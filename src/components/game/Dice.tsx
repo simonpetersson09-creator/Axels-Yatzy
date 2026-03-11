@@ -34,10 +34,11 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
 
   return (
     <div
-      className="absolute rounded-lg"
+      className="absolute"
       style={{
         width: size,
         height: size,
+        borderRadius: 14,
         background: 'linear-gradient(145deg, hsl(40 10% 94%), hsl(36 8% 82%))',
         boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.08)',
         backfaceVisibility: 'hidden',
@@ -104,9 +105,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       {/* Locked glow ring and border */}
       {locked && (
         <motion.div
-          className="absolute rounded-xl pointer-events-none z-0"
+          className="absolute pointer-events-none z-0"
           style={{
             inset: -4,
+            borderRadius: 14,
             border: '3px solid hsl(42 88% 52%)',
             boxShadow: '0 0 20px hsl(42 88% 52% / 0.5), 0 0 8px hsl(42 88% 52% / 0.3)',
           }}

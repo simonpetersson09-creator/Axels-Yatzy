@@ -134,7 +134,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
             <div
               key={i}
               className={cn(
-                'py-2.5 text-center border-r border-yatzy-line/60 last:border-r-0 flex flex-col items-center justify-center gap-1',
+                'text-center border-r border-yatzy-line/60 last:border-r-0 flex flex-col items-center justify-center gap-0.5',
                 COL_W,
                 player && isCurrent ? color.activeBg : player ? color.bg : 'bg-yatzy-section-header/30',
                 player && isCurrent && 'border-b-[3px]',

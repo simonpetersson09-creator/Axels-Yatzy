@@ -78,7 +78,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   const renderRow = (cat: typeof CATEGORIES[0], idx: number) => (
     <div key={cat.id} className="flex border-b border-yatzy-line/50">
       <div className={cn(
-        'flex-shrink-0 px-3 py-2.5 border-r border-yatzy-line/60 flex items-center', LABEL_W,
+        'flex-shrink-0 px-3 border-r border-yatzy-line/60 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/40',
       )}>
         <span className="text-[13px] font-medium text-yatzy-text/90 leading-none tracking-tight">{cat.name}</span>

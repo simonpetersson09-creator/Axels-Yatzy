@@ -101,7 +101,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         </span>
         <span className={cn(
           'text-xs font-bold',
-          hasBonus ? 'text-green-700' : 'text-yatzy-text/40'
+          hasBonus ? 'text-game-success' : 'text-yatzy-text/40'
         )}>
           Bonus: {hasBonus ? `+${UPPER_BONUS_VALUE}` : '0'}
         </span>

@@ -141,7 +141,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
                     'text-[10px] font-bold truncate max-w-[48px] leading-none',
                     isCurrent ? 'text-yatzy-text' : 'text-yatzy-text/50'
                   )}>
-                    {player.name}
+                    P{i + 1}
                   </span>
                 </>
               ) : (

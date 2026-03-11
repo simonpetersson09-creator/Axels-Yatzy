@@ -32,8 +32,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
           'flex items-center justify-between border-b border-r border-yatzy-line',
           'px-2 py-1.5 transition-colors text-left',
           'last:border-b-0',
-          canSelect && possibleScore! > 0 && 'bg-green-50 hover:bg-green-100 cursor-pointer',
-          canSelect && possibleScore === 0 && 'bg-red-50 hover:bg-red-100 cursor-pointer',
+          canSelect && possibleScore! > 0 && 'bg-yatzy-highlight hover:bg-yatzy-header cursor-pointer',
+          canSelect && possibleScore === 0 && 'bg-destructive/10 hover:bg-destructive/15 cursor-pointer',
           !canSelect && !isScored && 'bg-yatzy-bg',
           isScored && 'bg-yatzy-bg'
         )}
@@ -41,15 +41,15 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       >
         <span className={cn(
           'text-xs font-medium text-yatzy-text',
-          canSelect && possibleScore! > 0 && 'text-green-800 font-semibold',
+          canSelect && possibleScore! > 0 && 'text-game-gold-dark font-semibold',
           isScored && 'text-yatzy-text/60'
         )}>
           {cat.name}
         </span>
         <span className={cn(
           'text-xs font-bold min-w-[24px] text-right text-yatzy-text',
-          canSelect && possibleScore! > 0 && 'text-green-700',
-          canSelect && possibleScore === 0 && 'text-red-400',
+          canSelect && possibleScore! > 0 && 'text-game-gold-dark',
+          canSelect && possibleScore === 0 && 'text-destructive/50',
           isScored && 'text-yatzy-text'
         )}>
           {isScored ? currentPlayer.scores[cat.id] : canSelect ? possibleScore : ''}

@@ -37,15 +37,15 @@ export default function GamePage() {
   const canRoll = gameState.rollsLeft > 0;
 
   return (
-    <div className="min-h-screen px-3 sm:px-4 py-6 safe-top safe-bottom flex items-center justify-center">
+    <div className="min-h-screen px-4 py-6 safe-top safe-bottom flex items-center justify-center">
       <motion.div
-        className="flex gap-3 sm:gap-6 md:gap-10 items-stretch w-full max-w-[420px] sm:max-w-none"
+        className="flex gap-6 items-stretch"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        {/* Left: Score Board + controls - 70-75% width on mobile */}
-        <div className="flex flex-col gap-4 flex-[3] min-w-0">
+        {/* Left: Score Board + controls */}
+        <div className="flex flex-col gap-4">
           {/* Turn indicator */}
           <div className="text-center space-y-1">
             <p className="text-[9px] text-muted-foreground uppercase tracking-[0.25em] font-semibold">Tur</p>

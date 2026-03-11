@@ -69,14 +69,14 @@ export default function GamePage() {
           <motion.button
             onClick={roll}
             disabled={!canRoll || gameState.isRolling}
-            className={`w-full py-3 rounded-xl font-display font-bold text-base transition-all ${
+            className={`w-full py-4 rounded-2xl font-display font-bold text-base tracking-wide transition-all ${
               canRoll && !gameState.isRolling
-                ? 'bg-primary text-primary-foreground game-shadow active:scale-95'
-                : 'bg-muted text-muted-foreground'
+                ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_24px_-4px_hsl(40_90%_55%/0.4),0_2px_6px_-1px_hsl(0_0%_0%/0.3)] active:scale-[0.97] active:shadow-[0_2px_8px_-2px_hsl(40_90%_55%/0.3)]'
+                : 'bg-muted text-muted-foreground shadow-none'
             }`}
             whileTap={canRoll ? { scale: 0.97 } : {}}
           >
-            {gameState.rollsLeft === 3 ? 'Kasta tärningarna' : gameState.rollsLeft === 0 ? 'Välj kategori' : 'Kasta igen'}
+            {gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? 'Välj kategori' : 'Kasta igen'}
           </motion.button>
           {gameState.rollsLeft === 0 && (
             <p className="text-center text-xs text-game-gold font-medium">

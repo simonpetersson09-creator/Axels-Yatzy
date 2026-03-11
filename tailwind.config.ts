@@ -81,6 +81,10 @@ export default {
           highlight: "hsl(var(--yatzy-highlight))",
           "section-header": "hsl(var(--yatzy-section-header))",
           "sum-row": "hsl(var(--yatzy-sum-row))",
+          player1: "hsl(var(--yatzy-player1))",
+          player2: "hsl(var(--yatzy-player2))",
+          player3: "hsl(var(--yatzy-player3))",
+          player4: "hsl(var(--yatzy-player4))",
         },
       },
       borderRadius: {

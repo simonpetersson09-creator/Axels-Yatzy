@@ -35,53 +35,61 @@ export default function GamePage() {
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = getPossibleScores();
   const canRoll = gameState.rollsLeft > 0;
-  const hasRolled = gameState.rollsLeft < 3;
 
   return (
-    <div className="min-h-screen px-4 py-4 safe-top safe-bottom flex items-center justify-center">
+    <div className="min-h-screen px-4 py-6 safe-top safe-bottom flex items-center justify-center">
       <motion.div
-        className="flex gap-8 items-stretch"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        className="flex gap-10 items-stretch"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        {/* Left: Score Board + Roll Button */}
-        <div className="flex flex-col gap-3">
-          {/* Turn indicator + roll status */}
-          <div className="text-center space-y-0.5">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Tur</p>
-            <p className="text-lg font-display font-bold text-game-gold leading-tight">{currentPlayer.name}</p>
-            <p className="text-[11px] text-muted-foreground/70 font-medium tabular-nums">
+        {/* Left: Score Board + controls */}
+        <div className="flex flex-col gap-4">
+          {/* Turn indicator */}
+          <div className="text-center space-y-1">
+            <p className="text-[9px] text-muted-foreground uppercase tracking-[0.25em] font-semibold">Tur</p>
+            <p className="text-xl font-display font-bold text-gold-gradient leading-tight">{currentPlayer.name}</p>
+            <p className="text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
               {gameState.rollsLeft === 3
                 ? '\u00A0'
                 : `Kast ${3 - gameState.rollsLeft} / 3`}
             </p>
           </div>
 
-          <ScoreBoard
-            players={gameState.players}
-            currentPlayerIndex={gameState.currentPlayerIndex}
-            possibleScores={possibleScores}
-            onSelectCategory={selectCategory}
-            rollsLeft={gameState.rollsLeft}
-          />
+          {/* Scorecard with subtle outer glow */}
+          <div className="game-shadow-soft rounded-lg">
+            <ScoreBoard
+              players={gameState.players}
+              currentPlayerIndex={gameState.currentPlayerIndex}
+              possibleScores={possibleScores}
+              onSelectCategory={selectCategory}
+              rollsLeft={gameState.rollsLeft}
+            />
+          </div>
 
-          {/* Roll button below scorecard */}
+          {/* Roll button */}
           <motion.button
             onClick={roll}
             disabled={!canRoll || gameState.isRolling}
-            className={`w-full py-4 rounded-2xl font-display font-bold text-base tracking-wide transition-all ${
+            className={`w-full py-4 rounded-2xl font-display font-bold text-[15px] tracking-wide transition-all ${
               canRoll && !gameState.isRolling
-                ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_24px_-4px_hsl(40_90%_55%/0.4),0_2px_6px_-1px_hsl(0_0%_0%/0.3)] active:scale-[0.97] active:shadow-[0_2px_8px_-2px_hsl(40_90%_55%/0.3)]'
-                : 'bg-muted text-muted-foreground shadow-none'
+                ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_28px_-4px_hsl(42_88%_52%/0.35),0_2px_8px_-2px_hsl(0_0%_0%/0.35)] active:scale-[0.97]'
+                : 'bg-secondary text-muted-foreground shadow-none'
             }`}
             whileTap={canRoll ? { scale: 0.97 } : {}}
           >
             {gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? 'Välj kategori' : 'Kasta igen'}
           </motion.button>
+
           {gameState.rollsLeft === 0 && (
-            <p className="text-center text-xs text-game-gold font-medium">
-              Du måste välja en kategori
-            </p>
+            <motion.p
+              className="text-center text-[11px] text-game-gold font-medium tracking-wide"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              Välj en kategori på brickan
+            </motion.p>
           )}
         </div>
 

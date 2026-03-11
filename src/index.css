@@ -6,69 +6,69 @@
 
 @layer base {
   :root {
-    --background: 228 20% 10%;
-    --foreground: 40 20% 95%;
+    --background: 225 25% 8%;
+    --foreground: 40 15% 93%;
 
-    --card: 228 18% 14%;
-    --card-foreground: 40 20% 95%;
+    --card: 225 22% 12%;
+    --card-foreground: 40 15% 93%;
 
-    --popover: 228 18% 14%;
-    --popover-foreground: 40 20% 95%;
+    --popover: 225 22% 12%;
+    --popover-foreground: 40 15% 93%;
 
-    --primary: 40 90% 55%;
-    --primary-foreground: 228 20% 10%;
+    --primary: 42 88% 52%;
+    --primary-foreground: 225 25% 8%;
 
-    --secondary: 228 15% 20%;
-    --secondary-foreground: 40 20% 90%;
+    --secondary: 225 18% 16%;
+    --secondary-foreground: 40 15% 85%;
 
-    --muted: 228 15% 18%;
-    --muted-foreground: 228 10% 55%;
+    --muted: 225 16% 15%;
+    --muted-foreground: 225 10% 48%;
 
-    --accent: 40 90% 55%;
-    --accent-foreground: 228 20% 10%;
+    --accent: 42 88% 52%;
+    --accent-foreground: 225 25% 8%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 40 20% 95%;
+    --destructive: 0 65% 48%;
+    --destructive-foreground: 40 15% 93%;
 
-    --border: 228 15% 22%;
-    --input: 228 15% 22%;
-    --ring: 40 90% 55%;
+    --border: 225 16% 18%;
+    --input: 225 16% 18%;
+    --ring: 42 88% 52%;
 
-    --radius: 1rem;
+    --radius: 0.875rem;
 
-    --sidebar-background: 228 18% 12%;
-    --sidebar-foreground: 40 20% 90%;
-    --sidebar-primary: 40 90% 55%;
-    --sidebar-primary-foreground: 228 20% 10%;
-    --sidebar-accent: 228 15% 18%;
-    --sidebar-accent-foreground: 40 20% 90%;
-    --sidebar-border: 228 15% 22%;
-    --sidebar-ring: 40 90% 55%;
+    --sidebar-background: 225 22% 10%;
+    --sidebar-foreground: 40 15% 85%;
+    --sidebar-primary: 42 88% 52%;
+    --sidebar-primary-foreground: 225 25% 8%;
+    --sidebar-accent: 225 16% 15%;
+    --sidebar-accent-foreground: 40 15% 85%;
+    --sidebar-border: 225 16% 18%;
+    --sidebar-ring: 42 88% 52%;
 
-    /* Custom game tokens */
-    --game-gold: 40 90% 55%;
-    --game-gold-light: 40 85% 70%;
-    --game-gold-dark: 40 90% 40%;
-    --game-surface: 228 18% 16%;
-    --game-surface-hover: 228 18% 20%;
-    --game-dice: 40 15% 92%;
-    --game-dice-dot: 228 20% 12%;
-    --game-dice-locked: 40 90% 55%;
-    --game-success: 142 70% 45%;
-    --game-info: 210 80% 55%;
+    /* Game tokens */
+    --game-gold: 42 88% 52%;
+    --game-gold-light: 42 80% 68%;
+    --game-gold-dark: 38 85% 38%;
+    --game-surface: 225 22% 13%;
+    --game-surface-hover: 225 20% 17%;
+    --game-dice: 40 12% 90%;
+    --game-dice-dot: 225 22% 10%;
+    --game-dice-locked: 42 88% 52%;
+    --game-success: 152 60% 42%;
+    --game-info: 210 70% 52%;
 
-    /* Yatzy scorecard tokens - classic paper look */
-    --yatzy-bg: 45 30% 96%;
-    --yatzy-line: 0 0% 20%;
-    --yatzy-text: 0 0% 12%;
-    --yatzy-header: 45 25% 90%;
-    --yatzy-highlight: 48 70% 85%;
-    --yatzy-section-header: 45 20% 92%;
-    --yatzy-sum-row: 45 25% 93%;
-    --yatzy-player1: 45 90% 50%;
-    --yatzy-player2: 210 80% 50%;
-    --yatzy-player3: 142 70% 42%;
-    --yatzy-player4: 0 72% 50%;
+    /* Yatzy scorecard */
+    --yatzy-bg: 44 25% 95%;
+    --yatzy-line: 225 10% 25%;
+    --yatzy-text: 225 15% 12%;
+    --yatzy-header: 44 20% 89%;
+    --yatzy-highlight: 46 65% 84%;
+    --yatzy-section-header: 44 15% 92%;
+    --yatzy-sum-row: 44 18% 91%;
+    --yatzy-player1: 42 88% 48%;
+    --yatzy-player2: 215 72% 48%;
+    --yatzy-player3: 152 60% 40%;
+    --yatzy-player4: 0 62% 48%;
   }
 }
 
@@ -83,6 +83,8 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    background-image: radial-gradient(ellipse at 50% 0%, hsl(225 25% 12%) 0%, hsl(225 25% 8%) 70%);
+    min-height: 100vh;
   }
   h1, h2, h3, h4 {
     font-family: 'Space Grotesk', sans-serif;
@@ -101,9 +103,17 @@
     background-image: linear-gradient(135deg, hsl(var(--game-gold-light)), hsl(var(--game-gold)), hsl(var(--game-gold-dark)));
   }
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl;
+    @apply backdrop-blur-xl border border-border/40 rounded-2xl;
+    background: linear-gradient(145deg, hsl(var(--card) / 0.85), hsl(var(--card) / 0.6));
   }
   .game-shadow {
-    box-shadow: 0 8px 32px -8px hsl(var(--game-gold) / 0.15), 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+    box-shadow:
+      0 8px 32px -8px hsl(var(--game-gold) / 0.12),
+      0 4px 12px -4px hsl(0 0% 0% / 0.4);
+  }
+  .game-shadow-soft {
+    box-shadow:
+      0 4px 20px -6px hsl(0 0% 0% / 0.5),
+      0 1px 4px -1px hsl(0 0% 0% / 0.2);
   }
 }

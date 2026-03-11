@@ -119,13 +119,13 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             width: size + 10,
             height: size + 10,
             borderRadius: 16,
-            border: '3px solid hsl(42 88% 52%)',
-            boxShadow: '0 0 20px hsl(42 88% 52% / 0.5), 0 0 8px hsl(42 88% 52% / 0.3)',
+            border: '3px solid #F5B942',
+            boxShadow: '0 0 16px rgba(245, 185, 66, 0.45), 0 0 6px rgba(245, 185, 66, 0.25)',
           }}
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.12, ease: 'easeOut' }}
         />
       )}
 

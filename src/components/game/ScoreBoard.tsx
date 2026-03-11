@@ -177,7 +177,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className="bg-yatzy-section-header/60 border-b border-yatzy-line/50 px-3 py-1">
+      <div className={cn('bg-yatzy-section-header/60 border-b border-yatzy-line/50 px-3 flex items-center', ROW_H)}>
         <span className="text-[9px] font-bold text-yatzy-text/35 uppercase tracking-[0.15em]">Nedre sektionen</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

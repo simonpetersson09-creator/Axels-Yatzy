@@ -124,8 +124,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Player columns header */}
-      <div className="flex border-b-2 border-yatzy-line">
-        <div className={cn('flex-shrink-0 border-r border-yatzy-line/60 bg-yatzy-section-header px-3 py-2.5', LABEL_W)} />
+      <div className={cn('flex border-b-2 border-yatzy-line', ROW_H)}>
+        <div className={cn('flex-shrink-0 border-r border-yatzy-line/60 bg-yatzy-section-header px-3 flex items-center', LABEL_W)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];
           const color = PLAYER_COLORS[i];

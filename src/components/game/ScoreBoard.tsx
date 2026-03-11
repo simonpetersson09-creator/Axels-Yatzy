@@ -21,6 +21,7 @@ const PLAYER_COLORS = [
 const SLOT_COUNT = 4;
 const COL_W = 'min-w-[54px] w-[54px]';
 const LABEL_W = 'w-[104px] min-w-[104px]';
+const ROW_H = 'h-[34px]';
 
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft }: ScoreBoardProps) {
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
@@ -40,7 +41,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
     if (!player) {
       return (
-        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/60 last:border-r-0 py-2.5 text-center', COL_W, 'bg-yatzy-bg/40')} />
+        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/60 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, 'bg-yatzy-bg/40')} />
       );
     }
 
@@ -54,7 +55,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         onClick={() => canSelect && onSelectCategory(cat.id)}
         disabled={!canSelect}
         className={cn(
-          'border-r border-yatzy-line/60 last:border-r-0 py-2.5 text-center transition-all', COL_W,
+          'border-r border-yatzy-line/60 last:border-r-0 text-center transition-all flex items-center justify-center', ROW_H, COL_W,
           cellBg(slotIdx),
           canSelect && possibleScore! > 0 && 'bg-yatzy-highlight/80 hover:bg-yatzy-highlight cursor-pointer ring-1 ring-inset ring-game-gold-dark/20',
           canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
@@ -77,7 +78,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   const renderRow = (cat: typeof CATEGORIES[0], idx: number) => (
     <div key={cat.id} className="flex border-b border-yatzy-line/50">
       <div className={cn(
-        'flex-shrink-0 px-3 py-2.5 border-r border-yatzy-line/60 flex items-center', LABEL_W,
+        'flex-shrink-0 px-3 border-r border-yatzy-line/60 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/40',
       )}>
         <span className="text-[13px] font-medium text-yatzy-text/90 leading-none tracking-tight">{cat.name}</span>
@@ -88,7 +89,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
   const renderSumRow = (label: string, getValue: (p: Player) => string | number, bold?: boolean) => (
     <div className="flex border-b-2 border-yatzy-line bg-yatzy-sum-row">
-      <div className={cn('flex-shrink-0 px-3 py-2.5 border-r border-yatzy-line/60 flex items-center', LABEL_W)}>
+      <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/60 flex items-center', ROW_H, LABEL_W)}>
         <span className={cn(
           'uppercase tracking-wider leading-none',
           bold ? 'text-[12px] font-black text-yatzy-text' : 'text-[10px] font-bold text-yatzy-text/60',
@@ -98,7 +99,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         const player = players[i];
         const isCurrent = i === currentPlayerIndex;
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/60 last:border-r-0 py-2.5 text-center', COL_W, cellBg(i))}>
+          <div key={i} className={cn('border-r border-yatzy-line/60 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, cellBg(i))}>
             <span className={cn(
               'tabular-nums leading-none',
               bold ? 'text-[14px] font-black' : 'text-[12px] font-bold',
@@ -118,13 +119,13 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       style={{ minWidth: 104 + SLOT_COUNT * 54 }}
     >
       {/* Header */}
-      <div className="bg-yatzy-header border-b-2 border-yatzy-line px-4 py-3 text-center">
+      <div className={cn('bg-yatzy-header border-b-2 border-yatzy-line px-4 text-center flex items-center justify-center', ROW_H)}>
         <span className="font-display font-bold text-base text-yatzy-text tracking-[0.2em] uppercase">Yatzy</span>
       </div>
 
       {/* Player columns header */}
-      <div className="flex border-b-2 border-yatzy-line">
-        <div className={cn('flex-shrink-0 border-r border-yatzy-line/60 bg-yatzy-section-header px-3 py-2.5', LABEL_W)} />
+      <div className={cn('flex border-b-2 border-yatzy-line', ROW_H)}>
+        <div className={cn('flex-shrink-0 border-r border-yatzy-line/60 bg-yatzy-section-header px-3 flex items-center', LABEL_W)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];
           const color = PLAYER_COLORS[i];
@@ -133,7 +134,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
             <div
               key={i}
               className={cn(
-                'py-2.5 text-center border-r border-yatzy-line/60 last:border-r-0 flex flex-col items-center justify-center gap-1',
+                'text-center border-r border-yatzy-line/60 last:border-r-0 flex flex-col items-center justify-center gap-0.5',
                 COL_W,
                 player && isCurrent ? color.activeBg : player ? color.bg : 'bg-yatzy-section-header/30',
                 player && isCurrent && 'border-b-[3px]',
@@ -164,7 +165,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Upper section */}
-      <div className="bg-yatzy-section-header/60 border-b border-yatzy-line/50 px-3 py-1">
+      <div className={cn('bg-yatzy-section-header/60 border-b border-yatzy-line/50 px-3 flex items-center', ROW_H)}>
         <span className="text-[9px] font-bold text-yatzy-text/35 uppercase tracking-[0.15em]">Övre sektionen</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
@@ -176,7 +177,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className="bg-yatzy-section-header/60 border-b border-yatzy-line/50 px-3 py-1">
+      <div className={cn('bg-yatzy-section-header/60 border-b border-yatzy-line/50 px-3 flex items-center', ROW_H)}>
         <span className="text-[9px] font-bold text-yatzy-text/35 uppercase tracking-[0.15em]">Nedre sektionen</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

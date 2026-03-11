@@ -38,9 +38,9 @@ export default function GamePage() {
   const hasRolled = gameState.rollsLeft < 3;
 
   return (
-    <div className="min-h-screen px-4 py-4 safe-top safe-bottom flex items-start justify-center">
+    <div className="min-h-screen px-4 py-4 safe-top safe-bottom flex items-center justify-center">
       <motion.div
-        className="flex gap-6 items-start mt-4"
+        className="flex gap-8 items-stretch"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >

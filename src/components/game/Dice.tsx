@@ -111,49 +111,62 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
 
   return (
     <div className="flex items-center justify-center" style={{ width: size, height: size }}>
-      <div style={{ perspective: 600, width: size, height: size }}>
-        <motion.button
-          onClick={handleToggle}
-          className={cn(
-            'relative',
-            canLock ? 'cursor-pointer' : 'cursor-default'
-          )}
-          style={{
-            width: size,
-            height: size,
-            transformStyle: 'preserve-3d',
-            borderRadius: 14,
-            boxShadow: locked
-              ? '0 0 0 4px #F5B942, 0 0 20px rgba(245,185,66,0.6), 0 0 40px rgba(245,185,66,0.25)'
-              : 'none',
-            transition: 'box-shadow 0.15s ease',
-          }}
-          animate={{
-            rotateX: spinRotation.rotateX,
-            rotateY: spinRotation.rotateY,
-            y: isAnimating ? [0, -22, -8, -14, 0] : justToggled ? [0, -4, 0] : 0,
-            scale: locked ? 1.05 : justToggled ? [1, 0.95, 1.05, 1] : 1,
-          }}
-          transition={
-            isAnimating
-              ? {
-                  duration: 0.7,
-                  ease: [0.16, 1, 0.3, 1],
-                  y: { duration: 0.7, times: [0, 0.3, 0.5, 0.7, 1], ease: 'easeOut' },
-                }
-              : justToggled
-              ? { duration: 0.12, ease: 'easeOut' }
-              : { duration: 0.15, ease: 'easeOut' }
-          }
-          whileTap={canLock ? { scale: 0.95 } : {}}
-        >
-          {faces.map((face) => (
-            <div key={face.faceValue} className="absolute inset-0" style={{ transform: face.transform, transformStyle: 'preserve-3d' }}>
-              <DiceFace faceValue={face.faceValue} size={size} locked={locked} />
-            </div>
-          ))}
-        </motion.button>
-      </div>
+      {/* Outer wrapper handles highlight — stays flat, no 3D */}
+      <motion.div
+        style={{
+          width: size,
+          height: size,
+          borderRadius: 14,
+          boxShadow: locked
+            ? '0 0 0 3.5px #F5B942, 0 0 18px rgba(245,185,66,0.65), 0 6px 20px rgba(0,0,0,0.18)'
+            : '0 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)',
+          transition: 'box-shadow 0.15s ease',
+        }}
+        animate={{
+          scale: locked ? 1.06 : justToggled ? [1, 0.95, 1.05, 1] : 1,
+        }}
+        transition={
+          justToggled
+            ? { duration: 0.12, ease: 'easeOut' }
+            : { duration: 0.15, ease: 'easeOut' }
+        }
+      >
+        <div style={{ perspective: 600, width: size, height: size }}>
+          <motion.button
+            onClick={handleToggle}
+            className={cn(
+              'relative',
+              canLock ? 'cursor-pointer' : 'cursor-default'
+            )}
+            style={{
+              width: size,
+              height: size,
+              transformStyle: 'preserve-3d',
+            }}
+            animate={{
+              rotateX: spinRotation.rotateX,
+              rotateY: spinRotation.rotateY,
+              y: isAnimating ? [0, -22, -8, -14, 0] : 0,
+            }}
+            transition={
+              isAnimating
+                ? {
+                    duration: 0.7,
+                    ease: [0.16, 1, 0.3, 1],
+                    y: { duration: 0.7, times: [0, 0.3, 0.5, 0.7, 1], ease: 'easeOut' },
+                  }
+                : { duration: 0.15, ease: 'easeOut' }
+            }
+            whileTap={canLock ? { scale: 0.95 } : {}}
+          >
+            {faces.map((face) => (
+              <div key={face.faceValue} className="absolute inset-0" style={{ transform: face.transform, transformStyle: 'preserve-3d' }}>
+                <DiceFace faceValue={face.faceValue} size={size} locked={locked} />
+              </div>
+            ))}
+          </motion.button>
+        </div>
+      </motion.div>
 
       {/* Shadow */}
       <motion.div

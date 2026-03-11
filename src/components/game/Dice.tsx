@@ -124,7 +124,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           transition: 'box-shadow 0.15s ease',
         }}
         animate={{
-          scale: locked ? 1.15 : justToggled ? [1, 0.95, 1.06, 1] : 1,
+          scale: locked ? 1.08 : justToggled ? [1, 0.95, 1.06, 1] : 1,
         }}
         transition={
           justToggled

@@ -105,9 +105,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       {/* Locked glow ring and border */}
       {locked && (
         <motion.div
-          className="absolute rounded-xl pointer-events-none z-0"
+          className="absolute pointer-events-none z-0"
           style={{
             inset: -4,
+            borderRadius: 14,
             border: '3px solid hsl(42 88% 52%)',
             boxShadow: '0 0 20px hsl(42 88% 52% / 0.5), 0 0 8px hsl(42 88% 52% / 0.3)',
           }}

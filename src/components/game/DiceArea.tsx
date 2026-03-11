@@ -13,7 +13,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
   const hasRolled = rollsLeft < 3;
 
   return (
-    <div className="flex flex-col items-center pt-[160px]">
+    <div className="flex flex-col items-center pt-[220px]">
       <div className="flex flex-col gap-3 sm:gap-4">
         {dice.map((value, index) => (
           <motion.div

@@ -65,6 +65,10 @@
     --yatzy-highlight: 48 70% 85%;
     --yatzy-section-header: 45 20% 92%;
     --yatzy-sum-row: 45 25% 93%;
+    --yatzy-player1: 45 90% 50%;
+    --yatzy-player2: 210 80% 50%;
+    --yatzy-player3: 142 70% 42%;
+    --yatzy-player4: 0 72% 50%;
   }
 }
 

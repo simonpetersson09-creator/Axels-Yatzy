@@ -55,7 +55,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         onClick={() => canSelect && onSelectCategory(cat.id)}
         disabled={!canSelect}
         className={cn(
-          'border-r border-yatzy-line/60 last:border-r-0 py-2.5 text-center transition-all', COL_W,
+          'border-r border-yatzy-line/60 last:border-r-0 text-center transition-all flex items-center justify-center', ROW_H, COL_W,
           cellBg(slotIdx),
           canSelect && possibleScore! > 0 && 'bg-yatzy-highlight/80 hover:bg-yatzy-highlight cursor-pointer ring-1 ring-inset ring-game-gold-dark/20',
           canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',

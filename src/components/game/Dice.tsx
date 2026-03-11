@@ -176,7 +176,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           height: 5,
           marginTop: 3,
           background: locked
-            ? 'radial-gradient(ellipse, hsl(42 88% 52% / 0.4), transparent)'
+            ? 'radial-gradient(ellipse, rgba(245, 185, 66, 0.35), transparent)'
             : 'radial-gradient(ellipse, rgba(0,0,0,0.25), transparent)',
         }}
         animate={{

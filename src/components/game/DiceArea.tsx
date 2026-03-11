@@ -1,4 +1,5 @@
 import { Dice } from './Dice';
+import { motion } from 'framer-motion';
 
 interface DiceAreaProps {
   dice: number[];
@@ -12,24 +13,34 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
   const hasRolled = rollsLeft < 3;
 
   return (
-    <div className="flex flex-col items-center justify-center self-stretch py-4">
-      <div className="flex flex-col gap-3">
+    <div className="flex flex-col items-center justify-center self-stretch">
+      <div className="flex flex-col gap-2.5">
         {dice.map((value, index) => (
-          <Dice
+          <motion.div
             key={index}
-            value={value}
-            locked={lockedDice[index]}
-            rolling={isRolling}
-            onToggleLock={() => onToggleLock(index)}
-            canLock={hasRolled && rollsLeft > 0}
-          />
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.04, duration: 0.3 }}
+          >
+            <Dice
+              value={value}
+              locked={lockedDice[index]}
+              rolling={isRolling}
+              onToggleLock={() => onToggleLock(index)}
+              canLock={hasRolled && rollsLeft > 0}
+            />
+          </motion.div>
         ))}
       </div>
 
       {hasRolled && rollsLeft > 0 && (
-        <p className="text-center text-[11px] text-muted-foreground mt-3 max-w-[80px] leading-tight">
+        <motion.p
+          className="text-center text-[10px] text-muted-foreground/50 mt-2 tracking-wide"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
           Tryck för att låsa
-        </p>
+        </motion.p>
       )}
     </div>
   );

@@ -34,10 +34,11 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
 
   return (
     <div
-      className="absolute rounded-lg"
+      className="absolute"
       style={{
         width: size,
         height: size,
+        borderRadius: 14,
         background: 'linear-gradient(145deg, hsl(40 10% 94%), hsl(36 8% 82%))',
         boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.08)',
         backfaceVisibility: 'hidden',

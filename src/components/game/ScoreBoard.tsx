@@ -114,8 +114,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
   return (
     <div
-      className="bg-yatzy-bg border-2 border-yatzy-line rounded-md shadow-lg overflow-hidden"
-      style={{ minWidth: 104 + SLOT_COUNT * 54 }}
+      className="bg-yatzy-bg border-2 border-yatzy-line rounded-md shadow-lg overflow-hidden text-sm sm:text-base"
+      style={{ minWidth: 80 + SLOT_COUNT * 44 }}
     >
       {/* Header */}
       <div className="bg-yatzy-header border-b-2 border-yatzy-line px-4 py-3 text-center">

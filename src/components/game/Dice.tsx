@@ -124,7 +124,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transformStyle: 'preserve-3d',
             borderRadius: 14,
             boxShadow: locked
-              ? '0 0 0 3px #F5B942, 0 0 14px rgba(245,185,66,0.5), 0 0 6px rgba(245,185,66,0.25)'
+              ? '0 0 0 4px #F5B942, 0 0 20px rgba(245,185,66,0.6), 0 0 40px rgba(245,185,66,0.25)'
               : 'none',
             transition: 'box-shadow 0.15s ease',
           }}

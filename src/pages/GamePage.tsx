@@ -71,20 +71,20 @@ export default function GamePage() {
             }`}
             whileTap={canRoll ? { scale: 0.97 } : {}}
           >
-            {gameState.rollsLeft === 3 ? 'Kasta tärningarna' : gameState.rollsLeft === 0 ? 'Välj kategori' : `Kasta igen (${gameState.rollsLeft})`}
+            {gameState.rollsLeft === 3 ? 'Kasta tärningarna' : gameState.rollsLeft === 0 ? 'Välj kategori' : 'Kasta igen'}
           </motion.button>
 
-          {/* Roll indicators */}
-          <div className="flex justify-center gap-1">
-            {[1, 2, 3].map(i => (
-              <div
-                key={i}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  i <= (3 - gameState.rollsLeft) ? 'bg-game-gold' : 'bg-muted'
-                }`}
-              />
-            ))}
-          </div>
+          {/* Roll counter text */}
+          <p className="text-center text-sm font-semibold text-yatzy-text/80 font-display">
+            {gameState.rollsLeft === 3
+              ? ''
+              : `Kast ${3 - gameState.rollsLeft} / 3`}
+          </p>
+          {gameState.rollsLeft === 0 && (
+            <p className="text-center text-xs text-game-gold font-medium">
+              Du måste välja en kategori
+            </p>
+          )}
         </div>
 
         {/* Right: Dice */}

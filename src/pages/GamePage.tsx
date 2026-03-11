@@ -46,10 +46,15 @@ export default function GamePage() {
       >
         {/* Left: Score Board + Roll Button */}
         <div className="flex flex-col gap-3">
-          {/* Current player indicator */}
-          <div className="text-center">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Tur</p>
-            <p className="text-lg font-display font-bold text-game-gold">{currentPlayer.name}</p>
+          {/* Turn indicator + roll status */}
+          <div className="text-center space-y-0.5">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Tur</p>
+            <p className="text-lg font-display font-bold text-game-gold leading-tight">{currentPlayer.name}</p>
+            <p className="text-[11px] text-muted-foreground/70 font-medium tabular-nums">
+              {gameState.rollsLeft === 3
+                ? '\u00A0'
+                : `Kast ${3 - gameState.rollsLeft} / 3`}
+            </p>
           </div>
 
           <ScoreBoard
@@ -73,13 +78,6 @@ export default function GamePage() {
           >
             {gameState.rollsLeft === 3 ? 'Kasta tärningarna' : gameState.rollsLeft === 0 ? 'Välj kategori' : 'Kasta igen'}
           </motion.button>
-
-          {/* Roll counter text */}
-          <p className="text-center text-sm font-semibold text-yatzy-text/80 font-display">
-            {gameState.rollsLeft === 3
-              ? ''
-              : `Kast ${3 - gameState.rollsLeft} / 3`}
-          </p>
           {gameState.rollsLeft === 0 && (
             <p className="text-center text-xs text-game-gold font-medium">
               Du måste välja en kategori

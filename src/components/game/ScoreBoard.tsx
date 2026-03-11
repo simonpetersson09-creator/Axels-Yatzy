@@ -19,8 +19,8 @@ const PLAYER_COLORS = [
 ];
 
 const SLOT_COUNT = 4;
-const COL_W = 'min-w-[44px] w-[44px] sm:min-w-[54px] sm:w-[54px]';
-const LABEL_W = 'w-[80px] min-w-[80px] sm:w-[104px] sm:min-w-[104px]';
+const COL_W = 'min-w-[54px] w-[54px]';
+const LABEL_W = 'w-[104px] min-w-[104px]';
 
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft }: ScoreBoardProps) {
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');

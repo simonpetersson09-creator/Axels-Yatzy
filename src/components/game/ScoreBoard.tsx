@@ -19,8 +19,8 @@ const PLAYER_COLORS = [
 ];
 
 const SLOT_COUNT = 4;
-const COL_W = 'min-w-[44px] w-[44px] sm:min-w-[54px] sm:w-[54px]';
-const LABEL_W = 'w-[80px] min-w-[80px] sm:w-[104px] sm:min-w-[104px]';
+const COL_W = 'min-w-[54px] w-[54px]';
+const LABEL_W = 'w-[104px] min-w-[104px]';
 
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft }: ScoreBoardProps) {
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
@@ -114,8 +114,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
   return (
     <div
-      className="bg-yatzy-bg border-2 border-yatzy-line rounded-md shadow-lg overflow-hidden text-sm sm:text-base"
-      style={{ minWidth: 80 + SLOT_COUNT * 44 }}
+      className="bg-yatzy-bg border-2 border-yatzy-line rounded-md shadow-lg overflow-hidden"
+      style={{ minWidth: 104 + SLOT_COUNT * 54 }}
     >
       {/* Header */}
       <div className="bg-yatzy-header border-b-2 border-yatzy-line px-4 py-3 text-center">

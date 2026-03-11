@@ -56,7 +56,7 @@ export default function GamePage() {
         </div>
 
         {/* Scoreboard + Dice side by side, dice centered to scoreboard */}
-        <div className="flex gap-6 items-start">
+        <div className="flex gap-6 items-end">
           <div className="game-shadow-soft rounded-lg overflow-hidden">
             <ScoreBoard
               players={gameState.players}

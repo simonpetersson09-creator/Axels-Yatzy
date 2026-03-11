@@ -34,32 +34,66 @@ export default function GamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = getPossibleScores();
+  const canRoll = gameState.rollsLeft > 0;
+  const hasRolled = gameState.rollsLeft < 3;
 
   return (
-    <div className="min-h-screen px-4 py-4 safe-top safe-bottom">
+    <div className="min-h-screen px-4 py-4 safe-top safe-bottom flex items-start justify-center">
       <motion.div
-        className="max-w-sm mx-auto space-y-4"
+        className="flex gap-6 items-start mt-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        {/* Dice Area */}
+        {/* Left: Score Board + Roll Button */}
+        <div className="flex flex-col gap-3">
+          {/* Current player indicator */}
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">Tur</p>
+            <p className="text-lg font-display font-bold text-game-gold">{currentPlayer.name}</p>
+          </div>
+
+          <ScoreBoard
+            players={gameState.players}
+            currentPlayerIndex={gameState.currentPlayerIndex}
+            possibleScores={possibleScores}
+            onSelectCategory={selectCategory}
+            rollsLeft={gameState.rollsLeft}
+          />
+
+          {/* Roll button below scorecard */}
+          <motion.button
+            onClick={roll}
+            disabled={!canRoll || gameState.isRolling}
+            className={`w-full py-3 rounded-xl font-display font-bold text-base transition-all ${
+              canRoll && !gameState.isRolling
+                ? 'bg-primary text-primary-foreground game-shadow active:scale-95'
+                : 'bg-muted text-muted-foreground'
+            }`}
+            whileTap={canRoll ? { scale: 0.97 } : {}}
+          >
+            {gameState.rollsLeft === 3 ? 'Kasta tärningarna' : gameState.rollsLeft === 0 ? 'Välj kategori' : `Kasta igen (${gameState.rollsLeft})`}
+          </motion.button>
+
+          {/* Roll indicators */}
+          <div className="flex justify-center gap-1">
+            {[1, 2, 3].map(i => (
+              <div
+                key={i}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  i <= (3 - gameState.rollsLeft) ? 'bg-game-gold' : 'bg-muted'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Dice */}
         <DiceArea
           dice={gameState.dice}
           lockedDice={gameState.lockedDice}
           rollsLeft={gameState.rollsLeft}
           isRolling={gameState.isRolling}
-          onRoll={roll}
           onToggleLock={toggleLock}
-          currentPlayerName={currentPlayer.name}
-        />
-
-        {/* Score Board */}
-        <ScoreBoard
-          players={gameState.players}
-          currentPlayerIndex={gameState.currentPlayerIndex}
-          possibleScores={possibleScores}
-          onSelectCategory={selectCategory}
-          rollsLeft={gameState.rollsLeft}
         />
       </motion.div>
     </div>

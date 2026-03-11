@@ -119,7 +119,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       style={{ minWidth: 104 + SLOT_COUNT * 54 }}
     >
       {/* Header */}
-      <div className="bg-yatzy-header border-b-2 border-yatzy-line px-4 py-3 text-center">
+      <div className={cn('bg-yatzy-header border-b-2 border-yatzy-line px-4 text-center flex items-center justify-center', ROW_H)}>
         <span className="font-display font-bold text-base text-yatzy-text tracking-[0.2em] uppercase">Yatzy</span>
       </div>
 

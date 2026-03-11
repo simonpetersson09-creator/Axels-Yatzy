@@ -66,7 +66,7 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
 }
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
-  const size = 68;
+  const size = 60;
   const half = size / 2;
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState({ rotateX: 0, rotateY: 0 });

@@ -10,13 +10,14 @@ interface DiceProps {
   canLock: boolean;
 }
 
-const dotPositions: Record<number, [number, number][]> = {
-  1: [[50, 50]],
-  2: [[28, 28], [72, 72]],
-  3: [[28, 28], [50, 50], [72, 72]],
-  4: [[28, 28], [72, 28], [28, 72], [72, 72]],
-  5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
-  6: [[28, 28], [72, 28], [28, 50], [72, 50], [28, 72], [72, 72]],
+// 3×3 grid positions: 1=top-left, 2=top-center, 3=top-right, 4=mid-left, 5=center, 6=mid-right, 7=bot-left, 8=bot-center, 9=bot-right
+const pipGridPositions: Record<number, number[]> = {
+  1: [5],
+  2: [3, 7],
+  3: [3, 5, 7],
+  4: [1, 3, 7, 9],
+  5: [1, 3, 5, 7, 9],
+  6: [1, 3, 4, 6, 7, 9],
 };
 
 const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
@@ -29,8 +30,9 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 };
 
 function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number; locked: boolean }) {
-  const dots = dotPositions[faceValue] || [];
-  const dotSize = size * 0.16;
+  const positions = pipGridPositions[faceValue] || [];
+  const pipSize = Math.round(size * 0.16);
+  const padding = Math.round(size * 0.18);
 
   return (
     <div
@@ -38,29 +40,44 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
       style={{
         width: size,
         height: size,
-        borderRadius: 14,
+        borderRadius: 12,
         background: locked
           ? 'linear-gradient(180deg, #fffdf7 0%, #fff7e0 100%)'
           : 'linear-gradient(145deg, #ffffff, #f2f0ed)',
         boxShadow: 'inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -2px 5px rgba(0,0,0,0.06)',
         backfaceVisibility: 'hidden',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateRows: 'repeat(3, 1fr)',
+        padding,
       }}
     >
-      {dots.map(([x, y], i) => (
-        <div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: dotSize,
-            height: dotSize,
-            left: `${x}%`,
-            top: `${y}%`,
-            transform: 'translate(-50%, -50%)',
-            background: 'radial-gradient(circle at 38% 38%, hsl(220 10% 25%), hsl(220 15% 10%))',
-            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(255,255,255,0.15)',
-          }}
-        />
-      ))}
+      {Array.from({ length: 9 }, (_, i) => {
+        const cellIndex = i + 1;
+        const hasPip = positions.includes(cellIndex);
+        return (
+          <div
+            key={i}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {hasPip && (
+              <div
+                style={{
+                  width: pipSize,
+                  height: pipSize,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle at 38% 38%, hsl(220 10% 25%), hsl(220 15% 10%))',
+                  boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(255,255,255,0.15)',
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

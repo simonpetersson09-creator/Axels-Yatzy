@@ -30,7 +30,7 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 
 function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number; locked: boolean }) {
   const dots = dotPositions[faceValue] || [];
-  const dotSize = size * 0.15;
+  const dotSize = size * 0.16;
 
   return (
     <div
@@ -38,10 +38,11 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
       style={{
         width: size,
         height: size,
-        borderRadius: 13,
-        background: 'linear-gradient(145deg, #ffffff, #f0eeeb)',
-        boxShadow:
-          'inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -2px 5px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)',
+        borderRadius: 14,
+        background: locked
+          ? 'linear-gradient(180deg, #fffdf7 0%, #fff7e0 100%)'
+          : 'linear-gradient(145deg, #ffffff, #f2f0ed)',
+        boxShadow: 'inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -2px 5px rgba(0,0,0,0.06)',
         backfaceVisibility: 'hidden',
       }}
     >
@@ -65,7 +66,7 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
 }
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
-  const size = 68;
+  const size = 60;
   const half = size / 2;
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState({ rotateX: 0, rotateY: 0 });
@@ -118,12 +119,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           height: size,
           borderRadius: 14,
           boxShadow: locked
-            ? '0 0 0 3.5px #F5B942, 0 0 18px rgba(245,185,66,0.65), 0 6px 20px rgba(0,0,0,0.18)'
-            : '0 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)',
+            ? '0 0 0 3px #F5B942, 0 0 18px rgba(245,185,66,0.7), 0 8px 20px rgba(0,0,0,0.2)'
+            : '0 4px 10px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)',
           transition: 'box-shadow 0.15s ease',
         }}
         animate={{
-          scale: locked ? 1.06 : justToggled ? [1, 0.95, 1.05, 1] : 1,
+          scale: locked ? 1.15 : justToggled ? [1, 0.95, 1.06, 1] : 1,
         }}
         transition={
           justToggled

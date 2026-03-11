@@ -38,9 +38,10 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
       style={{
         width: size,
         height: size,
-        borderRadius: 14,
-        background: 'linear-gradient(145deg, hsl(40 10% 94%), hsl(36 8% 82%))',
-        boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.08)',
+        borderRadius: 13,
+        background: 'linear-gradient(145deg, #ffffff, #f0eeeb)',
+        boxShadow:
+          'inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -2px 5px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)',
         backfaceVisibility: 'hidden',
       }}
     >
@@ -54,8 +55,8 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
             left: `${x}%`,
             top: `${y}%`,
             transform: 'translate(-50%, -50%)',
-            background: 'radial-gradient(circle at 35% 35%, hsl(225 12% 22%), hsl(225 18% 8%))',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.25)',
+            background: 'radial-gradient(circle at 38% 38%, hsl(220 10% 25%), hsl(220 15% 10%))',
+            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(255,255,255,0.15)',
           }}
         />
       ))}

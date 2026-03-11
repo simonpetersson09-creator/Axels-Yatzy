@@ -56,6 +56,15 @@
     --game-dice-locked: 40 90% 55%;
     --game-success: 142 70% 45%;
     --game-info: 210 80% 55%;
+
+    /* Yatzy scorecard tokens - classic paper look */
+    --yatzy-bg: 45 30% 96%;
+    --yatzy-line: 0 0% 20%;
+    --yatzy-text: 0 0% 12%;
+    --yatzy-header: 45 25% 90%;
+    --yatzy-highlight: 48 70% 85%;
+    --yatzy-section-header: 45 20% 92%;
+    --yatzy-sum-row: 45 25% 93%;
   }
 }
 

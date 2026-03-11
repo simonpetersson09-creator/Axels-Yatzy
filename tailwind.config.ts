@@ -73,6 +73,15 @@ export default {
           success: "hsl(var(--game-success))",
           info: "hsl(var(--game-info))",
         },
+        yatzy: {
+          bg: "hsl(var(--yatzy-bg))",
+          line: "hsl(var(--yatzy-line))",
+          text: "hsl(var(--yatzy-text))",
+          header: "hsl(var(--yatzy-header))",
+          highlight: "hsl(var(--yatzy-highlight))",
+          "section-header": "hsl(var(--yatzy-section-header))",
+          "sum-row": "hsl(var(--yatzy-sum-row))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -89,7 +89,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
   const renderSumRow = (label: string, getValue: (p: Player) => string | number, bold?: boolean) => (
     <div className="flex border-b-2 border-yatzy-line bg-yatzy-sum-row">
-      <div className={cn('flex-shrink-0 px-3 py-2.5 border-r border-yatzy-line/60 flex items-center', LABEL_W)}>
+      <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/60 flex items-center', ROW_H, LABEL_W)}>
         <span className={cn(
           'uppercase tracking-wider leading-none',
           bold ? 'text-[12px] font-black text-yatzy-text' : 'text-[10px] font-bold text-yatzy-text/60',
@@ -99,7 +99,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         const player = players[i];
         const isCurrent = i === currentPlayerIndex;
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/60 last:border-r-0 py-2.5 text-center', COL_W, cellBg(i))}>
+          <div key={i} className={cn('border-r border-yatzy-line/60 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, cellBg(i))}>
             <span className={cn(
               'tabular-nums leading-none',
               bold ? 'text-[14px] font-black' : 'text-[12px] font-bold',

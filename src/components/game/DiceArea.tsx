@@ -14,7 +14,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
 
   return (
     <div className="flex flex-col items-center pt-[220px]">
-      <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="flex flex-col" style={{ gap: 18 }}>
         {dice.map((value, index) => (
           <motion.div
             key={index}
@@ -36,7 +36,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
 
       {hasRolled && rollsLeft > 0 && (
         <motion.p
-          className="text-center text-[9px] sm:text-[10px] text-muted-foreground/50 mt-3 sm:mt-4 tracking-wide hidden sm:block"
+          className="text-center text-[9px] text-muted-foreground/40 mt-3 tracking-widest uppercase"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >

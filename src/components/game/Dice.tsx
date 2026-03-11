@@ -110,25 +110,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   ];
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: size + 12, height: size + 12 }}>
-      {/* Locked glow ring and border — centered around the die */}
-      {locked && (
-        <motion.div
-          className="absolute pointer-events-none z-0"
-          style={{
-            width: size + 10,
-            height: size + 10,
-            borderRadius: 16,
-            border: '3px solid #F5B942',
-            boxShadow: '0 0 16px rgba(245, 185, 66, 0.45), 0 0 6px rgba(245, 185, 66, 0.25)',
-          }}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.12, ease: 'easeOut' }}
-        />
-      )}
-
+    <div className="flex items-center justify-center" style={{ width: size, height: size }}>
       <div style={{ perspective: 600, width: size, height: size }}>
         <motion.button
           onClick={handleToggle}
@@ -140,6 +122,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             width: size,
             height: size,
             transformStyle: 'preserve-3d',
+            borderRadius: 14,
+            boxShadow: locked
+              ? '0 0 0 3px #F5B942, 0 0 14px rgba(245,185,66,0.5), 0 0 6px rgba(245,185,66,0.25)'
+              : 'none',
+            transition: 'box-shadow 0.15s ease',
           }}
           animate={{
             rotateX: spinRotation.rotateX,

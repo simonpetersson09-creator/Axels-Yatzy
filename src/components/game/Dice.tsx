@@ -144,21 +144,21 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           animate={{
             rotateX: spinRotation.rotateX,
             rotateY: spinRotation.rotateY,
-            y: isAnimating ? [0, -22, -8, -14, 0] : justToggled ? [0, -6, 0] : 0,
-            scale: locked ? 1.05 : justToggled ? [1, 0.9, 1.06, 1] : 1,
+            y: isAnimating ? [0, -22, -8, -14, 0] : justToggled ? [0, -4, 0] : 0,
+            scale: locked ? 1.05 : justToggled ? [1, 0.95, 1.05, 1] : 1,
           }}
           transition={
             isAnimating
               ? {
-                  duration: 0.75,
+                  duration: 0.7,
                   ease: [0.16, 1, 0.3, 1],
-                  y: { duration: 0.75, times: [0, 0.3, 0.5, 0.7, 1], ease: 'easeOut' },
+                  y: { duration: 0.7, times: [0, 0.3, 0.5, 0.7, 1], ease: 'easeOut' },
                 }
               : justToggled
-              ? { duration: 0.3, ease: 'easeOut' }
-              : { type: 'spring', stiffness: 300, damping: 22 }
+              ? { duration: 0.12, ease: 'easeOut' }
+              : { duration: 0.15, ease: 'easeOut' }
           }
-          whileTap={canLock ? { scale: 0.88 } : {}}
+          whileTap={canLock ? { scale: 0.95 } : {}}
         >
           {faces.map((face) => (
             <div key={face.faceValue} className="absolute inset-0" style={{ transform: face.transform, transformStyle: 'preserve-3d' }}>

@@ -12,8 +12,8 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
   const hasRolled = rollsLeft < 3;
 
   return (
-    <div className="flex flex-col items-center gap-4 pt-8">
-      <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-center justify-center self-stretch py-4">
+      <div className="flex flex-col gap-3">
         {dice.map((value, index) => (
           <Dice
             key={index}
@@ -27,7 +27,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
       </div>
 
       {hasRolled && rollsLeft > 0 && (
-        <p className="text-center text-xs text-muted-foreground max-w-[80px] leading-tight">
+        <p className="text-center text-[11px] text-muted-foreground mt-3 max-w-[80px] leading-tight">
           Tryck för att låsa
         </p>
       )}

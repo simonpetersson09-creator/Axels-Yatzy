@@ -119,12 +119,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           height: size,
           borderRadius: 14,
           boxShadow: locked
-            ? '0 0 0 3.5px #F5B942, 0 0 18px rgba(245,185,66,0.65), 0 6px 20px rgba(0,0,0,0.18)'
-            : '0 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)',
+            ? '0 0 0 3px #F5B942, 0 0 18px rgba(245,185,66,0.7), 0 8px 20px rgba(0,0,0,0.2)'
+            : '0 4px 10px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)',
           transition: 'box-shadow 0.15s ease',
         }}
         animate={{
-          scale: locked ? 1.06 : justToggled ? [1, 0.95, 1.05, 1] : 1,
+          scale: locked ? 1.15 : justToggled ? [1, 0.95, 1.06, 1] : 1,
         }}
         transition={
           justToggled

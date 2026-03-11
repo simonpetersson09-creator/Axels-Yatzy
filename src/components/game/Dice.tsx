@@ -109,25 +109,26 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   ];
 
   return (
-    <div className="relative" style={{ width: size + 6, height: size + 10 }}>
-      {/* Locked glow ring and border */}
+    <div className="relative flex items-center justify-center" style={{ width: size + 12, height: size + 12 }}>
+      {/* Locked glow ring and border — centered around the die */}
       {locked && (
         <motion.div
           className="absolute pointer-events-none z-0"
           style={{
-            inset: -4,
-            borderRadius: 14,
+            width: size + 10,
+            height: size + 10,
+            borderRadius: 16,
             border: '3px solid hsl(42 88% 52%)',
             boxShadow: '0 0 20px hsl(42 88% 52% / 0.5), 0 0 8px hsl(42 88% 52% / 0.3)',
           }}
           initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
           transition={{ type: 'spring', stiffness: 400, damping: 20 }}
         />
       )}
 
-      <div style={{ perspective: 600, width: size, height: size, margin: '0 auto' }}>
+      <div style={{ perspective: 600, width: size, height: size }}>
         <motion.button
           onClick={handleToggle}
           className={cn(

@@ -93,16 +93,14 @@ export default function GamePage() {
           )}
         </div>
 
-        {/* Right: Dice - 25-30% width on mobile */}
-        <div className="flex flex-col flex-1 min-w-0">
-          <DiceArea
-            dice={gameState.dice}
-            lockedDice={gameState.lockedDice}
-            rollsLeft={gameState.rollsLeft}
-            isRolling={gameState.isRolling}
-            onToggleLock={toggleLock}
-          />
-        </div>
+        {/* Right: Dice */}
+        <DiceArea
+          dice={gameState.dice}
+          lockedDice={gameState.lockedDice}
+          rollsLeft={gameState.rollsLeft}
+          isRolling={gameState.isRolling}
+          onToggleLock={toggleLock}
+        />
       </motion.div>
     </div>
   );

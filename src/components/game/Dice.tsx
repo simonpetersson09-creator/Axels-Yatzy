@@ -101,18 +101,18 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
 
   return (
     <div className="relative" style={{ width: size + 6, height: size + 10 }}>
-      {/* Locked glow ring */}
+      {/* Locked glow ring and border */}
       {locked && (
         <motion.div
           className="absolute rounded-xl pointer-events-none z-0"
           style={{
-            inset: -3,
-            border: '2px solid hsl(42 88% 52% / 0.7)',
-            boxShadow: '0 0 14px hsl(42 88% 52% / 0.3), 0 0 4px hsl(42 88% 52% / 0.15)',
+            inset: -4,
+            border: '3px solid hsl(42 88% 52%)',
+            boxShadow: '0 0 20px hsl(42 88% 52% / 0.5), 0 0 8px hsl(42 88% 52% / 0.3)',
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1.05 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
         />
       )}
 
@@ -132,11 +132,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             rotateX: spinRotation.rotateX,
             rotateY: spinRotation.rotateY,
             y: isAnimating ? [0, -18, 0] : 0,
+            scale: locked ? 1.05 : 1,
           }}
           transition={
             isAnimating
               ? { duration: 0.65, ease: [0.22, 1, 0.36, 1], y: { duration: 0.65, ease: 'easeOut' } }
-              : { duration: 0.01 }
+              : { duration: 0.2, ease: 'easeOut' }
           }
           whileTap={canLock ? { scale: 0.92 } : {}}
         >
@@ -156,7 +157,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           height: 5,
           marginTop: 3,
           background: locked
-            ? 'radial-gradient(ellipse, hsl(42 88% 52% / 0.3), transparent)'
+            ? 'radial-gradient(ellipse, hsl(42 88% 52% / 0.4), transparent)'
             : 'radial-gradient(ellipse, rgba(0,0,0,0.25), transparent)',
           filter: isAnimating ? 'blur(5px)' : 'blur(2px)',
           opacity: isAnimating ? 0.3 : 0.7,
@@ -165,4 +166,3 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       />
     </div>
   );
-}

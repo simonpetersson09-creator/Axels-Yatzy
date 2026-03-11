@@ -30,7 +30,7 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 
 function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number; locked: boolean }) {
   const dots = dotPositions[faceValue] || [];
-  const dotSize = size * 0.15;
+  const dotSize = size * 0.16;
 
   return (
     <div
@@ -38,10 +38,11 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
       style={{
         width: size,
         height: size,
-        borderRadius: 13,
-        background: 'linear-gradient(145deg, #ffffff, #f0eeeb)',
-        boxShadow:
-          'inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -2px 5px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)',
+        borderRadius: 14,
+        background: locked
+          ? 'linear-gradient(180deg, #fffdf7 0%, #fff7e0 100%)'
+          : 'linear-gradient(145deg, #ffffff, #f2f0ed)',
+        boxShadow: 'inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -2px 5px rgba(0,0,0,0.06)',
         backfaceVisibility: 'hidden',
       }}
     >

@@ -166,3 +166,4 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       />
     </div>
   );
+}

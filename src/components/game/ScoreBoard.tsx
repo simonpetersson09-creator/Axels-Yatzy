@@ -41,7 +41,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
     if (!player) {
       return (
-        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/60 last:border-r-0 py-2.5 text-center', COL_W, 'bg-yatzy-bg/40')} />
+        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/60 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, 'bg-yatzy-bg/40')} />
       );
     }
 

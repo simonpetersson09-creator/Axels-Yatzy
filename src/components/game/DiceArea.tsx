@@ -24,7 +24,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onRoll, onTog
       </div>
 
       {/* Dice */}
-      <div className="flex justify-center gap-3">
+      <div className="flex justify-center gap-4 py-2">
         {dice.map((value, index) => (
           <Dice
             key={index}

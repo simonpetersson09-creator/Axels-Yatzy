@@ -1,8 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { getActiveGame } from '@/lib/active-game';
+import { Play } from 'lucide-react';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const activeGame = getActiveGame();
+
+  const resumeGame = () => {
+    if (!activeGame) return;
+    if (activeGame.type === 'local') {
+      navigate('/game');
+    } else if (activeGame.type === 'multiplayer' && activeGame.gameId) {
+      navigate(`/multiplayer-game?gameId=${activeGame.gameId}`);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom">
@@ -37,6 +49,18 @@ export default function HomePage() {
 
         {/* Main Actions */}
         <div className="w-full space-y-3">
+          {activeGame && (
+            <motion.button
+              onClick={resumeGame}
+              className="w-full py-4 rounded-2xl bg-game-success text-white font-display font-bold text-lg shadow-lg flex items-center justify-center gap-2"
+              whileTap={{ scale: 0.97 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <Play className="w-5 h-5" />
+              Fortsätt pågående match
+            </motion.button>
+          )}
           <motion.button
             onClick={() => navigate('/setup')}
             className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"

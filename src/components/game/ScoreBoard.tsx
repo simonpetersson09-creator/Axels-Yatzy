@@ -24,6 +24,97 @@ const COL_W = 'min-w-[56px] w-[56px]';
 const LABEL_W = 'w-[110px] min-w-[110px]';
 const ROW_H = 'h-[34px]';
 
+function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect }: {
+  catId: string;
+  isScored: boolean;
+  scoreValue: number | null | undefined;
+  possibleScore: number | undefined;
+  canSelect: boolean;
+  bgClass: string;
+  onSelect: () => void;
+}) {
+  const [justScored, setJustScored] = useState(false);
+  const prevScoredRef = useRef(isScored);
+
+  useEffect(() => {
+    if (isScored && !prevScoredRef.current) {
+      setJustScored(true);
+      const t = setTimeout(() => setJustScored(false), 700);
+      return () => clearTimeout(t);
+    }
+    prevScoredRef.current = isScored;
+  }, [isScored]);
+
+  const sparkles = useMemo(() =>
+    Array.from({ length: 6 }, (_, i) => {
+      const angle = (i / 6) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+      const dist = 14 + Math.random() * 10;
+      return { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, size: 2 + Math.random() * 2, delay: Math.random() * 0.08 };
+    }),
+  [isScored]);
+
+  return (
+    <motion.button
+      onClick={onSelect}
+      disabled={!canSelect}
+      className={cn(
+        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center overflow-visible', ROW_H, COL_W,
+        bgClass,
+        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight hover:brightness-95 cursor-pointer ring-1 ring-inset ring-game-gold-dark/25',
+        canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
+      )}
+      whileTap={canSelect ? { scale: 0.96 } : {}}
+    >
+      <AnimatePresence>
+        {justScored && sparkles.map((s, i) => (
+          <motion.div
+            key={`sp-${i}`}
+            className="absolute pointer-events-none z-10"
+            style={{
+              width: s.size, height: s.size, borderRadius: '50%',
+              background: 'radial-gradient(circle, hsl(42 90% 70%), hsl(36 82% 52%))',
+              boxShadow: '0 0 4px hsl(42 90% 60%)',
+              left: '50%', top: '50%',
+              marginLeft: -s.size / 2, marginTop: -s.size / 2,
+            }}
+            initial={{ x: 0, y: 0, opacity: 1, scale: 0.5 }}
+            animate={{ x: s.x, y: s.y, opacity: 0, scale: 1.3 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.45, delay: s.delay, ease: 'easeOut' }}
+          />
+        ))}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {justScored && (
+          <motion.div
+            className="absolute pointer-events-none z-10 inset-0"
+            style={{ border: '2px solid hsl(36 82% 52%)', borderRadius: 4 }}
+            initial={{ scale: 0.7, opacity: 0.9 }}
+            animate={{ scale: 1.4, opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.span
+        className={cn(
+          'text-[13px] tabular-nums leading-none',
+          isScored && 'font-bold text-yatzy-text',
+          canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-bold text-game-gold-dark',
+          canSelect && possibleScore === 0 && 'font-medium text-yatzy-text/25',
+          !isScored && !canSelect && 'text-yatzy-text/10',
+        )}
+        animate={justScored ? { scale: [1, 1.4, 1] } : { scale: 1 }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+      >
+        {isScored ? scoreValue : canSelect ? possibleScore : ''}
+      </motion.span>
+    </motion.button>
+  );
+}
+
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft }: ScoreBoardProps) {
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
   const lowerCats = CATEGORIES.filter(c => c.section === 'lower');

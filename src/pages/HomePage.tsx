@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { getActiveGame } from '@/lib/active-game';
+import { Play } from 'lucide-react';
 
 export default function HomePage() {
   const navigate = useNavigate();

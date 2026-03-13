@@ -43,13 +43,13 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
         borderRadius: radius,
         background: locked
           ? `linear-gradient(145deg, 
-              hsl(44 65% 96%) 0%, 
-              hsl(40 55% 88%) 50%, 
-              hsl(36 50% 82%) 100%)`
+              hsl(44 50% 97%) 0%, 
+              hsl(40 40% 92%) 50%, 
+              hsl(36 35% 87%) 100%)`
           : `linear-gradient(145deg, 
-              hsl(0 0% 99%) 0%, 
-              hsl(0 0% 94%) 40%, 
-              hsl(0 0% 90%) 100%)`,
+              hsl(0 0% 100%) 0%, 
+              hsl(0 0% 97%) 40%, 
+              hsl(0 0% 95%) 100%)`,
         boxShadow: locked
           ? `inset 0 2px 6px rgba(255,255,255,0.7), 
              inset 0 -3px 6px rgba(180,130,30,0.08)`

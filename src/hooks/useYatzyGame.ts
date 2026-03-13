@@ -41,7 +41,7 @@ export function useYatzyGame() {
     });
     setTimeout(() => {
       setGameState(prev => prev ? { ...prev, isRolling: false } : prev);
-    }, 600);
+    }, 700);
   }, []);
 
   const toggleLock = useCallback((index: number) => {

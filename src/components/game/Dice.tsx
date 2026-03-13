@@ -135,8 +135,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
 
   const targetRotation = useMemo(() => {
     const base = valueToRotation[value];
-    const extraX = (Math.floor(Math.random() * 3) + 2) * 360;
-    const extraY = (Math.floor(Math.random() * 3) + 2) * 360;
+    const extraX = (Math.floor(Math.random() * 4) + 3) * 360;
+    const extraY = (Math.floor(Math.random() * 4) + 3) * 360;
     return { rotateX: base.rotateX + extraX, rotateY: base.rotateY + extraY };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, rolling]);

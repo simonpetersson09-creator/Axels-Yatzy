@@ -198,7 +198,7 @@ export function useMultiplayerGame() {
 
     await supabase
       .from('games')
-      .update({ status: 'playing' as string })
+      .update({ status: 'playing' as const })
       .eq('id', state.gameId);
   }, [state.gameId, state.myPlayerIndex]);
 

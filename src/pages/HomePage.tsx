@@ -5,6 +5,16 @@ import { Play } from 'lucide-react';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const activeGame = getActiveGame();
+
+  const resumeGame = () => {
+    if (!activeGame) return;
+    if (activeGame.type === 'local') {
+      navigate('/game');
+    } else if (activeGame.type === 'multiplayer' && activeGame.gameId) {
+      navigate(`/multiplayer-game?gameId=${activeGame.gameId}`);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom">

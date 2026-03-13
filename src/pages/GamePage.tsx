@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
+import { playRollSound } from '@/lib/dice-sounds';
 import { motion } from 'framer-motion';
 import { Home } from 'lucide-react';
 
@@ -38,6 +39,10 @@ export default function GamePage() {
       navigate('/results', { state: { results } });
     }
   }, [gameState?.gameOver]);
+  const handleRoll = useCallback(() => {
+    playRollSound();
+    roll();
+  }, [roll]);
 
   if (!gameState) return null;
 
@@ -141,7 +146,7 @@ export default function GamePage() {
               </button>
 
               <motion.button
-                onClick={roll}
+                onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}
                 className={`w-[76px] h-[76px] rounded-full font-display font-bold text-[14px] tracking-wide transition-all flex items-center justify-center ${
                   canRoll && !gameState.isRolling

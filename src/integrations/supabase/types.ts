@@ -14,7 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      game_players: {
+        Row: {
+          game_id: string
+          id: string
+          joined_at: string
+          player_index: number
+          player_name: string
+          scores: Json
+          session_id: string
+        }
+        Insert: {
+          game_id: string
+          id?: string
+          joined_at?: string
+          player_index: number
+          player_name: string
+          scores?: Json
+          session_id: string
+        }
+        Update: {
+          game_id?: string
+          id?: string
+          joined_at?: string
+          player_index?: number
+          player_name?: string
+          scores?: Json
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_players_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      games: {
+        Row: {
+          created_at: string
+          current_player_index: number
+          dice: number[]
+          game_code: string
+          id: string
+          is_rolling: boolean
+          locked_dice: boolean[]
+          max_players: number
+          rolls_left: number
+          round: number
+          status: Database["public"]["Enums"]["game_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_player_index?: number
+          dice?: number[]
+          game_code: string
+          id?: string
+          is_rolling?: boolean
+          locked_dice?: boolean[]
+          max_players?: number
+          rolls_left?: number
+          round?: number
+          status?: Database["public"]["Enums"]["game_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_player_index?: number
+          dice?: number[]
+          game_code?: string
+          id?: string
+          is_rolling?: boolean
+          locked_dice?: boolean[]
+          max_players?: number
+          rolls_left?: number
+          round?: number
+          status?: Database["public"]["Enums"]["game_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +105,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      game_status: "waiting" | "playing" | "finished"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +232,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      game_status: ["waiting", "playing", "finished"],
+    },
   },
 } as const

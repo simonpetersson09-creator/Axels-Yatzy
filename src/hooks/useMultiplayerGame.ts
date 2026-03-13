@@ -76,7 +76,7 @@ export function useMultiplayerGame() {
       lockedDice: game.locked_dice as boolean[],
       rollsLeft: game.rolls_left,
       isRolling: game.is_rolling,
-      gameOver: game.status === 'finished',
+      gameOver: gameStatus === 'finished',
       round: game.round,
     };
 
@@ -84,7 +84,7 @@ export function useMultiplayerGame() {
       ...prev,
       gameId: game.id,
       gameCode: game.game_code,
-      status: game.status as 'waiting' | 'playing' | 'finished',
+      status: gameStatus,
       myPlayerIndex: myIndex >= 0 ? myIndex : prev.myPlayerIndex,
       gameState,
       loading: false,

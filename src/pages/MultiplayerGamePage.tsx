@@ -24,6 +24,16 @@ export default function MultiplayerGamePage() {
     }
   }, [gameId]);
 
+  // Track active game
+  useEffect(() => {
+    if (gameId && status === 'playing') {
+      setActiveGame({ type: 'multiplayer', gameId, timestamp: Date.now() });
+    }
+    if (status === 'finished') {
+      clearActiveGame();
+    }
+  }, [gameId, status]);
+
   useEffect(() => {
     if (status === 'finished' && gameState) {
       const results = gameState.players.map(p => ({

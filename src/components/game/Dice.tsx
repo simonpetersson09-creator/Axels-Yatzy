@@ -186,16 +186,16 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
               rotateX: finalRotateX,
               rotateY: finalRotateY,
               rotateZ: isAnimating ? 0 : restingTilt.z,
-              x: isAnimating ? [120, 0] : 0,
-              y: isAnimating ? [0, -26, -10, -16, 0] : 0,
+              x: isAnimating ? [600, 0, 18, 0, 6, 0] : 0,
+              y: isAnimating ? [0, -20, 0, -8, 0] : 0,
             }}
             transition={
               isAnimating
                 ? {
                     duration: 1.8,
                     ease: [0.22, 1, 0.36, 1],
-                    x: { duration: 1.0, ease: [0.16, 1, 0.3, 1] },
-                    y: { duration: 1.8, times: [0, 0.25, 0.45, 0.65, 1], ease: 'easeOut' },
+                    x: { duration: 1.4, times: [0, 0.4, 0.6, 0.75, 0.88, 1], ease: 'easeOut' },
+                    y: { duration: 1.4, times: [0, 0.4, 0.6, 0.8, 1], ease: 'easeOut' },
                   }
                 : { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
             }

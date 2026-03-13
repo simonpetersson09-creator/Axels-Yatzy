@@ -174,6 +174,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       >
         <div style={{ perspective: 500, width: size, height: size }}>
           <motion.button
+            key={rollKey}
             onClick={handleToggle}
             className={cn(
               'relative',

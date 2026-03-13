@@ -61,8 +61,8 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
         gridTemplateRows: 'repeat(3, 1fr)',
         padding,
         border: locked 
-          ? '1px solid rgba(200,160,50,0.2)' 
-          : '1px solid rgba(0,0,0,0.06)',
+          ? '2px solid rgba(255,255,255,0.85)' 
+          : '2px solid rgba(255,255,255,0.9)',
       }}
     >
       {Array.from({ length: 9 }, (_, i) => {

@@ -4,7 +4,9 @@ import { useMultiplayerGame } from '@/hooks/useMultiplayerGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { getTotalScore } from '@/lib/yatzy-scoring';
+import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { motion } from 'framer-motion';
+import { Home } from 'lucide-react';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();

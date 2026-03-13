@@ -105,7 +105,7 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
           <motion.div
             className="relative flex flex-col items-center gap-2"
             initial={{ scale: 0, rotate: -10 }}
-            animate={{ scale: [0, 1.3, 1], rotate: [−10, 3, 0] }}
+            animate={{ scale: [0, 1.3, 1], rotate: [-10, 3, 0] }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
           >

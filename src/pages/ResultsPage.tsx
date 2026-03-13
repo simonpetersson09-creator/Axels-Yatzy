@@ -11,6 +11,7 @@ export default function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const results: PlayerResult[] = location.state?.results || [];
+  const playerNames: string[] = results.map(r => r.name);
 
   const sorted = [...results].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
@@ -69,15 +70,22 @@ export default function ResultsPage() {
         {/* Actions */}
         <div className="space-y-3">
           <motion.button
-            onClick={() => navigate('/setup')}
+            onClick={() => navigate('/game', { state: { playerNames } })}
             className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"
+            whileTap={{ scale: 0.97 }}
+          >
+            Rematch
+          </motion.button>
+          <motion.button
+            onClick={() => navigate('/setup')}
+            className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-semibold"
             whileTap={{ scale: 0.97 }}
           >
             Spela igen
           </motion.button>
           <motion.button
             onClick={() => navigate('/')}
-            className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-semibold"
+            className="w-full py-3 rounded-2xl text-muted-foreground font-medium text-sm"
             whileTap={{ scale: 0.97 }}
           >
             Till startsidan

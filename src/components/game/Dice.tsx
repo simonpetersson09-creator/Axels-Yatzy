@@ -243,6 +243,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
                0 2px 4px rgba(0,0,0,0.08), 
                0 12px 28px rgba(0,0,0,0.1)`,
           transition: 'box-shadow 0.3s ease',
+          opacity: canLock && !locked ? 0.5 : 1,
         }}
         animate={{
           scale: locked ? 1.1 : justToggled ? [1, 0.93, 1.06, 1] : 1,

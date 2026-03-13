@@ -4,7 +4,9 @@ import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { getTotalScore } from '@/lib/yatzy-scoring';
+import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { motion } from 'framer-motion';
+import { Home } from 'lucide-react';
 
 export default function GamePage() {
   const location = useLocation();
@@ -20,7 +22,14 @@ export default function GamePage() {
   }, []);
 
   useEffect(() => {
+    if (gameState && !gameState.gameOver) {
+      setActiveGame({ type: 'local', timestamp: Date.now() });
+    }
+  }, [gameState]);
+
+  useEffect(() => {
     if (gameState?.gameOver) {
+      clearActiveGame();
       const results = gameState.players.map(p => ({
         name: p.name,
         score: getTotalScore(p.scores),
@@ -44,18 +53,28 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        {/* Turn indicator */}
-        <div className="text-center space-y-1">
-          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.25em] font-semibold">Tur</p>
-          <p className="text-xl font-display font-bold text-gold-gradient leading-tight">{currentPlayer.name}</p>
-          <p className="text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
-            {gameState.rollsLeft === 3
-              ? '\u00A0'
-              : `Kast ${3 - gameState.rollsLeft} / 3`}
-          </p>
+        {/* Menu button + Turn indicator */}
+        <div className="flex items-start justify-between">
+          <button
+            onClick={() => navigate('/')}
+            className="p-2 rounded-xl hover:bg-secondary transition-colors"
+            title="Till menyn"
+          >
+            <Home className="w-4 h-4 text-muted-foreground" />
+          </button>
+          <div className="text-center space-y-1 flex-1">
+            <p className="text-[9px] text-muted-foreground uppercase tracking-[0.25em] font-semibold">Tur</p>
+            <p className="text-xl font-display font-bold text-gold-gradient leading-tight">{currentPlayer.name}</p>
+            <p className="text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
+              {gameState.rollsLeft === 3
+                ? '\u00A0'
+                : `Kast ${3 - gameState.rollsLeft} / 3`}
+            </p>
+          </div>
+          <div className="w-8" /> {/* spacer for centering */}
         </div>
 
-        {/* Scoreboard + Dice side by side, dice centered to scoreboard */}
+        {/* Scoreboard + Dice side by side */}
         <div className="flex gap-6 items-stretch">
           <div className="game-shadow-soft rounded-lg overflow-hidden">
             <ScoreBoard

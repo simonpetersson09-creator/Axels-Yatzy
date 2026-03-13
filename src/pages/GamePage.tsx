@@ -146,7 +146,7 @@ export default function GamePage() {
               </button>
 
               <motion.button
-                onClick={roll}
+                onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}
                 className={`w-[76px] h-[76px] rounded-full font-display font-bold text-[14px] tracking-wide transition-all flex items-center justify-center ${
                   canRoll && !gameState.isRolling

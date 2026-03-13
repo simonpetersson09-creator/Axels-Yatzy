@@ -204,7 +204,56 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   const finalRotateY = spinRotation.rotateY + (isAnimating ? 0 : restingTilt.y);
 
   return (
-    <div className="flex flex-col items-center overflow-visible" style={{ width: size + 8, height: size + 16 }}>
+    <div className="relative flex flex-col items-center overflow-visible" style={{ width: size + 8, height: size + 16 }}>
+      {/* Sparkle particles on lock */}
+      <AnimatePresence>
+        {showSparkle && sparkles.map((s, i) => (
+          <motion.div
+            key={`sparkle-${i}`}
+            className="absolute pointer-events-none"
+            style={{
+              width: s.size,
+              height: s.size,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, hsl(42 90% 70%), hsl(36 82% 52%))',
+              boxShadow: '0 0 6px hsl(42 90% 60%), 0 0 12px hsl(36 82% 52% / 0.4)',
+              left: '50%',
+              top: '50%',
+              marginLeft: -s.size / 2,
+              marginTop: -s.size / 2,
+              zIndex: 50,
+            }}
+            initial={{ x: 0, y: 0, opacity: 1, scale: 0.5 }}
+            animate={{ x: s.x, y: s.y, opacity: 0, scale: 1.2 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, delay: s.delay, ease: 'easeOut' }}
+          />
+        ))}
+      </AnimatePresence>
+
+      {/* Lock pulse ring */}
+      <AnimatePresence>
+        {showSparkle && (
+          <motion.div
+            className="absolute pointer-events-none"
+            style={{
+              width: size + 12,
+              height: size + 12,
+              borderRadius: radius + 6,
+              border: '2px solid hsl(36 82% 52%)',
+              left: '50%',
+              top: size / 2,
+              marginLeft: -(size + 12) / 2,
+              marginTop: -(size + 12) / 2,
+              zIndex: 49,
+            }}
+            initial={{ scale: 0.8, opacity: 0.8 }}
+            animate={{ scale: 1.3, opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          />
+        )}
+      </AnimatePresence>
       {/* Outer glow wrapper */}
       <motion.div
         style={{

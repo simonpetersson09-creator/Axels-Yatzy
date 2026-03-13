@@ -30,8 +30,9 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 
 function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number; locked: boolean }) {
   const positions = pipGridPositions[faceValue] || [];
-  const pipSize = Math.round(size * 0.15);
-  const padding = Math.round(size * 0.17);
+  const pipSize = Math.round(size * 0.14);
+  const padding = Math.round(size * 0.19);
+  const radius = size * 0.28;
 
   return (
     <div
@@ -39,19 +40,35 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
       style={{
         width: size,
         height: size,
-        borderRadius: size * 0.22,
+        borderRadius: radius,
         background: locked
-          ? 'linear-gradient(145deg, #fffef8 0%, #fff5d4 50%, #ffe8a8 100%)'
-          : 'linear-gradient(145deg, #fafafa 0%, #f0efec 40%, #e8e6e2 100%)',
+          ? `linear-gradient(155deg, 
+              hsl(45 80% 98%) 0%, 
+              hsl(42 70% 90%) 35%, 
+              hsl(38 65% 82%) 70%, 
+              hsl(35 60% 76%) 100%)`
+          : `linear-gradient(155deg, 
+              hsl(40 15% 98%) 0%, 
+              hsl(30 8% 93%) 30%, 
+              hsl(25 6% 88%) 65%, 
+              hsl(20 4% 84%) 100%)`,
         boxShadow: locked
-          ? 'inset 0 2px 8px rgba(255,255,255,0.95), inset 0 -3px 6px rgba(200,160,50,0.12), inset 2px 0 4px rgba(255,255,255,0.5)'
-          : 'inset 0 2px 8px rgba(255,255,255,0.95), inset 0 -3px 6px rgba(0,0,0,0.08), inset 2px 0 4px rgba(255,255,255,0.5)',
+          ? `inset 0 3px 10px rgba(255,255,255,0.9), 
+             inset 0 -4px 8px rgba(180,130,30,0.1), 
+             inset 3px 0 6px rgba(255,255,255,0.4),
+             inset -2px 0 4px rgba(180,130,30,0.06)`
+          : `inset 0 3px 10px rgba(255,255,255,0.9), 
+             inset 0 -4px 8px rgba(0,0,0,0.06), 
+             inset 3px 0 6px rgba(255,255,255,0.4),
+             inset -2px 0 4px rgba(0,0,0,0.03)`,
         backfaceVisibility: 'hidden',
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gridTemplateRows: 'repeat(3, 1fr)',
         padding,
-        border: locked ? '1px solid rgba(245,185,66,0.3)' : '1px solid rgba(0,0,0,0.06)',
+        border: locked 
+          ? '1.5px solid rgba(220,170,50,0.25)' 
+          : '1.5px solid rgba(0,0,0,0.04)',
       }}
     >
       {Array.from({ length: 9 }, (_, i) => {
@@ -73,9 +90,19 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
                   height: pipSize,
                   borderRadius: '50%',
                   background: locked
-                    ? 'radial-gradient(circle at 35% 35%, hsl(35 40% 30%), hsl(30 30% 12%))'
-                    : 'radial-gradient(circle at 35% 35%, hsl(220 8% 28%), hsl(220 12% 10%))',
-                  boxShadow: 'inset 0 1.5px 3px rgba(0,0,0,0.5), 0 0.5px 1px rgba(255,255,255,0.2)',
+                    ? `radial-gradient(circle at 38% 32%, 
+                        hsl(32 35% 32%) 0%, 
+                        hsl(28 30% 18%) 60%, 
+                        hsl(25 25% 12%) 100%)`
+                    : `radial-gradient(circle at 38% 32%, 
+                        hsl(215 8% 30%) 0%, 
+                        hsl(215 10% 16%) 60%, 
+                        hsl(215 12% 8%) 100%)`,
+                  boxShadow: `
+                    inset 0 2px 3px rgba(0,0,0,0.45), 
+                    inset 0 -1px 2px rgba(255,255,255,0.08),
+                    0 0.5px 1.5px rgba(255,255,255,0.15),
+                    0 0 0 0.5px rgba(0,0,0,0.1)`,
                 }}
               />
             )}
@@ -86,24 +113,23 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
   );
 }
 
-// Each dice gets a unique subtle resting tilt for a natural look
 const RESTING_TILTS = [
-  { x: 8, y: -6, z: 2 },
-  { x: -5, y: 8, z: -3 },
-  { x: 6, y: 5, z: 1 },
-  { x: -7, y: -4, z: -2 },
-  { x: 4, y: 7, z: 3 },
+  { x: 7, y: -5, z: 1.5 },
+  { x: -4, y: 7, z: -2 },
+  { x: 5, y: 4, z: 1 },
+  { x: -6, y: -3, z: -1.5 },
+  { x: 3, y: 6, z: 2 },
 ];
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
-  const size = 62;
+  const size = 64;
   const half = size / 2;
+  const radius = size * 0.28;
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [justToggled, setJustToggled] = useState(false);
   const [rollKey, setRollKey] = useState(0);
 
-  // Stable tilt per dice instance
   const tiltIndex = useMemo(() => Math.floor(Math.random() * RESTING_TILTS.length), []);
   const restingTilt = RESTING_TILTS[tiltIndex];
 
@@ -123,7 +149,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       const timer = setTimeout(() => {
         setIsAnimating(false);
         setSpinRotation(valueToRotation[value]);
-      }, 1800);
+      }, 2200);
       return () => clearTimeout(timer);
     } else if (!rolling) {
       setSpinRotation(valueToRotation[value]);
@@ -146,22 +172,26 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
     { faceValue: 4, transform: `rotateX(90deg) translateZ(${half}px)` },
   ];
 
-  // Final resting rotation includes the subtle tilt
   const finalRotateX = spinRotation.rotateX + (isAnimating ? 0 : restingTilt.x);
   const finalRotateY = spinRotation.rotateY + (isAnimating ? 0 : restingTilt.y);
 
   return (
-    <div className="flex flex-col items-center overflow-visible" style={{ width: size + 8, height: size + 14 }}>
-      {/* Outer wrapper — glow & scale */}
+    <div className="flex flex-col items-center overflow-visible" style={{ width: size + 8, height: size + 16 }}>
+      {/* Outer glow wrapper */}
       <motion.div
         style={{
           width: size,
           height: size,
-          borderRadius: size * 0.22,
+          borderRadius: radius,
           boxShadow: locked
-            ? '0 0 0 2.5px hsl(36 82% 52%), 0 0 20px rgba(245,185,66,0.6), 0 0 40px rgba(245,185,66,0.2), 0 10px 25px rgba(0,0,0,0.25)'
-            : '0 6px 16px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.1), 0 12px 28px rgba(0,0,0,0.08)',
-          transition: 'box-shadow 0.2s ease',
+            ? `0 0 0 2px hsl(36 82% 52%), 
+               0 0 16px rgba(245,185,66,0.5), 
+               0 0 36px rgba(245,185,66,0.15), 
+               0 8px 24px rgba(0,0,0,0.2)`
+            : `0 4px 12px rgba(0,0,0,0.15), 
+               0 1px 3px rgba(0,0,0,0.08), 
+               0 10px 30px rgba(0,0,0,0.1)`,
+          transition: 'box-shadow 0.25s ease',
         }}
         animate={{
           scale: locked ? 1.1 : justToggled ? [1, 0.93, 1.06, 1] : 1,
@@ -169,10 +199,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
         transition={
           justToggled
             ? { duration: 0.15, ease: 'easeOut' }
-            : { duration: 0.2, ease: 'easeOut' }
+            : { duration: 0.25, ease: 'easeOut' }
         }
       >
-        <div style={{ perspective: 500, width: size, height: size }}>
+        <div style={{ perspective: 450, width: size, height: size }}>
           <motion.button
             key={rollKey}
             onClick={handleToggle}
@@ -189,18 +219,26 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
               rotateX: finalRotateX,
               rotateY: finalRotateY,
               rotateZ: isAnimating ? 0 : restingTilt.z,
-              x: isAnimating ? [600, 0, 18, 0, 6, 0] : 0,
-              y: isAnimating ? [0, -20, 0, -8, 0] : 0,
+              x: isAnimating ? [500, -8, 12, -3, 4, 0] : 0,
+              y: isAnimating ? [0, -14, 0, -5, 0] : 0,
             }}
             transition={
               isAnimating
                 ? {
-                    duration: 1.8,
-                    ease: [0.22, 1, 0.36, 1],
-                    x: { duration: 1.4, times: [0, 0.4, 0.6, 0.75, 0.88, 1], ease: 'easeOut' },
-                    y: { duration: 1.4, times: [0, 0.4, 0.6, 0.8, 1], ease: 'easeOut' },
+                    duration: 2.2,
+                    ease: [0.15, 0.85, 0.35, 1],
+                    x: { 
+                      duration: 2.0, 
+                      times: [0, 0.35, 0.55, 0.72, 0.86, 1], 
+                      ease: [0.12, 0.8, 0.3, 1],
+                    },
+                    y: { 
+                      duration: 1.8, 
+                      times: [0, 0.4, 0.6, 0.82, 1], 
+                      ease: 'easeOut',
+                    },
                   }
-                : { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+                : { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
             }
             whileTap={canLock ? { scale: 0.93 } : {}}
           >
@@ -216,20 +254,20 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       {/* Ground shadow */}
       <motion.div
         style={{
-          width: size * 0.6,
-          height: 6,
-          marginTop: 4,
+          width: size * 0.55,
+          height: 5,
+          marginTop: 5,
           borderRadius: '50%',
           background: locked
-            ? 'radial-gradient(ellipse, rgba(245, 185, 66, 0.4), transparent)'
-            : 'radial-gradient(ellipse, rgba(0,0,0,0.3), transparent)',
+            ? 'radial-gradient(ellipse, rgba(245, 185, 66, 0.35), transparent)'
+            : 'radial-gradient(ellipse, rgba(0,0,0,0.25), transparent)',
         }}
         animate={{
           filter: isAnimating ? 'blur(8px)' : 'blur(3px)',
-          opacity: isAnimating ? 0.15 : 0.6,
-          scaleX: isAnimating ? 1.6 : 1,
+          opacity: isAnimating ? 0.1 : 0.55,
+          scaleX: isAnimating ? 1.8 : 1,
         }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
       />
     </div>
   );

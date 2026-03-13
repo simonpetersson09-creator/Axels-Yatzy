@@ -202,7 +202,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             : { duration: 0.25, ease: 'easeOut' }
         }
       >
-        <div style={{ perspective: 320, width: size, height: size }}>
+        <div style={{ perspective: 220, width: size, height: size }}>
           <motion.button
             key={rollKey}
             onClick={handleToggle}

@@ -123,8 +123,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     const isCurrent = slotIdx === currentPlayerIndex;
     const player = players[slotIdx];
     if (!player) return 'bg-yatzy-bg/40';
-    const color = PLAYER_COLORS[slotIdx];
-    return isCurrent ? color.activeBg : 'bg-yatzy-bg';
+    return isCurrent ? 'bg-sky-100/60' : 'bg-yatzy-bg';
   };
 
   const renderCell = (cat: typeof CATEGORIES[0], slotIdx: number) => {

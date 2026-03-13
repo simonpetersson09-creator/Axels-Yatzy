@@ -13,7 +13,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
   const hasRolled = rollsLeft < 3;
 
   return (
-    <div className="mt-auto flex flex-col items-center justify-end pb-2 overflow-visible">
+    <div className="mt-4 flex flex-col items-center justify-end pb-2 overflow-visible">
       <div className="flex flex-col" style={{ gap: 18 }}>
         {dice.map((value, index) => (
           <motion.div

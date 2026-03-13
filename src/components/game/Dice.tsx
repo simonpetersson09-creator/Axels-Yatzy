@@ -202,7 +202,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             : { duration: 0.25, ease: 'easeOut' }
         }
       >
-        <div style={{ perspective: 450, width: size, height: size }}>
+        <div style={{ perspective: 320, width: size, height: size }}>
           <motion.button
             key={rollKey}
             onClick={handleToggle}
@@ -219,26 +219,26 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
               rotateX: finalRotateX,
               rotateY: finalRotateY,
               rotateZ: isAnimating ? 0 : restingTilt.z,
-              x: isAnimating ? [500, -8, 12, -3, 4, 0] : 0,
-              y: isAnimating ? [0, -14, 0, -5, 0] : 0,
+              x: isAnimating ? [500, -10, 14, -4, 5, 0] : 0,
+              y: isAnimating ? [0, -16, 0, -6, 0] : 0,
             }}
             transition={
               isAnimating
                 ? {
-                    duration: 2.2,
-                    ease: [0.15, 0.85, 0.35, 1],
+                    duration: 3.0,
+                    ease: [0.12, 0.82, 0.3, 1],
                     x: { 
-                      duration: 2.0, 
+                      duration: 2.6, 
                       times: [0, 0.35, 0.55, 0.72, 0.86, 1], 
-                      ease: [0.12, 0.8, 0.3, 1],
+                      ease: [0.1, 0.75, 0.25, 1],
                     },
                     y: { 
-                      duration: 1.8, 
+                      duration: 2.4, 
                       times: [0, 0.4, 0.6, 0.82, 1], 
                       ease: 'easeOut',
                     },
                   }
-                : { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
+                : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }
             }
             whileTap={canLock ? { scale: 0.93 } : {}}
           >

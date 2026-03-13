@@ -117,6 +117,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
 
   useEffect(() => {
     if (rolling && !locked) {
+      setRollKey(k => k + 1);
       setIsAnimating(true);
       setSpinRotation(targetRotation);
       const timer = setTimeout(() => {

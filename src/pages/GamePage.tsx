@@ -42,7 +42,7 @@ export default function GamePage() {
   if (!gameState) return null;
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-  const possibleScores = getPossibleScores();
+  const possibleScores = gameState.isRolling ? null : getPossibleScores();
   const canRoll = gameState.rollsLeft > 0;
 
   const PLAYER_COLORS = [

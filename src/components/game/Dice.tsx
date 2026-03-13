@@ -114,9 +114,9 @@ const RESTING_TILTS = [
 ];
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
-  const size = 64;
+  const size = 62;
   const half = size / 2;
-  const radius = size * 0.28;
+  const radius = size * 0.22;
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [justToggled, setJustToggled] = useState(false);

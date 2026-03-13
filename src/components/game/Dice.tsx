@@ -114,11 +114,11 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
 }
 
 const RESTING_TILTS = [
-  { x: 7, y: -5, z: 1.5 },
-  { x: -6, y: 10, z: -3 },
-  { x: 8, y: 6, z: 2 },
-  { x: -9, y: -5, z: -2.5 },
-  { x: 5, y: 9, z: 3 },
+  { x: 12, y: -9, z: 3 },
+  { x: -10, y: 14, z: -4 },
+  { x: 13, y: 8, z: 3.5 },
+  { x: -14, y: -7, z: -3.5 },
+  { x: 8, y: 13, z: 4 },
 ];
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
@@ -135,8 +135,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
 
   const targetRotation = useMemo(() => {
     const base = valueToRotation[value];
-    const extraX = (Math.floor(Math.random() * 3) + 2) * 360;
-    const extraY = (Math.floor(Math.random() * 3) + 2) * 360;
+    const extraX = (Math.floor(Math.random() * 4) + 3) * 360;
+    const extraY = (Math.floor(Math.random() * 4) + 3) * 360;
     return { rotateX: base.rotateX + extraX, rotateY: base.rotateY + extraY };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, rolling]);
@@ -149,7 +149,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       const timer = setTimeout(() => {
         setIsAnimating(false);
         setSpinRotation(valueToRotation[value]);
-      }, 3000);
+      }, 3800);
       return () => clearTimeout(timer);
     } else if (!rolling) {
       setSpinRotation(valueToRotation[value]);
@@ -202,7 +202,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             : { duration: 0.25, ease: 'easeOut' }
         }
       >
-        <div style={{ perspective: 320, width: size, height: size }}>
+        <div style={{ perspective: 220, width: size, height: size }}>
           <motion.button
             key={rollKey}
             onClick={handleToggle}
@@ -225,20 +225,20 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transition={
               isAnimating
                 ? {
-                    duration: 3.0,
-                    ease: [0.12, 0.82, 0.3, 1],
+                    duration: 3.8,
+                    ease: [0.1, 0.8, 0.25, 1],
                     x: { 
-                      duration: 2.6, 
+                      duration: 3.2, 
                       times: [0, 0.35, 0.55, 0.72, 0.86, 1], 
-                      ease: [0.1, 0.75, 0.25, 1],
+                      ease: [0.08, 0.72, 0.22, 1],
                     },
                     y: { 
-                      duration: 2.4, 
+                      duration: 3.0, 
                       times: [0, 0.4, 0.6, 0.82, 1], 
                       ease: 'easeOut',
                     },
                   }
-                : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }
+                : { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }
             }
             whileTap={canLock ? { scale: 0.93 } : {}}
           >

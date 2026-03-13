@@ -41,7 +41,13 @@ export function calculateScore(dice: number[], category: CategoryId): number {
     case 'twoPairs': {
       const pairs: number[] = [];
       for (let i = 5; i >= 0; i--) {
-        if (counts[i] >= 2) pairs.push(i + 1);
+        if (counts[i] >= 4) {
+          // Four of a kind counts as two pairs of the same value
+          pairs.push(i + 1);
+          pairs.push(i + 1);
+        } else if (counts[i] >= 2) {
+          pairs.push(i + 1);
+        }
       }
       if (pairs.length >= 2) return pairs[0] * 2 + pairs[1] * 2;
       return 0;

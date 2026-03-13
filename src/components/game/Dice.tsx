@@ -30,9 +30,9 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 
 function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number; locked: boolean }) {
   const positions = pipGridPositions[faceValue] || [];
-  const pipSize = Math.round(size * 0.14);
-  const padding = Math.round(size * 0.19);
-  const radius = size * 0.28;
+  const pipSize = Math.round(size * 0.15);
+  const padding = Math.round(size * 0.18);
+  const radius = size * 0.22;
 
   return (
     <div
@@ -42,33 +42,27 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
         height: size,
         borderRadius: radius,
         background: locked
-          ? `linear-gradient(155deg, 
-              hsl(45 80% 98%) 0%, 
-              hsl(42 70% 90%) 35%, 
-              hsl(38 65% 82%) 70%, 
-              hsl(35 60% 76%) 100%)`
-          : `linear-gradient(155deg, 
-              hsl(40 15% 98%) 0%, 
-              hsl(30 8% 93%) 30%, 
-              hsl(25 6% 88%) 65%, 
-              hsl(20 4% 84%) 100%)`,
+          ? `linear-gradient(145deg, 
+              hsl(44 65% 96%) 0%, 
+              hsl(40 55% 88%) 50%, 
+              hsl(36 50% 82%) 100%)`
+          : `linear-gradient(145deg, 
+              hsl(0 0% 99%) 0%, 
+              hsl(0 0% 94%) 40%, 
+              hsl(0 0% 90%) 100%)`,
         boxShadow: locked
-          ? `inset 0 3px 10px rgba(255,255,255,0.9), 
-             inset 0 -4px 8px rgba(180,130,30,0.1), 
-             inset 3px 0 6px rgba(255,255,255,0.4),
-             inset -2px 0 4px rgba(180,130,30,0.06)`
-          : `inset 0 3px 10px rgba(255,255,255,0.9), 
-             inset 0 -4px 8px rgba(0,0,0,0.06), 
-             inset 3px 0 6px rgba(255,255,255,0.4),
-             inset -2px 0 4px rgba(0,0,0,0.03)`,
+          ? `inset 0 2px 6px rgba(255,255,255,0.7), 
+             inset 0 -3px 6px rgba(180,130,30,0.08)`
+          : `inset 0 2px 6px rgba(255,255,255,0.7), 
+             inset 0 -3px 6px rgba(0,0,0,0.04)`,
         backfaceVisibility: 'hidden',
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gridTemplateRows: 'repeat(3, 1fr)',
         padding,
         border: locked 
-          ? '1.5px solid rgba(220,170,50,0.25)' 
-          : '1.5px solid rgba(0,0,0,0.04)',
+          ? '1px solid rgba(200,160,50,0.2)' 
+          : '1px solid rgba(0,0,0,0.06)',
       }}
     >
       {Array.from({ length: 9 }, (_, i) => {
@@ -90,19 +84,17 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
                   height: pipSize,
                   borderRadius: '50%',
                   background: locked
-                    ? `radial-gradient(circle at 38% 32%, 
-                        hsl(32 35% 32%) 0%, 
-                        hsl(28 30% 18%) 60%, 
-                        hsl(25 25% 12%) 100%)`
-                    : `radial-gradient(circle at 38% 32%, 
-                        hsl(215 8% 30%) 0%, 
-                        hsl(215 10% 16%) 60%, 
-                        hsl(215 12% 8%) 100%)`,
+                    ? `radial-gradient(circle at 40% 35%, 
+                        hsl(30 40% 35%) 0%, 
+                        hsl(25 35% 20%) 70%, 
+                        hsl(20 30% 14%) 100%)`
+                    : `radial-gradient(circle at 40% 35%, 
+                        hsl(0 0% 32%) 0%, 
+                        hsl(0 0% 18%) 70%, 
+                        hsl(0 0% 10%) 100%)`,
                   boxShadow: `
-                    inset 0 2px 3px rgba(0,0,0,0.45), 
-                    inset 0 -1px 2px rgba(255,255,255,0.08),
-                    0 0.5px 1.5px rgba(255,255,255,0.15),
-                    0 0 0 0.5px rgba(0,0,0,0.1)`,
+                    inset 0 1.5px 2px rgba(0,0,0,0.4), 
+                    0 0.5px 1px rgba(255,255,255,0.12)`,
                 }}
               />
             )}
@@ -122,9 +114,9 @@ const RESTING_TILTS = [
 ];
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
-  const size = 64;
+  const size = 62;
   const half = size / 2;
-  const radius = size * 0.28;
+  const radius = size * 0.22;
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [justToggled, setJustToggled] = useState(false);
@@ -261,14 +253,14 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           height: size,
           borderRadius: radius,
           boxShadow: locked
-            ? `0 0 0 2px hsl(36 82% 52%), 
-               0 0 16px rgba(245,185,66,0.5), 
-               0 0 36px rgba(245,185,66,0.15), 
-               0 8px 24px rgba(0,0,0,0.2)`
-            : `0 4px 12px rgba(0,0,0,0.15), 
-               0 1px 3px rgba(0,0,0,0.08), 
-               0 10px 30px rgba(0,0,0,0.1)`,
-          transition: 'box-shadow 0.25s ease',
+            ? `0 0 0 2.5px hsl(36 72% 50%), 
+               0 0 20px rgba(245,185,66,0.4), 
+               0 0 40px rgba(245,185,66,0.1), 
+               0 6px 20px rgba(0,0,0,0.15)`
+            : `0 3px 8px rgba(0,0,0,0.1), 
+               0 1px 2px rgba(0,0,0,0.06), 
+               0 8px 24px rgba(0,0,0,0.08)`,
+          transition: 'box-shadow 0.3s ease',
         }}
         animate={{
           scale: locked ? 1.1 : justToggled ? [1, 0.93, 1.06, 1] : 1,

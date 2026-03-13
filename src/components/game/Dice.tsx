@@ -41,20 +41,8 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
         width: size,
         height: size,
         borderRadius: radius,
-        background: locked
-          ? `linear-gradient(145deg, 
-              hsl(44 50% 97%) 0%, 
-              hsl(40 40% 92%) 50%, 
-              hsl(36 35% 87%) 100%)`
-          : `linear-gradient(145deg, 
-              hsl(0 0% 100%) 0%, 
-              hsl(0 0% 97%) 40%, 
-              hsl(0 0% 95%) 100%)`,
-        boxShadow: locked
-          ? `inset 0 2px 6px rgba(255,255,255,0.7), 
-             inset 0 -3px 6px rgba(180,130,30,0.08)`
-          : `inset 0 2px 6px rgba(255,255,255,0.7), 
-             inset 0 -3px 6px rgba(0,0,0,0.04)`,
+        background: '#ffffff',
+        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
         backfaceVisibility: 'hidden',
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -83,17 +71,11 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
                   width: pipSize,
                   height: pipSize,
                   borderRadius: '50%',
-                  background: locked
-                    ? `radial-gradient(circle at 40% 35%, 
-                        hsl(30 40% 35%) 0%, 
-                        hsl(25 35% 20%) 70%, 
-                        hsl(20 30% 14%) 100%)`
-                    : `radial-gradient(circle at 40% 35%, 
-                        hsl(0 0% 32%) 0%, 
-                        hsl(0 0% 18%) 70%, 
-                        hsl(0 0% 10%) 100%)`,
-                  boxShadow: `
-                    inset 0 1.5px 2px rgba(0,0,0,0.4), 
+                  background: `radial-gradient(circle at 40% 35%, 
+                      hsl(0 0% 25%) 0%, 
+                      hsl(0 0% 10%) 70%, 
+                      hsl(0 0% 5%) 100%)`,
+                  boxShadow: `inset 0 1.5px 2px rgba(0,0,0,0.4), 
                     0 0.5px 1px rgba(255,255,255,0.12)`,
                 }}
               />

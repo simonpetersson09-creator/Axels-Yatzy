@@ -130,12 +130,20 @@ export default function GamePage() {
               onToggleLock={toggleLock}
             />
 
-            {/* Bottom: Home + Round Roll button */}
-            <div className="flex flex-col items-center gap-3 mt-auto">
+            {/* Bottom: Home above, Roll button below */}
+            <div className="flex flex-col items-center gap-3 mt-6">
+              <button
+                onClick={() => navigate('/')}
+                className="p-2.5 rounded-full bg-secondary/60 hover:bg-secondary transition-colors"
+                title="Till menyn"
+              >
+                <Home className="w-4 h-4 text-muted-foreground" />
+              </button>
+
               <motion.button
                 onClick={roll}
                 disabled={!canRoll || gameState.isRolling}
-                className={`w-16 h-16 rounded-full font-display font-bold text-[13px] tracking-wide transition-all flex items-center justify-center ${
+                className={`w-[76px] h-[76px] rounded-full font-display font-bold text-[14px] tracking-wide transition-all flex items-center justify-center ${
                   canRoll && !gameState.isRolling
                     ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_28px_-4px_hsl(42_88%_52%/0.35),0_2px_8px_-2px_hsl(0_0%_0%/0.35)] active:scale-[0.97]'
                     : 'bg-secondary text-muted-foreground shadow-none'
@@ -144,14 +152,6 @@ export default function GamePage() {
               >
                 {gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
               </motion.button>
-
-              <button
-                onClick={() => navigate('/')}
-                className="p-2 rounded-full bg-secondary/60 hover:bg-secondary transition-colors"
-                title="Till menyn"
-              >
-                <Home className="w-4 h-4 text-muted-foreground" />
-              </button>
             </div>
           </div>
         </div>

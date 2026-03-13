@@ -39,17 +39,16 @@ export default function GamePage() {
       navigate('/results', { state: { results } });
     }
   }, [gameState?.gameOver]);
+  const handleRoll = useCallback(() => {
+    playRollSound();
+    roll();
+  }, [roll]);
 
   if (!gameState) return null;
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = gameState.isRolling ? null : getPossibleScores();
   const canRoll = gameState.rollsLeft > 0;
-
-  const handleRoll = useCallback(() => {
-    playRollSound();
-    roll();
-  }, [roll]);
 
   const PLAYER_COLORS = [
     { ring: 'ring-yatzy-player1', bg: 'bg-yatzy-player1', glow: 'shadow-[0_0_8px_hsl(36_82%_52%/0.5)]' },

@@ -91,8 +91,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
 
   const targetRotation = useMemo(() => {
     const base = valueToRotation[value];
-    const extraX = (Math.floor(Math.random() * 3) + 2) * 360;
-    const extraY = (Math.floor(Math.random() * 3) + 2) * 360;
+    const extraX = (Math.floor(Math.random() * 2) + 1) * 360;
+    const extraY = (Math.floor(Math.random() * 2) + 1) * 360;
     return { rotateX: base.rotateX + extraX, rotateY: base.rotateY + extraY };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, rolling]);
@@ -104,7 +104,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       const timer = setTimeout(() => {
         setIsAnimating(false);
         setSpinRotation(valueToRotation[value]);
-      }, 750);
+      }, 1200);
       return () => clearTimeout(timer);
     } else if (!rolling) {
       setSpinRotation(valueToRotation[value]);
@@ -169,9 +169,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transition={
               isAnimating
                 ? {
-                    duration: 0.7,
-                    ease: [0.16, 1, 0.3, 1],
-                    y: { duration: 0.7, times: [0, 0.3, 0.5, 0.7, 1], ease: 'easeOut' },
+                    duration: 1.2,
+                    ease: [0.22, 1, 0.36, 1],
+                    y: { duration: 1.2, times: [0, 0.25, 0.45, 0.65, 1], ease: 'easeOut' },
                   }
                 : { duration: 0.15, ease: 'easeOut' }
             }

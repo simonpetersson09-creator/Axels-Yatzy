@@ -94,7 +94,7 @@ export default function GamePage() {
                 players={gameState.players}
                 currentPlayerIndex={gameState.currentPlayerIndex}
                 possibleScores={possibleScores}
-                onSelectCategory={selectCategory}
+                onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
               />
             </div>

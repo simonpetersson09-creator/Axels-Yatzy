@@ -101,6 +101,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [justToggled, setJustToggled] = useState(false);
+  const [rollKey, setRollKey] = useState(0);
 
   // Stable tilt per dice instance
   const tiltIndex = useMemo(() => Math.floor(Math.random() * RESTING_TILTS.length), []);

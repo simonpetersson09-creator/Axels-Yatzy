@@ -104,7 +104,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       const timer = setTimeout(() => {
         setIsAnimating(false);
         setSpinRotation(valueToRotation[value]);
-      }, 1200);
+      }, 1800);
       return () => clearTimeout(timer);
     } else if (!rolling) {
       setSpinRotation(valueToRotation[value]);

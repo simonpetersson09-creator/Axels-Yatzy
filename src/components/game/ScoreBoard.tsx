@@ -1,7 +1,8 @@
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { CATEGORIES, CategoryId, Player, UPPER_BONUS_THRESHOLD, UPPER_BONUS_VALUE } from '@/types/yatzy';
 import { getUpperSectionTotal, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ScoreBoardProps {
   players: Player[];

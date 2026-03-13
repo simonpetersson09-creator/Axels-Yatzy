@@ -11,6 +11,7 @@ export default function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const results: PlayerResult[] = location.state?.results || [];
+  const playerNames: string[] = results.map(r => r.name);
 
   const sorted = [...results].sort((a, b) => b.score - a.score);
   const winner = sorted[0];

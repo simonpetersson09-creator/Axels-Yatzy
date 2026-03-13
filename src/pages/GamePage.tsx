@@ -45,6 +45,13 @@ export default function GamePage() {
   const possibleScores = getPossibleScores();
   const canRoll = gameState.rollsLeft > 0;
 
+  const PLAYER_COLORS = [
+    { ring: 'ring-yatzy-player1', bg: 'bg-yatzy-player1', glow: 'shadow-[0_0_8px_hsl(36_82%_52%/0.5)]' },
+    { ring: 'ring-yatzy-player2', bg: 'bg-yatzy-player2', glow: 'shadow-[0_0_8px_hsl(210_70%_52%/0.5)]' },
+    { ring: 'ring-yatzy-player3', bg: 'bg-yatzy-player3', glow: 'shadow-[0_0_8px_hsl(155_60%_42%/0.5)]' },
+    { ring: 'ring-yatzy-player4', bg: 'bg-yatzy-player4', glow: 'shadow-[0_0_8px_hsl(350_65%_52%/0.5)]' },
+  ];
+
   return (
     <div className="min-h-screen px-4 py-6 safe-top safe-bottom flex items-center justify-center">
       <motion.div
@@ -53,28 +60,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        {/* Menu button + Turn indicator */}
-        <div className="flex items-start justify-between">
-          <button
-            onClick={() => navigate('/')}
-            className="p-2 rounded-xl hover:bg-secondary transition-colors"
-            title="Till menyn"
-          >
-            <Home className="w-4 h-4 text-muted-foreground" />
-          </button>
-          <div className="text-center space-y-1 flex-1">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-[0.25em] font-semibold">Tur</p>
-            <p className="text-xl font-display font-bold text-gold-gradient leading-tight">{currentPlayer.name}</p>
-            <p className="text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
-              {gameState.rollsLeft === 3
-                ? '\u00A0'
-                : `Kast ${3 - gameState.rollsLeft} / 3`}
-            </p>
-          </div>
-          <div className="w-8" /> {/* spacer for centering */}
-        </div>
-
-        {/* Scoreboard + Dice side by side */}
+        {/* Scoreboard + Players + Dice */}
         <div className="flex gap-6 items-stretch">
           <div className="game-shadow-soft rounded-lg overflow-hidden">
             <ScoreBoard
@@ -86,38 +72,85 @@ export default function GamePage() {
             />
           </div>
 
-          <DiceArea
-            dice={gameState.dice}
-            lockedDice={gameState.lockedDice}
-            rollsLeft={gameState.rollsLeft}
-            isRolling={gameState.isRolling}
-            onToggleLock={toggleLock}
-          />
+          <div className="flex flex-col gap-4">
+            {/* Player indicators */}
+            <div className="flex flex-col gap-2">
+              {gameState.players.map((player, idx) => {
+                const isCurrent = idx === gameState.currentPlayerIndex;
+                const color = PLAYER_COLORS[idx];
+                return (
+                  <motion.div
+                    key={player.id}
+                    className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all ${
+                      isCurrent ? 'bg-secondary/80' : ''
+                    }`}
+                    animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  >
+                    <div className={`w-5 h-5 rounded-full ${color.bg} ring-2 ring-offset-2 ring-offset-background ${
+                      isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
+                    } transition-all`} />
+                    <span className={`text-[12px] font-semibold truncate max-w-[80px] ${
+                      isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
+                    }`}>
+                      {player.name}
+                    </span>
+                    {isCurrent && (
+                      <motion.span
+                        className="text-[9px] text-primary font-bold uppercase tracking-wider ml-auto"
+                        initial={{ opacity: 0, x: -4 }}
+                        animate={{ opacity: 1, x: 0 }}
+                      >
+                        ●
+                      </motion.span>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Dice */}
+            <DiceArea
+              dice={gameState.dice}
+              lockedDice={gameState.lockedDice}
+              rollsLeft={gameState.rollsLeft}
+              isRolling={gameState.isRolling}
+              onToggleLock={toggleLock}
+            />
+          </div>
         </div>
 
-        {/* Roll button */}
-        <motion.button
-          onClick={roll}
-          disabled={!canRoll || gameState.isRolling}
-          className={`w-full py-4 rounded-2xl font-display font-bold text-[15px] tracking-wide transition-all ${
-            canRoll && !gameState.isRolling
-              ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_28px_-4px_hsl(42_88%_52%/0.35),0_2px_8px_-2px_hsl(0_0%_0%/0.35)] active:scale-[0.97]'
-              : 'bg-secondary text-muted-foreground shadow-none'
-          }`}
-          whileTap={canRoll ? { scale: 0.97 } : {}}
-        >
-          {gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? 'Välj kategori' : 'Kasta igen'}
-        </motion.button>
+        {/* Roll count */}
+        <p className="text-center text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
+          {gameState.rollsLeft === 3
+            ? '\u00A0'
+            : gameState.rollsLeft === 0
+              ? 'Välj en kategori på brickan'
+              : `Kast ${3 - gameState.rollsLeft} / 3`}
+        </p>
 
-        {gameState.rollsLeft === 0 && (
-          <motion.p
-            className="text-center text-[11px] text-game-gold font-medium tracking-wide"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+        {/* Home + Roll button row */}
+        <div className="flex gap-3 items-stretch">
+          <button
+            onClick={() => navigate('/')}
+            className="px-4 rounded-2xl bg-secondary hover:bg-secondary/80 transition-colors flex items-center justify-center"
+            title="Till menyn"
           >
-            Välj en kategori på brickan
-          </motion.p>
-        )}
+            <Home className="w-4 h-4 text-muted-foreground" />
+          </button>
+          <motion.button
+            onClick={roll}
+            disabled={!canRoll || gameState.isRolling}
+            className={`flex-1 py-4 rounded-2xl font-display font-bold text-[15px] tracking-wide transition-all ${
+              canRoll && !gameState.isRolling
+                ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_28px_-4px_hsl(42_88%_52%/0.35),0_2px_8px_-2px_hsl(0_0%_0%/0.35)] active:scale-[0.97]'
+                : 'bg-secondary text-muted-foreground shadow-none'
+            }`}
+            whileTap={canRoll ? { scale: 0.97 } : {}}
+          >
+            {gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? 'Välj kategori' : 'Kasta igen'}
+          </motion.button>
+        </div>
       </motion.div>
     </div>
   );

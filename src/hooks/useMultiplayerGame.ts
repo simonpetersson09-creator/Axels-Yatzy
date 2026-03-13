@@ -300,7 +300,7 @@ export function useMultiplayerGame() {
         locked_dice: [false, false, false, false, false],
         rolls_left: 3,
         is_rolling: false,
-        status: gameOver ? ('finished' as string) : ('playing' as string),
+        status: (gameOver ? 'finished' : 'playing') as const,
         round: nextPlayerIndex === 0 ? gs.round + 1 : gs.round,
       })
       .eq('id', state.gameId);

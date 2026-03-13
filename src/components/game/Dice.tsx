@@ -114,11 +114,11 @@ function DiceFace({ faceValue, size, locked }: { faceValue: number; size: number
 }
 
 const RESTING_TILTS = [
-  { x: 7, y: -5, z: 1.5 },
-  { x: -6, y: 10, z: -3 },
-  { x: 8, y: 6, z: 2 },
-  { x: -9, y: -5, z: -2.5 },
-  { x: 5, y: 9, z: 3 },
+  { x: 12, y: -9, z: 3 },
+  { x: -10, y: 14, z: -4 },
+  { x: 13, y: 8, z: 3.5 },
+  { x: -14, y: -7, z: -3.5 },
+  { x: 8, y: 13, z: 4 },
 ];
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {

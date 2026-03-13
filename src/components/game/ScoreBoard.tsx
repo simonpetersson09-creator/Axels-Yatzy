@@ -51,28 +51,16 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     const canSelect = isCurrent && !isScored && possibleScore !== undefined && rollsLeft < 3;
 
     return (
-      <motion.button
+      <ScoreCell
         key={`${cat.id}-${player.id}`}
-        onClick={() => canSelect && onSelectCategory(cat.id)}
-        disabled={!canSelect}
-        className={cn(
-          'border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center', ROW_H, COL_W,
-          cellBg(slotIdx),
-          canSelect && possibleScore! > 0 && 'bg-yatzy-highlight hover:brightness-95 cursor-pointer ring-1 ring-inset ring-game-gold-dark/25',
-          canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
-        )}
-        whileTap={canSelect ? { scale: 0.96 } : {}}
-      >
-        <span className={cn(
-          'text-[13px] tabular-nums leading-none',
-          isScored && 'font-bold text-yatzy-text',
-          canSelect && possibleScore! > 0 && 'font-bold text-game-gold-dark',
-          canSelect && possibleScore === 0 && 'font-medium text-yatzy-text/25',
-          !isScored && !canSelect && 'text-yatzy-text/10',
-        )}>
-          {isScored ? player.scores[cat.id] : canSelect ? possibleScore : ''}
-        </span>
-      </motion.button>
+        catId={cat.id}
+        isScored={isScored}
+        scoreValue={player.scores[cat.id]}
+        possibleScore={possibleScore}
+        canSelect={canSelect}
+        bgClass={cellBg(slotIdx)}
+        onSelect={() => canSelect && onSelectCategory(cat.id)}
+      />
     );
   };
 

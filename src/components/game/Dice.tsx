@@ -21,10 +21,10 @@ const pipGridPositions: Record<number, number[]> = {
 
 const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   1: { rotateX: 0, rotateY: 0 },
-  2: { rotateX: 0, rotateY: -90 },
-  3: { rotateX: -90, rotateY: 0 },
-  4: { rotateX: 90, rotateY: 0 },
-  5: { rotateX: 0, rotateY: 90 },
+  2: { rotateX: 0, rotateY: 90 },
+  3: { rotateX: 90, rotateY: 0 },
+  4: { rotateX: -90, rotateY: 0 },
+  5: { rotateX: 0, rotateY: -90 },
   6: { rotateX: 0, rotateY: 180 },
 };
 

@@ -67,7 +67,7 @@ export function useMultiplayerGame() {
       scores: (p.scores as Record<string, number | null>) ?? {},
     }));
 
-    const myIndex = dbPlayers.findIndex(p => p.session_id === sessionId);
+    const gameStatus = game.status as 'waiting' | 'playing' | 'finished';
 
     const gameState: GameState = {
       players,

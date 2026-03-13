@@ -156,12 +156,40 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
     }
   }, [rolling, value, locked, targetRotation]);
 
+  // Track when dice becomes locked (not just toggled)
+  const [showSparkle, setShowSparkle] = useState(false);
+  const prevLockedRef = useRef(locked);
+
+  useEffect(() => {
+    if (locked && !prevLockedRef.current) {
+      setShowSparkle(true);
+      const t = setTimeout(() => setShowSparkle(false), 600);
+      return () => clearTimeout(t);
+    }
+    prevLockedRef.current = locked;
+  }, [locked]);
+
   const handleToggle = () => {
     if (!canLock) return;
     setJustToggled(true);
     onToggleLock();
     setTimeout(() => setJustToggled(false), 200);
   };
+
+  // Generate sparkle positions
+  const sparkles = useMemo(() => 
+    Array.from({ length: 8 }, (_, i) => {
+      const angle = (i / 8) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+      const dist = 28 + Math.random() * 16;
+      return {
+        x: Math.cos(angle) * dist,
+        y: Math.sin(angle) * dist,
+        size: 3 + Math.random() * 3,
+        delay: Math.random() * 0.1,
+      };
+    }), 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [rollKey, locked]);
 
   const faces = [
     { faceValue: 1, transform: `translateZ(${half}px)` },

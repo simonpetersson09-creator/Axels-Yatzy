@@ -75,6 +75,10 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen px-4 py-6 safe-top safe-bottom flex items-center justify-center">
+      <YatzyCelebration
+        show={showYatzyCelebration}
+        onComplete={() => setShowYatzyCelebration(false)}
+      />
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

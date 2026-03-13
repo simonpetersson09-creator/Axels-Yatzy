@@ -253,14 +253,14 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           height: size,
           borderRadius: radius,
           boxShadow: locked
-            ? `0 0 0 2px hsl(36 82% 52%), 
-               0 0 16px rgba(245,185,66,0.5), 
-               0 0 36px rgba(245,185,66,0.15), 
-               0 8px 24px rgba(0,0,0,0.2)`
-            : `0 4px 12px rgba(0,0,0,0.15), 
-               0 1px 3px rgba(0,0,0,0.08), 
-               0 10px 30px rgba(0,0,0,0.1)`,
-          transition: 'box-shadow 0.25s ease',
+            ? `0 0 0 2.5px hsl(36 72% 50%), 
+               0 0 20px rgba(245,185,66,0.4), 
+               0 0 40px rgba(245,185,66,0.1), 
+               0 6px 20px rgba(0,0,0,0.15)`
+            : `0 3px 8px rgba(0,0,0,0.1), 
+               0 1px 2px rgba(0,0,0,0.06), 
+               0 8px 24px rgba(0,0,0,0.08)`,
+          transition: 'box-shadow 0.3s ease',
         }}
         animate={{
           scale: locked ? 1.1 : justToggled ? [1, 0.93, 1.06, 1] : 1,

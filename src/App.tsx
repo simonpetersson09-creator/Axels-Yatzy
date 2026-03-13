@@ -11,6 +11,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import StatsPage from "./pages/StatsPage";
 import SettingsPage from "./pages/SettingsPage";
+import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
+import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
+          <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

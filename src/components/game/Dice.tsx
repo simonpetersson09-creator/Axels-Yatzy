@@ -169,9 +169,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transition={
               isAnimating
                 ? {
-                    duration: 0.7,
-                    ease: [0.16, 1, 0.3, 1],
-                    y: { duration: 0.7, times: [0, 0.3, 0.5, 0.7, 1], ease: 'easeOut' },
+                    duration: 1.2,
+                    ease: [0.22, 1, 0.36, 1],
+                    y: { duration: 1.2, times: [0, 0.25, 0.45, 0.65, 1], ease: 'easeOut' },
                   }
                 : { duration: 0.15, ease: 'easeOut' }
             }

@@ -1,8 +1,9 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
+import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { playRollSound } from '@/lib/dice-sounds';
@@ -39,10 +40,25 @@ export default function GamePage() {
       navigate('/results', { state: { results } });
     }
   }, [gameState?.gameOver]);
+
+  const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
+
   const handleRoll = useCallback(() => {
     playRollSound();
     roll();
   }, [roll]);
+
+  const handleSelectCategory = useCallback((categoryId: string) => {
+    // Check if selecting yatzy with a score of 50
+    if (categoryId === 'yatzy' && gameState) {
+      const dice = gameState.dice;
+      const allSame = dice.every(d => d === dice[0]);
+      if (allSame) {
+        setShowYatzyCelebration(true);
+      }
+    }
+    selectCategory(categoryId as any);
+  }, [gameState, selectCategory]);
 
   if (!gameState) return null;
 
@@ -59,6 +75,10 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen px-4 py-6 safe-top safe-bottom flex items-center justify-center">
+      <YatzyCelebration
+        show={showYatzyCelebration}
+        onComplete={() => setShowYatzyCelebration(false)}
+      />
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}
@@ -74,7 +94,7 @@ export default function GamePage() {
                 players={gameState.players}
                 currentPlayerIndex={gameState.currentPlayerIndex}
                 possibleScores={possibleScores}
-                onSelectCategory={selectCategory}
+                onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
               />
             </div>

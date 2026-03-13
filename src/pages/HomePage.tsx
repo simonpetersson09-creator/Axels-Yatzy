@@ -42,7 +42,15 @@ export default function HomePage() {
             className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"
             whileTap={{ scale: 0.97 }}
           >
-            Spela nu
+            Spela lokalt
+          </motion.button>
+
+          <motion.button
+            onClick={() => navigate('/multiplayer')}
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-lg shadow-lg"
+            whileTap={{ scale: 0.97 }}
+          >
+            🌐 Multiplayer
           </motion.button>
 
           <motion.button

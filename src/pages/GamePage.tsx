@@ -40,10 +40,25 @@ export default function GamePage() {
       navigate('/results', { state: { results } });
     }
   }, [gameState?.gameOver]);
+
+  const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
+
   const handleRoll = useCallback(() => {
     playRollSound();
     roll();
   }, [roll]);
+
+  const handleSelectCategory = useCallback((categoryId: string) => {
+    // Check if selecting yatzy with a score of 50
+    if (categoryId === 'yatzy' && gameState) {
+      const dice = gameState.dice;
+      const allSame = dice.every(d => d === dice[0]);
+      if (allSame) {
+        setShowYatzyCelebration(true);
+      }
+    }
+    selectCategory(categoryId as any);
+  }, [gameState, selectCategory]);
 
   if (!gameState) return null;
 

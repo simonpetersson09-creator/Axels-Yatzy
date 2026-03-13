@@ -76,6 +76,7 @@ export default {
         yatzy: {
           bg: "hsl(var(--yatzy-bg))",
           line: "hsl(var(--yatzy-line))",
+          "line-strong": "hsl(var(--yatzy-line-strong))",
           text: "hsl(var(--yatzy-text))",
           header: "hsl(var(--yatzy-header))",
           highlight: "hsl(var(--yatzy-highlight))",
@@ -85,6 +86,10 @@ export default {
           player2: "hsl(var(--yatzy-player2))",
           player3: "hsl(var(--yatzy-player3))",
           player4: "hsl(var(--yatzy-player4))",
+          "player1-soft": "hsl(var(--yatzy-player1-soft))",
+          "player2-soft": "hsl(var(--yatzy-player2-soft))",
+          "player3-soft": "hsl(var(--yatzy-player3-soft))",
+          "player4-soft": "hsl(var(--yatzy-player4-soft))",
         },
       },
       borderRadius: {

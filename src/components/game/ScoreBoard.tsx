@@ -12,15 +12,15 @@ interface ScoreBoardProps {
 }
 
 const PLAYER_COLORS = [
-  { bg: 'bg-yatzy-player1/8', activeBg: 'bg-yatzy-player1/18', border: 'border-yatzy-player1/50', text: 'text-yatzy-player1', dot: 'bg-yatzy-player1' },
-  { bg: 'bg-yatzy-player2/8', activeBg: 'bg-yatzy-player2/18', border: 'border-yatzy-player2/50', text: 'text-yatzy-player2', dot: 'bg-yatzy-player2' },
-  { bg: 'bg-yatzy-player3/8', activeBg: 'bg-yatzy-player3/18', border: 'border-yatzy-player3/50', text: 'text-yatzy-player3', dot: 'bg-yatzy-player3' },
-  { bg: 'bg-yatzy-player4/8', activeBg: 'bg-yatzy-player4/18', border: 'border-yatzy-player4/50', text: 'text-yatzy-player4', dot: 'bg-yatzy-player4' },
+  { bg: 'bg-yatzy-player1-soft', activeBg: 'bg-yatzy-player1/15', border: 'border-yatzy-player1', text: 'text-yatzy-player1', dot: 'bg-yatzy-player1', label: 'P1' },
+  { bg: 'bg-yatzy-player2-soft', activeBg: 'bg-yatzy-player2/15', border: 'border-yatzy-player2', text: 'text-yatzy-player2', dot: 'bg-yatzy-player2', label: 'P2' },
+  { bg: 'bg-yatzy-player3-soft', activeBg: 'bg-yatzy-player3/15', border: 'border-yatzy-player3', text: 'text-yatzy-player3', dot: 'bg-yatzy-player3', label: 'P3' },
+  { bg: 'bg-yatzy-player4-soft', activeBg: 'bg-yatzy-player4/15', border: 'border-yatzy-player4', text: 'text-yatzy-player4', dot: 'bg-yatzy-player4', label: 'P4' },
 ];
 
 const SLOT_COUNT = 4;
-const COL_W = 'min-w-[54px] w-[54px]';
-const LABEL_W = 'w-[104px] min-w-[104px]';
+const COL_W = 'min-w-[56px] w-[56px]';
+const LABEL_W = 'w-[110px] min-w-[110px]';
 const ROW_H = 'h-[34px]';
 
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft }: ScoreBoardProps) {
@@ -41,7 +41,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
     if (!player) {
       return (
-        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/60 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, 'bg-yatzy-bg/40')} />
+        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, 'bg-yatzy-bg/30')} />
       );
     }
 
@@ -55,9 +55,9 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         onClick={() => canSelect && onSelectCategory(cat.id)}
         disabled={!canSelect}
         className={cn(
-          'border-r border-yatzy-line/60 last:border-r-0 text-center transition-all flex items-center justify-center', ROW_H, COL_W,
+          'border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center', ROW_H, COL_W,
           cellBg(slotIdx),
-          canSelect && possibleScore! > 0 && 'bg-yatzy-highlight/80 hover:bg-yatzy-highlight cursor-pointer ring-1 ring-inset ring-game-gold-dark/20',
+          canSelect && possibleScore! > 0 && 'bg-yatzy-highlight hover:brightness-95 cursor-pointer ring-1 ring-inset ring-game-gold-dark/25',
           canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
         )}
         whileTap={canSelect ? { scale: 0.96 } : {}}
@@ -67,7 +67,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
           isScored && 'font-bold text-yatzy-text',
           canSelect && possibleScore! > 0 && 'font-bold text-game-gold-dark',
           canSelect && possibleScore === 0 && 'font-medium text-yatzy-text/25',
-          !isScored && !canSelect && 'text-yatzy-text/15',
+          !isScored && !canSelect && 'text-yatzy-text/10',
         )}>
           {isScored ? player.scores[cat.id] : canSelect ? possibleScore : ''}
         </span>
@@ -76,34 +76,38 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   };
 
   const renderRow = (cat: typeof CATEGORIES[0], idx: number) => (
-    <div key={cat.id} className="flex border-b border-yatzy-line/50">
+    <div key={cat.id} className="flex border-b border-yatzy-line/30">
       <div className={cn(
-        'flex-shrink-0 px-3 border-r border-yatzy-line/60 flex items-center', ROW_H, LABEL_W,
-        idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/40',
+        'flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
+        idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className="text-[13px] font-medium text-yatzy-text/90 leading-none tracking-tight">{cat.name}</span>
+        <span className="text-[12.5px] font-medium text-yatzy-text/80 leading-none">{cat.name}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </div>
   );
 
-  const renderSumRow = (label: string, getValue: (p: Player) => string | number, bold?: boolean) => (
-    <div className="flex border-b-2 border-yatzy-line bg-yatzy-sum-row">
-      <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/60 flex items-center', ROW_H, LABEL_W)}>
+  const renderSumRow = (label: string, getValue: (p: Player) => string | number, isTotalRow?: boolean) => (
+    <div className={cn(
+      'flex',
+      isTotalRow ? 'border-t-2 border-yatzy-line-strong' : 'border-b border-yatzy-line/50',
+      isTotalRow ? 'bg-yatzy-header' : 'bg-yatzy-sum-row',
+    )}>
+      <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W)}>
         <span className={cn(
           'uppercase tracking-wider leading-none',
-          bold ? 'text-[12px] font-black text-yatzy-text' : 'text-[10px] font-bold text-yatzy-text/60',
+          isTotalRow ? 'text-[11px] font-black text-yatzy-text' : 'text-[10px] font-bold text-yatzy-text/50',
         )}>{label}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => {
         const player = players[i];
         const isCurrent = i === currentPlayerIndex;
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/60 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, cellBg(i))}>
+          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, cellBg(i))}>
             <span className={cn(
               'tabular-nums leading-none',
-              bold ? 'text-[14px] font-black' : 'text-[12px] font-bold',
-              player && isCurrent ? 'text-yatzy-text' : player ? 'text-yatzy-text/50' : 'text-yatzy-text/10',
+              isTotalRow ? 'text-[14px] font-black' : 'text-[12px] font-bold',
+              player && isCurrent ? 'text-yatzy-text' : player ? 'text-yatzy-text/40' : 'text-yatzy-text/10',
             )}>
               {player ? getValue(player) : '–'}
             </span>
@@ -115,17 +119,20 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
   return (
     <div
-      className="bg-yatzy-bg border-2 border-yatzy-line rounded-md shadow-lg overflow-hidden"
-      style={{ minWidth: 104 + SLOT_COUNT * 54 }}
+      className="bg-yatzy-bg border border-yatzy-line-strong/30 rounded-lg overflow-hidden"
+      style={{
+        minWidth: 110 + SLOT_COUNT * 56,
+        boxShadow: '0 1px 3px hsl(0 0% 0% / 0.08), 0 4px 16px hsl(0 0% 0% / 0.06)',
+      }}
     >
       {/* Header */}
-      <div className={cn('bg-yatzy-header border-b-2 border-yatzy-line px-4 text-center flex items-center justify-center', ROW_H)}>
-        <span className="font-display font-bold text-base text-yatzy-text tracking-[0.2em] uppercase">Yatzy</span>
+      <div className={cn('bg-yatzy-header border-b border-yatzy-line/50 px-4 text-center flex items-center justify-center', ROW_H)}>
+        <span className="font-display font-bold text-[15px] text-yatzy-text tracking-[0.25em] uppercase">Yatzy</span>
       </div>
 
       {/* Player columns header */}
-      <div className={cn('flex border-b-2 border-yatzy-line', ROW_H)}>
-        <div className={cn('flex-shrink-0 border-r border-yatzy-line/60 bg-yatzy-section-header px-3 flex items-center', LABEL_W)} />
+      <div className={cn('flex border-b-2 border-yatzy-line-strong/40')}>
+        <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 bg-yatzy-section-header px-3 flex items-center', LABEL_W, ROW_H)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];
           const color = PLAYER_COLORS[i];
@@ -134,30 +141,32 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
             <div
               key={i}
               className={cn(
-                'text-center border-r border-yatzy-line/60 last:border-r-0 flex flex-col items-center justify-center gap-0.5',
-                COL_W,
-                player && isCurrent ? color.activeBg : player ? color.bg : 'bg-yatzy-section-header/30',
-                player && isCurrent && 'border-b-[3px]',
-                player && isCurrent && color.border,
+                'text-center border-r border-yatzy-line/40 last:border-r-0 flex items-center justify-center relative',
+                COL_W, ROW_H,
+                player ? (isCurrent ? color.activeBg : color.bg) : 'bg-yatzy-section-header/30',
               )}
             >
               {player ? (
-                <>
+                <div className="flex items-center gap-1.5">
                   <div className={cn(
-                    'w-3 h-3 rounded-full',
+                    'w-2.5 h-2.5 rounded-full',
                     color.dot,
-                    isCurrent && 'ring-2 ring-offset-1 ring-offset-yatzy-bg',
-                    isCurrent && color.border,
+                    isCurrent && 'ring-[1.5px] ring-offset-1 ring-offset-yatzy-bg',
+                    isCurrent && color.border.replace('border-', 'ring-'),
                   )} />
                   <span className={cn(
                     'text-[11px] font-bold leading-none',
-                    isCurrent ? 'text-yatzy-text' : 'text-yatzy-text/40'
+                    isCurrent ? 'text-yatzy-text' : 'text-yatzy-text/35'
                   )}>
-                    P{i + 1}
+                    {color.label}
                   </span>
-                </>
+                </div>
               ) : (
                 <span className="text-[10px] text-yatzy-text/10">–</span>
+              )}
+              {/* Active indicator bar */}
+              {player && isCurrent && (
+                <div className={cn('absolute bottom-0 left-1 right-1 h-[2.5px] rounded-t-full', color.dot)} />
               )}
             </div>
           );
@@ -165,8 +174,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Upper section */}
-      <div className={cn('bg-yatzy-section-header/60 border-b border-yatzy-line/50 px-3 flex items-center', ROW_H)}>
-        <span className="text-[9px] font-bold text-yatzy-text/35 uppercase tracking-[0.15em]">Övre sektionen</span>
+      <div className={cn('bg-yatzy-section-header border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)}>
+        <span className="text-[9px] font-bold text-yatzy-text/30 uppercase tracking-[0.15em]">Övre sektionen</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
 
@@ -177,8 +186,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className={cn('bg-yatzy-section-header/60 border-b border-yatzy-line/50 px-3 flex items-center', ROW_H)}>
-        <span className="text-[9px] font-bold text-yatzy-text/35 uppercase tracking-[0.15em]">Nedre sektionen</span>
+      <div className={cn('bg-yatzy-section-header border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)}>
+        <span className="text-[9px] font-bold text-yatzy-text/30 uppercase tracking-[0.15em]">Nedre sektionen</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}
 

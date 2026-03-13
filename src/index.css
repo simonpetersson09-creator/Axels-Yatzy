@@ -58,17 +58,22 @@
     --game-info: 200 65% 50%;
 
     /* Yatzy scorecard */
-    --yatzy-bg: 42 28% 95%;
-    --yatzy-line: 195 15% 30%;
-    --yatzy-text: 195 20% 12%;
-    --yatzy-header: 42 22% 89%;
-    --yatzy-highlight: 38 60% 84%;
-    --yatzy-section-header: 42 18% 92%;
-    --yatzy-sum-row: 42 20% 91%;
-    --yatzy-player1: 36 78% 50%;
-    --yatzy-player2: 200 65% 48%;
-    --yatzy-player3: 160 55% 40%;
-    --yatzy-player4: 0 60% 48%;
+    --yatzy-bg: 40 30% 96%;
+    --yatzy-line: 195 12% 72%;
+    --yatzy-line-strong: 195 15% 40%;
+    --yatzy-text: 200 18% 15%;
+    --yatzy-header: 38 25% 88%;
+    --yatzy-highlight: 42 65% 82%;
+    --yatzy-section-header: 40 20% 93%;
+    --yatzy-sum-row: 38 22% 90%;
+    --yatzy-player1: 36 82% 52%;
+    --yatzy-player2: 210 70% 52%;
+    --yatzy-player3: 155 60% 42%;
+    --yatzy-player4: 350 65% 52%;
+    --yatzy-player1-soft: 36 70% 92%;
+    --yatzy-player2-soft: 210 60% 92%;
+    --yatzy-player3-soft: 155 50% 92%;
+    --yatzy-player4-soft: 350 55% 93%;
   }
 }
 

@@ -76,22 +76,6 @@ export default function HomePage() {
           >
             🌐 Spela med vänner
           </motion.button>
-
-          <motion.button
-            onClick={() => navigate('/login')}
-            className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-semibold"
-            whileTap={{ scale: 0.97 }}
-          >
-            Logga in
-          </motion.button>
-
-          <motion.button
-            onClick={() => navigate('/register')}
-            className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-semibold"
-            whileTap={{ scale: 0.97 }}
-          >
-            Skapa konto
-          </motion.button>
         </div>
 
         {/* Secondary Actions */}

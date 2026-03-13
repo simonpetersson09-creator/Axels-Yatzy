@@ -305,20 +305,48 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       {/* Ground shadow */}
       <motion.div
         style={{
-          width: size * 0.55,
-          height: 5,
-          marginTop: 5,
+          width: size * 0.6,
+          height: 6,
+          marginTop: 4,
           borderRadius: '50%',
           background: locked
             ? 'radial-gradient(ellipse, rgba(245, 185, 66, 0.35), transparent)'
-            : 'radial-gradient(ellipse, rgba(0,0,0,0.25), transparent)',
+            : 'radial-gradient(ellipse, rgba(0,0,0,0.3), transparent)',
         }}
         animate={{
-          filter: isAnimating ? 'blur(8px)' : 'blur(3px)',
-          opacity: isAnimating ? 0.1 : 0.55,
-          scaleX: isAnimating ? 1.8 : 1,
+          x: isAnimating ? [500, -10, 14, -4, 5, 0] : 0,
+          scaleX: isAnimating ? [0.4, 1.4, 1.1, 1.05, 1.02, 1] : locked ? 1.1 : 1,
+          scaleY: isAnimating ? [0.5, 1.3, 0.9, 1.05, 1] : 1,
+          opacity: isAnimating ? [0, 0.15, 0.5, 0.45, 0.5, 0.55] : 0.55,
+          filter: isAnimating ? 'blur(6px)' : 'blur(3px)',
         }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+        transition={
+          isAnimating
+            ? {
+                x: {
+                  duration: 3.2,
+                  times: [0, 0.35, 0.55, 0.72, 0.86, 1],
+                  ease: [0.08, 0.72, 0.22, 1],
+                },
+                scaleX: {
+                  duration: 3.2,
+                  times: [0, 0.35, 0.55, 0.72, 0.86, 1],
+                  ease: 'easeOut',
+                },
+                scaleY: {
+                  duration: 3.0,
+                  times: [0, 0.4, 0.6, 0.82, 1],
+                  ease: 'easeOut',
+                },
+                opacity: {
+                  duration: 3.2,
+                  times: [0, 0.35, 0.55, 0.72, 0.86, 1],
+                  ease: 'easeOut',
+                },
+                filter: { duration: 0.4 },
+              }
+            : { duration: 0.4, ease: 'easeOut' }
+        }
       />
     </div>
   );

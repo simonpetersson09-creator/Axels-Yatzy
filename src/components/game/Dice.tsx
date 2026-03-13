@@ -225,20 +225,20 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transition={
               isAnimating
                 ? {
-                    duration: 3.0,
-                    ease: [0.12, 0.82, 0.3, 1],
+                    duration: 3.8,
+                    ease: [0.1, 0.8, 0.25, 1],
                     x: { 
-                      duration: 2.6, 
+                      duration: 3.2, 
                       times: [0, 0.35, 0.55, 0.72, 0.86, 1], 
-                      ease: [0.1, 0.75, 0.25, 1],
+                      ease: [0.08, 0.72, 0.22, 1],
                     },
                     y: { 
-                      duration: 2.4, 
+                      duration: 3.0, 
                       times: [0, 0.4, 0.6, 0.82, 1], 
                       ease: 'easeOut',
                     },
                   }
-                : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }
+                : { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }
             }
             whileTap={canLock ? { scale: 0.93 } : {}}
           >

@@ -13,10 +13,10 @@ interface ScoreBoardProps {
 }
 
 const PLAYER_COLORS = [
-  { bg: 'bg-yatzy-player1-soft', activeBg: 'bg-yatzy-player1/15', border: 'border-yatzy-player1', text: 'text-yatzy-player1', dot: 'bg-yatzy-player1', label: 'P1' },
-  { bg: 'bg-yatzy-player2-soft', activeBg: 'bg-yatzy-player2/15', border: 'border-yatzy-player2', text: 'text-yatzy-player2', dot: 'bg-yatzy-player2', label: 'P2' },
-  { bg: 'bg-yatzy-player3-soft', activeBg: 'bg-yatzy-player3/15', border: 'border-yatzy-player3', text: 'text-yatzy-player3', dot: 'bg-yatzy-player3', label: 'P3' },
-  { bg: 'bg-yatzy-player4-soft', activeBg: 'bg-yatzy-player4/15', border: 'border-yatzy-player4', text: 'text-yatzy-player4', dot: 'bg-yatzy-player4', label: 'P4' },
+  { bg: 'bg-yatzy-player1-soft', activeBg: 'bg-yatzy-player1/20', border: 'border-yatzy-player1', text: 'text-yatzy-player1', dot: 'bg-yatzy-player1', label: 'P1' },
+  { bg: 'bg-yatzy-player2-soft', activeBg: 'bg-yatzy-player2/20', border: 'border-yatzy-player2', text: 'text-yatzy-player2', dot: 'bg-yatzy-player2', label: 'P2' },
+  { bg: 'bg-yatzy-player3-soft', activeBg: 'bg-yatzy-player3/20', border: 'border-yatzy-player3', text: 'text-yatzy-player3', dot: 'bg-yatzy-player3', label: 'P3' },
+  { bg: 'bg-yatzy-player4-soft', activeBg: 'bg-yatzy-player4/20', border: 'border-yatzy-player4', text: 'text-yatzy-player4', dot: 'bg-yatzy-player4', label: 'P4' },
 ];
 
 const SLOT_COUNT = 4;

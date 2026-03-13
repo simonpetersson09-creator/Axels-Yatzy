@@ -46,6 +46,11 @@ export default function GamePage() {
   const possibleScores = gameState.isRolling ? null : getPossibleScores();
   const canRoll = gameState.rollsLeft > 0;
 
+  const handleRoll = useCallback(() => {
+    playRollSound();
+    roll();
+  }, [roll]);
+
   const PLAYER_COLORS = [
     { ring: 'ring-yatzy-player1', bg: 'bg-yatzy-player1', glow: 'shadow-[0_0_8px_hsl(36_82%_52%/0.5)]' },
     { ring: 'ring-yatzy-player2', bg: 'bg-yatzy-player2', glow: 'shadow-[0_0_8px_hsl(210_70%_52%/0.5)]' },

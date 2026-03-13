@@ -68,25 +68,35 @@ export default function MultiplayerGamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        {/* Turn indicator */}
-        <div className="text-center space-y-1">
-          {gameCode && (
-            <p className="text-[9px] text-muted-foreground/50 font-mono tracking-wider mb-1">
-              Kod: {gameCode}
+        {/* Menu button + Turn indicator */}
+        <div className="flex items-start justify-between">
+          <button
+            onClick={() => navigate('/')}
+            className="p-2 rounded-xl hover:bg-secondary transition-colors"
+            title="Till menyn"
+          >
+            <Home className="w-4 h-4 text-muted-foreground" />
+          </button>
+          <div className="text-center space-y-1 flex-1">
+            {gameCode && (
+              <p className="text-[9px] text-muted-foreground/50 font-mono tracking-wider mb-1">
+                Kod: {gameCode}
+              </p>
+            )}
+            <p className="text-[9px] text-muted-foreground uppercase tracking-[0.25em] font-semibold">
+              {isMyTurn ? 'Din tur' : 'Tur'}
             </p>
-          )}
-          <p className="text-[9px] text-muted-foreground uppercase tracking-[0.25em] font-semibold">
-            {isMyTurn ? 'Din tur' : 'Tur'}
-          </p>
-          <p className="text-xl font-display font-bold text-gold-gradient leading-tight">
-            {currentPlayer.name}
-            {!isMyTurn && <span className="text-muted-foreground text-sm font-normal ml-2">spelar...</span>}
-          </p>
-          <p className="text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
-            {gameState.rollsLeft === 3
-              ? '\u00A0'
-              : `Kast ${3 - gameState.rollsLeft} / 3`}
-          </p>
+            <p className="text-xl font-display font-bold text-gold-gradient leading-tight">
+              {currentPlayer.name}
+              {!isMyTurn && <span className="text-muted-foreground text-sm font-normal ml-2">spelar...</span>}
+            </p>
+            <p className="text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
+              {gameState.rollsLeft === 3
+                ? '\u00A0'
+                : `Kast ${3 - gameState.rollsLeft} / 3`}
+            </p>
+          </div>
+          <div className="w-8" />
         </div>
 
         {/* Scoreboard + Dice */}

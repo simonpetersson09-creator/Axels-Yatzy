@@ -149,7 +149,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   const finalRotateY = spinRotation.rotateY + (isAnimating ? 0 : restingTilt.y);
 
   return (
-    <div className="flex flex-col items-center" style={{ width: size + 8, height: size + 14 }}>
+    <div className="flex flex-col items-center overflow-visible" style={{ width: size + 8, height: size + 14 }}>
       {/* Outer wrapper — glow & scale */}
       <motion.div
         style={{

@@ -29,10 +29,10 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-const SIZE = 74;
+const SIZE = 56;
 const HALF = SIZE / 2;
-const RADIUS = 14;
-const PIP_SIZE = 10.5;
+const RADIUS = 12;
+const PIP_SIZE = 8;
 const PIP_COLOR = '#2f3a40';
 const ANIM_DURATION = 0.8;
 
@@ -53,7 +53,7 @@ function DiceFace({ faceValue }: { faceValue: number }) {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gridTemplateRows: 'repeat(3, 1fr)',
-        padding: 11,
+        padding: 8,
       }}
     >
       {Array.from({ length: 9 }, (_, i) => (

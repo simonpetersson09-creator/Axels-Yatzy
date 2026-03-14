@@ -161,10 +161,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   const renderRow = (cat: typeof CATEGORIES[0], idx: number) => (
     <div key={cat.id} className="flex border-b border-yatzy-line/30">
       <div className={cn(
-        'flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
+        'flex-shrink-0 px-2 sm:px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className="text-[12.5px] font-medium text-yatzy-text/80 leading-none">{cat.name}</span>
+        <span className="text-[11px] sm:text-[12.5px] font-medium text-yatzy-text/80 leading-none">{cat.name}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </div>

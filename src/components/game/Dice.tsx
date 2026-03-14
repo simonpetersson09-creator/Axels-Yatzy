@@ -53,7 +53,7 @@ function DiceFace({ faceValue }: { faceValue: number }) {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gridTemplateRows: 'repeat(3, 1fr)',
-        padding: 11,
+        padding: 8,
       }}
     >
       {Array.from({ length: 9 }, (_, i) => (

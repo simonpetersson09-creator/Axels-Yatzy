@@ -215,8 +215,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           <motion.button
             key={rollKey}
             onClick={handleToggle}
-            className={cn('relative', canLock ? 'cursor-pointer' : 'cursor-default')}
-            style={{ width: SIZE, height: SIZE, transformStyle: 'preserve-3d' }}
+            className={cn('relative touch-manipulation', canLock ? 'cursor-pointer' : 'cursor-default')}
+            style={{ width: SIZE, height: SIZE, transformStyle: 'preserve-3d', WebkitTapHighlightColor: 'transparent' }}
             animate={{
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,

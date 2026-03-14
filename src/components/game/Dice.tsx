@@ -127,6 +127,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
     if (!canLock) return;
     setJustToggled(true);
     onToggleLock();
+    // Haptic feedback if available
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10);
+    }
     setTimeout(() => setJustToggled(false), 200);
   };
 
@@ -149,7 +153,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   ];
 
   return (
-    <div className="relative flex flex-col items-center overflow-visible" style={{ width: SIZE + 10, height: SIZE + 16 }}>
+    <div className="relative flex flex-col items-center overflow-visible touch-manipulation" style={{ width: SIZE + 10, height: SIZE + 16 }}>
       {/* Lock sparkles */}
       <AnimatePresence>
         {showSparkle && sparkles.map((s, i) => (
@@ -211,8 +215,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           <motion.button
             key={rollKey}
             onClick={handleToggle}
-            className={cn('relative', canLock ? 'cursor-pointer' : 'cursor-default')}
-            style={{ width: SIZE, height: SIZE, transformStyle: 'preserve-3d' }}
+            className={cn('relative touch-manipulation', canLock ? 'cursor-pointer' : 'cursor-default')}
+            style={{ width: SIZE, height: SIZE, transformStyle: 'preserve-3d', WebkitTapHighlightColor: 'transparent' }}
             animate={{
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,
@@ -227,7 +231,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
                   }
                 : { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
             }
-            whileTap={canLock ? { scale: 0.93 } : {}}
+            whileTap={canLock ? { scale: 1.05 } : {}}
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>

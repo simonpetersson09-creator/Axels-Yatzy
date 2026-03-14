@@ -20,9 +20,9 @@ const PLAYER_COLORS = [
 ];
 
 const SLOT_COUNT = 4;
-const COL_W = 'min-w-[56px] w-[56px]';
-const LABEL_W = 'w-[110px] min-w-[110px]';
-const ROW_H = 'h-[30px]';
+const COL_W = 'min-w-[48px] w-[48px] sm:min-w-[56px] sm:w-[56px]';
+const LABEL_W = 'w-[90px] min-w-[90px] sm:w-[110px] sm:min-w-[110px]';
+const ROW_H = 'h-[36px]';
 
 function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect }: {
   catId: string;
@@ -58,13 +58,16 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       onClick={onSelect}
       disabled={!canSelect}
       className={cn(
-        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center overflow-visible', ROW_H, COL_W,
+        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center overflow-visible rounded-[2px]', ROW_H, COL_W,
         bgClass,
-        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30 rounded-sm',
-        canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
+        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30',
+        canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 active:bg-destructive/10 cursor-pointer',
       )}
-      style={{ boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)' }}
-      whileTap={canSelect ? { scale: 0.96 } : {}}
+      style={{ 
+        boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+      whileTap={canSelect ? { scale: 0.94 } : {}}
     >
       <AnimatePresence>
         {justScored && sparkles.map((s, i) => (
@@ -158,10 +161,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   const renderRow = (cat: typeof CATEGORIES[0], idx: number) => (
     <div key={cat.id} className="flex border-b border-yatzy-line/30">
       <div className={cn(
-        'flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
+        'flex-shrink-0 px-2 sm:px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className="text-[12.5px] font-medium text-yatzy-text/80 leading-none">{cat.name}</span>
+        <span className="text-[11px] sm:text-[12.5px] font-medium text-yatzy-text/80 leading-none">{cat.name}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </div>
@@ -201,7 +204,6 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     <div
       className="bg-yatzy-bg border border-yatzy-line-strong/30 rounded-lg overflow-hidden"
       style={{
-        minWidth: 110 + SLOT_COUNT * 56,
         boxShadow: '0 1px 3px hsl(0 0% 0% / 0.08), 0 4px 16px hsl(0 0% 0% / 0.06)',
       }}
     >

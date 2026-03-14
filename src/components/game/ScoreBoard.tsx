@@ -204,7 +204,6 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     <div
       className="bg-yatzy-bg border border-yatzy-line-strong/30 rounded-lg overflow-hidden"
       style={{
-        minWidth: 110 + SLOT_COUNT * 56,
         boxShadow: '0 1px 3px hsl(0 0% 0% / 0.08), 0 4px 16px hsl(0 0% 0% / 0.06)',
       }}
     >

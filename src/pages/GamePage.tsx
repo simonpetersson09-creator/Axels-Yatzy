@@ -171,10 +171,11 @@ export default function GamePage() {
             />
 
             {/* Bottom: Home above, Roll button below */}
-            <div className="flex flex-col items-center gap-3 mt-6">
+            <div className="flex flex-col items-center gap-3 mt-4 sm:mt-6">
               <button
                 onClick={() => navigate('/')}
-                className="p-2.5 rounded-full bg-secondary/60 hover:bg-secondary transition-colors"
+                className="p-3 rounded-full bg-secondary/60 hover:bg-secondary active:bg-secondary/90 transition-colors touch-manipulation"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
                 title="Till menyn"
               >
                 <Home className="w-4 h-4 text-muted-foreground" />
@@ -183,11 +184,12 @@ export default function GamePage() {
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}
-                className={`w-[84px] h-[84px] rounded-full font-display font-bold text-[15px] tracking-wide transition-all flex items-center justify-center ${
+                className={`w-[84px] h-[84px] rounded-full font-display font-bold text-[15px] tracking-wide transition-all flex items-center justify-center touch-manipulation ${
                   canRoll && !gameState.isRolling
-                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_3px_12px_-2px_hsl(0_0%_0%/0.4)] active:scale-[0.97]'
+                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]'
                     : 'bg-secondary text-muted-foreground shadow-none'
                 }`}
+                style={{ WebkitTapHighlightColor: 'transparent' }}
                 animate={
                   canRoll && !gameState.isRolling
                     ? { scale: [1, 1.06, 1] }

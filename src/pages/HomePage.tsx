@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, clearActiveGame } from '@/lib/active-game';
-import { Play, Clock } from 'lucide-react';
+import { getAiName } from '@/lib/yatzy-ai';
+import { Play, Clock, Bot } from 'lucide-react';
 import { toast } from 'sonner';
 
 const item = {

@@ -22,7 +22,7 @@ const PLAYER_COLORS = [
 const SLOT_COUNT = 4;
 const COL_W = 'min-w-[56px] w-[56px]';
 const LABEL_W = 'w-[110px] min-w-[110px]';
-const ROW_H = 'h-[34px]';
+const ROW_H = 'h-[30px]';
 
 function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect }: {
   catId: string;
@@ -63,6 +63,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
         canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30 rounded-sm',
         canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
       )}
+      style={{ boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)' }}
       whileTap={canSelect ? { scale: 0.96 } : {}}
     >
       <AnimatePresence>
@@ -123,7 +124,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     const isCurrent = slotIdx === currentPlayerIndex;
     const player = players[slotIdx];
     if (!player) return 'bg-yatzy-bg/40';
-    return isCurrent ? 'bg-sky-100/60' : 'bg-yatzy-bg';
+    return isCurrent ? 'bg-sky-100/70' : 'bg-yatzy-bg';
   };
 
   const renderCell = (cat: typeof CATEGORIES[0], slotIdx: number) => {

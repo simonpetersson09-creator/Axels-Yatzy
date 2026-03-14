@@ -29,10 +29,10 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-const SIZE = 62;
+const SIZE = 74;
 const HALF = SIZE / 2;
-const RADIUS = 12;
-const PIP_SIZE = 9;
+const RADIUS = 14;
+const PIP_SIZE = 10.5;
 const PIP_COLOR = '#2f3a40';
 const ANIM_DURATION = 0.8;
 

@@ -127,6 +127,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
     if (!canLock) return;
     setJustToggled(true);
     onToggleLock();
+    // Haptic feedback if available
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10);
+    }
     setTimeout(() => setJustToggled(false), 200);
   };
 

@@ -136,6 +136,7 @@ export function useYatzyGame() {
     startGame,
     roll,
     toggleLock,
+    setLocks,
     getPossibleScores,
     selectCategory,
     resetGame,

@@ -29,61 +29,47 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-function DiceFace({ faceValue, size }: { faceValue: number; size: number }) {
+const SIZE = 60;
+const RADIUS = 12;
+const PIP_SIZE = 9;
+const PIP_COLOR = '#2f3a40';
+const ANIM_DURATION = 0.8;
+
+function DiceFace({ faceValue }: { faceValue: number }) {
   const positions = pipGridPositions[faceValue] || [];
-  const pipSize = Math.round(size * 0.14);
-  const padding = Math.round(size * 0.17);
-  const radius = size * 0.20;
+  const pad = 12;
 
   return (
     <div
       className="absolute"
       style={{
-        width: size,
-        height: size,
-        borderRadius: radius,
-        // Layered background: subtle gradient for 3D lighting from upper-left
-        background: `
-          linear-gradient(135deg, 
-            rgba(255,255,255,1) 0%, 
-            rgba(248,248,250,1) 40%, 
-            rgba(240,240,244,1) 100%
-          )
-        `,
-        // Inner shadow for depth + outer subtle highlight
+        width: SIZE,
+        height: SIZE,
+        borderRadius: RADIUS,
+        background: 'linear-gradient(180deg, #ffffff 0%, #f1f3f4 100%)',
+        // Subtle top-left highlight + soft bottom shadow for 3D feel
         boxShadow: `
-          inset -2px -3px 6px rgba(0,0,0,0.06),
-          inset 2px 2px 4px rgba(255,255,255,0.9),
-          inset 0 -1px 3px rgba(0,0,0,0.04)
+          inset 1px 1px 2px rgba(255,255,255,0.9),
+          inset -1px -1px 2px rgba(0,0,0,0.03)
         `,
         backfaceVisibility: 'hidden',
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gridTemplateRows: 'repeat(3, 1fr)',
-        padding,
-        border: '1.5px solid rgba(230,230,235,0.8)',
+        padding: pad,
       }}
     >
       {Array.from({ length: 9 }, (_, i) => {
-        const cellIndex = i + 1;
-        const hasPip = positions.includes(cellIndex);
+        const hasPip = positions.includes(i + 1);
         return (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div key={i} className="flex items-center justify-center">
             {hasPip && (
               <div
                 style={{
-                  width: pipSize,
-                  height: pipSize,
+                  width: PIP_SIZE,
+                  height: PIP_SIZE,
                   borderRadius: '50%',
-                  background: `radial-gradient(circle at 38% 32%, 
-                      hsl(0 0% 30%) 0%, 
-                      hsl(0 0% 12%) 60%, 
-                      hsl(0 0% 6%) 100%)`,
-                  boxShadow: `
-                    inset 0 1.5px 2.5px rgba(0,0,0,0.45), 
-                    0 0.5px 1px rgba(255,255,255,0.15),
-                    0 1px 2px rgba(0,0,0,0.12)
-                  `,
+                  backgroundColor: PIP_COLOR,
                 }}
               />
             )}
@@ -94,36 +80,28 @@ function DiceFace({ faceValue, size }: { faceValue: number; size: number }) {
   );
 }
 
-const ANIM_DURATION = 0.75;
-
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
-  const size = 64;
-  const half = size / 2;
-  const radius = size * 0.20;
+  const half = SIZE / 2;
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState({ rotateX: 0, rotateY: 0 });
   const [justToggled, setJustToggled] = useState(false);
   const [rollKey, setRollKey] = useState(0);
 
-  // Random variation per roll for organic feel
-  const rollVariation = useMemo(() => ({
-    extraSpinsX: Math.floor(Math.random() * 2) + 2,  // 2-3 full rotations
-    extraSpinsY: Math.floor(Math.random() * 2) + 2,
-    durationOffset: (Math.random() - 0.5) * 0.12,    // ±60ms variation
-    bounceHeight: -6 - Math.random() * 6,             // -6 to -12px
-    bounceSettle: 1 + Math.random() * 2,              // 1-3px settle
-    shakeX: (Math.random() - 0.5) * 4,                // slight horizontal shake
+  // Variation per roll
+  const rollVar = useMemo(() => ({
+    spinsX: (Math.floor(Math.random() * 2) + 2) * 360,
+    spinsY: (Math.floor(Math.random() * 2) + 2) * 360,
+    dtOffset: (Math.random() - 0.5) * 0.1,
+    bounceY: -6 - Math.random() * 5,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [rolling, value]);
 
+  const animDur = ANIM_DURATION + rollVar.dtOffset;
+
   const targetRotation = useMemo(() => {
     const base = valueToRotation[value];
-    const extraX = rollVariation.extraSpinsX * 360;
-    const extraY = rollVariation.extraSpinsY * 360;
-    return { rotateX: base.rotateX + extraX, rotateY: base.rotateY + extraY };
-  }, [value, rollVariation]);
-
-  const animDuration = ANIM_DURATION + rollVariation.durationOffset;
+    return { rotateX: base.rotateX + rollVar.spinsX, rotateY: base.rotateY + rollVar.spinsY };
+  }, [value, rollVar]);
 
   useEffect(() => {
     if (rolling && !locked) {
@@ -134,17 +112,16 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
         setIsAnimating(false);
         setSpinRotation(valueToRotation[value]);
         playLandSound();
-      }, animDuration * 1000);
+      }, animDur * 1000);
       return () => clearTimeout(timer);
     } else if (!rolling) {
       setSpinRotation(valueToRotation[value]);
     }
-  }, [rolling, value, locked, targetRotation, animDuration]);
+  }, [rolling, value, locked, targetRotation, animDur]);
 
-  // Sparkle on lock
+  // Lock sparkle
   const [showSparkle, setShowSparkle] = useState(false);
   const prevLockedRef = useRef(locked);
-
   useEffect(() => {
     if (locked && !prevLockedRef.current) {
       setShowSparkle(true);
@@ -161,17 +138,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
     setTimeout(() => setJustToggled(false), 200);
   };
 
-  const sparkles = useMemo(() => 
+  const sparkles = useMemo(() =>
     Array.from({ length: 8 }, (_, i) => {
       const angle = (i / 8) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
-      const dist = 28 + Math.random() * 16;
-      return {
-        x: Math.cos(angle) * dist,
-        y: Math.sin(angle) * dist,
-        size: 3 + Math.random() * 3,
-        delay: Math.random() * 0.1,
-      };
-    }), 
+      const dist = 26 + Math.random() * 14;
+      return { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, size: 3 + Math.random() * 2.5, delay: Math.random() * 0.1 };
+    }),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [rollKey, locked]);
 
@@ -184,12 +156,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
     { faceValue: 4, transform: `rotateX(90deg) translateZ(${half}px)` },
   ];
 
-  const bH = rollVariation.bounceHeight;
-  const bS = rollVariation.bounceSettle;
-  const shX = rollVariation.shakeX;
+  const bY = rollVar.bounceY;
 
   return (
-    <div className="relative flex flex-col items-center overflow-visible" style={{ width: size + 8, height: size + 16 }}>
+    <div className="relative flex flex-col items-center overflow-visible" style={{ width: SIZE + 8, height: SIZE + 14 }}>
       {/* Sparkle particles on lock */}
       <AnimatePresence>
         {showSparkle && sparkles.map((s, i) => (
@@ -199,7 +169,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             style={{
               width: s.size, height: s.size, borderRadius: '50%',
               background: 'radial-gradient(circle, hsl(42 90% 70%), hsl(36 82% 52%))',
-              boxShadow: '0 0 6px hsl(42 90% 60%), 0 0 12px hsl(36 82% 52% / 0.4)',
+              boxShadow: '0 0 6px hsl(42 90% 60%)',
               left: '50%', top: '50%',
               marginLeft: -s.size / 2, marginTop: -s.size / 2, zIndex: 50,
             }}
@@ -217,10 +187,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           <motion.div
             className="absolute pointer-events-none"
             style={{
-              width: size + 12, height: size + 12, borderRadius: radius + 6,
+              width: SIZE + 10, height: SIZE + 10, borderRadius: RADIUS + 5,
               border: '2px solid hsl(36 82% 52%)',
-              left: '50%', top: size / 2,
-              marginLeft: -(size + 12) / 2, marginTop: -(size + 12) / 2, zIndex: 49,
+              left: '50%', top: SIZE / 2,
+              marginLeft: -(SIZE + 10) / 2, marginTop: -(SIZE + 10) / 2, zIndex: 49,
             }}
             initial={{ scale: 0.8, opacity: 0.8 }}
             animate={{ scale: 1.3, opacity: 0 }}
@@ -230,60 +200,38 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
         )}
       </AnimatePresence>
 
-      {/* Outer glow wrapper */}
+      {/* Outer wrapper with shadow and locked state */}
       <motion.div
         style={{
-          width: size, height: size, borderRadius: radius,
+          width: SIZE, height: SIZE, borderRadius: RADIUS,
           boxShadow: locked
-            ? `0 0 0 2.5px hsl(36 72% 50%), 
-               0 0 18px rgba(245,185,66,0.35), 
-               0 0 36px rgba(245,185,66,0.08), 
-               0 4px 16px rgba(0,0,0,0.12),
-               0 8px 24px rgba(0,0,0,0.08)`
-            : `0 3px 8px rgba(0,0,0,0.10), 
-               0 1px 3px rgba(0,0,0,0.08), 
-               0 8px 20px rgba(0,0,0,0.08),
-               0 1px 0 rgba(255,255,255,0.4)`,
+            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 16px rgba(245,185,66,0.3), 0 4px 10px rgba(0,0,0,0.15)'
+            : '0 4px 10px rgba(0,0,0,0.15)',
           transition: 'box-shadow 0.3s ease, opacity 0.3s ease',
-          opacity: canLock && !locked ? 0.45 : 1,
+          opacity: canLock && !locked ? 0.5 : 1,
         }}
         animate={{
-          scale: locked ? 1.12 : justToggled ? [1, 0.92, 1.06, 1] : 1,
-          y: locked ? -2 : 0, // Locked dice float slightly
+          scale: locked ? 1.1 : justToggled ? [1, 0.93, 1.05, 1] : 1,
         }}
-        transition={
-          justToggled
-            ? { duration: 0.15, ease: 'easeOut' }
-            : { duration: 0.25, ease: 'easeOut' }
-        }
+        transition={justToggled ? { duration: 0.15, ease: 'easeOut' } : { duration: 0.25, ease: 'easeOut' }}
       >
-        <div style={{ perspective: 250, width: size, height: size }}>
+        <div style={{ perspective: 240, width: SIZE, height: SIZE }}>
           <motion.button
             key={rollKey}
             onClick={handleToggle}
             className={cn('relative', canLock ? 'cursor-pointer' : 'cursor-default')}
-            style={{ width: size, height: size, transformStyle: 'preserve-3d' }}
+            style={{ width: SIZE, height: SIZE, transformStyle: 'preserve-3d' }}
             animate={{
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,
-              y: isAnimating ? [0, bH, bS, -1, 0] : 0,
-              x: isAnimating ? [0, shX, -shX * 0.5, shX * 0.2, 0] : 0,
+              y: isAnimating ? [0, bY, 2, -1, 0] : 0,
             }}
             transition={
               isAnimating
                 ? {
-                    rotateX: { duration: animDuration, ease: [0.15, 0.85, 0.25, 1] },
-                    rotateY: { duration: animDuration, ease: [0.15, 0.85, 0.25, 1] },
-                    y: {
-                      duration: animDuration,
-                      times: [0, 0.55, 0.72, 0.88, 1],
-                      ease: 'easeOut',
-                    },
-                    x: {
-                      duration: animDuration,
-                      times: [0, 0.3, 0.6, 0.85, 1],
-                      ease: 'easeOut',
-                    },
+                    rotateX: { duration: animDur, ease: [0.15, 0.85, 0.25, 1] },
+                    rotateY: { duration: animDur, ease: [0.15, 0.85, 0.25, 1] },
+                    y: { duration: animDur, times: [0, 0.55, 0.75, 0.9, 1], ease: 'easeOut' },
                   }
                 : { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
             }
@@ -291,7 +239,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           >
             {faces.map((face) => (
               <div key={face.faceValue} className="absolute inset-0" style={{ transform: face.transform, transformStyle: 'preserve-3d' }}>
-                <DiceFace faceValue={face.faceValue} size={size} />
+                <DiceFace faceValue={face.faceValue} />
               </div>
             ))}
           </motion.button>
@@ -301,25 +249,18 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       {/* Ground shadow */}
       <motion.div
         style={{
-          width: size * 0.55, height: 6, marginTop: 5, borderRadius: '50%',
+          width: SIZE * 0.55, height: 5, marginTop: 4, borderRadius: '50%',
           background: locked
-            ? 'radial-gradient(ellipse, rgba(245, 185, 66, 0.3), transparent)'
+            ? 'radial-gradient(ellipse, rgba(245,185,66,0.3), transparent)'
             : 'radial-gradient(ellipse, rgba(0,0,0,0.25), transparent)',
         }}
         animate={{
-          scaleX: isAnimating ? [1, 0.6, 1.2, 0.95, 1] : locked ? 1.15 : 1,
-          scaleY: isAnimating ? [1, 0.5, 1.15, 0.95, 1] : 1,
-          opacity: isAnimating ? [0.5, 0.15, 0.55, 0.45, 0.5] : locked ? 0.4 : 0.5,
-          filter: isAnimating ? 'blur(5px)' : 'blur(3px)',
+          scaleX: isAnimating ? [1, 0.6, 1.15, 0.95, 1] : locked ? 1.1 : 1,
+          opacity: isAnimating ? [0.5, 0.15, 0.55, 0.45, 0.5] : 0.5,
         }}
         transition={
           isAnimating
-            ? {
-                scaleX: { duration: animDuration, times: [0, 0.55, 0.72, 0.88, 1], ease: 'easeOut' },
-                scaleY: { duration: animDuration, times: [0, 0.55, 0.72, 0.88, 1], ease: 'easeOut' },
-                opacity: { duration: animDuration, times: [0, 0.55, 0.72, 0.88, 1], ease: 'easeOut' },
-                filter: { duration: 0.3 },
-              }
+            ? { duration: animDur, times: [0, 0.55, 0.75, 0.9, 1], ease: 'easeOut' }
             : { duration: 0.3, ease: 'easeOut' }
         }
       />

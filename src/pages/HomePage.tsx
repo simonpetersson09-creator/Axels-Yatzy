@@ -155,24 +155,20 @@ export default function HomePage() {
                   Välj antal spelare
                 </p>
                 <div className="flex gap-2">
-                  {[2, 3, 4].map(count => (
+                  {[1, 2, 3].map(opponents => (
                     <motion.button
-                      key={count}
+                      key={opponents}
                       onClick={() => {
                         const humanName = 'Du';
-                        const aiNames = Array.from({ length: count - 1 }, (_, i) => getAiName(i));
+                        const aiNames = Array.from({ length: opponents }, (_, i) => getAiName(i));
                         const playerNames = [humanName, ...aiNames];
-                        const aiPlayers = Array.from({ length: count - 1 }, (_, i) => i + 1);
+                        const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
                         navigate('/game', { state: { playerNames, aiPlayers } });
                       }}
-                      className="flex-1 py-3 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-base transition-all hover:bg-secondary/80 flex flex-col items-center gap-1"
+                      className="flex-1 py-3 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-base transition-all hover:bg-secondary/80 flex items-center justify-center"
                       whileTap={{ scale: 0.95 }}
                     >
-                      <span>{count}</span>
-                      <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground font-normal">
-                        <Bot className="w-3 h-3" />
-                        {count - 1} AI
-                      </span>
+                      {opponents} {opponents === 1 ? 'motståndare' : 'motståndare'}
                     </motion.button>
                   ))}
                 </div>

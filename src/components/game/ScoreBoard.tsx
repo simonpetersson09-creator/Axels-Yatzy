@@ -22,7 +22,7 @@ const PLAYER_COLORS = [
 const SLOT_COUNT = 4;
 const COL_W = 'min-w-[56px] w-[56px]';
 const LABEL_W = 'w-[110px] min-w-[110px]';
-const ROW_H = 'h-[34px]';
+const ROW_H = 'h-[30px]';
 
 function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect }: {
   catId: string;

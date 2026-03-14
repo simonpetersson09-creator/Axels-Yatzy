@@ -60,6 +60,24 @@ export default function GamePage() {
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
 
+  const handleForfeit = useCallback(() => {
+    if (!gameState) return;
+    clearActiveGame();
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    const results = gameState.players.map(p => ({
+      name: p.name,
+      score: getTotalScore(p.scores),
+      scores: p.scores,
+    }));
+    navigate('/results', {
+      state: {
+        results,
+        forfeit: true,
+        forfeitPlayerName: currentPlayer.name,
+      },
+    });
+  }, [gameState, navigate]);
+
   const handleRoll = useCallback(() => {
     playRollSound();
     roll();

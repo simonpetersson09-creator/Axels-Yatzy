@@ -60,7 +60,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       className={cn(
         'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center overflow-visible', ROW_H, COL_W,
         bgClass,
-        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight hover:brightness-95 cursor-pointer ring-1 ring-inset ring-game-gold-dark/25',
+        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30 rounded-sm',
         canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
       )}
       whileTap={canSelect ? { scale: 0.96 } : {}}

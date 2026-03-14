@@ -58,13 +58,16 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       onClick={onSelect}
       disabled={!canSelect}
       className={cn(
-        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center overflow-visible', ROW_H, COL_W,
+        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center overflow-visible rounded-[2px]', ROW_H, COL_W,
         bgClass,
-        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30 rounded-sm',
-        canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
+        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30',
+        canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 active:bg-destructive/10 cursor-pointer',
       )}
-      style={{ boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)' }}
-      whileTap={canSelect ? { scale: 0.96 } : {}}
+      style={{ 
+        boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+      whileTap={canSelect ? { scale: 0.94 } : {}}
     >
       <AnimatePresence>
         {justScored && sparkles.map((s, i) => (

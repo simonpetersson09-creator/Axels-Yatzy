@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -16,6 +16,7 @@ export default function GamePage() {
   const { gameState, startGame, roll, toggleLock, getPossibleScores, selectCategory } = useYatzyGame();
 
   const playerNames: string[] = location.state?.playerNames || ['Spelare 1'];
+  const autoRollRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!gameState) {

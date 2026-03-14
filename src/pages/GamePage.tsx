@@ -183,11 +183,21 @@ export default function GamePage() {
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}
-                className={`w-[76px] h-[76px] rounded-full font-display font-bold text-[14px] tracking-wide transition-all flex items-center justify-center ${
+                className={`w-[84px] h-[84px] rounded-full font-display font-bold text-[15px] tracking-wide transition-all flex items-center justify-center ${
                   canRoll && !gameState.isRolling
-                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_28px_-4px_hsl(42_88%_52%/0.35),0_2px_8px_-2px_hsl(0_0%_0%/0.35)] active:scale-[0.97]'
+                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_3px_12px_-2px_hsl(0_0%_0%/0.4)] active:scale-[0.97]'
                     : 'bg-secondary text-muted-foreground shadow-none'
                 }`}
+                animate={
+                  canRoll && !gameState.isRolling
+                    ? { scale: [1, 1.06, 1] }
+                    : {}
+                }
+                transition={
+                  canRoll && !gameState.isRolling
+                    ? { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }
+                    : {}
+                }
                 whileTap={canRoll ? { scale: 0.93 } : {}}
               >
                 {gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}

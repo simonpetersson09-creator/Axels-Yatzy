@@ -22,6 +22,7 @@ export default function GamePage() {
     if (!gameState) {
       startGame(playerNames);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

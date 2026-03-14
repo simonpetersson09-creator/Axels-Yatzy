@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GameState, Player, CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, rollDice } from '@/lib/yatzy-scoring';
+import { setActiveGame, updateLastRollTime, saveGameState, loadGameState, clearActiveGame } from '@/lib/active-game';
 
 function createPlayer(name: string, index: number): Player {
   return {
@@ -11,11 +12,22 @@ function createPlayer(name: string, index: number): Player {
 }
 
 export function useYatzyGame() {
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameState, setGameState] = useState<GameState | null>(() => {
+    // Try to restore saved game on mount
+    return loadGameState<GameState>();
+  });
+
+  // Persist game state on every change
+  useEffect(() => {
+    if (gameState && !gameState.gameOver) {
+      saveGameState(gameState);
+      setActiveGame({ type: 'local', timestamp: Date.now() });
+    }
+  }, [gameState]);
 
   const startGame = useCallback((playerNames: string[]) => {
     const players = playerNames.map((name, i) => createPlayer(name, i));
-    setGameState({
+    const state: GameState = {
       players,
       currentPlayerIndex: 0,
       dice: [1, 1, 1, 1, 1],
@@ -24,7 +36,8 @@ export function useYatzyGame() {
       isRolling: false,
       gameOver: false,
       round: 1,
-    });
+    };
+    setGameState(state);
   }, []);
 
   const roll = useCallback(() => {
@@ -39,6 +52,8 @@ export function useYatzyGame() {
         lockedDice: prev.rollsLeft === 3 ? [false, false, false, false, false] : prev.lockedDice,
       };
     });
+    // Update last roll time for 48h expiry
+    updateLastRollTime();
     setTimeout(() => {
       setGameState(prev => prev ? { ...prev, isRolling: false } : prev);
     }, 700);
@@ -83,9 +98,12 @@ export function useYatzyGame() {
       let gameOver = false;
 
       if (allFilled && nextPlayerIndex <= prev.currentPlayerIndex) {
-        // Check if all players have filled all categories
         const allDone = updatedPlayers.every(p => CATEGORIES.every(cat => p.scores[cat.id] !== undefined && p.scores[cat.id] !== null));
         if (allDone) gameOver = true;
+      }
+
+      if (gameOver) {
+        clearActiveGame();
       }
 
       return {
@@ -102,6 +120,7 @@ export function useYatzyGame() {
   }, []);
 
   const resetGame = useCallback(() => {
+    clearActiveGame();
     setGameState(null);
   }, []);
 

@@ -152,24 +152,24 @@ export default function HomePage() {
 
         {/* Secondary Actions */}
         <motion.div
-          className="flex gap-6"
+          className="w-full space-y-3"
           variants={item}
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
-          <button
+          <motion.button
             onClick={() => navigate('/stats')}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 active:scale-[0.97] transition-all"
+            className="w-full py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-2"
+            whileTap={{ scale: 0.97 }}
           >
-            <span className="text-base">📊</span>
-            <span>Statistik</span>
-          </button>
-          <button
+            📊 Statistik
+          </motion.button>
+          <motion.button
             onClick={() => navigate('/settings')}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 active:scale-[0.97] transition-all"
+            className="w-full py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-2"
+            whileTap={{ scale: 0.97 }}
           >
-            <span className="text-base">⚙️</span>
-            <span>Inställningar</span>
-          </button>
+            ⚙️ Inställningar
+          </motion.button>
         </motion.div>
       </motion.div>
     </div>

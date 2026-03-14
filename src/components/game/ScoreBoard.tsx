@@ -210,8 +210,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Player columns header */}
-      <div className={cn('flex border-b-2 border-yatzy-line-strong/40')}>
-        <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 bg-yatzy-section-header px-3 flex items-center', LABEL_W, ROW_H)} />
+      <div className={cn('flex border-b-2 border-yatzy-line-strong/40 py-2 bg-yatzy-section-header/50')}>
+        <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 px-3 flex items-center', LABEL_W, ROW_H)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];
           const color = PLAYER_COLORS[i];
@@ -220,32 +220,49 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
             <div
               key={i}
               className={cn(
-                'text-center border-r border-yatzy-line/40 last:border-r-0 flex items-center justify-center relative',
-                COL_W, ROW_H,
-                player ? (isCurrent ? color.activeBg : color.bg) : 'bg-yatzy-section-header/30',
+                'flex items-center justify-center relative px-1',
+                COL_W,
               )}
             >
               {player ? (
-                <div className="flex items-center gap-1.5">
-                  <div className={cn(
-                    'w-2.5 h-2.5 rounded-full',
-                    color.dot,
-                    isCurrent && 'ring-[1.5px] ring-offset-1 ring-offset-yatzy-bg',
-                    isCurrent && color.border.replace('border-', 'ring-'),
-                  )} />
+                <motion.div 
+                  className={cn(
+                    'flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition-all duration-300',
+                    isCurrent 
+                      ? `${color.activeBg} ${color.glow} ring-2 ring-offset-1 ring-offset-yatzy-bg ${color.border}` 
+                      : `${color.bg} ring-1 ring-yatzy-line/20`
+                  )}
+                  animate={isCurrent ? { scale: [1, 1.02, 1] } : {}}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  {/* Active indicator dot */}
+                  <motion.div 
+                    className={cn(
+                      'w-2 h-2 rounded-full',
+                      color.dot,
+                    )}
+                    animate={isCurrent ? { scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] } : {}}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  />
                   <span className={cn(
                     'text-[11px] font-bold leading-none',
-                    isCurrent ? 'text-yatzy-text' : 'text-yatzy-text/35'
+                    isCurrent ? color.text : 'text-yatzy-text/50'
                   )}>
                     {color.label}
                   </span>
-                </div>
+                  {/* Current turn arrow */}
+                  {isCurrent && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -2 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className={cn("text-[10px]", color.text)}
+                    >
+                      ▼
+                    </motion.span>
+                  )}
+                </motion.div>
               ) : (
-                <span className="text-[10px] text-yatzy-text/10">–</span>
-              )}
-              {/* Active indicator bar */}
-              {player && isCurrent && (
-                <div className={cn('absolute bottom-0 left-1 right-1 h-[2.5px] rounded-t-full', color.dot)} />
+                <div className="w-10 h-6 rounded-full bg-yatzy-line/10 ring-1 ring-yatzy-line/20" />
               )}
             </div>
           );

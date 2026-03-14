@@ -132,14 +132,53 @@ export default function HomePage() {
             </motion.div>
           )}
           <motion.button
-            onClick={() => navigate('/setup')}
-            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow"
+            onClick={() => setShowQuickMatch(true)}
+            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
             whileTap={{ scale: 0.97 }}
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
             🎲 Snabb match
           </motion.button>
+
+          {/* Quick match player count picker */}
+          <AnimatePresence>
+            {showQuickMatch && (
+              <motion.div
+                className="space-y-3"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                <p className="text-center text-sm text-muted-foreground font-medium">
+                  Välj antal spelare
+                </p>
+                <div className="flex gap-2">
+                  {[2, 3, 4].map(count => (
+                    <motion.button
+                      key={count}
+                      onClick={() => {
+                        const humanName = 'Du';
+                        const aiNames = Array.from({ length: count - 1 }, (_, i) => getAiName(i));
+                        const playerNames = [humanName, ...aiNames];
+                        const aiPlayers = Array.from({ length: count - 1 }, (_, i) => i + 1);
+                        navigate('/game', { state: { playerNames, aiPlayers } });
+                      }}
+                      className="flex-1 py-3 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-base transition-all hover:bg-secondary/80 flex flex-col items-center gap-1"
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span>{count}</span>
+                      <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground font-normal">
+                        <Bot className="w-3 h-3" />
+                        {count - 1} AI
+                      </span>
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <motion.button
             onClick={() => navigate('/multiplayer')}

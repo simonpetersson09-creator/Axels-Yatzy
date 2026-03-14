@@ -15,6 +15,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [activeGame, setActiveGameState] = useState(() => getActiveGame());
   const [timeLeft, setTimeLeft] = useState('');
+  const [showQuickMatch, setShowQuickMatch] = useState(false);
 
   // Check expiry and update countdown
   useEffect(() => {

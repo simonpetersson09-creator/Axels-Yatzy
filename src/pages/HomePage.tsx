@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, clearActiveGame } from '@/lib/active-game';
 import { getAiName } from '@/lib/yatzy-ai';
-import { Play, Clock, Bot } from 'lucide-react';
+import { Play, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
 const item = {

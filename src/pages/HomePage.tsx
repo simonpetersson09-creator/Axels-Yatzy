@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getActiveGame } from '@/lib/active-game';
-import { Play } from 'lucide-react';
+import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, clearActiveGame } from '@/lib/active-game';
+import { Play, Clock } from 'lucide-react';
+import { toast } from 'sonner';
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -10,10 +12,41 @@ const item = {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const activeGame = getActiveGame();
+  const [activeGame, setActiveGameState] = useState(() => getActiveGame());
+  const [timeLeft, setTimeLeft] = useState('');
+
+  // Check expiry and update countdown
+  useEffect(() => {
+    if (!activeGame) return;
+
+    const update = () => {
+      const game = getActiveGame();
+      if (!game) {
+        setActiveGameState(null);
+        return;
+      }
+      if (isGameExpired(game)) {
+        clearActiveGame();
+        setActiveGameState(null);
+        toast.error('Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.');
+        return;
+      }
+      setTimeLeft(formatTimeRemaining(getTimeRemaining(game)));
+    };
+
+    update();
+    const interval = setInterval(update, 30_000); // update every 30s
+    return () => clearInterval(interval);
+  }, [activeGame]);
 
   const resumeGame = () => {
     if (!activeGame) return;
+    if (isGameExpired(activeGame)) {
+      clearActiveGame();
+      setActiveGameState(null);
+      toast.error('Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.');
+      return;
+    }
     if (activeGame.type === 'local') {
       navigate('/game');
     } else if (activeGame.type === 'multiplayer' && activeGame.gameId) {
@@ -77,16 +110,24 @@ export default function HomePage() {
         {/* Main Actions */}
         <div className="w-full space-y-3">
           {activeGame && (
-            <motion.button
-              onClick={resumeGame}
-              className="w-full py-4 rounded-2xl bg-game-success text-white font-display font-bold text-lg shadow-lg flex items-center justify-center gap-2 active:shadow-md transition-shadow"
-              whileTap={{ scale: 0.97 }}
-              variants={item}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-            >
-              <Play className="w-5 h-5" />
-              Fortsätt pågående match
-            </motion.button>
+            <motion.div variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
+              <motion.button
+                onClick={resumeGame}
+                className="w-full py-4 rounded-2xl bg-game-success text-white font-display font-bold text-lg shadow-lg flex items-center justify-center gap-2 active:shadow-md transition-shadow"
+                whileTap={{ scale: 0.97 }}
+              >
+                <Play className="w-5 h-5" />
+                Fortsätt pågående match
+              </motion.button>
+              {timeLeft && (
+                <div className="flex items-center justify-center gap-1.5 mt-2">
+                  <Clock className="w-3 h-3 text-muted-foreground/60" />
+                  <span className="text-[11px] text-muted-foreground/60 tabular-nums">
+                    Pågående match – {timeLeft} kvar
+                  </span>
+                </div>
+              )}
+            </motion.div>
           )}
           <motion.button
             onClick={() => navigate('/setup')}

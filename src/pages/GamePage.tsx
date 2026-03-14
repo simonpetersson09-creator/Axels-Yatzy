@@ -42,6 +42,20 @@ export default function GamePage() {
     }
   }, [gameState?.gameOver]);
 
+  // Auto-roll first throw when turn changes
+  useEffect(() => {
+    if (!gameState || gameState.gameOver || gameState.isRolling) return;
+    if (gameState.rollsLeft !== 3) return;
+    const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
+    if (autoRollRef.current === key) return;
+    autoRollRef.current = key;
+    const t = setTimeout(() => {
+      playRollSound();
+      roll();
+    }, 350);
+    return () => clearTimeout(t);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, roll]);
+
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
 
   const handleRoll = useCallback(() => {

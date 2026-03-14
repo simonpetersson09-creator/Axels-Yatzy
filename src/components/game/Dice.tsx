@@ -153,7 +153,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   ];
 
   return (
-    <div className="relative flex flex-col items-center overflow-visible" style={{ width: SIZE + 10, height: SIZE + 16 }}>
+    <div className="relative flex flex-col items-center overflow-visible touch-manipulation" style={{ width: SIZE + 10, height: SIZE + 16 }}>
       {/* Lock sparkles */}
       <AnimatePresence>
         {showSparkle && sparkles.map((s, i) => (

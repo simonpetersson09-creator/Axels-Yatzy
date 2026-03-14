@@ -8,16 +8,20 @@ import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { playRollSound } from '@/lib/dice-sounds';
-import { motion } from 'framer-motion';
-import { Home } from 'lucide-react';
+import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Home, Bot } from 'lucide-react';
 
 export default function GamePage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { gameState, startGame, roll, toggleLock, getPossibleScores, selectCategory } = useYatzyGame();
+  const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame();
 
   const playerNames: string[] = location.state?.playerNames || ['Spelare 1'];
+  const aiPlayers: number[] = location.state?.aiPlayers || []; // indices of AI players
   const autoRollRef = useRef<string | null>(null);
+  const aiTurnRef = useRef<string | null>(null);
+  const [aiThinking, setAiThinking] = useState(false);
 
   useEffect(() => {
     if (!gameState) {
@@ -58,12 +62,51 @@ export default function GamePage() {
     return () => clearTimeout(t);
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, roll]);
 
+  // AI auto-play
+  useEffect(() => {
+    if (!gameState || gameState.gameOver || gameState.isRolling) return;
+    const isAi = aiPlayers.includes(gameState.currentPlayerIndex);
+    if (!isAi) {
+      setAiThinking(false);
+      return;
+    }
+    if (gameState.rollsLeft === 3) return; // wait for auto-roll first
+
+    const aiKey = `${gameState.currentPlayerIndex}-${gameState.round}-${gameState.rollsLeft}`;
+    if (aiTurnRef.current === aiKey) return;
+    aiTurnRef.current = aiKey;
+
+    setAiThinking(true);
+    const delay = 600 + Math.random() * 400; // 600-1000ms
+
+    const t = setTimeout(() => {
+      if (gameState.rollsLeft === 0) {
+        // Pick category
+        const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+        const cat = aiPickCategory(gameState.dice, currentPlayer.scores);
+        selectCategory(cat);
+        setAiThinking(false);
+      } else {
+        // Decide locks then roll
+        const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+        const locks = aiDecideLocks(gameState.dice, currentPlayer.scores);
+        setLocks(locks);
+        // Small delay then roll
+        setTimeout(() => {
+          playRollSound();
+          roll();
+        }, 300);
+      }
+    }, delay);
+
+    return () => clearTimeout(t);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, gameState, roll, selectCategory, setLocks]);
+
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
 
   const handleForfeit = useCallback(() => {
     if (!gameState) return;
     clearActiveGame();
-    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
     const results = gameState.players.map(p => ({
       name: p.name,
       score: getTotalScore(p.scores),
@@ -73,7 +116,7 @@ export default function GamePage() {
       state: {
         results,
         forfeit: true,
-        forfeitPlayerName: currentPlayer.name,
+        forfeitPlayerName: gameState.players[0].name, // human is always player 0
       },
     });
   }, [gameState, navigate]);
@@ -84,7 +127,6 @@ export default function GamePage() {
   }, [roll]);
 
   const handleSelectCategory = useCallback((categoryId: string) => {
-    // Check if selecting yatzy with a score of 50
     if (categoryId === 'yatzy' && gameState) {
       const dice = gameState.dice;
       const allSame = dice.every(d => d === dice[0]);
@@ -98,8 +140,9 @@ export default function GamePage() {
   if (!gameState) return null;
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-  const possibleScores = gameState.isRolling ? null : getPossibleScores();
-  const canRoll = gameState.rollsLeft > 0;
+  const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);
+  const possibleScores = gameState.isRolling || isCurrentAi ? null : getPossibleScores();
+  const canRoll = gameState.rollsLeft > 0 && !isCurrentAi;
 
   const PLAYER_COLORS = [
     { ring: 'ring-yatzy-player1', bg: 'bg-yatzy-player1', glow: 'shadow-[0_0_8px_hsl(36_82%_52%/0.5)]' },
@@ -120,9 +163,26 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
+        {/* AI thinking indicator */}
+        <AnimatePresence>
+          {aiThinking && (
+            <motion.div
+              className="flex items-center justify-center gap-2 py-2"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+            >
+              <Bot className="w-4 h-4 text-game-info animate-pulse" />
+              <span className="text-[12px] text-game-info font-medium">
+                {currentPlayer.name} tänker...
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Scoreboard + Players + Dice */}
         <div className="flex gap-3 sm:gap-6 items-start">
-          {/* Left: Scoreboard stretched full height */}
+          {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="game-shadow-soft rounded-lg overflow-hidden">
               <ScoreBoard
@@ -136,11 +196,13 @@ export default function GamePage() {
 
             {/* Roll count */}
             <p className="text-center text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
-              {gameState.rollsLeft === 3
-                ? '\u00A0'
-                : gameState.rollsLeft === 0
-                  ? 'Välj en kategori på brickan'
-                  : `Kast ${3 - gameState.rollsLeft} / 3`}
+              {isCurrentAi
+                ? `${currentPlayer.name} spelar...`
+                : gameState.rollsLeft === 3
+                  ? '\u00A0'
+                  : gameState.rollsLeft === 0
+                    ? 'Välj en kategori på brickan'
+                    : `Kast ${3 - gameState.rollsLeft} / 3`}
             </p>
           </div>
 
@@ -149,6 +211,7 @@ export default function GamePage() {
             <div className="flex flex-col gap-2">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
+                const isAi = aiPlayers.includes(idx);
                 const color = PLAYER_COLORS[idx];
                 return (
                   <motion.div
@@ -167,6 +230,9 @@ export default function GamePage() {
                     }`}>
                       {player.name}
                     </span>
+                    {isAi && (
+                      <Bot className="w-3 h-3 text-muted-foreground/40 flex-shrink-0" />
+                    )}
                     {isCurrent && (
                       <motion.span
                         className="text-[9px] text-primary font-bold uppercase tracking-wider ml-auto"
@@ -187,7 +253,7 @@ export default function GamePage() {
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}
               isRolling={gameState.isRolling}
-              onToggleLock={toggleLock}
+              onToggleLock={isCurrentAi ? () => {} : toggleLock}
             />
 
             {/* Bottom: Forfeit + Home + Roll button */}
@@ -204,7 +270,7 @@ export default function GamePage() {
                 <ForfeitButton
                   onConfirm={handleForfeit}
                   playerName={gameState.players.length > 1
-                    ? gameState.players.find((_, i) => i !== gameState.currentPlayerIndex)?.name
+                    ? gameState.players.find((_, i) => i !== 0)?.name
                     : undefined
                   }
                 />
@@ -231,7 +297,9 @@ export default function GamePage() {
                 }
                 whileTap={canRoll ? { scale: 0.93 } : {}}
               >
-                {gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
+                {isCurrentAi
+                  ? '⏳'
+                  : gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
               </motion.button>
             </div>
           </div>

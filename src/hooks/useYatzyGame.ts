@@ -68,6 +68,13 @@ export function useYatzyGame() {
     });
   }, []);
 
+  const setLocks = useCallback((locks: boolean[]) => {
+    setGameState(prev => {
+      if (!prev) return prev;
+      return { ...prev, lockedDice: locks };
+    });
+  }, []);
+
   const getPossibleScores = useCallback((): Record<CategoryId, number> | null => {
     if (!gameState || gameState.rollsLeft === 3) return null;
     const result: Record<string, number> = {};

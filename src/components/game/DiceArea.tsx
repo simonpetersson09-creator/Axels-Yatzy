@@ -14,7 +14,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
 
   return (
     <div className="mt-4 flex flex-col items-center justify-end pb-2 overflow-visible">
-      <div className="flex flex-col" style={{ gap: 18 }}>
+      <div className="flex flex-col" style={{ gap: 22 }}>
         {dice.map((value, index) => (
           <motion.div
             key={index}

@@ -153,7 +153,7 @@ export default function MultiplayerGamePage() {
               : `Kast ${3 - gameState.rollsLeft} / 3`}
         </p>
 
-        {/* Home + Roll button row */}
+        {/* Home + Forfeit + Roll button row */}
         <div className="flex gap-3 items-stretch">
           <button
             onClick={() => navigate('/')}
@@ -162,6 +162,25 @@ export default function MultiplayerGamePage() {
           >
             <Home className="w-4 h-4 text-muted-foreground" />
           </button>
+          <ForfeitButton
+            onConfirm={() => {
+              clearActiveGame();
+              const myName = myPlayerIndex !== undefined ? gameState.players[myPlayerIndex]?.name : 'Spelare';
+              const results = gameState.players.map(p => ({
+                name: p.name,
+                score: getTotalScore(p.scores),
+                scores: p.scores,
+              }));
+              navigate('/results', {
+                state: {
+                  results,
+                  forfeit: true,
+                  forfeitPlayerName: myName,
+                },
+              });
+            }}
+            playerName={gameState.players.find((_, i) => i !== myPlayerIndex)?.name}
+          />
           <motion.button
             onClick={roll}
             disabled={!canRoll || gameState.isRolling}

@@ -190,16 +190,25 @@ export default function GamePage() {
               onToggleLock={toggleLock}
             />
 
-            {/* Bottom: Home above, Roll button below */}
+            {/* Bottom: Forfeit + Home + Roll button */}
             <div className="flex flex-col items-center gap-3 mt-4 sm:mt-6">
-              <button
-                onClick={() => navigate('/')}
-                className="p-3 rounded-full bg-secondary/60 hover:bg-secondary active:bg-secondary/90 transition-colors touch-manipulation"
-                style={{ WebkitTapHighlightColor: 'transparent' }}
-                title="Till menyn"
-              >
-                <Home className="w-4 h-4 text-muted-foreground" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/')}
+                  className="p-3 rounded-full bg-secondary/60 hover:bg-secondary active:bg-secondary/90 transition-colors touch-manipulation"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                  title="Till menyn"
+                >
+                  <Home className="w-4 h-4 text-muted-foreground" />
+                </button>
+                <ForfeitButton
+                  onConfirm={handleForfeit}
+                  playerName={gameState.players.length > 1
+                    ? gameState.players.find((_, i) => i !== gameState.currentPlayerIndex)?.name
+                    : undefined
+                  }
+                />
+              </div>
 
               <motion.button
                 onClick={handleRoll}

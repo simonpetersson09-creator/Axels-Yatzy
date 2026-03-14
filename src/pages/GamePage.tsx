@@ -4,6 +4,7 @@ import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
+import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { playRollSound } from '@/lib/dice-sounds';
@@ -58,6 +59,24 @@ export default function GamePage() {
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, roll]);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
+
+  const handleForfeit = useCallback(() => {
+    if (!gameState) return;
+    clearActiveGame();
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    const results = gameState.players.map(p => ({
+      name: p.name,
+      score: getTotalScore(p.scores),
+      scores: p.scores,
+    }));
+    navigate('/results', {
+      state: {
+        results,
+        forfeit: true,
+        forfeitPlayerName: currentPlayer.name,
+      },
+    });
+  }, [gameState, navigate]);
 
   const handleRoll = useCallback(() => {
     playRollSound();
@@ -171,16 +190,25 @@ export default function GamePage() {
               onToggleLock={toggleLock}
             />
 
-            {/* Bottom: Home above, Roll button below */}
+            {/* Bottom: Forfeit + Home + Roll button */}
             <div className="flex flex-col items-center gap-3 mt-4 sm:mt-6">
-              <button
-                onClick={() => navigate('/')}
-                className="p-3 rounded-full bg-secondary/60 hover:bg-secondary active:bg-secondary/90 transition-colors touch-manipulation"
-                style={{ WebkitTapHighlightColor: 'transparent' }}
-                title="Till menyn"
-              >
-                <Home className="w-4 h-4 text-muted-foreground" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/')}
+                  className="p-3 rounded-full bg-secondary/60 hover:bg-secondary active:bg-secondary/90 transition-colors touch-manipulation"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                  title="Till menyn"
+                >
+                  <Home className="w-4 h-4 text-muted-foreground" />
+                </button>
+                <ForfeitButton
+                  onConfirm={handleForfeit}
+                  playerName={gameState.players.length > 1
+                    ? gameState.players.find((_, i) => i !== gameState.currentPlayerIndex)?.name
+                    : undefined
+                  }
+                />
+              </div>
 
               <motion.button
                 onClick={handleRoll}

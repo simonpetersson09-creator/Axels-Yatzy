@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -16,6 +16,7 @@ export default function GamePage() {
   const { gameState, startGame, roll, toggleLock, getPossibleScores, selectCategory } = useYatzyGame();
 
   const playerNames: string[] = location.state?.playerNames || ['Spelare 1'];
+  const autoRollRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!gameState) {
@@ -40,6 +41,20 @@ export default function GamePage() {
       navigate('/results', { state: { results } });
     }
   }, [gameState?.gameOver]);
+
+  // Auto-roll first throw when turn changes
+  useEffect(() => {
+    if (!gameState || gameState.gameOver || gameState.isRolling) return;
+    if (gameState.rollsLeft !== 3) return;
+    const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
+    if (autoRollRef.current === key) return;
+    autoRollRef.current = key;
+    const t = setTimeout(() => {
+      playRollSound();
+      roll();
+    }, 350);
+    return () => clearTimeout(t);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, roll]);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
 

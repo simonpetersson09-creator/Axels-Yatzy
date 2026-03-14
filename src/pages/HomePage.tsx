@@ -67,7 +67,7 @@ export default function HomePage() {
               textShadow: '0 0 30px hsl(36 78% 55% / 0.15), 0 0 60px hsl(36 78% 55% / 0.08)',
             }}
           >
-            Yatzy
+            Axels Yatzy
           </h1>
           <p className="text-muted-foreground text-sm">
             Klassiskt tärningsspel i modern tappning

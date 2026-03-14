@@ -63,6 +63,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
         canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30 rounded-sm',
         canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 cursor-pointer',
       )}
+      style={{ boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)' }}
       whileTap={canSelect ? { scale: 0.96 } : {}}
     >
       <AnimatePresence>

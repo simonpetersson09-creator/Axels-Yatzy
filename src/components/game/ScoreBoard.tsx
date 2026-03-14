@@ -102,7 +102,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
         className={cn(
           'text-[13px] tabular-nums leading-none',
           isScored && 'font-bold text-yatzy-text',
-          canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-bold text-game-gold-dark',
+          canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-bold text-yatzy-highlight',
           canSelect && possibleScore === 0 && 'font-medium text-yatzy-text/25',
           !isScored && !canSelect && 'text-yatzy-text/10',
         )}

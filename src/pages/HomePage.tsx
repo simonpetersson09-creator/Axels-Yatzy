@@ -136,7 +136,7 @@ export default function HomePage() {
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
-            🎲 Spela lokalt
+            🎲 Snabb match
           </motion.button>
 
           <motion.button

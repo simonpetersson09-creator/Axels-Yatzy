@@ -3,6 +3,11 @@ import { motion } from 'framer-motion';
 import { getActiveGame } from '@/lib/active-game';
 import { Play } from 'lucide-react';
 
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0 },
+};
+
 export default function HomePage() {
   const navigate = useNavigate();
   const activeGame = getActiveGame();
@@ -17,45 +22,67 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-game-gold/5 blur-[100px]" />
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-primary/6 blur-[120px]" />
       </div>
+
+      {/* Subtle dice pattern background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          opacity: 0.035,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect x='10' y='10' width='40' height='40' rx='8' fill='none' stroke='white' stroke-width='1.5'/%3E%3Ccircle cx='22' cy='22' r='3' fill='white'/%3E%3Ccircle cx='38' cy='22' r='3' fill='white'/%3E%3Ccircle cx='22' cy='38' r='3' fill='white'/%3E%3Ccircle cx='38' cy='38' r='3' fill='white'/%3E%3Ccircle cx='30' cy='30' r='3' fill='white'/%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px',
+        }}
+      />
 
       <motion.div
         className="relative z-10 flex flex-col items-center gap-8 w-full max-w-sm"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } } }}
+        initial="hidden"
+        animate="show"
       >
         {/* Logo / Title */}
-        <div className="text-center space-y-2">
+        <motion.div className="text-center space-y-2" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
           <motion.div
-            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-game-gold/10 border border-game-gold/20 mb-4"
-            initial={{ scale: 0.5, rotate: -10 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 mb-4"
+            animate={{
+              rotate: [0, 0, 6, -4, 0],
+              scale: [1, 1, 1.06, 1.02, 1],
+            }}
+            transition={{
+              duration: 1.2,
+              repeat: Infinity,
+              repeatDelay: 3,
+              ease: 'easeInOut',
+            }}
           >
             <span className="text-4xl">🎲</span>
           </motion.div>
-          <h1 className="text-5xl font-display font-black text-gold-gradient">
+          <h1
+            className="text-5xl font-display font-black text-gold-gradient"
+            style={{
+              textShadow: '0 0 30px hsl(36 78% 55% / 0.15), 0 0 60px hsl(36 78% 55% / 0.08)',
+            }}
+          >
             Yatzy
           </h1>
           <p className="text-muted-foreground text-sm">
             Klassiskt tärningsspel i modern tappning
           </p>
-        </div>
+        </motion.div>
 
         {/* Main Actions */}
         <div className="w-full space-y-3">
           {activeGame && (
             <motion.button
               onClick={resumeGame}
-              className="w-full py-4 rounded-2xl bg-game-success text-white font-display font-bold text-lg shadow-lg flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-2xl bg-game-success text-white font-display font-bold text-lg shadow-lg flex items-center justify-center gap-2 active:shadow-md transition-shadow"
               whileTap={{ scale: 0.97 }}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              variants={item}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
             >
               <Play className="w-5 h-5" />
               Fortsätt pågående match
@@ -63,36 +90,46 @@ export default function HomePage() {
           )}
           <motion.button
             onClick={() => navigate('/setup')}
-            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"
+            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow"
             whileTap={{ scale: 0.97 }}
+            variants={item}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
           >
             🎲 Spela lokalt
           </motion.button>
 
           <motion.button
             onClick={() => navigate('/multiplayer')}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-lg shadow-lg"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow"
             whileTap={{ scale: 0.97 }}
+            variants={item}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
           >
             🌐 Spela med vänner
           </motion.button>
         </div>
 
         {/* Secondary Actions */}
-        <div className="flex gap-4">
+        <motion.div
+          className="flex gap-6"
+          variants={item}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+        >
           <button
             onClick={() => navigate('/stats')}
-            className="px-5 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 active:scale-[0.97] transition-all"
           >
-            📊 Statistik
+            <span className="text-base">📊</span>
+            <span>Statistik</span>
           </button>
           <button
             onClick={() => navigate('/settings')}
-            className="px-5 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 active:scale-[0.97] transition-all"
           >
-            ⚙️ Inställningar
+            <span className="text-base">⚙️</span>
+            <span>Inställningar</span>
           </button>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );

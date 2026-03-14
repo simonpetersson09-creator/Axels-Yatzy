@@ -20,9 +20,9 @@ const PLAYER_COLORS = [
 ];
 
 const SLOT_COUNT = 4;
-const COL_W = 'min-w-[56px] w-[56px]';
-const LABEL_W = 'w-[110px] min-w-[110px]';
-const ROW_H = 'h-[30px]';
+const COL_W = 'min-w-[48px] w-[48px] sm:min-w-[56px] sm:w-[56px]';
+const LABEL_W = 'w-[90px] min-w-[90px] sm:w-[110px] sm:min-w-[110px]';
+const ROW_H = 'h-[36px]';
 
 function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect }: {
   catId: string;

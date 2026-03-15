@@ -172,7 +172,7 @@ export default function GamePage() {
       >
         {/* AI thinking indicator */}
         <AnimatePresence>
-          {aiThinking && (
+          {(aiThinking || aiChosenCategory) && (
             <motion.div
               className="flex items-center justify-center gap-2 py-2"
               initial={{ opacity: 0, y: -8 }}

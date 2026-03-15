@@ -241,8 +241,8 @@ export default function GamePage() {
             <div className="flex flex-col gap-2">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
-                const isAi = aiPlayers.includes(idx);
                 const color = PLAYER_COLORS[idx];
+                const label = `P${idx + 1}`;
                 return (
                   <motion.div
                     key={player.id}
@@ -254,15 +254,14 @@ export default function GamePage() {
                   >
                     <div className={`w-5 h-5 rounded-full ${color.bg} ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
-                    } transition-all`} />
+                    } transition-all flex items-center justify-center`}>
+                      <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
+                    </div>
                     <span className={`text-[12px] font-semibold truncate max-w-[80px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
                       {player.name}
                     </span>
-                    {isAi && (
-                      <Bot className="w-3 h-3 text-muted-foreground/40 flex-shrink-0" />
-                    )}
                     {isCurrent && (
                       <motion.span
                         className="text-[9px] text-primary font-bold uppercase tracking-wider ml-auto"

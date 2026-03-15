@@ -181,7 +181,9 @@ export default function GamePage() {
             >
               <Bot className="w-4 h-4 text-game-info animate-pulse" />
               <span className="text-[12px] text-game-info font-medium">
-                {currentPlayer.name} tänker...
+                {aiChosenCategory
+                  ? `${currentPlayer.name} väljer...`
+                  : `${currentPlayer.name} tänker...`}
               </span>
             </motion.div>
           )}

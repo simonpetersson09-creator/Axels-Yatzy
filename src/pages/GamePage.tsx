@@ -18,7 +18,24 @@ export default function GamePage() {
   const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame();
 
   const playerNames: string[] = location.state?.playerNames || ['Spelare 1'];
-  const aiPlayers: number[] = location.state?.aiPlayers || []; // indices of AI players
+  const incomingAiPlayers: number[] | undefined = location.state?.aiPlayers;
+  
+  // Persist aiPlayers to sessionStorage so it survives refreshes
+  const [aiPlayers, setAiPlayers] = useState<number[]>(() => {
+    if (incomingAiPlayers) return incomingAiPlayers;
+    try {
+      const saved = sessionStorage.getItem('yatzy-ai-players');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+
+  useEffect(() => {
+    if (incomingAiPlayers) {
+      setAiPlayers(incomingAiPlayers);
+      sessionStorage.setItem('yatzy-ai-players', JSON.stringify(incomingAiPlayers));
+    }
+  }, [incomingAiPlayers]);
+
   const autoRollRef = useRef<string | null>(null);
   const aiTurnRef = useRef<string | null>(null);
   const gameStateRef = useRef(gameState);
@@ -30,8 +47,6 @@ export default function GamePage() {
   useEffect(() => {
     if (hasStartedRef.current) return;
     hasStartedRef.current = true;
-    // Always start fresh when entering from menu (location.state present)
-    // or if no saved game exists
     if (location.state?.playerNames || !gameState) {
       startGame(playerNames);
     }

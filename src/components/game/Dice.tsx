@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { playLandSound } from '@/lib/dice-sounds';
@@ -36,7 +36,18 @@ const PIP_SIZE = 8;
 const PIP_COLOR = '#2f3a40';
 const ANIM_DURATION = 0.8;
 
-function DiceFace({ faceValue }: { faceValue: number }) {
+// Pre-compute face transforms (static)
+const FACES = [
+  { v: 1, t: `translateZ(${HALF}px)` },
+  { v: 6, t: `rotateY(180deg) translateZ(${HALF}px)` },
+  { v: 2, t: `rotateY(-90deg) translateZ(${HALF}px)` },
+  { v: 5, t: `rotateY(90deg) translateZ(${HALF}px)` },
+  { v: 3, t: `rotateX(-90deg) translateZ(${HALF}px)` },
+  { v: 4, t: `rotateX(90deg) translateZ(${HALF}px)` },
+];
+
+// Memoized face component — never re-renders since faceValue is static per instance
+const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
   const positions = pipGridPositions[faceValue] || [];
 
   return (
@@ -73,15 +84,15 @@ function DiceFace({ faceValue }: { faceValue: number }) {
       ))}
     </div>
   );
-}
+});
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState(valueToRotation[value]);
   const [justToggled, setJustToggled] = useState(false);
-  const [rollKey, setRollKey] = useState(0);
   const [showSparkle, setShowSparkle] = useState(false);
   const prevLockedRef = useRef(locked);
+  const rollingRef = useRef(false);
 
   const rollVar = useMemo(() => ({
     spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
@@ -99,17 +110,19 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   }, [value, rollVar]);
 
   useEffect(() => {
-    if (rolling && !locked) {
-      setRollKey(k => k + 1);
+    if (rolling && !locked && !rollingRef.current) {
+      rollingRef.current = true;
       setIsAnimating(true);
       setSpinRotation(target);
       const t = setTimeout(() => {
         setIsAnimating(false);
+        rollingRef.current = false;
         setSpinRotation(valueToRotation[value]);
         playLandSound();
       }, dur * 1000);
       return () => clearTimeout(t);
     } else if (!rolling) {
+      rollingRef.current = false;
       setSpinRotation(valueToRotation[value]);
     }
   }, [rolling, value, locked, target, dur]);
@@ -127,30 +140,21 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
     if (!canLock) return;
     setJustToggled(true);
     onToggleLock();
-    // Haptic feedback if available
     if ('vibrate' in navigator) {
       navigator.vibrate(10);
     }
     setTimeout(() => setJustToggled(false), 200);
   };
 
+  // Fewer sparkles (5 instead of 8)
   const sparkles = useMemo(() =>
-    Array.from({ length: 8 }, (_, i) => {
-      const a = (i / 8) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+    Array.from({ length: 5 }, (_, i) => {
+      const a = (i / 5) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
       const d = 26 + Math.random() * 14;
       return { x: Math.cos(a) * d, y: Math.sin(a) * d, size: 3 + Math.random() * 2.5, delay: Math.random() * 0.1 };
     }),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [rollKey, locked]);
-
-  const faces = [
-    { v: 1, t: `translateZ(${HALF}px)` },
-    { v: 6, t: `rotateY(180deg) translateZ(${HALF}px)` },
-    { v: 2, t: `rotateY(-90deg) translateZ(${HALF}px)` },
-    { v: 5, t: `rotateY(90deg) translateZ(${HALF}px)` },
-    { v: 3, t: `rotateX(-90deg) translateZ(${HALF}px)` },
-    { v: 4, t: `rotateX(90deg) translateZ(${HALF}px)` },
-  ];
+  [locked]);
 
   return (
     <div className="relative flex flex-col items-center overflow-visible touch-manipulation" style={{ width: SIZE + 10, height: SIZE + 16 }}>
@@ -200,6 +204,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           width: SIZE,
           height: SIZE,
           borderRadius: RADIUS,
+          willChange: 'transform',
           boxShadow: locked
             ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 6px 14px rgba(0,0,0,0.18)'
             : '0 6px 14px rgba(0,0,0,0.18)',
@@ -213,10 +218,15 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       >
         <div style={{ perspective: 240, width: SIZE, height: SIZE }}>
           <motion.button
-            key={rollKey}
             onClick={handleToggle}
             className={cn('relative touch-manipulation', canLock ? 'cursor-pointer' : 'cursor-default')}
-            style={{ width: SIZE, height: SIZE, transformStyle: 'preserve-3d', WebkitTapHighlightColor: 'transparent' }}
+            style={{
+              width: SIZE,
+              height: SIZE,
+              transformStyle: 'preserve-3d',
+              willChange: isAnimating ? 'transform' : 'auto',
+              WebkitTapHighlightColor: 'transparent',
+            }}
             animate={{
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,
@@ -233,7 +243,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             }
             whileTap={canLock ? { scale: 1.05 } : {}}
           >
-            {faces.map(f => (
+            {FACES.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
                 <DiceFace faceValue={f.v} />
               </div>

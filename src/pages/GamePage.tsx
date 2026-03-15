@@ -22,6 +22,7 @@ export default function GamePage() {
   const autoRollRef = useRef<string | null>(null);
   const aiTurnRef = useRef<string | null>(null);
   const [aiThinking, setAiThinking] = useState(false);
+  const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
 
   useEffect(() => {
     if (!gameState) {

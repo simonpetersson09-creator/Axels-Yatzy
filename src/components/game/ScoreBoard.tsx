@@ -10,6 +10,7 @@ interface ScoreBoardProps {
   possibleScores: Record<CategoryId, number> | null;
   onSelectCategory: (id: CategoryId) => void;
   rollsLeft: number;
+  aiChosenCategory?: string | null;
 }
 
 const PLAYER_COLORS = [

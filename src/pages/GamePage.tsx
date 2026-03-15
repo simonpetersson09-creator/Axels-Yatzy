@@ -101,7 +101,7 @@ export default function GamePage() {
     aiTurnRef.current = aiKey;
 
     setAiThinking(true);
-    const delay = 1000 + Math.random() * 600;
+    const delay = 1800 + Math.random() * 800;
 
     const t = setTimeout(() => {
       const gs = gameStateRef.current;
@@ -114,7 +114,7 @@ export default function GamePage() {
         setTimeout(() => {
           selectCategory(cat);
           setAiChosenCategory(null);
-        }, 1500);
+        }, 2200);
       } else {
         const currentPlayer = gs.players[gs.currentPlayerIndex];
         const locks = aiDecideLocks(gs.dice, currentPlayer.scores);
@@ -122,7 +122,7 @@ export default function GamePage() {
         setTimeout(() => {
           playRollSound();
           roll();
-        }, 600);
+        }, 1000);
       }
     }, delay);
 

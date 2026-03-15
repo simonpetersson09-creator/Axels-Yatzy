@@ -200,6 +200,7 @@ export default function GamePage() {
                 possibleScores={possibleScores}
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
+                aiChosenCategory={aiChosenCategory}
               />
             </div>
 

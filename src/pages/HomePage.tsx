@@ -160,7 +160,7 @@ export default function HomePage() {
                     <motion.button
                       key={opponents}
                       onClick={() => {
-                        const humanName = 'Du';
+                        const humanName = getPlayerName() || 'Du';
                         const aiNames = Array.from({ length: opponents }, (_, i) => getAiName(i));
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);

@@ -83,26 +83,24 @@ export default function GamePage() {
     aiTurnRef.current = aiKey;
 
     setAiThinking(true);
-    const delay = 1000 + Math.random() * 600; // 1000-1600ms (slower)
+    const delay = 1000 + Math.random() * 600;
 
     const t = setTimeout(() => {
-      if (gameState.rollsLeft === 0) {
-        // Pick category — show it highlighted first, then confirm after delay
-        const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-        const cat = aiPickCategory(gameState.dice, currentPlayer.scores);
+      const gs = gameStateRef.current;
+      if (!gs) return;
+      if (gs.rollsLeft === 0) {
+        const currentPlayer = gs.players[gs.currentPlayerIndex];
+        const cat = aiPickCategory(gs.dice, currentPlayer.scores);
         setAiChosenCategory(cat);
         setAiThinking(false);
-        // Wait so the player can see the choice
         setTimeout(() => {
           selectCategory(cat);
           setAiChosenCategory(null);
         }, 1500);
       } else {
-        // Decide locks then roll
-        const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-        const locks = aiDecideLocks(gameState.dice, currentPlayer.scores);
+        const currentPlayer = gs.players[gs.currentPlayerIndex];
+        const locks = aiDecideLocks(gs.dice, currentPlayer.scores);
         setLocks(locks);
-        // Longer delay then roll
         setTimeout(() => {
           playRollSound();
           roll();
@@ -111,7 +109,7 @@ export default function GamePage() {
     }, delay);
 
     return () => clearTimeout(t);
-  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, gameState, roll, selectCategory, setLocks]);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, roll, selectCategory, setLocks]);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
 

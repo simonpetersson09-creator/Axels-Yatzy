@@ -21,6 +21,8 @@ export default function GamePage() {
   const aiPlayers: number[] = location.state?.aiPlayers || []; // indices of AI players
   const autoRollRef = useRef<string | null>(null);
   const aiTurnRef = useRef<string | null>(null);
+  const gameStateRef = useRef(gameState);
+  gameStateRef.current = gameState;
   const [aiThinking, setAiThinking] = useState(false);
   const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
 

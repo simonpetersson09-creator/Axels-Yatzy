@@ -25,7 +25,9 @@ export default function GamePage() {
   const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!gameState) {
+    // Always start a fresh game if location state provides player names
+    // (means user clicked a button to start), or if no game state exists
+    if (!gameState || location.state?.playerNames) {
       startGame(playerNames);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

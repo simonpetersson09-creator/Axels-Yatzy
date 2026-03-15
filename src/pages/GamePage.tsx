@@ -224,16 +224,45 @@ export default function GamePage() {
               />
             </div>
 
-            {/* Roll count */}
-            <p className="text-center text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
-              {isCurrentAi
-                ? `${currentPlayer.name} spelar...`
-                : gameState.rollsLeft === 3
-                  ? '\u00A0'
-                  : gameState.rollsLeft === 0
-                    ? 'Välj en kategori på brickan'
-                    : `Kast ${3 - gameState.rollsLeft} / 3`}
-            </p>
+            {/* Roll indicator */}
+            <div className="flex items-center justify-center gap-2 py-1">
+              {isCurrentAi ? (
+                <span className="text-[11px] text-muted-foreground/60 font-medium">
+                  {currentPlayer.name} spelar...
+                </span>
+              ) : gameState.rollsLeft === 3 ? (
+                <span className="text-[11px] text-muted-foreground/40">&nbsp;</span>
+              ) : gameState.rollsLeft === 0 ? (
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="flex gap-1.5">
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className="w-2.5 h-2.5 rounded-full bg-muted-foreground/20" />
+                    ))}
+                  </div>
+                  <span className="text-[10px] text-primary font-semibold tracking-wide animate-pulse">
+                    Välj kategori ▸
+                  </span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="flex gap-1.5">
+                    {[0, 1, 2].map(i => (
+                      <div
+                        key={i}
+                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                          i < 3 - gameState.rollsLeft
+                            ? 'bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.5)]'
+                            : 'bg-muted-foreground/20'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-[10px] text-muted-foreground/50 font-medium tabular-nums">
+                    {gameState.rollsLeft} kast kvar
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col gap-4">

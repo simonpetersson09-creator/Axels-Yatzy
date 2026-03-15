@@ -227,49 +227,35 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
             <div
               key={i}
               className={cn(
-                'flex items-center justify-center relative px-1',
+                'flex items-center justify-center relative overflow-hidden',
                 COL_W,
               )}
             >
               {player ? (
                 <motion.div 
                   className={cn(
-                    'flex items-center gap-1.5 px-2.5 py-1.5 rounded-full transition-all duration-300',
+                    'flex flex-col items-center gap-0.5 px-1 py-1 rounded-full transition-all duration-300',
                     isCurrent 
-                      ? `${color.activeBg} ${color.glow} ring-2 ring-offset-1 ring-offset-yatzy-bg ${color.border}` 
-                      : `${color.bg} ring-1 ring-yatzy-line/20`
+                      ? `${color.activeBg} ${color.glow}` 
+                      : ``
                   )}
-                  animate={isCurrent ? { scale: [1, 1.02, 1] } : {}}
+                  animate={isCurrent ? { scale: [1, 1.05, 1] } : {}}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  {/* Active indicator dot */}
                   <motion.div 
-                    className={cn(
-                      'w-2 h-2 rounded-full',
-                      color.dot,
-                    )}
-                    animate={isCurrent ? { scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] } : {}}
+                    className={cn('w-2.5 h-2.5 rounded-full', color.dot)}
+                    animate={isCurrent ? { scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] } : {}}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                   />
                   <span className={cn(
-                    'text-[11px] font-bold leading-none',
+                    'text-[10px] font-bold leading-none',
                     isCurrent ? color.text : 'text-yatzy-text/50'
                   )}>
                     {color.label}
                   </span>
-                  {/* Current turn arrow */}
-                  {isCurrent && (
-                    <motion.span
-                      initial={{ opacity: 0, x: -2 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className={cn("text-[10px]", color.text)}
-                    >
-                      ▼
-                    </motion.span>
-                  )}
                 </motion.div>
               ) : (
-                <div className="w-10 h-6 rounded-full bg-yatzy-line/10 ring-1 ring-yatzy-line/20" />
+                <div className="w-6 h-6 rounded-full bg-yatzy-line/10" />
               )}
             </div>
           );

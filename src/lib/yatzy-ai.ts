@@ -1,7 +1,7 @@
 import { CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, getUpperSectionTotal } from '@/lib/yatzy-scoring';
 
-const AI_NAMES = ['Dice Master', 'Lucky Roller', 'Cube King'];
+const AI_NAMES = ['Alex', 'Nova', 'Elias', 'Saga', 'Leo', 'Wilma', 'Hugo', 'Alma'];
 
 export function getAiName(index: number): string {
   return AI_NAMES[index % AI_NAMES.length];

@@ -26,10 +26,13 @@ export default function GamePage() {
   const [aiThinking, setAiThinking] = useState(false);
   const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
 
+  const hasStartedRef = useRef(false);
   useEffect(() => {
-    // Always start a fresh game if location state provides player names
-    // (means user clicked a button to start), or if no game state exists
-    if (!gameState || location.state?.playerNames) {
+    if (hasStartedRef.current) return;
+    hasStartedRef.current = true;
+    // Always start fresh when entering from menu (location.state present)
+    // or if no saved game exists
+    if (location.state?.playerNames || !gameState) {
       startGame(playerNames);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

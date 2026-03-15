@@ -25,7 +25,7 @@ const COL_W = 'min-w-[48px] w-[48px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[90px] min-w-[90px] sm:w-[110px] sm:min-w-[110px]';
 const ROW_H = 'h-[36px]';
 
-function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect }: {
+function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect, isAiChosen }: {
   catId: string;
   isScored: boolean;
   scoreValue: number | null | undefined;
@@ -33,6 +33,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
   canSelect: boolean;
   bgClass: string;
   onSelect: () => void;
+  isAiChosen?: boolean;
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);

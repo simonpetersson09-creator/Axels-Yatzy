@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
+import { getPlayerName } from '@/lib/session';
 
 export default function GameSetupPage() {
   const navigate = useNavigate();
   const [playerCount, setPlayerCount] = useState(1);
-  const [names, setNames] = useState(['Spelare 1', 'Spelare 2', 'Spelare 3', 'Spelare 4']);
+  const savedName = getPlayerName();
+  const [names, setNames] = useState([savedName || 'Spelare 1', 'Spelare 2', 'Spelare 3', 'Spelare 4']);
 
   const updateName = (index: number, name: string) => {
     const updated = [...names];

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, clearActiveGame } from '@/lib/active-game';
 import { getAiName } from '@/lib/yatzy-ai';
+import { getPlayerName } from '@/lib/session';
 import { Play, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -159,7 +160,7 @@ export default function HomePage() {
                     <motion.button
                       key={opponents}
                       onClick={() => {
-                        const humanName = 'Du';
+                        const humanName = getPlayerName() || 'Du';
                         const aiNames = Array.from({ length: opponents }, (_, i) => getAiName(i));
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);

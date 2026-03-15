@@ -22,6 +22,7 @@ export default function GamePage() {
   const autoRollRef = useRef<string | null>(null);
   const aiTurnRef = useRef<string | null>(null);
   const [aiThinking, setAiThinking] = useState(false);
+  const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
 
   useEffect(() => {
     if (!gameState) {
@@ -68,6 +69,7 @@ export default function GamePage() {
     const isAi = aiPlayers.includes(gameState.currentPlayerIndex);
     if (!isAi) {
       setAiThinking(false);
+      setAiChosenCategory(null);
       return;
     }
     if (gameState.rollsLeft === 3) return; // wait for auto-roll first
@@ -77,25 +79,30 @@ export default function GamePage() {
     aiTurnRef.current = aiKey;
 
     setAiThinking(true);
-    const delay = 600 + Math.random() * 400; // 600-1000ms
+    const delay = 1000 + Math.random() * 600; // 1000-1600ms (slower)
 
     const t = setTimeout(() => {
       if (gameState.rollsLeft === 0) {
-        // Pick category
+        // Pick category — show it highlighted first, then confirm after delay
         const currentPlayer = gameState.players[gameState.currentPlayerIndex];
         const cat = aiPickCategory(gameState.dice, currentPlayer.scores);
-        selectCategory(cat);
+        setAiChosenCategory(cat);
         setAiThinking(false);
+        // Wait so the player can see the choice
+        setTimeout(() => {
+          selectCategory(cat);
+          setAiChosenCategory(null);
+        }, 1500);
       } else {
         // Decide locks then roll
         const currentPlayer = gameState.players[gameState.currentPlayerIndex];
         const locks = aiDecideLocks(gameState.dice, currentPlayer.scores);
         setLocks(locks);
-        // Small delay then roll
+        // Longer delay then roll
         setTimeout(() => {
           playRollSound();
           roll();
-        }, 300);
+        }, 600);
       }
     }, delay);
 
@@ -165,7 +172,7 @@ export default function GamePage() {
       >
         {/* AI thinking indicator */}
         <AnimatePresence>
-          {aiThinking && (
+          {(aiThinking || aiChosenCategory) && (
             <motion.div
               className="flex items-center justify-center gap-2 py-2"
               initial={{ opacity: 0, y: -8 }}
@@ -174,7 +181,9 @@ export default function GamePage() {
             >
               <Bot className="w-4 h-4 text-game-info animate-pulse" />
               <span className="text-[12px] text-game-info font-medium">
-                {currentPlayer.name} tänker...
+                {aiChosenCategory
+                  ? `${currentPlayer.name} väljer...`
+                  : `${currentPlayer.name} tänker...`}
               </span>
             </motion.div>
           )}
@@ -191,6 +200,7 @@ export default function GamePage() {
                 possibleScores={possibleScores}
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
+                aiChosenCategory={aiChosenCategory}
               />
             </div>
 

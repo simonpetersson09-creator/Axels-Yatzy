@@ -10,6 +10,7 @@ interface ScoreBoardProps {
   possibleScores: Record<CategoryId, number> | null;
   onSelectCategory: (id: CategoryId) => void;
   rollsLeft: number;
+  aiChosenCategory?: string | null;
 }
 
 const PLAYER_COLORS = [
@@ -24,7 +25,7 @@ const COL_W = 'min-w-[48px] w-[48px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[90px] min-w-[90px] sm:w-[110px] sm:min-w-[110px]';
 const ROW_H = 'h-[36px]';
 
-function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect }: {
+function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect, isAiChosen }: {
   catId: string;
   isScored: boolean;
   scoreValue: number | null | undefined;
@@ -32,6 +33,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
   canSelect: boolean;
   bgClass: string;
   onSelect: () => void;
+  isAiChosen?: boolean;
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);
@@ -60,6 +62,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       className={cn(
         'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center overflow-visible rounded-[2px]', ROW_H, COL_W,
         bgClass,
+        isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
         canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30',
         canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 active:bg-destructive/10 cursor-pointer',
       )}
@@ -119,7 +122,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft }: ScoreBoardProps) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory }: ScoreBoardProps) {
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
   const lowerCats = CATEGORIES.filter(c => c.section === 'lower');
 
@@ -154,6 +157,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         canSelect={canSelect}
         bgClass={cellBg(slotIdx)}
         onSelect={() => canSelect && onSelectCategory(cat.id)}
+        isAiChosen={isCurrent && aiChosenCategory === cat.id}
       />
     );
   };

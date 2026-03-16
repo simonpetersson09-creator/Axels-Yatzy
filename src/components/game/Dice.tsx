@@ -75,10 +75,14 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
               style={{
                 width: PIP_SIZE,
                 height: PIP_SIZE,
+                minWidth: PIP_SIZE,
+                minHeight: PIP_SIZE,
+                maxWidth: PIP_SIZE,
+                maxHeight: PIP_SIZE,
                 borderRadius: '50%',
                 backgroundColor: PIP_COLOR,
                 boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
-                imageRendering: 'auto',
+                aspectRatio: '1 / 1',
               }}
             />
           )}

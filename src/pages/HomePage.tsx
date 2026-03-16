@@ -232,13 +232,6 @@ export default function HomePage() {
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
           <motion.button
-            onClick={() => navigate('/stats')}
-            className="w-full py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-2"
-            whileTap={{ scale: 0.97 }}
-          >
-            📊 Statistik
-          </motion.button>
-          <motion.button
             onClick={() => navigate('/settings')}
             className="w-full py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-2"
             whileTap={{ scale: 0.97 }}

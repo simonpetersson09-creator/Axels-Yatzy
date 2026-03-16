@@ -40,15 +40,3 @@
 .read-the-docs {
   color: #888;
 }
-
-.dice-pip {
-  width: 10px;
-  height: 10px;
-  min-width: 10px;
-  min-height: 10px;
-  max-width: 10px;
-  max-height: 10px;
-  border-radius: 9999px;
-  display: block;
-  flex-shrink: 0;
-}

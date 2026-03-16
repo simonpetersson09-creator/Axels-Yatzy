@@ -30,7 +30,7 @@ const App = () => (
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/stats" element={<StatsPage />} />
+          
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
           <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />

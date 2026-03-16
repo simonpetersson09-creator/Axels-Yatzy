@@ -160,7 +160,19 @@ export default function GamePage() {
     selectCategory(categoryId as any);
   }, [gameState, selectCategory]);
 
+  const handlePlayAgain = useCallback(() => {
+    startGame(playerNames);
+  }, [startGame, playerNames]);
+
+  const handleBackToMenu = useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+
   if (!gameState) return null;
+
+  const gameOverResults = gameState.gameOver
+    ? gameState.players.map(p => ({ name: p.name, score: getTotalScore(p.scores) }))
+    : [];
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);

@@ -18,6 +18,14 @@ export default function HomePage() {
   const [activeGame, setActiveGameState] = useState(() => getActiveGame());
   const [timeLeft, setTimeLeft] = useState('');
   const [showQuickMatch, setShowQuickMatch] = useState(false);
+  const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
+
+  // Refresh stats when page becomes visible (e.g. returning from game)
+  useEffect(() => {
+    const onFocus = () => setStats(getLocalStats());
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, []);
 
   // Check expiry and update countdown
   useEffect(() => {

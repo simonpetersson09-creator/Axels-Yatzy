@@ -250,7 +250,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
                   }
                 : { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
             }
-            whileTap={canLock ? { scale: 1.05 } : {}}
+            
           >
             {FACES.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>

@@ -197,6 +197,34 @@ export default function HomePage() {
           </motion.button>
         </div>
 
+        {/* Stats Panel */}
+        <motion.div
+          className="w-full"
+          variants={item}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+        >
+          <div className="grid grid-cols-3 gap-2.5">
+            {[
+              { label: 'Spelade', value: stats.gamesPlayed, icon: Gamepad2 },
+              { label: 'Vinster', value: stats.wins, icon: Trophy },
+              { label: 'Rekord', value: stats.highScore, icon: Star },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl bg-secondary/60 border border-border/50"
+              >
+                <stat.icon className="w-3.5 h-3.5 text-primary/70" />
+                <span className="text-2xl font-display font-black text-foreground tabular-nums leading-none">
+                  {stat.value}
+                </span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Secondary Actions */}
         <motion.div
           className="w-full space-y-3"

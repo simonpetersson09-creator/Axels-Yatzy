@@ -11,13 +11,14 @@ interface DiceProps {
   canLock: boolean;
 }
 
+// Grid: 1=TL 2=TC 3=TR 4=ML 5=C 6=MR 7=BL 8=BC 9=BR
 const pipGridPositions: Record<number, number[]> = {
   1: [5],
-  2: [3, 7],
-  3: [3, 5, 7],
+  2: [1, 9],
+  3: [1, 5, 9],
   4: [1, 3, 7, 9],
   5: [1, 3, 5, 7, 9],
-  6: [1, 3, 4, 6, 7, 9],
+  6: [1, 4, 7, 3, 6, 9],
 };
 
 const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {

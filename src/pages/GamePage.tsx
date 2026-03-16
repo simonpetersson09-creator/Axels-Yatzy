@@ -63,12 +63,6 @@ export default function GamePage() {
   useEffect(() => {
     if (gameState?.gameOver) {
       clearActiveGame();
-      const results = gameState.players.map(p => ({
-        name: p.name,
-        score: getTotalScore(p.scores),
-        scores: p.scores,
-      }));
-      navigate('/results', { state: { results, aiPlayers } });
     }
   }, [gameState?.gameOver]);
 

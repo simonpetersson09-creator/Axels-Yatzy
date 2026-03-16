@@ -32,8 +32,8 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 const SIZE = 56;
 const HALF = SIZE / 2;
 const RADIUS = 12;
-const PIP_SIZE = 8;
-const PIP_COLOR = '#2f3a40';
+const PIP_SIZE = 9;
+const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 0.8;
 
 // Pre-compute face transforms (static)
@@ -64,7 +64,8 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gridTemplateRows: 'repeat(3, 1fr)',
-        padding: 8,
+        padding: 10,
+        gap: 0,
       }}
     >
       {Array.from({ length: 9 }, (_, i) => (
@@ -76,7 +77,8 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
                 height: PIP_SIZE,
                 borderRadius: '50%',
                 backgroundColor: PIP_COLOR,
-                boxShadow: '0 1px 1px rgba(0,0,0,0.1)',
+                boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
+                imageRendering: 'auto',
               }}
             />
           )}

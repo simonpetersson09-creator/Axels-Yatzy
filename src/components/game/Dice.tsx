@@ -11,14 +11,14 @@ interface DiceProps {
   canLock: boolean;
 }
 
-// Grid: 1=TL 2=TC 3=TR 4=ML 5=C 6=MR 7=BL 8=BC 9=BR
-const pipGridPositions: Record<number, number[]> = {
-  1: [5],
-  2: [1, 9],
-  3: [1, 5, 9],
-  4: [1, 3, 7, 9],
-  5: [1, 3, 5, 7, 9],
-  6: [1, 4, 7, 3, 6, 9],
+// Pip positions as [left%, top%] on a 25/50/75 grid
+const pipLayouts: Record<number, [number, number][]> = {
+  1: [[50, 50]],
+  2: [[25, 25], [75, 75]],
+  3: [[25, 25], [50, 50], [75, 75]],
+  4: [[25, 25], [75, 25], [25, 75], [75, 75]],
+  5: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]],
+  6: [[25, 25], [25, 50], [25, 75], [75, 25], [75, 50], [75, 75]],
 };
 
 const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
@@ -33,7 +33,8 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 const SIZE = 56;
 const HALF = SIZE / 2;
 const RADIUS = 12;
-const PIP_SIZE = 9;
+const PIP_RATIO = 0.2;
+const PIP_PX = Math.round(SIZE * PIP_RATIO);
 const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 0.8;
 
@@ -49,7 +50,7 @@ const FACES = [
 
 // Memoized face component — never re-renders since faceValue is static per instance
 const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
-  const positions = pipGridPositions[faceValue] || [];
+  const pips = pipLayouts[faceValue] || [];
 
   return (
     <div
@@ -62,32 +63,24 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
         border: '1px solid rgba(0,0,0,0.05)',
         boxShadow: 'inset 1px 1px 3px rgba(255,255,255,0.8), inset -1px -1px 2px rgba(0,0,0,0.02)',
         backfaceVisibility: 'hidden',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gridTemplateRows: 'repeat(3, 1fr)',
-        padding: 10,
-        gap: 0,
       }}
     >
-      {Array.from({ length: 9 }, (_, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {positions.includes(i + 1) && (
-            <div
-              style={{
-                width: PIP_SIZE,
-                height: PIP_SIZE,
-                minWidth: PIP_SIZE,
-                minHeight: PIP_SIZE,
-                maxWidth: PIP_SIZE,
-                maxHeight: PIP_SIZE,
-                borderRadius: '50%',
-                backgroundColor: PIP_COLOR,
-                boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
-                aspectRatio: '1 / 1',
-              }}
-            />
-          )}
-        </div>
+      {pips.map(([x, y], i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            left: `${x}%`,
+            top: `${y}%`,
+            width: PIP_PX,
+            height: PIP_PX,
+            marginLeft: -PIP_PX / 2,
+            marginTop: -PIP_PX / 2,
+            borderRadius: '50%',
+            backgroundColor: PIP_COLOR,
+            boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
+          }}
+        />
       ))}
     </div>
   );

@@ -51,6 +51,13 @@ const Pip = memo(function Pip() {
     <div
       className={PIP_CLASS}
       style={{
+        width: 10,
+        height: 10,
+        minWidth: 10,
+        minHeight: 10,
+        maxWidth: 10,
+        maxHeight: 10,
+        borderRadius: 9999,
         backgroundColor: PIP_COLOR,
         boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
       }}

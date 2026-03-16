@@ -7,6 +7,7 @@ import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
+import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';

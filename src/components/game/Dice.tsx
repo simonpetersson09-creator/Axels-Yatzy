@@ -211,23 +211,19 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
         )}
       </AnimatePresence>
 
-      {/* Outer wrapper — shadow, glow, scale */}
+      {/* Outer wrapper — shadow and glow */}
       <motion.div
         style={{
           width: SIZE,
           height: SIZE,
           borderRadius: RADIUS,
-          willChange: 'transform',
+          willChange: 'auto',
           boxShadow: locked
             ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 6px 14px rgba(0,0,0,0.18)'
             : '0 6px 14px rgba(0,0,0,0.18)',
           transition: 'box-shadow 0.3s ease, opacity 0.3s ease',
           opacity: canLock && !locked ? 0.5 : 1,
         }}
-        animate={{
-          scale: locked ? 1.08 : justToggled ? [1, 0.93, 1.05, 1] : 1,
-        }}
-        transition={justToggled ? { duration: 0.15 } : { duration: 0.25, ease: 'easeOut' }}
       >
         <div style={{ perspective: 240, width: SIZE, height: SIZE }}>
           <motion.button

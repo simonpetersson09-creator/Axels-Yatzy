@@ -64,6 +64,12 @@ export default function GamePage() {
   useEffect(() => {
     if (gameState?.gameOver) {
       clearActiveGame();
+      // Record local stats for human player (index 0)
+      const humanScore = getTotalScore(gameState.players[0].scores);
+      const allScores = gameState.players.map(p => getTotalScore(p.scores));
+      const maxScore = Math.max(...allScores);
+      const won = humanScore === maxScore && !aiPlayers.includes(0);
+      recordGameResult(humanScore, won);
     }
   }, [gameState?.gameOver]);
 

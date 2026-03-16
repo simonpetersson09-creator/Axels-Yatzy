@@ -7,6 +7,7 @@ import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
+import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
@@ -63,6 +64,12 @@ export default function GamePage() {
   useEffect(() => {
     if (gameState?.gameOver) {
       clearActiveGame();
+      // Record local stats for human player (index 0)
+      const humanScore = getTotalScore(gameState.players[0].scores);
+      const allScores = gameState.players.map(p => getTotalScore(p.scores));
+      const maxScore = Math.max(...allScores);
+      const won = humanScore === maxScore && !aiPlayers.includes(0);
+      recordGameResult(humanScore, won);
     }
   }, [gameState?.gameOver]);
 

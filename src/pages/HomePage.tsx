@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, clearActiveGame } from '@/lib/active-game';
 import { getAiName } from '@/lib/yatzy-ai';
 import { getPlayerName } from '@/lib/session';
-import { Play, Clock } from 'lucide-react';
+import { getLocalStats, type LocalStats } from '@/lib/local-stats';
+import { Play, Clock, Gamepad2, Trophy, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
 const item = {
@@ -17,6 +18,14 @@ export default function HomePage() {
   const [activeGame, setActiveGameState] = useState(() => getActiveGame());
   const [timeLeft, setTimeLeft] = useState('');
   const [showQuickMatch, setShowQuickMatch] = useState(false);
+  const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
+
+  // Refresh stats when page becomes visible (e.g. returning from game)
+  useEffect(() => {
+    const onFocus = () => setStats(getLocalStats());
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, []);
 
   // Check expiry and update countdown
   useEffect(() => {
@@ -187,6 +196,34 @@ export default function HomePage() {
             🌐 Spela med vänner
           </motion.button>
         </div>
+
+        {/* Stats Panel */}
+        <motion.div
+          className="w-full"
+          variants={item}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+        >
+          <div className="grid grid-cols-3 gap-2.5">
+            {[
+              { label: 'Spelade', value: stats.gamesPlayed, icon: Gamepad2 },
+              { label: 'Vinster', value: stats.wins, icon: Trophy },
+              { label: 'Rekord', value: stats.highScore, icon: Star },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl bg-secondary/60 border border-border/50"
+              >
+                <stat.icon className="w-3.5 h-3.5 text-primary/70" />
+                <span className="text-2xl font-display font-black text-foreground tabular-nums leading-none">
+                  {stat.value}
+                </span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         {/* Secondary Actions */}
         <motion.div

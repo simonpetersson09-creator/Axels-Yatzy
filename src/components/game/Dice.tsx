@@ -11,14 +11,13 @@ interface DiceProps {
   canLock: boolean;
 }
 
-// Pip positions as [left%, top%] on a 25/50/75 grid
-const pipLayouts: Record<number, [number, number][]> = {
-  1: [[50, 50]],
-  2: [[25, 25], [75, 75]],
-  3: [[25, 25], [50, 50], [75, 75]],
-  4: [[25, 25], [75, 25], [25, 75], [75, 75]],
-  5: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]],
-  6: [[25, 25], [25, 50], [25, 75], [75, 25], [75, 50], [75, 75]],
+const pipGridPositions: Record<number, number[]> = {
+  1: [5],
+  2: [1, 9],
+  3: [1, 5, 9],
+  4: [1, 3, 7, 9],
+  5: [1, 3, 5, 7, 9],
+  6: [1, 4, 7, 3, 6, 9],
 };
 
 const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
@@ -36,6 +35,7 @@ const RADIUS = 12;
 const PIP_PX = 10;
 const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 0.8;
+const PIP_CLASS = 'dice-pip';
 
 // Pre-compute face transforms (static)
 const FACES = [
@@ -47,9 +47,28 @@ const FACES = [
   { v: 4, t: `rotateX(90deg) translateZ(${HALF}px)` },
 ];
 
+const Pip = memo(function Pip() {
+  return (
+    <div
+      className={PIP_CLASS}
+      style={{
+        width: PIP_PX,
+        height: PIP_PX,
+        borderRadius: 9999,
+        minWidth: PIP_PX,
+        minHeight: PIP_PX,
+        maxWidth: PIP_PX,
+        maxHeight: PIP_PX,
+        backgroundColor: PIP_COLOR,
+        boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
+      }}
+    />
+  );
+});
+
 // Memoized face component — never re-renders since faceValue is static per instance
 const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
-  const pips = pipLayouts[faceValue] || [];
+  const positions = new Set(pipGridPositions[faceValue] || []);
 
   return (
     <div
@@ -64,23 +83,21 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
         backfaceVisibility: 'hidden',
       }}
     >
-      {pips.map(([x, y], i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute',
-            left: `${x}%`,
-            top: `${y}%`,
-            width: PIP_PX,
-            height: PIP_PX,
-            marginLeft: -PIP_PX / 2,
-            marginTop: -PIP_PX / 2,
-            borderRadius: '50%',
-            backgroundColor: PIP_COLOR,
-            boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
-          }}
-        />
-      ))}
+      <div
+        style={{
+          position: 'absolute',
+          inset: '12.5%',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+          gridTemplateRows: 'repeat(3, minmax(0, 1fr))',
+        }}
+      >
+        {Array.from({ length: 9 }, (_, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {positions.has(i + 1) ? <Pip /> : null}
+          </div>
+        ))}
+      </div>
     </div>
   );
 });

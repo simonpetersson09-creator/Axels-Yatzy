@@ -104,7 +104,7 @@ export default function ResultsPage() {
         {/* Actions */}
         <div className="space-y-3">
           <motion.button
-            onClick={() => navigate('/game', { state: { playerNames } })}
+            onClick={() => navigate('/game', { state: { playerNames, aiPlayers } })}
             className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"
             whileTap={{ scale: 0.97 }}
           >

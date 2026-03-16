@@ -67,7 +67,7 @@ export default function GamePage() {
         score: getTotalScore(p.scores),
         scores: p.scores,
       }));
-      navigate('/results', { state: { results } });
+      navigate('/results', { state: { results, aiPlayers } });
     }
   }, [gameState?.gameOver]);
 

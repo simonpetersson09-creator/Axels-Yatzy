@@ -67,7 +67,7 @@ export default function GamePage() {
         score: getTotalScore(p.scores),
         scores: p.scores,
       }));
-      navigate('/results', { state: { results } });
+      navigate('/results', { state: { results, aiPlayers } });
     }
   }, [gameState?.gameOver]);
 
@@ -143,7 +143,8 @@ export default function GamePage() {
       state: {
         results,
         forfeit: true,
-        forfeitPlayerName: gameState.players[0].name, // human is always player 0
+        forfeitPlayerName: gameState.players[0].name,
+        aiPlayers,
       },
     });
   }, [gameState, navigate]);

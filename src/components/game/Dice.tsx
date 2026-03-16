@@ -34,7 +34,7 @@ const HALF = SIZE / 2;
 const RADIUS = 12;
 const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 0.8;
-const PIP_CLASS = 'dice-pip';
+
 
 // Pre-compute face transforms (static)
 const FACES = [
@@ -46,20 +46,25 @@ const FACES = [
   { v: 4, t: `rotateX(90deg) translateZ(${HALF}px)` },
 ];
 
+const PIP = 10;
+const GRID_INSET = 7;
+const GRID_SIZE = SIZE - GRID_INSET * 2;
+
 const Pip = memo(function Pip() {
   return (
     <div
-      className={PIP_CLASS}
       style={{
-        width: 10,
-        height: 10,
-        minWidth: 10,
-        minHeight: 10,
-        maxWidth: 10,
-        maxHeight: 10,
+        width: PIP,
+        height: PIP,
+        minWidth: PIP,
+        minHeight: PIP,
+        maxWidth: PIP,
+        maxHeight: PIP,
         borderRadius: 9999,
         backgroundColor: PIP_COLOR,
         boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
+        flexShrink: 0,
+        flexGrow: 0,
       }}
     />
   );
@@ -85,10 +90,13 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
       <div
         style={{
           position: 'absolute',
-          inset: '12.5%',
+          left: GRID_INSET,
+          top: GRID_INSET,
+          width: GRID_SIZE,
+          height: GRID_SIZE,
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-          gridTemplateRows: 'repeat(3, minmax(0, 1fr))',
+          gridTemplateColumns: `repeat(3, ${Math.floor(GRID_SIZE / 3)}px)`,
+          gridTemplateRows: `repeat(3, ${Math.floor(GRID_SIZE / 3)}px)`,
         }}
       >
         {Array.from({ length: 9 }, (_, i) => (

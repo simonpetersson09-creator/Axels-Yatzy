@@ -34,7 +34,7 @@ const HALF = SIZE / 2;
 const RADIUS = 12;
 const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 0.8;
-const PIP_CLASS = 'dice-pip';
+
 
 // Pre-compute face transforms (static)
 const FACES = [

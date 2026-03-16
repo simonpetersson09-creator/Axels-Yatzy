@@ -64,7 +64,8 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gridTemplateRows: 'repeat(3, 1fr)',
-        padding: 8,
+        padding: 10,
+        gap: 0,
       }}
     >
       {Array.from({ length: 9 }, (_, i) => (

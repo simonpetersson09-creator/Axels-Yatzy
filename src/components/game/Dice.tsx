@@ -32,8 +32,8 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 const SIZE = 56;
 const HALF = SIZE / 2;
 const RADIUS = 12;
-const PIP_SIZE = 8;
-const PIP_COLOR = '#2f3a40';
+const PIP_SIZE = 9;
+const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 0.8;
 
 // Pre-compute face transforms (static)

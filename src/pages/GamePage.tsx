@@ -9,6 +9,7 @@ import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
+import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';
 
@@ -62,12 +63,6 @@ export default function GamePage() {
   useEffect(() => {
     if (gameState?.gameOver) {
       clearActiveGame();
-      const results = gameState.players.map(p => ({
-        name: p.name,
-        score: getTotalScore(p.scores),
-        scores: p.scores,
-      }));
-      navigate('/results', { state: { results, aiPlayers } });
     }
   }, [gameState?.gameOver]);
 
@@ -165,7 +160,19 @@ export default function GamePage() {
     selectCategory(categoryId as any);
   }, [gameState, selectCategory]);
 
+  const handlePlayAgain = useCallback(() => {
+    startGame(playerNames);
+  }, [startGame, playerNames]);
+
+  const handleBackToMenu = useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+
   if (!gameState) return null;
+
+  const gameOverResults = gameState.gameOver
+    ? gameState.players.map(p => ({ name: p.name, score: getTotalScore(p.scores) }))
+    : [];
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);
@@ -181,6 +188,13 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen px-3 sm:px-4 py-4 sm:py-6 safe-top safe-bottom flex items-center justify-center">
+      <GameOverOverlay
+        show={gameState.gameOver}
+        players={gameOverResults}
+        aiPlayers={aiPlayers}
+        onPlayAgain={handlePlayAgain}
+        onBackToMenu={handleBackToMenu}
+      />
       <YatzyCelebration
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}

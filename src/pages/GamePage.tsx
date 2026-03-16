@@ -188,6 +188,13 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen px-3 sm:px-4 py-4 sm:py-6 safe-top safe-bottom flex items-center justify-center">
+      <GameOverOverlay
+        show={gameState.gameOver}
+        players={gameOverResults}
+        aiPlayers={aiPlayers}
+        onPlayAgain={handlePlayAgain}
+        onBackToMenu={handleBackToMenu}
+      />
       <YatzyCelebration
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}

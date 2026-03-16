@@ -13,6 +13,7 @@ export default function ResultsPage() {
   const results: PlayerResult[] = location.state?.results || [];
   const forfeit: boolean = location.state?.forfeit || false;
   const forfeitPlayerName: string = location.state?.forfeitPlayerName || '';
+  const aiPlayers: number[] = location.state?.aiPlayers || [];
   const playerNames: string[] = results.map(r => r.name);
 
   const sorted = [...results].sort((a, b) => b.score - a.score);

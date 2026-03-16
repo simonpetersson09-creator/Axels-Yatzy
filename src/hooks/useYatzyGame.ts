@@ -99,14 +99,21 @@ export function useYatzyGame() {
         return { ...p, scores: { ...p.scores, [categoryId]: score } };
       });
 
-      const allFilled = CATEGORIES.every(cat => updatedPlayers[prev.currentPlayerIndex].scores[cat.id] !== undefined && updatedPlayers[prev.currentPlayerIndex].scores[cat.id] !== null);
-      
-      let nextPlayerIndex = (prev.currentPlayerIndex + 1) % prev.players.length;
-      let gameOver = false;
+      // Check if ALL players have filled all categories
+      const allDone = updatedPlayers.every(p => CATEGORIES.every(cat => p.scores[cat.id] !== undefined && p.scores[cat.id] !== null));
+      let gameOver = allDone;
 
-      if (allFilled && nextPlayerIndex <= prev.currentPlayerIndex) {
-        const allDone = updatedPlayers.every(p => CATEGORIES.every(cat => p.scores[cat.id] !== undefined && p.scores[cat.id] !== null));
-        if (allDone) gameOver = true;
+      // Find next player who still has open categories (skip finished players)
+      let nextPlayerIndex = (prev.currentPlayerIndex + 1) % prev.players.length;
+      if (!gameOver) {
+        for (let i = 0; i < prev.players.length; i++) {
+          const candidate = (prev.currentPlayerIndex + 1 + i) % prev.players.length;
+          const hasOpen = CATEGORIES.some(cat => updatedPlayers[candidate].scores[cat.id] === undefined || updatedPlayers[candidate].scores[cat.id] === null);
+          if (hasOpen) {
+            nextPlayerIndex = candidate;
+            break;
+          }
+        }
       }
 
       if (gameOver) {

@@ -77,7 +77,8 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
                 height: PIP_SIZE,
                 borderRadius: '50%',
                 backgroundColor: PIP_COLOR,
-                boxShadow: '0 1px 1px rgba(0,0,0,0.1)',
+                boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
+                imageRendering: 'auto',
               }}
             />
           )}

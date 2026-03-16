@@ -11,14 +11,13 @@ interface DiceProps {
   canLock: boolean;
 }
 
-// Pip positions as [left%, top%] on a 25/50/75 grid
-const pipLayouts: Record<number, [number, number][]> = {
-  1: [[50, 50]],
-  2: [[25, 25], [75, 75]],
-  3: [[25, 25], [50, 50], [75, 75]],
-  4: [[25, 25], [75, 25], [25, 75], [75, 75]],
-  5: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]],
-  6: [[25, 25], [25, 50], [25, 75], [75, 25], [75, 50], [75, 75]],
+const pipGridPositions: Record<number, number[]> = {
+  1: [5],
+  2: [1, 9],
+  3: [1, 5, 9],
+  4: [1, 3, 7, 9],
+  5: [1, 3, 5, 7, 9],
+  6: [1, 4, 7, 3, 6, 9],
 };
 
 const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
@@ -33,9 +32,9 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 const SIZE = 56;
 const HALF = SIZE / 2;
 const RADIUS = 12;
-const PIP_PX = 10;
 const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 0.8;
+const PIP_CLASS = 'dice-pip';
 
 // Pre-compute face transforms (static)
 const FACES = [
@@ -47,9 +46,28 @@ const FACES = [
   { v: 4, t: `rotateX(90deg) translateZ(${HALF}px)` },
 ];
 
+const Pip = memo(function Pip() {
+  return (
+    <div
+      className={PIP_CLASS}
+      style={{
+        width: 10,
+        height: 10,
+        minWidth: 10,
+        minHeight: 10,
+        maxWidth: 10,
+        maxHeight: 10,
+        borderRadius: 9999,
+        backgroundColor: PIP_COLOR,
+        boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
+      }}
+    />
+  );
+});
+
 // Memoized face component — never re-renders since faceValue is static per instance
 const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
-  const pips = pipLayouts[faceValue] || [];
+  const positions = new Set(pipGridPositions[faceValue] || []);
 
   return (
     <div
@@ -64,23 +82,21 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
         backfaceVisibility: 'hidden',
       }}
     >
-      {pips.map(([x, y], i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute',
-            left: `${x}%`,
-            top: `${y}%`,
-            width: PIP_PX,
-            height: PIP_PX,
-            marginLeft: -PIP_PX / 2,
-            marginTop: -PIP_PX / 2,
-            borderRadius: '50%',
-            backgroundColor: PIP_COLOR,
-            boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
-          }}
-        />
-      ))}
+      <div
+        style={{
+          position: 'absolute',
+          inset: '12.5%',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+          gridTemplateRows: 'repeat(3, minmax(0, 1fr))',
+        }}
+      >
+        {Array.from({ length: 9 }, (_, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {positions.has(i + 1) ? <Pip /> : null}
+          </div>
+        ))}
+      </div>
     </div>
   );
 });
@@ -88,7 +104,6 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState(valueToRotation[value]);
-  const [justToggled, setJustToggled] = useState(false);
   const [showSparkle, setShowSparkle] = useState(false);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
@@ -137,12 +152,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
 
   const handleToggle = () => {
     if (!canLock) return;
-    setJustToggled(true);
     onToggleLock();
     if ('vibrate' in navigator) {
       navigator.vibrate(10);
     }
-    setTimeout(() => setJustToggled(false), 200);
   };
 
   // Fewer sparkles (5 instead of 8)
@@ -197,23 +210,19 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
         )}
       </AnimatePresence>
 
-      {/* Outer wrapper — shadow, glow, scale */}
+      {/* Outer wrapper — shadow and glow */}
       <motion.div
         style={{
           width: SIZE,
           height: SIZE,
           borderRadius: RADIUS,
-          willChange: 'transform',
+          willChange: 'auto',
           boxShadow: locked
             ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 6px 14px rgba(0,0,0,0.18)'
             : '0 6px 14px rgba(0,0,0,0.18)',
           transition: 'box-shadow 0.3s ease, opacity 0.3s ease',
           opacity: canLock && !locked ? 0.5 : 1,
         }}
-        animate={{
-          scale: locked ? 1.08 : justToggled ? [1, 0.93, 1.05, 1] : 1,
-        }}
-        transition={justToggled ? { duration: 0.15 } : { duration: 0.25, ease: 'easeOut' }}
       >
         <div style={{ perspective: 240, width: SIZE, height: SIZE }}>
           <motion.button
@@ -240,7 +249,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
                   }
                 : { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
             }
-            whileTap={canLock ? { scale: 1.05 } : {}}
+            
           >
             {FACES.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>

@@ -105,7 +105,6 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
 export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState(valueToRotation[value]);
-  const [justToggled, setJustToggled] = useState(false);
   const [showSparkle, setShowSparkle] = useState(false);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
@@ -154,12 +153,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
 
   const handleToggle = () => {
     if (!canLock) return;
-    setJustToggled(true);
     onToggleLock();
     if ('vibrate' in navigator) {
       navigator.vibrate(10);
     }
-    setTimeout(() => setJustToggled(false), 200);
   };
 
   // Fewer sparkles (5 instead of 8)

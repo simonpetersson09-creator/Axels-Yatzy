@@ -196,20 +196,20 @@ export function useMultiplayerGame() {
     setTimeout(() => setLocalRolling(false), 600);
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, localRolling]);
 
-  // Toggle lock
+  // Toggle lock — server-side validated
   const toggleLock = useCallback(async (index: number) => {
     if (!state.gameId || !state.gameState) return;
     const gs = state.gameState;
     if (gs.rollsLeft === 3 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
-    const newLocked = [...gs.lockedDice];
-    newLocked[index] = !newLocked[index];
+    const { error } = await supabase.functions.invoke('toggle-lock', {
+      body: { game_id: state.gameId, session_id: sessionId, dice_index: index },
+    });
 
-    await supabase
-      .from('games')
-      .update({ locked_dice: newLocked })
-      .eq('id', state.gameId);
-  }, [state.gameId, state.gameState, state.myPlayerIndex]);
+    if (error) {
+      console.error('Toggle lock error:', error);
+    }
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Get possible scores
   const getPossibleScores = useCallback((): Record<CategoryId, number> | null => {

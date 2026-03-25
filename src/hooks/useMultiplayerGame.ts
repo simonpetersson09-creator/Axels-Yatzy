@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { generateGameCode } from '@/lib/game-code';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
-import { calculateScore, rollDice } from '@/lib/yatzy-scoring';
+import { calculateScore } from '@/lib/yatzy-scoring';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 interface MultiplayerState {

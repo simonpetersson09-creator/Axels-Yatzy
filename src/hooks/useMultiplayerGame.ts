@@ -34,6 +34,8 @@ export function useMultiplayerGame() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef(true);
   const sessionId = getSessionId();
   // Use ref to avoid stale closure in debouncedRefresh
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);

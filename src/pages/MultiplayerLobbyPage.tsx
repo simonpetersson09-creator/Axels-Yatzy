@@ -260,8 +260,9 @@ export default function MultiplayerLobbyPage() {
           <input
             type="text"
             value={playerName}
-            onChange={e => setPlayerName(e.target.value)}
+            onChange={e => setPlayerName(e.target.value.slice(0, MAX_NAME_LENGTH))}
             placeholder="Ange ditt namn"
+            maxLength={MAX_NAME_LENGTH}
             className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-medium border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all"
           />
         </div>

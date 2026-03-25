@@ -166,33 +166,21 @@ export function useMultiplayerGame() {
       .eq('id', state.gameId);
   }, [state.gameId, state.myPlayerIndex]);
 
-  // Roll dice
+  // Roll dice — calls server-side Edge Function
   const roll = useCallback(async () => {
     if (!state.gameId || !state.gameState) return;
     const gs = state.gameState;
     if (gs.rollsLeft <= 0 || gs.isRolling) return;
     if (state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
-    const locked = gs.rollsLeft === 3 ? [false, false, false, false, false] : gs.lockedDice;
-    const newDice = rollDice(gs.dice, locked);
+    const { data, error } = await supabase.functions.invoke('roll-dice', {
+      body: { game_id: state.gameId, session_id: sessionId },
+    });
 
-    await supabase
-      .from('games')
-      .update({
-        dice: newDice,
-        rolls_left: gs.rollsLeft - 1,
-        is_rolling: true,
-        locked_dice: gs.rollsLeft === 3 ? [false, false, false, false, false] : gs.lockedDice,
-      })
-      .eq('id', state.gameId);
-
-    setTimeout(async () => {
-      await supabase
-        .from('games')
-        .update({ is_rolling: false })
-        .eq('id', state.gameId);
-    }, 600);
-  }, [state.gameId, state.gameState, state.myPlayerIndex]);
+    if (error) {
+      console.error('Roll dice error:', error);
+    }
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Toggle lock
   const toggleLock = useCallback(async (index: number) => {

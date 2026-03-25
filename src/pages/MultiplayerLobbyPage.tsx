@@ -108,7 +108,7 @@ export default function MultiplayerLobbyPage() {
   const handleJoin = async () => {
     setLoading(true);
     setError(null);
-    const name = playerName.trim() || 'Spelare';
+    const name = sanitizeName(playerName) || 'Spelare';
 
     const { data, error: rpcErr } = await supabase.rpc('join_game', {
       p_game_code: joinCode.toUpperCase(),

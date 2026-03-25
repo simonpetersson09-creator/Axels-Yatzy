@@ -239,7 +239,11 @@ export function useMultiplayerGame() {
       console.error('Roll dice error:', error);
     }
 
-    setTimeout(() => setLocalRolling(false), 600);
+    // BUG 11 fix: clear previous timer and guard against unmounted update
+    if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+    rollingTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setLocalRolling(false);
+    }, 600);
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, localRolling]);
 
   // Toggle lock — server-side validated

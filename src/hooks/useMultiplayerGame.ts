@@ -259,6 +259,7 @@ export function useMultiplayerGame() {
   return {
     ...state,
     isMyTurn,
+    localRolling,
     createGame,
     joinGame,
     startGame,

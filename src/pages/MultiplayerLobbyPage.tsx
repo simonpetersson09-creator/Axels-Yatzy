@@ -11,8 +11,10 @@ interface LobbyPlayer {
   id: string;
   player_name: string;
   player_index: number;
-  session_id: string;
 }
+
+const MAX_NAME_LENGTH = 20;
+const NAME_REGEX = /^[\p{L}\p{N}\s\-_.!]+$/u;
 
 export default function MultiplayerLobbyPage() {
   const navigate = useNavigate();

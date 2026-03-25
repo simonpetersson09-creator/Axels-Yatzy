@@ -199,6 +199,9 @@ export function useMultiplayerGame() {
       return false;
     }
 
+    // C3 fix: set myPlayerIndex from join result
+    const playerIndex = (result as any).player_index ?? null;
+    setState(prev => ({ ...prev, myPlayerIndex: playerIndex }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
     return true;

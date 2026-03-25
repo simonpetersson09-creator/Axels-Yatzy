@@ -201,7 +201,7 @@ export default function MultiplayerLobbyPage() {
                   }`} />
                   <span className="font-medium text-foreground">{player.player_name}</span>
                   {i === 0 && <span className="ml-auto text-[10px] text-primary font-bold uppercase tracking-wider">Värd</span>}
-                  {player.session_id === sessionId && i !== 0 && (
+                  {i === myPlayerIndex && i !== 0 && (
                     <span className="ml-auto text-[10px] text-game-success font-bold uppercase tracking-wider">Du</span>
                   )}
                 </motion.div>

@@ -57,7 +57,7 @@ export function useMultiplayerGame() {
   const refreshGameState = useCallback(async (gameId: string) => {
     const [gameRes, playersRes] = await Promise.all([
       supabase.from('games').select('*').eq('id', gameId).single(),
-      supabase.from('game_players').select('*').eq('game_id', gameId).order('player_index'),
+      supabase.from('game_players').select('id, game_id, player_name, player_index, scores').eq('game_id', gameId).order('player_index'),
     ]);
 
     if (gameRes.error || playersRes.error) return;
@@ -71,7 +71,7 @@ export function useMultiplayerGame() {
       scores: (p.scores as Record<string, number | null>) ?? {},
     }));
 
-    const myIndex = dbPlayers.findIndex(p => p.session_id === sessionId);
+    // Use stored myPlayerIndex instead of matching on session_id
     const gameStatus = game.status as 'waiting' | 'playing' | 'finished';
 
     const gameState: GameState = {

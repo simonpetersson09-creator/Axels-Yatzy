@@ -133,62 +133,26 @@ export function useMultiplayerGame() {
   const joinGame = useCallback(async (code: string, playerName: string) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
-    const { data: game, error: gameErr } = await supabase
-      .from('games')
-      .select('*')
-      .eq('game_code', code.toUpperCase())
-      .single();
+    const { data, error: rpcErr } = await supabase.rpc('join_game', {
+      p_game_code: code.toUpperCase(),
+      p_player_name: playerName,
+      p_session_id: sessionId,
+    });
 
-    if (gameErr || !game) {
-      setState(prev => ({ ...prev, loading: false, error: 'Spelet hittades inte' }));
+    if (rpcErr || !data) {
+      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte gå med i spelet' }));
       return false;
     }
 
-    if (game.status !== 'waiting') {
-      setState(prev => ({ ...prev, loading: false, error: 'Spelet har redan startat' }));
+    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string };
+
+    if (!result.success) {
+      setState(prev => ({ ...prev, loading: false, error: result.error || 'Kunde inte gå med' }));
       return false;
     }
 
-    // Check if already in the game
-    const { data: existing } = await supabase
-      .from('game_players')
-      .select('*')
-      .eq('game_id', game.id)
-      .eq('session_id', sessionId);
-
-    if (existing && existing.length > 0) {
-      subscribeToGame(game.id);
-      await refreshGameState(game.id);
-      return true;
-    }
-
-    // Count current players
-    const { count } = await supabase
-      .from('game_players')
-      .select('*', { count: 'exact', head: true })
-      .eq('game_id', game.id);
-
-    if ((count ?? 0) >= game.max_players) {
-      setState(prev => ({ ...prev, loading: false, error: 'Spelet är fullt' }));
-      return false;
-    }
-
-    const { error: playerErr } = await supabase
-      .from('game_players')
-      .insert({
-        game_id: game.id,
-        player_name: playerName,
-        player_index: count ?? 0,
-        session_id: sessionId,
-      });
-
-    if (playerErr) {
-      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte gå med' }));
-      return false;
-    }
-
-    subscribeToGame(game.id);
-    await refreshGameState(game.id);
+    subscribeToGame(result.game_id!);
+    await refreshGameState(result.game_id!);
     return true;
   }, [sessionId, subscribeToGame, refreshGameState]);
 

@@ -14,7 +14,7 @@ export default function MultiplayerGamePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
+    gameState, gameCode, status, myPlayerIndex, isMyTurn, error, localRolling,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 

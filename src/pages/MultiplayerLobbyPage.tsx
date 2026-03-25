@@ -131,7 +131,12 @@ export default function MultiplayerLobbyPage() {
 
   const handleStart = async () => {
     if (!gameId) return;
-    await supabase.from('games').update({ status: 'playing' as const }).eq('id', gameId);
+    const { data, error } = await supabase.functions.invoke('start-game', {
+      body: { game_id: gameId, session_id: sessionId },
+    });
+    if (error || (data && !data.success)) {
+      setError(data?.error || 'Kunde inte starta spelet');
+    }
   };
 
   const copyCode = () => {

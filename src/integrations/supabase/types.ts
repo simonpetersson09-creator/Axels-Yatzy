@@ -114,6 +114,14 @@ export type Database = {
         }
         Returns: Json
       }
+      perform_roll_dice: {
+        Args: { p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
+      perform_submit_score: {
+        Args: { p_category_id: string; p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
       validate_game_session: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json

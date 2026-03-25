@@ -339,9 +339,12 @@ export function useMultiplayerGame() {
 
   // Cleanup on unmount
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
+      mountedRef.current = false;
       cleanupChannel();
       cleanupTimers();
+      if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
     };
   }, [cleanupChannel, cleanupTimers]);
 

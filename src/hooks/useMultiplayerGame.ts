@@ -333,6 +333,9 @@ export function useMultiplayerGame() {
       return;
     }
 
+    // Set myPlayerIndex from validated result before subscribing
+    setState(prev => ({ ...prev, myPlayerIndex: result.player_index ?? prev.myPlayerIndex }));
+
     subscribeToGame(gameId);
     await refreshGameState(gameId);
   }, [sessionId, subscribeToGame, refreshGameState]);

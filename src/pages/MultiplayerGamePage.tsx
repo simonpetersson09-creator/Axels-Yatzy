@@ -99,7 +99,11 @@ export default function MultiplayerGamePage() {
   ];
 
   const handleForfeit = async () => {
-    // Record stats before forfeiting (loss)
+    // Guard against double recording — set ref BEFORE async work
+    if (statsRecordedRef.current) return;
+    statsRecordedRef.current = true;
+
+    // Record stats as loss
     if (myPlayerIndex !== null && myPlayerIndex >= 0) {
       const myScore = getTotalScore(gameState.players[myPlayerIndex]?.scores ?? {});
       recordGameResult(myScore, false);

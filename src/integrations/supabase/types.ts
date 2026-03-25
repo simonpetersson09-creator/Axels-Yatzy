@@ -19,6 +19,7 @@ export type Database = {
           game_id: string
           id: string
           joined_at: string
+          last_active_at: string
           player_index: number
           player_name: string
           scores: Json
@@ -28,6 +29,7 @@ export type Database = {
           game_id: string
           id?: string
           joined_at?: string
+          last_active_at?: string
           player_index: number
           player_name: string
           scores?: Json
@@ -37,6 +39,7 @@ export type Database = {
           game_id?: string
           id?: string
           joined_at?: string
+          last_active_at?: string
           player_index?: number
           player_name?: string
           scores?: Json
@@ -106,6 +109,10 @@ export type Database = {
         Args: { p_player_name: string; p_session_id: string }
         Returns: Json
       }
+      heartbeat: {
+        Args: { p_game_id: string; p_session_id: string }
+        Returns: undefined
+      }
       join_game: {
         Args: {
           p_game_code: string
@@ -120,6 +127,10 @@ export type Database = {
       }
       perform_submit_score: {
         Args: { p_category_id: string; p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
+      skip_inactive_turn: {
+        Args: { p_game_id: string; p_timeout_seconds?: number }
         Returns: Json
       }
       validate_game_session: {

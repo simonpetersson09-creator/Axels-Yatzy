@@ -104,59 +104,28 @@ export default function MultiplayerLobbyPage() {
     setError(null);
     const name = playerName.trim() || 'Spelare';
 
-    const { data: game, error: err } = await supabase
-      .from('games')
-      .select('*')
-      .eq('game_code', joinCode.toUpperCase())
-      .single();
-
-    if (err || !game) {
-      setError('Spelet hittades inte');
-      setLoading(false);
-      return;
-    }
-
-    if (game.status !== 'waiting') {
-      setError('Spelet har redan startat');
-      setLoading(false);
-      return;
-    }
-
-    // Check if already joined
-    const { data: existing } = await supabase
-      .from('game_players')
-      .select('*')
-      .eq('game_id', game.id)
-      .eq('session_id', sessionId);
-
-    if (existing && existing.length > 0) {
-      setGameId(game.id);
-      setGameCode(game.game_code);
-      setMode('waiting');
-      setLoading(false);
-      return;
-    }
-
-    const { count } = await supabase
-      .from('game_players')
-      .select('*', { count: 'exact', head: true })
-      .eq('game_id', game.id);
-
-    if ((count ?? 0) >= game.max_players) {
-      setError('Spelet är fullt');
-      setLoading(false);
-      return;
-    }
-
-    await supabase.from('game_players').insert({
-      game_id: game.id,
-      player_name: name,
-      player_index: count ?? 0,
-      session_id: sessionId,
+    const { data, error: rpcErr } = await supabase.rpc('join_game', {
+      p_game_code: joinCode.toUpperCase(),
+      p_player_name: name,
+      p_session_id: sessionId,
     });
 
-    setGameId(game.id);
-    setGameCode(game.game_code);
+    if (rpcErr || !data) {
+      setError('Kunde inte gå med i spelet');
+      setLoading(false);
+      return;
+    }
+
+    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string; player_index?: number };
+
+    if (!result.success) {
+      setError(result.error || 'Kunde inte gå med');
+      setLoading(false);
+      return;
+    }
+
+    setGameId(result.game_id!);
+    setGameCode(result.game_code!);
     setMode('waiting');
     setLoading(false);
   };

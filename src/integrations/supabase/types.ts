@@ -102,6 +102,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_game_with_code: {
+        Args: { p_player_name: string; p_session_id: string }
+        Returns: Json
+      }
       join_game: {
         Args: {
           p_game_code: string

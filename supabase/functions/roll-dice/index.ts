@@ -86,28 +86,21 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 6. Verify not already rolling
-    if (game.is_rolling) {
-      return new Response(
-        JSON.stringify({ error: "Kastar redan" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // 7. Generate dice server-side
+    // 6. Generate dice server-side
     const locked = game.rolls_left === 3
       ? [false, false, false, false, false]
       : (game.locked_dice as boolean[]);
     const currentDice = game.dice as number[];
     const newDice = rollDice(currentDice, locked);
 
-    // 8. Update game state atomically
+    // 7. Update game state atomically — is_rolling stays false,
+    //    animation is handled client-side only
     const { error: updateErr } = await supabase
       .from("games")
       .update({
         dice: newDice,
         rolls_left: game.rolls_left - 1,
-        is_rolling: true,
+        is_rolling: false,
         locked_dice: game.rolls_left === 3
           ? [false, false, false, false, false]
           : game.locked_dice,
@@ -120,14 +113,6 @@ Deno.serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    // 9. Clear is_rolling after delay (animation window)
-    setTimeout(async () => {
-      await supabase
-        .from("games")
-        .update({ is_rolling: false })
-        .eq("id", game_id);
-    }, 600);
 
     return new Response(
       JSON.stringify({ success: true, dice: newDice, rolls_left: game.rolls_left - 1 }),

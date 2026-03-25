@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Copy, Check, Users, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
-import { generateGameCode } from '@/lib/game-code';
+
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 interface LobbyPlayer {

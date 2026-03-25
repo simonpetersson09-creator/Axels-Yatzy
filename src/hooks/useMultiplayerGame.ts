@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
-
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import type { RealtimeChannel } from '@supabase/supabase-js';
@@ -28,27 +27,41 @@ export function useMultiplayerGame() {
   });
 
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionId = getSessionId();
 
-  // Subscribe to realtime changes
-  const subscribeToGame = useCallback((gameId: string) => {
-    // Cleanup previous
+  // Cleanup any existing channel
+  const cleanupChannel = useCallback(() => {
     if (channelRef.current) {
       supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
     }
+  }, []);
+
+  // Debounced refresh — coalesces rapid events into one query
+  const debouncedRefresh = useCallback((gameId: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      refreshGameState(gameId);
+    }, 100);
+  }, []);
+
+  // Subscribe to realtime changes (single channel for both lobby + game)
+  const subscribeToGame = useCallback((gameId: string) => {
+    cleanupChannel();
 
     const channel = supabase
-      .channel(`game-${gameId}`)
+      .channel(`yatzy-${gameId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, () => {
-        refreshGameState(gameId);
+        debouncedRefresh(gameId);
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `game_id=eq.${gameId}` }, () => {
-        refreshGameState(gameId);
+        debouncedRefresh(gameId);
       })
       .subscribe();
 
     channelRef.current = channel;
-  }, []);
+  }, [cleanupChannel, debouncedRefresh]);
 
   const refreshGameState = useCallback(async (gameId: string) => {
     const [gameRes, playersRes] = await Promise.all([
@@ -157,7 +170,6 @@ export function useMultiplayerGame() {
   }, [state.gameId, state.myPlayerIndex]);
 
   // Roll dice — calls server-side Edge Function
-  // is_rolling is handled as local animation state only
   const [localRolling, setLocalRolling] = useState(false);
 
   const roll = useCallback(async () => {
@@ -166,7 +178,6 @@ export function useMultiplayerGame() {
     if (gs.rollsLeft <= 0) return;
     if (state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
-    // Start local animation
     setLocalRolling(true);
 
     const { error } = await supabase.functions.invoke('roll-dice', {
@@ -177,7 +188,6 @@ export function useMultiplayerGame() {
       console.error('Roll dice error:', error);
     }
 
-    // End animation after delay (purely visual, not state-critical)
     setTimeout(() => setLocalRolling(false), 600);
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, localRolling]);
 
@@ -219,7 +229,7 @@ export function useMultiplayerGame() {
     const currentPlayer = gs.players[gs.currentPlayerIndex];
     if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return;
 
-    const { data, error } = await supabase.functions.invoke('submit-score', {
+    const { error } = await supabase.functions.invoke('submit-score', {
       body: { game_id: state.gameId, session_id: sessionId, category_id: categoryId },
     });
 
@@ -228,11 +238,23 @@ export function useMultiplayerGame() {
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
+  // Forfeit — calls server-side Edge Function
+  const forfeitGame = useCallback(async () => {
+    if (!state.gameId) return;
+
+    const { error } = await supabase.functions.invoke('forfeit-game', {
+      body: { game_id: state.gameId, session_id: sessionId },
+    });
+
+    if (error) {
+      console.error('Forfeit error:', error);
+    }
+  }, [state.gameId, sessionId]);
+
   // Rejoin existing game — validates membership server-side first
   const rejoinGame = useCallback(async (gameId: string) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
-    // Validate session membership via secure RPC
     const { data, error: rpcErr } = await supabase.rpc('validate_game_session', {
       p_game_id: gameId,
       p_session_id: sessionId,
@@ -250,7 +272,6 @@ export function useMultiplayerGame() {
       return;
     }
 
-    // Only subscribe and load state after validation passes
     subscribeToGame(gameId);
     await refreshGameState(gameId);
   }, [sessionId, subscribeToGame, refreshGameState]);
@@ -258,11 +279,10 @@ export function useMultiplayerGame() {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-      }
+      cleanupChannel();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, []);
+  }, [cleanupChannel]);
 
   const isMyTurn = state.gameState ? state.myPlayerIndex === state.gameState.currentPlayerIndex : false;
 
@@ -277,6 +297,7 @@ export function useMultiplayerGame() {
     toggleLock,
     getPossibleScores,
     selectCategory,
+    forfeitGame,
     rejoinGame,
   };
 }

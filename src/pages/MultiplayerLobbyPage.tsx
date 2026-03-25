@@ -52,7 +52,7 @@ export default function MultiplayerLobbyPage() {
     refresh();
 
     channel = supabase
-      .channel(`lobby-${gameId}`)
+      .channel(`yatzy-${gameId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, refresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `game_id=eq.${gameId}` }, refresh)
       .subscribe();

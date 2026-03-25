@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/useMultiplayerGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -6,6 +6,7 @@ import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
+import { recordGameResult } from '@/lib/local-stats';
 import { motion } from 'framer-motion';
 import { Home } from 'lucide-react';
 
@@ -14,10 +15,11 @@ export default function MultiplayerGamePage() {
   const [searchParams] = useSearchParams();
   const {
     gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
-    roll, toggleLock, getPossibleScores, selectCategory, rejoinGame,
+    roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 
   const gameId = searchParams.get('gameId');
+  const statsRecordedRef = useRef(false);
 
   useEffect(() => {
     if (gameId && !gameState) {
@@ -35,16 +37,28 @@ export default function MultiplayerGamePage() {
     }
   }, [gameId, status]);
 
+  // Handle game finished — record stats and navigate to results
   useEffect(() => {
-    if (status === 'finished' && gameState) {
+    if (status === 'finished' && gameState && !statsRecordedRef.current) {
+      statsRecordedRef.current = true;
+
       const results = gameState.players.map(p => ({
         name: p.name,
         score: getTotalScore(p.scores),
         scores: p.scores,
       }));
+
+      // Record local stats for multiplayer
+      if (myPlayerIndex !== null && myPlayerIndex >= 0) {
+        const myScore = results[myPlayerIndex]?.score ?? 0;
+        const topScore = Math.max(...results.map(r => r.score));
+        const won = myScore === topScore && myScore > 0;
+        recordGameResult(myScore, won);
+      }
+
       navigate('/results', { state: { results } });
     }
-  }, [status]);
+  }, [status, gameState, myPlayerIndex, navigate]);
 
   if (error) {
     return (
@@ -83,6 +97,31 @@ export default function MultiplayerGamePage() {
     { ring: 'ring-yatzy-player3', bg: 'bg-yatzy-player3', glow: 'shadow-[0_0_8px_hsl(155_60%_42%/0.5)]' },
     { ring: 'ring-yatzy-player4', bg: 'bg-yatzy-player4', glow: 'shadow-[0_0_8px_hsl(350_65%_52%/0.5)]' },
   ];
+
+  const handleForfeit = async () => {
+    // Record stats before forfeiting (loss)
+    if (myPlayerIndex !== null && myPlayerIndex >= 0) {
+      const myScore = getTotalScore(gameState.players[myPlayerIndex]?.scores ?? {});
+      recordGameResult(myScore, false);
+    }
+
+    await forfeitGame();
+    clearActiveGame();
+
+    const myName = myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : 'Spelare';
+    const results = gameState.players.map(p => ({
+      name: p.name,
+      score: getTotalScore(p.scores),
+      scores: p.scores,
+    }));
+    navigate('/results', {
+      state: {
+        results,
+        forfeit: true,
+        forfeitPlayerName: myName,
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen px-4 py-6 safe-top safe-bottom flex items-center justify-center">
@@ -179,22 +218,7 @@ export default function MultiplayerGamePage() {
             <Home className="w-4 h-4 text-muted-foreground" />
           </button>
           <ForfeitButton
-            onConfirm={() => {
-              clearActiveGame();
-              const myName = myPlayerIndex !== undefined ? gameState.players[myPlayerIndex]?.name : 'Spelare';
-              const results = gameState.players.map(p => ({
-                name: p.name,
-                score: getTotalScore(p.scores),
-                scores: p.scores,
-              }));
-              navigate('/results', {
-                state: {
-                  results,
-                  forfeit: true,
-                  forfeitPlayerName: myName,
-                },
-              });
-            }}
+            onConfirm={handleForfeit}
             playerName={gameState.players.find((_, i) => i !== myPlayerIndex)?.name}
           />
           <motion.button

@@ -34,6 +34,8 @@ export function useMultiplayerGame() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef(true);
   const sessionId = getSessionId();
   // Use ref to avoid stale closure in debouncedRefresh
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
@@ -55,7 +57,7 @@ export function useMultiplayerGame() {
   const refreshGameState = useCallback(async (gameId: string) => {
     const [gameRes, playersRes] = await Promise.all([
       supabase.from('games').select('*').eq('id', gameId).single(),
-      supabase.from('game_players').select('*').eq('game_id', gameId).order('player_index'),
+      supabase.from('game_players').select('id, game_id, player_name, player_index, scores').eq('game_id', gameId).order('player_index'),
     ]);
 
     if (gameRes.error || playersRes.error) return;
@@ -69,7 +71,7 @@ export function useMultiplayerGame() {
       scores: (p.scores as Record<string, number | null>) ?? {},
     }));
 
-    const myIndex = dbPlayers.findIndex(p => p.session_id === sessionId);
+    // Use stored myPlayerIndex instead of matching on session_id
     const gameStatus = game.status as 'waiting' | 'playing' | 'finished';
 
     const gameState: GameState = {
@@ -88,12 +90,12 @@ export function useMultiplayerGame() {
       gameId: game.id,
       gameCode: game.game_code,
       status: gameStatus,
-      myPlayerIndex: myIndex >= 0 ? myIndex : prev.myPlayerIndex,
+      // myPlayerIndex is set by createGame/joinGame/rejoinGame, not here
       gameState,
       loading: false,
       error: null,
     }));
-  }, [sessionId]);
+  }, []);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
   useEffect(() => {
@@ -237,7 +239,11 @@ export function useMultiplayerGame() {
       console.error('Roll dice error:', error);
     }
 
-    setTimeout(() => setLocalRolling(false), 600);
+    // BUG 11 fix: clear previous timer and guard against unmounted update
+    if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+    rollingTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setLocalRolling(false);
+    }, 600);
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, localRolling]);
 
   // Toggle lock — server-side validated
@@ -327,15 +333,21 @@ export function useMultiplayerGame() {
       return;
     }
 
+    // Set myPlayerIndex from validated result before subscribing
+    setState(prev => ({ ...prev, myPlayerIndex: result.player_index ?? prev.myPlayerIndex }));
+
     subscribeToGame(gameId);
     await refreshGameState(gameId);
   }, [sessionId, subscribeToGame, refreshGameState]);
 
   // Cleanup on unmount
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
+      mountedRef.current = false;
       cleanupChannel();
       cleanupTimers();
+      if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
     };
   }, [cleanupChannel, cleanupTimers]);
 

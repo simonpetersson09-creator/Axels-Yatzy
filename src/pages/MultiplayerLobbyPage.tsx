@@ -11,8 +11,10 @@ interface LobbyPlayer {
   id: string;
   player_name: string;
   player_index: number;
-  session_id: string;
 }
+
+const MAX_NAME_LENGTH = 20;
+const NAME_REGEX = /^[\p{L}\p{N}\s\-_.!]+$/u;
 
 export default function MultiplayerLobbyPage() {
   const navigate = useNavigate();
@@ -39,12 +41,10 @@ export default function MultiplayerLobbyPage() {
     const refresh = async () => {
       const [gameRes, playersRes] = await Promise.all([
         supabase.from('games').select('status').eq('id', gameId).single(),
-        supabase.from('game_players').select('*').eq('game_id', gameId).order('player_index'),
+        supabase.from('game_players').select('id, player_name, player_index').eq('game_id', gameId).order('player_index'),
       ]);
       if (playersRes.data) {
         setPlayers(playersRes.data);
-        const me = playersRes.data.find(p => p.session_id === sessionId);
-        if (me) setMyPlayerIndex(me.player_index);
       }
       if (gameRes.data) setGameStatus(gameRes.data.status);
     };
@@ -67,10 +67,17 @@ export default function MultiplayerLobbyPage() {
     }
   }, [gameStatus, gameId, navigate]);
 
+  const sanitizeName = (raw: string): string => {
+    const trimmed = raw.trim().slice(0, MAX_NAME_LENGTH);
+    if (!trimmed) return '';
+    if (!NAME_REGEX.test(trimmed)) return '';
+    return trimmed;
+  };
+
   const handleCreate = async () => {
     setLoading(true);
     setError(null);
-    const name = playerName.trim() || 'Spelare 1';
+    const name = sanitizeName(playerName) || 'Spelare 1';
 
     const { data, error: rpcErr } = await supabase.rpc('create_game_with_code', {
       p_player_name: name,
@@ -101,7 +108,7 @@ export default function MultiplayerLobbyPage() {
   const handleJoin = async () => {
     setLoading(true);
     setError(null);
-    const name = playerName.trim() || 'Spelare';
+    const name = sanitizeName(playerName) || 'Spelare';
 
     const { data, error: rpcErr } = await supabase.rpc('join_game', {
       p_game_code: joinCode.toUpperCase(),
@@ -201,7 +208,7 @@ export default function MultiplayerLobbyPage() {
                   }`} />
                   <span className="font-medium text-foreground">{player.player_name}</span>
                   {i === 0 && <span className="ml-auto text-[10px] text-primary font-bold uppercase tracking-wider">Värd</span>}
-                  {player.session_id === sessionId && i !== 0 && (
+                  {i === myPlayerIndex && i !== 0 && (
                     <span className="ml-auto text-[10px] text-game-success font-bold uppercase tracking-wider">Du</span>
                   )}
                 </motion.div>
@@ -253,8 +260,9 @@ export default function MultiplayerLobbyPage() {
           <input
             type="text"
             value={playerName}
-            onChange={e => setPlayerName(e.target.value)}
+            onChange={e => setPlayerName(e.target.value.slice(0, MAX_NAME_LENGTH))}
             placeholder="Ange ditt namn"
+            maxLength={MAX_NAME_LENGTH}
             className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-medium border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all"
           />
         </div>

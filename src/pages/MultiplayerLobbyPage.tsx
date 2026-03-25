@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Copy, Check, Users, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
-import { generateGameCode } from '@/lib/game-code';
+
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 interface LobbyPlayer {
@@ -71,29 +71,28 @@ export default function MultiplayerLobbyPage() {
     setLoading(true);
     setError(null);
     const name = playerName.trim() || 'Spelare 1';
-    const code = generateGameCode();
 
-    const { data: game, error: err } = await supabase
-      .from('games')
-      .insert({ game_code: code })
-      .select()
-      .single();
+    const { data, error: rpcErr } = await supabase.rpc('create_game_with_code', {
+      p_player_name: name,
+      p_session_id: sessionId,
+    });
 
-    if (err || !game) {
+    if (rpcErr || !data) {
       setError('Kunde inte skapa spel');
       setLoading(false);
       return;
     }
 
-    await supabase.from('game_players').insert({
-      game_id: game.id,
-      player_name: name,
-      player_index: 0,
-      session_id: sessionId,
-    });
+    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string };
 
-    setGameId(game.id);
-    setGameCode(code);
+    if (!result.success) {
+      setError(result.error || 'Kunde inte skapa spel');
+      setLoading(false);
+      return;
+    }
+
+    setGameId(result.game_id!);
+    setGameCode(result.game_code!);
     setMyPlayerIndex(0);
     setMode('waiting');
     setLoading(false);
@@ -287,7 +286,7 @@ export default function MultiplayerLobbyPage() {
           />
           <motion.button
             onClick={handleJoin}
-            disabled={loading || joinCode.length < 4}
+            disabled={loading || joinCode.length < 6}
             className="w-full py-4 rounded-2xl bg-secondary text-foreground font-display font-bold text-lg border border-border/50 disabled:opacity-50"
             whileTap={{ scale: 0.97 }}
           >

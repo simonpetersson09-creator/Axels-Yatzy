@@ -88,7 +88,7 @@ export default function MultiplayerGamePage() {
   }
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-  const possibleScores = isMyTurn ? getPossibleScores() : null;
+  const possibleScores = isMyTurn && !localRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn;
 
   const PLAYER_COLORS = [

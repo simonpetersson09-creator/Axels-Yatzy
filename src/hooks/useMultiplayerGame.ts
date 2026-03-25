@@ -238,12 +238,32 @@ export function useMultiplayerGame() {
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
-  // Rejoin existing game
+  // Rejoin existing game — validates membership server-side first
   const rejoinGame = useCallback(async (gameId: string) => {
-    setState(prev => ({ ...prev, loading: true }));
+    setState(prev => ({ ...prev, loading: true, error: null }));
+
+    // Validate session membership via secure RPC
+    const { data, error: rpcErr } = await supabase.rpc('validate_game_session', {
+      p_game_id: gameId,
+      p_session_id: sessionId,
+    });
+
+    if (rpcErr || !data) {
+      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte validera spelåtkomst' }));
+      return;
+    }
+
+    const result = data as { valid: boolean; error?: string; player_index?: number };
+
+    if (!result.valid) {
+      setState(prev => ({ ...prev, loading: false, error: result.error || 'Åtkomst nekad' }));
+      return;
+    }
+
+    // Only subscribe and load state after validation passes
     subscribeToGame(gameId);
     await refreshGameState(gameId);
-  }, [subscribeToGame, refreshGameState]);
+  }, [sessionId, subscribeToGame, refreshGameState]);
 
   // Cleanup on unmount
   useEffect(() => {

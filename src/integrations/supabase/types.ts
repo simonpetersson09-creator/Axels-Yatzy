@@ -110,6 +110,10 @@ export type Database = {
         }
         Returns: Json
       }
+      validate_game_session: {
+        Args: { p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       game_status: "waiting" | "playing" | "finished"

@@ -13,7 +13,7 @@ export default function MultiplayerGamePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    gameState, gameCode, status, myPlayerIndex, isMyTurn,
+    gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame,
   } = useMultiplayerGame();
 
@@ -45,6 +45,22 @@ export default function MultiplayerGamePage() {
       navigate('/results', { state: { results } });
     }
   }, [status]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <div className="text-center space-y-4 max-w-sm">
+          <p className="text-destructive font-semibold">{error}</p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-display font-bold"
+          >
+            Tillbaka till menyn
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!gameState) {
     return (

@@ -67,10 +67,17 @@ export default function MultiplayerLobbyPage() {
     }
   }, [gameStatus, gameId, navigate]);
 
+  const sanitizeName = (raw: string): string => {
+    const trimmed = raw.trim().slice(0, MAX_NAME_LENGTH);
+    if (!trimmed) return '';
+    if (!NAME_REGEX.test(trimmed)) return '';
+    return trimmed;
+  };
+
   const handleCreate = async () => {
     setLoading(true);
     setError(null);
-    const name = playerName.trim() || 'Spelare 1';
+    const name = sanitizeName(playerName) || 'Spelare 1';
 
     const { data, error: rpcErr } = await supabase.rpc('create_game_with_code', {
       p_player_name: name,

@@ -170,6 +170,8 @@ export function useMultiplayerGame() {
       return null;
     }
 
+    // C3 fix: creator is always player index 0
+    setState(prev => ({ ...prev, myPlayerIndex: 0 }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
     return result.game_code!;

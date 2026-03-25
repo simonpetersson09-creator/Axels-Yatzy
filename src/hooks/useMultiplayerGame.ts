@@ -211,7 +211,7 @@ export function useMultiplayerGame() {
     return result as Record<CategoryId, number>;
   }, [state.gameState]);
 
-  // Select category
+  // Select category — calls server-side Edge Function
   const selectCategory = useCallback(async (categoryId: CategoryId) => {
     if (!state.gameId || !state.gameState) return;
     const gs = state.gameState;
@@ -220,43 +220,14 @@ export function useMultiplayerGame() {
     const currentPlayer = gs.players[gs.currentPlayerIndex];
     if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return;
 
-    const score = calculateScore(gs.dice, categoryId);
-    const newScores = { ...currentPlayer.scores, [categoryId]: score };
+    const { data, error } = await supabase.functions.invoke('submit-score', {
+      body: { game_id: state.gameId, session_id: sessionId, category_id: categoryId },
+    });
 
-    // Update player scores
-    await supabase
-      .from('game_players')
-      .update({ scores: newScores })
-      .eq('id', currentPlayer.id);
-
-    // Check if game is over
-    const allFilled = CATEGORIES.every(cat => newScores[cat.id] !== undefined && newScores[cat.id] !== null);
-
-    let nextPlayerIndex = (gs.currentPlayerIndex + 1) % gs.players.length;
-    let gameOver = false;
-
-    if (allFilled && nextPlayerIndex <= gs.currentPlayerIndex) {
-      // Check all players
-      const allDone = gs.players.every((p, i) => {
-        const scores = i === gs.currentPlayerIndex ? newScores : p.scores;
-        return CATEGORIES.every(cat => scores[cat.id] !== undefined && scores[cat.id] !== null);
-      });
-      if (allDone) gameOver = true;
+    if (error) {
+      console.error('Submit score error:', error);
     }
-
-    await supabase
-      .from('games')
-      .update({
-        current_player_index: gameOver ? gs.currentPlayerIndex : nextPlayerIndex,
-        dice: [1, 1, 1, 1, 1],
-        locked_dice: [false, false, false, false, false],
-        rolls_left: 3,
-        is_rolling: false,
-        status: gameOver ? 'finished' as 'finished' : 'playing' as 'playing',
-        round: nextPlayerIndex === 0 ? gs.round + 1 : gs.round,
-      })
-      .eq('id', state.gameId);
-  }, [state.gameId, state.gameState, state.myPlayerIndex]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Rejoin existing game
   const rejoinGame = useCallback(async (gameId: string) => {

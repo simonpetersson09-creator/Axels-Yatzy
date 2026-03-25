@@ -41,12 +41,10 @@ export default function MultiplayerLobbyPage() {
     const refresh = async () => {
       const [gameRes, playersRes] = await Promise.all([
         supabase.from('games').select('status').eq('id', gameId).single(),
-        supabase.from('game_players').select('*').eq('game_id', gameId).order('player_index'),
+        supabase.from('game_players').select('id, player_name, player_index').eq('game_id', gameId).order('player_index'),
       ]);
       if (playersRes.data) {
         setPlayers(playersRes.data);
-        const me = playersRes.data.find(p => p.session_id === sessionId);
-        if (me) setMyPlayerIndex(me.player_index);
       }
       if (gameRes.data) setGameStatus(gameRes.data.status);
     };

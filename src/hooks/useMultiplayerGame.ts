@@ -170,6 +170,8 @@ export function useMultiplayerGame() {
       return null;
     }
 
+    // C3 fix: creator is always player index 0
+    setState(prev => ({ ...prev, myPlayerIndex: 0 }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
     return result.game_code!;
@@ -197,6 +199,9 @@ export function useMultiplayerGame() {
       return false;
     }
 
+    // C3 fix: set myPlayerIndex from join result
+    const playerIndex = (result as any).player_index ?? null;
+    setState(prev => ({ ...prev, myPlayerIndex: playerIndex }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
     return true;

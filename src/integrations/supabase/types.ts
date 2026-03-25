@@ -121,12 +121,20 @@ export type Database = {
         }
         Returns: Json
       }
+      perform_forfeit: {
+        Args: { p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
       perform_roll_dice: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json
       }
       perform_submit_score: {
         Args: { p_category_id: string; p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
+      perform_toggle_lock: {
+        Args: { p_dice_index: number; p_game_id: string; p_session_id: string }
         Returns: Json
       }
       skip_inactive_turn: {

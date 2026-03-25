@@ -159,15 +159,20 @@ export function useMultiplayerGame() {
     return true;
   }, [sessionId, subscribeToGame, refreshGameState]);
 
-  // Start the game (host only)
+  // Start the game (host only) — server-side validated
   const startGame = useCallback(async () => {
     if (!state.gameId || state.myPlayerIndex !== 0) return;
 
-    await supabase
-      .from('games')
-      .update({ status: 'playing' as const })
-      .eq('id', state.gameId);
-  }, [state.gameId, state.myPlayerIndex]);
+    const { data, error } = await supabase.functions.invoke('start-game', {
+      body: { game_id: state.gameId, session_id: sessionId },
+    });
+
+    if (error) {
+      console.error('Start game error:', error);
+      const msg = data?.error || 'Kunde inte starta spelet';
+      setState(prev => ({ ...prev, error: msg }));
+    }
+  }, [state.gameId, state.myPlayerIndex, sessionId]);
 
   // Roll dice — calls server-side Edge Function
   const [localRolling, setLocalRolling] = useState(false);

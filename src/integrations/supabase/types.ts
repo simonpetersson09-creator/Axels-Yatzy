@@ -129,6 +129,10 @@ export type Database = {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json
       }
+      perform_start_game: {
+        Args: { p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
       perform_submit_score: {
         Args: { p_category_id: string; p_game_id: string; p_session_id: string }
         Returns: Json

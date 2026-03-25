@@ -102,7 +102,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      join_game: {
+        Args: {
+          p_game_code: string
+          p_player_name: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       game_status: "waiting" | "playing" | "finished"

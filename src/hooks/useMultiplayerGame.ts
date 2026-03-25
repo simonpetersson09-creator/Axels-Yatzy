@@ -15,6 +15,10 @@ interface MultiplayerState {
   loading: boolean;
 }
 
+const HEARTBEAT_INTERVAL_MS = 15_000;
+const INACTIVE_TIMEOUT_S = 60;
+const INACTIVE_CHECK_INTERVAL_MS = 10_000;
+
 export function useMultiplayerGame() {
   const [state, setState] = useState<MultiplayerState>({
     gameId: null,
@@ -28,7 +32,11 @@ export function useMultiplayerGame() {
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const sessionId = getSessionId();
+  // Use ref to avoid stale closure in debouncedRefresh
+  const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {
@@ -38,30 +46,11 @@ export function useMultiplayerGame() {
     }
   }, []);
 
-  // Debounced refresh — coalesces rapid events into one query
-  const debouncedRefresh = useCallback((gameId: string) => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      refreshGameState(gameId);
-    }, 100);
+  const cleanupTimers = useCallback(() => {
+    if (heartbeatRef.current) { clearInterval(heartbeatRef.current); heartbeatRef.current = null; }
+    if (inactiveCheckRef.current) { clearInterval(inactiveCheckRef.current); inactiveCheckRef.current = null; }
+    if (debounceRef.current) { clearTimeout(debounceRef.current); debounceRef.current = null; }
   }, []);
-
-  // Subscribe to realtime changes (single channel for both lobby + game)
-  const subscribeToGame = useCallback((gameId: string) => {
-    cleanupChannel();
-
-    const channel = supabase
-      .channel(`yatzy-${gameId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, () => {
-        debouncedRefresh(gameId);
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `game_id=eq.${gameId}` }, () => {
-        debouncedRefresh(gameId);
-      })
-      .subscribe();
-
-    channelRef.current = channel;
-  }, [cleanupChannel, debouncedRefresh]);
 
   const refreshGameState = useCallback(async (gameId: string) => {
     const [gameRes, playersRes] = await Promise.all([
@@ -105,6 +94,58 @@ export function useMultiplayerGame() {
       error: null,
     }));
   }, [sessionId]);
+
+  // Keep ref in sync so debouncedRefresh always calls latest version
+  useEffect(() => {
+    refreshGameStateRef.current = refreshGameState;
+  }, [refreshGameState]);
+
+  // Debounced refresh — uses ref to avoid stale closure (BUG 10 fix)
+  const debouncedRefresh = useCallback((gameId: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      refreshGameStateRef.current?.(gameId);
+    }, 100);
+  }, []);
+
+  // Start heartbeat + inactive player polling
+  const startPresence = useCallback((gameId: string) => {
+    // Heartbeat: update last_active_at every 15s
+    if (heartbeatRef.current) clearInterval(heartbeatRef.current);
+    // Send immediately
+    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+    heartbeatRef.current = setInterval(() => {
+      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+    }, HEARTBEAT_INTERVAL_MS);
+
+    // Check for inactive current player every 10s
+    if (inactiveCheckRef.current) clearInterval(inactiveCheckRef.current);
+    inactiveCheckRef.current = setInterval(async () => {
+      const { data } = await supabase.rpc('skip_inactive_turn', {
+        p_game_id: gameId,
+        p_timeout_seconds: INACTIVE_TIMEOUT_S,
+      });
+      // If a turn was skipped, realtime will pick it up via debouncedRefresh
+    }, INACTIVE_CHECK_INTERVAL_MS);
+  }, [sessionId]);
+
+  // Subscribe to realtime changes (single channel for both lobby + game)
+  const subscribeToGame = useCallback((gameId: string) => {
+    cleanupChannel();
+
+    const channel = supabase
+      .channel(`yatzy-${gameId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, () => {
+        debouncedRefresh(gameId);
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `game_id=eq.${gameId}` }, () => {
+        debouncedRefresh(gameId);
+      })
+      .subscribe();
+
+    channelRef.current = channel;
+    startPresence(gameId);
+  }, [cleanupChannel, debouncedRefresh, startPresence]);
 
   // Create a new game via atomic RPC
   const createGame = useCallback(async (playerName: string) => {
@@ -185,6 +226,9 @@ export function useMultiplayerGame() {
 
     setLocalRolling(true);
 
+    // Send heartbeat on action
+    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
+
     const { error } = await supabase.functions.invoke('roll-dice', {
       body: { game_id: state.gameId, session_id: sessionId },
     });
@@ -201,6 +245,9 @@ export function useMultiplayerGame() {
     if (!state.gameId || !state.gameState) return;
     const gs = state.gameState;
     if (gs.rollsLeft === 3 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
+
+    // Send heartbeat on action
+    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
     const { error } = await supabase.functions.invoke('toggle-lock', {
       body: { game_id: state.gameId, session_id: sessionId, dice_index: index },
@@ -233,6 +280,9 @@ export function useMultiplayerGame() {
 
     const currentPlayer = gs.players[gs.currentPlayerIndex];
     if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return;
+
+    // Send heartbeat on action
+    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
     const { error } = await supabase.functions.invoke('submit-score', {
       body: { game_id: state.gameId, session_id: sessionId, category_id: categoryId },
@@ -285,9 +335,9 @@ export function useMultiplayerGame() {
   useEffect(() => {
     return () => {
       cleanupChannel();
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      cleanupTimers();
     };
-  }, [cleanupChannel]);
+  }, [cleanupChannel, cleanupTimers]);
 
   const isMyTurn = state.gameState ? state.myPlayerIndex === state.gameState.currentPlayerIndex : false;
 

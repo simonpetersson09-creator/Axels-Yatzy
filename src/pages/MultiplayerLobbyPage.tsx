@@ -71,29 +71,28 @@ export default function MultiplayerLobbyPage() {
     setLoading(true);
     setError(null);
     const name = playerName.trim() || 'Spelare 1';
-    const code = generateGameCode();
 
-    const { data: game, error: err } = await supabase
-      .from('games')
-      .insert({ game_code: code })
-      .select()
-      .single();
+    const { data, error: rpcErr } = await supabase.rpc('create_game_with_code', {
+      p_player_name: name,
+      p_session_id: sessionId,
+    });
 
-    if (err || !game) {
+    if (rpcErr || !data) {
       setError('Kunde inte skapa spel');
       setLoading(false);
       return;
     }
 
-    await supabase.from('game_players').insert({
-      game_id: game.id,
-      player_name: name,
-      player_index: 0,
-      session_id: sessionId,
-    });
+    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string };
 
-    setGameId(game.id);
-    setGameCode(code);
+    if (!result.success) {
+      setError(result.error || 'Kunde inte skapa spel');
+      setLoading(false);
+      return;
+    }
+
+    setGameId(result.game_id!);
+    setGameCode(result.game_code!);
     setMyPlayerIndex(0);
     setMode('waiting');
     setLoading(false);

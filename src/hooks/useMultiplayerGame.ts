@@ -93,40 +93,30 @@ export function useMultiplayerGame() {
     }));
   }, [sessionId]);
 
-  // Create a new game
+  // Create a new game via atomic RPC
   const createGame = useCallback(async (playerName: string) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
-    const gameCode = generateGameCode();
+    const { data, error: rpcErr } = await supabase.rpc('create_game_with_code', {
+      p_player_name: playerName,
+      p_session_id: sessionId,
+    });
 
-    const { data: game, error: gameErr } = await supabase
-      .from('games')
-      .insert({ game_code: gameCode })
-      .select()
-      .single();
-
-    if (gameErr || !game) {
+    if (rpcErr || !data) {
       setState(prev => ({ ...prev, loading: false, error: 'Kunde inte skapa spel' }));
       return null;
     }
 
-    const { error: playerErr } = await supabase
-      .from('game_players')
-      .insert({
-        game_id: game.id,
-        player_name: playerName,
-        player_index: 0,
-        session_id: sessionId,
-      });
+    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string };
 
-    if (playerErr) {
-      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte gå med i spelet' }));
+    if (!result.success) {
+      setState(prev => ({ ...prev, loading: false, error: result.error || 'Kunde inte skapa spel' }));
       return null;
     }
 
-    subscribeToGame(game.id);
-    await refreshGameState(game.id);
-    return gameCode;
+    subscribeToGame(result.game_id!);
+    await refreshGameState(result.game_id!);
+    return result.game_code!;
   }, [sessionId, subscribeToGame, refreshGameState]);
 
   // Join existing game

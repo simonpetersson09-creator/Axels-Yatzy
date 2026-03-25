@@ -286,7 +286,7 @@ export default function MultiplayerLobbyPage() {
           />
           <motion.button
             onClick={handleJoin}
-            disabled={loading || joinCode.length < 4}
+            disabled={loading || joinCode.length < 6}
             className="w-full py-4 rounded-2xl bg-secondary text-foreground font-display font-bold text-lg border border-border/50 disabled:opacity-50"
             whileTap={{ scale: 0.97 }}
           >

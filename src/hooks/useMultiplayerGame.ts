@@ -90,12 +90,12 @@ export function useMultiplayerGame() {
       gameId: game.id,
       gameCode: game.game_code,
       status: gameStatus,
-      myPlayerIndex: myIndex >= 0 ? myIndex : prev.myPlayerIndex,
+      // myPlayerIndex is set by createGame/joinGame/rejoinGame, not here
       gameState,
       loading: false,
       error: null,
     }));
-  }, [sessionId]);
+  }, []);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
   useEffect(() => {

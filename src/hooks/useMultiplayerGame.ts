@@ -167,20 +167,29 @@ export function useMultiplayerGame() {
   }, [state.gameId, state.myPlayerIndex]);
 
   // Roll dice — calls server-side Edge Function
+  // is_rolling is handled as local animation state only
+  const [localRolling, setLocalRolling] = useState(false);
+
   const roll = useCallback(async () => {
-    if (!state.gameId || !state.gameState) return;
+    if (!state.gameId || !state.gameState || localRolling) return;
     const gs = state.gameState;
-    if (gs.rollsLeft <= 0 || gs.isRolling) return;
+    if (gs.rollsLeft <= 0) return;
     if (state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
-    const { data, error } = await supabase.functions.invoke('roll-dice', {
+    // Start local animation
+    setLocalRolling(true);
+
+    const { error } = await supabase.functions.invoke('roll-dice', {
       body: { game_id: state.gameId, session_id: sessionId },
     });
 
     if (error) {
       console.error('Roll dice error:', error);
     }
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
+
+    // End animation after delay (purely visual, not state-critical)
+    setTimeout(() => setLocalRolling(false), 600);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, localRolling]);
 
   // Toggle lock
   const toggleLock = useCallback(async (index: number) => {

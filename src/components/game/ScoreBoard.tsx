@@ -157,7 +157,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         possibleScore={possibleScore}
         canSelect={canSelect}
         bgClass={cellBg(slotIdx)}
-        onSelect={() => canSelect && onSelectCategory(cat.id)}
+        onSelect={() => { if (canSelect) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
       />
     );

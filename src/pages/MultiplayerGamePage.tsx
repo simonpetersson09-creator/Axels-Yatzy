@@ -101,33 +101,37 @@ export default function MultiplayerGamePage() {
   ];
 
   const handleForfeit = async () => {
-    // Guard against double recording — set ref BEFORE async work
     if (statsRecordedRef.current) return;
     statsRecordedRef.current = true;
 
-    // Record stats as loss
-    if (myPlayerIndex !== null && myPlayerIndex >= 0) {
-      const myScore = getTotalScore(gameState.players[myPlayerIndex]?.scores ?? {});
-      recordGameResult(myScore, false);
+    try {
+      // Record stats as loss
+      if (myPlayerIndex !== null && myPlayerIndex >= 0) {
+        const myScore = getTotalScore(gameState.players[myPlayerIndex]?.scores ?? {});
+        recordGameResult(myScore, false);
+      }
+
+      await forfeitGame();
+      clearActiveGame();
+
+      const myName = myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : 'Spelare';
+      const results = gameState.players.map(p => ({
+        name: p.name,
+        score: getTotalScore(p.scores),
+        scores: p.scores,
+      }));
+      navigate('/results', {
+        state: {
+          results,
+          forfeit: true,
+          forfeitPlayerName: myName,
+          isMultiplayer: true,
+        },
+      });
+    } catch (err) {
+      console.error('Forfeit failed:', err);
+      statsRecordedRef.current = false;
     }
-
-    await forfeitGame();
-    clearActiveGame();
-
-    const myName = myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : 'Spelare';
-    const results = gameState.players.map(p => ({
-      name: p.name,
-      score: getTotalScore(p.scores),
-      scores: p.scores,
-    }));
-    navigate('/results', {
-      state: {
-        results,
-        forfeit: true,
-        forfeitPlayerName: myName,
-        isMultiplayer: true,
-      },
-    });
   };
 
   return (

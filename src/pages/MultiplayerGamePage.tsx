@@ -224,7 +224,11 @@ export default function MultiplayerGamePage() {
           </button>
           <ForfeitButton
             onConfirm={handleForfeit}
-            playerName={gameState.players.find((_, i) => i !== myPlayerIndex)?.name}
+            playerName={
+              myPlayerIndex !== null && gameState.players.length > 1
+                ? gameState.players.filter((_, i) => i !== myPlayerIndex).map(p => p.name).join(', ')
+                : undefined
+            }
           />
           <motion.button
             onClick={roll}

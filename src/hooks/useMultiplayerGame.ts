@@ -381,7 +381,7 @@ export function useMultiplayerGame() {
       cleanupTimers();
       setState(prev => ({ ...prev, loading: false, error: 'Kunde inte återansluta till spelet' }));
     }
-  }, [sessionId, subscribeToGame, refreshGameState]);
+  }, [sessionId, subscribeToGame, refreshGameState, cleanupChannel, cleanupTimers]);
 
   // Stop presence/polling when game is finished
   useEffect(() => {

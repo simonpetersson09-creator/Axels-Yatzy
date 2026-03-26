@@ -3,6 +3,7 @@ import { CATEGORIES, CategoryId, Player, UPPER_BONUS_THRESHOLD, UPPER_BONUS_VALU
 import { getUpperSectionTotal, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { playScoreSelectSound } from '@/lib/dice-sounds';
 
 interface ScoreBoardProps {
   players: Player[];
@@ -156,7 +157,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         possibleScore={possibleScore}
         canSelect={canSelect}
         bgClass={cellBg(slotIdx)}
-        onSelect={() => canSelect && onSelectCategory(cat.id)}
+        onSelect={() => { if (canSelect) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
       />
     );

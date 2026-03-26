@@ -28,11 +28,13 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
 
   const handleCreate = () => {
     const name = sanitizeName(playerName) || 'Spelare 1';
+    savePlayerName(name);
     onCreateGame(name);
   };
 
   const handleJoin = () => {
     const name = sanitizeName(playerName) || 'Spelare';
+    savePlayerName(name);
     onJoinGame(joinCode.toUpperCase(), name);
   };
 

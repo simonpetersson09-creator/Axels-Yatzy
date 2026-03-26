@@ -165,6 +165,11 @@ export default function GamePage() {
         setShowLargeStraight(true);
         setTimeout(() => setShowLargeStraight(false), 450);
       }
+      // Four of a kind
+      if (calculateScore(gameState.dice, 'fourOfAKind') > 0 && currentPlayer.scores['fourOfAKind'] == null) {
+        setShowFourOfAKind(true);
+        setTimeout(() => setShowFourOfAKind(false), 400);
+      }
     }
   }, [gameState?.isRolling]);
 

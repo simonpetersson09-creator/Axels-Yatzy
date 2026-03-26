@@ -11,12 +11,8 @@ import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
-import { FullHouseCelebration } from '@/components/game/FullHouseCelebration';
-import { SmallStraightCelebration } from '@/components/game/SmallStraightCelebration';
-import { LargeStraightCelebration } from '@/components/game/LargeStraightCelebration';
-import { FourOfAKindCelebration } from '@/components/game/FourOfAKindCelebration';
-import { ThreeOfAKindCelebration } from '@/components/game/ThreeOfAKindCelebration';
-import { calculateScore } from '@/lib/yatzy-scoring';
+import { CombinationCelebration } from '@/components/game/CombinationCelebration';
+import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';
 

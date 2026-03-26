@@ -84,7 +84,7 @@ export function useMultiplayerGame() {
       isRolling: game.is_rolling,
       gameOver: gameStatus === 'finished',
       round: game.round,
-      forfeitedBy: (game as any).forfeited_by as string | null ?? null,
+      forfeitedBy: game.forfeited_by ?? null,
     };
 
     setState(prev => ({

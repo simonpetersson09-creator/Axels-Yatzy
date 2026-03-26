@@ -15,6 +15,7 @@ import { FullHouseCelebration } from '@/components/game/FullHouseCelebration';
 import { SmallStraightCelebration } from '@/components/game/SmallStraightCelebration';
 import { LargeStraightCelebration } from '@/components/game/LargeStraightCelebration';
 import { FourOfAKindCelebration } from '@/components/game/FourOfAKindCelebration';
+import { ThreeOfAKindCelebration } from '@/components/game/ThreeOfAKindCelebration';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';

@@ -14,6 +14,7 @@ export default function ResultsPage() {
   const forfeit: boolean = location.state?.forfeit || false;
   const forfeitPlayerName: string = location.state?.forfeitPlayerName || '';
   const aiPlayers: number[] = location.state?.aiPlayers || [];
+  const isMultiplayer: boolean = location.state?.isMultiplayer || false;
   const playerNames: string[] = results.map(r => r.name);
 
   const sorted = [...results].sort((a, b) => b.score - a.score);
@@ -104,11 +105,11 @@ export default function ResultsPage() {
         {/* Actions */}
         <div className="space-y-3">
           <motion.button
-            onClick={() => navigate('/game', { state: { playerNames, aiPlayers } })}
+            onClick={() => isMultiplayer ? navigate('/multiplayer') : navigate('/game', { state: { playerNames, aiPlayers } })}
             className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"
             whileTap={{ scale: 0.97 }}
           >
-            Rematch
+            {isMultiplayer ? 'Ny match' : 'Rematch'}
           </motion.button>
           <motion.button
             onClick={() => navigate('/setup')}

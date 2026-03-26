@@ -56,7 +56,7 @@ export default function MultiplayerGamePage() {
         recordGameResult(myScore, won);
       }
 
-      navigate('/results', { state: { results } });
+      navigate('/results', { state: { results, isMultiplayer: true } });
     }
   }, [status, gameState, myPlayerIndex, navigate]);
 
@@ -123,6 +123,7 @@ export default function MultiplayerGamePage() {
         results,
         forfeit: true,
         forfeitPlayerName: myName,
+        isMultiplayer: true,
       },
     });
   };

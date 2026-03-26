@@ -185,15 +185,15 @@ export function useMultiplayerGame() {
       return null;
     }
 
-    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string };
+    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string; player_index?: number };
 
     if (!result.success) {
       setState(prev => ({ ...prev, loading: false, error: result.error || 'Kunde inte skapa spel' }));
       return null;
     }
 
-    // C3 fix: creator is always player index 0
-    setState(prev => ({ ...prev, myPlayerIndex: 0 }));
+    // Use player_index from RPC (defaults to 0 for creator)
+    setState(prev => ({ ...prev, myPlayerIndex: result.player_index ?? 0 }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
     return result.game_code!;
@@ -258,19 +258,21 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
-    const { error } = await supabase.functions.invoke('roll-dice', {
-      body: { game_id: state.gameId, session_id: sessionId },
-    });
+    try {
+      const { error } = await supabase.functions.invoke('roll-dice', {
+        body: { game_id: state.gameId, session_id: sessionId },
+      });
 
-    if (error) {
-      console.error('Roll dice error:', error);
+      if (error) {
+        console.error('Roll dice error:', error);
+      }
+    } finally {
+      // M4 fix: clear rolling after server response, with minimum visual delay
+      if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+      rollingTimerRef.current = setTimeout(() => {
+        if (mountedRef.current) setLocalRolling(false);
+      }, 400);
     }
-
-    // BUG 11 fix: clear previous timer and guard against unmounted update
-    if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
-    rollingTimerRef.current = setTimeout(() => {
-      if (mountedRef.current) setLocalRolling(false);
-    }, 600);
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, localRolling]);
 
   // Toggle lock — server-side validated
@@ -370,9 +372,16 @@ export function useMultiplayerGame() {
     // Set myPlayerIndex from validated result before subscribing
     setState(prev => ({ ...prev, myPlayerIndex: result.player_index ?? prev.myPlayerIndex }));
 
-    subscribeToGame(gameId);
-    await refreshGameState(gameId);
-  }, [sessionId, subscribeToGame, refreshGameState]);
+    try {
+      subscribeToGame(gameId);
+      await refreshGameState(gameId);
+    } catch (err) {
+      // H3 fix: cleanup on failure
+      cleanupChannel();
+      cleanupTimers();
+      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte återansluta till spelet' }));
+    }
+  }, [sessionId, subscribeToGame, refreshGameState, cleanupChannel, cleanupTimers]);
 
   // Stop presence/polling when game is finished
   useEffect(() => {

@@ -140,6 +140,7 @@ export default function GamePage() {
   const [showFullHouse, setShowFullHouse] = useState(false);
   const [showSmallStraight, setShowSmallStraight] = useState(false);
   const [showLargeStraight, setShowLargeStraight] = useState(false);
+  const [showFourOfAKind, setShowFourOfAKind] = useState(false);
   const prevIsRollingRef = useRef(false);
 
   // Detect combinations when dice stop rolling

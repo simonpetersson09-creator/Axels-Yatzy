@@ -14,6 +14,7 @@ export default function ResultsPage() {
   const forfeit: boolean = location.state?.forfeit || false;
   const forfeitPlayerName: string = location.state?.forfeitPlayerName || '';
   const aiPlayers: number[] = location.state?.aiPlayers || [];
+  const isMultiplayer: boolean = location.state?.isMultiplayer || false;
   const playerNames: string[] = results.map(r => r.name);
 
   const sorted = [...results].sort((a, b) => b.score - a.score);

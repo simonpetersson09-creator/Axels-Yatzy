@@ -138,6 +138,7 @@ export default function GamePage() {
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
   const [showFullHouse, setShowFullHouse] = useState(false);
   const [showSmallStraight, setShowSmallStraight] = useState(false);
+  const [showLargeStraight, setShowLargeStraight] = useState(false);
   const prevIsRollingRef = useRef(false);
 
   // Detect combinations when dice stop rolling

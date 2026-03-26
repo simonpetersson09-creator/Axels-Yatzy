@@ -15,6 +15,7 @@ import { FullHouseCelebration } from '@/components/game/FullHouseCelebration';
 import { SmallStraightCelebration } from '@/components/game/SmallStraightCelebration';
 import { LargeStraightCelebration } from '@/components/game/LargeStraightCelebration';
 import { FourOfAKindCelebration } from '@/components/game/FourOfAKindCelebration';
+import { ThreeOfAKindCelebration } from '@/components/game/ThreeOfAKindCelebration';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';
@@ -141,6 +142,7 @@ export default function GamePage() {
   const [showSmallStraight, setShowSmallStraight] = useState(false);
   const [showLargeStraight, setShowLargeStraight] = useState(false);
   const [showFourOfAKind, setShowFourOfAKind] = useState(false);
+  const [showThreeOfAKind, setShowThreeOfAKind] = useState(false);
   const prevIsRollingRef = useRef(false);
 
   // Detect combinations when dice stop rolling
@@ -169,6 +171,16 @@ export default function GamePage() {
       if (calculateScore(gameState.dice, 'fourOfAKind') > 0 && currentPlayer.scores['fourOfAKind'] == null) {
         setShowFourOfAKind(true);
         setTimeout(() => setShowFourOfAKind(false), 400);
+      }
+      // Three of a kind (only if not also four of a kind or full house)
+      if (
+        calculateScore(gameState.dice, 'threeOfAKind') > 0 &&
+        calculateScore(gameState.dice, 'fourOfAKind') === 0 &&
+        calculateScore(gameState.dice, 'fullHouse') === 0 &&
+        currentPlayer.scores['threeOfAKind'] == null
+      ) {
+        setShowThreeOfAKind(true);
+        setTimeout(() => setShowThreeOfAKind(false), 280);
       }
     }
   }, [gameState?.isRolling]);
@@ -250,6 +262,7 @@ export default function GamePage() {
       <SmallStraightCelebration show={showSmallStraight} />
       <LargeStraightCelebration show={showLargeStraight} />
       <FourOfAKindCelebration show={showFourOfAKind} />
+      <ThreeOfAKindCelebration show={showThreeOfAKind} />
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

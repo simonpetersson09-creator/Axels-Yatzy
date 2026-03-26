@@ -348,6 +348,7 @@ export function useMultiplayerGame() {
 
     if (error) {
       console.error('Forfeit error:', error);
+      throw new Error('Forfeit failed');
     }
   }, [state.gameId, sessionId]);
 

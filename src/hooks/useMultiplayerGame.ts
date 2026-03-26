@@ -185,15 +185,15 @@ export function useMultiplayerGame() {
       return null;
     }
 
-    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string };
+    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string; player_index?: number };
 
     if (!result.success) {
       setState(prev => ({ ...prev, loading: false, error: result.error || 'Kunde inte skapa spel' }));
       return null;
     }
 
-    // C3 fix: creator is always player index 0
-    setState(prev => ({ ...prev, myPlayerIndex: 0 }));
+    // Use player_index from RPC (defaults to 0 for creator)
+    setState(prev => ({ ...prev, myPlayerIndex: result.player_index ?? 0 }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
     return result.game_code!;

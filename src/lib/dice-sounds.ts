@@ -1,4 +1,4 @@
-// Clean, precise dice rolling sounds — tightly synced to rotation animation
+// Dice rolling sounds — realistic rattling dice on wood surface
 let audioCtx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
@@ -11,223 +11,193 @@ function getCtx(): AudioContext | null {
   }
 }
 
-// Matches the cubic-bezier(0.15, 0.85, 0.25, 1) used by dice rotation
-function rotationSpeed(t: number): number {
-  if (t < 0.1) return t / 0.1 * 0.95;       // quick ramp up
-  if (t < 0.5) return 0.95 + 0.05 * Math.sin((t - 0.1) / 0.4 * Math.PI * 0.5); // sustained peak
+// Rotation speed curve matching dice animation easing
+function speed(t: number): number {
+  if (t < 0.1) return t / 0.1;
+  if (t < 0.5) return 1;
   const d = (t - 0.5) / 0.5;
-  return Math.max(0, (1 - d * d) * 0.95);    // smooth quadratic decel
+  return Math.max(0, 1 - d * d);
 }
 
 /**
- * Rolling sound synced to rotation duration.
- * Clean layers: pitched hum + rhythmic contact ticks + subtle body resonance.
+ * Dice roll — layered: rattling noise + wooden impacts + table vibration.
+ * Sounds like hard plastic dice tumbling on a wooden surface.
  */
 export function playRollSound(duration = 0.8) {
   const ctx = getCtx();
   if (!ctx) return;
-
   const sr = ctx.sampleRate;
   const now = ctx.currentTime;
 
-  // Master output
   const master = ctx.createGain();
-  master.gain.value = 0.55;
+  master.gain.value = 0.8;
   master.connect(ctx.destination);
 
-  // ─── Layer 1: Clean rolling hum (pitched, not noise) ───
-  // Two detuned oscillators create a natural "rolling on surface" tone
-  const baseFreq = 180;
+  // ─── Rattling: filtered white noise shaped by rotation ───
+  const len = Math.floor(sr * duration);
+  const buf = ctx.createBuffer(1, len, sr);
+  const data = buf.getChannelData(0);
 
-  for (let detune = 0; detune < 2; detune++) {
-    const osc = ctx.createOscillator();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(baseFreq + detune * 7, now);
-
-    // Frequency follows rotation speed — higher pitch = faster spin
-    const steps = 20;
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const speed = rotationSpeed(t);
-      const freq = 60 + speed * (baseFreq - 60 + detune * 7);
-      if (i === 0) {
-        osc.frequency.setValueAtTime(freq, now);
-      } else {
-        osc.frequency.linearRampToValueAtTime(freq, now + t * duration);
-      }
-    }
-
-    const oscGain = ctx.createGain();
-    // Volume follows rotation speed
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const vol = rotationSpeed(t) * 0.06;
-      if (i === 0) {
-        oscGain.gain.setValueAtTime(Math.max(vol, 0.001), now);
-      } else {
-        oscGain.gain.linearRampToValueAtTime(Math.max(vol, 0.001), now + t * duration);
-      }
-    }
-
-    // Soft lowpass to remove harshness
-    const lpf = ctx.createBiquadFilter();
-    lpf.type = 'lowpass';
-    lpf.frequency.value = 1200;
-    lpf.Q.value = 0.5;
-
-    osc.connect(oscGain).connect(lpf).connect(master);
-    osc.start(now);
-    osc.stop(now + duration);
+  for (let i = 0; i < len; i++) {
+    const t = i / len;
+    const s = speed(t);
+    // Amplitude-modulated noise — simulates intermittent contact
+    const rattle = Math.sin(t * duration * Math.PI * 2 * (30 + s * 40));
+    const am = 0.4 + 0.6 * Math.max(0, rattle); // amplitude modulation
+    data[i] = (Math.random() * 2 - 1) * s * am * 0.15;
   }
 
-  // ─── Layer 2: Rhythmic contact ticks (clean, evenly spaced by rotation) ───
-  // Each "tick" = one face/edge passing the surface. Spacing = rotation period.
-  // A die has 4 edges per revolution, so ~4 ticks per full rotation.
-  // Total rotations ≈ 2-3, so ~8-12 ticks, fast at start, slowing down.
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
 
-  let accumulated = 0;
-  let tickTime = 0.005;
-  const tickTimes: number[] = [];
+  // Shape: mid-heavy, like plastic on wood
+  const bp = ctx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.setValueAtTime(3200, now);
+  bp.frequency.linearRampToValueAtTime(1500, now + duration);
+  bp.Q.value = 0.7;
 
-  while (tickTime < duration - 0.03) {
-    const t = tickTime / duration;
-    const speed = rotationSpeed(t);
-    if (speed < 0.03) break;
+  const lp = ctx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.setValueAtTime(6000, now);
+  lp.frequency.linearRampToValueAtTime(3000, now + duration);
 
-    tickTimes.push(tickTime);
+  const rattleGain = ctx.createGain();
+  rattleGain.gain.setValueAtTime(0.2, now);
+  rattleGain.gain.setValueAtTime(0.2, now + duration * 0.4);
+  rattleGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-    // Interval: fast rotation = short gaps, slow = long gaps
-    // Base: 4 ticks per revolution, speed=1 means ~2 revolutions/sec
-    const revsPerSec = speed * 2.5;
-    const ticksPerSec = revsPerSec * 4;
-    const interval = ticksPerSec > 0 ? 1 / ticksPerSec : 0.2;
+  src.connect(bp).connect(lp).connect(rattleGain).connect(master);
+  src.start(now);
+  src.stop(now + duration);
 
-    tickTime += Math.max(interval, 0.018); // floor to prevent overlap
-    accumulated++;
-    if (accumulated > 20) break;
+  // ─── Impacts: short clacks as die edges hit the surface ───
+  let hitTime = 0.01;
+  let count = 0;
+
+  while (hitTime < duration - 0.02 && count < 18) {
+    const t = hitTime / duration;
+    const s = speed(t);
+    if (s < 0.05) break;
+
+    // Create a short "clack" — noise burst + resonant ping
+    const clackDur = 0.01 + (1 - s) * 0.008;
+    const clackLen = Math.floor(sr * clackDur);
+    const clackBuf = ctx.createBuffer(1, clackLen, sr);
+    const cd = clackBuf.getChannelData(0);
+    for (let j = 0; j < clackLen; j++) {
+      // Sharp attack, quick decay
+      const env = Math.exp(-j / (clackLen * 0.08));
+      cd[j] = (Math.random() * 2 - 1) * env;
+    }
+
+    const clackSrc = ctx.createBufferSource();
+    clackSrc.buffer = clackBuf;
+
+    // Resonant filter — gives the "woody" character
+    const clackBp = ctx.createBiquadFilter();
+    clackBp.type = 'bandpass';
+    clackBp.frequency.value = 1800 + Math.random() * 1200;
+    clackBp.Q.value = 3 + Math.random() * 4; // resonant = more "clacky"
+
+    const clackGain = ctx.createGain();
+    clackGain.gain.value = s * (0.12 + Math.random() * 0.06);
+
+    clackSrc.connect(clackBp).connect(clackGain).connect(master);
+    clackSrc.start(now + hitTime);
+    clackSrc.stop(now + hitTime + clackDur + 0.01);
+
+    // Spacing follows rotation speed
+    const interval = (0.02 + Math.random() * 0.015) / Math.max(s, 0.15);
+    hitTime += Math.max(interval, 0.02);
+    count++;
   }
 
-  tickTimes.forEach((tt) => {
-    const t = tt / duration;
-    const speed = rotationSpeed(t);
+  // ─── Table body: low thud resonance from surface ───
+  const bodyOsc = ctx.createOscillator();
+  bodyOsc.type = 'sine';
+  bodyOsc.frequency.value = 80;
 
-    // Clean tick: short sine ping + tiny noise transient
-    const tickOsc = ctx.createOscillator();
-    tickOsc.type = 'sine';
-    const tickFreq = 800 + speed * 600 + (Math.random() - 0.5) * 100;
-    tickOsc.frequency.value = tickFreq;
+  const bodyGain = ctx.createGain();
+  bodyGain.gain.setValueAtTime(0.04, now);
+  bodyGain.gain.setValueAtTime(0.04, now + duration * 0.3);
+  bodyGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.7);
 
-    const tickEnv = ctx.createGain();
-    const tickDur = 0.008 + (1 - speed) * 0.006; // longer ticks when slower
-    tickEnv.gain.setValueAtTime(speed * 0.07, now + tt);
-    tickEnv.gain.exponentialRampToValueAtTime(0.001, now + tt + tickDur);
-
-    // Bandpass for clean character
-    const tickBpf = ctx.createBiquadFilter();
-    tickBpf.type = 'bandpass';
-    tickBpf.frequency.value = tickFreq;
-    tickBpf.Q.value = 2;
-
-    tickOsc.connect(tickBpf).connect(tickEnv).connect(master);
-    tickOsc.start(now + tt);
-    tickOsc.stop(now + tt + tickDur + 0.01);
-
-    // Tiny noise transient for realism
-    const nLen = Math.floor(sr * 0.003);
-    const nBuf = ctx.createBuffer(1, nLen, sr);
-    const nd = nBuf.getChannelData(0);
-    for (let j = 0; j < nLen; j++) {
-      nd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (nLen * 0.1)) * 0.5;
-    }
-    const nSrc = ctx.createBufferSource();
-    nSrc.buffer = nBuf;
-    const nGain = ctx.createGain();
-    nGain.gain.value = speed * 0.02;
-    const nHpf = ctx.createBiquadFilter();
-    nHpf.type = 'highpass';
-    nHpf.frequency.value = 2000;
-    nSrc.connect(nHpf).connect(nGain).connect(master);
-    nSrc.start(now + tt);
-    nSrc.stop(now + tt + 0.005);
-  });
-
-  // ─── Layer 3: Subtle surface resonance (warm body) ───
-  const resOsc = ctx.createOscillator();
-  resOsc.type = 'sine';
-  resOsc.frequency.value = 95;
-
-  const resGain = ctx.createGain();
-  const steps2 = 12;
-  for (let i = 0; i <= steps2; i++) {
-    const t = i / steps2;
-    const vol = rotationSpeed(t) * 0.025;
-    if (i === 0) {
-      resGain.gain.setValueAtTime(Math.max(vol, 0.001), now);
-    } else {
-      resGain.gain.linearRampToValueAtTime(Math.max(vol, 0.001), now + t * duration);
-    }
-  }
-
-  const resLpf = ctx.createBiquadFilter();
-  resLpf.type = 'lowpass';
-  resLpf.frequency.value = 200;
-
-  resOsc.connect(resGain).connect(resLpf).connect(master);
-  resOsc.start(now);
-  resOsc.stop(now + duration);
+  bodyOsc.connect(bodyGain).connect(master);
+  bodyOsc.start(now);
+  bodyOsc.stop(now + duration * 0.7);
 }
 
 /**
- * Settling: clean final contact + warm stop tone.
+ * Landing: die settles flat — final clack + wood thud.
  */
 export function playLandSound() {
   const ctx = getCtx();
   if (!ctx) return;
   const now = ctx.currentTime;
+  const sr = ctx.sampleRate;
 
   const master = ctx.createGain();
-  master.gain.value = 0.5;
+  master.gain.value = 0.7;
   master.connect(ctx.destination);
 
-  // Final contact tick — clean sine
-  const tick = ctx.createOscillator();
-  tick.type = 'sine';
-  tick.frequency.value = 650 + Math.random() * 150;
+  // Final clack — sharp, clean
+  const clackDur = 0.015;
+  const clackLen = Math.floor(sr * clackDur);
+  const clackBuf = ctx.createBuffer(1, clackLen, sr);
+  const cd = clackBuf.getChannelData(0);
+  for (let j = 0; j < clackLen; j++) {
+    cd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (clackLen * 0.06));
+  }
 
-  const tickGain = ctx.createGain();
-  tickGain.gain.setValueAtTime(0.08, now);
-  tickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+  const clackSrc = ctx.createBufferSource();
+  clackSrc.buffer = clackBuf;
 
-  tick.connect(tickGain).connect(master);
-  tick.start(now);
-  tick.stop(now + 0.05);
+  const clackBp = ctx.createBiquadFilter();
+  clackBp.type = 'bandpass';
+  clackBp.frequency.value = 2200 + Math.random() * 800;
+  clackBp.Q.value = 4;
 
-  // Warm settle thump
-  const thump = ctx.createOscillator();
-  thump.type = 'sine';
-  thump.frequency.setValueAtTime(100, now);
-  thump.frequency.exponentialRampToValueAtTime(42, now + 0.08);
+  const clackGain = ctx.createGain();
+  clackGain.gain.value = 0.15;
 
-  const thumpGain = ctx.createGain();
-  thumpGain.gain.setValueAtTime(0.04, now);
-  thumpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+  clackSrc.connect(clackBp).connect(clackGain).connect(master);
+  clackSrc.start(now);
+  clackSrc.stop(now + 0.03);
 
-  thump.connect(thumpGain).connect(master);
-  thump.start(now);
-  thump.stop(now + 0.12);
+  // Wood thud
+  const thud = ctx.createOscillator();
+  thud.type = 'sine';
+  thud.frequency.setValueAtTime(120, now);
+  thud.frequency.exponentialRampToValueAtTime(45, now + 0.06);
 
-  // Optional second micro-tap (die settling flat)
-  if (Math.random() > 0.4) {
-    const tap2 = ctx.createOscillator();
-    tap2.type = 'sine';
-    tap2.frequency.value = 500 + Math.random() * 200;
+  const thudGain = ctx.createGain();
+  thudGain.gain.setValueAtTime(0.06, now);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
-    const tap2Gain = ctx.createGain();
-    tap2Gain.gain.setValueAtTime(0.03, now + 0.04);
-    tap2Gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+  thud.connect(thudGain).connect(master);
+  thud.start(now);
+  thud.stop(now + 0.1);
 
-    tap2.connect(tap2Gain).connect(master);
-    tap2.start(now + 0.04);
-    tap2.stop(now + 0.08);
+  // Second lighter settle tap
+  if (Math.random() > 0.3) {
+    const tapDur = 0.01;
+    const tapLen = Math.floor(sr * tapDur);
+    const tapBuf = ctx.createBuffer(1, tapLen, sr);
+    const td = tapBuf.getChannelData(0);
+    for (let j = 0; j < tapLen; j++) {
+      td[j] = (Math.random() * 2 - 1) * Math.exp(-j / (tapLen * 0.05));
+    }
+    const tapSrc = ctx.createBufferSource();
+    tapSrc.buffer = tapBuf;
+    const tapBp = ctx.createBiquadFilter();
+    tapBp.type = 'bandpass';
+    tapBp.frequency.value = 2500 + Math.random() * 600;
+    tapBp.Q.value = 5;
+    const tapGain = ctx.createGain();
+    tapGain.gain.value = 0.06;
+    tapSrc.connect(tapBp).connect(tapGain).connect(master);
+    tapSrc.start(now + 0.035);
+    tapSrc.stop(now + 0.05);
   }
 }

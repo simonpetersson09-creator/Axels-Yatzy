@@ -241,6 +241,7 @@ export default function GamePage() {
       />
       <FullHouseCelebration show={showFullHouse} />
       <SmallStraightCelebration show={showSmallStraight} />
+      <LargeStraightCelebration show={showLargeStraight} />
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

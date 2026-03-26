@@ -123,6 +123,7 @@ export default function MultiplayerGamePage() {
         results,
         forfeit: true,
         forfeitPlayerName: myName,
+        isMultiplayer: true,
       },
     });
   };

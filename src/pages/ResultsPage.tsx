@@ -105,11 +105,11 @@ export default function ResultsPage() {
         {/* Actions */}
         <div className="space-y-3">
           <motion.button
-            onClick={() => navigate('/game', { state: { playerNames, aiPlayers } })}
+            onClick={() => isMultiplayer ? navigate('/multiplayer') : navigate('/game', { state: { playerNames, aiPlayers } })}
             className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"
             whileTap={{ scale: 0.97 }}
           >
-            Rematch
+            {isMultiplayer ? 'Ny match' : 'Rematch'}
           </motion.button>
           <motion.button
             onClick={() => navigate('/setup')}

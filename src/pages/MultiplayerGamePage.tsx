@@ -112,13 +112,14 @@ export default function MultiplayerGamePage() {
     statsRecordedRef.current = true;
 
     try {
-      // Record stats as loss
+      await forfeitGame();
+
+      // Record stats as loss AFTER server confirms
       if (myPlayerIndex !== null && myPlayerIndex >= 0) {
         const myScore = getTotalScore(gameState.players[myPlayerIndex]?.scores ?? {});
         recordGameResult(myScore, false);
       }
 
-      await forfeitGame();
       clearActiveGame();
 
       const myName = myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : 'Spelare';

@@ -23,7 +23,7 @@ function sanitizeName(raw: string): string {
 
 export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: LobbyJoinFormProps) {
   const navigate = useNavigate();
-  const [playerName, setPlayerName] = useState('');
+  const [playerName, setPlayerName] = useState(() => getPlayerName());
   const [joinCode, setJoinCode] = useState('');
 
   const handleCreate = () => {

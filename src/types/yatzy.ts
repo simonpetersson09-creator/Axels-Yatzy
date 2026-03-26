@@ -49,6 +49,7 @@ export interface GameState {
   isRolling: boolean;
   gameOver: boolean;
   round: number;
+  forfeitedBy?: string | null;
 }
 
 export interface PlayerStats {

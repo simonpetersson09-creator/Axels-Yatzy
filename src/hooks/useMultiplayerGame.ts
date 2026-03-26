@@ -154,6 +154,7 @@ export function useMultiplayerGame() {
   // Subscribe to realtime changes (single channel for both lobby + game)
   const subscribeToGame = useCallback((gameId: string) => {
     cleanupChannel();
+    cleanupTimers();
 
     const channel = supabase
       .channel(`yatzy-${gameId}`)

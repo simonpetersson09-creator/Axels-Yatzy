@@ -172,6 +172,16 @@ export default function GamePage() {
         setShowFourOfAKind(true);
         setTimeout(() => setShowFourOfAKind(false), 400);
       }
+      // Three of a kind (only if not also four of a kind or full house)
+      if (
+        calculateScore(gameState.dice, 'threeOfAKind') > 0 &&
+        calculateScore(gameState.dice, 'fourOfAKind') === 0 &&
+        calculateScore(gameState.dice, 'fullHouse') === 0 &&
+        currentPlayer.scores['threeOfAKind'] == null
+      ) {
+        setShowThreeOfAKind(true);
+        setTimeout(() => setShowThreeOfAKind(false), 280);
+      }
     }
   }, [gameState?.isRolling]);
 

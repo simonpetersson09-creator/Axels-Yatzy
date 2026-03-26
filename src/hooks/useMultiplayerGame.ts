@@ -110,7 +110,7 @@ export function useMultiplayerGame() {
     }, 100);
   }, []);
 
-  // Start heartbeat + inactive player polling
+  // Start heartbeat (all players) — inactive polling is managed separately
   const startPresence = useCallback((gameId: string) => {
     // Heartbeat: update last_active_at every 15s
     if (heartbeatRef.current) clearInterval(heartbeatRef.current);
@@ -119,17 +119,37 @@ export function useMultiplayerGame() {
     heartbeatRef.current = setInterval(() => {
       supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
     }, HEARTBEAT_INTERVAL_MS);
+  }, [sessionId]);
 
-    // Check for inactive current player every 10s
-    if (inactiveCheckRef.current) clearInterval(inactiveCheckRef.current);
+  // Only the "next player" after the current player polls skip_inactive_turn.
+  // This reduces N× polling to exactly 1×. If the designated poller disconnects,
+  // they become inactive → get skipped → a new next-player takes over. Self-healing.
+  useEffect(() => {
+    if (inactiveCheckRef.current) { clearInterval(inactiveCheckRef.current); inactiveCheckRef.current = null; }
+
+    const gs = state.gameState;
+    const gameId = state.gameId;
+    if (!gs || !gameId || state.status !== 'playing' || state.myPlayerIndex === null) return;
+
+    const playerCount = gs.players.length;
+    if (playerCount < 2) return;
+
+    const nextPlayerIndex = (gs.currentPlayerIndex + 1) % playerCount;
+    const iAmDesignatedPoller = state.myPlayerIndex === nextPlayerIndex;
+
+    if (!iAmDesignatedPoller) return;
+
     inactiveCheckRef.current = setInterval(async () => {
-      const { data } = await supabase.rpc('skip_inactive_turn', {
+      await supabase.rpc('skip_inactive_turn', {
         p_game_id: gameId,
         p_timeout_seconds: INACTIVE_TIMEOUT_S,
       });
-      // If a turn was skipped, realtime will pick it up via debouncedRefresh
     }, INACTIVE_CHECK_INTERVAL_MS);
-  }, [sessionId]);
+
+    return () => {
+      if (inactiveCheckRef.current) { clearInterval(inactiveCheckRef.current); inactiveCheckRef.current = null; }
+    };
+  }, [state.gameId, state.status, state.myPlayerIndex, state.gameState?.currentPlayerIndex, state.gameState?.players.length]);
 
   // Subscribe to realtime changes (single channel for both lobby + game)
   const subscribeToGame = useCallback((gameId: string) => {

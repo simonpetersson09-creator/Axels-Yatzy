@@ -3,6 +3,7 @@ import { CATEGORIES, CategoryId, Player, UPPER_BONUS_THRESHOLD, UPPER_BONUS_VALU
 import { getUpperSectionTotal, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { playScoreSelectSound } from '@/lib/dice-sounds';
 
 interface ScoreBoardProps {
   players: Player[];

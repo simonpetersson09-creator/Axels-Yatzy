@@ -58,7 +58,14 @@ export default function MultiplayerGamePage() {
         recordGameResult(myScore, won);
       }
 
-      navigate('/results', { state: { results, isMultiplayer: true } });
+      const isForfeit = !!gameState.forfeitedBy;
+      navigate('/results', {
+        state: {
+          results,
+          isMultiplayer: true,
+          ...(isForfeit ? { forfeit: true, forfeitPlayerName: gameState.forfeitedBy } : {}),
+        },
+      });
     }
   }, [status, gameState, myPlayerIndex, navigate]);
 

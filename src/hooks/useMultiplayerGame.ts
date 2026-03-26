@@ -372,8 +372,15 @@ export function useMultiplayerGame() {
     // Set myPlayerIndex from validated result before subscribing
     setState(prev => ({ ...prev, myPlayerIndex: result.player_index ?? prev.myPlayerIndex }));
 
-    subscribeToGame(gameId);
-    await refreshGameState(gameId);
+    try {
+      subscribeToGame(gameId);
+      await refreshGameState(gameId);
+    } catch (err) {
+      // H3 fix: cleanup on failure
+      cleanupChannel();
+      cleanupTimers();
+      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte återansluta till spelet' }));
+    }
   }, [sessionId, subscribeToGame, refreshGameState]);
 
   // Stop presence/polling when game is finished

@@ -276,7 +276,7 @@ export function useMultiplayerGame() {
   const toggleLock = useCallback(async (index: number) => {
     if (!state.gameId || !state.gameState || localRolling) return;
     const gs = state.gameState;
-    if (gs.rollsLeft === 3 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
+    if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();

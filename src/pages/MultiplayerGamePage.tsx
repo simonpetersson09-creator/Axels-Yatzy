@@ -20,12 +20,14 @@ export default function MultiplayerGamePage() {
 
   const gameId = searchParams.get('gameId');
   const statsRecordedRef = useRef(false);
+  const rejoinCalledRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (gameId && !gameState) {
+    if (gameId && !gameState && rejoinCalledRef.current !== gameId) {
+      rejoinCalledRef.current = gameId;
       rejoinGame(gameId);
     }
-  }, [gameId]);
+  }, [gameId, gameState, rejoinGame]);
 
   // Track active game
   useEffect(() => {

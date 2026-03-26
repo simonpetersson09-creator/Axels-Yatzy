@@ -14,6 +14,7 @@ import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { FullHouseCelebration } from '@/components/game/FullHouseCelebration';
 import { SmallStraightCelebration } from '@/components/game/SmallStraightCelebration';
 import { LargeStraightCelebration } from '@/components/game/LargeStraightCelebration';
+import { FourOfAKindCelebration } from '@/components/game/FourOfAKindCelebration';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';

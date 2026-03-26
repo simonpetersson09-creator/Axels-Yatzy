@@ -60,6 +60,7 @@ export type Database = {
           created_at: string
           current_player_index: number
           dice: number[]
+          forfeited_by: string | null
           game_code: string
           id: string
           is_rolling: boolean
@@ -74,6 +75,7 @@ export type Database = {
           created_at?: string
           current_player_index?: number
           dice?: number[]
+          forfeited_by?: string | null
           game_code: string
           id?: string
           is_rolling?: boolean
@@ -88,6 +90,7 @@ export type Database = {
           created_at?: string
           current_player_index?: number
           dice?: number[]
+          forfeited_by?: string | null
           game_code?: string
           id?: string
           is_rolling?: boolean

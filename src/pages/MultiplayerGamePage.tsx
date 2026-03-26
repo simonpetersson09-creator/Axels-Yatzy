@@ -56,7 +56,7 @@ export default function MultiplayerGamePage() {
         recordGameResult(myScore, won);
       }
 
-      navigate('/results', { state: { results } });
+      navigate('/results', { state: { results, isMultiplayer: true } });
     }
   }, [status, gameState, myPlayerIndex, navigate]);
 

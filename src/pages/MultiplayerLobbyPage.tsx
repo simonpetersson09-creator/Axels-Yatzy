@@ -132,6 +132,7 @@ export default function MultiplayerLobbyPage() {
 
     setGameId(result.game_id!);
     setGameCode(result.game_code!);
+    setMyPlayerIndex(result.player_index ?? null);
     setMode('waiting');
     setLoading(false);
   };

@@ -168,7 +168,7 @@ export function useMultiplayerGame() {
 
     channelRef.current = channel;
     startPresence(gameId);
-  }, [cleanupChannel, debouncedRefresh, startPresence]);
+  }, [cleanupChannel, cleanupTimers, debouncedRefresh, startPresence]);
 
   // Create a new game via atomic RPC
   const createGame = useCallback(async (playerName: string) => {

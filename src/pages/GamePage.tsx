@@ -158,6 +158,11 @@ export default function GamePage() {
         setShowSmallStraight(true);
         setTimeout(() => setShowSmallStraight(false), 350);
       }
+      // Large straight
+      if (calculateScore(gameState.dice, 'largeStraight') > 0 && currentPlayer.scores['largeStraight'] == null) {
+        setShowLargeStraight(true);
+        setTimeout(() => setShowLargeStraight(false), 450);
+      }
     }
   }, [gameState?.isRolling]);
 

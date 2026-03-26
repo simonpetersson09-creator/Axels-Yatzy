@@ -1,4 +1,4 @@
-// Dice rolling sounds — realistic rattling dice on wood surface
+// Dice surface-friction sounds — continuous contact, no bouncing
 let audioCtx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
@@ -12,16 +12,19 @@ function getCtx(): AudioContext | null {
 }
 
 // Rotation speed curve matching dice animation easing
-function speed(t: number): number {
-  if (t < 0.1) return t / 0.1;
-  if (t < 0.5) return 1;
-  const d = (t - 0.5) / 0.5;
+function spd(t: number): number {
+  if (t < 0.08) return t / 0.08;
+  if (t < 0.45) return 1;
+  const d = (t - 0.45) / 0.55;
   return Math.max(0, 1 - d * d);
 }
 
 /**
- * Dice roll — layered: rattling noise + wooden impacts + table vibration.
- * Sounds like hard plastic dice tumbling on a wooden surface.
+ * Continuous friction-based roll sound.
+ * Three layers:
+ *  1. Base: soft continuous surface friction (brownian noise, never silent, no hard edges)
+ *  2. Detail: tiny irregular edge-contact micro-clicks
+ *  3. (Land sound handled separately)
  */
 export function playRollSound(duration = 0.8) {
   const ctx = getCtx();
@@ -30,106 +33,113 @@ export function playRollSound(duration = 0.8) {
   const now = ctx.currentTime;
 
   const master = ctx.createGain();
-  master.gain.value = 0.8;
+  master.gain.value = 0.6;
   master.connect(ctx.destination);
 
-  // ─── Rattling: filtered white noise shaped by rotation ───
+  // ═══════════════════════════════════════════
+  // LAYER 1: Continuous surface friction
+  // Brownian noise — inherently smooth, no harsh transients.
+  // Pitch (filter freq) and volume track rotation speed.
+  // ═══════════════════════════════════════════
   const len = Math.floor(sr * duration);
   const buf = ctx.createBuffer(1, len, sr);
-  const data = buf.getChannelData(0);
+  const d = buf.getChannelData(0);
 
+  let brown = 0;
   for (let i = 0; i < len; i++) {
     const t = i / len;
-    const s = speed(t);
-    // Amplitude-modulated noise — simulates intermittent contact
-    const rattle = Math.sin(t * duration * Math.PI * 2 * (30 + s * 40));
-    const am = 0.4 + 0.6 * Math.max(0, rattle); // amplitude modulation
-    data[i] = (Math.random() * 2 - 1) * s * am * 0.15;
+    const s = spd(t);
+
+    // Brownian walk — step size scales with speed for natural intensity
+    brown += (Math.random() * 2 - 1) * (0.02 + s * 0.06);
+    brown *= 0.998; // gentle mean-reversion
+
+    // No envelope gating — just speed-proportional amplitude
+    // This ensures the sound never "starts" or "stops" abruptly
+    d[i] = brown * (0.15 + s * 0.85);
   }
 
   const src = ctx.createBufferSource();
   src.buffer = buf;
 
-  // Shape: mid-heavy, like plastic on wood
-  const bp = ctx.createBiquadFilter();
-  bp.type = 'bandpass';
-  bp.frequency.setValueAtTime(3200, now);
-  bp.frequency.linearRampToValueAtTime(1500, now + duration);
-  bp.Q.value = 0.7;
-
+  // Lowpass tracks speed: faster = brighter friction, slower = duller
   const lp = ctx.createBiquadFilter();
   lp.type = 'lowpass';
-  lp.frequency.setValueAtTime(6000, now);
-  lp.frequency.linearRampToValueAtTime(3000, now + duration);
+  lp.Q.value = 0.5;
+  // Automate frequency to follow rotation
+  const steps = 30;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const s = spd(t);
+    const freq = 400 + s * 2600; // 400 Hz at rest → 3000 Hz at full speed
+    if (i === 0) lp.frequency.setValueAtTime(freq, now);
+    else lp.frequency.linearRampToValueAtTime(freq, now + t * duration);
+  }
 
-  const rattleGain = ctx.createGain();
-  rattleGain.gain.setValueAtTime(0.2, now);
-  rattleGain.gain.setValueAtTime(0.2, now + duration * 0.4);
-  rattleGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  // Volume automation matching speed (smooth, no jumps)
+  const frictionGain = ctx.createGain();
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const s = spd(t);
+    const vol = 0.02 + s * 0.13; // never fully silent — always some contact
+    if (i === 0) frictionGain.gain.setValueAtTime(vol, now);
+    else frictionGain.gain.linearRampToValueAtTime(vol, now + t * duration);
+  }
 
-  src.connect(bp).connect(lp).connect(rattleGain).connect(master);
+  src.connect(lp).connect(frictionGain).connect(master);
   src.start(now);
   src.stop(now + duration);
 
-  // ─── Impacts: short clacks as die edges hit the surface ───
-  let hitTime = 0.01;
-  let count = 0;
+  // ═══════════════════════════════════════════
+  // LAYER 2: Irregular edge-contact micro-clicks
+  // NOT evenly spaced. Random intervals with bias toward
+  // shorter gaps at higher speed. Very quiet, just texture.
+  // ═══════════════════════════════════════════
+  let clickTime = 0.02 + Math.random() * 0.03;
 
-  while (hitTime < duration - 0.02 && count < 18) {
-    const t = hitTime / duration;
-    const s = speed(t);
-    if (s < 0.05) break;
+  while (clickTime < duration - 0.03) {
+    const t = clickTime / duration;
+    const s = spd(t);
+    if (s < 0.02) break;
 
-    // Create a short "clack" — noise burst + resonant ping
-    const clackDur = 0.01 + (1 - s) * 0.008;
-    const clackLen = Math.floor(sr * clackDur);
-    const clackBuf = ctx.createBuffer(1, clackLen, sr);
-    const cd = clackBuf.getChannelData(0);
-    for (let j = 0; j < clackLen; j++) {
-      // Sharp attack, quick decay
-      const env = Math.exp(-j / (clackLen * 0.08));
-      cd[j] = (Math.random() * 2 - 1) * env;
+    // Micro-click: extremely short filtered noise, 2-4ms
+    const clickDur = 0.002 + Math.random() * 0.002;
+    const clickLen = Math.floor(sr * clickDur);
+    const clickBuf = ctx.createBuffer(1, clickLen, sr);
+    const cd = clickBuf.getChannelData(0);
+    for (let j = 0; j < clickLen; j++) {
+      // Very fast exponential decay
+      cd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (clickLen * 0.06));
     }
 
-    const clackSrc = ctx.createBufferSource();
-    clackSrc.buffer = clackBuf;
+    const clickSrc = ctx.createBufferSource();
+    clickSrc.buffer = clickBuf;
 
-    // Resonant filter — gives the "woody" character
-    const clackBp = ctx.createBiquadFilter();
-    clackBp.type = 'bandpass';
-    clackBp.frequency.value = 1800 + Math.random() * 1200;
-    clackBp.Q.value = 3 + Math.random() * 4; // resonant = more "clacky"
+    // Narrow bandpass — gives each click a slightly different "pitch"
+    const clickBp = ctx.createBiquadFilter();
+    clickBp.type = 'bandpass';
+    clickBp.frequency.value = 1200 + Math.random() * 1800; // vary 1200–3000
+    clickBp.Q.value = 1.5 + Math.random() * 2;
 
-    const clackGain = ctx.createGain();
-    clackGain.gain.value = s * (0.12 + Math.random() * 0.06);
+    const clickGain = ctx.createGain();
+    // Quiet: 0.02–0.06, scaled by speed
+    clickGain.gain.value = s * (0.02 + Math.random() * 0.04);
 
-    clackSrc.connect(clackBp).connect(clackGain).connect(master);
-    clackSrc.start(now + hitTime);
-    clackSrc.stop(now + hitTime + clackDur + 0.01);
+    clickSrc.connect(clickBp).connect(clickGain).connect(master);
+    clickSrc.start(now + clickTime);
+    clickSrc.stop(now + clickTime + clickDur + 0.005);
 
-    // Spacing follows rotation speed
-    const interval = (0.02 + Math.random() * 0.015) / Math.max(s, 0.15);
-    hitTime += Math.max(interval, 0.02);
-    count++;
+    // Random interval — NOT rhythmic
+    // Base gap shrinks with speed, plus heavy randomization
+    const meanGap = 0.03 / Math.max(s, 0.1);
+    const jitter = meanGap * (0.3 + Math.random() * 1.4); // 30%-170% of mean
+    clickTime += Math.max(jitter, 0.015);
   }
-
-  // ─── Table body: low thud resonance from surface ───
-  const bodyOsc = ctx.createOscillator();
-  bodyOsc.type = 'sine';
-  bodyOsc.frequency.value = 80;
-
-  const bodyGain = ctx.createGain();
-  bodyGain.gain.setValueAtTime(0.04, now);
-  bodyGain.gain.setValueAtTime(0.04, now + duration * 0.3);
-  bodyGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.7);
-
-  bodyOsc.connect(bodyGain).connect(master);
-  bodyOsc.start(now);
-  bodyOsc.stop(now + duration * 0.7);
 }
 
 /**
- * Landing: die settles flat — final clack + wood thud.
+ * Landing: die settles flat against surface.
+ * Short, muffled "tick" — NOT a bounce, just the final lay-down.
  */
 export function playLandSound() {
   const ctx = getCtx();
@@ -138,66 +148,45 @@ export function playLandSound() {
   const sr = ctx.sampleRate;
 
   const master = ctx.createGain();
-  master.gain.value = 0.7;
+  master.gain.value = 0.5;
   master.connect(ctx.destination);
 
-  // Final clack — sharp, clean
-  const clackDur = 0.015;
-  const clackLen = Math.floor(sr * clackDur);
-  const clackBuf = ctx.createBuffer(1, clackLen, sr);
-  const cd = clackBuf.getChannelData(0);
-  for (let j = 0; j < clackLen; j++) {
-    cd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (clackLen * 0.06));
+  // Muffled tick: very short noise through a low bandpass
+  const tickDur = 0.012;
+  const tickLen = Math.floor(sr * tickDur);
+  const tickBuf = ctx.createBuffer(1, tickLen, sr);
+  const td = tickBuf.getChannelData(0);
+  for (let j = 0; j < tickLen; j++) {
+    td[j] = (Math.random() * 2 - 1) * Math.exp(-j / (tickLen * 0.04));
   }
 
-  const clackSrc = ctx.createBufferSource();
-  clackSrc.buffer = clackBuf;
+  const tickSrc = ctx.createBufferSource();
+  tickSrc.buffer = tickBuf;
 
-  const clackBp = ctx.createBiquadFilter();
-  clackBp.type = 'bandpass';
-  clackBp.frequency.value = 2200 + Math.random() * 800;
-  clackBp.Q.value = 4;
+  // Low bandpass = muffled, not sharp
+  const tickBp = ctx.createBiquadFilter();
+  tickBp.type = 'bandpass';
+  tickBp.frequency.value = 900 + Math.random() * 400;
+  tickBp.Q.value = 1.5;
 
-  const clackGain = ctx.createGain();
-  clackGain.gain.value = 0.15;
+  const tickGain = ctx.createGain();
+  tickGain.gain.value = 0.1;
 
-  clackSrc.connect(clackBp).connect(clackGain).connect(master);
-  clackSrc.start(now);
-  clackSrc.stop(now + 0.03);
+  tickSrc.connect(tickBp).connect(tickGain).connect(master);
+  tickSrc.start(now);
+  tickSrc.stop(now + 0.025);
 
-  // Wood thud
+  // Soft low thud — table absorbing the settle
   const thud = ctx.createOscillator();
   thud.type = 'sine';
-  thud.frequency.setValueAtTime(120, now);
-  thud.frequency.exponentialRampToValueAtTime(45, now + 0.06);
+  thud.frequency.setValueAtTime(85, now);
+  thud.frequency.exponentialRampToValueAtTime(35, now + 0.05);
 
   const thudGain = ctx.createGain();
-  thudGain.gain.setValueAtTime(0.06, now);
-  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+  thudGain.gain.setValueAtTime(0.035, now);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
 
   thud.connect(thudGain).connect(master);
   thud.start(now);
-  thud.stop(now + 0.1);
-
-  // Second lighter settle tap
-  if (Math.random() > 0.3) {
-    const tapDur = 0.01;
-    const tapLen = Math.floor(sr * tapDur);
-    const tapBuf = ctx.createBuffer(1, tapLen, sr);
-    const td = tapBuf.getChannelData(0);
-    for (let j = 0; j < tapLen; j++) {
-      td[j] = (Math.random() * 2 - 1) * Math.exp(-j / (tapLen * 0.05));
-    }
-    const tapSrc = ctx.createBufferSource();
-    tapSrc.buffer = tapBuf;
-    const tapBp = ctx.createBiquadFilter();
-    tapBp.type = 'bandpass';
-    tapBp.frequency.value = 2500 + Math.random() * 600;
-    tapBp.Q.value = 5;
-    const tapGain = ctx.createGain();
-    tapGain.gain.value = 0.06;
-    tapSrc.connect(tapBp).connect(tapGain).connect(master);
-    tapSrc.start(now + 0.035);
-    tapSrc.stop(now + 0.05);
-  }
+  thud.stop(now + 0.08);
 }

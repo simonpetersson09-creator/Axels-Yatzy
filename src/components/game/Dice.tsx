@@ -136,6 +136,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       rollingRef.current = true;
       setIsAnimating(true);
       setSpinRotation(target);
+      playRollSound(dur);
       const t = setTimeout(() => {
         setIsAnimating(false);
         rollingRef.current = false;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getPlayerName } from '@/lib/session';
+import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
@@ -28,11 +28,13 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
 
   const handleCreate = () => {
     const name = sanitizeName(playerName) || 'Spelare 1';
+    savePlayerName(name);
     onCreateGame(name);
   };
 
   const handleJoin = () => {
     const name = sanitizeName(playerName) || 'Spelare';
+    savePlayerName(name);
     onJoinGame(joinCode.toUpperCase(), name);
   };
 

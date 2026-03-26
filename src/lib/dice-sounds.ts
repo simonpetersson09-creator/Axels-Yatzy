@@ -1,4 +1,4 @@
-// Realistic dice rolling sounds — synchronized with rotation speed
+// Clean, precise dice rolling sounds — tightly synced to rotation animation
 let audioCtx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
@@ -11,9 +11,17 @@ function getCtx(): AudioContext | null {
   }
 }
 
+// Matches the cubic-bezier(0.15, 0.85, 0.25, 1) used by dice rotation
+function rotationSpeed(t: number): number {
+  if (t < 0.1) return t / 0.1 * 0.95;       // quick ramp up
+  if (t < 0.5) return 0.95 + 0.05 * Math.sin((t - 0.1) / 0.4 * Math.PI * 0.5); // sustained peak
+  const d = (t - 0.5) / 0.5;
+  return Math.max(0, (1 - d * d) * 0.95);    // smooth quadratic decel
+}
+
 /**
- * Rolling sound — duration-aware, matches dice rotation deceleration.
- * @param duration Total roll animation time in seconds (matches Dice component)
+ * Rolling sound synced to rotation duration.
+ * Clean layers: pitched hum + rhythmic contact ticks + subtle body resonance.
  */
 export function playRollSound(duration = 0.8) {
   const ctx = getCtx();
@@ -21,196 +29,205 @@ export function playRollSound(duration = 0.8) {
 
   const sr = ctx.sampleRate;
   const now = ctx.currentTime;
+
+  // Master output
   const master = ctx.createGain();
-  master.gain.value = 0.7;
+  master.gain.value = 0.55;
   master.connect(ctx.destination);
 
-  // Match the cubic-bezier ease [0.15, 0.85, 0.25, 1] used by dice rotation.
-  // Approximate as: speed starts high, stays high until ~60%, then decelerates sharply.
-  // speedAt(t) ≈ 1 at t=0, peaks slightly, drops to 0 at t=1
-  function speedAt(t: number): number {
-    // Fast start, sustain, then sharp decel — mirrors the CSS ease curve
-    if (t < 0.15) return 0.7 + t / 0.15 * 0.3; // ramp up
-    if (t < 0.55) return 1.0; // sustained fast spin
-    // Sharp deceleration
-    const d = (t - 0.55) / 0.45;
-    return Math.max(0, 1.0 - d * d * 1.1);
-  }
+  // ─── Layer 1: Clean rolling hum (pitched, not noise) ───
+  // Two detuned oscillators create a natural "rolling on surface" tone
+  const baseFreq = 180;
 
-  // ─── Layer 1: Friction noise shaped by rotation speed ───
-  const frictionLen = Math.floor(sr * duration);
-  const frictionBuf = ctx.createBuffer(1, frictionLen, sr);
-  const fd = frictionBuf.getChannelData(0);
+  for (let detune = 0; detune < 2; detune++) {
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(baseFreq + detune * 7, now);
 
-  let lastSample = 0;
-  for (let i = 0; i < frictionLen; i++) {
-    const t = i / frictionLen;
-    const speed = speedAt(t);
-    // Brownian noise — step size proportional to speed
-    lastSample += (Math.random() * 2 - 1) * (0.08 + speed * 0.12);
-    lastSample *= 0.996;
-    // Wobble frequency increases with speed
-    const wobble = 1 + 0.2 * Math.sin(t * Math.PI * 2 * (6 + speed * 14));
-    fd[i] = lastSample * speed * wobble * 0.07;
-  }
-
-  const frictionSrc = ctx.createBufferSource();
-  frictionSrc.buffer = frictionBuf;
-
-  const frictionFilter = ctx.createBiquadFilter();
-  frictionFilter.type = 'bandpass';
-  // Frequency sweeps down as rotation slows
-  frictionFilter.frequency.setValueAtTime(1800, now);
-  frictionFilter.frequency.linearRampToValueAtTime(2000, now + duration * 0.3);
-  frictionFilter.frequency.linearRampToValueAtTime(800, now + duration);
-  frictionFilter.Q.value = 0.4;
-
-  const warmth = ctx.createBiquadFilter();
-  warmth.type = 'lowpass';
-  warmth.frequency.setValueAtTime(3500, now);
-  warmth.frequency.linearRampToValueAtTime(1800, now + duration);
-
-  const frictionGain = ctx.createGain();
-  frictionGain.gain.setValueAtTime(0.14, now);
-  frictionGain.gain.setValueAtTime(0.14, now + duration * 0.5);
-  frictionGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-  frictionSrc.connect(frictionFilter).connect(warmth).connect(frictionGain).connect(master);
-  frictionSrc.start();
-  frictionSrc.stop(now + duration);
-
-  // ─── Layer 2: Edge taps — faster when spinning fast, spacing out as it slows ───
-  let tapTime = 0.015;
-  while (tapTime < duration - 0.04) {
-    const progress = tapTime / duration;
-    const speed = speedAt(progress);
-
-    if (speed < 0.05) break;
-
-    // Tap interval inversely proportional to speed
-    const baseInterval = 0.02 / Math.max(speed, 0.1);
-    const jitter = (Math.random() - 0.5) * baseInterval * 0.5;
-    const interval = Math.min(baseInterval + jitter, 0.15);
-
-    const tapDur = 0.005 + Math.random() * 0.003;
-    const tapLen = Math.floor(sr * tapDur);
-    const tapBuf = ctx.createBuffer(1, tapLen, sr);
-    const td = tapBuf.getChannelData(0);
-    let ts = 0;
-    for (let j = 0; j < tapLen; j++) {
-      const env = Math.exp(-j / (tapLen * 0.15));
-      ts += (Math.random() * 2 - 1) * 0.25;
-      ts *= 0.98;
-      td[j] = ts * env;
+    // Frequency follows rotation speed — higher pitch = faster spin
+    const steps = 20;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const speed = rotationSpeed(t);
+      const freq = 60 + speed * (baseFreq - 60 + detune * 7);
+      if (i === 0) {
+        osc.frequency.setValueAtTime(freq, now);
+      } else {
+        osc.frequency.linearRampToValueAtTime(freq, now + t * duration);
+      }
     }
 
-    const tapSrc = ctx.createBufferSource();
-    tapSrc.buffer = tapBuf;
+    const oscGain = ctx.createGain();
+    // Volume follows rotation speed
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const vol = rotationSpeed(t) * 0.06;
+      if (i === 0) {
+        oscGain.gain.setValueAtTime(Math.max(vol, 0.001), now);
+      } else {
+        oscGain.gain.linearRampToValueAtTime(Math.max(vol, 0.001), now + t * duration);
+      }
+    }
 
-    const tapFilter = ctx.createBiquadFilter();
-    tapFilter.type = 'bandpass';
-    tapFilter.frequency.value = 1000 + speed * 800 + Math.random() * 400;
-    tapFilter.Q.value = 0.5;
+    // Soft lowpass to remove harshness
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.value = 1200;
+    lpf.Q.value = 0.5;
 
-    const tapGain = ctx.createGain();
-    tapGain.gain.value = speed * (0.025 + Math.random() * 0.015);
-
-    tapSrc.connect(tapFilter).connect(tapGain).connect(master);
-    tapSrc.start(now + tapTime);
-    tapSrc.stop(now + tapTime + tapDur);
-
-    tapTime += interval;
+    osc.connect(oscGain).connect(lpf).connect(master);
+    osc.start(now);
+    osc.stop(now + duration);
   }
 
-  // ─── Layer 3: Low rumble matched to rotation ───
-  const rumbleDur = duration * 0.7;
-  const rumbleLen = Math.floor(sr * rumbleDur);
-  const rumbleBuf = ctx.createBuffer(1, rumbleLen, sr);
-  const rd = rumbleBuf.getChannelData(0);
-  let rs = 0;
-  for (let i = 0; i < rumbleLen; i++) {
-    const t = i / rumbleLen;
-    const speed = speedAt(t * 0.7); // map to first 70% of animation
-    rs += (Math.random() * 2 - 1) * (0.05 + speed * 0.08);
-    rs *= 0.994;
-    rd[i] = rs * speed * 0.05;
+  // ─── Layer 2: Rhythmic contact ticks (clean, evenly spaced by rotation) ───
+  // Each "tick" = one face/edge passing the surface. Spacing = rotation period.
+  // A die has 4 edges per revolution, so ~4 ticks per full rotation.
+  // Total rotations ≈ 2-3, so ~8-12 ticks, fast at start, slowing down.
+
+  let accumulated = 0;
+  let tickTime = 0.005;
+  const tickTimes: number[] = [];
+
+  while (tickTime < duration - 0.03) {
+    const t = tickTime / duration;
+    const speed = rotationSpeed(t);
+    if (speed < 0.03) break;
+
+    tickTimes.push(tickTime);
+
+    // Interval: fast rotation = short gaps, slow = long gaps
+    // Base: 4 ticks per revolution, speed=1 means ~2 revolutions/sec
+    const revsPerSec = speed * 2.5;
+    const ticksPerSec = revsPerSec * 4;
+    const interval = ticksPerSec > 0 ? 1 / ticksPerSec : 0.2;
+
+    tickTime += Math.max(interval, 0.018); // floor to prevent overlap
+    accumulated++;
+    if (accumulated > 20) break;
   }
 
-  const rumbleSrc = ctx.createBufferSource();
-  rumbleSrc.buffer = rumbleBuf;
+  tickTimes.forEach((tt) => {
+    const t = tt / duration;
+    const speed = rotationSpeed(t);
 
-  const rumbleFilter = ctx.createBiquadFilter();
-  rumbleFilter.type = 'lowpass';
-  rumbleFilter.frequency.value = 250;
+    // Clean tick: short sine ping + tiny noise transient
+    const tickOsc = ctx.createOscillator();
+    tickOsc.type = 'sine';
+    const tickFreq = 800 + speed * 600 + (Math.random() - 0.5) * 100;
+    tickOsc.frequency.value = tickFreq;
 
-  const rumbleGain = ctx.createGain();
-  rumbleGain.gain.setValueAtTime(0.08, now);
-  rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + rumbleDur);
+    const tickEnv = ctx.createGain();
+    const tickDur = 0.008 + (1 - speed) * 0.006; // longer ticks when slower
+    tickEnv.gain.setValueAtTime(speed * 0.07, now + tt);
+    tickEnv.gain.exponentialRampToValueAtTime(0.001, now + tt + tickDur);
 
-  rumbleSrc.connect(rumbleFilter).connect(rumbleGain).connect(master);
-  rumbleSrc.start();
-  rumbleSrc.stop(now + rumbleDur);
+    // Bandpass for clean character
+    const tickBpf = ctx.createBiquadFilter();
+    tickBpf.type = 'bandpass';
+    tickBpf.frequency.value = tickFreq;
+    tickBpf.Q.value = 2;
+
+    tickOsc.connect(tickBpf).connect(tickEnv).connect(master);
+    tickOsc.start(now + tt);
+    tickOsc.stop(now + tt + tickDur + 0.01);
+
+    // Tiny noise transient for realism
+    const nLen = Math.floor(sr * 0.003);
+    const nBuf = ctx.createBuffer(1, nLen, sr);
+    const nd = nBuf.getChannelData(0);
+    for (let j = 0; j < nLen; j++) {
+      nd[j] = (Math.random() * 2 - 1) * Math.exp(-j / (nLen * 0.1)) * 0.5;
+    }
+    const nSrc = ctx.createBufferSource();
+    nSrc.buffer = nBuf;
+    const nGain = ctx.createGain();
+    nGain.gain.value = speed * 0.02;
+    const nHpf = ctx.createBiquadFilter();
+    nHpf.type = 'highpass';
+    nHpf.frequency.value = 2000;
+    nSrc.connect(nHpf).connect(nGain).connect(master);
+    nSrc.start(now + tt);
+    nSrc.stop(now + tt + 0.005);
+  });
+
+  // ─── Layer 3: Subtle surface resonance (warm body) ───
+  const resOsc = ctx.createOscillator();
+  resOsc.type = 'sine';
+  resOsc.frequency.value = 95;
+
+  const resGain = ctx.createGain();
+  const steps2 = 12;
+  for (let i = 0; i <= steps2; i++) {
+    const t = i / steps2;
+    const vol = rotationSpeed(t) * 0.025;
+    if (i === 0) {
+      resGain.gain.setValueAtTime(Math.max(vol, 0.001), now);
+    } else {
+      resGain.gain.linearRampToValueAtTime(Math.max(vol, 0.001), now + t * duration);
+    }
+  }
+
+  const resLpf = ctx.createBiquadFilter();
+  resLpf.type = 'lowpass';
+  resLpf.frequency.value = 200;
+
+  resOsc.connect(resGain).connect(resLpf).connect(master);
+  resOsc.start(now);
+  resOsc.stop(now + duration);
 }
 
 /**
- * Settling sound — the die gently comes to rest.
+ * Settling: clean final contact + warm stop tone.
  */
 export function playLandSound() {
   const ctx = getCtx();
   if (!ctx) return;
   const now = ctx.currentTime;
-  const sr = ctx.sampleRate;
 
   const master = ctx.createGain();
-  master.gain.value = 0.65;
+  master.gain.value = 0.5;
   master.connect(ctx.destination);
 
-  // Gentle final taps
-  const tapCount = 1 + Math.floor(Math.random() * 2);
-  let tapTime = 0;
+  // Final contact tick — clean sine
+  const tick = ctx.createOscillator();
+  tick.type = 'sine';
+  tick.frequency.value = 650 + Math.random() * 150;
 
-  for (let i = 0; i < tapCount; i++) {
-    const tapDur = 0.01 + Math.random() * 0.005;
-    const tapLen = Math.floor(sr * tapDur);
-    const tapBuf = ctx.createBuffer(1, tapLen, sr);
-    const td = tapBuf.getChannelData(0);
-    let ts = 0;
-    for (let j = 0; j < tapLen; j++) {
-      const env = Math.exp(-j / (tapLen * 0.15));
-      ts += (Math.random() * 2 - 1) * 0.2;
-      ts *= 0.98;
-      td[j] = ts * env;
-    }
+  const tickGain = ctx.createGain();
+  tickGain.gain.setValueAtTime(0.08, now);
+  tickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
-    const tapSrc = ctx.createBufferSource();
-    tapSrc.buffer = tapBuf;
+  tick.connect(tickGain).connect(master);
+  tick.start(now);
+  tick.stop(now + 0.05);
 
-    const tapFilter = ctx.createBiquadFilter();
-    tapFilter.type = 'bandpass';
-    tapFilter.frequency.value = 1000 + Math.random() * 500;
-    tapFilter.Q.value = 0.6;
+  // Warm settle thump
+  const thump = ctx.createOscillator();
+  thump.type = 'sine';
+  thump.frequency.setValueAtTime(100, now);
+  thump.frequency.exponentialRampToValueAtTime(42, now + 0.08);
 
-    const tapGain = ctx.createGain();
-    tapGain.gain.value = (0.04 - i * 0.015) * (0.7 + Math.random() * 0.3);
+  const thumpGain = ctx.createGain();
+  thumpGain.gain.setValueAtTime(0.04, now);
+  thumpGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
 
-    tapSrc.connect(tapFilter).connect(tapGain).connect(master);
-    tapSrc.start(now + tapTime);
-    tapSrc.stop(now + tapTime + tapDur);
+  thump.connect(thumpGain).connect(master);
+  thump.start(now);
+  thump.stop(now + 0.12);
 
-    tapTime += 0.035 + i * 0.02;
+  // Optional second micro-tap (die settling flat)
+  if (Math.random() > 0.4) {
+    const tap2 = ctx.createOscillator();
+    tap2.type = 'sine';
+    tap2.frequency.value = 500 + Math.random() * 200;
+
+    const tap2Gain = ctx.createGain();
+    tap2Gain.gain.setValueAtTime(0.03, now + 0.04);
+    tap2Gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+
+    tap2.connect(tap2Gain).connect(master);
+    tap2.start(now + 0.04);
+    tap2.stop(now + 0.08);
   }
-
-  // Warm thump
-  const osc = ctx.createOscillator();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(110, now);
-  osc.frequency.exponentialRampToValueAtTime(50, now + 0.07);
-
-  const thudGain = ctx.createGain();
-  thudGain.gain.setValueAtTime(0.045, now);
-  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-
-  osc.connect(thudGain).connect(master);
-  osc.start();
-  osc.stop(now + 0.1);
 }

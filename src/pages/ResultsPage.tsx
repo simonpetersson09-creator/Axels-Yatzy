@@ -74,7 +74,7 @@ export default function ResultsPage() {
         <div className="space-y-2">
           {sorted.map((player, i) => (
             <motion.div
-              key={player.name}
+              key={`${player.name}-${i}`}
               className={`glass-card p-4 flex items-center justify-between ${
                 i === 0 && !forfeit ? 'ring-1 ring-game-gold/30' : ''
               } ${forfeit && player.name === forfeitPlayerName ? 'opacity-50' : ''}`}

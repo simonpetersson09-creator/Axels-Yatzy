@@ -280,7 +280,7 @@ export function useMultiplayerGame() {
 
   // Toggle lock — server-side validated
   const toggleLock = useCallback(async (index: number) => {
-    if (!state.gameId || !state.gameState || localRolling) return;
+    if (!state.gameId || !state.gameState || rollingGuardRef.current) return;
     const gs = state.gameState;
     if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
@@ -313,7 +313,7 @@ export function useMultiplayerGame() {
   // Select category — calls server-side Edge Function
   const selectCategory = useCallback(async (categoryId: CategoryId) => {
     if (submittingRef.current) return;
-    if (!state.gameId || !state.gameState || localRolling) return;
+    if (!state.gameId || !state.gameState || rollingGuardRef.current) return;
     const gs = state.gameState;
     if (gs.rollsLeft === 3 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
@@ -348,6 +348,7 @@ export function useMultiplayerGame() {
 
     if (error) {
       console.error('Forfeit error:', error);
+      throw new Error('Forfeit failed');
     }
   }, [state.gameId, sessionId]);
 

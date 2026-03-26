@@ -35,6 +35,7 @@ export function useMultiplayerGame() {
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const submittingRef = useRef(false);
   const mountedRef = useRef(true);
   const sessionId = getSessionId();
   // Use ref to avoid stale closure in debouncedRefresh
@@ -154,6 +155,7 @@ export function useMultiplayerGame() {
   // Subscribe to realtime changes (single channel for both lobby + game)
   const subscribeToGame = useCallback((gameId: string) => {
     cleanupChannel();
+    cleanupTimers();
 
     const channel = supabase
       .channel(`yatzy-${gameId}`)
@@ -167,7 +169,7 @@ export function useMultiplayerGame() {
 
     channelRef.current = channel;
     startPresence(gameId);
-  }, [cleanupChannel, debouncedRefresh, startPresence]);
+  }, [cleanupChannel, cleanupTimers, debouncedRefresh, startPresence]);
 
   // Create a new game via atomic RPC
   const createGame = useCallback(async (playerName: string) => {
@@ -275,7 +277,7 @@ export function useMultiplayerGame() {
   const toggleLock = useCallback(async (index: number) => {
     if (!state.gameId || !state.gameState || localRolling) return;
     const gs = state.gameState;
-    if (gs.rollsLeft === 3 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
+    if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
@@ -305,6 +307,7 @@ export function useMultiplayerGame() {
 
   // Select category — calls server-side Edge Function
   const selectCategory = useCallback(async (categoryId: CategoryId) => {
+    if (submittingRef.current) return;
     if (!state.gameId || !state.gameState || localRolling) return;
     const gs = state.gameState;
     if (gs.rollsLeft === 3 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
@@ -312,15 +315,21 @@ export function useMultiplayerGame() {
     const currentPlayer = gs.players[gs.currentPlayerIndex];
     if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return;
 
+    submittingRef.current = true;
+
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
-    const { error } = await supabase.functions.invoke('submit-score', {
-      body: { game_id: state.gameId, session_id: sessionId, category_id: categoryId },
-    });
+    try {
+      const { error } = await supabase.functions.invoke('submit-score', {
+        body: { game_id: state.gameId, session_id: sessionId, category_id: categoryId },
+      });
 
-    if (error) {
-      console.error('Submit score error:', error);
+      if (error) {
+        console.error('Submit score error:', error);
+      }
+    } finally {
+      submittingRef.current = false;
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 

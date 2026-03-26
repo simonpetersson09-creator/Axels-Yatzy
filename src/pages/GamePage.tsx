@@ -12,6 +12,7 @@ import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { FullHouseCelebration } from '@/components/game/FullHouseCelebration';
+import { SmallStraightCelebration } from '@/components/game/SmallStraightCelebration';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';
@@ -135,22 +136,25 @@ export default function GamePage() {
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
   const [showFullHouse, setShowFullHouse] = useState(false);
+  const [showSmallStraight, setShowSmallStraight] = useState(false);
   const prevIsRollingRef = useRef(false);
 
-  // Detect full house when dice stop rolling
+  // Detect combinations when dice stop rolling
   useEffect(() => {
     if (!gameState) return;
     const wasRolling = prevIsRollingRef.current;
     prevIsRollingRef.current = gameState.isRolling;
     if (wasRolling && !gameState.isRolling) {
-      const score = calculateScore(gameState.dice, 'fullHouse');
-      if (score > 0) {
-        // Only show if player hasn't already scored full house
-        const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-        if (currentPlayer.scores['fullHouse'] == null) {
-          setShowFullHouse(true);
-          setTimeout(() => setShowFullHouse(false), 450);
-        }
+      const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+      // Full house
+      if (calculateScore(gameState.dice, 'fullHouse') > 0 && currentPlayer.scores['fullHouse'] == null) {
+        setShowFullHouse(true);
+        setTimeout(() => setShowFullHouse(false), 450);
+      }
+      // Small straight
+      if (calculateScore(gameState.dice, 'smallStraight') > 0 && currentPlayer.scores['smallStraight'] == null) {
+        setShowSmallStraight(true);
+        setTimeout(() => setShowSmallStraight(false), 350);
       }
     }
   }, [gameState?.isRolling]);
@@ -229,6 +233,7 @@ export default function GamePage() {
         onComplete={() => setShowYatzyCelebration(false)}
       />
       <FullHouseCelebration show={showFullHouse} />
+      <SmallStraightCelebration show={showSmallStraight} />
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

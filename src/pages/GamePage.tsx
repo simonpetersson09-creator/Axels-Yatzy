@@ -209,11 +209,7 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <FullHouseCelebration show={showFullHouse} />
-      <SmallStraightCelebration show={showSmallStraight} />
-      <LargeStraightCelebration show={showLargeStraight} />
-      <FourOfAKindCelebration show={showFourOfAKind} />
-      <ThreeOfAKindCelebration show={showThreeOfAKind} />
+      <CombinationCelebration type={activeCelebration} />
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

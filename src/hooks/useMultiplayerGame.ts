@@ -246,13 +246,16 @@ export function useMultiplayerGame() {
 
   // Roll dice — calls server-side Edge Function
   const [localRolling, setLocalRolling] = useState(false);
+  const rollingGuardRef = useRef(false);
 
   const roll = useCallback(async () => {
-    if (!state.gameId || !state.gameState || localRolling) return;
+    if (rollingGuardRef.current) return;
+    if (!state.gameId || !state.gameState) return;
     const gs = state.gameState;
     if (gs.rollsLeft <= 0) return;
     if (state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
+    rollingGuardRef.current = true;
     setLocalRolling(true);
 
     // Send heartbeat on action
@@ -267,13 +270,13 @@ export function useMultiplayerGame() {
         console.error('Roll dice error:', error);
       }
     } finally {
-      // M4 fix: clear rolling after server response, with minimum visual delay
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
       rollingTimerRef.current = setTimeout(() => {
+        rollingGuardRef.current = false;
         if (mountedRef.current) setLocalRolling(false);
       }, 400);
     }
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, localRolling]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Toggle lock — server-side validated
   const toggleLock = useCallback(async (index: number) => {

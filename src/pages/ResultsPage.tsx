@@ -20,9 +20,9 @@ export default function ResultsPage() {
   const sorted = [...results].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
 
-  // If forfeit, the winner is whoever didn't forfeit
+  // If forfeit, the winner is the highest-scoring non-forfeit player
   const forfeitWinner = forfeit && results.length > 1
-    ? results.find(r => r.name !== forfeitPlayerName)
+    ? [...results].filter(r => r.name !== forfeitPlayerName).sort((a, b) => b.score - a.score)[0] ?? null
     : null;
 
   return (

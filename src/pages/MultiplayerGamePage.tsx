@@ -204,7 +204,7 @@ export default function MultiplayerGamePage() {
               dice={gameState.dice}
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}
-              isRolling={gameState.isRolling}
+              isRolling={localRolling || gameState.isRolling}
               onToggleLock={toggleLock}
             />
           </div>

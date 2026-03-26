@@ -12,6 +12,7 @@ import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { FullHouseCelebration } from '@/components/game/FullHouseCelebration';
+import { SmallStraightCelebration } from '@/components/game/SmallStraightCelebration';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';

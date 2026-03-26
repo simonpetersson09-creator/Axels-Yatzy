@@ -11,12 +11,8 @@ import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
-import { FullHouseCelebration } from '@/components/game/FullHouseCelebration';
-import { SmallStraightCelebration } from '@/components/game/SmallStraightCelebration';
-import { LargeStraightCelebration } from '@/components/game/LargeStraightCelebration';
-import { FourOfAKindCelebration } from '@/components/game/FourOfAKindCelebration';
-import { ThreeOfAKindCelebration } from '@/components/game/ThreeOfAKindCelebration';
-import { calculateScore } from '@/lib/yatzy-scoring';
+import { CombinationCelebration } from '@/components/game/CombinationCelebration';
+import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';
 
@@ -138,52 +134,7 @@ export default function GamePage() {
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, roll, selectCategory, setLocks]);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
-  const [showFullHouse, setShowFullHouse] = useState(false);
-  const [showSmallStraight, setShowSmallStraight] = useState(false);
-  const [showLargeStraight, setShowLargeStraight] = useState(false);
-  const [showFourOfAKind, setShowFourOfAKind] = useState(false);
-  const [showThreeOfAKind, setShowThreeOfAKind] = useState(false);
-  const prevIsRollingRef = useRef(false);
-
-  // Detect combinations when dice stop rolling
-  useEffect(() => {
-    if (!gameState) return;
-    const wasRolling = prevIsRollingRef.current;
-    prevIsRollingRef.current = gameState.isRolling;
-    if (wasRolling && !gameState.isRolling) {
-      const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-      // Full house
-      if (calculateScore(gameState.dice, 'fullHouse') > 0 && currentPlayer.scores['fullHouse'] == null) {
-        setShowFullHouse(true);
-        setTimeout(() => setShowFullHouse(false), 450);
-      }
-      // Small straight
-      if (calculateScore(gameState.dice, 'smallStraight') > 0 && currentPlayer.scores['smallStraight'] == null) {
-        setShowSmallStraight(true);
-        setTimeout(() => setShowSmallStraight(false), 350);
-      }
-      // Large straight
-      if (calculateScore(gameState.dice, 'largeStraight') > 0 && currentPlayer.scores['largeStraight'] == null) {
-        setShowLargeStraight(true);
-        setTimeout(() => setShowLargeStraight(false), 450);
-      }
-      // Four of a kind
-      if (calculateScore(gameState.dice, 'fourOfAKind') > 0 && currentPlayer.scores['fourOfAKind'] == null) {
-        setShowFourOfAKind(true);
-        setTimeout(() => setShowFourOfAKind(false), 400);
-      }
-      // Three of a kind (only if not also four of a kind or full house)
-      if (
-        calculateScore(gameState.dice, 'threeOfAKind') > 0 &&
-        calculateScore(gameState.dice, 'fourOfAKind') === 0 &&
-        calculateScore(gameState.dice, 'fullHouse') === 0 &&
-        currentPlayer.scores['threeOfAKind'] == null
-      ) {
-        setShowThreeOfAKind(true);
-        setTimeout(() => setShowThreeOfAKind(false), 280);
-      }
-    }
-  }, [gameState?.isRolling]);
+  const activeCelebration = useCombinationCelebration(gameState);
 
   const handleForfeit = useCallback(() => {
     if (!gameState) return;
@@ -258,11 +209,7 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <FullHouseCelebration show={showFullHouse} />
-      <SmallStraightCelebration show={showSmallStraight} />
-      <LargeStraightCelebration show={showLargeStraight} />
-      <FourOfAKindCelebration show={showFourOfAKind} />
-      <ThreeOfAKindCelebration show={showThreeOfAKind} />
+      <CombinationCelebration type={activeCelebration} />
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

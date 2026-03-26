@@ -258,19 +258,21 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
-    const { error } = await supabase.functions.invoke('roll-dice', {
-      body: { game_id: state.gameId, session_id: sessionId },
-    });
+    try {
+      const { error } = await supabase.functions.invoke('roll-dice', {
+        body: { game_id: state.gameId, session_id: sessionId },
+      });
 
-    if (error) {
-      console.error('Roll dice error:', error);
+      if (error) {
+        console.error('Roll dice error:', error);
+      }
+    } finally {
+      // M4 fix: clear rolling after server response, with minimum visual delay
+      if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+      rollingTimerRef.current = setTimeout(() => {
+        if (mountedRef.current) setLocalRolling(false);
+      }, 400);
     }
-
-    // BUG 11 fix: clear previous timer and guard against unmounted update
-    if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
-    rollingTimerRef.current = setTimeout(() => {
-      if (mountedRef.current) setLocalRolling(false);
-    }, 600);
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, localRolling]);
 
   // Toggle lock — server-side validated

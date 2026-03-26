@@ -13,6 +13,7 @@ import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { FullHouseCelebration } from '@/components/game/FullHouseCelebration';
 import { SmallStraightCelebration } from '@/components/game/SmallStraightCelebration';
+import { LargeStraightCelebration } from '@/components/game/LargeStraightCelebration';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Bot } from 'lucide-react';
@@ -137,6 +138,7 @@ export default function GamePage() {
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
   const [showFullHouse, setShowFullHouse] = useState(false);
   const [showSmallStraight, setShowSmallStraight] = useState(false);
+  const [showLargeStraight, setShowLargeStraight] = useState(false);
   const prevIsRollingRef = useRef(false);
 
   // Detect combinations when dice stop rolling
@@ -155,6 +157,11 @@ export default function GamePage() {
       if (calculateScore(gameState.dice, 'smallStraight') > 0 && currentPlayer.scores['smallStraight'] == null) {
         setShowSmallStraight(true);
         setTimeout(() => setShowSmallStraight(false), 350);
+      }
+      // Large straight
+      if (calculateScore(gameState.dice, 'largeStraight') > 0 && currentPlayer.scores['largeStraight'] == null) {
+        setShowLargeStraight(true);
+        setTimeout(() => setShowLargeStraight(false), 450);
       }
     }
   }, [gameState?.isRolling]);
@@ -234,6 +241,7 @@ export default function GamePage() {
       />
       <FullHouseCelebration show={showFullHouse} />
       <SmallStraightCelebration show={showSmallStraight} />
+      <LargeStraightCelebration show={showLargeStraight} />
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

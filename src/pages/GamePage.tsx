@@ -134,6 +134,26 @@ export default function GamePage() {
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, roll, selectCategory, setLocks]);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
+  const [showFullHouse, setShowFullHouse] = useState(false);
+  const prevIsRollingRef = useRef(false);
+
+  // Detect full house when dice stop rolling
+  useEffect(() => {
+    if (!gameState) return;
+    const wasRolling = prevIsRollingRef.current;
+    prevIsRollingRef.current = gameState.isRolling;
+    if (wasRolling && !gameState.isRolling) {
+      const score = calculateScore(gameState.dice, 'fullHouse');
+      if (score > 0) {
+        // Only show if player hasn't already scored full house
+        const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+        if (currentPlayer.scores['fullHouse'] == null) {
+          setShowFullHouse(true);
+          setTimeout(() => setShowFullHouse(false), 450);
+        }
+      }
+    }
+  }, [gameState?.isRolling]);
 
   const handleForfeit = useCallback(() => {
     if (!gameState) return;

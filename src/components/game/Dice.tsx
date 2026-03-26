@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { playLandSound } from '@/lib/dice-sounds';
+import { playRollSound, playLandSound } from '@/lib/dice-sounds';
 
 interface DiceProps {
   value: number;

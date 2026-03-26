@@ -345,6 +345,13 @@ export function useMultiplayerGame() {
     await refreshGameState(gameId);
   }, [sessionId, subscribeToGame, refreshGameState]);
 
+  // Stop presence/polling when game is finished
+  useEffect(() => {
+    if (state.status === 'finished') {
+      cleanupTimers();
+    }
+  }, [state.status, cleanupTimers]);
+
   // Cleanup on unmount
   useEffect(() => {
     mountedRef.current = true;

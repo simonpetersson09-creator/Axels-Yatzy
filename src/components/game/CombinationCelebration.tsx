@@ -147,7 +147,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
             }}
             transition={{
               duration: config.duration,
-              ease: config.easing,
+              ease: config.easing as [number, number, number, number],
               times: config.times,
             }}
           >

@@ -1,4 +1,4 @@
-// Realistic dice rolling sounds — continuous surface contact with subtle scraping and corner clicks
+// Realistic dice rolling sounds — soft surface contact with natural scraping
 let audioCtx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
@@ -11,119 +11,120 @@ function getCtx(): AudioContext | null {
   }
 }
 
-// Scheduled nodes for cleanup on early stop
-let activeNodes: AudioScheduledSourceNode[] = [];
-
-function track(node: AudioScheduledSourceNode) {
-  activeNodes.push(node);
-  node.onended = () => {
-    activeNodes = activeNodes.filter(n => n !== node);
-  };
-}
-
 /**
- * Main rolling sound — plays for the full rotation duration.
- * Layers:
- *  1. Filtered noise simulating continuous surface scraping
- *  2. Irregular micro-clicks from corners hitting the surface
- *  3. Speed envelope: starts intense, decelerates naturally
+ * Rolling sound — soft, continuous surface contact.
+ * Three gentle layers:
+ *  1. Warm filtered noise (felt/wood friction)
+ *  2. Soft irregular taps from edges brushing the surface
+ *  3. Very low warm rumble
  */
 export function playRollSound() {
   const ctx = getCtx();
   if (!ctx) return;
 
-  const duration = 0.75;
-  const sampleRate = ctx.sampleRate;
+  const duration = 0.7;
+  const sr = ctx.sampleRate;
+  const now = ctx.currentTime;
   const master = ctx.createGain();
-  master.gain.value = 1.0;
+  master.gain.value = 0.7;
   master.connect(ctx.destination);
 
-  // ─── Layer 1: Continuous surface scrape (shaped noise) ───
-  const scrapeLen = Math.floor(sampleRate * duration);
-  const scrapeBuffer = ctx.createBuffer(1, scrapeLen, sampleRate);
-  const scrapeData = scrapeBuffer.getChannelData(0);
+  // ─── Layer 1: Warm surface friction (soft filtered noise) ───
+  const frictionLen = Math.floor(sr * duration);
+  const frictionBuf = ctx.createBuffer(1, frictionLen, sr);
+  const fd = frictionBuf.getChannelData(0);
 
-  for (let i = 0; i < scrapeLen; i++) {
-    const t = i / scrapeLen; // 0→1
-    // Deceleration envelope: intense at start, fades out
-    const speedEnv = Math.pow(1 - t, 1.2);
-    // Subtle amplitude modulation to simulate uneven surface contact
-    const wobble = 1 + 0.3 * Math.sin(t * Math.PI * 2 * (18 + Math.random() * 6));
-    const grain = (Math.random() * 2 - 1) * 0.06 * speedEnv * wobble;
-    scrapeData[i] = grain;
+  // Use brownian noise (smoother than white) for a warmer texture
+  let lastSample = 0;
+  for (let i = 0; i < frictionLen; i++) {
+    const t = i / frictionLen;
+    // Smooth deceleration curve
+    const env = Math.pow(1 - t, 0.8) * (0.5 + 0.5 * Math.cos(t * Math.PI));
+    // Brownian: integrate white noise for a softer, rounder sound
+    lastSample += (Math.random() * 2 - 1) * 0.15;
+    lastSample *= 0.997; // slight decay to prevent drift
+    // Gentle wobble for organic feel
+    const wobble = 1 + 0.15 * Math.sin(t * Math.PI * 2 * 12);
+    fd[i] = lastSample * env * wobble * 0.08;
   }
 
-  const scrapeSource = ctx.createBufferSource();
-  scrapeSource.buffer = scrapeBuffer;
+  const frictionSrc = ctx.createBufferSource();
+  frictionSrc.buffer = frictionBuf;
 
-  // Bandpass to sound like wood/felt surface friction
-  const scrapeFilter = ctx.createBiquadFilter();
-  scrapeFilter.type = 'bandpass';
-  scrapeFilter.frequency.value = 2200;
-  scrapeFilter.Q.value = 0.6;
+  // Warm bandpass — lower center frequency, wider band
+  const frictionFilter = ctx.createBiquadFilter();
+  frictionFilter.type = 'bandpass';
+  frictionFilter.frequency.value = 1400;
+  frictionFilter.Q.value = 0.4;
 
-  const scrapeGain = ctx.createGain();
-  scrapeGain.gain.setValueAtTime(0.18, ctx.currentTime);
-  scrapeGain.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + duration * 0.7);
-  scrapeGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  // Additional warmth: gentle lowpass to remove harshness
+  const warmth = ctx.createBiquadFilter();
+  warmth.type = 'lowpass';
+  warmth.frequency.value = 3000;
 
-  scrapeSource.connect(scrapeFilter).connect(scrapeGain).connect(master);
-  scrapeSource.start();
-  scrapeSource.stop(ctx.currentTime + duration);
-  track(scrapeSource);
+  const frictionGain = ctx.createGain();
+  frictionGain.gain.setValueAtTime(0.14, now);
+  frictionGain.gain.exponentialRampToValueAtTime(0.03, now + duration * 0.65);
+  frictionGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-  // ─── Layer 2: Irregular corner clicks ───
-  // More frequent at start (fast rotation), spacing out as dice decelerates
-  const clickCount = 8 + Math.floor(Math.random() * 5);
-  let clickTime = 0.01;
+  frictionSrc.connect(frictionFilter).connect(warmth).connect(frictionGain).connect(master);
+  frictionSrc.start();
+  frictionSrc.stop(now + duration);
 
-  for (let i = 0; i < clickCount; i++) {
-    if (clickTime >= duration - 0.04) break;
+  // ─── Layer 2: Soft edge taps (very gentle, rounded) ───
+  const tapCount = 5 + Math.floor(Math.random() * 3);
+  let tapTime = 0.02;
 
-    const progress = clickTime / duration;
-    // Interval grows as rotation slows
-    const baseInterval = 0.025 + progress * 0.08;
-    const jitter = (Math.random() - 0.5) * baseInterval * 0.6;
-    const interval = baseInterval + jitter;
+  for (let i = 0; i < tapCount; i++) {
+    if (tapTime >= duration - 0.05) break;
 
-    // Each click is a tiny filtered noise burst
-    const clickLen = Math.floor(sampleRate * (0.008 + Math.random() * 0.006));
-    const clickBuf = ctx.createBuffer(1, clickLen, sampleRate);
-    const clickData = clickBuf.getChannelData(0);
-    for (let j = 0; j < clickLen; j++) {
-      const env = Math.exp(-j / (clickLen * 0.12));
-      clickData[j] = (Math.random() * 2 - 1) * env;
+    const progress = tapTime / duration;
+    const interval = 0.04 + progress * 0.1 + (Math.random() - 0.5) * 0.025;
+
+    // Rounded tap: very short brownian burst
+    const tapDur = 0.006 + Math.random() * 0.004;
+    const tapLen = Math.floor(sr * tapDur);
+    const tapBuf = ctx.createBuffer(1, tapLen, sr);
+    const td = tapBuf.getChannelData(0);
+    let ts = 0;
+    for (let j = 0; j < tapLen; j++) {
+      const env = Math.exp(-j / (tapLen * 0.18));
+      ts += (Math.random() * 2 - 1) * 0.3;
+      ts *= 0.98;
+      td[j] = ts * env;
     }
 
-    const clickSrc = ctx.createBufferSource();
-    clickSrc.buffer = clickBuf;
+    const tapSrc = ctx.createBufferSource();
+    tapSrc.buffer = tapBuf;
 
-    // Highpass to make clicks sharp and small
-    const clickFilter = ctx.createBiquadFilter();
-    clickFilter.type = 'highpass';
-    clickFilter.frequency.value = 1800 + Math.random() * 1200;
+    // Rounded filter — not too sharp
+    const tapFilter = ctx.createBiquadFilter();
+    tapFilter.type = 'bandpass';
+    tapFilter.frequency.value = 1200 + Math.random() * 600;
+    tapFilter.Q.value = 0.5;
 
-    const clickGain = ctx.createGain();
-    // Clicks get softer as dice decelerates
-    const intensity = (1 - progress) * (0.06 + Math.random() * 0.04);
-    clickGain.gain.value = intensity;
+    const tapGain = ctx.createGain();
+    // Very soft, decreasing with deceleration
+    tapGain.gain.value = (1 - progress) * (0.03 + Math.random() * 0.02);
 
-    clickSrc.connect(clickFilter).connect(clickGain).connect(master);
-    clickSrc.start(ctx.currentTime + clickTime);
-    clickSrc.stop(ctx.currentTime + clickTime + clickLen / sampleRate);
-    track(clickSrc);
+    tapSrc.connect(tapFilter).connect(tapGain).connect(master);
+    tapSrc.start(now + tapTime);
+    tapSrc.stop(now + tapTime + tapDur);
 
-    clickTime += interval;
+    tapTime += interval;
   }
 
-  // ─── Layer 3: Low rumble undertone (surface vibration) ───
-  const rumbleLen = Math.floor(sampleRate * duration * 0.8);
-  const rumbleBuf = ctx.createBuffer(1, rumbleLen, sampleRate);
-  const rumbleData = rumbleBuf.getChannelData(0);
+  // ─── Layer 3: Warm low rumble (table resonance) ───
+  const rumbleLen = Math.floor(sr * duration * 0.6);
+  const rumbleBuf = ctx.createBuffer(1, rumbleLen, sr);
+  const rd = rumbleBuf.getChannelData(0);
+  let rs = 0;
   for (let i = 0; i < rumbleLen; i++) {
     const t = i / rumbleLen;
-    const env = Math.pow(1 - t, 1.5);
-    rumbleData[i] = (Math.random() * 2 - 1) * 0.04 * env;
+    const env = Math.pow(1 - t, 2);
+    rs += (Math.random() * 2 - 1) * 0.1;
+    rs *= 0.995;
+    rd[i] = rs * env * 0.06;
   }
 
   const rumbleSrc = ctx.createBufferSource();
@@ -131,43 +132,46 @@ export function playRollSound() {
 
   const rumbleFilter = ctx.createBiquadFilter();
   rumbleFilter.type = 'lowpass';
-  rumbleFilter.frequency.value = 350;
+  rumbleFilter.frequency.value = 250;
 
   const rumbleGain = ctx.createGain();
-  rumbleGain.gain.setValueAtTime(0.12, ctx.currentTime);
-  rumbleGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration * 0.8);
+  rumbleGain.gain.setValueAtTime(0.08, now);
+  rumbleGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.6);
 
   rumbleSrc.connect(rumbleFilter).connect(rumbleGain).connect(master);
   rumbleSrc.start();
-  rumbleSrc.stop(ctx.currentTime + duration * 0.8);
-  track(rumbleSrc);
+  rumbleSrc.stop(now + duration * 0.6);
 }
 
 /**
- * Settling sound — the die comes to rest.
- * A final soft wobble + a gentle "tap" as it lays flat.
+ * Settling sound — the die gently comes to rest.
+ * A soft final wobble tap + a warm low "thump".
  */
 export function playLandSound() {
   const ctx = getCtx();
   if (!ctx) return;
+  const now = ctx.currentTime;
+  const sr = ctx.sampleRate;
 
   const master = ctx.createGain();
-  master.gain.value = 1.0;
+  master.gain.value = 0.65;
   master.connect(ctx.destination);
 
-  // ─── Final wobble: 2-3 rapid micro-taps decreasing in volume ───
-  const tapCount = 2 + Math.floor(Math.random() * 2);
+  // ─── Gentle final taps (1-2 very soft) ───
+  const tapCount = 1 + Math.floor(Math.random() * 2);
   let tapTime = 0;
 
   for (let i = 0; i < tapCount; i++) {
-    const tapDur = 0.012 + Math.random() * 0.008;
-    const tapLen = Math.floor(ctx.sampleRate * tapDur);
-    const tapBuf = ctx.createBuffer(1, tapLen, ctx.sampleRate);
-    const tapData = tapBuf.getChannelData(0);
-
+    const tapDur = 0.01 + Math.random() * 0.005;
+    const tapLen = Math.floor(sr * tapDur);
+    const tapBuf = ctx.createBuffer(1, tapLen, sr);
+    const td = tapBuf.getChannelData(0);
+    let ts = 0;
     for (let j = 0; j < tapLen; j++) {
-      const env = Math.exp(-j / (tapLen * 0.1));
-      tapData[j] = (Math.random() * 2 - 1) * env;
+      const env = Math.exp(-j / (tapLen * 0.15));
+      ts += (Math.random() * 2 - 1) * 0.2;
+      ts *= 0.98;
+      td[j] = ts * env;
     }
 
     const tapSrc = ctx.createBufferSource();
@@ -175,32 +179,30 @@ export function playLandSound() {
 
     const tapFilter = ctx.createBiquadFilter();
     tapFilter.type = 'bandpass';
-    tapFilter.frequency.value = 1400 + Math.random() * 800;
-    tapFilter.Q.value = 1.2;
+    tapFilter.frequency.value = 1000 + Math.random() * 500;
+    tapFilter.Q.value = 0.6;
 
     const tapGain = ctx.createGain();
-    tapGain.gain.value = (0.08 - i * 0.025) * (0.8 + Math.random() * 0.4);
+    tapGain.gain.value = (0.04 - i * 0.015) * (0.7 + Math.random() * 0.3);
 
     tapSrc.connect(tapFilter).connect(tapGain).connect(master);
-    tapSrc.start(ctx.currentTime + tapTime);
-    tapSrc.stop(ctx.currentTime + tapTime + tapDur);
-    track(tapSrc);
+    tapSrc.start(now + tapTime);
+    tapSrc.stop(now + tapTime + tapDur);
 
-    tapTime += 0.03 + i * 0.015 + Math.random() * 0.01;
+    tapTime += 0.035 + i * 0.02;
   }
 
-  // ─── Soft thud: low sine for the final lay-down ───
+  // ─── Warm thump (very soft sine) ───
   const osc = ctx.createOscillator();
   osc.type = 'sine';
-  osc.frequency.setValueAtTime(140, ctx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(55, ctx.currentTime + 0.06);
+  osc.frequency.setValueAtTime(110, now);
+  osc.frequency.exponentialRampToValueAtTime(50, now + 0.07);
 
   const thudGain = ctx.createGain();
-  thudGain.gain.setValueAtTime(0.07, ctx.currentTime);
-  thudGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+  thudGain.gain.setValueAtTime(0.045, now);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
 
   osc.connect(thudGain).connect(master);
   osc.start();
-  osc.stop(ctx.currentTime + 0.1);
-  track(osc);
+  osc.stop(now + 0.1);
 }

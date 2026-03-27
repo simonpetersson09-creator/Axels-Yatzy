@@ -88,17 +88,17 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
   // Level 5 — Stark reward
   fullHouse: {
     label: 'Kåk!',
-    duration: 0.4,
+    duration: 1.3,
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
     gradient: 'linear-gradient(135deg, hsl(42 90% 62%), hsl(36 82% 48%))',
     shadow: 'drop-shadow(0 2px 10px hsla(36, 80%, 50%, 0.4))',
     glow: 'radial-gradient(circle at 50% 50%, hsla(36, 80%, 55%, 0.12) 0%, transparent 45%)',
-    glowDuration: 0.4,
+    glowDuration: 1.3,
     scaleFrom: 0.55,
-    scaleKeyframes: [0.55, 1.14, 0.98, 1],
-    opacityKeyframes: [0, 1, 1, 0],
-    times: [0, 0.28, 0.65, 1],
+    scaleKeyframes: [0.55, 1.14, 0.98, 1, 1],
+    opacityKeyframes: [0, 1, 1, 1, 0],
+    times: [0, 0.12, 0.25, 0.7, 1],
     easing: [0.34, 1.56, 0.64, 1],
   },
 };

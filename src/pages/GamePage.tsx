@@ -21,10 +21,18 @@ export default function GamePage() {
   const navigate = useNavigate();
   const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame();
 
-  const playerNames: string[] = location.state?.playerNames || ['Spelare 1'];
+  const incomingPlayerNames: string[] | undefined = location.state?.playerNames;
   const incomingAiPlayers: number[] | undefined = location.state?.aiPlayers;
   
-  // Persist aiPlayers to sessionStorage so it survives refreshes
+  // Persist playerNames and aiPlayers to sessionStorage so they survive refreshes and "play again"
+  const [playerNames, setPlayerNames] = useState<string[]>(() => {
+    if (incomingPlayerNames) return incomingPlayerNames;
+    try {
+      const saved = sessionStorage.getItem('yatzy-player-names');
+      return saved ? JSON.parse(saved) : ['Spelare 1'];
+    } catch { return ['Spelare 1']; }
+  });
+
   const [aiPlayers, setAiPlayers] = useState<number[]>(() => {
     if (incomingAiPlayers) return incomingAiPlayers;
     try {
@@ -34,11 +42,15 @@ export default function GamePage() {
   });
 
   useEffect(() => {
+    if (incomingPlayerNames) {
+      setPlayerNames(incomingPlayerNames);
+      sessionStorage.setItem('yatzy-player-names', JSON.stringify(incomingPlayerNames));
+    }
     if (incomingAiPlayers) {
       setAiPlayers(incomingAiPlayers);
       sessionStorage.setItem('yatzy-ai-players', JSON.stringify(incomingAiPlayers));
     }
-  }, [incomingAiPlayers]);
+  }, [incomingPlayerNames, incomingAiPlayers]);
 
   const autoRollRef = useRef<string | null>(null);
   const aiTurnRef = useRef<string | null>(null);

@@ -23,7 +23,7 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
   // Level 1 — Subtil, lågintensiv
   threeOfAKind: {
     label: 'Triss',
-    duration: 0.22,
+    duration: 0.8,
     fontSize: 'text-xl sm:text-2xl',
     fontWeight: 'font-bold',
     gradient: '',
@@ -31,9 +31,9 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
     glow: null,
     glowDuration: 0,
     scaleFrom: 0.88,
-    scaleKeyframes: [0.88, 1.02, 1],
-    opacityKeyframes: [0, 0.8, 0],
-    times: [0, 0.4, 1],
+    scaleKeyframes: [0.88, 1.02, 1, 1],
+    opacityKeyframes: [0, 0.9, 0.9, 0],
+    times: [0, 0.15, 0.7, 1],
     easing: [0.25, 1, 0.5, 1],
   },
   // Level 2 — Flow, mjuk sekvens

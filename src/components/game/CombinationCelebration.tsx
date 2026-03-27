@@ -72,17 +72,17 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
   // Level 4 — Wow, starkare flow
   largeStraight: {
     label: 'Stor stege!',
-    duration: 0.38,
+    duration: 1.2,
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
     gradient: 'linear-gradient(135deg, hsl(175 65% 58%), hsl(210 70% 55%), hsl(185 60% 48%))',
     shadow: 'drop-shadow(0 2px 10px hsla(195, 60%, 50%, 0.4))',
     glow: 'radial-gradient(circle at 50% 50%, hsla(175, 70%, 50%, 0.12) 0%, hsla(210, 60%, 55%, 0.04) 30%, transparent 50%)',
-    glowDuration: 0.38,
+    glowDuration: 1.2,
     scaleFrom: 0.5,
-    scaleKeyframes: [0.5, 1.14, 0.97, 1.03, 1],
-    opacityKeyframes: [0, 1, 1, 1, 0],
-    times: [0, 0.22, 0.48, 0.75, 1],
+    scaleKeyframes: [0.5, 1.14, 0.97, 1.03, 1, 1],
+    opacityKeyframes: [0, 1, 1, 1, 1, 0],
+    times: [0, 0.12, 0.25, 0.4, 0.7, 1],
     easing: [0.34, 1.56, 0.64, 1],
   },
   // Level 5 — Stark reward

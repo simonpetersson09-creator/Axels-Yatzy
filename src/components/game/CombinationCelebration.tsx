@@ -56,17 +56,17 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
   // Level 3 — Tydlig, impact
   fourOfAKind: {
     label: 'Fyrtal!',
-    duration: 0.32,
+    duration: 1.1,
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
     gradient: 'linear-gradient(180deg, hsl(25 80% 55%), hsl(15 70% 42%))',
     shadow: 'drop-shadow(0 2px 8px hsla(20, 70%, 45%, 0.35))',
     glow: 'radial-gradient(circle at 50% 50%, hsla(20, 75%, 50%, 0.1) 0%, transparent 45%)',
-    glowDuration: 0.32,
+    glowDuration: 1.1,
     scaleFrom: 1.25,
-    scaleKeyframes: [1.25, 0.96, 1.02, 1],
-    opacityKeyframes: [0, 1, 1, 0],
-    times: [0, 0.25, 0.6, 1],
+    scaleKeyframes: [1.25, 0.96, 1.02, 1, 1],
+    opacityKeyframes: [0, 1, 1, 1, 0],
+    times: [0, 0.15, 0.3, 0.7, 1],
     easing: [0.22, 1, 0.36, 1],
   },
   // Level 4 — Wow, starkare flow

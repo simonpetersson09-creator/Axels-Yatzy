@@ -101,26 +101,36 @@ function categoryValue(
   const bonus = bonusInfo(scores, available);
 
   // ── Upper section ──
+  // Key insight: always evaluate upper categories by how well the roll
+  // "fills" the category relative to its target (3×face).
+  // A roll of [2,2,3,5,6] → twos=4 is 67% of target(6), sixes=6 is 33% of target(18).
+  // Twos is the smarter pick because it uses the category efficiently.
   if (catId in UPPER_TARGET) {
     const target = UPPER_TARGET[catId];
     const face = UPPER_FACE[catId];
+    const ratio = target > 0 ? score / target : 0; // 0..1+ how well we fill this category
 
     if (bonus.alreadyHave) {
-      // Bonus secured — just take raw value
-      return score + 5;
+      // Bonus secured — value by ratio-to-target so we still pick efficient fills
+      if (ratio >= 1) return score + 15 + face;
+      if (ratio >= 0.67) return score + 8;
+      if (score > 0) return score * ratio * 3; // scale down poor fills
+      return -6;
     }
 
     if (bonus.reachable) {
       // Weight heavily toward meeting targets
       if (score >= target) return score + 30 + face; // on-target, prefer higher faces
       if (score >= target - face) return score + 15; // one die short of target
-      if (score > 0) return score + 3;
+      if (ratio >= 0.5) return score + 5; // decent partial fill
+      if (score > 0) return score * ratio * 2; // poor fill → low value
       return -12 - face; // zeroing a high upper cat is very costly
     }
 
-    // Bonus unreachable — moderate value
-    if (score >= target) return score + 10;
-    if (score > 0) return score;
+    // Bonus unreachable — use ratio to avoid wasting categories
+    if (ratio >= 1) return score + 10;
+    if (ratio >= 0.67) return score + 5;
+    if (score > 0) return score * ratio * 2;
     return -6;
   }
 

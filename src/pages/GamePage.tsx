@@ -227,7 +227,6 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-      <motion.div
         <div className="flex gap-2 sm:gap-6 items-start">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">

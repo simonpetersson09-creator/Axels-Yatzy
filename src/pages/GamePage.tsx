@@ -92,7 +92,14 @@ export default function GamePage() {
     document.body.classList.add('game-scroll-lock');
     document.getElementById('root')?.classList.add('game-scroll-lock');
 
+    const preventScroll = (event: TouchEvent) => {
+      event.preventDefault();
+    };
+
+    document.addEventListener('touchmove', preventScroll, { passive: false });
+
     return () => {
+      document.removeEventListener('touchmove', preventScroll);
       document.documentElement.classList.remove('game-scroll-lock');
       document.body.classList.remove('game-scroll-lock');
       document.getElementById('root')?.classList.remove('game-scroll-lock');

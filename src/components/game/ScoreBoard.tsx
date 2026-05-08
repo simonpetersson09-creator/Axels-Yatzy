@@ -21,6 +21,9 @@ const PLAYER_COLORS = [
   { bg: 'bg-yatzy-player4-soft', activeBg: 'bg-yatzy-player4/20', border: 'border-yatzy-player4', text: 'text-yatzy-player4', dot: 'bg-yatzy-player4', glow: 'shadow-[0_0_12px_hsl(350_65%_52%/0.4)]', label: 'P4' },
 ];
 
+// Raw HSL for inline-styled tints/borders (Tailwind can't generate dynamic class names)
+const PLAYER_HSL = ['36 82% 52%', '210 70% 52%', '155 60% 42%', '350 65% 52%'];
+
 const SLOT_COUNT = 4;
 const COL_W = 'min-w-[38px] w-[38px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[72px] min-w-[72px] sm:w-[110px] sm:min-w-[110px]';

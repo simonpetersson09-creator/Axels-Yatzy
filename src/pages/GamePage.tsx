@@ -244,7 +244,7 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <FitScaler maxScale={1.15}>
+      <FitScaler maxScale={1.3}>
       <motion.div
         className="relative flex flex-col gap-2 sm:gap-4"
         initial={{ opacity: 0, y: 12 }}

@@ -158,7 +158,7 @@ export default function MultiplayerGamePage() {
         )}
 
         {/* Scoreboard + Players + Dice */}
-        <div className="flex gap-6 items-stretch">
+        <div className="flex gap-2 sm:gap-6 items-stretch">
           <div className="game-shadow-soft rounded-lg overflow-hidden">
             <ScoreBoard
               players={gameState.players}

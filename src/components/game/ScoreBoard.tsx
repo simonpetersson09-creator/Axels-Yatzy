@@ -302,7 +302,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Upper section */}
-      <div className={cn('bg-yatzy-section-header border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)}>
+      <div className={cn('border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)} style={{ backgroundColor: 'hsl(195 45% 22% / 0.35)' }}>
         <span className="text-[9px] font-bold text-yatzy-text/30 uppercase tracking-[0.15em]">Övre sektionen</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
@@ -314,7 +314,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className={cn('bg-yatzy-section-header border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)}>
+      <div className={cn('border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)} style={{ backgroundColor: 'hsl(195 45% 22% / 0.35)' }}>
         <span className="text-[9px] font-bold text-yatzy-text/30 uppercase tracking-[0.15em]">Nedre sektionen</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

@@ -239,6 +239,7 @@ export default function GamePage() {
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
                 aiChosenCategory={aiChosenCategory}
+                selectionDisabled={isCurrentAi}
               />
               <CombinationCelebration type={activeCelebration} />
             </div>

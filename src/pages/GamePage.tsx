@@ -181,7 +181,7 @@ export default function GamePage() {
       }
     }
     selectCategory(categoryId as any);
-  }, [gameState, selectCategory]);
+  }, [gameState, selectCategory, aiPlayers]);
 
   const handlePlayAgain = useCallback(() => {
     startGame(playerNames);

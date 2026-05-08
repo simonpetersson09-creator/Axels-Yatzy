@@ -67,7 +67,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom relative overflow-hidden">
+    <div className="min-h-[100dvh] h-[100dvh] flex flex-col items-center justify-center px-6 py-3 safe-top safe-bottom relative overflow-hidden">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-primary/6 blur-[120px]" />
@@ -84,15 +84,15 @@ export default function HomePage() {
       />
 
       <motion.div
-        className="relative z-10 flex flex-col items-center gap-8 w-full max-w-sm"
+        className="relative z-10 flex flex-col items-center gap-4 sm:gap-8 w-full max-w-sm"
         variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } } }}
         initial="hidden"
         animate="show"
       >
         {/* Logo / Title */}
-        <motion.div className="text-center space-y-2" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
+        <motion.div className="text-center space-y-1 sm:space-y-2" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
           <motion.div
-            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 mb-4"
+            className="inline-flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-primary/10 border border-primary/20 mb-2 sm:mb-4"
             animate={{
               rotate: [0, 0, 6, -4, 0],
               scale: [1, 1, 1.06, 1.02, 1],
@@ -104,23 +104,23 @@ export default function HomePage() {
               ease: 'easeInOut',
             }}
           >
-            <span className="text-4xl">🎲</span>
+            <span className="text-3xl sm:text-4xl">🎲</span>
           </motion.div>
           <h1
-            className="text-5xl font-display font-black text-gold-gradient"
+            className="text-4xl sm:text-5xl font-display font-black text-gold-gradient"
             style={{
               textShadow: '0 0 30px hsl(36 78% 55% / 0.15), 0 0 60px hsl(36 78% 55% / 0.08)',
             }}
           >
             Mr.B Yatzy
           </h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs sm:text-sm">
             Klassiskt tärningsspel i modern tappning
           </p>
         </motion.div>
 
         {/* Main Actions */}
-        <div className="w-full space-y-3">
+        <div className="w-full space-y-2 sm:space-y-3">
           {activeGame && (
             <motion.div variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               <motion.button

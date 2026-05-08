@@ -130,7 +130,7 @@ export default function GamePage() {
         setTimeout(() => {
           selectCategory(cat);
           setAiChosenCategory(null);
-        }, 2200);
+        }, 3400);
       } else {
         const currentPlayer = gs.players[gs.currentPlayerIndex];
         const locks = aiDecideLocks(gs.dice, currentPlayer.scores);
@@ -198,7 +198,7 @@ export default function GamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);
-  const possibleScores = gameState.isRolling || isCurrentAi ? null : getPossibleScores();
+  const possibleScores = gameState.isRolling ? null : getPossibleScores();
   const canRoll = gameState.rollsLeft > 0 && !isCurrentAi;
 
   const PLAYER_COLORS = [

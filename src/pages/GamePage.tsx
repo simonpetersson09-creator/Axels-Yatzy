@@ -230,7 +230,7 @@ export default function GamePage() {
 
   return (
     <div
-      className="h-[100dvh] max-h-[100dvh] px-2 sm:px-4 pt-12 pb-6 sm:py-6 safe-top safe-bottom flex items-start sm:items-center justify-center overflow-hidden overscroll-none touch-none"
+      className="h-[100dvh] max-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-hidden overscroll-none touch-none"
       style={{ WebkitOverflowScrolling: 'auto' }}
     >
       <GameOverOverlay
@@ -244,6 +244,7 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
+      <FitScaler maxScale={1.15}>
       <motion.div
         className="relative flex flex-col gap-2 sm:gap-4"
         initial={{ opacity: 0, y: 12 }}

@@ -314,7 +314,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className={cn('border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className="border-b border-yatzy-line/30 px-3 flex items-center h-[20px] sm:h-[26px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">Nedre sektionen</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

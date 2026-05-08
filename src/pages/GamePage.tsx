@@ -172,6 +172,7 @@ export default function GamePage() {
   }, [roll]);
 
   const handleSelectCategory = useCallback((categoryId: string) => {
+    if (gameState && aiPlayers.includes(gameState.currentPlayerIndex)) return;
     if (categoryId === 'yatzy' && gameState) {
       const dice = gameState.dice;
       const allSame = dice.every(d => d === dice[0]);

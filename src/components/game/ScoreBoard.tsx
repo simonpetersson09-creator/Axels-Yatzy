@@ -216,7 +216,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W)}>
         <span className={cn(
           'uppercase tracking-wider leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full',
-          isTotalRow ? 'text-[10px] font-medium text-yatzy-text' : 'text-[9px] font-bold text-yatzy-text/50',
+          isTotalRow ? 'text-[10px] font-medium text-yatzy-text' : 'text-[9px] font-normal text-yatzy-text/50',
         )}>{label}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => {

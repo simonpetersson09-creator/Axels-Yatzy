@@ -29,7 +29,7 @@ const COL_W = 'min-w-[38px] w-[38px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[72px] min-w-[72px] sm:w-[110px] sm:min-w-[110px]';
 const ROW_H = 'h-[24px] sm:h-[36px]';
 
-function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, onSelect, isAiChosen }: {
+function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, onSelect, isAiChosen, playerColor }: {
   catId: string;
   isScored: boolean;
   scoreValue: number | null | undefined;
@@ -39,6 +39,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
   bgStyle?: React.CSSProperties;
   onSelect: () => void;
   isAiChosen?: boolean;
+  playerColor?: string;
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);
@@ -78,13 +79,13 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       }}
       whileTap={canSelect ? { scale: 0.94 } : {}}
     >
-      {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && (
+      {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && playerColor && (
         <motion.span
           aria-hidden
           className="absolute inset-[2px] rounded-[6px] sm:rounded-[8px] pointer-events-none z-[5]"
           style={{
-            border: '1.5px solid hsl(0 75% 58%)',
-            boxShadow: '0 0 6px hsl(0 80% 55% / 0.55), inset 0 0 4px hsl(0 80% 60% / 0.25)',
+            border: `1.5px solid hsl(${playerColor})`,
+            boxShadow: `0 0 6px hsl(${playerColor} / 0.55), inset 0 0 4px hsl(${playerColor} / 0.25)`,
           }}
           initial={{ opacity: 0.6 }}
           animate={{ opacity: [0.55, 1, 0.55] }}
@@ -184,6 +185,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         bgStyle={bg.style}
         onSelect={() => { if (canSelect) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
+        playerColor={PLAYER_HSL[slotIdx]}
       />
     );
   };

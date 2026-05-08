@@ -185,9 +185,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         scoreValue={player.scores[cat.id]}
         possibleScore={possibleScore}
         canSelect={canSelect}
+        interactive={!selectionDisabled}
         bgClass={bg.className}
         bgStyle={bg.style}
-        onSelect={() => { if (canSelect) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
+        onSelect={() => { if (canSelect && !selectionDisabled) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
       />

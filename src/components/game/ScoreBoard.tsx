@@ -227,7 +227,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
           <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', ROW_H, COL_W, bg.className)} style={bg.style}>
             <span className={cn(
               'tabular-nums leading-none',
-              isTotalRow ? 'text-[13px] font-normal' : 'text-[12px] font-bold',
+              isTotalRow ? 'text-[13px] font-normal' : 'text-[12px] font-normal',
               player && isCurrent ? 'text-yatzy-text' : player ? 'text-yatzy-text/40' : 'text-yatzy-text/10',
             )}>
               {player ? getValue(player) : '–'}

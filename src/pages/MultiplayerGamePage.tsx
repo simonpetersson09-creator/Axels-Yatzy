@@ -166,6 +166,7 @@ export default function MultiplayerGamePage() {
               possibleScores={possibleScores}
               onSelectCategory={selectCategory}
               rollsLeft={gameState.rollsLeft}
+              selectionDisabled={!isMyTurn}
             />
           </div>
 

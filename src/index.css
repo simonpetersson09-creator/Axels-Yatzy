@@ -83,9 +83,8 @@
   }
   html, body, #root {
     height: 100%;
-    height: 100dvh;
+    width: 100%;
     overflow: hidden;
-    overscroll-behavior: none;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
@@ -95,13 +94,25 @@
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     background-image: radial-gradient(ellipse at 50% 0%, hsl(195 45% 20%) 0%, hsl(195 50% 14%) 70%);
-    position: fixed;
-    inset: 0;
-    width: 100%;
     touch-action: manipulation;
   }
   h1, h2, h3, h4 {
     font-family: 'Space Grotesk', sans-serif;
+  }
+
+  html.game-scroll-lock,
+  body.game-scroll-lock,
+  #root.game-scroll-lock {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    overscroll-behavior: none;
+  }
+
+  body.game-scroll-lock {
+    touch-action: none;
   }
 }
 

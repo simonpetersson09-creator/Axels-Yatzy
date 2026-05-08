@@ -97,7 +97,7 @@ export default function GamePage() {
     const t = setTimeout(() => {
       playRollSound();
       roll();
-    }, 350);
+    }, 600);
     return () => clearTimeout(t);
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, roll]);
 
@@ -357,7 +357,7 @@ export default function GamePage() {
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}
-                className={`w-[58px] h-[58px] sm:w-[84px] sm:h-[84px] rounded-full font-display font-bold text-[12px] sm:text-[15px] tracking-wide transition-all flex items-center justify-center touch-manipulation ${
+                className={`w-[58px] h-[58px] sm:w-[84px] sm:h-[84px] rounded-full font-display font-bold text-[12px] sm:text-[15px] tracking-wide transition-all duration-300 flex items-center justify-center touch-manipulation ${
                   canRoll && !gameState.isRolling
                     ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]'
                     : 'bg-secondary text-muted-foreground shadow-none'
@@ -365,15 +365,15 @@ export default function GamePage() {
                 style={{ WebkitTapHighlightColor: 'transparent' }}
                 animate={
                   canRoll && !gameState.isRolling
-                    ? { scale: [1, 1.06, 1] }
+                    ? { scale: [1, 1.05, 1] }
                     : {}
                 }
                 transition={
                   canRoll && !gameState.isRolling
-                    ? { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }
+                    ? { duration: 2.4, repeat: Infinity, ease: [0.45, 0, 0.55, 1] }
                     : {}
                 }
-                whileTap={canRoll ? { scale: 0.93 } : {}}
+                whileTap={canRoll ? { scale: 0.92, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } } : {}}
               >
                 {isCurrentAi
                   ? '⏳'
@@ -381,15 +381,16 @@ export default function GamePage() {
               </motion.button>
 
               <div className="flex items-center gap-1.5">
-                <button
+                <motion.button
                   onClick={() => navigate('/')}
-                  className="p-2.5 rounded-full bg-secondary/60 hover:bg-secondary active:bg-secondary/90 transition-colors touch-manipulation"
+                  className="p-2.5 rounded-full bg-secondary/60 hover:bg-secondary transition-colors duration-300 touch-manipulation"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
+                  whileTap={{ scale: 0.92, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } }}
                   title="Till menyn"
                   aria-label="Till menyn"
                 >
                   <Home className="w-3.5 h-3.5 text-muted-foreground" />
-                </button>
+                </motion.button>
                 <ForfeitButton
                   onConfirm={handleForfeit}
                   playerName={gameState.players.length > 1

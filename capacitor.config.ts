@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.svenskasolparksprojekt.yatzy',
-  appName: 'Yatzy',
+  appName: 'Mr.B Yatzy',
   webDir: 'dist',
   ios: {
     contentInset: 'always',

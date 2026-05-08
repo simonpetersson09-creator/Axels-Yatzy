@@ -13,8 +13,8 @@ import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Bot } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Home } from 'lucide-react';
 
 export default function GamePage() {
   const location = useLocation();
@@ -227,26 +227,6 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        {/* AI thinking indicator */}
-        <AnimatePresence>
-          {(aiThinking || aiChosenCategory) && (
-            <motion.div
-              className="flex items-center justify-center gap-2 py-2"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-            >
-              <Bot className="w-4 h-4 text-game-info animate-pulse" />
-              <span className="text-[12px] text-game-info font-medium">
-                {aiChosenCategory
-                  ? `${currentPlayer.name} väljer...`
-                  : `${currentPlayer.name} tänker...`}
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Scoreboard + Players + Dice */}
         <div className="flex gap-2 sm:gap-6 items-start">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">

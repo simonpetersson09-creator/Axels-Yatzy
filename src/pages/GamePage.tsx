@@ -361,7 +361,7 @@ export default function GamePage() {
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}
-                className={`w-[58px] h-[58px] sm:w-[84px] sm:h-[84px] rounded-full font-display font-bold text-[12px] sm:text-[15px] tracking-wide transition-all duration-300 flex items-center justify-center touch-manipulation ${
+                className={`w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] rounded-full font-display font-bold text-[13px] sm:text-[16px] tracking-wide transition-all duration-300 flex items-center justify-center touch-manipulation ${
                   canRoll && !gameState.isRolling
                     ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]'
                     : 'bg-secondary text-muted-foreground shadow-none'

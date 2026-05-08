@@ -237,13 +237,18 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
           const player = players[i];
           const color = PLAYER_COLORS[i];
           const isCurrent = i === currentPlayerIndex;
+          const hsl = PLAYER_HSL[i];
           return (
             <div
               key={i}
               className={cn(
-                'flex items-center justify-center relative overflow-hidden',
+                'flex items-center justify-center relative overflow-hidden transition-all duration-300',
                 COL_W,
               )}
+              style={isCurrent && player ? {
+                backgroundColor: `hsl(${hsl} / 0.10)`,
+                boxShadow: `inset 0 -2px 0 0 hsl(${hsl} / 0.85)`,
+              } : undefined}
             >
               {player ? (
                 <motion.div 

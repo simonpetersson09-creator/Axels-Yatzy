@@ -143,7 +143,7 @@ export default function MultiplayerGamePage() {
   };
 
   return (
-    <div className="min-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-x-hidden">
+    <div className="min-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-start justify-center overflow-x-hidden">
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

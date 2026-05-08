@@ -132,11 +132,16 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
   const lowerCats = CATEGORIES.filter(c => c.section === 'lower');
 
-  const cellBg = (slotIdx: number) => {
+  const cellBg = (slotIdx: number): { className: string; style?: React.CSSProperties } => {
     const isCurrent = slotIdx === currentPlayerIndex;
     const player = players[slotIdx];
-    if (!player) return 'bg-yatzy-bg/40';
-    return isCurrent ? 'bg-sky-100/70' : 'bg-yatzy-bg';
+    if (!player) return { className: 'bg-yatzy-bg/40' };
+    if (!isCurrent) return { className: 'bg-yatzy-bg' };
+    const hsl = PLAYER_HSL[slotIdx] ?? PLAYER_HSL[0];
+    return {
+      className: '',
+      style: { backgroundColor: `hsl(${hsl} / 0.10)` },
+    };
   };
 
   const renderCell = (cat: typeof CATEGORIES[0], slotIdx: number) => {
@@ -152,6 +157,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     const isScored = player.scores[cat.id] !== undefined && player.scores[cat.id] !== null;
     const possibleScore = isCurrent ? possibleScores?.[cat.id] : undefined;
     const canSelect = isCurrent && !isScored && possibleScore !== undefined && rollsLeft < 3;
+    const bg = cellBg(slotIdx);
 
     return (
       <ScoreCell
@@ -161,7 +167,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         scoreValue={player.scores[cat.id]}
         possibleScore={possibleScore}
         canSelect={canSelect}
-        bgClass={cellBg(slotIdx)}
+        bgClass={bg.className}
+        bgStyle={bg.style}
         onSelect={() => { if (canSelect) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
       />

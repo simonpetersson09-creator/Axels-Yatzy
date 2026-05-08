@@ -125,7 +125,7 @@ export default function HomePage() {
             <motion.div variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               <motion.button
                 onClick={resumeGame}
-                className="w-full py-4 rounded-2xl bg-game-success text-white font-display font-bold text-lg shadow-lg flex items-center justify-center gap-2 active:shadow-md transition-shadow"
+                className="w-full py-3 sm:py-4 rounded-2xl bg-game-success text-white font-display font-bold text-base sm:text-lg shadow-lg flex items-center justify-center gap-2 active:shadow-md transition-shadow"
                 whileTap={{ scale: 0.97 }}
               >
                 <Play className="w-5 h-5" />
@@ -143,7 +143,7 @@ export default function HomePage() {
           )}
           <motion.button
             onClick={() => setShowQuickMatch(true)}
-            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
+            className="w-full py-3 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
             whileTap={{ scale: 0.97 }}
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
@@ -188,7 +188,7 @@ export default function HomePage() {
 
           <motion.button
             onClick={() => navigate('/multiplayer')}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow"
+            className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow"
             whileTap={{ scale: 0.97 }}
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
@@ -211,10 +211,10 @@ export default function HomePage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl bg-secondary/60 border border-border/50"
+                className="flex flex-col items-center gap-1 py-2.5 sm:py-3.5 px-2 rounded-2xl bg-secondary/60 border border-border/50"
               >
                 <stat.icon className="w-3.5 h-3.5 text-primary/70" />
-                <span className="text-2xl font-display font-black text-foreground tabular-nums leading-none">
+                <span className="text-xl sm:text-2xl font-display font-black text-foreground tabular-nums leading-none">
                   {stat.value}
                 </span>
                 <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
@@ -233,7 +233,7 @@ export default function HomePage() {
         >
           <motion.button
             onClick={() => navigate('/settings')}
-            className="w-full py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-lg shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-2"
+            className="w-full py-3 sm:py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-2"
             whileTap={{ scale: 0.97 }}
           >
             ⚙️ Inställningar

@@ -209,7 +209,7 @@ export default function GamePage() {
   ];
 
   return (
-    <div className="min-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-x-hidden">
+    <div className="min-h-[100dvh] h-[100dvh] px-2 sm:px-4 py-1 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-hidden">
       <GameOverOverlay
         show={gameState.gameOver}
         players={gameOverResults}
@@ -223,7 +223,7 @@ export default function GamePage() {
       />
       <CombinationCelebration type={activeCelebration} />
       <motion.div
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-2 sm:gap-4"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -303,9 +303,9 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 sm:gap-4">
             {/* Player indicators */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1 sm:gap-2">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const color = PLAYER_COLORS[idx];
@@ -313,7 +313,7 @@ export default function GamePage() {
                 return (
                   <motion.div
                     key={player.id}
-                    className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all ${
+                    className={`flex items-center gap-2.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl transition-all ${
                       isCurrent ? 'bg-secondary/80' : ''
                     }`}
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
@@ -353,11 +353,11 @@ export default function GamePage() {
             />
 
             {/* Bottom: Roll + Home + Forfeit */}
-            <div className="flex flex-col items-center gap-3 mt-4 sm:mt-6">
+            <div className="flex flex-col items-center gap-2 mt-2 sm:mt-6">
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}
-                className={`w-[68px] h-[68px] sm:w-[84px] sm:h-[84px] rounded-full font-display font-bold text-[13px] sm:text-[15px] tracking-wide transition-all flex items-center justify-center touch-manipulation ${
+                className={`w-[58px] h-[58px] sm:w-[84px] sm:h-[84px] rounded-full font-display font-bold text-[12px] sm:text-[15px] tracking-wide transition-all flex items-center justify-center touch-manipulation ${
                   canRoll && !gameState.isRolling
                     ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]'
                     : 'bg-secondary text-muted-foreground shadow-none'

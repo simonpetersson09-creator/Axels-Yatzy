@@ -209,7 +209,7 @@ export default function GamePage() {
   ];
 
   return (
-    <div className="min-h-screen px-3 sm:px-4 py-4 sm:py-6 safe-top safe-bottom flex items-center justify-center">
+    <div className="min-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-x-hidden">
       <GameOverOverlay
         show={gameState.gameOver}
         players={gameOverResults}

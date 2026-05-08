@@ -11,11 +11,11 @@ const COMBINATION_CHECKS: {
   excludeIf?: string[];
 }[] = [
   // Highest priority first — only one celebration shown per roll
-  { type: 'fullHouse', category: 'fullHouse', duration: 1400 },
-  { type: 'largeStraight', category: 'largeStraight', duration: 1300 },
-  { type: 'fourOfAKind', category: 'fourOfAKind', duration: 1200 },
-  { type: 'smallStraight', category: 'smallStraight', duration: 1100 },
-  { type: 'threeOfAKind', category: 'threeOfAKind', duration: 900, excludeIf: ['fourOfAKind', 'fullHouse'] },
+  { type: 'fullHouse', category: 'fullHouse', duration: 2100 },
+  { type: 'largeStraight', category: 'largeStraight', duration: 2100 },
+  { type: 'fourOfAKind', category: 'fourOfAKind', duration: 2100 },
+  { type: 'smallStraight', category: 'smallStraight', duration: 2100 },
+  { type: 'threeOfAKind', category: 'threeOfAKind', duration: 2100, excludeIf: ['fourOfAKind', 'fullHouse'] },
 ];
 
 export function useCombinationCelebration(gameState: GameState | null) {

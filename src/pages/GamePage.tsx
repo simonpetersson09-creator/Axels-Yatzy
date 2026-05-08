@@ -227,7 +227,6 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <CombinationCelebration type={activeCelebration} />
         {/* AI thinking indicator */}
         <AnimatePresence>
           {(aiThinking || aiChosenCategory) && (
@@ -248,7 +247,8 @@ export default function GamePage() {
         </AnimatePresence>
 
         {/* Scoreboard + Players + Dice */}
-        <div className="flex gap-2 sm:gap-6 items-start">
+        <div className="relative flex gap-2 sm:gap-6 items-start">
+          <CombinationCelebration type={activeCelebration} />
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="game-shadow-soft rounded-lg overflow-hidden">

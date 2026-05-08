@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useRef } from 'react';
+import { useEffect, useCallback, useState, useRef, useLayoutEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -230,7 +230,7 @@ export default function GamePage() {
 
   return (
     <div
-      className="h-[100dvh] max-h-[100dvh] px-2 sm:px-4 pt-12 pb-6 sm:py-6 safe-top safe-bottom flex items-start sm:items-center justify-center overflow-hidden overscroll-none touch-none"
+      className="h-[100dvh] max-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-hidden overscroll-none touch-none"
       style={{ WebkitOverflowScrolling: 'auto' }}
     >
       <GameOverOverlay
@@ -244,6 +244,7 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
+      <FitScaler maxScale={1.15}>
       <motion.div
         className="relative flex flex-col gap-2 sm:gap-4"
         initial={{ opacity: 0, y: 12 }}
@@ -407,6 +408,50 @@ export default function GamePage() {
           </div>
         </div>
       </motion.div>
+      </FitScaler>
+    </div>
+  );
+}
+
+function FitScaler({ children, maxScale = 1.15 }: { children: React.ReactNode; maxScale?: number }) {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const outer = outerRef.current;
+    const inner = innerRef.current;
+    if (!outer || !inner) return;
+
+    const compute = () => {
+      const ow = outer.clientWidth;
+      const oh = outer.clientHeight;
+      const iw = inner.scrollWidth;
+      const ih = inner.scrollHeight;
+      if (!iw || !ih) return;
+      const s = Math.min(maxScale, ow / iw, oh / ih);
+      setScale(s > 0 ? s : 1);
+    };
+
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(outer);
+    ro.observe(inner);
+    window.addEventListener('resize', compute);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', compute);
+    };
+  }, [maxScale]);
+
+  return (
+    <div ref={outerRef} className="w-full h-full flex items-center justify-center overflow-hidden">
+      <div
+        ref={innerRef}
+        style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
+      >
+        {children}
+      </div>
     </div>
   );
 }

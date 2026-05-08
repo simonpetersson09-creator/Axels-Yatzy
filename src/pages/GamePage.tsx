@@ -199,7 +199,7 @@ export default function GamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);
-  const possibleScores = gameState.isRolling ? null : getPossibleScores();
+  const possibleScores = gameState.isRolling || isCurrentAi ? null : getPossibleScores();
   const canRoll = gameState.rollsLeft > 0 && !isCurrentAi;
 
   const PLAYER_COLORS = [

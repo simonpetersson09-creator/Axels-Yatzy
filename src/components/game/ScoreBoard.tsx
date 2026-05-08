@@ -78,7 +78,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       }}
       whileTap={canSelect ? { scale: 0.94 } : {}}
     >
-      {canSelect && !isAiChosen && (
+      {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && (
         <motion.span
           aria-hidden
           className="absolute inset-[2px] rounded-[6px] sm:rounded-[8px] pointer-events-none z-[5]"

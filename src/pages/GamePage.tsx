@@ -172,6 +172,7 @@ export default function GamePage() {
   }, [roll]);
 
   const handleSelectCategory = useCallback((categoryId: string) => {
+    if (gameState && aiPlayers.includes(gameState.currentPlayerIndex)) return;
     if (categoryId === 'yatzy' && gameState) {
       const dice = gameState.dice;
       const allSame = dice.every(d => d === dice[0]);
@@ -180,7 +181,7 @@ export default function GamePage() {
       }
     }
     selectCategory(categoryId as any);
-  }, [gameState, selectCategory]);
+  }, [gameState, selectCategory, aiPlayers]);
 
   const handlePlayAgain = useCallback(() => {
     startGame(playerNames);
@@ -198,7 +199,7 @@ export default function GamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);
-  const possibleScores = gameState.isRolling ? null : getPossibleScores();
+  const possibleScores = gameState.isRolling || isCurrentAi ? null : getPossibleScores();
   const canRoll = gameState.rollsLeft > 0 && !isCurrentAi;
 
   const PLAYER_COLORS = [

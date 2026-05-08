@@ -34,16 +34,12 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
         ))}
       </div>
 
-      {hasRolled && rollsLeft > 0 && (
-        <motion.p
-          className="text-center text-[9px] text-muted-foreground/40 mt-3 tracking-widest uppercase"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-        >
-          Tryck för att låsa
-        </motion.p>
-      )}
+      <p
+        className="text-center text-[9px] text-muted-foreground/40 mt-3 tracking-widest uppercase transition-opacity duration-300"
+        style={{ opacity: hasRolled && rollsLeft > 0 ? 1 : 0 }}
+      >
+        Tryck för att låsa
+      </p>
     </div>
   );
 }

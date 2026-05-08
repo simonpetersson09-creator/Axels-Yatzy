@@ -210,13 +210,13 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   const renderSumRow = (label: string, getValue: (p: Player) => string | number, isTotalRow?: boolean) => (
     <div className={cn(
       'flex',
-      isTotalRow ? 'border-t-2 border-yatzy-line-strong' : 'border-b border-yatzy-line/50',
+      isTotalRow ? 'border-t-2 border-yatzy-line-strong py-1' : 'border-b border-yatzy-line/50',
       isTotalRow ? 'bg-yatzy-header' : 'bg-yatzy-sum-row',
     )}>
       <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W)}>
         <span className={cn(
           'uppercase tracking-wider leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full',
-          isTotalRow ? 'text-[10px] font-black text-yatzy-text' : 'text-[9px] font-bold text-yatzy-text/50',
+          isTotalRow ? 'text-[10px] font-medium text-yatzy-text' : 'text-[9px] font-bold text-yatzy-text/50',
         )}>{label}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => {
@@ -227,7 +227,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
           <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', ROW_H, COL_W, bg.className)} style={bg.style}>
             <span className={cn(
               'tabular-nums leading-none',
-              isTotalRow ? 'text-[14px] font-black' : 'text-[12px] font-bold',
+              isTotalRow ? 'text-[13px] font-normal' : 'text-[12px] font-bold',
               player && isCurrent ? 'text-yatzy-text' : player ? 'text-yatzy-text/40' : 'text-yatzy-text/10',
             )}>
               {player ? getValue(player) : '–'}

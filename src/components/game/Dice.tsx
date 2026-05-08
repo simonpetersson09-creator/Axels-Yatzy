@@ -33,7 +33,7 @@ const SIZE = 56;
 const HALF = SIZE / 2;
 const RADIUS = 12;
 const PIP_COLOR = '#1a2428';
-const ANIM_DURATION = 0.8;
+const ANIM_DURATION = 1.05;
 
 
 // Pre-compute face transforms (static)
@@ -163,7 +163,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
     if (!canLock) return;
     onToggleLock();
     if ('vibrate' in navigator) {
-      navigator.vibrate(10);
+      navigator.vibrate(5);
     }
   };
 
@@ -229,7 +229,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           boxShadow: locked
             ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 6px 14px rgba(0,0,0,0.18)'
             : '0 6px 14px rgba(0,0,0,0.18)',
-          transition: 'box-shadow 0.3s ease, opacity 0.3s ease',
+          transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
           opacity: canLock && !locked ? 0.5 : 1,
         }}
       >
@@ -252,11 +252,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transition={
               isAnimating
                 ? {
-                    rotateX: { duration: dur, ease: [0.15, 0.85, 0.25, 1] },
-                    rotateY: { duration: dur, ease: [0.15, 0.85, 0.25, 1] },
-                    y: { duration: dur, times: [0, 0.55, 0.75, 0.9, 1], ease: 'easeOut' },
+                    rotateX: { duration: dur, ease: [0.22, 1, 0.36, 1] },
+                    rotateY: { duration: dur, ease: [0.22, 1, 0.36, 1] },
+                    y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
                   }
-                : { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+                : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }
             
           >

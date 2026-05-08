@@ -227,7 +227,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     >
       {/* Header */}
       <div className={cn('bg-yatzy-header border-b border-yatzy-line/50 px-4 text-center flex items-center justify-center', ROW_H)}>
-        <span className="font-display font-bold text-[15px] text-yatzy-text tracking-[0.25em] uppercase">Yatzy</span>
+        <span className="font-display font-bold text-[15px] text-yatzy-text tracking-[0.25em] uppercase">Mr.B Yatzy</span>
       </div>
 
       {/* Player columns header */}

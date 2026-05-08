@@ -20,7 +20,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
             key={index}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.04, duration: 0.3 }}
+            transition={{ delay: index * 0.07, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="flex items-center justify-center"
           >
             <Dice
@@ -39,6 +39,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
           className="text-center text-[9px] text-muted-foreground/40 mt-3 tracking-widest uppercase"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
         >
           Tryck för att låsa
         </motion.p>

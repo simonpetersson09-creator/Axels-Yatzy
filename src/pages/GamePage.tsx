@@ -87,6 +87,18 @@ export default function GamePage() {
     }
   }, [gameState?.gameOver]);
 
+  useEffect(() => {
+    document.documentElement.classList.add('game-scroll-lock');
+    document.body.classList.add('game-scroll-lock');
+    document.getElementById('root')?.classList.add('game-scroll-lock');
+
+    return () => {
+      document.documentElement.classList.remove('game-scroll-lock');
+      document.body.classList.remove('game-scroll-lock');
+      document.getElementById('root')?.classList.remove('game-scroll-lock');
+    };
+  }, []);
+
   // Auto-roll first throw when turn changes
   useEffect(() => {
     if (!gameState || gameState.gameOver || gameState.isRolling) return;
@@ -210,7 +222,10 @@ export default function GamePage() {
   ];
 
   return (
-    <div className="min-h-[100dvh] h-[100dvh] px-2 sm:px-4 py-1 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-hidden">
+    <div
+      className="h-[100dvh] max-h-[100dvh] px-2 sm:px-4 py-1 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-hidden overscroll-none touch-none"
+      style={{ WebkitOverflowScrolling: 'auto' }}
+    >
       <GameOverOverlay
         show={gameState.gameOver}
         players={gameOverResults}

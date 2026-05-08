@@ -219,7 +219,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         const isCurrent = i === currentPlayerIndex;
         const bg = cellBg(i);
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-300', ROW_H, COL_W, bg.className)} style={bg.style}>
+          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', ROW_H, COL_W, bg.className)} style={bg.style}>
             <span className={cn(
               'tabular-nums leading-none',
               isTotalRow ? 'text-[14px] font-black' : 'text-[12px] font-bold',
@@ -257,7 +257,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
             <div
               key={i}
               className={cn(
-                'flex items-center justify-center relative overflow-hidden transition-all duration-300',
+                'flex items-center justify-center relative overflow-hidden transition-all duration-500 ease-out',
                 COL_W,
               )}
               style={isCurrent && player ? {
@@ -268,7 +268,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
               {player ? (
                 <motion.div 
                   className={cn(
-                    'flex flex-col items-center gap-0.5 px-1 py-1 rounded-full transition-all duration-300',
+                    'flex flex-col items-center gap-0.5 px-1 py-1 rounded-full transition-all duration-500 ease-out',
                     isCurrent 
                       ? `${color.activeBg} ${color.glow}` 
                       : ``

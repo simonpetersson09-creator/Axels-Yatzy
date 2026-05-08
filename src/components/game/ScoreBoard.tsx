@@ -79,13 +79,13 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       }}
       whileTap={canSelect ? { scale: 0.94 } : {}}
     >
-      {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && (
+      {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && playerColor && (
         <motion.span
           aria-hidden
           className="absolute inset-[2px] rounded-[6px] sm:rounded-[8px] pointer-events-none z-[5]"
           style={{
-            border: '1.5px solid hsl(0 75% 58%)',
-            boxShadow: '0 0 6px hsl(0 80% 55% / 0.55), inset 0 0 4px hsl(0 80% 60% / 0.25)',
+            border: `1.5px solid hsl(${playerColor})`,
+            boxShadow: `0 0 6px hsl(${playerColor} / 0.55), inset 0 0 4px hsl(${playerColor} / 0.25)`,
           }}
           initial={{ opacity: 0.6 }}
           animate={{ opacity: [0.55, 1, 0.55] }}

@@ -13,8 +13,8 @@ import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Bot } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Home } from 'lucide-react';
 
 export default function GamePage() {
   const location = useLocation();

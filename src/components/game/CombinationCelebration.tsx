@@ -4,104 +4,70 @@ export type CombinationType = 'threeOfAKind' | 'fourOfAKind' | 'smallStraight' |
 
 interface CombinationConfig {
   label: string;
-  duration: number;
   fontSize: string;
   fontWeight: string;
   gradient: string;
   shadow: string;
   glow: string | null;
-  glowDuration: number;
-  scaleFrom: number;
-  scaleKeyframes: number[];
-  opacityKeyframes: number[];
-  times: number[];
-  easing: number[];
-  yShift?: number;
+  bounce: boolean;
+  color?: string;
 }
 
 const CONFIGS: Record<CombinationType, CombinationConfig> = {
-  // Level 1 — Subtil, lågintensiv
   threeOfAKind: {
     label: 'Triss',
-    duration: 0.8,
     fontSize: 'text-xl sm:text-2xl',
     fontWeight: 'font-bold',
     gradient: '',
-    shadow: 'drop-shadow(0 1px 3px hsla(220, 15%, 50%, 0.15))',
+    shadow: 'drop-shadow(0 1px 4px hsla(220, 15%, 50%, 0.2))',
     glow: null,
-    glowDuration: 0,
-    scaleFrom: 0.88,
-    scaleKeyframes: [0.88, 1.02, 1, 1],
-    opacityKeyframes: [0, 0.9, 0.9, 0],
-    times: [0, 0.15, 0.7, 1],
-    easing: [0.25, 1, 0.5, 1],
+    bounce: false,
+    color: 'hsl(220 15% 60%)',
   },
-  // Level 2 — Flow, mjuk sekvens
   smallStraight: {
     label: 'Liten stege',
-    duration: 1.0,
     fontSize: 'text-2xl sm:text-3xl',
     fontWeight: 'font-bold',
-    gradient: 'linear-gradient(135deg, hsl(185 55% 55%), hsl(160 50% 45%))',
-    shadow: 'drop-shadow(0 1px 5px hsla(175, 50%, 50%, 0.25))',
-    glow: 'radial-gradient(circle at 50% 50%, hsla(185, 60%, 50%, 0.07) 0%, transparent 45%)',
-    glowDuration: 1.0,
-    scaleFrom: 0.75,
-    scaleKeyframes: [0.75, 1.05, 1, 1],
-    opacityKeyframes: [0, 1, 1, 0],
-    times: [0, 0.15, 0.7, 1],
-    easing: [0.25, 1, 0.5, 1],
-    yShift: 3,
+    gradient: 'linear-gradient(135deg, hsl(185 55% 58%), hsl(160 50% 48%))',
+    shadow: 'drop-shadow(0 2px 8px hsla(175, 50%, 50%, 0.3))',
+    glow: 'radial-gradient(circle at 50% 50%, hsla(185, 60%, 50%, 0.1) 0%, transparent 50%)',
+    bounce: false,
   },
-  // Level 3 — Tydlig, impact
   fourOfAKind: {
     label: 'Fyrtal!',
-    duration: 1.1,
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
-    gradient: 'linear-gradient(180deg, hsl(25 80% 55%), hsl(15 70% 42%))',
-    shadow: 'drop-shadow(0 2px 8px hsla(20, 70%, 45%, 0.35))',
-    glow: 'radial-gradient(circle at 50% 50%, hsla(20, 75%, 50%, 0.1) 0%, transparent 45%)',
-    glowDuration: 1.1,
-    scaleFrom: 1.25,
-    scaleKeyframes: [1.25, 0.96, 1.02, 1, 1],
-    opacityKeyframes: [0, 1, 1, 1, 0],
-    times: [0, 0.15, 0.3, 0.7, 1],
-    easing: [0.22, 1, 0.36, 1],
+    gradient: 'linear-gradient(180deg, hsl(25 80% 58%), hsl(15 70% 45%))',
+    shadow: 'drop-shadow(0 3px 12px hsla(20, 70%, 45%, 0.4))',
+    glow: 'radial-gradient(circle at 50% 50%, hsla(20, 75%, 50%, 0.13) 0%, transparent 50%)',
+    bounce: true,
   },
-  // Level 4 — Wow, starkare flow
   largeStraight: {
     label: 'Stor stege!',
-    duration: 1.2,
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
-    gradient: 'linear-gradient(135deg, hsl(175 65% 58%), hsl(210 70% 55%), hsl(185 60% 48%))',
-    shadow: 'drop-shadow(0 2px 10px hsla(195, 60%, 50%, 0.4))',
-    glow: 'radial-gradient(circle at 50% 50%, hsla(175, 70%, 50%, 0.12) 0%, hsla(210, 60%, 55%, 0.04) 30%, transparent 50%)',
-    glowDuration: 1.2,
-    scaleFrom: 0.5,
-    scaleKeyframes: [0.5, 1.14, 0.97, 1.03, 1, 1],
-    opacityKeyframes: [0, 1, 1, 1, 1, 0],
-    times: [0, 0.12, 0.25, 0.4, 0.7, 1],
-    easing: [0.34, 1.56, 0.64, 1],
+    gradient: 'linear-gradient(135deg, hsl(175 65% 60%), hsl(210 70% 58%), hsl(185 60% 50%))',
+    shadow: 'drop-shadow(0 3px 14px hsla(195, 60%, 50%, 0.45))',
+    glow: 'radial-gradient(circle at 50% 50%, hsla(175, 70%, 50%, 0.15) 0%, hsla(210, 60%, 55%, 0.05) 35%, transparent 55%)',
+    bounce: true,
   },
-  // Level 5 — Stark reward
   fullHouse: {
     label: 'Kåk!',
-    duration: 1.3,
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
-    gradient: 'linear-gradient(135deg, hsl(42 90% 62%), hsl(36 82% 48%))',
-    shadow: 'drop-shadow(0 2px 10px hsla(36, 80%, 50%, 0.4))',
-    glow: 'radial-gradient(circle at 50% 50%, hsla(36, 80%, 55%, 0.12) 0%, transparent 45%)',
-    glowDuration: 1.3,
-    scaleFrom: 0.55,
-    scaleKeyframes: [0.55, 1.14, 0.98, 1, 1],
-    opacityKeyframes: [0, 1, 1, 1, 0],
-    times: [0, 0.12, 0.25, 0.7, 1],
-    easing: [0.34, 1.56, 0.64, 1],
+    gradient: 'linear-gradient(135deg, hsl(42 90% 65%), hsl(36 82% 50%))',
+    shadow: 'drop-shadow(0 3px 14px hsla(36, 80%, 50%, 0.45))',
+    glow: 'radial-gradient(circle at 50% 50%, hsla(36, 80%, 55%, 0.15) 0%, transparent 50%)',
+    bounce: true,
   },
 };
+
+// Unified timing (premium feel):
+// intro ~350ms, hold ~1200ms, outro ~500ms => total ~2050ms
+const INTRO = 0.35;
+const HOLD = 1.2;
+const OUTRO = 0.5;
+const TOTAL = INTRO + HOLD + OUTRO;
 
 interface CombinationCelebrationProps {
   type: CombinationType | null;
@@ -119,36 +85,42 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.08 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          {/* Background glow */}
+          {/* Background glow — soft fade in/out */}
           {config.glow && (
             <motion.div
               className="absolute inset-0"
               style={{ background: config.glow }}
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 1, 0] }}
-              transition={{ duration: config.glowDuration, ease: 'easeOut' }}
+              animate={{ opacity: [0, 1, 1, 0] }}
+              transition={{
+                duration: TOTAL,
+                ease: 'easeInOut',
+                times: [0, INTRO / TOTAL, (INTRO + HOLD) / TOTAL, 1],
+              }}
             />
           )}
 
-          {/* Text */}
+          {/* Text — smooth fade/scale-in, hold, soft fade-out */}
           <motion.div
             className="relative flex items-center justify-center"
-            initial={{
-              scale: config.scaleFrom,
-              opacity: 0,
-              ...(config.yShift ? { y: config.yShift } : {}),
-            }}
+            initial={{ scale: 0.85, opacity: 0, y: 4 }}
             animate={{
-              scale: config.scaleKeyframes,
-              opacity: config.opacityKeyframes,
-              ...(config.yShift ? { y: [config.yShift, 0, 0] } : {}),
+              scale: config.bounce ? [0.85, 1.06, 1, 1, 1] : [0.92, 1.02, 1, 1, 1],
+              opacity: [0, 1, 1, 1, 0],
+              y: [4, 0, 0, 0, -2],
             }}
             transition={{
-              duration: config.duration,
-              ease: config.easing as [number, number, number, number],
-              times: config.times,
+              duration: TOTAL,
+              ease: [0.22, 1, 0.36, 1],
+              times: [
+                0,
+                INTRO / TOTAL,
+                (INTRO + 0.1) / TOTAL,
+                (INTRO + HOLD) / TOTAL,
+                1,
+              ],
             }}
           >
             <span
@@ -160,7 +132,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                     }
-                  : { color: 'hsl(220 15% 55%)' }),
+                  : { color: config.color ?? 'hsl(220 15% 60%)' }),
                 filter: config.shadow,
               }}
             >

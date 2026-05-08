@@ -68,7 +68,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
         'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all duration-300 flex items-center justify-center overflow-visible rounded-[2px]', ROW_H, COL_W,
         bgClass,
         isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
-        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30',
+        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer',
         canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 active:bg-destructive/10 cursor-pointer',
       )}
       style={{ 
@@ -78,6 +78,19 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       }}
       whileTap={canSelect ? { scale: 0.94 } : {}}
     >
+      {canSelect && !isAiChosen && (
+        <motion.span
+          aria-hidden
+          className="absolute inset-[2px] rounded-[3px] pointer-events-none z-[5]"
+          style={{
+            border: '1.5px solid hsl(0 75% 58%)',
+            boxShadow: '0 0 6px hsl(0 80% 55% / 0.55), inset 0 0 4px hsl(0 80% 60% / 0.25)',
+          }}
+          initial={{ opacity: 0.6 }}
+          animate={{ opacity: [0.55, 1, 0.55] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      )}
       <AnimatePresence>
         {justScored && sparkles.map((s, i) => (
           <motion.div

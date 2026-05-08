@@ -230,7 +230,7 @@ export default function GamePage() {
 
   return (
     <div
-      className="h-[100dvh] max-h-[100dvh] px-2 sm:px-4 py-1 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-hidden overscroll-none touch-none"
+      className="h-[100dvh] max-h-[100dvh] px-2 sm:px-4 py-1 sm:py-6 safe-top safe-bottom flex items-start sm:items-center justify-center overflow-hidden overscroll-none touch-none"
       style={{ WebkitOverflowScrolling: 'auto' }}
     >
       <GameOverOverlay

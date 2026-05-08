@@ -303,7 +303,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
       {/* Upper section */}
       <div className={cn('border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)} style={{ backgroundColor: 'hsl(195 45% 22% / 0.35)' }}>
-        <span className="text-[9px] font-normal text-foreground uppercase tracking-[0.15em]">Övre sektionen</span>
+        <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">Övre sektionen</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
 
@@ -315,7 +315,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
       {/* Lower section */}
       <div className={cn('border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)} style={{ backgroundColor: 'hsl(195 45% 22% / 0.35)' }}>
-        <span className="text-[9px] font-normal text-foreground uppercase tracking-[0.15em]">Nedre sektionen</span>
+        <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">Nedre sektionen</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}
 

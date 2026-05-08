@@ -228,10 +228,6 @@ export default function GamePage() {
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
         <CombinationCelebration type={activeCelebration} />
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-      >
         {/* AI thinking indicator */}
         <AnimatePresence>
           {(aiThinking || aiChosenCategory) && (

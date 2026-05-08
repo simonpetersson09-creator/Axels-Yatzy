@@ -12,6 +12,7 @@ interface ScoreBoardProps {
   onSelectCategory: (id: CategoryId) => void;
   rollsLeft: number;
   aiChosenCategory?: string | null;
+  selectionDisabled?: boolean;
 }
 
 const PLAYER_COLORS = [
@@ -29,12 +30,13 @@ const COL_W = 'min-w-[38px] w-[38px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[72px] min-w-[72px] sm:w-[110px] sm:min-w-[110px]';
 const ROW_H = 'h-[24px] sm:h-[36px]';
 
-function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, onSelect, isAiChosen, playerColor }: {
+function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, interactive, bgClass, bgStyle, onSelect, isAiChosen, playerColor }: {
   catId: string;
   isScored: boolean;
   scoreValue: number | null | undefined;
   possibleScore: number | undefined;
   canSelect: boolean;
+  interactive: boolean;
   bgClass: string;
   bgStyle?: React.CSSProperties;
   onSelect: () => void;
@@ -64,20 +66,22 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
   return (
     <motion.button
       onClick={onSelect}
-      disabled={!canSelect}
+      disabled={!canSelect || !interactive}
       className={cn(
         'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all duration-500 ease-out flex items-center justify-center overflow-visible rounded-[2px]', ROW_H, COL_W,
         bgClass,
         isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
-        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer',
-        canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 active:bg-destructive/10 cursor-pointer',
+        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25',
+        canSelect && interactive && possibleScore !== undefined && possibleScore > 0 && 'hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer',
+        canSelect && possibleScore === 0 && 'bg-yatzy-bg',
+        canSelect && interactive && possibleScore === 0 && 'hover:bg-destructive/5 active:bg-destructive/10 cursor-pointer',
       )}
       style={{ 
         boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)',
         WebkitTapHighlightColor: 'transparent',
         ...bgStyle,
       }}
-      whileTap={canSelect ? { scale: 0.94, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } } : {}}
+      whileTap={canSelect && interactive ? { scale: 0.94, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } } : {}}
     >
       {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && playerColor && (
         <motion.span
@@ -142,7 +146,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory }: ScoreBoardProps) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled }: ScoreBoardProps) {
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
   const lowerCats = CATEGORIES.filter(c => c.section === 'lower');
 
@@ -181,9 +185,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         scoreValue={player.scores[cat.id]}
         possibleScore={possibleScore}
         canSelect={canSelect}
+        interactive={!selectionDisabled}
         bgClass={bg.className}
         bgStyle={bg.style}
-        onSelect={() => { if (canSelect) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
+        onSelect={() => { if (canSelect && !selectionDisabled) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
       />

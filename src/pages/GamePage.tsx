@@ -199,7 +199,7 @@ export default function GamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);
-  const possibleScores = gameState.isRolling || isCurrentAi ? null : getPossibleScores();
+  const possibleScores = gameState.isRolling ? null : getPossibleScores();
   const canRoll = gameState.rollsLeft > 0 && !isCurrentAi;
 
   const PLAYER_COLORS = [
@@ -239,6 +239,7 @@ export default function GamePage() {
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
                 aiChosenCategory={aiChosenCategory}
+                selectionDisabled={isCurrentAi}
               />
               <CombinationCelebration type={activeCelebration} />
             </div>

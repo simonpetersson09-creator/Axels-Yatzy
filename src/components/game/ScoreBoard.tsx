@@ -216,7 +216,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W)}>
         <span className={cn(
           'uppercase tracking-wider leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full',
-          isTotalRow ? 'text-[10px] font-medium text-yatzy-text' : 'text-[9px] font-bold text-yatzy-text/50',
+          isTotalRow ? 'text-[10px] font-medium text-yatzy-text' : 'text-[9px] font-normal text-yatzy-text/50',
         )}>{label}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => {
@@ -227,7 +227,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
           <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', ROW_H, COL_W, bg.className)} style={bg.style}>
             <span className={cn(
               'tabular-nums leading-none',
-              isTotalRow ? 'text-[13px] font-normal' : 'text-[12px] font-bold',
+              isTotalRow ? 'text-[13px] font-normal' : 'text-[12px] font-normal',
               player && isCurrent ? 'text-yatzy-text' : player ? 'text-yatzy-text/40' : 'text-yatzy-text/10',
             )}>
               {player ? getValue(player) : '–'}
@@ -303,7 +303,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
       {/* Upper section */}
       <div className={cn('border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)} style={{ backgroundColor: 'hsl(195 45% 22% / 0.35)' }}>
-        <span className="text-[9px] font-bold text-yatzy-text/30 uppercase tracking-[0.15em]">Övre sektionen</span>
+        <span className="text-[9px] font-normal text-foreground uppercase tracking-[0.15em]">Övre sektionen</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
 
@@ -315,7 +315,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
       {/* Lower section */}
       <div className={cn('border-b border-yatzy-line/30 px-3 flex items-center', ROW_H)} style={{ backgroundColor: 'hsl(195 45% 22% / 0.35)' }}>
-        <span className="text-[9px] font-bold text-yatzy-text/30 uppercase tracking-[0.15em]">Nedre sektionen</span>
+        <span className="text-[9px] font-normal text-foreground uppercase tracking-[0.15em]">Nedre sektionen</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}
 

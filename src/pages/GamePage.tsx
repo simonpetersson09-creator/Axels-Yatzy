@@ -248,7 +248,7 @@ export default function GamePage() {
         </AnimatePresence>
 
         {/* Scoreboard + Players + Dice */}
-        <div className="flex gap-3 sm:gap-6 items-start">
+        <div className="flex gap-2 sm:gap-6 items-start">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="game-shadow-soft rounded-lg overflow-hidden">

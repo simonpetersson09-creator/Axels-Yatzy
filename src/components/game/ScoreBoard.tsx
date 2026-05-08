@@ -185,6 +185,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         bgStyle={bg.style}
         onSelect={() => { if (canSelect) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
+        playerColor={PLAYER_HSL[slotIdx]}
       />
     );
   };

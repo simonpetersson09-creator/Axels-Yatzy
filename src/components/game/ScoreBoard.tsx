@@ -21,18 +21,22 @@ const PLAYER_COLORS = [
   { bg: 'bg-yatzy-player4-soft', activeBg: 'bg-yatzy-player4/20', border: 'border-yatzy-player4', text: 'text-yatzy-player4', dot: 'bg-yatzy-player4', glow: 'shadow-[0_0_12px_hsl(350_65%_52%/0.4)]', label: 'P4' },
 ];
 
+// Raw HSL for inline-styled tints/borders (Tailwind can't generate dynamic class names)
+const PLAYER_HSL = ['36 82% 52%', '210 70% 52%', '155 60% 42%', '350 65% 52%'];
+
 const SLOT_COUNT = 4;
 const COL_W = 'min-w-[38px] w-[38px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[72px] min-w-[72px] sm:w-[110px] sm:min-w-[110px]';
 const ROW_H = 'h-[24px] sm:h-[36px]';
 
-function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect, isAiChosen }: {
+function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, onSelect, isAiChosen }: {
   catId: string;
   isScored: boolean;
   scoreValue: number | null | undefined;
   possibleScore: number | undefined;
   canSelect: boolean;
   bgClass: string;
+  bgStyle?: React.CSSProperties;
   onSelect: () => void;
   isAiChosen?: boolean;
 }) {
@@ -61,7 +65,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       onClick={onSelect}
       disabled={!canSelect}
       className={cn(
-        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all flex items-center justify-center overflow-visible rounded-[2px]', ROW_H, COL_W,
+        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all duration-300 flex items-center justify-center overflow-visible rounded-[2px]', ROW_H, COL_W,
         bgClass,
         isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
         canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer ring-1 ring-inset ring-yatzy-highlight/30',
@@ -70,6 +74,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       style={{ 
         boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)',
         WebkitTapHighlightColor: 'transparent',
+        ...bgStyle,
       }}
       whileTap={canSelect ? { scale: 0.94 } : {}}
     >
@@ -127,11 +132,16 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
   const lowerCats = CATEGORIES.filter(c => c.section === 'lower');
 
-  const cellBg = (slotIdx: number) => {
+  const cellBg = (slotIdx: number): { className: string; style?: React.CSSProperties } => {
     const isCurrent = slotIdx === currentPlayerIndex;
     const player = players[slotIdx];
-    if (!player) return 'bg-yatzy-bg/40';
-    return isCurrent ? 'bg-sky-100/70' : 'bg-yatzy-bg';
+    if (!player) return { className: 'bg-yatzy-bg/40' };
+    if (!isCurrent) return { className: 'bg-yatzy-bg' };
+    const hsl = PLAYER_HSL[slotIdx] ?? PLAYER_HSL[0];
+    return {
+      className: '',
+      style: { backgroundColor: `hsl(${hsl} / 0.10)` },
+    };
   };
 
   const renderCell = (cat: typeof CATEGORIES[0], slotIdx: number) => {
@@ -147,6 +157,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     const isScored = player.scores[cat.id] !== undefined && player.scores[cat.id] !== null;
     const possibleScore = isCurrent ? possibleScores?.[cat.id] : undefined;
     const canSelect = isCurrent && !isScored && possibleScore !== undefined && rollsLeft < 3;
+    const bg = cellBg(slotIdx);
 
     return (
       <ScoreCell
@@ -156,7 +167,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         scoreValue={player.scores[cat.id]}
         possibleScore={possibleScore}
         canSelect={canSelect}
-        bgClass={cellBg(slotIdx)}
+        bgClass={bg.className}
+        bgStyle={bg.style}
         onSelect={() => { if (canSelect) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
       />
@@ -190,8 +202,9 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       {Array.from({ length: SLOT_COUNT }).map((_, i) => {
         const player = players[i];
         const isCurrent = i === currentPlayerIndex;
+        const bg = cellBg(i);
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, cellBg(i))}>
+          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-300', ROW_H, COL_W, bg.className)} style={bg.style}>
             <span className={cn(
               'tabular-nums leading-none',
               isTotalRow ? 'text-[14px] font-black' : 'text-[12px] font-bold',
@@ -224,13 +237,18 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
           const player = players[i];
           const color = PLAYER_COLORS[i];
           const isCurrent = i === currentPlayerIndex;
+          const hsl = PLAYER_HSL[i];
           return (
             <div
               key={i}
               className={cn(
-                'flex items-center justify-center relative overflow-hidden',
+                'flex items-center justify-center relative overflow-hidden transition-all duration-300',
                 COL_W,
               )}
+              style={isCurrent && player ? {
+                backgroundColor: `hsl(${hsl} / 0.10)`,
+                boxShadow: `inset 0 -2px 0 0 hsl(${hsl} / 0.85)`,
+              } : undefined}
             >
               {player ? (
                 <motion.div 

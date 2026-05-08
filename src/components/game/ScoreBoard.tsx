@@ -22,9 +22,9 @@ const PLAYER_COLORS = [
 ];
 
 const SLOT_COUNT = 4;
-const COL_W = 'min-w-[48px] w-[48px] sm:min-w-[56px] sm:w-[56px]';
-const LABEL_W = 'w-[90px] min-w-[90px] sm:w-[110px] sm:min-w-[110px]';
-const ROW_H = 'h-[36px]';
+const COL_W = 'min-w-[38px] w-[38px] sm:min-w-[56px] sm:w-[56px]';
+const LABEL_W = 'w-[72px] min-w-[72px] sm:w-[110px] sm:min-w-[110px]';
+const ROW_H = 'h-[28px] sm:h-[36px]';
 
 function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgClass, onSelect, isAiChosen }: {
   catId: string;

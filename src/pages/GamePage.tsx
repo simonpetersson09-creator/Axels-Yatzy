@@ -247,11 +247,10 @@ export default function GamePage() {
         </AnimatePresence>
 
         {/* Scoreboard + Players + Dice */}
-        <div className="relative flex gap-2 sm:gap-6 items-start">
-          <CombinationCelebration type={activeCelebration} />
+        <div className="flex gap-2 sm:gap-6 items-start">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
-            <div className="game-shadow-soft rounded-lg overflow-hidden">
+            <div className="relative game-shadow-soft rounded-lg overflow-hidden">
               <ScoreBoard
                 players={gameState.players}
                 currentPlayerIndex={gameState.currentPlayerIndex}
@@ -260,6 +259,7 @@ export default function GamePage() {
                 rollsLeft={gameState.rollsLeft}
                 aiChosenCategory={aiChosenCategory}
               />
+              <CombinationCelebration type={activeCelebration} />
             </div>
 
             {/* Roll indicator */}

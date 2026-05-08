@@ -117,7 +117,7 @@ export default function GamePage() {
     aiTurnRef.current = aiKey;
 
     setAiThinking(true);
-    const delay = 1800 + Math.random() * 800;
+    const delay = 1400 + Math.random() * 600;
 
     const t = setTimeout(() => {
       const gs = gameStateRef.current;
@@ -130,7 +130,7 @@ export default function GamePage() {
         setTimeout(() => {
           selectCategory(cat);
           setAiChosenCategory(null);
-        }, 3400);
+        }, 2600);
       } else {
         const currentPlayer = gs.players[gs.currentPlayerIndex];
         const locks = aiDecideLocks(gs.dice, currentPlayer.scores);

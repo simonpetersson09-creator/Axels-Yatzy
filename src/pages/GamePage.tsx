@@ -221,13 +221,13 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <CombinationCelebration type={activeCelebration} />
       <motion.div
-        className="flex flex-col gap-2 sm:gap-4"
+        className="relative flex flex-col gap-2 sm:gap-4"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
+        <CombinationCelebration type={activeCelebration} />
         {/* AI thinking indicator */}
         <AnimatePresence>
           {(aiThinking || aiChosenCategory) && (

@@ -143,7 +143,7 @@ export default function MultiplayerGamePage() {
   };
 
   return (
-    <div className="min-h-screen px-4 py-6 safe-top safe-bottom flex items-center justify-center">
+    <div className="min-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-x-hidden">
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}
@@ -158,7 +158,7 @@ export default function MultiplayerGamePage() {
         )}
 
         {/* Scoreboard + Players + Dice */}
-        <div className="flex gap-6 items-stretch">
+        <div className="flex gap-2 sm:gap-6 items-stretch">
           <div className="game-shadow-soft rounded-lg overflow-hidden">
             <ScoreBoard
               players={gameState.players}

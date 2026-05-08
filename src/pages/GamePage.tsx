@@ -209,7 +209,7 @@ export default function GamePage() {
   ];
 
   return (
-    <div className="min-h-screen px-3 sm:px-4 py-4 sm:py-6 safe-top safe-bottom flex items-center justify-center">
+    <div className="min-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-center justify-center overflow-x-hidden">
       <GameOverOverlay
         show={gameState.gameOver}
         players={gameOverResults}
@@ -248,7 +248,7 @@ export default function GamePage() {
         </AnimatePresence>
 
         {/* Scoreboard + Players + Dice */}
-        <div className="flex gap-3 sm:gap-6 items-start">
+        <div className="flex gap-2 sm:gap-6 items-start">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="game-shadow-soft rounded-lg overflow-hidden">
@@ -357,7 +357,7 @@ export default function GamePage() {
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}
-                className={`w-[84px] h-[84px] rounded-full font-display font-bold text-[15px] tracking-wide transition-all flex items-center justify-center touch-manipulation ${
+                className={`w-[68px] h-[68px] sm:w-[84px] sm:h-[84px] rounded-full font-display font-bold text-[13px] sm:text-[15px] tracking-wide transition-all flex items-center justify-center touch-manipulation ${
                   canRoll && !gameState.isRolling
                     ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]'
                     : 'bg-secondary text-muted-foreground shadow-none'

@@ -81,7 +81,7 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, bgCl
       {canSelect && !isAiChosen && (
         <motion.span
           aria-hidden
-          className="absolute inset-[2px] rounded-[3px] pointer-events-none z-[5]"
+          className="absolute inset-[2px] rounded-[6px] sm:rounded-[8px] pointer-events-none z-[5]"
           style={{
             border: '1.5px solid hsl(0 75% 58%)',
             boxShadow: '0 0 6px hsl(0 80% 55% / 0.55), inset 0 0 4px hsl(0 80% 60% / 0.25)',

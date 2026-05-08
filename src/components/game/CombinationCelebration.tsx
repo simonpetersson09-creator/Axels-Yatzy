@@ -63,10 +63,10 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
 };
 
 // Unified timing (premium feel):
-// intro ~350ms, hold ~1200ms, outro ~500ms => total ~2050ms
-const INTRO = 0.35;
-const HOLD = 1.2;
-const OUTRO = 0.5;
+// intro ~600ms, hold ~2800ms, outro ~1000ms => total ~4400ms
+const INTRO = 0.6;
+const HOLD = 2.8;
+const OUTRO = 1.0;
 const TOTAL = INTRO + HOLD + OUTRO;
 
 interface CombinationCelebrationProps {

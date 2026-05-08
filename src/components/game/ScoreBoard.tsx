@@ -202,8 +202,9 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       {Array.from({ length: SLOT_COUNT }).map((_, i) => {
         const player = players[i];
         const isCurrent = i === currentPlayerIndex;
+        const bg = cellBg(i);
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, cellBg(i))}>
+          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-300', ROW_H, COL_W, bg.className)} style={bg.style}>
             <span className={cn(
               'tabular-nums leading-none',
               isTotalRow ? 'text-[14px] font-black' : 'text-[12px] font-bold',

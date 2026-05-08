@@ -308,7 +308,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
 
       {renderSumRow('Summa', (p) => `${getUpperSectionTotal(p.scores)}`)}
-      {renderSumRow('Bonus ≥63', (p) => {
+      {renderSumRow('Bonus', (p) => {
         const ut = getUpperSectionTotal(p.scores);
         return ut >= UPPER_BONUS_THRESHOLD ? `+${UPPER_BONUS_VALUE}` : '0';
       })}

@@ -66,20 +66,22 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, inte
   return (
     <motion.button
       onClick={onSelect}
-      disabled={!canSelect}
+      disabled={!canSelect || !interactive}
       className={cn(
         'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-all duration-500 ease-out flex items-center justify-center overflow-visible rounded-[2px]', ROW_H, COL_W,
         bgClass,
         isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
-        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25 hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer',
-        canSelect && possibleScore === 0 && 'bg-yatzy-bg hover:bg-destructive/5 active:bg-destructive/10 cursor-pointer',
+        canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25',
+        canSelect && interactive && possibleScore !== undefined && possibleScore > 0 && 'hover:bg-yatzy-highlight/40 active:bg-yatzy-highlight/50 cursor-pointer',
+        canSelect && possibleScore === 0 && 'bg-yatzy-bg',
+        canSelect && interactive && possibleScore === 0 && 'hover:bg-destructive/5 active:bg-destructive/10 cursor-pointer',
       )}
       style={{ 
         boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)',
         WebkitTapHighlightColor: 'transparent',
         ...bgStyle,
       }}
-      whileTap={canSelect ? { scale: 0.94, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } } : {}}
+      whileTap={canSelect && interactive ? { scale: 0.94, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } } : {}}
     >
       {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && playerColor && (
         <motion.span

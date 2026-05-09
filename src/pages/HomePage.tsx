@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, clearActiveGame } from '@/lib/active-game';
-import { getAiName } from '@/lib/yatzy-ai';
+import { getRandomAiNames } from '@/lib/yatzy-ai';
 import { getPlayerName } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { Play, Clock, Gamepad2, Trophy, Star } from 'lucide-react';

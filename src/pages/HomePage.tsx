@@ -170,7 +170,7 @@ export default function HomePage() {
                       key={opponents}
                       onClick={() => {
                         const humanName = getPlayerName() || 'Du';
-                        const aiNames = Array.from({ length: opponents }, (_, i) => getAiName(i));
+                        const aiNames = getRandomAiNames(opponents);
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
                         navigate('/game', { state: { playerNames, aiPlayers } });

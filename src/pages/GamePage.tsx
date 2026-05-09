@@ -195,9 +195,9 @@ export default function GamePage() {
 
   const handleSelectCategory = useCallback((categoryId: string) => {
     if (!gameState) return;
-    // Hard guard: human (index 0) can only score on their own turn.
-    // Prevents scoring for AI/other players if app was suspended and aiPlayers list lost.
-    if (gameState.currentPlayerIndex !== HUMAN_INDEX) return;
+    // Hard guard: in any game with AI opponents, the human only controls index 0.
+    // Prevents scoring for AI players if app was suspended and aiPlayers list was lost.
+    if (aiPlayers.length > 0 && gameState.currentPlayerIndex !== HUMAN_INDEX) return;
     if (aiPlayers.includes(gameState.currentPlayerIndex)) return;
     if (categoryId === 'yatzy') {
       const dice = gameState.dice;

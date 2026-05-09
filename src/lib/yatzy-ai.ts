@@ -101,35 +101,34 @@ function categoryValue(
   const bonus = bonusInfo(scores, available);
 
   // ── Upper section ──
-  // Key insight: always evaluate upper categories by how well the roll
-  // "fills" the category relative to its target (3×face).
-  // A roll of [2,2,3,5,6] → twos=4 is 67% of target(6), sixes=6 is 33% of target(18).
-  // Twos is the smarter pick because it uses the category efficiently.
+  // Always evaluate upper categories by how well the roll fills the category
+  // relative to its target (3×face). A roll of [2,2,3,5,6] → twos=4 is 67%
+  // of target(6). A single 6 in "sixes" is only 33% — bad fill.
   if (catId in UPPER_TARGET) {
     const target = UPPER_TARGET[catId];
     const face = UPPER_FACE[catId];
-    const ratio = target > 0 ? score / target : 0; // 0..1+ how well we fill this category
+    const ratio = target > 0 ? score / target : 0;
 
     if (bonus.alreadyHave) {
-      // Bonus secured — value by ratio-to-target so we still pick efficient fills
-      if (ratio >= 1) return score + 15 + face;
+      if (ratio >= 1) return score + 18 + face;
       if (ratio >= 0.67) return score + 8;
-      if (score > 0) return score * ratio * 3; // scale down poor fills
-      return -6;
+      if (score > 0) return score * ratio * 3;
+      return -8;
     }
 
     if (bonus.reachable) {
-      // Weight heavily toward meeting targets
-      if (score >= target) return score + 30 + face; // on-target, prefer higher faces
-      if (score >= target - face) return score + 15; // one die short of target
-      if (ratio >= 0.5) return score + 5; // decent partial fill
-      if (score > 0) return score * ratio * 2; // poor fill → low value
-      return -12 - face; // zeroing a high upper cat is very costly
+      // Strongly prefer perfect/over-target fills — these directly secure the bonus.
+      if (score >= target) return score + 40 + face * 2;
+      if (score >= target - face) return score + 22 + face; // one die short
+      if (ratio >= 0.5) return score + 8;
+      if (score > 0) return score * ratio * 2;
+      // Zeroing a high upper category is very costly when chasing bonus.
+      return -14 - face * 1.5;
     }
 
     // Bonus unreachable — use ratio to avoid wasting categories
-    if (ratio >= 1) return score + 10;
-    if (ratio >= 0.67) return score + 5;
+    if (ratio >= 1) return score + 12;
+    if (ratio >= 0.67) return score + 6;
     if (score > 0) return score * ratio * 2;
     return -6;
   }
@@ -137,7 +136,7 @@ function categoryValue(
   // ── Lower section ──
   switch (catId) {
     case 'yatzy':
-      return score === 50 ? 130 : -1; // massive reward; cheap sacrifice (rare)
+      return score === 50 ? 130 : -1;
 
     case 'largeStraight':
       return score === 20 ? 55 : -2;
@@ -161,7 +160,6 @@ function categoryValue(
       return score > 0 ? score + 3 : -7;
 
     case 'chance': {
-      // Use chance wisely — only take if high sum
       if (score >= 28) return score + 15;
       if (score >= 24) return score + 8;
       if (score >= 20) return score;

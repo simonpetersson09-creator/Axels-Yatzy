@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, clearActiveGame } from '@/lib/active-game';
-import { getAiName } from '@/lib/yatzy-ai';
+import { getRandomAiNames } from '@/lib/yatzy-ai';
 import { getPlayerName } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { Play, Clock, Gamepad2, Trophy, Star } from 'lucide-react';
@@ -170,7 +170,7 @@ export default function HomePage() {
                       key={opponents}
                       onClick={() => {
                         const humanName = getPlayerName() || 'Du';
-                        const aiNames = Array.from({ length: opponents }, (_, i) => getAiName(i));
+                        const aiNames = getRandomAiNames(opponents);
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
                         navigate('/game', { state: { playerNames, aiPlayers } });

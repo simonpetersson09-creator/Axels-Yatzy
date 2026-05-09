@@ -2,10 +2,26 @@ import { CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, getUpperSectionTotal } from '@/lib/yatzy-scoring';
 
 // Simple everyday Swedish names
-const AI_NAMES = ['Erik', 'Anna', 'Lars', 'Karin', 'Olle', 'Lisa', 'Sven', 'Eva'];
+const AI_NAMES = [
+  'Erik', 'Anna', 'Lars', 'Karin', 'Olle', 'Lisa', 'Sven', 'Eva',
+  'Astrid', 'Gustav', 'Maja', 'Nils', 'Sofia', 'Johan', 'Elin', 'Magnus',
+  'Linnea', 'Oskar', 'Hanna', 'Filip', 'Sara', 'Anders', 'Klara', 'Mikael',
+  'Ida', 'Henrik', 'Frida', 'Jonas', 'Emma', 'Viktor',
+];
 
 export function getAiName(index: number): string {
   return AI_NAMES[index % AI_NAMES.length];
+}
+
+/** Returns N unique random AI names. */
+export function getRandomAiNames(count: number): string[] {
+  const pool = [...AI_NAMES];
+  const result: string[] = [];
+  for (let i = 0; i < count && pool.length > 0; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    result.push(pool.splice(idx, 1)[0]);
+  }
+  return result;
 }
 
 // ─── Constants ───────────────────────────────────────────

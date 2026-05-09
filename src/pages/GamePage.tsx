@@ -24,11 +24,11 @@ export default function GamePage() {
   const incomingPlayerNames: string[] | undefined = location.state?.playerNames;
   const incomingAiPlayers: number[] | undefined = location.state?.aiPlayers;
   
-  // Persist playerNames and aiPlayers to sessionStorage so they survive refreshes and "play again"
+  // Persist playerNames and aiPlayers to localStorage so they survive app suspension/refresh
   const [playerNames, setPlayerNames] = useState<string[]>(() => {
     if (incomingPlayerNames) return incomingPlayerNames;
     try {
-      const saved = sessionStorage.getItem('yatzy-player-names');
+      const saved = localStorage.getItem('yatzy-player-names');
       return saved ? JSON.parse(saved) : ['Spelare 1'];
     } catch { return ['Spelare 1']; }
   });
@@ -36,7 +36,7 @@ export default function GamePage() {
   const [aiPlayers, setAiPlayers] = useState<number[]>(() => {
     if (incomingAiPlayers) return incomingAiPlayers;
     try {
-      const saved = sessionStorage.getItem('yatzy-ai-players');
+      const saved = localStorage.getItem('yatzy-ai-players');
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
@@ -44,13 +44,16 @@ export default function GamePage() {
   useEffect(() => {
     if (incomingPlayerNames) {
       setPlayerNames(incomingPlayerNames);
-      sessionStorage.setItem('yatzy-player-names', JSON.stringify(incomingPlayerNames));
+      localStorage.setItem('yatzy-player-names', JSON.stringify(incomingPlayerNames));
     }
     if (incomingAiPlayers) {
       setAiPlayers(incomingAiPlayers);
-      sessionStorage.setItem('yatzy-ai-players', JSON.stringify(incomingAiPlayers));
+      localStorage.setItem('yatzy-ai-players', JSON.stringify(incomingAiPlayers));
     }
   }, [incomingPlayerNames, incomingAiPlayers]);
+
+  // Human is always player index 0 in this app
+  const HUMAN_INDEX = 0;
 
   const autoRollRef = useRef<string | null>(null);
   const aiTurnRef = useRef<string | null>(null);
@@ -191,8 +194,12 @@ export default function GamePage() {
   }, [roll]);
 
   const handleSelectCategory = useCallback((categoryId: string) => {
-    if (gameState && aiPlayers.includes(gameState.currentPlayerIndex)) return;
-    if (categoryId === 'yatzy' && gameState) {
+    if (!gameState) return;
+    // Hard guard: in any game with AI opponents, the human only controls index 0.
+    // Prevents scoring for AI players if app was suspended and aiPlayers list was lost.
+    if (aiPlayers.length > 0 && gameState.currentPlayerIndex !== HUMAN_INDEX) return;
+    if (aiPlayers.includes(gameState.currentPlayerIndex)) return;
+    if (categoryId === 'yatzy') {
       const dice = gameState.dice;
       const allSame = dice.every(d => d === dice[0]);
       if (allSame) {

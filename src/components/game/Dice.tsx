@@ -117,8 +117,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
   const rollingRef = useRef(false);
 
   const rollVar = useMemo(() => ({
-    spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
-    spinsY: (2 + Math.floor(Math.random() * 2)) * 360,
+    // More spins + sharper deceleration so the final face only resolves at the very end.
+    spinsX: (5 + Math.floor(Math.random() * 3)) * 360,
+    spinsY: (5 + Math.floor(Math.random() * 3)) * 360,
     dt: (Math.random() - 0.5) * 0.1,
     bounceY: -5 - Math.random() * 6,
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -252,8 +253,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transition={
               isAnimating
                 ? {
-                    rotateX: { duration: dur, ease: [0.22, 1, 0.36, 1] },
-                    rotateY: { duration: dur, ease: [0.22, 1, 0.36, 1] },
+                    // Near-linear with sharper deceleration at the very end
+                    // so the final face doesn't reveal itself mid-spin.
+                    rotateX: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
+                    rotateY: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
                     y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }

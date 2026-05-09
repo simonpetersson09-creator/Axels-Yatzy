@@ -23,8 +23,9 @@ export function ForfeitButton({ onConfirm, playerName }: ForfeitDialogProps) {
         Ge upp
       </motion.button>
 
-      <AnimatePresence>
-        {showDialog && (
+      {createPortal(
+        <AnimatePresence>
+
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center px-6"
             initial={{ opacity: 0 }}

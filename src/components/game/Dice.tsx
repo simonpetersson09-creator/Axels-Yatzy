@@ -253,8 +253,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transition={
               isAnimating
                 ? {
-                    rotateX: { duration: dur, ease: [0.22, 1, 0.36, 1] },
-                    rotateY: { duration: dur, ease: [0.22, 1, 0.36, 1] },
+                    // Near-linear with sharper deceleration at the very end
+                    // so the final face doesn't reveal itself mid-spin.
+                    rotateX: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
+                    rotateY: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
                     y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }

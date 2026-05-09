@@ -194,8 +194,12 @@ export default function GamePage() {
   }, [roll]);
 
   const handleSelectCategory = useCallback((categoryId: string) => {
-    if (gameState && aiPlayers.includes(gameState.currentPlayerIndex)) return;
-    if (categoryId === 'yatzy' && gameState) {
+    if (!gameState) return;
+    // Hard guard: human (index 0) can only score on their own turn.
+    // Prevents scoring for AI/other players if app was suspended and aiPlayers list lost.
+    if (gameState.currentPlayerIndex !== HUMAN_INDEX) return;
+    if (aiPlayers.includes(gameState.currentPlayerIndex)) return;
+    if (categoryId === 'yatzy') {
       const dice = gameState.dice;
       const allSame = dice.every(d => d === dice[0]);
       if (allSame) {

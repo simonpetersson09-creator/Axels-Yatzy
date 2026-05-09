@@ -369,20 +369,28 @@ export function aiDecideLocks(dice: number[], scores: Record<string, number | nu
   }
 
   // ── Strategy: Upper section targeting ──
-  if (bonus.reachable && !bonus.alreadyHave) {
-    // Find the best upper category to target
+  // Even when bonus is already secured, we still want to fill these efficiently
+  // when we have 2+ of a face and the category is open.
+  if (!bonus.alreadyHave || bonus.upperLeft.length > 0) {
     for (const catId of bonus.upperLeft) {
       const face = UPPER_FACE[catId];
       const faceCount = counts[face - 1];
       if (faceCount >= 2) {
         const upperLocks = lockAllOf(dice, face);
-        const expectedScore = expectedCountAfterReroll(faceCount, 5 - faceCount) * face;
-        const targetDiff = expectedScore - UPPER_TARGET[catId];
-        strategies.push({
-          name: `upper-${catId}`,
-          locks: upperLocks,
-          value: expectedScore + (targetDiff >= 0 ? 15 : 5) + (face >= 5 ? 5 : 0),
-        });
+        const rerollCount = 5 - faceCount;
+        const expectedScore = expectedCountAfterReroll(faceCount, rerollCount) * face;
+        const target = UPPER_TARGET[catId];
+        // Strong bonus when we already meet/exceed the target
+        const meetsTarget = faceCount * face >= target;
+        const closeToTarget = expectedScore >= target;
+        let value = expectedScore;
+        if (meetsTarget) value += 25 + face * 2;
+        else if (closeToTarget) value += 15 + face;
+        else value += 5;
+        if (bonus.reachable && !bonus.alreadyHave) value += 8;
+        // Triples of a face we still need are very strong upper plays
+        if (faceCount >= 3) value += 12 + face;
+        strategies.push({ name: `upper-${catId}`, locks: upperLocks, value });
       }
     }
   }

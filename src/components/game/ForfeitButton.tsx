@@ -15,7 +15,12 @@ export function ForfeitButton({ onConfirm, playerName }: ForfeitDialogProps) {
     <>
       <button
         type="button"
-        onClick={() => setShowDialog(true)}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowDialog(true);
+        }}
         className="relative inline-flex items-center justify-center gap-1.5 px-3 min-h-[44px] rounded-xl text-[11px] font-medium text-destructive/60 hover:text-destructive hover:bg-destructive/10 active:bg-destructive/15 transition-colors duration-200 whitespace-nowrap"
         style={{
           WebkitTapHighlightColor: 'transparent',

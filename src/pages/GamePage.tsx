@@ -258,7 +258,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex gap-1 sm:gap-6 items-stretch sm:items-center -translate-x-3 sm:translate-x-0">
+        <div className="flex gap-1 sm:gap-6 items-center -translate-x-3 sm:translate-x-0">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
@@ -275,9 +275,9 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 sm:gap-4 h-full justify-between sm:h-auto sm:justify-start">
+          <div className="flex flex-col gap-2 sm:gap-4">
             {/* Player indicators */}
-            <div className="flex flex-col gap-1 sm:gap-2">
+            <div className="flex flex-col gap-1 sm:gap-2 mt-20 sm:mt-0">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const color = PLAYER_COLORS[idx];
@@ -325,7 +325,7 @@ export default function GamePage() {
             />
 
             {/* Bottom: Roll + Home + Forfeit */}
-            <div className="flex flex-col items-center gap-2 mt-0 sm:mt-8 translate-y-0">
+            <div className="flex flex-col items-center gap-2 -mt-12 sm:mt-12 -translate-y-8 sm:translate-y-0">
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}

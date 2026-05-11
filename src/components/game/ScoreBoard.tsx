@@ -184,7 +184,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     };
   };
 
-  const renderCell = (cat: typeof CATEGORIES[0], slotIdx: number) => {
+  const renderCell = (cat: Category, slotIdx: number) => {
     const player = players[slotIdx];
     const isCurrent = slotIdx === currentPlayerIndex;
 
@@ -202,7 +202,9 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     return (
       <ScoreCell
         key={`${cat.id}-${player.id}`}
-        catId={cat.id}
+        categoryId={cat.id}
+        categoryName={cat.name}
+        currentPlayerLabel={player.name}
         isScored={isScored}
         scoreValue={player.scores[cat.id]}
         possibleScore={possibleScore}
@@ -210,14 +212,14 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         interactive={!selectionDisabled}
         bgClass={bg.className}
         bgStyle={bg.style}
-        onSelect={() => { if (canSelect && !selectionDisabled) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
+        onSelect={() => onSelectCategory(cat.id)}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
       />
     );
   };
 
-  const renderRow = (cat: typeof CATEGORIES[0], idx: number) => (
+  const renderRow = (cat: Category, idx: number) => (
     <div key={cat.id} className="flex border-b border-yatzy-line/30">
       <div className={cn(
         'flex-shrink-0 px-2 sm:px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,

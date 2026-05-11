@@ -155,7 +155,7 @@ export default function GamePage() {
         }, 2600);
       } else {
         const currentPlayer = gs.players[gs.currentPlayerIndex];
-        const locks = aiDecideLocks(gs.dice, currentPlayer.scores);
+        const locks = aiDecideLocks(gs.dice, currentPlayer.scores, gs.rollsLeft);
         setLocks(locks);
         setTimeout(() => {
           playRollSound();

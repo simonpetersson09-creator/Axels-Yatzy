@@ -10,6 +10,8 @@ export function getSessionId(): string {
   return id;
 }
 
+// Kept as a thin wrapper for backwards compatibility.
+// Profile data now lives in src/lib/profile.ts (local-only, no auth).
 export function getPlayerName(): string {
   return localStorage.getItem(PLAYER_NAME_KEY) || '';
 }

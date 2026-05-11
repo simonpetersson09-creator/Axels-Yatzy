@@ -10,6 +10,7 @@ import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
+import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
@@ -54,6 +55,8 @@ export default function GamePage() {
 
   // Human is always player index 0 in this app
   const HUMAN_INDEX = 0;
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
+  useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
 
   const autoRollRef = useRef<string | null>(null);
   const aiTurnRef = useRef<string | null>(null);
@@ -282,6 +285,8 @@ export default function GamePage() {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const color = PLAYER_COLORS[idx];
                 const label = `P${idx + 1}`;
+                const isHuman = idx === HUMAN_INDEX && !aiPlayers.includes(idx);
+                const showAvatar = isHuman && !!avatarUrl;
                 return (
                   <motion.div
                     key={player.id}
@@ -291,10 +296,14 @@ export default function GamePage() {
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
-                    <div className={`w-5 h-5 rounded-full ${color.bg} ring-2 ring-offset-2 ring-offset-background ${
+                    <div className={`w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
                     } transition-all flex items-center justify-center`}>
-                      <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
+                      {showAvatar ? (
+                        <img src={avatarUrl!} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
+                      )}
                     </div>
                     <span className={`text-[12px] font-semibold truncate max-w-[80px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'

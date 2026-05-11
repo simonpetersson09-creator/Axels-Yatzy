@@ -275,9 +275,9 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="flex flex-col gap-4 sm:gap-4">
             {/* Player indicators */}
-            <div className="flex flex-col gap-1 sm:gap-2 mt-4 sm:mt-0">
+            <div className="flex flex-col gap-1 sm:gap-2">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const color = PLAYER_COLORS[idx];

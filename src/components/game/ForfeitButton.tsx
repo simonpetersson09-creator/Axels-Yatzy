@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, MutableRefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flag } from 'lucide-react';
@@ -6,22 +6,30 @@ import { Flag } from 'lucide-react';
 interface ForfeitDialogProps {
   onConfirm: () => void;
   playerName?: string;
+  pressedButtonRef?: MutableRefObject<'kasta' | 'home' | 'forfeit' | null>;
 }
 
-export function ForfeitButton({ onConfirm, playerName }: ForfeitDialogProps) {
+export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: ForfeitDialogProps) {
   const [showDialog, setShowDialog] = useState(false);
 
   return (
     <>
       <button
         type="button"
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          e.preventDefault();
+        onPointerDown={(e) => {
           e.stopPropagation();
+          if (pressedButtonRef) pressedButtonRef.current = 'forfeit';
+          (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+        }}
+        onPointerUp={(e) => {
+          e.stopPropagation();
+          if (pressedButtonRef && pressedButtonRef.current !== 'forfeit') return;
+          if (pressedButtonRef) pressedButtonRef.current = null;
           setShowDialog(true);
         }}
-        className="relative inline-flex items-center justify-center gap-1.5 px-3 min-h-[44px] rounded-xl text-[11px] font-medium text-destructive/60 hover:text-destructive hover:bg-destructive/10 active:bg-destructive/15 transition-colors duration-200 whitespace-nowrap"
+        onPointerCancel={() => { if (pressedButtonRef) pressedButtonRef.current = null; }}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        className="relative inline-flex items-center justify-center gap-1.5 px-3 min-h-[44px] rounded-xl text-[11px] font-medium text-destructive/60 active:bg-destructive/15 transition-colors duration-200 whitespace-nowrap"
         style={{
           WebkitTapHighlightColor: 'transparent',
           touchAction: 'manipulation',

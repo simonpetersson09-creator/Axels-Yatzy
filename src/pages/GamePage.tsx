@@ -268,7 +268,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex gap-2 sm:gap-6 items-start -ml-2 sm:ml-0 mt-10">
+        <div className="flex gap-2 sm:gap-6 items-start mt-10">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">

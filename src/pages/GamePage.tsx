@@ -218,7 +218,7 @@ export default function GamePage() {
       currentPlayer: gameState.players[gameState.currentPlayerIndex]?.name ?? null,
       score: debug?.score ?? null,
     });
-    selectCategory(categoryId as any);
+    selectCategory(categoryId as any, debug);
   }, [gameState, selectCategory, aiPlayers]);
 
   const handlePlayAgain = useCallback(() => {
@@ -235,7 +235,6 @@ export default function GamePage() {
     ? gameState.players.map(p => ({ name: p.name, score: getTotalScore(p.scores) }))
     : [];
 
-  const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);
   const possibleScores = gameState.isRolling ? null : getPossibleScores();
   const canRoll = gameState.rollsLeft > 0 && !isCurrentAi;

@@ -401,6 +401,34 @@ export function aiPickCategory(
   const avSet = new Set<string>(available);
   const bonus = bonusInfo(scores, avSet);
 
+  // ─── Hard priority overrides (never sacrifice a finished premium hand) ───
+  const counts = getCounts(dice);
+  const sorted = [...dice].sort((a, b) => a - b).join('');
+
+  // 1. Yatzy: 5 of a kind always goes to yatzy if open
+  if (counts.some(c => c === 5) && avSet.has('yatzy')) {
+    return 'yatzy';
+  }
+  // 2. Large straight
+  if (sorted === '23456' && avSet.has('largeStraight')) {
+    return 'largeStraight';
+  }
+  // 3. Small straight (only if large isn't already filled by these dice)
+  if (sorted === '12345' && avSet.has('smallStraight')) {
+    return 'smallStraight';
+  }
+  // 4. Full house: prefer over upper if available
+  const threeIdx = counts.findIndex(c => c >= 3);
+  const twoIdx = counts.findIndex((c, i) => c >= 2 && i !== threeIdx);
+  if (threeIdx !== -1 && twoIdx !== -1 && avSet.has('fullHouse')) {
+    return 'fullHouse';
+  }
+  // 5. Four of a kind: prefer fourOfAKind slot if open
+  const fourFace = counts.findIndex(c => c >= 4);
+  if (fourFace !== -1 && avSet.has('fourOfAKind')) {
+    return 'fourOfAKind';
+  }
+
   return bestPlacementValue(dice, scores, available, bonus).catId;
 }
 

@@ -67,9 +67,9 @@ export default function SettingsPage() {
   const displayName = name.trim() || t('guest');
 
   return (
-    <div className="min-h-[100dvh] px-5 py-6 pt-[calc(1.5rem+30px)] safe-top safe-bottom">
+    <div className="min-h-[100dvh] px-5 py-6 safe-top safe-bottom">
       <motion.div
-        className="max-w-sm mx-auto space-y-7"
+        className="max-w-sm mx-auto space-y-7 mt-[30px]"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}

@@ -45,7 +45,7 @@ const PLAYER_HSL = ['36 82% 52%', '210 70% 52%', '155 60% 42%', '350 65% 52%'];
 const SLOT_COUNT = 4;
 const COL_W = 'min-w-[42px] w-[42px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[80px] min-w-[80px] sm:w-[110px] sm:min-w-[110px]';
-const ROW_H = 'h-[35px] sm:h-[40px]';
+const ROW_H = 'h-[28px] sm:h-[40px]';
 
 function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor }: {
   isScored: boolean;
@@ -141,7 +141,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 
       <motion.span
         className={cn(
-          'text-[17px] sm:text-[13px] tabular-nums leading-none',
+          'text-[13px] sm:text-[13px] tabular-nums leading-none',
           isScored && 'font-normal text-yatzy-text',
           canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-normal text-yatzy-highlight',
           canSelect && possibleScore === 0 && 'font-normal text-yatzy-text/25',
@@ -284,7 +284,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         'flex-shrink-0 px-2 sm:px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className="text-[13px] sm:text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{cat.name}</span>
+        <span className="text-[11px] sm:text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{cat.name}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </button>
@@ -335,7 +335,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Player columns header */}
-      <div className={cn('flex border-b-2 border-yatzy-line-strong/40 py-2 bg-yatzy-section-header/50')}>
+      <div className={cn('flex border-b-2 border-yatzy-line-strong/40 py-1 sm:py-2 bg-yatzy-section-header/50')}>
         <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 px-3 flex items-center', LABEL_W, ROW_H)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];

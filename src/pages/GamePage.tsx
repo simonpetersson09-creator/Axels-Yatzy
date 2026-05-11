@@ -274,8 +274,9 @@ export default function GamePage() {
 
   return (
     <div
-      className="h-[100dvh] max-h-[100dvh] px-1 sm:px-4 pt-1 pb-2 sm:py-6 flex items-start sm:items-center justify-start sm:justify-center overflow-hidden overscroll-none touch-none"
-      style={{ WebkitOverflowScrolling: 'auto' }}
+      key={orientationKey}
+      className="h-[100svh] max-h-[100svh] px-1 sm:px-4 pt-1 pb-2 sm:py-6 flex items-start sm:items-center justify-start sm:justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
+      style={{ height: '100dvh', maxHeight: '100dvh', WebkitOverflowScrolling: 'auto' }}
     >
       <GameOverOverlay
         show={gameState.gameOver}

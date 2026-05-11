@@ -334,21 +334,32 @@ export default function GamePage() {
             />
 
             {/* Bottom: Roll + Home + Forfeit */}
-            <div className="flex flex-col items-center gap-3 -mt-12 sm:mt-12 -translate-y-[32px] sm:translate-y-0">
+            <div
+              className="flex flex-col items-center gap-3 -mt-12 sm:mt-12 -translate-y-[32px] sm:translate-y-0"
+              style={{ isolation: 'isolate' }}
+            >
               <button
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
+                onPointerDown={(e) => {
                   e.stopPropagation();
+                  pressedButtonRef.current = 'kasta';
+                  (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                }}
+                onPointerUp={(e) => {
+                  e.stopPropagation();
+                  if (pressedButtonRef.current !== 'kasta') return;
+                  pressedButtonRef.current = null;
                   if (canRoll && !gameState.isRolling) handleRoll();
                 }}
+                onPointerCancel={() => { pressedButtonRef.current = null; }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 disabled={!canRoll || gameState.isRolling}
                 className={`relative w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] rounded-full font-display font-bold text-[13px] sm:text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
                   canRoll && !gameState.isRolling
                     ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
                     : 'bg-secondary text-muted-foreground shadow-none'
                 }`}
-                style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+                style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
               >
                 <span className="pointer-events-none">
                   {isCurrentAi
@@ -357,16 +368,23 @@ export default function GamePage() {
                 </span>
               </button>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-3" style={{ position: 'relative', zIndex: 2 }}>
                 <button
                   type="button"
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => {
-                    e.preventDefault();
+                  onPointerDown={(e) => {
                     e.stopPropagation();
+                    pressedButtonRef.current = 'home';
+                    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                  }}
+                  onPointerUp={(e) => {
+                    e.stopPropagation();
+                    if (pressedButtonRef.current !== 'home') return;
+                    pressedButtonRef.current = null;
                     navigate('/');
                   }}
-                  className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full bg-secondary/60 hover:bg-secondary active:bg-secondary transition-colors duration-200"
+                  onPointerCancel={() => { pressedButtonRef.current = null; }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full bg-secondary/60 active:bg-secondary transition-colors duration-200"
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                   title="Till menyn"
                   aria-label="Till menyn"
@@ -379,6 +397,7 @@ export default function GamePage() {
                     ? gameState.players.find((_, i) => i !== 0)?.name
                     : undefined
                   }
+                  pressedButtonRef={pressedButtonRef}
                 />
               </div>
             </div>

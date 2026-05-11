@@ -275,9 +275,9 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 sm:gap-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
             {/* Player indicators */}
-            <div className="flex flex-col gap-1 sm:gap-2 mt-20 sm:mt-0">
+            <div className="flex flex-col gap-1 sm:gap-2 mt-4 sm:mt-0">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const color = PLAYER_COLORS[idx];
@@ -325,7 +325,7 @@ export default function GamePage() {
             />
 
             {/* Bottom: Roll + Home + Forfeit */}
-            <div className="flex flex-col items-center gap-2 -mt-12 sm:mt-12 -translate-y-8 sm:translate-y-0">
+            <div className="flex flex-col items-center gap-2 mt-2 sm:mt-6 translate-y-0">
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}

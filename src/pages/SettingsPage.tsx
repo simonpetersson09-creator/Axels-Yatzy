@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, User, Camera, Trash2, Check, Globe, BarChart3 } from 'lucide-react';
+import { ArrowLeft, User, Camera, Trash2, Check } from 'lucide-react';
 import {
   getProfileName, setProfileName,
   getProfileAvatar, setProfileAvatar,

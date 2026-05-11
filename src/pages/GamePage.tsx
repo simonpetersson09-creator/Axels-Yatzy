@@ -334,44 +334,45 @@ export default function GamePage() {
             />
 
             {/* Bottom: Roll + Home + Forfeit */}
-            <div className="flex flex-col items-center gap-2 -mt-12 sm:mt-12 -translate-y-[32px] sm:translate-y-0">
-              <motion.button
-                onClick={handleRoll}
+            <div className="flex flex-col items-center gap-3 -mt-12 sm:mt-12 -translate-y-[32px] sm:translate-y-0">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (canRoll && !gameState.isRolling) handleRoll();
+                }}
                 disabled={!canRoll || gameState.isRolling}
-                className={`w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] rounded-full font-display font-bold text-[13px] sm:text-[16px] tracking-wide transition-all duration-300 flex items-center justify-center touch-manipulation ${
+                className={`relative w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] rounded-full font-display font-bold text-[13px] sm:text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
                   canRoll && !gameState.isRolling
-                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]'
+                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
                     : 'bg-secondary text-muted-foreground shadow-none'
                 }`}
-                style={{ WebkitTapHighlightColor: 'transparent' }}
-                animate={
-                  canRoll && !gameState.isRolling
-                    ? { scale: [1, 1.05, 1] }
-                    : {}
-                }
-                transition={
-                  canRoll && !gameState.isRolling
-                    ? { duration: 2.4, repeat: Infinity, ease: [0.45, 0, 0.55, 1] }
-                    : {}
-                }
-                whileTap={canRoll ? { scale: 0.92, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } } : {}}
+                style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
               >
-                {isCurrentAi
-                  ? '⏳'
-                  : gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
-              </motion.button>
+                <span className="pointer-events-none">
+                  {isCurrentAi
+                    ? '⏳'
+                    : gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
+                </span>
+              </button>
 
               <div className="flex items-center gap-1.5">
-                <motion.button
-                  onClick={() => navigate('/')}
-                  className="p-2.5 rounded-full bg-secondary/60 hover:bg-secondary transition-colors duration-300 touch-manipulation"
-                  style={{ WebkitTapHighlightColor: 'transparent' }}
-                  whileTap={{ scale: 0.92, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } }}
+                <button
+                  type="button"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate('/');
+                  }}
+                  className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full bg-secondary/60 hover:bg-secondary active:bg-secondary transition-colors duration-200"
+                  style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                   title="Till menyn"
                   aria-label="Till menyn"
                 >
-                  <Home className="w-3.5 h-3.5 text-muted-foreground" />
-                </motion.button>
+                  <Home className="w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+                </button>
                 <ForfeitButton
                   onConfirm={handleForfeit}
                   playerName={gameState.players.length > 1

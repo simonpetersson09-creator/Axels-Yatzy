@@ -67,7 +67,10 @@ export default function SettingsPage() {
   const displayName = name.trim() || t('guest');
 
   return (
-    <div className="min-h-[100dvh] px-5 py-6 safe-top safe-bottom">
+    <div
+      className="h-[100svh] max-h-[100svh] overflow-y-auto overscroll-contain px-5 py-6 safe-top safe-bottom"
+      style={{ height: '100dvh', maxHeight: '100dvh', WebkitOverflowScrolling: 'touch' }}
+    >
       <motion.div
         className="max-w-sm mx-auto space-y-7 mt-[30px]"
         initial={{ opacity: 0, y: 16 }}

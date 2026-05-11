@@ -18,7 +18,9 @@ export default function GameSetupPage() {
 
   const startGame = () => {
     const playerNames = names.slice(0, playerCount).map((n, i) => n.trim() || `Spelare ${i + 1}`);
-    navigate('/game', { state: { playerNames } });
+    // Only P1 is human. P2/P3/P4 are AI-controlled.
+    const aiPlayers = playerNames.map((_, i) => i).filter(i => i !== 0);
+    navigate('/game', { state: { playerNames, aiPlayers } });
   };
 
   return (

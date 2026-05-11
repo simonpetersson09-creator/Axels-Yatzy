@@ -1,7 +1,8 @@
 import { CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, getUpperSectionTotal } from '@/lib/yatzy-scoring';
 
-// Simple everyday Swedish names
+// ─── Names ───────────────────────────────────────────────
+
 const AI_NAMES = [
   'Erik', 'Anna', 'Lars', 'Karin', 'Olle', 'Lisa', 'Sven', 'Eva',
   'Astrid', 'Gustav', 'Maja', 'Nils', 'Sofia', 'Johan', 'Elin', 'Magnus',
@@ -13,7 +14,6 @@ export function getAiName(index: number): string {
   return AI_NAMES[index % AI_NAMES.length];
 }
 
-/** Returns N unique random AI names. */
 export function getRandomAiNames(count: number): string[] {
   const pool = [...AI_NAMES];
   const result: string[] = [];
@@ -36,6 +36,30 @@ const UPPER_TARGET: Record<string, number> = {
 const BONUS_THRESHOLD = 63;
 const BONUS_VALUE = 50;
 
+/**
+ * Approximate baseline expected score per category if we were to play
+ * that category in isolation with 3 rolls and optimal keep-decisions.
+ * These represent the long-term opportunity cost of "burning" a category
+ * with a sub-optimal score now.
+ */
+const BASELINE_EV: Record<CategoryId, number> = {
+  ones: 1.88,
+  twos: 3.75,
+  threes: 5.62,
+  fours: 7.50,
+  fives: 9.38,
+  sixes: 11.25,
+  pair: 7.5,
+  twoPairs: 11,
+  threeOfAKind: 8,
+  fourOfAKind: 5,
+  smallStraight: 9,    // 15 * ~0.6 chance with 3 rolls
+  largeStraight: 6,    // 20 * ~0.3 chance with 3 rolls
+  fullHouse: 11,
+  chance: 22,
+  yatzy: 2.5,          // 50 * ~0.05 chance opportunistically
+};
+
 // ─── Helpers ─────────────────────────────────────────────
 
 function getCounts(dice: number[]): number[] {
@@ -44,10 +68,10 @@ function getCounts(dice: number[]): number[] {
   return c;
 }
 
-function availableSet(scores: Record<string, number | null>): Set<string> {
-  return new Set(
-    CATEGORIES.filter(c => scores[c.id] === undefined || scores[c.id] === null).map(c => c.id),
-  );
+function availableList(scores: Record<string, number | null>): CategoryId[] {
+  return CATEGORIES
+    .filter(c => scores[c.id] === undefined || scores[c.id] === null)
+    .map(c => c.id);
 }
 
 function longestRun(dice: number[]): number[] {
@@ -80,358 +104,353 @@ function lockAllOf(dice: number[], value: number): boolean[] {
   return dice.map(d => d === value);
 }
 
-function mergeLocks(a: boolean[], b: boolean[]): boolean[] {
-  return a.map((v, i) => v || b[i]);
+function rollD6(): number {
+  return 1 + Math.floor(Math.random() * 6);
 }
 
-// ─── Expected-value helpers ──────────────────────────────
-
-/** Estimate how many of `face` we expect after re-rolling `rerollCount` dice */
-function expectedCountAfterReroll(currentCount: number, rerollCount: number): number {
-  return currentCount + rerollCount / 6;
+function rerollDice(dice: number[], locks: boolean[]): number[] {
+  return dice.map((v, i) => locks[i] ? v : rollD6());
 }
 
-/** Upper bonus gap: how far are we from 63, and how realistic is it? */
-function bonusInfo(scores: Record<string, number | null>, available: Set<string>) {
+// ─── Bonus pressure ──────────────────────────────────────
+
+interface BonusInfo {
+  upperTotal: number;
+  gap: number;                // how many points to bonus
+  upperLeft: CategoryId[];    // remaining upper categories
+  reachable: boolean;         // can we still reach 63 in theory?
+  alreadyHave: boolean;
+  /** Per-point value of upper progress in this game state. */
+  pointValue: number;
+}
+
+function bonusInfo(scores: Record<string, number | null>, available: Set<string>): BonusInfo {
   const upperTotal = getUpperSectionTotal(scores);
   const upperLeft = UPPER_IDS.filter(c => available.has(c));
   const gap = BONUS_THRESHOLD - upperTotal;
-  const avgPotential = upperLeft.reduce((s, c) => s + UPPER_TARGET[c], 0);
-  return {
-    gap,
-    upperLeft,
-    reachable: gap <= 0 || (upperLeft.length > 0 && avgPotential >= gap),
-    alreadyHave: gap <= 0,
-    urgency: upperLeft.length > 0 ? gap / upperLeft.length : 99,
-  };
+  const maxRemaining = upperLeft.reduce((s, c) => s + 5 * UPPER_FACE[c], 0);
+  const alreadyHave = gap <= 0;
+  const reachable = alreadyHave || maxRemaining >= gap;
+
+  // Marginal value of each upper point. When far from bonus but reachable,
+  // each point is worth ~50/gap (since closing the gap unlocks +50).
+  // Cap so a single die's contribution is meaningful but not overwhelming.
+  let pointValue = 1;
+  if (alreadyHave) {
+    pointValue = 1; // points are just face value
+  } else if (reachable && upperLeft.length > 0) {
+    // The closer we are, the more each point matters.
+    pointValue = Math.min(2.2, 1 + 50 / Math.max(gap * (upperLeft.length + 1), 30));
+  } else {
+    pointValue = 1;
+  }
+
+  return { upperTotal, gap, upperLeft, reachable, alreadyHave, pointValue };
 }
 
-// ─── Category Scoring (Pro-level) ────────────────────────
-
-function categoryValue(
-  catId: CategoryId,
-  score: number,
-  scores: Record<string, number | null>,
-  available: Set<string>,
-): number {
-  const bonus = bonusInfo(scores, available);
-
-  // ── Upper section ──
-  // Always evaluate upper categories by how well the roll fills the category
-  // relative to its target (3×face). A roll of [2,2,3,5,6] → twos=4 is 67%
-  // of target(6). A single 6 in "sixes" is only 33% — bad fill.
-  if (catId in UPPER_TARGET) {
-    const target = UPPER_TARGET[catId];
-    const face = UPPER_FACE[catId];
-    const ratio = target > 0 ? score / target : 0;
-
-    if (bonus.alreadyHave) {
-      if (ratio >= 1) return score + 18 + face;
-      if (ratio >= 0.67) return score + 8;
-      if (score > 0) return score * ratio * 3;
-      return -8;
-    }
-
-    if (bonus.reachable) {
-      // Strongly prefer perfect/over-target fills — these directly secure the bonus.
-      if (score >= target) return score + 40 + face * 2;
-      if (score >= target - face) return score + 22 + face; // one die short
-      if (ratio >= 0.5) return score + 8;
-      if (score > 0) return score * ratio * 2;
-      // Zeroing a high upper category is very costly when chasing bonus.
-      return -14 - face * 1.5;
-    }
-
-    // Bonus unreachable — use ratio to avoid wasting categories
-    if (ratio >= 1) return score + 12;
-    if (ratio >= 0.67) return score + 6;
-    if (score > 0) return score * ratio * 2;
-    return -6;
-  }
-
-  // ── Lower section ──
-  switch (catId) {
-    case 'yatzy':
-      return score === 50 ? 130 : -1;
-
-    case 'largeStraight':
-      return score === 20 ? 55 : -2;
-
-    case 'smallStraight':
-      return score === 15 ? 42 : -2;
-
-    case 'fullHouse':
-      return score > 0 ? score + 22 : -3;
-
-    case 'fourOfAKind':
-      return score > 0 ? score + 15 : -3;
-
-    case 'threeOfAKind':
-      return score > 0 ? score + 8 : -5;
-
-    case 'twoPairs':
-      return score > 0 ? score + 12 : -3;
-
-    case 'pair':
-      return score > 0 ? score + 3 : -7;
-
-    case 'chance': {
-      if (score >= 28) return score + 15;
-      if (score >= 24) return score + 8;
-      if (score >= 20) return score;
-      return score - 10;
-    }
-
-    default:
-      return score;
-  }
-}
-
-// ─── Category Selection ──────────────────────────────────
-
-export function aiPickCategory(dice: number[], scores: Record<string, number | null>): CategoryId {
-  const available = CATEGORIES.filter(c => scores[c.id] === undefined || scores[c.id] === null);
-  if (available.length === 0) return 'chance';
-
-  const avSet = availableSet(scores);
-  const bonus = bonusInfo(scores, avSet);
-
-  const scored = available.map(cat => {
-    const raw = calculateScore(dice, cat.id);
-    const value = categoryValue(cat.id, raw, scores, avSet);
-    return { id: cat.id, score: raw, value };
-  });
-
-  scored.sort((a, b) => b.value - a.value);
-
-  // If best option is positive, take it
-  if (scored[0].value > 0) return scored[0].id;
-
-  // All negative → sacrifice least valuable
-  // Sacrifice categories that are hardest to fill AND cheapest to lose
-  const sacrificeOrder: CategoryId[] = [
-    'yatzy',           // hardest to fill, 0 loss most times
-    'largeStraight',   // hard to fill
-    'smallStraight',   // hard to fill  
-    'fullHouse',       
-    'fourOfAKind',     
-    'twoPairs',        
-    'threeOfAKind',    
-    'pair',            
-  ];
-
-  // If bonus is reachable, prefer sacrificing lower section
-  // If bonus is gone, consider sacrificing upper section zeros
-  if (!bonus.reachable) {
-    // Add low upper cats as sacrifice options
-    sacrificeOrder.push('ones', 'twos', 'threes');
-  }
-
-  sacrificeOrder.push('chance');
-
-  for (const cat of sacrificeOrder) {
-    if (available.find(a => a.id === cat)) return cat;
-  }
-  return available[0].id;
-}
-
-// ─── Dice Locking (Pro-level) ────────────────────────────
+// ─── Final-dice valuation ────────────────────────────────
 
 /**
- * Evaluate multiple strategies and pick the one with highest expected value.
- * Each strategy produces a lock pattern; we score them and pick the best.
+ * Given a final 5-dice hand and the current scoresheet, compute the
+ * marginal value of the BEST placement choice for those dice.
+ * Marginal value = realised score - opportunity cost of the burned slot
+ * (its baseline EV) + upper-bonus pressure adjustments.
+ *
+ * Used both for evaluating Monte-Carlo samples and for picking categories
+ * at rollsLeft=0.
  */
-export function aiDecideLocks(dice: number[], scores: Record<string, number | null>): boolean[] {
-  const counts = getCounts(dice);
-  const available = availableSet(scores);
-  const bonus = bonusInfo(scores, available);
-  const noLock = [false, false, false, false, false];
+function bestPlacementValue(
+  dice: number[],
+  scores: Record<string, number | null>,
+  available: CategoryId[],
+  bonus: BonusInfo,
+): { catId: CategoryId; value: number; rawScore: number } {
+  let bestCat: CategoryId = available[0];
+  let bestValue = -Infinity;
+  let bestRaw = 0;
 
-  interface Strategy {
-    name: string;
-    locks: boolean[];
-    value: number;
+  for (const catId of available) {
+    const raw = calculateScore(dice, catId);
+    const baseline = BASELINE_EV[catId];
+
+    // Marginal value of placing here = score earned now minus
+    // what we'd typically score for that slot later.
+    let value = raw - baseline;
+
+    // Upper bonus pressure
+    if (catId in UPPER_FACE) {
+      const target = UPPER_TARGET[catId];
+      const face = UPPER_FACE[catId];
+      const surplus = raw - target; // negative if under, positive if over
+
+      if (!bonus.alreadyHave && bonus.reachable) {
+        // Each point above/below target is worth pointValue extra (~1.3-2.2)
+        // beyond face value, because it changes the bonus equation.
+        value += surplus * bonus.pointValue;
+        // Heavy penalty for zero-ing a bonus-reachable upper slot:
+        // it removes the entire face's contribution from the bonus path.
+        if (raw === 0) value -= face * 1.5;
+      } else if (bonus.alreadyHave) {
+        // Surplus still nice but not critical
+        value += Math.max(0, surplus) * 0.3;
+      }
+    }
+
+    // Strong premium hands deserve a small "loyalty" bump so the AI
+    // doesn't dump them into chance/upper when both options score similarly.
+    if (catId === 'yatzy' && raw === 50) value += 5;
+    if (catId === 'largeStraight' && raw === 20) value += 3;
+    if (catId === 'smallStraight' && raw === 15) value += 2;
+    if (catId === 'fullHouse' && raw > 0) value += 2;
+
+    if (value > bestValue) {
+      bestValue = value;
+      bestCat = catId;
+      bestRaw = raw;
+    }
   }
 
-  const strategies: Strategy[] = [];
+  return { catId: bestCat, value: bestValue, rawScore: bestRaw };
+}
 
-  const maxCount = Math.max(...counts);
-  const maxVal = counts.lastIndexOf(maxCount) + 1;
+// ─── Greedy reroll heuristic for inner simulation ────────
+
+/**
+ * Cheap, deterministic lock heuristic used INSIDE Monte-Carlo simulation
+ * for subsequent rolls. Avoids recursive simulation explosion.
+ */
+function greedyLocksForSim(dice: number[], available: Set<string>): boolean[] {
+  const counts = getCounts(dice);
   const run = longestRun(dice);
 
-  // ── Strategy: Yatzy chase ──
-  if (available.has('yatzy') && maxCount >= 3) {
-    // With 3+, the EV of going for yatzy is significant
-    const bestVal = counts.lastIndexOf(maxCount) + 1;
-    const rerolls = 5 - maxCount;
-    const prob = Math.pow(1 / 6, rerolls);
-    const ev = prob * 50 + (1 - prob) * (bestVal * maxCount * 0.3); // fallback to N-of-a-kind value
-    strategies.push({
-      name: 'yatzy',
-      locks: lockAllOf(dice, bestVal),
-      value: maxCount >= 4 ? 80 : ev + (maxCount === 3 ? 5 : 0),
-    });
+  // 1. Yatzy chase if 4+ same and yatzy open
+  for (let f = 6; f >= 1; f--) {
+    if (counts[f - 1] >= 4 && available.has('yatzy')) return lockAllOf(dice, f);
   }
 
-  // ── Strategy: Large straight ──
+  // 2. Completed straights/full house — keep all
+  const sorted = [...dice].sort((a, b) => a - b).join('');
+  if ((sorted === '12345' && available.has('smallStraight')) ||
+      (sorted === '23456' && available.has('largeStraight'))) {
+    return [true, true, true, true, true];
+  }
+  const hasThree = counts.findIndex(c => c >= 3);
+  const hasTwoOther = counts.findIndex((c, i) => c >= 2 && i !== hasThree);
+  if (hasThree !== -1 && hasTwoOther !== -1 && available.has('fullHouse')) {
+    return [true, true, true, true, true];
+  }
+
+  // 3. Building a straight
+  if (run.length >= 4 && (available.has('smallStraight') || available.has('largeStraight'))) {
+    return lockIndicesForValues(dice, run);
+  }
+
+  // 4. Triples → keep for fourOfAKind/yatzy/upper
+  for (let f = 6; f >= 1; f--) {
+    if (counts[f - 1] >= 3) return lockAllOf(dice, f);
+  }
+
+  // 5. Best pair if it's high (>=4) or if matching face is open in upper
+  let bestPairFace = 0;
+  for (let f = 6; f >= 1; f--) {
+    if (counts[f - 1] >= 2) { bestPairFace = f; break; }
+  }
+  if (bestPairFace >= 4) return lockAllOf(dice, bestPairFace);
+  if (bestPairFace > 0) {
+    const upperId = UPPER_IDS[bestPairFace - 1];
+    if (available.has(upperId)) return lockAllOf(dice, bestPairFace);
+  }
+
+  // 6. Two pairs for twoPairs/fullHouse
+  const pairs: number[] = [];
+  for (let f = 6; f >= 1; f--) if (counts[f - 1] >= 2) pairs.push(f);
+  if (pairs.length >= 2 && (available.has('twoPairs') || available.has('fullHouse'))) {
+    return dice.map(d => d === pairs[0] || d === pairs[1]);
+  }
+
+  // 7. Default: keep 5s and 6s
+  return dice.map(d => d >= 5);
+}
+
+// ─── Monte-Carlo simulation of remaining rolls ───────────
+
+/**
+ * Given a lock pattern and remaining rolls, produce a sample of the final
+ * dice hand. Uses a greedy heuristic for any locks needed AFTER the first
+ * reroll so we don't blow up cost recursively.
+ */
+function sampleFinalDice(
+  locks: boolean[],
+  dice: number[],
+  rollsRemaining: number,
+  available: Set<string>,
+): number[] {
+  let d = rerollDice(dice, locks);
+  let r = rollsRemaining - 1;
+  while (r > 0) {
+    const greedy = greedyLocksForSim(d, available);
+    if (greedy.every(Boolean)) break;
+    d = rerollDice(d, greedy);
+    r -= 1;
+  }
+  return d;
+}
+
+// ─── Candidate keep-set generation ───────────────────────
+
+function uniqueLockKey(locks: boolean[]): string {
+  return locks.map(l => l ? '1' : '0').join('');
+}
+
+function generateCandidateLocks(dice: number[], available: Set<string>): boolean[][] {
+  const seen = new Set<string>();
+  const out: boolean[][] = [];
+  const add = (locks: boolean[]) => {
+    const key = uniqueLockKey(locks);
+    if (!seen.has(key)) { seen.add(key); out.push(locks); }
+  };
+
+  // Reroll all & keep all baselines
+  add([false, false, false, false, false]);
+  add([true, true, true, true, true]);
+
+  const counts = getCounts(dice);
+
+  // Lock all of each face that appears
+  for (let f = 1; f <= 6; f++) {
+    if (counts[f - 1] > 0) add(lockAllOf(dice, f));
+  }
+
+  // Lock pairs of two faces (twoPairs / fullHouse / chance combos)
+  for (let f1 = 1; f1 <= 6; f1++) {
+    if (counts[f1 - 1] === 0) continue;
+    for (let f2 = f1; f2 <= 6; f2++) {
+      if (counts[f2 - 1] === 0) continue;
+      if (f1 === f2 && counts[f1 - 1] < 2) continue;
+      add(dice.map(d => d === f1 || d === f2));
+    }
+  }
+
+  // Straight building
+  const run = longestRun(dice);
+  if (run.length >= 2) add(lockIndicesForValues(dice, run));
+  // Specifically lock sub-runs for small/large straight
+  if (available.has('smallStraight')) {
+    const wanted = [1, 2, 3, 4, 5].filter(v => dice.includes(v));
+    if (wanted.length >= 2) add(lockIndicesForValues(dice, wanted));
+  }
   if (available.has('largeStraight')) {
-    if (run.length >= 4) {
-      const missing = run.length === 4 ? 1 : 0;
-      strategies.push({
-        name: 'largeStraight',
-        locks: lockIndicesForValues(dice, run),
-        value: missing === 0 ? 55 : 20 * (1 / 6) + 10, // ~13 EV with 1 missing
-      });
-    } else if (run.length === 3 && maxCount <= 2) {
-      strategies.push({
-        name: 'largeStraight-early',
-        locks: lockIndicesForValues(dice, run),
-        value: 6, // speculative
-      });
-    }
+    const wanted = [2, 3, 4, 5, 6].filter(v => dice.includes(v));
+    if (wanted.length >= 2) add(lockIndicesForValues(dice, wanted));
   }
 
-  // ── Strategy: Small straight ──
-  if (available.has('smallStraight') && run.length >= 3) {
-    if (run.length >= 4 && run[0] >= 1 && run[run.length - 1] <= 5) {
-      strategies.push({ name: 'smallStraight-done', locks: lockIndicesForValues(dice, run), value: 40 });
-    } else {
-      strategies.push({
-        name: 'smallStraight',
-        locks: lockIndicesForValues(dice, run),
-        value: run.length === 4 ? 30 : 10,
-      });
-    }
-  }
+  // High dice for chance
+  add(dice.map(d => d >= 4));
+  add(dice.map(d => d >= 5));
 
-  // ── Strategy: Full house ──
-  if (available.has('fullHouse')) {
-    let threeVal = 0, twoVal = 0;
-    for (let i = 5; i >= 0; i--) {
-      if (counts[i] >= 3 && !threeVal) threeVal = i + 1;
-      else if (counts[i] >= 2 && !twoVal) twoVal = i + 1;
-    }
-    if (threeVal && twoVal) {
-      // Already full house
-      const fhScore = calculateScore(dice, 'fullHouse');
-      strategies.push({ name: 'fullHouse-done', locks: [true, true, true, true, true], value: fhScore + 22 });
-    } else if (threeVal) {
-      strategies.push({
-        name: 'fullHouse-need-pair',
-        locks: lockAllOf(dice, threeVal),
-        value: 15 + threeVal, // decent EV to find a pair in 2 dice
-      });
-    } else if (twoVal) {
-      // Two pairs → keep both, try for trips
-      const pairs: number[] = [];
-      for (let i = 5; i >= 0; i--) if (counts[i] >= 2) pairs.push(i + 1);
-      if (pairs.length >= 2) {
-        const keepVals = [pairs[0], pairs[0], pairs[1], pairs[1]];
-        strategies.push({
-          name: 'fullHouse-two-pairs',
-          locks: lockIndicesForValues(dice, keepVals),
-          value: 10,
-        });
+  // Three-of-a-kind + an extra high die (for fullHouse/upper)
+  for (let f = 1; f <= 6; f++) {
+    if (counts[f - 1] >= 3) {
+      let added = 0;
+      const locks = dice.map(d => d === f);
+      for (let i = 0; i < 5 && added < 1; i++) {
+        if (!locks[i] && dice[i] >= 4) { locks[i] = true; added++; }
       }
+      add(locks);
     }
   }
 
-  // ── Strategy: Four of a kind ──
-  if (available.has('fourOfAKind') && maxCount >= 3) {
-    strategies.push({
-      name: 'fourOfAKind',
-      locks: lockAllOf(dice, maxVal),
-      value: maxCount >= 4 ? maxVal * 4 + 15 : maxVal * 3 + 5,
-    });
+  return out;
+}
+
+// ─── EV evaluation for a keep pattern ────────────────────
+
+function MC_SAMPLES(rollsRemaining: number): number {
+  // More rolls left = more variance, more samples needed
+  return rollsRemaining >= 2 ? 90 : 60;
+}
+
+function evaluateKeepEV(
+  locks: boolean[],
+  dice: number[],
+  rollsRemaining: number,
+  scores: Record<string, number | null>,
+  available: CategoryId[],
+  availableSet: Set<string>,
+  bonus: BonusInfo,
+): number {
+  const samples = MC_SAMPLES(rollsRemaining);
+  let total = 0;
+  for (let i = 0; i < samples; i++) {
+    const finalDice = sampleFinalDice(locks, dice, rollsRemaining, availableSet);
+    total += bestPlacementValue(finalDice, scores, available, bonus).value;
+  }
+  return total / samples;
+}
+
+// ─── Public: pick category at rollsLeft = 0 ──────────────
+
+export function aiPickCategory(
+  dice: number[],
+  scores: Record<string, number | null>,
+): CategoryId {
+  const available = availableList(scores);
+  if (available.length === 0) return 'chance';
+  if (available.length === 1) return available[0];
+
+  const avSet = new Set<string>(available);
+  const bonus = bonusInfo(scores, avSet);
+
+  return bestPlacementValue(dice, scores, available, bonus).catId;
+}
+
+// ─── Public: decide which dice to lock before reroll ─────
+
+export function aiDecideLocks(
+  dice: number[],
+  scores: Record<string, number | null>,
+  rollsLeft: number = 2,
+): boolean[] {
+  const available = availableList(scores);
+  if (available.length === 0) return [false, false, false, false, false];
+
+  const avSet = new Set<string>(available);
+  const bonus = bonusInfo(scores, avSet);
+
+  // Quick exit: completed yatzy → keep all
+  const counts = getCounts(dice);
+  if (counts.some(c => c === 5) && avSet.has('yatzy')) {
+    return [true, true, true, true, true];
   }
 
-  // ── Strategy: Three of a kind (keep for threeOfAKind, pair, etc.) ──
-  if (maxCount >= 3 && (available.has('threeOfAKind') || available.has('fourOfAKind') || available.has('chance'))) {
-    strategies.push({
-      name: 'threeOfAKind',
-      locks: lockAllOf(dice, maxVal),
-      value: maxVal * 3 + 8,
-    });
+  // Quick exit: completed large straight → keep all (unless we already used it)
+  const sorted = [...dice].sort((a, b) => a - b).join('');
+  if (sorted === '23456' && avSet.has('largeStraight')) {
+    return [true, true, true, true, true];
   }
-
-  // ── Strategy: Two pairs ──
-  if (available.has('twoPairs') || available.has('fullHouse')) {
-    const pairs: number[] = [];
-    for (let i = 5; i >= 0; i--) if (counts[i] >= 2) pairs.push(i + 1);
-    if (pairs.length >= 2) {
-      const keepVals = [pairs[0], pairs[0], pairs[1], pairs[1]];
-      strategies.push({
-        name: 'twoPairs',
-        locks: lockIndicesForValues(dice, keepVals),
-        value: pairs[0] * 2 + pairs[1] * 2 + 10,
-      });
+  if (sorted === '12345' && avSet.has('smallStraight') && !avSet.has('largeStraight')) {
+    return [true, true, true, true, true];
+  }
+  // Completed full house with both slots open & no obvious better play
+  const threeIdx = counts.findIndex(c => c >= 3);
+  const twoIdx = counts.findIndex((c, i) => c >= 2 && i !== threeIdx);
+  if (threeIdx !== -1 && twoIdx !== -1 && avSet.has('fullHouse')) {
+    // Keep unless we have 4-of-a-kind and yatzy is open (then chase yatzy)
+    if (!(counts[threeIdx] >= 4 && avSet.has('yatzy'))) {
+      return [true, true, true, true, true];
     }
   }
 
-  // ── Strategy: High pair ──
-  if (maxCount >= 2) {
-    let bestPair = 0;
-    for (let i = 5; i >= 0; i--) if (counts[i] >= 2) { bestPair = i + 1; break; }
-    if (bestPair >= 3) {
-      const pairLocks = lockAllOf(dice, bestPair);
-      // Also keep other high dice for chance/upper
-      const enhanced = dice.map((d, i) => pairLocks[i] || d >= 5);
-      strategies.push({
-        name: 'highPair',
-        locks: enhanced,
-        value: bestPair * 2 + 3,
-      });
+  const candidates = generateCandidateLocks(dice, avSet);
+
+  let bestLocks = candidates[0];
+  let bestEV = -Infinity;
+  for (const locks of candidates) {
+    const ev = evaluateKeepEV(locks, dice, rollsLeft, scores, available, avSet, bonus);
+    if (ev > bestEV) {
+      bestEV = ev;
+      bestLocks = locks;
     }
   }
-
-  // ── Strategy: Upper section targeting ──
-  // Even when bonus is already secured, we still want to fill these efficiently
-  // when we have 2+ of a face and the category is open.
-  if (!bonus.alreadyHave || bonus.upperLeft.length > 0) {
-    for (const catId of bonus.upperLeft) {
-      const face = UPPER_FACE[catId];
-      const faceCount = counts[face - 1];
-      if (faceCount >= 2) {
-        const upperLocks = lockAllOf(dice, face);
-        const rerollCount = 5 - faceCount;
-        const expectedScore = expectedCountAfterReroll(faceCount, rerollCount) * face;
-        const target = UPPER_TARGET[catId];
-        // Strong bonus when we already meet/exceed the target
-        const meetsTarget = faceCount * face >= target;
-        const closeToTarget = expectedScore >= target;
-        let value = expectedScore;
-        if (meetsTarget) value += 25 + face * 2;
-        else if (closeToTarget) value += 15 + face;
-        else value += 5;
-        if (bonus.reachable && !bonus.alreadyHave) value += 8;
-        // Triples of a face we still need are very strong upper plays
-        if (faceCount >= 3) value += 12 + face;
-        strategies.push({ name: `upper-${catId}`, locks: upperLocks, value });
-      }
-    }
-  }
-
-  // ── Strategy: Keep high dice for chance ──
-  if (available.has('chance')) {
-    const sorted = [...dice].sort((a, b) => b - a);
-    const threshold = sorted[2]; // top 3
-    if (threshold >= 4) {
-      strategies.push({
-        name: 'chance-high',
-        locks: dice.map(d => d >= threshold),
-        value: sorted.slice(0, 3).reduce((s, v) => s + v, 0) + expectedCountAfterReroll(0, 2) * 3.5,
-      });
-    }
-  }
-
-  // Pick best strategy
-  if (strategies.length > 0) {
-    strategies.sort((a, b) => b.value - a.value);
-    return strategies[0].locks;
-  }
-
-  // ── Fallback: keep high dice ──
-  const sorted = [...dice].sort((a, b) => b - a);
-  const keepThreshold = Math.max(sorted[2], 4);
-  return dice.map(d => d >= keepThreshold);
+  return bestLocks;
 }

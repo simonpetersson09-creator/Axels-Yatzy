@@ -325,7 +325,7 @@ export default function GamePage() {
             />
 
             {/* Bottom: Roll + Home + Forfeit */}
-            <div className="flex flex-col items-center gap-2 mt-2 sm:mt-6 translate-y-0">
+            <div className="flex flex-col items-center gap-2 mt-4 sm:mt-8 translate-y-0">
               <motion.button
                 onClick={handleRoll}
                 disabled={!canRoll || gameState.isRolling}

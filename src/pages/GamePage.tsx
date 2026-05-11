@@ -248,7 +248,7 @@ export default function GamePage() {
 
   return (
     <div
-      className="h-[100dvh] max-h-[100dvh] px-2 sm:px-4 pt-[33px] pb-6 sm:py-6 flex items-start sm:items-center justify-center overflow-hidden overscroll-none touch-none"
+      className="h-[100dvh] max-h-[100dvh] px-1 sm:px-4 pt-1 pb-2 sm:py-6 flex items-start sm:items-center justify-start sm:justify-center overflow-hidden overscroll-none touch-none"
       style={{ WebkitOverflowScrolling: 'auto' }}
     >
       <GameOverOverlay
@@ -268,7 +268,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex gap-2 sm:gap-6 items-start -ml-2 sm:ml-0 mt-10">
+        <div className="flex gap-2 sm:gap-6 items-start mt-2 sm:mt-10">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
@@ -312,7 +312,7 @@ export default function GamePage() {
                         <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
                       )}
                     </div>
-                    <span className={`text-[12px] font-semibold truncate max-w-[80px] ${
+                    <span className={`text-[12px] font-semibold truncate max-w-[64px] sm:max-w-[80px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
                       {player.name}
@@ -342,7 +342,7 @@ export default function GamePage() {
 
             {/* Bottom: Roll + Home + Forfeit */}
             <div
-              className="flex flex-col items-center gap-8 mt-[10px] sm:mt-12"
+              className="flex flex-col items-center gap-2 mt-0 sm:gap-8 sm:mt-12"
               style={{ isolation: 'isolate' }}
             >
               <button
@@ -375,7 +375,7 @@ export default function GamePage() {
                 </span>
               </button>
 
-              <div className="flex items-center gap-3 mt-[15px]" style={{ position: 'relative', zIndex: 2 }}>
+              <div className="flex items-center gap-3 mt-0 sm:mt-[15px]" style={{ position: 'relative', zIndex: 2 }}>
                 <button
                   type="button"
                   onPointerDown={(e) => {
@@ -397,7 +397,7 @@ export default function GamePage() {
                   aria-label="Till menyn"
                 >
                   <Home className="w-3 h-3 pointer-events-none" aria-hidden />
-                  <span className="pointer-events-none">Hem</span>
+                  <span className="pointer-events-none hidden sm:inline">Hem</span>
                 </button>
                 <ForfeitButton
                   onConfirm={handleForfeit}

@@ -9,10 +9,27 @@ interface ScoreBoardProps {
   players: Player[];
   currentPlayerIndex: number;
   possibleScores: Record<CategoryId, number> | null;
-  onSelectCategory: (id: CategoryId) => void;
+  onSelectCategory: (id: CategoryId, debug?: ScoreboardClickDebug) => void;
   rollsLeft: number;
   aiChosenCategory?: string | null;
   selectionDisabled?: boolean;
+}
+
+export interface ScoreboardClickDebug {
+  rowText: string;
+  clickedCategoryId: CategoryId;
+  renderedRowIndex: number;
+  actualSavedCategory: CategoryId;
+  currentPlayer: string;
+  score: number | null;
+  pointerType: string;
+  clientX: number | null;
+  clientY: number | null;
+  rowTop: number;
+  rowBottom: number;
+  rowLeft: number;
+  rowRight: number;
+  hitWithinRow: boolean;
 }
 
 const PLAYER_COLORS = [
@@ -30,39 +47,18 @@ const COL_W = 'min-w-[38px] w-[38px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[72px] min-w-[72px] sm:w-[110px] sm:min-w-[110px]';
 const ROW_H = 'h-[30px] sm:h-[40px]';
 
-function ScoreCell({ categoryId, categoryName, currentPlayerLabel, isScored, scoreValue, possibleScore, canSelect, interactive, bgClass, bgStyle, onSelect, isAiChosen, playerColor }: {
-  categoryId: CategoryId;
-  categoryName: string;
-  currentPlayerLabel: string;
+function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor }: {
   isScored: boolean;
   scoreValue: number | null | undefined;
   possibleScore: number | undefined;
   canSelect: boolean;
-  interactive: boolean;
   bgClass: string;
   bgStyle?: React.CSSProperties;
-  onSelect: () => void;
   isAiChosen?: boolean;
   playerColor?: string;
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!canSelect || !interactive) return;
-
-    console.log('scoreboard-category-click', {
-      clickedCategoryId: categoryId,
-      clickedCategoryName: categoryName,
-      currentPlayer: currentPlayerLabel,
-      score: possibleScore ?? null,
-    });
-
-    playScoreSelectSound();
-    onSelect();
-  };
 
   useEffect(() => {
     if (isScored && !prevScoredRef.current) {
@@ -82,26 +78,18 @@ function ScoreCell({ categoryId, categoryName, currentPlayerLabel, isScored, sco
   [isScored]);
 
   return (
-    <motion.button
-      type="button"
-      data-category-id={categoryId}
-      data-category-name={categoryName}
-      onClick={handleClick}
-      onPointerDown={(event) => event.stopPropagation()}
-      disabled={!canSelect || !interactive}
+    <div
       className={cn(
-        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-colors duration-300 ease-out flex items-center justify-center overflow-visible rounded-[2px] active:brightness-110', ROW_H, COL_W,
+        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-colors duration-300 ease-out flex items-center justify-center overflow-hidden rounded-[2px] pointer-events-none', ROW_H, COL_W,
         bgClass,
         isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
         canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25',
-        canSelect && interactive && possibleScore !== undefined && possibleScore > 0 && 'hover:bg-yatzy-highlight/40 cursor-pointer',
+        canSelect && possibleScore !== undefined && possibleScore > 0 && 'group-hover:bg-yatzy-highlight/40',
         canSelect && possibleScore === 0 && 'bg-yatzy-bg',
-        canSelect && interactive && possibleScore === 0 && 'hover:bg-destructive/5 cursor-pointer',
+        canSelect && possibleScore === 0 && 'group-hover:bg-destructive/5',
       )}
       style={{
         boxShadow: isScored ? 'inset 0 1px 3px rgba(0,0,0,0.06)' : 'inset 0 1px 2px rgba(0,0,0,0.03)',
-        WebkitTapHighlightColor: 'transparent',
-        touchAction: 'manipulation',
         ...bgStyle,
       }}
     >
@@ -164,7 +152,7 @@ function ScoreCell({ categoryId, categoryName, currentPlayerLabel, isScored, sco
       >
         {isScored ? scoreValue : canSelect ? possibleScore : ''}
       </motion.span>
-    </motion.button>
+    </div>
   );
 }
 

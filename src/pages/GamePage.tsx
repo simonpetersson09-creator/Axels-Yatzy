@@ -55,6 +55,8 @@ export default function GamePage() {
 
   // Human is always player index 0 in this app
   const HUMAN_INDEX = 0;
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
+  useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
 
   const autoRollRef = useRef<string | null>(null);
   const aiTurnRef = useRef<string | null>(null);

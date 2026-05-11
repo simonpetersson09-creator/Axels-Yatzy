@@ -13,15 +13,18 @@ export function ForfeitButton({ onConfirm, playerName }: ForfeitDialogProps) {
 
   return (
     <>
-      <motion.button
+      <button
+        type="button"
         onClick={() => setShowDialog(true)}
-        className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-[11px] font-medium text-destructive/60 hover:text-destructive hover:bg-destructive/10 transition-all duration-300 touch-manipulation whitespace-nowrap"
-        style={{ WebkitTapHighlightColor: 'transparent' }}
-        whileTap={{ scale: 0.94, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } }}
+        className="relative inline-flex items-center justify-center gap-1.5 px-3 min-h-[44px] rounded-xl text-[11px] font-medium text-destructive/60 hover:text-destructive hover:bg-destructive/10 active:bg-destructive/15 transition-colors duration-200 whitespace-nowrap"
+        style={{
+          WebkitTapHighlightColor: 'transparent',
+          touchAction: 'manipulation',
+        }}
       >
-        <Flag className="w-3 h-3" />
-        Ge upp
-      </motion.button>
+        <Flag className="w-3 h-3 pointer-events-none" aria-hidden />
+        <span className="pointer-events-none">Ge upp</span>
+      </button>
 
       {createPortal(
         <AnimatePresence>

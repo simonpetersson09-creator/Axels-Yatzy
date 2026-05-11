@@ -36,7 +36,7 @@ export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: Forfe
         }}
       >
         <Flag className="w-3 h-3 pointer-events-none" aria-hidden />
-        <span className="pointer-events-none">Ge upp</span>
+        <span className="pointer-events-none hidden sm:inline">Ge upp</span>
       </button>
 
       {createPortal(

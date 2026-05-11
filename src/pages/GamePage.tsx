@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useRef, useLayoutEffect } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';

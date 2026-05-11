@@ -157,6 +157,11 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 }
 
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled }: ScoreBoardProps) {
+  const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({
+    pointerType: 'unknown',
+    clientX: null,
+    clientY: null,
+  });
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
   const lowerCats = CATEGORIES.filter(c => c.section === 'lower');
 
@@ -190,25 +195,91 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     return (
       <ScoreCell
         key={`${cat.id}-${player.id}`}
-        categoryId={cat.id}
-        categoryName={cat.name}
-        currentPlayerLabel={player.name}
         isScored={isScored}
         scoreValue={player.scores[cat.id]}
         possibleScore={possibleScore}
         canSelect={canSelect}
-        interactive={!selectionDisabled}
         bgClass={bg.className}
         bgStyle={bg.style}
-        onSelect={() => onSelectCategory(cat.id)}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
       />
     );
   };
 
-  const renderRow = (cat: Category, idx: number) => (
-    <div key={cat.id} className="flex border-b border-yatzy-line/30">
+  const renderRow = (cat: Category, idx: number) => {
+    const renderedRowIndex = CATEGORIES.findIndex(c => c.id === cat.id);
+    const currentPlayer = players[currentPlayerIndex];
+    const isScored = !!currentPlayer && currentPlayer.scores[cat.id] !== undefined && currentPlayer.scores[cat.id] !== null;
+    const possibleScore = possibleScores?.[cat.id];
+    const canSelectRow = !!currentPlayer && !isScored && possibleScore !== undefined && rollsLeft < 3 && !selectionDisabled;
+
+    const handleRowClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const rect = event.currentTarget.getBoundingClientRect();
+      const clientX = lastPointerRef.current.clientX ?? event.clientX ?? null;
+      const clientY = lastPointerRef.current.clientY ?? event.clientY ?? null;
+      const debug: ScoreboardClickDebug = {
+        rowText: cat.name,
+        clickedCategoryId: cat.id,
+        renderedRowIndex,
+        actualSavedCategory: cat.id,
+        currentPlayer: currentPlayer?.name ?? 'unknown',
+        score: possibleScore ?? null,
+        pointerType: lastPointerRef.current.pointerType,
+        clientX,
+        clientY,
+        rowTop: rect.top,
+        rowBottom: rect.bottom,
+        rowLeft: rect.left,
+        rowRight: rect.right,
+        hitWithinRow: clientX !== null && clientY !== null
+          ? clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom
+          : true,
+      };
+
+      console.log('scoreboard-row-click', debug);
+
+      if (!canSelectRow) return;
+      playScoreSelectSound();
+      onSelectCategory(cat.id, debug);
+    };
+
+    return (
+    <button
+      key={cat.id}
+      type="button"
+      data-score-row="true"
+      data-category-id={cat.id}
+      data-category-name={cat.name}
+      data-rendered-row-index={renderedRowIndex}
+      aria-label={`${cat.name} (${cat.id})`}
+      aria-disabled={!canSelectRow}
+      onPointerDown={(event) => {
+        event.stopPropagation();
+        lastPointerRef.current = {
+          pointerType: event.pointerType || 'pointer',
+          clientX: event.clientX,
+          clientY: event.clientY,
+        };
+      }}
+      onPointerUp={(event) => {
+        lastPointerRef.current = {
+          pointerType: event.pointerType || 'pointer',
+          clientX: event.clientX,
+          clientY: event.clientY,
+        };
+      }}
+      onClick={handleRowClick}
+      className={cn(
+        'group flex w-full border-b border-yatzy-line/30 p-0 m-0 text-left bg-transparent rounded-none overflow-hidden touch-manipulation',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-yatzy-highlight',
+        canSelectRow ? 'cursor-pointer' : 'cursor-default',
+      )}
+      style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+    >
       <div className={cn(
         'flex-shrink-0 px-2 sm:px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
@@ -216,8 +287,9 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         <span className="text-[10px] sm:text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{cat.name}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
-    </div>
-  );
+    </button>
+    );
+  };
 
   const renderSumRow = (label: string, getValue: (p: Player) => string | number, isTotalRow?: boolean) => (
     <div className={cn(

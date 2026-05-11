@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { CATEGORIES, CategoryId, Player, UPPER_BONUS_THRESHOLD, UPPER_BONUS_VALUE } from '@/types/yatzy';
+import { CATEGORIES, Category, CategoryId, Player, UPPER_BONUS_THRESHOLD, UPPER_BONUS_VALUE } from '@/types/yatzy';
 import { getUpperSectionTotal, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,8 +30,10 @@ const COL_W = 'min-w-[38px] w-[38px] sm:min-w-[56px] sm:w-[56px]';
 const LABEL_W = 'w-[72px] min-w-[72px] sm:w-[110px] sm:min-w-[110px]';
 const ROW_H = 'h-[30px] sm:h-[40px]';
 
-function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, interactive, bgClass, bgStyle, onSelect, isAiChosen, playerColor }: {
-  catId: string;
+function ScoreCell({ categoryId, categoryName, currentPlayerLabel, isScored, scoreValue, possibleScore, canSelect, interactive, bgClass, bgStyle, onSelect, isAiChosen, playerColor }: {
+  categoryId: CategoryId;
+  categoryName: string;
+  currentPlayerLabel: string;
   isScored: boolean;
   scoreValue: number | null | undefined;
   possibleScore: number | undefined;
@@ -45,6 +47,22 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, inte
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!canSelect || !interactive) return;
+
+    console.log('scoreboard-category-click', {
+      clickedCategoryId: categoryId,
+      clickedCategoryName: categoryName,
+      currentPlayer: currentPlayerLabel,
+      score: possibleScore ?? null,
+    });
+
+    playScoreSelectSound();
+    onSelect();
+  };
 
   useEffect(() => {
     if (isScored && !prevScoredRef.current) {
@@ -65,7 +83,11 @@ function ScoreCell({ catId, isScored, scoreValue, possibleScore, canSelect, inte
 
   return (
     <motion.button
-      onClick={onSelect}
+      type="button"
+      data-category-id={categoryId}
+      data-category-name={categoryName}
+      onClick={handleClick}
+      onPointerDown={(event) => event.stopPropagation()}
       disabled={!canSelect || !interactive}
       className={cn(
         'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-colors duration-300 ease-out flex items-center justify-center overflow-visible rounded-[2px] active:brightness-110', ROW_H, COL_W,
@@ -162,7 +184,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     };
   };
 
-  const renderCell = (cat: typeof CATEGORIES[0], slotIdx: number) => {
+  const renderCell = (cat: Category, slotIdx: number) => {
     const player = players[slotIdx];
     const isCurrent = slotIdx === currentPlayerIndex;
 
@@ -180,7 +202,9 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     return (
       <ScoreCell
         key={`${cat.id}-${player.id}`}
-        catId={cat.id}
+        categoryId={cat.id}
+        categoryName={cat.name}
+        currentPlayerLabel={player.name}
         isScored={isScored}
         scoreValue={player.scores[cat.id]}
         possibleScore={possibleScore}
@@ -188,14 +212,14 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         interactive={!selectionDisabled}
         bgClass={bg.className}
         bgStyle={bg.style}
-        onSelect={() => { if (canSelect && !selectionDisabled) { playScoreSelectSound(); onSelectCategory(cat.id); } }}
+        onSelect={() => onSelectCategory(cat.id)}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
       />
     );
   };
 
-  const renderRow = (cat: typeof CATEGORIES[0], idx: number) => (
+  const renderRow = (cat: Category, idx: number) => (
     <div key={cat.id} className="flex border-b border-yatzy-line/30">
       <div className={cn(
         'flex-shrink-0 px-2 sm:px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,

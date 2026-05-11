@@ -312,7 +312,7 @@ export function useMultiplayerGame() {
   }, [state.gameState]);
 
   // Select category — calls server-side Edge Function
-  const selectCategory = useCallback(async (categoryId: CategoryId) => {
+  const selectCategory = useCallback(async (categoryId: CategoryId, debug?: { rowText?: string; clickedCategoryId?: CategoryId; renderedRowIndex?: number | null; score?: number | null }) => {
     if (submittingRef.current) return;
     if (!state.gameId || !state.gameState || rollingGuardRef.current) return;
     const gs = state.gameState;
@@ -320,6 +320,15 @@ export function useMultiplayerGame() {
 
     const currentPlayer = gs.players[gs.currentPlayerIndex];
     if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return;
+
+    console.log('scoreboard-category-saved', {
+      clickedRowText: debug?.rowText ?? null,
+      clickedCategoryId: debug?.clickedCategoryId ?? categoryId,
+      renderedRowIndex: debug?.renderedRowIndex ?? null,
+      actualSavedCategory: categoryId,
+      currentPlayer: currentPlayer.name,
+      score: debug?.score ?? null,
+    });
 
     submittingRef.current = true;
 

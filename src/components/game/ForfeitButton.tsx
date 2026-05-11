@@ -29,7 +29,7 @@ export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: Forfe
         }}
         onPointerCancel={() => { if (pressedButtonRef) pressedButtonRef.current = null; }}
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-        className="relative inline-flex items-center justify-center gap-1.5 px-3 min-h-[44px] rounded-xl text-[11px] font-medium text-destructive/60 active:bg-destructive/15 transition-colors duration-200 whitespace-nowrap"
+        className="relative inline-flex items-center justify-center gap-1.5 px-3 min-h-[44px] rounded-xl text-[11px] font-medium text-destructive/85 bg-destructive/10 border border-destructive/30 active:bg-destructive/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
         style={{
           WebkitTapHighlightColor: 'transparent',
           touchAction: 'manipulation',

@@ -275,7 +275,7 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 sm:gap-4">
+          <div className="flex flex-col gap-2 sm:gap-4 h-full justify-between sm:h-auto sm:justify-start">
             {/* Player indicators */}
             <div className="flex flex-col gap-1 sm:gap-2">
               {gameState.players.map((player, idx) => {

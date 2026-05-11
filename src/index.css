@@ -128,6 +128,14 @@
   }
 }
 
+@keyframes kasta-pulse-shadow {
+  0%, 100% { box-shadow: 0 8px 32px -4px hsl(42 88% 52% / 0.45), 0 4px 16px -2px hsl(0 0% 0% / 0.45); }
+  50% { box-shadow: 0 8px 40px 0px hsl(42 88% 52% / 0.7), 0 4px 16px -2px hsl(0 0% 0% / 0.45); }
+}
+.kasta-pulse {
+  animation: kasta-pulse-shadow 2.4s ease-in-out infinite;
+}
+
 @layer utilities {
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);

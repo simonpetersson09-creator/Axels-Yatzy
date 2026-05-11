@@ -375,7 +375,7 @@ export default function GamePage() {
                 </span>
               </button>
 
-              <div className="flex items-center gap-3 mt-[6px] sm:mt-[15px]" style={{ position: 'relative', zIndex: 2 }}>
+              <div className="flex items-center gap-3 mt-0 sm:mt-[15px]" style={{ position: 'relative', zIndex: 2 }}>
                 <button
                   type="button"
                   onPointerDown={(e) => {

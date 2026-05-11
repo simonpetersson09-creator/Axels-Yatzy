@@ -397,7 +397,7 @@ export default function GamePage() {
                   aria-label="Till menyn"
                 >
                   <Home className="w-3 h-3 pointer-events-none" aria-hidden />
-                  <span className="pointer-events-none">Hem</span>
+                  <span className="pointer-events-none hidden sm:inline">Hem</span>
                 </button>
                 <ForfeitButton
                   onConfirm={handleForfeit}

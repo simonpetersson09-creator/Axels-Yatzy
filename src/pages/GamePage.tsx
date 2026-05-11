@@ -59,6 +59,7 @@ export default function GamePage() {
   useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
 
   const autoRollRef = useRef<string | null>(null);
+  const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const aiTurnRef = useRef<string | null>(null);
   const gameStateRef = useRef(gameState);
   gameStateRef.current = gameState;

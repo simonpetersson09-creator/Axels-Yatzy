@@ -141,7 +141,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 
       <motion.span
         className={cn(
-          'text-[17px] sm:text-[13px] tabular-nums leading-none',
+          'text-[13px] sm:text-[13px] tabular-nums leading-none',
           isScored && 'font-normal text-yatzy-text',
           canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-normal text-yatzy-highlight',
           canSelect && possibleScore === 0 && 'font-normal text-yatzy-text/25',

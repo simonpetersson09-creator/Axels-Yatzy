@@ -244,16 +244,14 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           opacity: canLock && !locked ? 0.5 : 1,
         }}
       >
-        <div style={{ perspective: 240, width: SIZE, height: SIZE }}>
-          <motion.button
-            onClick={handleToggle}
-            className={cn('relative touch-manipulation', canLock ? 'cursor-pointer' : 'cursor-default')}
+        <div style={{ perspective: 240, width: SIZE, height: SIZE, pointerEvents: 'none' }}>
+          <motion.div
+            className="relative"
             style={{
               width: SIZE,
               height: SIZE,
               transformStyle: 'preserve-3d',
               willChange: isAnimating ? 'transform' : 'auto',
-              WebkitTapHighlightColor: 'transparent',
             }}
             animate={{
               rotateX: spinRotation.rotateX,
@@ -263,22 +261,19 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             transition={
               isAnimating
                 ? {
-                    // Near-linear with sharper deceleration at the very end
-                    // so the final face doesn't reveal itself mid-spin.
                     rotateX: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
                     rotateY: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
                     y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }
-            
           >
             {FACES.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
                 <DiceFace faceValue={f.v} />
               </div>
             ))}
-          </motion.button>
+          </motion.div>
         </div>
       </motion.div>
 
@@ -286,6 +281,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       <motion.div
         style={{
           width: SIZE * 0.55, height: 5, marginTop: 5, borderRadius: '50%',
+          pointerEvents: 'none',
           background: locked
             ? 'radial-gradient(ellipse, rgba(245,185,66,0.3), transparent)'
             : 'radial-gradient(ellipse, rgba(0,0,0,0.22), transparent)',
@@ -300,6 +296,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
             : { duration: 0.3, ease: 'easeOut' }
         }
       />
-    </div>
+    </button>
   );
 }

@@ -7,9 +7,6 @@ import HomePage from "./pages/HomePage";
 import GameSetupPage from "./pages/GameSetupPage";
 import GamePage from "./pages/GamePage";
 import ResultsPage from "./pages/ResultsPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-
 import SettingsPage from "./pages/SettingsPage";
 import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
 import MultiplayerGamePage from "./pages/MultiplayerGamePage";
@@ -28,9 +25,6 @@ const App = () => (
           <Route path="/setup" element={<GameSetupPage />} />
           <Route path="/game" element={<GamePage />} />
           <Route path="/results" element={<ResultsPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
           <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />

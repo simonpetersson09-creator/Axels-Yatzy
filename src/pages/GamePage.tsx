@@ -113,6 +113,32 @@ export default function GamePage() {
     };
   }, []);
 
+  // Force full re-layout on orientation change / viewport resize.
+  // iOS Safari/Capacitor doesn't always recompute 100dvh, fixed positions,
+  // or safe-area insets after rotating back to portrait. Bumping a key
+  // remounts the layout tree so every dimension is measured fresh.
+  const [orientationKey, setOrientationKey] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const bump = () => {
+      cancelAnimationFrame(raf);
+      // Wait two frames so Safari has finished recomputing dvh / safe-area
+      raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setOrientationKey((k) => k + 1));
+      });
+    };
+    window.addEventListener('orientationchange', bump);
+    window.addEventListener('resize', bump);
+    // visualViewport fires more reliably on iOS than resize/orientationchange
+    window.visualViewport?.addEventListener('resize', bump);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('orientationchange', bump);
+      window.removeEventListener('resize', bump);
+      window.visualViewport?.removeEventListener('resize', bump);
+    };
+  }, []);
+
   // Auto-roll first throw when turn changes
   useEffect(() => {
     if (!gameState || gameState.gameOver || gameState.isRolling) return;
@@ -248,8 +274,9 @@ export default function GamePage() {
 
   return (
     <div
-      className="h-[100dvh] max-h-[100dvh] px-1 sm:px-4 pt-1 pb-2 sm:py-6 flex items-start sm:items-center justify-start sm:justify-center overflow-hidden overscroll-none touch-none"
-      style={{ WebkitOverflowScrolling: 'auto' }}
+      key={orientationKey}
+      className="h-[100svh] max-h-[100svh] px-1 sm:px-4 pt-1 pb-2 sm:py-6 flex items-start sm:items-center justify-start sm:justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
+      style={{ height: '100dvh', maxHeight: '100dvh', WebkitOverflowScrolling: 'auto' }}
     >
       <GameOverOverlay
         show={gameState.gameOver}

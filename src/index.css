@@ -83,18 +83,14 @@
   }
   html, body, #root {
     width: 100%;
+    /* Use svh as a stable fallback (doesn't change with browser chrome),
+       dvh as preferred (recalculated on orientation). */
+    min-height: 100svh;
     min-height: 100dvh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
     overflow-y: hidden;
-  }
-  /* iOS / Capacitor safe-area on root container */
-  body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
   }
   html {
     background-color: hsl(var(--background));
@@ -112,7 +108,8 @@
     background-attachment: fixed;
     background-color: hsl(var(--background));
     touch-action: manipulation;
-    padding-bottom: env(safe-area-inset-bottom);
+    /* Safe-area handled per-screen via .safe-top/.safe-bottom utilities,
+       NOT on body — double-padding breaks 100dvh layout after rotation. */
   }
   #root {
     background-color: hsl(var(--background));
@@ -124,8 +121,12 @@
   html.game-scroll-lock,
   body.game-scroll-lock,
   #root.game-scroll-lock {
+    height: 100svh;
     height: 100dvh;
+    min-height: 100svh;
     min-height: 100dvh;
+    max-height: 100svh;
+    max-height: 100dvh;
     width: 100%;
     overflow: hidden;
     overscroll-behavior: none;

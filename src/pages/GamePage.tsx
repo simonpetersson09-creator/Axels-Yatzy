@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState, useRef, useLayoutEffect } from 'react
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
-import { ScoreBoard } from '@/components/game/ScoreBoard';
+import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
@@ -197,7 +197,7 @@ export default function GamePage() {
     roll();
   }, [roll]);
 
-  const handleSelectCategory = useCallback((categoryId: string) => {
+  const handleSelectCategory = useCallback((categoryId: string, debug?: ScoreboardClickDebug) => {
     if (!gameState) return;
     // Hard guard: in any game with AI opponents, the human only controls index 0.
     // Prevents scoring for AI players if app was suspended and aiPlayers list was lost.
@@ -210,6 +210,14 @@ export default function GamePage() {
         setShowYatzyCelebration(true);
       }
     }
+    console.log('scoreboard-save-request', {
+      clickedRowText: debug?.rowText ?? null,
+      clickedCategoryId: debug?.clickedCategoryId ?? categoryId,
+      renderedRowIndex: debug?.renderedRowIndex ?? null,
+      actualSavedCategory: categoryId,
+      currentPlayer: gameState.players[gameState.currentPlayerIndex]?.name ?? null,
+      score: debug?.score ?? null,
+    });
     selectCategory(categoryId as any);
   }, [gameState, selectCategory, aiPlayers]);
 
@@ -255,7 +263,6 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <FitScaler maxScale={1.3}>
       <motion.div
         className="relative flex flex-col gap-2 sm:gap-4"
         initial={{ opacity: 0, y: 12 }}
@@ -405,50 +412,6 @@ export default function GamePage() {
           </div>
         </div>
       </motion.div>
-      </FitScaler>
-    </div>
-  );
-}
-
-function FitScaler({ children, maxScale = 1.15 }: { children: React.ReactNode; maxScale?: number }) {
-  const outerRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-
-  useLayoutEffect(() => {
-    const outer = outerRef.current;
-    const inner = innerRef.current;
-    if (!outer || !inner) return;
-
-    const compute = () => {
-      const ow = outer.clientWidth;
-      const oh = outer.clientHeight;
-      const iw = inner.scrollWidth;
-      const ih = inner.scrollHeight;
-      if (!iw || !ih) return;
-      const s = Math.min(maxScale, ow / iw, oh / ih);
-      setScale(s > 0 ? s : 1);
-    };
-
-    compute();
-    const ro = new ResizeObserver(compute);
-    ro.observe(outer);
-    ro.observe(inner);
-    window.addEventListener('resize', compute);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener('resize', compute);
-    };
-  }, [maxScale]);
-
-  return (
-    <div ref={outerRef} className="w-full h-full flex items-center justify-center overflow-hidden">
-      <div
-        ref={innerRef}
-        style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
-      >
-        {children}
-      </div>
     </div>
   );
 }

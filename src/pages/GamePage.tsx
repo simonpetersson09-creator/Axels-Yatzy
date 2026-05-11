@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useRef, useLayoutEffect } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -262,9 +262,8 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <FitScaler maxScale={1.3}>
       <motion.div
-        className="relative flex flex-col gap-2 sm:gap-4"
+        className="relative flex flex-col gap-2 sm:gap-4 origin-center scale-[1.3]"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -412,50 +411,6 @@ export default function GamePage() {
           </div>
         </div>
       </motion.div>
-      </FitScaler>
-    </div>
-  );
-}
-
-function FitScaler({ children, maxScale = 1.15 }: { children: React.ReactNode; maxScale?: number }) {
-  const outerRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-
-  useLayoutEffect(() => {
-    const outer = outerRef.current;
-    const inner = innerRef.current;
-    if (!outer || !inner) return;
-
-    const compute = () => {
-      const ow = outer.clientWidth;
-      const oh = outer.clientHeight;
-      const iw = inner.scrollWidth;
-      const ih = inner.scrollHeight;
-      if (!iw || !ih) return;
-      const s = Math.min(maxScale, ow / iw, oh / ih);
-      setScale(s > 0 ? s : 1);
-    };
-
-    compute();
-    const ro = new ResizeObserver(compute);
-    ro.observe(outer);
-    ro.observe(inner);
-    window.addEventListener('resize', compute);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener('resize', compute);
-    };
-  }, [maxScale]);
-
-  return (
-    <div ref={outerRef} className="w-full h-full flex items-center justify-center overflow-hidden">
-      <div
-        ref={innerRef}
-        style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
-      >
-        {children}
-      </div>
     </div>
   );
 }

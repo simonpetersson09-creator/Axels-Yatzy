@@ -67,7 +67,7 @@ export default function SettingsPage() {
   const displayName = name.trim() || t('guest');
 
   return (
-    <div className="min-h-[100dvh] px-5 py-6 safe-top safe-bottom">
+    <div className="min-h-[100dvh] px-5 py-6 pt-[calc(1.5rem+10px)] safe-top safe-bottom">
       <motion.div
         className="max-w-sm mx-auto space-y-7"
         initial={{ opacity: 0, y: 16 }}

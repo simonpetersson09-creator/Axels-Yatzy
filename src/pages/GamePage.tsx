@@ -342,7 +342,7 @@ export default function GamePage() {
 
             {/* Bottom: Roll + Home + Forfeit */}
             <div
-              className="flex flex-col items-center gap-3 mt-[6px] sm:gap-8 sm:mt-12"
+              className="flex flex-col items-center gap-2 mt-0 sm:gap-8 sm:mt-12"
               style={{ isolation: 'isolate' }}
             >
               <button

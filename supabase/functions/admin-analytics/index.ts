@@ -170,6 +170,9 @@ Deno.serve(async (req) => {
         forfeits,
         roomsCreated,
         roomsJoined,
+        uniqueDevices: totalUsers,
+        uniqueSessions: uniqueSessions.size,
+        // legacy alias
         uniqueUsers: totalUsers,
       },
       activity: {

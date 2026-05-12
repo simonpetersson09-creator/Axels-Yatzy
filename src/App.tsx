@@ -33,6 +33,7 @@ const App = () => (
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
           <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
+          <Route path="/friend-stats" element={<FriendStatsPage />} />
           {IS_DEV && AdminPage && (
             <Route
               path="/admin"

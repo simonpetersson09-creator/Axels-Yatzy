@@ -14,6 +14,7 @@ interface LobbyWaitingRoomProps {
 
 export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: LobbyWaitingRoomProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const isHost = myPlayerIndex === 0;

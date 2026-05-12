@@ -27,6 +27,9 @@ export default function SettingsPage() {
   // Re-render labels when language changes
   useEffect(() => { force(n => n + 1); }, [lang]);
 
+  // Track settings opened (once per mount)
+  useEffect(() => { trackEvent('settings_opened'); }, []);
+
   const saveName = () => {
     setProfileName(name);
     setEditingName(false);

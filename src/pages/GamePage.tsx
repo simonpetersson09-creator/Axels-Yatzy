@@ -16,11 +16,13 @@ import { CombinationCelebration } from '@/components/game/CombinationCelebration
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { motion } from 'framer-motion';
 import { Home } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 export default function GamePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame();
+  const { t } = useTranslation();
 
   const incomingPlayerNames: string[] | undefined = location.state?.playerNames;
   const incomingAiPlayers: number[] | undefined = location.state?.aiPlayers;
@@ -403,7 +405,7 @@ export default function GamePage() {
                 <span className="pointer-events-none">
                   {isCurrentAi
                     ? '⏳'
-                    : gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
+                    : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
                 </span>
               </button>
 
@@ -425,10 +427,10 @@ export default function GamePage() {
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   className="inline-flex items-center justify-center px-2 min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
-                  title="Till menyn"
-                  aria-label="Hem"
+                  title={t('toMenu')}
+                  aria-label={t('home')}
                 >
-                  <span className="pointer-events-none">Hem</span>
+                  <span className="pointer-events-none">{t('home')}</span>
                 </button>
                 <ForfeitButton
                   onConfirm={handleForfeit}

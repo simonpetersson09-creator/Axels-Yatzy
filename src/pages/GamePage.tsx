@@ -316,7 +316,7 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <div className="ios-game-shift" data-ios-game-shift="outer-wrapper">
+      <div className="ios-game-shift" data-ios-game-shift="outer-wrapper" style={{ transform: 'scale(0.95)', transformOrigin: 'top center' }}>
         <motion.div
           className="relative flex flex-col gap-2"
           initial={{ opacity: 0, y: 12 }}

@@ -217,10 +217,9 @@ export default function AdminPage() {
   if (!stats) return null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Horizontal scroll wrapper — desktop tool, no mobile responsiveness */}
-      <div className="overflow-x-auto">
-        <div className="mx-auto" style={{ minWidth: 1280, maxWidth: 1600, padding: "24px 32px" }}>
+    <div className="w-full min-h-screen bg-background text-foreground">
+      <div className="w-full overflow-x-auto">
+        <div className="w-full" style={{ minWidth: 1400, padding: "24px 32px" }}>
           <header className="mb-6 flex items-end justify-between border-b border-border/40 pb-4">
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Admin Analytics</h1>

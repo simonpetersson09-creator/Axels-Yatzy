@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, User, Camera, Trash2, Check } from 'lucide-react';
+import { ArrowLeft, User, Camera, Trash2, Check, Bell, BellRing } from 'lucide-react';
 import {
   getProfileName, setProfileName,
   getProfileAvatar, setProfileAvatar,
@@ -12,6 +12,7 @@ import {
 import { saveLocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
@@ -22,7 +23,14 @@ export default function SettingsPage() {
   const [avatar, setAvatar] = useState<string | null>(() => getProfileAvatar());
   const [lang, setLang] = useState<Language>(() => getLanguage());
   const [editingName, setEditingName] = useState(false);
+  const [notifPrefs, setNotifPrefsState] = useState(() => getNotificationPrefs());
   const [, force] = useState(0);
+
+  const updateNotifPref = (key: 'turnNotifications' | 'reminderNotifications', value: boolean) => {
+    const next = { ...notifPrefs, [key]: value };
+    setNotifPrefsState(next);
+    void setNotificationPrefs(next);
+  };
 
   // Re-render labels when language changes
   useEffect(() => { force(n => n + 1); }, [lang]);
@@ -214,7 +222,27 @@ export default function SettingsPage() {
           </Card>
         </Section>
 
-        {/* Stats */}
+        {/* Notifications */}
+        <Section title="Notiser">
+          <Card>
+            <ToggleRow
+              icon={<Bell className="w-4 h-4 text-primary" />}
+              label="Notis när det är min tur"
+              description="Få push när motspelaren har slagit"
+              value={notifPrefs.turnNotifications}
+              onChange={(v) => updateNotifPref('turnNotifications', v)}
+            />
+            <div className="border-t border-border/40" />
+            <ToggleRow
+              icon={<BellRing className="w-4 h-4 text-primary" />}
+              label="Påminnelser om väntande matcher"
+              description="Vi knackar dig på axeln om matchen står still"
+              value={notifPrefs.reminderNotifications}
+              onChange={(v) => updateNotifPref('reminderNotifications', v)}
+            />
+          </Card>
+        </Section>
+
         <Section title={t('statistics')}>
           <Card>
             <motion.button
@@ -268,5 +296,40 @@ function Row({ icon, label, value, onClick }: { icon: React.ReactNode; label: st
         {value && <p className="text-xs text-muted-foreground truncate">{value}</p>}
       </div>
     </motion.button>
+  );
+}
+
+function ToggleRow({
+  icon, label, description, value, onChange,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  description?: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!value)}
+      className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
+    >
+      {icon}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium">{label}</p>
+        {description && <p className="text-[11px] text-muted-foreground/80 truncate">{description}</p>}
+      </div>
+      <span
+        className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 ${
+          value ? 'bg-primary' : 'bg-secondary border border-border'
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+            value ? 'translate-x-4' : 'translate-x-0'
+          }`}
+        />
+      </span>
+    </button>
   );
 }

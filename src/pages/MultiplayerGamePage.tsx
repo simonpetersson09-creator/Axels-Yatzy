@@ -115,6 +115,7 @@ export default function MultiplayerGamePage() {
         }
         const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
         recordGameResult(myScore, won, yatzys);
+        trackEvent('game_finished', { won, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
       }
 
       clearActiveGame();

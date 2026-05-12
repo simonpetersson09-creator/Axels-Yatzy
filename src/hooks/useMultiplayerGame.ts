@@ -429,6 +429,33 @@ export function useMultiplayerGame() {
     }
   }, [state.status, cleanupTimers]);
 
+  // Foreground reconnect (iOS Capacitor / Safari): re-subscribe + refresh + heartbeat
+  // when the app comes back from background. Avoids dead realtime channels after suspend.
+  useEffect(() => {
+    const gameId = state.gameId;
+    if (!gameId || state.status === 'finished') return;
+
+    const handleForeground = () => {
+      if (document.visibilityState !== 'visible') return;
+      // Re-subscribe (cleanupChannel inside subscribeToGame avoids duplicates)
+      subscribeToGame(gameId);
+      // Pull latest state
+      refreshGameStateRef.current?.(gameId);
+      // Refresh presence
+      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+    };
+
+    document.addEventListener('visibilitychange', handleForeground);
+    window.addEventListener('pageshow', handleForeground);
+    window.addEventListener('focus', handleForeground);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleForeground);
+      window.removeEventListener('pageshow', handleForeground);
+      window.removeEventListener('focus', handleForeground);
+    };
+  }, [state.gameId, state.status, subscribeToGame, sessionId]);
+
   // Cleanup on unmount
   useEffect(() => {
     mountedRef.current = true;

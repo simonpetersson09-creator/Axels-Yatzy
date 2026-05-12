@@ -370,8 +370,8 @@ export default function GamePage() {
     { ring: 'ring-yatzy-player4', bg: 'bg-yatzy-player4', glow: 'shadow-[0_0_8px_hsl(350_65%_52%/0.5)]' },
   ];
 
-  // Use the compact iOS layout both on real iOS device and in browser preview
-  const nativeIosGameLayout = true;
+  const nativeIosGameLayout = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+  const compactScoreBoard = true;
 
   const renderGameBoard = (nativeIos = false) => (
     <div
@@ -392,6 +392,7 @@ export default function GamePage() {
             aiChosenCategory={aiChosenCategory}
             selectionDisabled={isCurrentAi}
             nativeIos={nativeIos}
+            compactHeight={compactScoreBoard}
           />
           <CombinationCelebration type={activeCelebration} />
         </div>

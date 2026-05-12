@@ -299,7 +299,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex w-full max-w-full gap-2 items-stretch mt-[40px] mb-[40px]">
+        <div className="flex w-full max-w-full gap-1 items-stretch mt-[40px] mb-[40px]">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
@@ -316,7 +316,7 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex w-[117px] flex-shrink-0 flex-col gap-2">
+          <div className="flex w-[108px] flex-shrink-0 flex-col gap-2">
             {/* Player indicators */}
             <div className="flex flex-col gap-1 h-[124px]">
               {gameState.players.map((player, idx) => {
@@ -407,7 +407,7 @@ export default function GamePage() {
                 </span>
               </button>
 
-              <div className="flex items-center gap-3 self-end mt-0" style={{ position: 'relative', zIndex: 2 }}>
+              <div className="flex items-center justify-center gap-2 w-full mt-0" style={{ position: 'relative', zIndex: 2 }}>
                 <button
                   type="button"
                   onPointerDown={(e) => {

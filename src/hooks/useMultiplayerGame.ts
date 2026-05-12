@@ -373,13 +373,17 @@ export function useMultiplayerGame() {
   const forfeitGame = useCallback(async () => {
     if (!state.gameId) return;
 
-    const { error } = await supabase.functions.invoke('forfeit-game', {
-      body: { game_id: state.gameId, session_id: sessionId },
-    });
-
-    if (error) {
-      console.error('Forfeit error:', error);
-      throw new Error('Forfeit failed');
+    try {
+      const { error } = await withTimeout(supabase.functions.invoke('forfeit-game', {
+        body: { game_id: state.gameId, session_id: sessionId },
+      }));
+      if (error) {
+        console.error('Forfeit error:', error);
+        throw new Error('Forfeit failed');
+      }
+    } catch (err) {
+      console.error('Forfeit failed:', err);
+      throw err instanceof Error ? err : new Error('Forfeit failed');
     }
   }, [state.gameId, sessionId]);
 

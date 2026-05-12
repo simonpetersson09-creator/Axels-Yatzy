@@ -21,6 +21,7 @@ import { Home } from 'lucide-react';
 export default function GamePage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame();
 
   const incomingPlayerNames: string[] | undefined = location.state?.playerNames;

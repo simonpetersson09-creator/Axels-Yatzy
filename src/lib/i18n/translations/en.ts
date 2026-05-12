@@ -134,6 +134,25 @@ export const en: typeof sv = {
   avatarRemoved: 'Avatar removed',
   languageSaved: 'Language updated',
 
+
+  // Friend stats
+  friendStats: 'Friend stats',
+  friendStatsTitle: 'Friend stats',
+  friendStatsEmpty: 'Play with a friend to build up stats',
+  friendStatsBack: 'Back',
+  friendsMatches: 'matches',
+  friendsWins: 'Wins',
+  friendsLosses: 'Losses',
+  friendsDraws: 'Draws',
+  friendsHighScore: 'High score',
+  friendsLastMatch: 'Last match',
+  friendsLastResult: 'Last result',
+  friendsHeadToHead: 'Head-to-head',
+  friendsRecentMatches: 'Recent matches',
+  friendsYouWon: 'Won',
+  friendsYouLost: 'Lost',
+  friendsDraw: 'Draw',
+
   notFound: 'Page not found',
   returnHome: 'Return to home',
 };

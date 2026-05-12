@@ -134,6 +134,25 @@ export const da: typeof sv = {
   avatarRemoved: 'Profilbillede fjernet',
   languageSaved: 'Sprog opdateret',
 
+
+  // Friend stats
+  friendStats: 'Venstatistik',
+  friendStatsTitle: 'Venstatistik',
+  friendStatsEmpty: 'Spil med en ven for at opbygge statistik',
+  friendStatsBack: 'Tilbage',
+  friendsMatches: 'kampe',
+  friendsWins: 'Sejre',
+  friendsLosses: 'Tab',
+  friendsDraws: 'Uafgjort',
+  friendsHighScore: 'Højeste score',
+  friendsLastMatch: 'Sidste kamp',
+  friendsLastResult: 'Sidste resultat',
+  friendsHeadToHead: 'Head-to-head',
+  friendsRecentMatches: 'Seneste kampe',
+  friendsYouWon: 'Sejr',
+  friendsYouLost: 'Tab',
+  friendsDraw: 'Uafgjort',
+
   notFound: 'Siden blev ikke fundet',
   returnHome: 'Tilbage til forsiden',
 };

@@ -182,6 +182,16 @@ export default function HomePage() {
           >
             🌐 <span className="truncate">{t('playWithFriends')}</span>
           </motion.button>
+
+          <motion.button
+            onClick={() => navigate('/friend-stats')}
+            className="w-full py-2 text-[12px] font-medium text-muted-foreground/80 active:text-foreground transition-colors"
+            whileTap={{ scale: 0.97 }}
+            variants={item}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+          >
+            {t('friendStats')} →
+          </motion.button>
         </div>
 
         <motion.div

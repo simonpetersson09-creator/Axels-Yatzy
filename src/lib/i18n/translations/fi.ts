@@ -134,6 +134,25 @@ export const fi: typeof sv = {
   avatarRemoved: 'Profiilikuva poistettu',
   languageSaved: 'Kieli päivitetty',
 
+
+  // Friend stats
+  friendStats: 'Kaveritilastot',
+  friendStatsTitle: 'Kaveritilastot',
+  friendStatsEmpty: 'Pelaa kaverin kanssa kerätäksesi tilastoja',
+  friendStatsBack: 'Takaisin',
+  friendsMatches: 'ottelua',
+  friendsWins: 'Voitot',
+  friendsLosses: 'Tappiot',
+  friendsDraws: 'Tasapelit',
+  friendsHighScore: 'Paras tulos',
+  friendsLastMatch: 'Viimeinen ottelu',
+  friendsLastResult: 'Viimeisin tulos',
+  friendsHeadToHead: 'Kohtaaminen',
+  friendsRecentMatches: 'Viimeisimmät ottelut',
+  friendsYouWon: 'Voitto',
+  friendsYouLost: 'Tappio',
+  friendsDraw: 'Tasapeli',
+
   notFound: 'Sivua ei löytynyt',
   returnHome: 'Takaisin etusivulle',
 };

@@ -169,6 +169,30 @@ function bestPlacementValue(
   let bestValue = -Infinity;
   let bestRaw = 0;
 
+  // How costly it is to "burn" (zero-score) a category. Lower = sacrifice first.
+  // This produces human-credible strikes: ones → twos → straights → triples → ...
+  // → chance → yatzy (almost never sacrificed early).
+  const SACRIFICE_PENALTY: Record<CategoryId, number> = {
+    ones: 1,
+    twos: 2,
+    threes: 3.5,
+    fours: 5,
+    fives: 6.5,
+    sixes: 8,
+    smallStraight: 4,
+    largeStraight: 6,
+    pair: 5,
+    twoPairs: 7,
+    threeOfAKind: 8,
+    fourOfAKind: 10,
+    fullHouse: 12,
+    chance: 14,
+    yatzy: 30,
+  };
+  // Late in the game we accept that yatzy must eventually be filled.
+  const filledCount = CATEGORIES.length - available.length;
+  const lateGameFactor = Math.max(0.25, 1 - filledCount / CATEGORIES.length);
+
   for (const catId of available) {
     const raw = calculateScore(dice, catId);
     const baseline = BASELINE_EV[catId];
@@ -176,6 +200,16 @@ function bestPlacementValue(
     // Marginal value of placing here = score earned now minus
     // what we'd typically score for that slot later.
     let value = raw - baseline;
+
+    // When we're forced to score 0 here, use the explicit sacrifice ranking
+    // instead of just baseline EV. This keeps yatzy/chance/full-house safe
+    // and pushes the AI toward dumping ones/twos/straights first.
+    if (raw === 0) {
+      let penalty = SACRIFICE_PENALTY[catId];
+      // Yatzy in particular gets extra protection while plenty of turns remain.
+      if (catId === 'yatzy') penalty *= lateGameFactor * 2 + 0.5;
+      value = -penalty;
+    }
 
     // Upper bonus pressure
     if (catId in UPPER_FACE) {

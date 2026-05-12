@@ -223,6 +223,102 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_log: {
+        Row: {
+          delivered: boolean
+          game_id: string
+          id: string
+          kind: string
+          metadata: Json | null
+          opened_at: string | null
+          player_index: number | null
+          recipient_device_id: string | null
+          recipient_session_id: string
+          round: number | null
+          sent_at: string
+        }
+        Insert: {
+          delivered?: boolean
+          game_id: string
+          id?: string
+          kind: string
+          metadata?: Json | null
+          opened_at?: string | null
+          player_index?: number | null
+          recipient_device_id?: string | null
+          recipient_session_id: string
+          round?: number | null
+          sent_at?: string
+        }
+        Update: {
+          delivered?: boolean
+          game_id?: string
+          id?: string
+          kind?: string
+          metadata?: Json | null
+          opened_at?: string | null
+          player_index?: number | null
+          recipient_device_id?: string | null
+          recipient_session_id?: string
+          round?: number | null
+          sent_at?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          device_id: string
+          reminder_notifications: boolean
+          turn_notifications: boolean
+          updated_at: string
+        }
+        Insert: {
+          device_id: string
+          reminder_notifications?: boolean
+          turn_notifications?: boolean
+          updated_at?: string
+        }
+        Update: {
+          device_id?: string
+          reminder_notifications?: boolean
+          turn_notifications?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      push_tokens: {
+        Row: {
+          created_at: string
+          device_id: string
+          enabled: boolean
+          id: string
+          platform: string
+          session_id: string | null
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          enabled?: boolean
+          id?: string
+          platform: string
+          session_id?: string | null
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          enabled?: boolean
+          id?: string
+          platform?: string
+          session_id?: string | null
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

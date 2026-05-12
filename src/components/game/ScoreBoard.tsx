@@ -308,10 +308,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       isTotalRow ? 'border-t-2 border-yatzy-line-strong py-1' : 'border-b border-yatzy-line/50',
       isTotalRow ? 'bg-yatzy-header' : 'bg-yatzy-sum-row',
     )}>
-      <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W)}>
+      <div className={cn('flex-shrink-0 px-2 border-r border-yatzy-line/40 flex items-center', rowHeight, labelWidth)}>
         <span className={cn(
           'uppercase tracking-wider leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full',
-          isTotalRow ? 'text-[10px] font-medium text-yatzy-text' : 'text-[9px] font-normal text-yatzy-text/50',
+          isTotalRow ? `${nativeIos ? 'text-[8px]' : 'text-[10px]'} font-medium text-yatzy-text` : `${nativeIos ? 'text-[8px]' : 'text-[9px]'} font-normal text-yatzy-text/50`,
         )}>{label}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => {
@@ -319,10 +319,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         const isCurrent = i === currentPlayerIndex;
         const bg = cellBg(i);
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', ROW_H, COL_W, bg.className)} style={bg.style}>
+          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', rowHeight, colWidth, bg.className)} style={bg.style}>
             <span className={cn(
               'tabular-nums leading-none',
-              isTotalRow ? 'text-[13px] font-normal' : 'text-[12px] font-normal',
+              isTotalRow ? `${nativeIos ? 'text-[11px]' : 'text-[13px]'} font-normal` : `${nativeIos ? 'text-[10px]' : 'text-[12px]'} font-normal`,
               player && isCurrent ? 'text-yatzy-text' : player ? 'text-yatzy-text/40' : 'text-yatzy-text/10',
             )}>
               {player ? getValue(player) : '–'}

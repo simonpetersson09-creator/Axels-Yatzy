@@ -7,9 +7,7 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const json = (body: object, status = 200) =>
     new Response(JSON.stringify(body), {
@@ -30,16 +28,22 @@ Deno.serve(async (req) => {
       .select("event_name, local_user_id, game_mode, metadata, created_at, platform")
       .gte("created_at", since)
       .order("created_at", { ascending: false })
-      .limit(5000);
+      .limit(10000);
 
     if (error) return json({ error: error.message }, 500);
 
     const evs = events ?? [];
 
-    // Daily active users (last 14 days)
     const dauMap = new Map<string, Set<string>>();
     const startedByDay = new Map<string, number>();
     const finishedByDay = new Map<string, number>();
+    const eventsByDay = new Map<string, number>();
+    const userFirstSeen = new Map<string, string>();
+    const userLastSeen = new Map<string, string>();
+    const userGameCount = new Map<string, number>();
+    const eventCounts = new Map<string, number>();
+    const platforms = new Map<string, number>();
+
     let quickMatch = 0;
     let multiplayer = 0;
     let yatzyCount = 0;
@@ -50,18 +54,42 @@ Deno.serve(async (req) => {
     let roomsJoined = 0;
     const langs = new Map<string, number>();
 
+    const now = Date.now();
+    const day1 = new Date(now - 1 * 86400000).toISOString().slice(0, 10);
+    const day7 = new Date(now - 7 * 86400000).toISOString().slice(0, 10);
+    const day30 = new Date(now - 30 * 86400000).toISOString().slice(0, 10);
+
+    const dauSet = new Set<string>();
+    const wauSet = new Set<string>();
+    const mauSet = new Set<string>();
+
     for (const e of evs) {
       const day = e.created_at.slice(0, 10);
+      eventsByDay.set(day, (eventsByDay.get(day) ?? 0) + 1);
+      eventCounts.set(e.event_name, (eventCounts.get(e.event_name) ?? 0) + 1);
+      if (e.platform) platforms.set(e.platform, (platforms.get(e.platform) ?? 0) + 1);
+
       if (e.local_user_id) {
+        const uid = e.local_user_id;
         if (!dauMap.has(day)) dauMap.set(day, new Set());
-        dauMap.get(day)!.add(e.local_user_id);
+        dauMap.get(day)!.add(uid);
+
+        if (day >= day1) dauSet.add(uid);
+        if (day >= day7) wauSet.add(uid);
+        if (day >= day30) mauSet.add(uid);
+
+        if (!userFirstSeen.has(uid) || day < userFirstSeen.get(uid)!) userFirstSeen.set(uid, day);
+        if (!userLastSeen.has(uid) || day > userLastSeen.get(uid)!) userLastSeen.set(uid, day);
       }
+
       switch (e.event_name) {
         case "game_started":
           started++;
           startedByDay.set(day, (startedByDay.get(day) ?? 0) + 1);
           if (e.game_mode === "quick") quickMatch++;
           else if (e.game_mode === "multiplayer") multiplayer++;
+          if (e.local_user_id)
+            userGameCount.set(e.local_user_id, (userGameCount.get(e.local_user_id) ?? 0) + 1);
           break;
         case "quick_match_started":
           quickMatch++;
@@ -90,9 +118,39 @@ Deno.serve(async (req) => {
       }
     }
 
-    const dau = Array.from(dauMap.entries())
-      .map(([day, set]) => ({ day, users: set.size }))
-      .sort((a, b) => a.day.localeCompare(b.day));
+    // Build last 30 days series (filling zeros)
+    const series: { day: string; users: number; started: number; finished: number; events: number }[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const day = new Date(now - i * 86400000).toISOString().slice(0, 10);
+      series.push({
+        day,
+        users: dauMap.get(day)?.size ?? 0,
+        started: startedByDay.get(day) ?? 0,
+        finished: finishedByDay.get(day) ?? 0,
+        events: eventsByDay.get(day) ?? 0,
+      });
+    }
+
+    // Retention: users seen in week N who returned in week N+1 (rolling)
+    const newUsers7d = Array.from(userFirstSeen.entries()).filter(
+      ([, d]) => d >= new Date(now - 14 * 86400000).toISOString().slice(0, 10) &&
+                 d < day7,
+    );
+    const retained = newUsers7d.filter(([uid]) => (userLastSeen.get(uid) ?? "") >= day7).length;
+    const retention7d = newUsers7d.length > 0 ? retained / newUsers7d.length : 0;
+
+    const totalUsers = userFirstSeen.size;
+    const avgGamesPerUser = totalUsers > 0 ? started / totalUsers : 0;
+    const completionRate = started > 0 ? finished / started : 0;
+    const multiplayerRate = (quickMatch + multiplayer) > 0
+      ? multiplayer / (quickMatch + multiplayer)
+      : 0;
+    const forfeitRate = started > 0 ? forfeits / started : 0;
+
+    const topEvents = Array.from(eventCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15)
+      .map(([name, count]) => ({ name, count }));
 
     return json({
       totals: {
@@ -105,10 +163,23 @@ Deno.serve(async (req) => {
         forfeits,
         roomsCreated,
         roomsJoined,
+        uniqueUsers: totalUsers,
       },
-      dau,
+      activity: {
+        dau: dauSet.size,
+        wau: wauSet.size,
+        mau: mauSet.size,
+        retention7d,
+        avgGamesPerUser,
+        completionRate,
+        multiplayerRate,
+        forfeitRate,
+      },
+      series,
       languages: Object.fromEntries(langs),
-      recent: evs.slice(0, 50),
+      platforms: Object.fromEntries(platforms),
+      topEvents,
+      recent: evs.slice(0, 100),
     });
   } catch (err) {
     return json({ error: String(err) }, 500);

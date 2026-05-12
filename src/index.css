@@ -132,6 +132,14 @@
     background-attachment: scroll;
     position: relative;
   }
+  html.capacitor-native.ios-viewport .app-shell {
+    position: fixed;
+    inset: 0;
+    width: var(--app-vw);
+    height: var(--app-dvh);
+    max-height: var(--app-dvh);
+    overflow: hidden;
+  }
   #root {
     background-color: hsl(var(--background));
   }
@@ -180,12 +188,37 @@
   justify-content: center;
 }
 
+.safe-area-wrapper,
+.ios-wrapper {
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  justify-content: center;
+}
+
 .game-board-frame {
   margin: 0;
 }
 
-html.ios-viewport .game-layout-shell {
+html.ios-viewport:not(.capacitor-native) .game-layout-shell {
   padding-top: 10px;
+}
+
+html.capacitor-native.ios-viewport .game-layout-shell {
+  position: fixed;
+  inset: 0;
+  width: var(--app-vw);
+  height: var(--app-dvh);
+  min-height: 0;
+  max-height: var(--app-dvh);
+  padding: 10px;
+}
+
+html.capacitor-native.ios-viewport .safe-area-wrapper,
+html.capacitor-native.ios-viewport .ios-wrapper,
+html.capacitor-native.ios-viewport .game-layout-wrapper {
+  height: 100%;
+  min-height: 0;
 }
 
 html.ios-game-layout-debug-active {

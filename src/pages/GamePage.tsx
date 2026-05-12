@@ -120,11 +120,14 @@ export default function GamePage() {
     if (!root.classList.contains('ios-viewport')) return;
 
     root.classList.add('ios-game-shift-debug-active');
-    const shiftElement = document.querySelector('[data-ios-game-shift="outer-wrapper"]');
+    const shiftElement = document.querySelector<HTMLElement>('[data-ios-game-shift="outer-wrapper"]');
+    const shiftRect = shiftElement?.getBoundingClientRect();
     console.info('[ios-game-shift-debug]', {
       iosViewport: true,
       shiftElement: shiftElement ? 'outer-wrapper' : 'missing',
       rootClasses: root.className,
+      computedTransform: shiftElement ? getComputedStyle(shiftElement).transform : null,
+      visualTop: shiftRect?.top ?? null,
       viewportHeight: window.visualViewport?.height ?? window.innerHeight,
     });
 

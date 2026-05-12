@@ -138,7 +138,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
                 filter: config.shadow,
               }}
             >
-              {config.label}
+              {t(config.labelKey)}
             </span>
           </motion.div>
         </motion.div>

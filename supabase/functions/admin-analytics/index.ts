@@ -25,7 +25,9 @@ Deno.serve(async (req) => {
 
     const { data: events, error } = await supabase
       .from("analytics_events")
-      .select("event_name, local_user_id, game_mode, metadata, created_at, platform")
+      .select(
+        "event_name, local_user_id, device_id, session_id, auth_user_id, game_mode, metadata, created_at, platform",
+      )
       .gte("created_at", since)
       .order("created_at", { ascending: false })
       .limit(10000);

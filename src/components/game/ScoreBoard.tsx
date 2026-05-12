@@ -266,7 +266,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       console.log('scoreboard-row-click', debug);
 
       if (!canSelectRow) return;
-      playScoreSelectSound();
+      // Sound is played by the filled-count effect above so that all players
+      // (P1–P4, AI, remote friends in multiplayer) trigger the same sound.
       onSelectCategory(cat.id, debug);
     };
 

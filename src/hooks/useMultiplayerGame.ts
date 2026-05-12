@@ -5,6 +5,7 @@ import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
+import { pingTurnChange } from '@/lib/notifications';
 
 interface MultiplayerState {
   gameId: string | null;
@@ -472,6 +473,20 @@ export function useMultiplayerGame() {
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
     };
   }, [cleanupChannel, cleanupTimers]);
+
+  // Notify when turn ownership changes (server is the source of truth; client just pings)
+  const lastNotifiedTurnRef = useRef<string | null>(null);
+  useEffect(() => {
+    const gameId = state.gameId;
+    const gs = state.gameState;
+    if (!gameId || !gs || state.status !== 'playing') return;
+    const key = `${gameId}:${gs.round}:${gs.currentPlayerIndex}`;
+    if (lastNotifiedTurnRef.current === key) return;
+    lastNotifiedTurnRef.current = key;
+    // Only ping when it's NOT my turn (so the server pings the actual recipient).
+    // Skip when I'm the current player — server-side check handles edge cases anyway.
+    void pingTurnChange(gameId);
+  }, [state.gameId, state.status, state.gameState?.currentPlayerIndex, state.gameState?.round]);
 
   const isMyTurn = state.gameState ? state.myPlayerIndex === state.gameState.currentPlayerIndex : false;
 

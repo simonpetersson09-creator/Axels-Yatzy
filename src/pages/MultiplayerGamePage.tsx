@@ -136,7 +136,7 @@ export default function MultiplayerGamePage() {
             onClick={() => navigate('/')}
             className="px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-display font-bold"
           >
-            Tillbaka till menyn
+            {t('backToMenu')}
           </button>
         </div>
       </div>

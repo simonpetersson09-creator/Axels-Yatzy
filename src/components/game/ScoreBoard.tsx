@@ -49,7 +49,7 @@ const COL_W = 'min-w-[42px] w-[42px]';
 const LABEL_W = 'w-[80px] min-w-[80px]';
 const ROW_H = 'h-[34px]';
 
-function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor }: {
+function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor, rowHeight, colWidth }: {
   isScored: boolean;
   scoreValue: number | null | undefined;
   possibleScore: number | undefined;

@@ -92,7 +92,8 @@ export default function GamePage() {
       const allScores = gameState.players.map(p => getTotalScore(p.scores));
       const maxScore = Math.max(...allScores);
       const won = humanScore === maxScore && !aiPlayers.includes(0);
-      recordGameResult(humanScore, won);
+      const yatzys = (gameState.players[0].scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
+      recordGameResult(humanScore, won, yatzys);
     }
   }, [gameState?.gameOver]);
 

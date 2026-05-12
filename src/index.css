@@ -236,6 +236,15 @@
   animation: kasta-pulse-shadow 2.4s ease-in-out infinite;
 }
 
+/* On real iOS / Capacitor the notch safe-area padding pushes the game
+   container ~30-50px lower than in the Lovable desktop preview (where
+   safe-area = 0). Shift the game content up on iOS so the visual top
+   spacing matches the preview, without changing the safe-area padding
+   itself (taps near the notch are still safe). */
+html.ios-viewport .ios-game-shift {
+  transform: translateY(-30px);
+}
+
 @layer utilities {
   .app-screen {
     min-height: 100svh;

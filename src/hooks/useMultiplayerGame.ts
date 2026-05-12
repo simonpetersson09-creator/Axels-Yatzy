@@ -386,6 +386,7 @@ export function useMultiplayerGame() {
         console.error('Forfeit error:', error);
         throw new Error('Forfeit failed');
       }
+      trackEvent('game_forfeited', undefined, { gameId: state.gameId, gameMode: 'multiplayer' });
     } catch (err) {
       console.error('Forfeit failed:', err);
       throw err instanceof Error ? err : new Error('Forfeit failed');

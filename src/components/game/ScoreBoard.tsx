@@ -225,7 +225,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       const clientX = lastPointerRef.current.clientX ?? event.clientX ?? null;
       const clientY = lastPointerRef.current.clientY ?? event.clientY ?? null;
       const debug: ScoreboardClickDebug = {
-        rowText: cat.name,
+        rowText: catName(cat.id),
         clickedCategoryId: cat.id,
         renderedRowIndex,
         actualSavedCategory: cat.id,
@@ -256,9 +256,9 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       type="button"
       data-score-row="true"
       data-category-id={cat.id}
-      data-category-name={cat.name}
+      data-category-name={catName(cat.id)}
       data-rendered-row-index={renderedRowIndex}
-      aria-label={`${cat.name} (${cat.id})`}
+      aria-label={`${catName(cat.id)} (${cat.id})`}
       aria-disabled={!canSelectRow}
       onPointerDown={(event) => {
         event.stopPropagation();
@@ -287,7 +287,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         'flex-shrink-0 px-2 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className="text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{cat.name}</span>
+        <span className="text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{catName(cat.id)}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </button>
@@ -334,7 +334,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     >
       {/* Header */}
       <div className={cn('bg-yatzy-header border-b border-yatzy-line/50 px-4 text-center flex items-center justify-center', ROW_H)}>
-        <span className="font-display font-bold text-[15px] text-yatzy-text tracking-[0.25em] uppercase">Mr.B Yatzy</span>
+        <span className="font-display font-bold text-[15px] text-yatzy-text tracking-[0.25em] uppercase">{t('appName')}</span>
       </div>
 
       {/* Player columns header */}
@@ -390,23 +390,23 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
       {/* Upper section */}
       <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
-        <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">Övre sektionen</span>
+        <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('upperSection')}</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
 
-      {renderSumRow('Summa', (p) => `${getUpperSectionTotal(p.scores)}`)}
-      {renderSumRow('Bonus', (p) => {
+      {renderSumRow(t('sum'), (p) => `${getUpperSectionTotal(p.scores)}`)}
+      {renderSumRow(t('bonus'), (p) => {
         const ut = getUpperSectionTotal(p.scores);
         return ut >= UPPER_BONUS_THRESHOLD ? `+${UPPER_BONUS_VALUE}` : '0';
       })}
 
       {/* Lower section */}
       <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
-        <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">Nedre sektionen</span>
+        <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('lowerSection')}</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}
 
-      {renderSumRow('Totalt', (p) => getTotalScore(p.scores), true)}
+      {renderSumRow(t('total'), (p) => getTotalScore(p.scores), true)}
     </div>
   );
 }

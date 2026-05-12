@@ -58,6 +58,8 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   bgStyle?: React.CSSProperties;
   isAiChosen?: boolean;
   playerColor?: string;
+  rowHeight?: string;
+  colWidth?: string;
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);
@@ -82,7 +84,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   return (
     <div
       className={cn(
-        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-colors duration-300 ease-out flex items-center justify-center overflow-hidden rounded-[2px] pointer-events-none', ROW_H, COL_W,
+        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-colors duration-300 ease-out flex items-center justify-center overflow-hidden rounded-[2px] pointer-events-none', rowHeight ?? ROW_H, colWidth ?? COL_W,
         bgClass,
         isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
         canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25',
@@ -143,7 +145,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 
       <motion.span
         className={cn(
-          'text-[13px] tabular-nums leading-none',
+          `${rowHeight === 'h-[28px]' ? 'text-[11px]' : 'text-[13px]'} tabular-nums leading-none`,
           isScored && 'font-normal text-yatzy-text',
           canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-normal text-yatzy-highlight',
           canSelect && possibleScore === 0 && 'font-normal text-yatzy-text/25',

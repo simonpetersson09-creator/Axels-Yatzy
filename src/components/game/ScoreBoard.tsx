@@ -341,13 +341,13 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       }}
     >
       {/* Header */}
-      <div className={cn('bg-yatzy-header border-b border-yatzy-line/50 px-4 text-center flex items-center justify-center', ROW_H)}>
-        <span className="font-display font-bold text-[15px] text-yatzy-text tracking-[0.25em] uppercase">{t('appName')}</span>
+      <div className={cn('bg-yatzy-header border-b border-yatzy-line/50 px-3 text-center flex items-center justify-center', rowHeight)}>
+        <span className={`${nativeIos ? 'text-[12px]' : 'text-[15px]'} font-display font-bold text-yatzy-text tracking-[0.25em] uppercase`}>{t('appName')}</span>
       </div>
 
       {/* Player columns header */}
       <div className={cn('flex border-b-2 border-yatzy-line-strong/40 py-1 bg-yatzy-section-header/50')}>
-        <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 px-3 flex items-center', LABEL_W, ROW_H)} />
+        <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 px-2 flex items-center', labelWidth, rowHeight)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];
           const color = PLAYER_COLORS[i];
@@ -358,7 +358,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
               key={i}
               className={cn(
                 'flex items-center justify-center relative overflow-hidden transition-all duration-500 ease-out',
-                COL_W,
+                colWidth,
               )}
               style={isCurrent && player ? {
                 backgroundColor: `hsl(${hsl} / 0.10)`,
@@ -377,19 +377,19 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <motion.div 
-                    className={cn('w-2.5 h-2.5 rounded-full', color.dot)}
+                    className={cn(nativeIos ? 'w-2 h-2' : 'w-2.5 h-2.5', 'rounded-full', color.dot)}
                     animate={isCurrent ? { scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] } : {}}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                   />
                   <span className={cn(
-                    'text-[10px] font-bold leading-none',
+                    `${nativeIos ? 'text-[8px]' : 'text-[10px]'} font-bold leading-none`,
                     isCurrent ? color.text : 'text-yatzy-text/50'
                   )}>
                     {color.label}
                   </span>
                 </motion.div>
               ) : (
-                <div className="w-6 h-6 rounded-full bg-yatzy-line/10" />
+                <div className={`${nativeIos ? 'w-5 h-5' : 'w-6 h-6'} rounded-full bg-yatzy-line/10`} />
               )}
             </div>
           );

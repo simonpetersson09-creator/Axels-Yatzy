@@ -163,7 +163,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled, nativeIos = false }: ScoreBoardProps) {
   const { t } = useTranslation();
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
-  const rowHeight = nativeIos ? 'h-[24px]' : ROW_H;
+  const rowHeight = nativeIos ? 'h-[22px]' : ROW_H;
   const labelWidth = nativeIos ? 'w-[66px] min-w-[66px]' : LABEL_W;
   const colWidth = nativeIos ? 'min-w-[31px] w-[31px]' : COL_W;
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({

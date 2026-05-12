@@ -1,6 +1,9 @@
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, RotateCcw, Home } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { fireWinConfetti, tryHapticWin } from '@/lib/confetti';
+import { playWinSound } from '@/lib/win-sound';
 
 interface PlayerResult {
   name: string;

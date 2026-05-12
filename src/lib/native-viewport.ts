@@ -7,20 +7,31 @@ export const isNativeIos = Capacitor.isNativePlatform() && Capacitor.getPlatform
 
 export function installNativeViewportSync() {
   const root = document.documentElement;
-  const isNative = Capacitor.isNativePlatform();
-  const shouldUseIosViewport = isIos || isNativeIos;
-  root.classList.toggle('capacitor-native', isNative);
-  root.classList.toggle('ios-viewport', shouldUseIosViewport);
+  const applyPlatformClasses = () => {
+    const isNative = Capacitor.isNativePlatform();
+    const isNativeIosRuntime = isNative && Capacitor.getPlatform() === 'ios';
+    const shouldUseIosViewport = isIos || isNativeIosRuntime;
+    root.classList.toggle('capacitor-native', isNative);
+    root.classList.toggle('ios-viewport', shouldUseIosViewport);
 
-  if (shouldUseIosViewport) {
-    root.classList.add('ios-viewport-debug-detected');
-    console.info('[ios-viewport-debug]', {
-      iosViewport: root.classList.contains('ios-viewport'),
-      capacitorNative: isNative,
-      capacitorPlatform: Capacitor.getPlatform(),
-      userAgent: navigator.userAgent,
-    });
-  }
+    if (shouldUseIosViewport) {
+      root.classList.add('ios-viewport-debug-detected');
+      console.info('[ios-viewport-debug]', {
+        iosViewport: root.classList.contains('ios-viewport'),
+        capacitorNative: isNative,
+        capacitorPlatform: Capacitor.getPlatform(),
+        windowInnerHeight: window.innerHeight,
+        visualViewportHeight: window.visualViewport?.height ?? null,
+        rootClasses: root.className,
+        userAgent: navigator.userAgent,
+      });
+    }
+  };
+
+  applyPlatformClasses();
+  window.addEventListener('DOMContentLoaded', applyPlatformClasses, { once: true });
+  window.setTimeout(applyPlatformClasses, 250);
+  window.setTimeout(applyPlatformClasses, 1000);
 
   let raf = 0;
   const sync = () => {

@@ -117,7 +117,8 @@ export default function GamePage() {
 
   useEffect(() => {
     const root = document.documentElement;
-    if (!root.classList.contains('ios-viewport')) return;
+    const isNativeIosRuntime = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+    if (!isNativeIosRuntime) return;
 
     root.classList.add('ios-game-layout-debug-active');
     const logLayout = () => {
@@ -125,25 +126,70 @@ export default function GamePage() {
       safeAreaProbe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);';
       document.body.appendChild(safeAreaProbe);
       const safeAreaStyles = getComputedStyle(safeAreaProbe);
-      const layoutShell = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-shell"]');
+      const wrapperSelectors: Array<[string, HTMLElement | null]> = [
+        ['html', document.documentElement],
+        ['body', document.body],
+        ['#root', document.getElementById('root')],
+        ['app-shell', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="app-shell"]')],
+        ['game-shell', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-shell"]')],
+        ['safe-area-wrapper', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="safe-area-wrapper"]')],
+        ['ios-wrapper', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="ios-wrapper"]')],
+        ['game-board-wrapper', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-board-wrapper"]')],
+        ['game-board', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-board"]')],
+      ];
+      const rows = wrapperSelectors.map(([name, element]) => {
+        if (!element) return { name, exists: false };
+        const styles = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return {
+          name,
+          exists: true,
+          className: element.className || '(none)',
+          top: Math.round(rect.top * 10) / 10,
+          bottom: Math.round(rect.bottom * 10) / 10,
+          height: Math.round(rect.height * 10) / 10,
+          offsetTop: element.offsetTop,
+          marginTop: styles.marginTop,
+          marginBottom: styles.marginBottom,
+          paddingTop: styles.paddingTop,
+          paddingBottom: styles.paddingBottom,
+          position: styles.position,
+          display: styles.display,
+          overflow: `${styles.overflowX}/${styles.overflowY}`,
+        };
+      });
+      const gameWrapper = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-board-wrapper"]');
       const gameBoard = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-board"]');
-      const shellStyles = layoutShell ? getComputedStyle(layoutShell) : null;
-      const boardRect = gameBoard?.getBoundingClientRect();
-      console.info('[ios-game-layout-debug]', {
-        isCapacitor: Capacitor.isNativePlatform(),
-        isIOS: root.classList.contains('ios-viewport'),
-        viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+      const contributors = rows
+        .filter((row) => row.exists === true && 'top' in row)
+        .map((row) => ({
+          name: row.name,
+          top: 'top' in row ? row.top : 0,
+          offsetTop: 'offsetTop' in row ? row.offsetTop : null,
+          paddingTop: 'paddingTop' in row ? row.paddingTop : null,
+          marginTop: 'marginTop' in row ? row.marginTop : null,
+        }));
+      const suspectedPusher = contributors.reduce(
+        (max, row) => row.top > max.top ? row : max,
+        contributors[0] ?? { name: 'none', top: 0, offsetTop: null, paddingTop: null, marginTop: null },
+      );
+
+      console.info('[ios-game-layout-debug:summary]', {
+        isCapacitor: true,
+        isIOS: Capacitor.getPlatform() === 'ios',
+        htmlHasIosViewport: root.classList.contains('ios-viewport'),
+        htmlClasses: root.className,
+        windowInnerHeight: window.innerHeight,
+        visualViewportHeight: window.visualViewport?.height ?? null,
+        visualViewportOffsetTop: window.visualViewport?.offsetTop ?? null,
         safeAreaTop: safeAreaStyles.paddingTop,
         safeAreaBottom: safeAreaStyles.paddingBottom,
-        shellPaddingTop: shellStyles?.paddingTop ?? null,
-        shellPaddingBottom: shellStyles?.paddingBottom ?? null,
-        activeLayoutClass: layoutShell?.className ?? 'missing-game-shell',
-        activeBoardClass: gameBoard?.className ?? 'missing-game-board',
-        boardTop: boardRect?.top ?? null,
-        boardBottom: boardRect?.bottom ?? null,
-        boardHeight: boardRect?.height ?? null,
-        rootClasses: root.className,
+        gameBoardOffsetTop: gameBoard?.offsetTop ?? null,
+        gameWrapperRect: gameWrapper?.getBoundingClientRect().toJSON?.() ?? gameWrapper?.getBoundingClientRect() ?? null,
+        gameBoardRect: gameBoard?.getBoundingClientRect().toJSON?.() ?? gameBoard?.getBoundingClientRect() ?? null,
+        suspectedPusher,
       });
+      console.table(rows);
       safeAreaProbe.remove();
     };
 
@@ -339,13 +385,15 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <div className="game-layout-wrapper" data-ios-layout-wrapper="game-wrapper">
-        <motion.div
-          className="relative flex flex-col gap-2"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        >
+      <div className="safe-area-wrapper" data-ios-layout-wrapper="safe-area-wrapper">
+        <div className="ios-wrapper" data-ios-layout-wrapper="ios-wrapper">
+          <div className="game-layout-wrapper" data-ios-layout-wrapper="game-board-wrapper">
+            <motion.div
+              className="relative flex flex-col gap-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            >
         <div className="game-board-frame flex w-full max-w-full gap-1 items-stretch" data-ios-layout-wrapper="game-board">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
@@ -489,7 +537,9 @@ export default function GamePage() {
             </div>
           </div>
         </div>
-        </motion.div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );

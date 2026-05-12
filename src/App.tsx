@@ -19,18 +19,20 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/setup" element={<GameSetupPage />} />
-          <Route path="/game" element={<GamePage />} />
-          <Route path="/results" element={<ResultsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
-          <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <div className="app-shell" data-ios-layout-wrapper="app-shell">
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/setup" element={<GameSetupPage />} />
+            <Route path="/game" element={<GamePage />} />
+            <Route path="/results" element={<ResultsPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
+            <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
     </TooltipProvider>
   </QueryClientProvider>
 );

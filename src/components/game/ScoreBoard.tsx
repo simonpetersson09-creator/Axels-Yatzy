@@ -192,7 +192,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
     if (!player) {
       return (
-        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, 'bg-yatzy-bg/30')} />
+        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center', rowHeight, colWidth, 'bg-yatzy-bg/30')} />
       );
     }
 
@@ -212,6 +212,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         bgStyle={bg.style}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
+        rowHeight={rowHeight}
+        colWidth={colWidth}
       />
     );
   };
@@ -290,10 +292,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
     >
       <div className={cn(
-        'flex-shrink-0 px-2 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
+        'flex-shrink-0 px-2 border-r border-yatzy-line/40 flex items-center', rowHeight, labelWidth,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className="text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{catName(cat.id)}</span>
+        <span className={`${nativeIos ? 'text-[9px]' : 'text-[11px]'} font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full`}>{catName(cat.id)}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </button>

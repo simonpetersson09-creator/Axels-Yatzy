@@ -357,7 +357,7 @@ export default function MultiplayerGamePage() {
 
               {!isMyTurn && (
                 <p className="text-center text-[10px] text-muted-foreground/70 font-medium px-1 mt-1 leading-tight">
-                  Väntar på {currentPlayer.name}…
+                  {t('waitingForPlayer', { name: currentPlayer.name })}
                 </p>
               )}
             </div>

@@ -321,7 +321,7 @@ export default function MultiplayerGamePage() {
                 <span className="pointer-events-none text-center leading-tight px-1">
                   {!isMyTurn
                     ? '⏳'
-                    : gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
+                    : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
                 </span>
               </button>
 

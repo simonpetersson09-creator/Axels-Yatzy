@@ -231,7 +231,7 @@ html.capacitor-native.ios-viewport .game-layout-wrapper {
   display: grid;
   place-items: center;
   width: 100%;
-  height: 100dvh;
+  height: min(100%, 100dvh);
   max-height: 100dvh;
   max-height: 100%;
   padding: 10px;

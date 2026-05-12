@@ -375,7 +375,7 @@ export default function GamePage() {
             {/* Bottom: Roll + Home + Forfeit */}
             <div
               className="ios-action-zone flex flex-col items-center gap-2"
-              style={{ isolation: 'isolate' }}
+              style={{ isolation: 'isolate', marginTop: '20px' }}
             >
               <button
                 type="button"

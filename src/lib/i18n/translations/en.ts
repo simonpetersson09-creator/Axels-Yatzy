@@ -1,7 +1,7 @@
 import type { sv } from './sv';
 
 export const en: typeof sv = {
-  appName: 'Mr.B Yatzy',
+  appName: 'Mr.B. Yatzy',
   tagline: 'Classic dice game with a modern twist',
   version: 'Version',
 

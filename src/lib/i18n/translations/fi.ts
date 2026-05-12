@@ -1,7 +1,7 @@
 import type { sv } from './sv';
 
 export const fi: typeof sv = {
-  appName: 'Mr.B Yatzy',
+  appName: 'Mr.B. Yatzy',
   tagline: 'Klassinen noppapeli modernissa muodossa',
   version: 'Versio',
 

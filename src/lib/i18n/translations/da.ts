@@ -1,7 +1,7 @@
 import type { sv } from './sv';
 
 export const da: typeof sv = {
-  appName: 'Mr.B Yatzy',
+  appName: 'Mr.B. Yatzy',
   tagline: 'Klassisk terningspil i moderne stil',
   version: 'Version',
 

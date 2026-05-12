@@ -316,7 +316,7 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex w-[117px] flex-shrink-0 flex-col gap-2">
+          <div className="flex w-[108px] flex-shrink-0 flex-col gap-2">
             {/* Player indicators */}
             <div className="flex flex-col gap-1 h-[124px]">
               {gameState.players.map((player, idx) => {

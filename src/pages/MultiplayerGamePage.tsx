@@ -178,36 +178,11 @@ export default function MultiplayerGamePage() {
   };
 
   const handleForfeit = async () => {
-    if (statsRecordedRef.current) return;
-    statsRecordedRef.current = true;
-
+    // Just call the RPC — the status==='finished' effect handles stats + navigation
     try {
       await forfeitGame();
-
-      if (myPlayerIndex !== null && myPlayerIndex >= 0) {
-        const myScore = getTotalScore(gameState.players[myPlayerIndex]?.scores ?? {});
-        recordGameResult(myScore, false);
-      }
-
-      clearActiveGame();
-
-      const myName = myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : 'Spelare';
-      const results = gameState.players.map(p => ({
-        name: p.name,
-        score: getTotalScore(p.scores),
-        scores: p.scores,
-      }));
-      navigate('/results', {
-        state: {
-          results,
-          forfeit: true,
-          forfeitPlayerName: myName,
-          isMultiplayer: true,
-        },
-      });
     } catch (err) {
       console.error('Forfeit failed:', err);
-      statsRecordedRef.current = false;
     }
   };
 

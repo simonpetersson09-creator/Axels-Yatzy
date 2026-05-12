@@ -2,6 +2,7 @@ import { useState, MutableRefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flag } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 interface ForfeitDialogProps {
   onConfirm: () => void;
@@ -10,6 +11,7 @@ interface ForfeitDialogProps {
 }
 
 export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: ForfeitDialogProps) {
+  const { t } = useTranslation();
   const [showDialog, setShowDialog] = useState(false);
 
   return (
@@ -34,10 +36,10 @@ export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: Forfe
           WebkitTapHighlightColor: 'transparent',
           touchAction: 'manipulation',
         }}
-        aria-label="Ge upp"
+        aria-label={t('forfeit')}
       >
         <Flag className="w-3 h-3 pointer-events-none" aria-hidden />
-        <span className="pointer-events-none">Ge upp</span>
+        <span className="pointer-events-none">{t('forfeit')}</span>
       </button>
 
       {createPortal(
@@ -49,7 +51,6 @@ export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: Forfe
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              {/* Backdrop */}
               <motion.div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                 initial={{ opacity: 0 }}
@@ -58,7 +59,6 @@ export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: Forfe
                 onClick={() => setShowDialog(false)}
               />
 
-              {/* Dialog */}
               <motion.div
                 className="relative glass-card p-6 w-full max-w-xs space-y-4 text-center"
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -72,11 +72,12 @@ export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: Forfe
 
                 <div className="space-y-2">
                   <h2 className="font-display font-bold text-lg text-foreground">
-                    Vill du ge upp matchen?
+                    {t('forfeitConfirmTitle')}
                   </h2>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Om du ger upp avslutas matchen direkt
-                    {playerName ? ` och ${playerName} vinner` : ''}.
+                    {playerName
+                      ? t('forfeitConfirmTextWithWinner', { name: playerName })
+                      : t('forfeitConfirmText')}
                   </p>
                 </div>
 
@@ -88,13 +89,13 @@ export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: Forfe
                     }}
                     className="w-full py-3 rounded-xl bg-destructive text-destructive-foreground font-bold text-sm active:scale-[0.97] transition-transform touch-manipulation"
                   >
-                    Ge upp match
+                    {t('forfeitButton')}
                   </button>
                   <button
                     onClick={() => setShowDialog(false)}
                     className="w-full py-3 rounded-xl bg-secondary text-secondary-foreground font-medium text-sm active:scale-[0.97] transition-transform touch-manipulation"
                   >
-                    Avbryt
+                    {t('cancel')}
                   </button>
                 </div>
               </motion.div>

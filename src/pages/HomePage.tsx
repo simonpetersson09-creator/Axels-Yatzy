@@ -160,10 +160,10 @@ export default function HomePage() {
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
                         navigate('/game', { state: { playerNames, aiPlayers } });
                       }}
-                      className="flex-1 py-3 px-1 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-sm sm:text-base transition-all hover:bg-secondary/80 flex items-center justify-center text-center"
+                      className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"
                       whileTap={{ scale: 0.95 }}
                     >
-                      <span className="truncate">{opponents} {opponents === 1 ? t('opponent') : t('opponents')}</span>
+                      <span>{opponents} {opponents === 1 ? t('opponent') : t('opponents')}</span>
                     </motion.button>
                   ))}
                 </div>

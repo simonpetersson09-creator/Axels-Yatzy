@@ -112,7 +112,8 @@ export default function MultiplayerGamePage() {
           const topScore = Math.max(...results.map(r => r.score));
           won = myScore === topScore && myScore > 0;
         }
-        recordGameResult(myScore, won);
+        const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
+        recordGameResult(myScore, won, yatzys);
       }
 
       clearActiveGame();

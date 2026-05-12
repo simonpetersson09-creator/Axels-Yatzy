@@ -23,6 +23,9 @@ export const da: typeof sv = {
   statGames: 'Spillede',
   statWins: 'Sejre',
   statHigh: 'Rekord',
+  statWinrate: 'Sejr-%',
+  statYatzy: 'Yatzyer',
+  statStreak: 'Stime',
   goSettings: 'Indstillinger',
   matchExpired: 'Kampen blev afsluttet, fordi 48 timer er gået uden aktivitet.',
 

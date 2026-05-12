@@ -25,6 +25,9 @@ export const sv = {
   statGames: 'Spelade',
   statWins: 'Vinster',
   statHigh: 'Rekord',
+  statWinrate: 'Vinst-%',
+  statYatzy: 'Yatzy',
+  statStreak: 'Svit',
   goSettings: 'Inställningar',
   matchExpired: 'Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.',
 

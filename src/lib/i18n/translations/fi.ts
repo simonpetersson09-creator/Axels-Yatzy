@@ -23,6 +23,9 @@ export const fi: typeof sv = {
   statGames: 'Pelatut',
   statWins: 'Voitot',
   statHigh: 'Ennätys',
+  statWinrate: 'Voitto-%',
+  statYatzy: 'Yatzyt',
+  statStreak: 'Putki',
   goSettings: 'Asetukset',
   matchExpired: 'Peli päättyi, koska 48 tuntia kului ilman toimintaa.',
 

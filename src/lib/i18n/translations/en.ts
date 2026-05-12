@@ -23,6 +23,9 @@ export const en: typeof sv = {
   statGames: 'Played',
   statWins: 'Wins',
   statHigh: 'Best',
+  statWinrate: 'Win rate',
+  statYatzy: 'Yatzys',
+  statStreak: 'Streak',
   goSettings: 'Settings',
   matchExpired: 'The match was ended because 48 hours passed without activity.',
 

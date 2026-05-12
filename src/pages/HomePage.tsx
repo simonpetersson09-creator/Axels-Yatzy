@@ -5,7 +5,7 @@ import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, cl
 import { getRandomAiNames } from '@/lib/yatzy-ai';
 import { getPlayerName } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
-import { Play, Clock, Gamepad2, Trophy, Star } from 'lucide-react';
+import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 
@@ -183,7 +183,7 @@ export default function HomePage() {
         </div>
 
         <motion.div
-          className="w-full"
+          className="w-full space-y-2.5"
           variants={item}
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
@@ -192,6 +192,37 @@ export default function HomePage() {
               { label: t('statGames'), value: stats.gamesPlayed, icon: Gamepad2 },
               { label: t('statWins'), value: stats.wins, icon: Trophy },
               { label: t('statHigh'), value: stats.highScore, icon: Star },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="flex flex-col items-center gap-1 py-2.5 sm:py-3.5 px-2 rounded-2xl bg-secondary/60 border border-border/50"
+              >
+                <stat.icon className="w-3.5 h-3.5 text-primary/70" />
+                <span className="text-xl sm:text-2xl font-display font-black text-foreground tabular-nums leading-none">
+                  {stat.value}
+                </span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate max-w-full">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-3 gap-2.5">
+            {[
+              {
+                label: t('statWinrate'),
+                value: stats.gamesPlayed > 0
+                  ? `${Math.round((stats.wins / stats.gamesPlayed) * 100)}%`
+                  : '—',
+                icon: Percent,
+              },
+              { label: t('statYatzy'), value: stats.yatzyCount, icon: Dices },
+              {
+                label: t('statStreak'),
+                value: `${stats.currentStreak}/${stats.bestStreak}`,
+                icon: Flame,
+              },
             ].map((stat) => (
               <div
                 key={stat.label}

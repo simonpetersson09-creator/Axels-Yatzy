@@ -15,7 +15,6 @@ import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { motion } from 'framer-motion';
-import { Home } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { Capacitor } from '@capacitor/core';
 

@@ -136,72 +136,6 @@
     background-color: hsl(var(--background));
   }
 
-  /* Desktop / Lovable preview: render the app inside a fixed iPhone 15
-     container (393×852) centered on the page. Real iOS / Capacitor never
-     gets this class, so on device the app stays fullscreen. */
-  html.preview-frame,
-  html.preview-frame body {
-    height: 100vh;
-    min-height: 100vh;
-    max-height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    background-attachment: fixed;
-  }
-  html.preview-frame body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-  }
-  html.preview-frame #root {
-    width: 393px;
-    height: 852px;
-    min-width: 393px;
-    min-height: 852px;
-    max-width: 393px;
-    max-height: 852px;
-    overflow: hidden;
-    position: relative;
-    border-radius: 28px;
-    box-shadow:
-      0 30px 80px -20px hsl(0 0% 0% / 0.7),
-      0 0 0 1px hsl(195 28% 24% / 0.6);
-    background-color: hsl(var(--background));
-    background-image: radial-gradient(ellipse at 50% 0%, hsl(195 45% 20%) 0%, hsl(195 50% 14%) 70%);
-  }
-  /* Preview frame must lock to the container, never the window. */
-  html.preview-frame.game-scroll-lock,
-  html.preview-frame body.game-scroll-lock {
-    height: 100vh;
-    max-height: 100vh;
-  }
-  html.preview-frame #root.game-scroll-lock {
-    height: 852px;
-    max-height: 852px;
-  }
-
-  /* Hide the preview frame when the window is too small to fit it
-     (e.g. Lovable's mobile preview / a phone browser) — fall back to
-     fullscreen so layout still matches the device. */
-  @media (max-width: 392px), (max-height: 851px) {
-    html.preview-frame,
-    html.preview-frame body {
-      display: block;
-      height: var(--app-dvh, 100dvh);
-      max-height: var(--app-dvh, 100dvh);
-    }
-    html.preview-frame #root {
-      width: 100%;
-      height: 100%;
-      min-width: 0;
-      min-height: 0;
-      max-width: 100%;
-      max-height: 100%;
-      border-radius: 0;
-      box-shadow: none;
-    }
-  }
   h1, h2, h3, h4 {
     font-family: 'Space Grotesk', sans-serif;
   }
@@ -236,18 +170,26 @@
   animation: kasta-pulse-shadow 2.4s ease-in-out infinite;
 }
 
-/* On real iOS / Capacitor the notch safe-area padding pushes the game
-   container lower than in the Lovable desktop preview. Shift only the
-   outer game wrapper up on iOS, without changing safe-area padding or
-   any internal scoreboard/dice/button layout. */
-html.ios-viewport .ios-game-shift {
-  --ios-game-top-shift: 48px;
-  transform: translate3d(0, calc(-1 * var(--ios-game-top-shift)), 0);
-  will-change: transform;
+.game-layout-shell {
+  padding: 10px max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
 }
 
-html.ios-game-shift-debug-active {
-  --ios-game-shift-debug: active;
+.game-layout-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.game-board-frame {
+  margin: 0;
+}
+
+html.ios-viewport .game-layout-shell {
+  padding-top: 10px;
+}
+
+html.ios-game-layout-debug-active {
+  --ios-game-layout-debug: active;
 }
 
 @layer utilities {

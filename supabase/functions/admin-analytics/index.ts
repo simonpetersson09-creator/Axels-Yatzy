@@ -23,18 +23,55 @@ Deno.serve(async (req) => {
 
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    const { data: events, error } = await supabase
-      .from("analytics_events")
-      .select(
-        "event_name, local_user_id, device_id, session_id, auth_user_id, game_mode, metadata, created_at, platform",
-      )
-      .gte("created_at", since)
-      .order("created_at", { ascending: false })
-      .limit(10000);
+    const [eventsRes, sessionsRes] = await Promise.all([
+      supabase
+        .from("analytics_events")
+        .select(
+          "event_name, local_user_id, device_id, session_id, auth_user_id, game_mode, metadata, created_at, platform",
+        )
+        .gte("created_at", since)
+        .order("created_at", { ascending: false })
+        .limit(10000),
+      supabase
+        .from("analytics_sessions")
+        .select("id, device_id, started_at, ended_at, duration_seconds, last_seen_at, platform")
+        .gte("started_at", since)
+        .order("started_at", { ascending: false })
+        .limit(10000),
+    ]);
 
-    if (error) return json({ error: error.message }, 500);
+    if (eventsRes.error) return json({ error: eventsRes.error.message }, 500);
 
-    const evs = events ?? [];
+    const evs = eventsRes.data ?? [];
+    const sessions = sessionsRes.data ?? [];
+
+    // Auto-close sessions that look stale (last_seen_at > 30 min ago and
+    // ended_at is null) so duration metrics aren't skewed by abandoned tabs.
+    const STALE_MS = 30 * 60 * 1000;
+    const nowMs = Date.now();
+    type Sess = {
+      id: string;
+      device_id: string | null;
+      started_at: string;
+      ended_at: string | null;
+      duration_seconds: number | null;
+      last_seen_at: string;
+      platform: string | null;
+    };
+    const normalizedSessions: Sess[] = sessions.map((s: Sess) => {
+      if (s.ended_at || !s.last_seen_at) return s;
+      const lastSeen = Date.parse(s.last_seen_at);
+      if (nowMs - lastSeen > STALE_MS) {
+        const startedMs = Date.parse(s.started_at);
+        return {
+          ...s,
+          ended_at: s.last_seen_at,
+          duration_seconds: Math.max(0, Math.round((lastSeen - startedMs) / 1000)),
+        };
+      }
+      return s;
+    });
+
 
     const dauMap = new Map<string, Set<string>>();
     const startedByDay = new Map<string, number>();

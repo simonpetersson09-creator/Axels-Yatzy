@@ -53,6 +53,48 @@ export type Database = {
         }
         Relationships: []
       }
+      friend_match_results: {
+        Row: {
+          created_at: string
+          game_id: string | null
+          game_mode: string
+          id: string
+          player_1_id: string
+          player_1_name: string
+          player_1_score: number
+          player_2_id: string
+          player_2_name: string
+          player_2_score: number
+          winner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          game_id?: string | null
+          game_mode?: string
+          id?: string
+          player_1_id: string
+          player_1_name: string
+          player_1_score?: number
+          player_2_id: string
+          player_2_name: string
+          player_2_score?: number
+          winner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          game_id?: string | null
+          game_mode?: string
+          id?: string
+          player_1_id?: string
+          player_1_name?: string
+          player_1_score?: number
+          player_2_id?: string
+          player_2_name?: string
+          player_2_score?: number
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
       game_players: {
         Row: {
           game_id: string

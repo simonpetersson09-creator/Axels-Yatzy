@@ -177,7 +177,10 @@ export default function MultiplayerGamePage() {
     if (!isMyTurn) return;
     if (categoryId === 'yatzy') {
       const allSame = gameState.dice.every(d => d === gameState.dice[0]);
-      if (allSame) setShowYatzyCelebration(true);
+      if (allSame) {
+        setShowYatzyCelebration(true);
+        trackEvent('yatzy_scored', undefined, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+      }
     }
     selectCategory(categoryId as any);
   };

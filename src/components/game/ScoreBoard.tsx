@@ -4,6 +4,7 @@ import { getUpperSectionTotal, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playScoreSelectSound } from '@/lib/dice-sounds';
+import { useTranslation, type TranslationKey } from '@/lib/i18n';
 
 interface ScoreBoardProps {
   players: Player[];

@@ -34,6 +34,12 @@ interface Stats {
     multiplayerRate: number;
     forfeitRate: number;
   };
+  sessions?: {
+    total: number;
+    avgDurationSeconds: number;
+    sessionsPerDayAvg: number;
+    perDay: { day: string; sessions: number }[];
+  };
   series: SeriesPoint[];
   languages: Record<string, number>;
   platforms: Record<string, number>;
@@ -201,6 +207,25 @@ export default function AdminPage() {
       { label: "MAU", value: n(a.mau) },
       { label: "Unique devices (30d)", value: n(t.uniqueDevices ?? t.uniqueUsers) },
       { label: "Unique sessions (30d)", value: n(t.uniqueSessions) },
+      {
+        label: "Total sessions",
+        value: n(stats.sessions?.total ?? 0),
+        spark: stats.sessions?.perDay.map((d) => d.sessions),
+      },
+      {
+        label: "Avg session duration",
+        value: (() => {
+          const s = stats.sessions?.avgDurationSeconds ?? 0;
+          if (s < 60) return `${Math.round(s)}s`;
+          const m = Math.floor(s / 60);
+          const sec = Math.round(s % 60);
+          return `${m}m ${sec}s`;
+        })(),
+      },
+      {
+        label: "Sessions / day",
+        value: (stats.sessions?.sessionsPerDayAvg ?? 0).toFixed(1),
+      },
       { label: "Events (30d)", value: n(t.events), spark: series.map((s) => s.events) },
       { label: "Games started", value: n(t.started), spark: series.map((s) => s.started) },
       { label: "Games finished", value: n(t.finished), spark: series.map((s) => s.finished) },

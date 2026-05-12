@@ -1,11 +1,11 @@
 // Silent, fire-and-forget analytics. Never throws. Never blocks UI.
 import { supabase } from '@/integrations/supabase/client';
 import {
-  getAnalyticsSessionId,
   getAuthUserId,
   getDeviceIdSync,
   initDeviceId,
 } from '@/lib/device';
+import { getCurrentSessionId } from '@/lib/analytics-session';
 
 const APP_VERSION = '1.0.0';
 
@@ -101,7 +101,7 @@ export function trackEvent(
     const deviceId = getDeviceIdSync();
     queue.push({
       event_name: eventName,
-      session_id: getAnalyticsSessionId(),
+      session_id: getCurrentSessionId(),
       device_id: deviceId,
       auth_user_id: getAuthUserId(),
       // Mirror device id into the legacy column so historical aggregates

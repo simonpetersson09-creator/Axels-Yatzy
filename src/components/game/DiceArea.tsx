@@ -15,7 +15,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock,
   const diceSize = compact ? 50 : 56;
 
   return (
-    <div className="mt-[42px] sm:mt-[72px] flex flex-col items-center justify-end pb-0 overflow-visible">
+    <div className="mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible">
       <div className="flex flex-col" style={{ gap: compact ? 20 : 26 }}>
         {dice.map((value, index) => (
           <motion.div

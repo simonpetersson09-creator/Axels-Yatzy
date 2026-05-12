@@ -163,7 +163,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled, nativeIos = false }: ScoreBoardProps) {
   const { t } = useTranslation();
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
-  const rowHeight = nativeIos ? 'h-[24px]' : ROW_H;
+  const rowHeight = nativeIos ? 'h-[22px]' : ROW_H;
   const labelWidth = nativeIos ? 'w-[66px] min-w-[66px]' : LABEL_W;
   const colWidth = nativeIos ? 'min-w-[31px] w-[31px]' : COL_W;
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({
@@ -397,7 +397,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Upper section */}
-      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${nativeIos ? 'h-[16px]' : 'h-[20px]'}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${nativeIos ? 'h-[14px]' : 'h-[20px]'}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('upperSection')}</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
@@ -409,7 +409,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${nativeIos ? 'h-[16px]' : 'h-[20px]'}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${nativeIos ? 'h-[14px]' : 'h-[20px]'}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('lowerSection')}</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

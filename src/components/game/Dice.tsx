@@ -9,6 +9,7 @@ interface DiceProps {
   rolling: boolean;
   onToggleLock: () => void;
   canLock: boolean;
+  size?: number;
 }
 
 const pipGridPositions: Record<number, number[]> = {
@@ -29,37 +30,19 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-const SIZE = 56;
-const HALF = SIZE / 2;
-const RADIUS = 12;
 const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 1.05;
 
-
-// Pre-compute face transforms (static)
-const FACES = [
-  { v: 1, t: `translateZ(${HALF}px)` },
-  { v: 6, t: `rotateY(180deg) translateZ(${HALF}px)` },
-  { v: 2, t: `rotateY(-90deg) translateZ(${HALF}px)` },
-  { v: 5, t: `rotateY(90deg) translateZ(${HALF}px)` },
-  { v: 3, t: `rotateX(-90deg) translateZ(${HALF}px)` },
-  { v: 4, t: `rotateX(90deg) translateZ(${HALF}px)` },
-];
-
-const PIP = 10;
-const GRID_INSET = 7;
-const GRID_SIZE = SIZE - GRID_INSET * 2;
-
-const Pip = memo(function Pip() {
+const Pip = memo(function Pip({ pipSize }: { pipSize: number }) {
   return (
     <div
       style={{
-        width: PIP,
-        height: PIP,
-        minWidth: PIP,
-        minHeight: PIP,
-        maxWidth: PIP,
-        maxHeight: PIP,
+        width: pipSize,
+        height: pipSize,
+        minWidth: pipSize,
+        minHeight: pipSize,
+        maxWidth: pipSize,
+        maxHeight: pipSize,
         borderRadius: 9999,
         backgroundColor: PIP_COLOR,
         boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
@@ -71,16 +54,23 @@ const Pip = memo(function Pip() {
 });
 
 // Memoized face component — never re-renders since faceValue is static per instance
-const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
+const DiceFace = memo(function DiceFace({ faceValue, size, radius, pipSize, gridInset, gridSize }: {
+  faceValue: number;
+  size: number;
+  radius: number;
+  pipSize: number;
+  gridInset: number;
+  gridSize: number;
+}) {
   const positions = new Set(pipGridPositions[faceValue] || []);
 
   return (
     <div
       style={{
         position: 'absolute',
-        width: SIZE,
-        height: SIZE,
-        borderRadius: RADIUS,
+        width: size,
+        height: size,
+        borderRadius: radius,
         background: 'linear-gradient(180deg, #ffffff 0%, #f2f4f6 100%)',
         border: '1px solid rgba(0,0,0,0.05)',
         boxShadow: 'inset 1px 1px 3px rgba(255,255,255,0.8), inset -1px -1px 2px rgba(0,0,0,0.02)',
@@ -90,18 +80,18 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
       <div
         style={{
           position: 'absolute',
-          left: GRID_INSET,
-          top: GRID_INSET,
-          width: GRID_SIZE,
-          height: GRID_SIZE,
+          left: gridInset,
+          top: gridInset,
+          width: gridSize,
+          height: gridSize,
           display: 'grid',
-          gridTemplateColumns: `repeat(3, ${Math.floor(GRID_SIZE / 3)}px)`,
-          gridTemplateRows: `repeat(3, ${Math.floor(GRID_SIZE / 3)}px)`,
+          gridTemplateColumns: `repeat(3, ${Math.floor(gridSize / 3)}px)`,
+          gridTemplateRows: `repeat(3, ${Math.floor(gridSize / 3)}px)`,
         }}
       >
         {Array.from({ length: 9 }, (_, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {positions.has(i + 1) ? <Pip /> : null}
+            {positions.has(i + 1) ? <Pip pipSize={pipSize} /> : null}
           </div>
         ))}
       </div>

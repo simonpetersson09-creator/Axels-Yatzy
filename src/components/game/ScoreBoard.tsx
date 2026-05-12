@@ -168,6 +168,26 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
   const upperCats = CATEGORIES.filter(c => c.section === 'upper');
   const lowerCats = CATEGORIES.filter(c => c.section === 'lower');
 
+  // Play the same selection sound for every player (P1–P4, AI, remote friends)
+  // by detecting any newly-filled cell across all players' scorecards.
+  const filledCount = useMemo(
+    () => players.reduce(
+      (sum, p) => sum + CATEGORIES.reduce(
+        (s, c) => s + (p.scores[c.id] !== undefined && p.scores[c.id] !== null ? 1 : 0),
+        0,
+      ),
+      0,
+    ),
+    [players],
+  );
+  const prevFilledRef = useRef(filledCount);
+  useEffect(() => {
+    if (filledCount > prevFilledRef.current) {
+      playScoreSelectSound();
+    }
+    prevFilledRef.current = filledCount;
+  }, [filledCount]);
+
   const cellBg = (slotIdx: number): { className: string; style?: React.CSSProperties } => {
     const isCurrent = slotIdx === currentPlayerIndex;
     const player = players[slotIdx];
@@ -246,7 +266,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       console.log('scoreboard-row-click', debug);
 
       if (!canSelectRow) return;
-      playScoreSelectSound();
+      // Sound is played by the filled-count effect above so that all players
+      // (P1–P4, AI, remote friends in multiplayer) trigger the same sound.
       onSelectCategory(cat.id, debug);
     };
 

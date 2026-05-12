@@ -11,6 +11,8 @@ import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
+import { QuickChat } from '@/components/game/QuickChat';
+import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';

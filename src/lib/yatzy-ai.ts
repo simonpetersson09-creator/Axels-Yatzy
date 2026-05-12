@@ -457,10 +457,25 @@ export function aiPickCategory(
   if (threeIdx !== -1 && twoIdx !== -1 && avSet.has('fullHouse')) {
     return 'fullHouse';
   }
-  // 5. Four of a kind: prefer fourOfAKind slot if open
+  // 5. Four of a kind: only auto-pick fourOfAKind when the matching upper
+  //    category is NOT a better choice. With four 6s and "sixes" still open,
+  //    sixes wins (same 24 points + counts toward the +50 bonus). Only force
+  //    fourOfAKind when the matching upper slot is already filled, or when
+  //    it would score 0 there (impossible if we have 4 of that face), or
+  //    when the upper bonus is already secured/unreachable AND the four-of-a-kind
+  //    score is materially higher than what bestPlacement would otherwise pick.
   const fourFace = counts.findIndex(c => c >= 4);
   if (fourFace !== -1 && avSet.has('fourOfAKind')) {
-    return 'fourOfAKind';
+    const matchingUpper = UPPER_IDS[fourFace];
+    const upperOpen = avSet.has(matchingUpper);
+    const upperBetter = upperOpen && (bonus.reachable && !bonus.alreadyHave);
+    if (!upperBetter) {
+      // Safe to take fourOfAKind — either the upper slot is gone, or
+      // we no longer benefit from feeding the upper bonus.
+      return 'fourOfAKind';
+    }
+    // Otherwise fall through to bestPlacementValue, which weighs bonus pressure
+    // and will correctly prefer the upper category (e.g. sixes over fourOfAKind).
   }
 
   return bestPlacementValue(dice, scores, available, bonus).catId;

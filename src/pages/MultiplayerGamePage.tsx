@@ -15,6 +15,8 @@ import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { saveFriendMatchResult } from '@/lib/friend-stats';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();

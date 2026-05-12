@@ -11,6 +11,10 @@ import SettingsPage from "./pages/SettingsPage";
 import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
 import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import NotFound from "./pages/NotFound";
+import { lazy, Suspense } from "react";
+
+const IS_DEV = import.meta.env.DEV;
+const AdminPage = IS_DEV ? lazy(() => import("./pages/AdminPage")) : null;
 
 const queryClient = new QueryClient();
 
@@ -28,6 +32,16 @@ const App = () => (
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
           <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
+          {IS_DEV && AdminPage && (
+            <Route
+              path="/admin"
+              element={
+                <Suspense fallback={<div className="p-8">Loading…</div>}>
+                  <AdminPage />
+                </Suspense>
+              }
+            />
+          )}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

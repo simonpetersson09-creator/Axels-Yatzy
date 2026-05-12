@@ -100,6 +100,8 @@ export default function GamePage() {
     document.documentElement.classList.add('game-scroll-lock');
     document.body.classList.add('game-scroll-lock');
     document.getElementById('root')?.classList.add('game-scroll-lock');
+    const isNativeIosRuntime = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+    document.documentElement.classList.toggle('ios-game-route', isNativeIosRuntime);
 
     const preventScroll = (event: TouchEvent) => {
       event.preventDefault();
@@ -112,6 +114,7 @@ export default function GamePage() {
       document.documentElement.classList.remove('game-scroll-lock');
       document.body.classList.remove('game-scroll-lock');
       document.getElementById('root')?.classList.remove('game-scroll-lock');
+      document.documentElement.classList.remove('ios-game-route');
     };
   }, []);
 
@@ -120,7 +123,6 @@ export default function GamePage() {
     const isNativeIosRuntime = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
     if (!isNativeIosRuntime) return;
 
-    root.classList.add('ios-game-layout-debug-active');
     const logLayout = () => {
       const safeAreaProbe = document.createElement('div');
       safeAreaProbe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);';
@@ -131,6 +133,10 @@ export default function GamePage() {
         ['body', document.body],
         ['#root', document.getElementById('root')],
         ['app-shell', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="app-shell"]')],
+        ['ios-game-layout', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="ios-game-layout"]')],
+        ['ios-game-card', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="ios-game-card"]')],
+        ['ios-score-zone', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="ios-score-zone"]')],
+        ['ios-side-zone', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="ios-side-zone"]')],
         ['game-shell', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-shell"]')],
         ['safe-area-wrapper', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="safe-area-wrapper"]')],
         ['ios-wrapper', document.querySelector<HTMLElement>('[data-ios-layout-wrapper="ios-wrapper"]')],
@@ -177,6 +183,7 @@ export default function GamePage() {
       console.info('[ios-game-layout-debug:summary]', {
         isCapacitor: true,
         isIOS: Capacitor.getPlatform() === 'ios',
+        activeLayout: document.querySelector('[data-ios-layout-wrapper="ios-game-layout"]') ? 'IOSGameLayout' : 'legacy-game-layout',
         htmlHasIosViewport: root.classList.contains('ios-viewport'),
         htmlClasses: root.className,
         windowInnerHeight: window.innerHeight,
@@ -201,7 +208,6 @@ export default function GamePage() {
       cancelAnimationFrame(raf);
       window.visualViewport?.removeEventListener('resize', logLayout);
       window.removeEventListener('orientationchange', logLayout);
-      root.classList.remove('ios-game-layout-debug-active');
     };
   }, []);
 

@@ -225,6 +225,28 @@ html.ios-game-layout-debug-active {
   --ios-game-layout-debug: active;
 }
 
+html.capacitor-native.ios-game-layout-debug-active {
+  outline: 3px solid hsl(350 90% 55%);
+  outline-offset: -3px;
+}
+
+html.capacitor-native.ios-game-layout-debug-active body {
+  outline: 3px dashed hsl(120 85% 45%);
+  outline-offset: -7px;
+}
+
+html.capacitor-native.ios-game-layout-debug-active #root {
+  outline: 3px dotted hsl(210 95% 60%);
+  outline-offset: -11px;
+}
+
+html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="app-shell"] { outline: 2px solid hsl(290 90% 65%); outline-offset: -15px; }
+html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="game-shell"] { outline: 2px solid hsl(55 100% 55%); outline-offset: -19px; }
+html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="safe-area-wrapper"] { outline: 2px dashed hsl(185 100% 50%); outline-offset: -23px; }
+html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="ios-wrapper"] { outline: 2px dashed hsl(25 100% 55%); outline-offset: -27px; }
+html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="game-board-wrapper"] { outline: 2px solid hsl(0 100% 65%); outline-offset: -31px; }
+html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="game-board"] { outline: 2px solid hsl(145 90% 50%); outline-offset: -35px; }
+
 @layer utilities {
   .app-screen {
     min-height: 100svh;

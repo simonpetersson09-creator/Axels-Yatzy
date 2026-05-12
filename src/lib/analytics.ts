@@ -1,11 +1,11 @@
 // Silent, fire-and-forget analytics. Never throws. Never blocks UI.
 import { supabase } from '@/integrations/supabase/client';
 import {
-  getAnalyticsSessionId,
   getAuthUserId,
   getDeviceIdSync,
   initDeviceId,
 } from '@/lib/device';
+import { getCurrentSessionId } from '@/lib/analytics-session';
 
 const APP_VERSION = '1.0.0';
 

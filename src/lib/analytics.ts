@@ -101,7 +101,7 @@ export function trackEvent(
     const deviceId = getDeviceIdSync();
     queue.push({
       event_name: eventName,
-      session_id: getAnalyticsSessionId(),
+      session_id: getCurrentSessionId(),
       device_id: deviceId,
       auth_user_id: getAuthUserId(),
       // Mirror device id into the legacy column so historical aggregates

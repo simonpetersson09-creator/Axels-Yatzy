@@ -41,6 +41,9 @@ interface Stats {
   recent: {
     event_name: string;
     local_user_id: string | null;
+    device_id?: string | null;
+    session_id?: string | null;
+    auth_user_id?: string | null;
     game_mode: string | null;
     metadata: Record<string, unknown> | null;
     created_at: string;

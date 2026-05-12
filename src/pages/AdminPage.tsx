@@ -34,6 +34,12 @@ interface Stats {
     multiplayerRate: number;
     forfeitRate: number;
   };
+  sessions?: {
+    total: number;
+    avgDurationSeconds: number;
+    sessionsPerDayAvg: number;
+    perDay: { day: string; sessions: number }[];
+  };
   series: SeriesPoint[];
   languages: Record<string, number>;
   platforms: Record<string, number>;

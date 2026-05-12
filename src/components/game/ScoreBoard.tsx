@@ -281,10 +281,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
     >
       <div className={cn(
-        'flex-shrink-0 px-2 sm:px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
+        'flex-shrink-0 px-2 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className="text-[11px] sm:text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{cat.name}</span>
+        <span className="text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{cat.name}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </button>
@@ -335,7 +335,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Player columns header */}
-      <div className={cn('flex border-b-2 border-yatzy-line-strong/40 py-1 sm:py-2 bg-yatzy-section-header/50')}>
+      <div className={cn('flex border-b-2 border-yatzy-line-strong/40 py-1 bg-yatzy-section-header/50')}>
         <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 px-3 flex items-center', LABEL_W, ROW_H)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];
@@ -386,7 +386,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Upper section */}
-      <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px] sm:h-[26px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">Övre sektionen</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
@@ -398,7 +398,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px] sm:h-[26px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">Nedre sektionen</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

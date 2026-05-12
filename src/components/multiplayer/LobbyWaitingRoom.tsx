@@ -58,7 +58,7 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              Spelare ({players.length}/4)
+              {t('playersOfMax', { count: players.length })}
             </span>
           </div>
           <div className="space-y-2">

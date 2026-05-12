@@ -65,7 +65,7 @@ async function flush(): Promise<void> {
   if (queue.length === 0) return;
   const batch = queue.splice(0, MAX_BATCH);
   try {
-    await supabase.from('analytics_events').insert(batch);
+    await supabase.from('analytics_events').insert(batch as any);
   } catch {
     // Swallow — never crash the app due to analytics.
   }

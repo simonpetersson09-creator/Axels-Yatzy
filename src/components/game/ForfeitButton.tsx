@@ -31,14 +31,13 @@ export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: Forfe
         }}
         onPointerCancel={() => { if (pressedButtonRef) pressedButtonRef.current = null; }}
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-        className="relative inline-flex items-center justify-center gap-0.5 px-1 min-h-[32px] rounded-lg text-[10px] font-medium text-destructive/85 bg-destructive/10 border border-destructive/30 active:bg-destructive/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
+        className="relative inline-flex items-center justify-center px-2 min-h-[32px] rounded-lg text-[10px] font-medium text-destructive/85 bg-destructive/10 border border-destructive/30 active:bg-destructive/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
         style={{
           WebkitTapHighlightColor: 'transparent',
           touchAction: 'manipulation',
         }}
         aria-label={t('forfeit')}
       >
-        <Flag className="w-3 h-3 pointer-events-none" aria-hidden />
         <span className="pointer-events-none">{t('forfeit')}</span>
       </button>
 

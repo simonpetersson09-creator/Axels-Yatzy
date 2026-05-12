@@ -275,10 +275,10 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none"
+      className="ios-game-layout app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none"
       style={{
         WebkitOverflowScrolling: 'auto',
-        padding: 'max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left))',
+        padding: '10px max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left))',
         boxSizing: 'border-box',
       }}
     >
@@ -294,14 +294,14 @@ export default function GamePage() {
         onComplete={() => setShowYatzyCelebration(false)}
       />
       <motion.div
-        className="relative flex flex-col gap-2"
+        className="ios-game-card relative flex flex-col gap-2"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex w-full max-w-full gap-1 items-stretch mt-[40px] mb-[40px]">
+        <div className="flex w-full max-w-full gap-1 items-start mt-[24px] mb-0">
           {/* Left: Scoreboard */}
-          <div className="flex flex-col gap-3">
+          <div className="ios-score-zone flex flex-col gap-3 self-start">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
               <ScoreBoard
                 players={gameState.players}
@@ -316,7 +316,7 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex w-[108px] flex-shrink-0 flex-col gap-2">
+          <div className="ios-side-zone flex w-[108px] flex-shrink-0 flex-col gap-2 self-start">
             {/* Player indicators */}
             <div className="flex flex-col gap-1 h-[124px]">
               {gameState.players.map((player, idx) => {
@@ -374,7 +374,7 @@ export default function GamePage() {
 
             {/* Bottom: Roll + Home + Forfeit */}
             <div
-              className="flex flex-col items-center gap-2"
+              className="ios-action-zone flex flex-col items-center gap-2"
               style={{ isolation: 'isolate' }}
             >
               <button

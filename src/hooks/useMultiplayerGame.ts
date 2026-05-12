@@ -258,7 +258,7 @@ export function useMultiplayerGame() {
       const msg = data?.error || 'Kunde inte starta spelet';
       setState(prev => ({ ...prev, error: msg }));
     } else {
-      trackEvent('game_started', null as any, { gameId: state.gameId, gameMode: 'multiplayer' });
+      trackEvent('game_started', undefined, { gameId: state.gameId, gameMode: 'multiplayer' });
     }
   }, [state.gameId, state.myPlayerIndex, sessionId]);
 

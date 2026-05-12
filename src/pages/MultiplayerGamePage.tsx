@@ -13,9 +13,11 @@ import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/lib/i18n';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const {
     gameState, gameCode, status, myPlayerIndex, isMyTurn, error, localRolling,

@@ -71,7 +71,7 @@ export default function MultiplayerGamePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="app-screen flex items-center justify-center px-6 safe-top safe-bottom">
         <div className="text-center space-y-4 max-w-sm">
           <p className="text-destructive font-semibold">{error}</p>
           <button
@@ -87,7 +87,7 @@ export default function MultiplayerGamePage() {
 
   if (!gameState) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="app-screen flex items-center justify-center safe-top safe-bottom">
         <div className="text-center space-y-3">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-muted-foreground text-sm">Laddar spel...</p>
@@ -143,7 +143,7 @@ export default function MultiplayerGamePage() {
   };
 
   return (
-    <div className="min-h-[100dvh] px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-start justify-center overflow-x-hidden">
+    <div className="app-screen px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-start justify-center overflow-x-hidden">
       <motion.div
         className="flex flex-col gap-4"
         initial={{ opacity: 0, y: 12 }}

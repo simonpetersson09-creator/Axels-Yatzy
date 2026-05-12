@@ -4,6 +4,7 @@ import { getSessionId } from '@/lib/session';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import { trackEvent } from '@/lib/analytics';
 
 interface MultiplayerState {
   gameId: string | null;

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, User, Camera, Trash2, Check } from 'lucide-react';
+import { ArrowLeft, User, Camera, Trash2, Check, Bell, BellRing } from 'lucide-react';
 import {
   getProfileName, setProfileName,
   getProfileAvatar, setProfileAvatar,
@@ -12,6 +12,7 @@ import {
 import { saveLocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
@@ -22,7 +23,14 @@ export default function SettingsPage() {
   const [avatar, setAvatar] = useState<string | null>(() => getProfileAvatar());
   const [lang, setLang] = useState<Language>(() => getLanguage());
   const [editingName, setEditingName] = useState(false);
+  const [notifPrefs, setNotifPrefsState] = useState(() => getNotificationPrefs());
   const [, force] = useState(0);
+
+  const updateNotifPref = (key: 'turnNotifications' | 'reminderNotifications', value: boolean) => {
+    const next = { ...notifPrefs, [key]: value };
+    setNotifPrefsState(next);
+    void setNotificationPrefs(next);
+  };
 
   // Re-render labels when language changes
   useEffect(() => { force(n => n + 1); }, [lang]);

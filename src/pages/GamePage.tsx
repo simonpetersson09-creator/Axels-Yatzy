@@ -161,13 +161,13 @@ export default function GamePage() {
       const gameWrapper = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-board-wrapper"]');
       const gameBoard = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-board"]');
       const contributors = rows
-        .filter((row): row is typeof row & { exists: true; top: number; paddingTop: string; marginTop: string } => row.exists === true)
+        .filter((row) => row.exists === true && 'top' in row)
         .map((row) => ({
           name: row.name,
-          top: row.top,
-          offsetTop: row.offsetTop,
-          paddingTop: row.paddingTop,
-          marginTop: row.marginTop,
+          top: 'top' in row ? row.top : 0,
+          offsetTop: 'offsetTop' in row ? row.offsetTop : null,
+          paddingTop: 'paddingTop' in row ? row.paddingTop : null,
+          marginTop: 'marginTop' in row ? row.marginTop : null,
         }));
       const suspectedPusher = contributors.reduce((max, row) => row.top > max.top ? row : max, contributors[0] ?? { name: 'none', top: 0 });
 
@@ -387,8 +387,8 @@ export default function GamePage() {
           <div className="game-layout-wrapper" data-ios-layout-wrapper="game-board-wrapper">
             <motion.div
               className="relative flex flex-col gap-2"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
             >
         <div className="game-board-frame flex w-full max-w-full gap-1 items-stretch" data-ios-layout-wrapper="game-board">

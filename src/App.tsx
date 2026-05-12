@@ -10,6 +10,7 @@ import ResultsPage from "./pages/ResultsPage";
 import SettingsPage from "./pages/SettingsPage";
 import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
 import MultiplayerGamePage from "./pages/MultiplayerGamePage";
+import FriendStatsPage from "./pages/FriendStatsPage";
 import NotFound from "./pages/NotFound";
 import { lazy, Suspense } from "react";
 

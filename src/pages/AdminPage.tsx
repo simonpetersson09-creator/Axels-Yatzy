@@ -152,6 +152,18 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Bypass the iPhone preview frame for /admin
+  useEffect(() => {
+    document.documentElement.classList.add("admin-route");
+    document.body.classList.add("admin-route");
+    document.getElementById("root")?.classList.add("admin-route");
+    return () => {
+      document.documentElement.classList.remove("admin-route");
+      document.body.classList.remove("admin-route");
+      document.getElementById("root")?.classList.remove("admin-route");
+    };
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -173,27 +185,30 @@ export default function AdminPage() {
 
   const kpis = useMemo(() => {
     if (!stats) return [];
-    const t = stats.totals;
-    const a = stats.activity;
+    const t = (stats.totals ?? {}) as Partial<Stats["totals"]>;
+    const a = (stats.activity ?? {}) as Partial<Stats["activity"]>;
+    const series = stats.series ?? [];
+    const n = (v: unknown) => fmtNum(typeof v === "number" ? v : 0);
+    const p = (v: unknown) => fmtPct(typeof v === "number" ? v : 0);
     return [
-      { label: "DAU", value: fmtNum(a.dau), spark: stats.series.slice(-14).map((s) => s.users) },
-      { label: "WAU", value: fmtNum(a.wau) },
-      { label: "MAU", value: fmtNum(a.mau) },
-      { label: "Unique users (30d)", value: fmtNum(t.uniqueUsers) },
-      { label: "Events (30d)", value: fmtNum(t.events), spark: stats.series.map((s) => s.events) },
-      { label: "Games started", value: fmtNum(t.started), spark: stats.series.map((s) => s.started) },
-      { label: "Games finished", value: fmtNum(t.finished), spark: stats.series.map((s) => s.finished) },
-      { label: "Completion %", value: fmtPct(a.completionRate) },
-      { label: "Multiplayer rate", value: fmtPct(a.multiplayerRate) },
-      { label: "Forfeit rate", value: fmtPct(a.forfeitRate) },
-      { label: "Avg games / user", value: a.avgGamesPerUser.toFixed(2) },
-      { label: "Retention 7d", value: fmtPct(a.retention7d) },
-      { label: "Quick match", value: fmtNum(t.quickMatch) },
-      { label: "Multiplayer", value: fmtNum(t.multiplayer) },
-      { label: "Yatzys", value: fmtNum(t.yatzyCount) },
-      { label: "Forfeits", value: fmtNum(t.forfeits) },
-      { label: "Rooms created", value: fmtNum(t.roomsCreated) },
-      { label: "Rooms joined", value: fmtNum(t.roomsJoined) },
+      { label: "DAU", value: n(a.dau), spark: series.slice(-14).map((s) => s.users) },
+      { label: "WAU", value: n(a.wau) },
+      { label: "MAU", value: n(a.mau) },
+      { label: "Unique users (30d)", value: n(t.uniqueUsers) },
+      { label: "Events (30d)", value: n(t.events), spark: series.map((s) => s.events) },
+      { label: "Games started", value: n(t.started), spark: series.map((s) => s.started) },
+      { label: "Games finished", value: n(t.finished), spark: series.map((s) => s.finished) },
+      { label: "Completion %", value: p(a.completionRate) },
+      { label: "Multiplayer rate", value: p(a.multiplayerRate) },
+      { label: "Forfeit rate", value: p(a.forfeitRate) },
+      { label: "Avg games / user", value: (typeof a.avgGamesPerUser === "number" ? a.avgGamesPerUser : 0).toFixed(2) },
+      { label: "Retention 7d", value: p(a.retention7d) },
+      { label: "Quick match", value: n(t.quickMatch) },
+      { label: "Multiplayer", value: n(t.multiplayer) },
+      { label: "Yatzys", value: n(t.yatzyCount) },
+      { label: "Forfeits", value: n(t.forfeits) },
+      { label: "Rooms created", value: n(t.roomsCreated) },
+      { label: "Rooms joined", value: n(t.roomsJoined) },
     ] as { label: string; value: string; spark?: number[] }[];
   }, [stats]);
 
@@ -202,10 +217,9 @@ export default function AdminPage() {
   if (!stats) return null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Horizontal scroll wrapper — desktop tool, no mobile responsiveness */}
-      <div className="overflow-x-auto">
-        <div className="mx-auto" style={{ minWidth: 1280, maxWidth: 1600, padding: "24px 32px" }}>
+    <div className="w-full min-h-screen bg-background text-foreground">
+      <div className="w-full overflow-x-auto">
+        <div className="w-full" style={{ minWidth: 1400, padding: "24px 32px" }}>
           <header className="mb-6 flex items-end justify-between border-b border-border/40 pb-4">
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Admin Analytics</h1>

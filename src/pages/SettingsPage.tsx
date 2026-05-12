@@ -68,8 +68,15 @@ export default function SettingsPage() {
 
   return (
     <div
-      className="app-fixed-screen overflow-y-auto overscroll-contain px-5 py-6 safe-top safe-bottom"
-      style={{ WebkitOverflowScrolling: 'touch' }}
+      className="overflow-y-auto overscroll-contain px-5 pt-6"
+      style={{
+        height: 'var(--app-dvh, 100dvh)',
+        maxHeight: 'var(--app-dvh, 100dvh)',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        paddingTop: 'calc(24px + env(safe-area-inset-top))',
+        paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',
+      }}
     >
       <motion.div
         className="max-w-sm mx-auto space-y-7 mt-[30px]"

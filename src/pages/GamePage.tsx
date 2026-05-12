@@ -296,7 +296,7 @@ export default function GamePage() {
         onComplete={() => setShowYatzyCelebration(false)}
       />
       <motion.div
-        className="relative flex flex-col gap-2"
+        className="relative flex flex-col gap-2 ios-game-shift"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}

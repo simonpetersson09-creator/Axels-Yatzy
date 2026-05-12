@@ -51,16 +51,16 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
-          <h1 className="text-2xl font-display font-bold">Multiplayer</h1>
+          <h1 className="text-2xl font-display font-bold">{t('multiplayer')}</h1>
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Ditt namn</label>
+          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('yourName')}</label>
           <input
             type="text"
             value={playerName}
             onChange={e => setPlayerName(e.target.value.slice(0, MAX_NAME_LENGTH))}
-            placeholder="Ange ditt namn"
+            placeholder={t('enterYourName')}
             maxLength={MAX_NAME_LENGTH}
             className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-medium border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all"
           />

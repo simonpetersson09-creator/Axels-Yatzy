@@ -132,6 +132,18 @@
     background-attachment: scroll;
     position: relative;
   }
+
+  /* iOS Preview Mode: html/body fill the desktop window so the 393×852
+     #root frame can be centered by the preview-frame flex rules below.
+     Overrides ios-viewport sizing which otherwise locks body to 393px. */
+  html.ios-preview,
+  html.ios-preview body {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+  }
   #root {
     background-color: hsl(var(--background));
   }

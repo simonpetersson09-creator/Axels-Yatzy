@@ -275,7 +275,7 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
+      className="app-fixed-screen flex items-end justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom pb-[30px]"
       style={{
         WebkitOverflowScrolling: 'auto',
         padding: 'max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left))',
@@ -423,7 +423,7 @@ export default function GamePage() {
                   }}
                   onPointerCancel={() => { pressedButtonRef.current = null; }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="inline-flex items-center justify-center gap-1 px-2.5 min-h-[32px] rounded-lg text-[11px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
+                  className="inline-flex items-center justify-center gap-0.5 px-1.5 min-h-[32px] rounded-lg text-[11px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                   title="Till menyn"
                   aria-label="Hem"

@@ -17,7 +17,9 @@ export type Database = {
       analytics_events: {
         Row: {
           app_version: string | null
+          auth_user_id: string | null
           created_at: string
+          device_id: string | null
           event_name: string
           game_id: string | null
           game_mode: string | null
@@ -29,7 +31,9 @@ export type Database = {
         }
         Insert: {
           app_version?: string | null
+          auth_user_id?: string | null
           created_at?: string
+          device_id?: string | null
           event_name: string
           game_id?: string | null
           game_mode?: string | null
@@ -41,7 +45,9 @@ export type Database = {
         }
         Update: {
           app_version?: string | null
+          auth_user_id?: string | null
           created_at?: string
+          device_id?: string | null
           event_name?: string
           game_id?: string | null
           game_mode?: string | null

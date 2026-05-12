@@ -39,7 +39,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
   };
 
   return (
-    <div className="min-h-screen px-6 py-8 safe-top safe-bottom">
+    <div className="app-screen px-6 py-8 safe-top safe-bottom overflow-y-auto overscroll-contain">
       <motion.div
         className="max-w-sm mx-auto space-y-8"
         initial={{ opacity: 0, y: 20 }}

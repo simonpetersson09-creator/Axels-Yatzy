@@ -36,7 +36,7 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
-          <h1 className="text-2xl font-display font-bold">Väntar på spelare</h1>
+          <h1 className="text-2xl font-display font-bold">{t('waitingForPlayers')}</h1>
         </div>
 
         {/* Game code */}

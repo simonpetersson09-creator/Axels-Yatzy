@@ -60,7 +60,7 @@ export default function SettingsPage() {
 
   const resetStats = () => {
     if (!confirm(t('resetStatsConfirm'))) return;
-    saveLocalStats({ gamesPlayed: 0, wins: 0, highScore: 0 });
+    saveLocalStats({ gamesPlayed: 0, wins: 0, highScore: 0, yatzyCount: 0, currentStreak: 0, bestStreak: 0 });
     toast.success(t('resetDone'));
   };
 

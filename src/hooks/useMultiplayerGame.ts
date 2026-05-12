@@ -275,13 +275,17 @@ export function useMultiplayerGame() {
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
     try {
-      const { error } = await supabase.functions.invoke('roll-dice', {
+      const { error } = await withTimeout(supabase.functions.invoke('roll-dice', {
         body: { game_id: state.gameId, session_id: sessionId },
-      });
+      }));
 
       if (error) {
         console.error('Roll dice error:', error);
       }
+    } catch (err) {
+      console.error('Roll dice failed:', err);
+      const msg = (err as Error)?.message === 'timeout' ? 'Anslutningen tog för lång tid. Försök igen.' : 'Kunde inte kasta tärningarna';
+      if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
       rollingTimerRef.current = setTimeout(() => {

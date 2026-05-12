@@ -7,6 +7,7 @@ import { getPlayerName } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { Play, Clock, Gamepad2, Trophy, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/i18n';
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -15,19 +16,18 @@ const item = {
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeGame, setActiveGameState] = useState(() => getActiveGame());
   const [timeLeft, setTimeLeft] = useState('');
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
 
-  // Refresh stats when page becomes visible (e.g. returning from game)
   useEffect(() => {
     const onFocus = () => setStats(getLocalStats());
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, []);
 
-  // Check expiry and update countdown
   useEffect(() => {
     if (!activeGame) return;
 
@@ -40,23 +40,23 @@ export default function HomePage() {
       if (isGameExpired(game)) {
         clearActiveGame();
         setActiveGameState(null);
-        toast.error('Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.');
+        toast.error(t('matchExpired'));
         return;
       }
       setTimeLeft(formatTimeRemaining(getTimeRemaining(game)));
     };
 
     update();
-    const interval = setInterval(update, 30_000); // update every 30s
+    const interval = setInterval(update, 30_000);
     return () => clearInterval(interval);
-  }, [activeGame]);
+  }, [activeGame, t]);
 
   const resumeGame = () => {
     if (!activeGame) return;
     if (isGameExpired(activeGame)) {
       clearActiveGame();
       setActiveGameState(null);
-      toast.error('Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.');
+      toast.error(t('matchExpired'));
       return;
     }
     if (activeGame.type === 'local') {
@@ -68,12 +68,10 @@ export default function HomePage() {
 
   return (
     <div className="app-fixed-screen flex flex-col items-center justify-center px-6 py-3 safe-top safe-bottom relative overflow-hidden">
-      {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-primary/6 blur-[120px]" />
       </div>
 
-      {/* Subtle dice pattern background */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -89,37 +87,25 @@ export default function HomePage() {
         initial="hidden"
         animate="show"
       >
-        {/* Logo / Title */}
         <motion.div className="text-center space-y-1 sm:space-y-2" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
           <motion.div
             className="inline-flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-primary/10 border border-primary/20 mb-2 sm:mb-4"
-            animate={{
-              rotate: [0, 0, 6, -4, 0],
-              scale: [1, 1, 1.06, 1.02, 1],
-            }}
-            transition={{
-              duration: 1.2,
-              repeat: Infinity,
-              repeatDelay: 3,
-              ease: 'easeInOut',
-            }}
+            animate={{ rotate: [0, 0, 6, -4, 0], scale: [1, 1, 1.06, 1.02, 1] }}
+            transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
           >
             <span className="text-3xl sm:text-4xl">🎲</span>
           </motion.div>
           <h1
             className="text-4xl sm:text-5xl font-display font-black text-gold-gradient"
-            style={{
-              textShadow: '0 0 30px hsl(36 78% 55% / 0.15), 0 0 60px hsl(36 78% 55% / 0.08)',
-            }}
+            style={{ textShadow: '0 0 30px hsl(36 78% 55% / 0.15), 0 0 60px hsl(36 78% 55% / 0.08)' }}
           >
-            Mr.B Yatzy
+            {t('appName')}
           </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm">
-            Klassiskt tärningsspel i modern tappning
+          <p className="text-muted-foreground text-xs sm:text-sm px-2">
+            {t('tagline')}
           </p>
         </motion.div>
 
-        {/* Main Actions */}
         <div className="w-full space-y-2 sm:space-y-3">
           {activeGame && (
             <motion.div variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
@@ -129,13 +115,13 @@ export default function HomePage() {
                 whileTap={{ scale: 0.97 }}
               >
                 <Play className="w-5 h-5" />
-                Fortsätt pågående match
+                <span className="truncate">{t('resumeMatch')}</span>
               </motion.button>
               {timeLeft && (
                 <div className="flex items-center justify-center gap-1.5 mt-2">
                   <Clock className="w-3 h-3 text-muted-foreground/60" />
-                  <span className="text-[11px] text-muted-foreground/60 tabular-nums">
-                    Pågående match – {timeLeft} kvar
+                  <span className="text-[11px] text-muted-foreground/60 tabular-nums truncate">
+                    {t('ongoingMatchRemaining', { time: timeLeft })}
                   </span>
                 </div>
               )}
@@ -148,10 +134,9 @@ export default function HomePage() {
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
-            🎲 Snabb match
+            🎲 <span className="truncate">{t('quickMatch')}</span>
           </motion.button>
 
-          {/* Quick match player count picker */}
           <AnimatePresence>
             {showQuickMatch && (
               <motion.div
@@ -162,23 +147,23 @@ export default function HomePage() {
                 transition={{ duration: 0.25 }}
               >
                 <p className="text-center text-sm text-muted-foreground font-medium">
-                  Välj antal spelare
+                  {t('selectPlayerCount')}
                 </p>
                 <div className="flex gap-2">
                   {[1, 2, 3].map(opponents => (
                     <motion.button
                       key={opponents}
                       onClick={() => {
-                        const humanName = getPlayerName() || 'Du';
+                        const humanName = getPlayerName() || t('you');
                         const aiNames = getRandomAiNames(opponents);
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
                         navigate('/game', { state: { playerNames, aiPlayers } });
                       }}
-                      className="flex-1 py-3 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-base transition-all hover:bg-secondary/80 flex items-center justify-center"
+                      className="flex-1 py-3 px-1 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-sm sm:text-base transition-all hover:bg-secondary/80 flex items-center justify-center text-center"
                       whileTap={{ scale: 0.95 }}
                     >
-                      {opponents} {opponents === 1 ? 'motståndare' : 'motståndare'}
+                      <span className="truncate">{opponents} {opponents === 1 ? t('opponent') : t('opponents')}</span>
                     </motion.button>
                   ))}
                 </div>
@@ -193,11 +178,10 @@ export default function HomePage() {
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
-            🌐 Spela med vänner
+            🌐 <span className="truncate">{t('playWithFriends')}</span>
           </motion.button>
         </div>
 
-        {/* Stats Panel */}
         <motion.div
           className="w-full"
           variants={item}
@@ -205,9 +189,9 @@ export default function HomePage() {
         >
           <div className="grid grid-cols-3 gap-2.5">
             {[
-              { label: 'Spelade', value: stats.gamesPlayed, icon: Gamepad2 },
-              { label: 'Vinster', value: stats.wins, icon: Trophy },
-              { label: 'Rekord', value: stats.highScore, icon: Star },
+              { label: t('statGames'), value: stats.gamesPlayed, icon: Gamepad2 },
+              { label: t('statWins'), value: stats.wins, icon: Trophy },
+              { label: t('statHigh'), value: stats.highScore, icon: Star },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -217,7 +201,7 @@ export default function HomePage() {
                 <span className="text-xl sm:text-2xl font-display font-black text-foreground tabular-nums leading-none">
                   {stat.value}
                 </span>
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate max-w-full">
                   {stat.label}
                 </span>
               </div>
@@ -225,7 +209,6 @@ export default function HomePage() {
           </div>
         </motion.div>
 
-        {/* Secondary Actions */}
         <motion.div
           className="w-full space-y-3"
           variants={item}
@@ -236,7 +219,7 @@ export default function HomePage() {
             className="w-full py-3 sm:py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-2"
             whileTap={{ scale: 0.97 }}
           >
-            ⚙️ Inställningar
+            ⚙️ <span className="truncate">{t('goSettings')}</span>
           </motion.button>
         </motion.div>
       </motion.div>

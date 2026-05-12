@@ -3,12 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { getPlayerName } from '@/lib/session';
+import { useTranslation } from '@/lib/i18n';
 
 export default function GameSetupPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [playerCount, setPlayerCount] = useState(1);
   const savedName = getPlayerName();
-  const [names, setNames] = useState([savedName || 'Spelare 1', 'Spelare 2', 'Spelare 3', 'Spelare 4']);
+  const [names, setNames] = useState([
+    savedName || t('playerN', { n: 1 }),
+    t('playerN', { n: 2 }),
+    t('playerN', { n: 3 }),
+    t('playerN', { n: 4 }),
+  ]);
 
   const updateName = (index: number, name: string) => {
     const updated = [...names];
@@ -17,8 +24,7 @@ export default function GameSetupPage() {
   };
 
   const startGame = () => {
-    const playerNames = names.slice(0, playerCount).map((n, i) => n.trim() || `Spelare ${i + 1}`);
-    // Only P1 is human. P2/P3/P4 are AI-controlled.
+    const playerNames = names.slice(0, playerCount).map((n, i) => n.trim() || t('playerN', { n: i + 1 }));
     const aiPlayers = playerNames.map((_, i) => i).filter(i => i !== 0);
     navigate('/game', { state: { playerNames, aiPlayers } });
   };
@@ -30,18 +36,16 @@ export default function GameSetupPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        {/* Header */}
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
-          <h1 className="text-2xl font-display font-bold">Nytt spel</h1>
+          <h1 className="text-2xl font-display font-bold">{t('newGame')}</h1>
         </div>
 
-        {/* Player count */}
         <div className="space-y-3">
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Antal spelare
+            {t('playerCount')}
           </label>
           <div className="flex gap-2">
             {[1, 2, 3, 4].map(n => (
@@ -61,10 +65,9 @@ export default function GameSetupPage() {
           </div>
         </div>
 
-        {/* Player names */}
         <div className="space-y-3">
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Spelarnamn
+            {t('playerNames')}
           </label>
           <div className="space-y-2">
             {Array.from({ length: playerCount }).map((_, i) => (
@@ -78,7 +81,7 @@ export default function GameSetupPage() {
                   type="text"
                   value={names[i]}
                   onChange={e => updateName(i, e.target.value)}
-                  placeholder={`Spelare ${i + 1}`}
+                  placeholder={t('playerN', { n: i + 1 })}
                   className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-medium border border-border/50 focus:border-game-gold/50 focus:outline-none focus:ring-1 focus:ring-game-gold/30 transition-all"
                 />
               </motion.div>
@@ -86,13 +89,12 @@ export default function GameSetupPage() {
           </div>
         </div>
 
-        {/* Start button */}
         <motion.button
           onClick={startGame}
           className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"
           whileTap={{ scale: 0.97 }}
         >
-          Starta spel
+          {t('startGame')}
         </motion.button>
       </motion.div>
     </div>

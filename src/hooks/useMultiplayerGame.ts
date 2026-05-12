@@ -241,6 +241,7 @@ export function useMultiplayerGame() {
     setState(prev => ({ ...prev, myPlayerIndex: playerIndex }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
+    trackEvent('multiplayer_room_joined', { code: result.game_code }, { gameId: result.game_id, gameMode: 'multiplayer' });
     return true;
   }, [sessionId, subscribeToGame, refreshGameState]);
 

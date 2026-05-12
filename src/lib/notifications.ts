@@ -46,7 +46,7 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
   } catch (err) {
     console.warn('[notifications] failed to sync prefs', err);
   }
-  trackEvent('notification_preferences_changed', prefs);
+  trackEvent('notification_preferences_changed', { ...prefs });
 }
 
 let initialized = false;

@@ -385,7 +385,8 @@ export default function AdminPage() {
                   <th className="py-1 pr-4">Event</th>
                   <th className="py-1 pr-4">Mode</th>
                   <th className="py-1 pr-4">Platform</th>
-                  <th className="py-1 pr-4">User</th>
+                  <th className="py-1 pr-4">Device</th>
+                  <th className="py-1 pr-4">Session</th>
                   <th className="py-1">Metadata</th>
                 </tr>
               </thead>
@@ -398,7 +399,10 @@ export default function AdminPage() {
                     <td className="py-1 pr-4 font-mono">{e.event_name}</td>
                     <td className="py-1 pr-4">{e.game_mode ?? "—"}</td>
                     <td className="py-1 pr-4">{e.platform ?? "—"}</td>
-                    <td className="py-1 pr-4 font-mono">{e.local_user_id?.slice(0, 8) ?? "—"}</td>
+                    <td className="py-1 pr-4 font-mono">
+                      {(e.device_id ?? e.local_user_id)?.slice(0, 8) ?? "—"}
+                    </td>
+                    <td className="py-1 pr-4 font-mono">{e.session_id?.slice(0, 8) ?? "—"}</td>
                     <td className="py-1 font-mono text-muted-foreground">
                       {e.metadata ? JSON.stringify(e.metadata) : ""}
                     </td>

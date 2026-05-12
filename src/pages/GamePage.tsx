@@ -17,6 +17,7 @@ import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { motion } from 'framer-motion';
 import { Home } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { Capacitor } from '@capacitor/core';
 
 export default function GamePage() {
   const location = useLocation();
@@ -119,20 +120,36 @@ export default function GamePage() {
     const root = document.documentElement;
     if (!root.classList.contains('ios-viewport')) return;
 
-    root.classList.add('ios-game-shift-debug-active');
-    const shiftElement = document.querySelector<HTMLElement>('[data-ios-game-shift="outer-wrapper"]');
-    const shiftRect = shiftElement?.getBoundingClientRect();
-    console.info('[ios-game-shift-debug]', {
-      iosViewport: true,
-      shiftElement: shiftElement ? 'outer-wrapper' : 'missing',
-      rootClasses: root.className,
-      computedTransform: shiftElement ? getComputedStyle(shiftElement).transform : null,
-      visualTop: shiftRect?.top ?? null,
-      viewportHeight: window.visualViewport?.height ?? window.innerHeight,
-    });
+    root.classList.add('ios-game-layout-debug-active');
+    const logLayout = () => {
+      const layoutShell = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-shell"]');
+      const gameBoard = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-board"]');
+      const shellStyles = layoutShell ? getComputedStyle(layoutShell) : null;
+      const boardRect = gameBoard?.getBoundingClientRect();
+      console.info('[ios-game-layout-debug]', {
+        isCapacitor: Capacitor.isNativePlatform(),
+        isIOS: root.classList.contains('ios-viewport'),
+        viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+        safeAreaTop: shellStyles?.paddingTop ?? null,
+        safeAreaBottom: shellStyles?.paddingBottom ?? null,
+        activeLayoutClass: layoutShell?.className ?? 'missing-game-shell',
+        activeBoardClass: gameBoard?.className ?? 'missing-game-board',
+        boardTop: boardRect?.top ?? null,
+        boardBottom: boardRect?.bottom ?? null,
+        boardHeight: boardRect?.height ?? null,
+        rootClasses: root.className,
+      });
+    };
+
+    const raf = requestAnimationFrame(logLayout);
+    window.visualViewport?.addEventListener('resize', logLayout, { passive: true });
+    window.addEventListener('orientationchange', logLayout, { passive: true });
 
     return () => {
-      root.classList.remove('ios-game-shift-debug-active');
+      cancelAnimationFrame(raf);
+      window.visualViewport?.removeEventListener('resize', logLayout);
+      window.removeEventListener('orientationchange', logLayout);
+      root.classList.remove('ios-game-layout-debug-active');
     };
   }, []);
 
@@ -298,10 +315,10 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
+      className="app-fixed-screen game-layout-shell flex items-start justify-center overflow-hidden overscroll-none touch-none"
+      data-ios-layout-wrapper="game-shell"
       style={{
         WebkitOverflowScrolling: 'auto',
-        padding: 'max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left))',
         boxSizing: 'border-box',
       }}
     >
@@ -316,14 +333,14 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <div className="ios-game-shift" data-ios-game-shift="outer-wrapper" style={{ transform: 'scale(0.95)', transformOrigin: 'top center' }}>
+      <div className="game-layout-wrapper" data-ios-layout-wrapper="game-wrapper">
         <motion.div
           className="relative flex flex-col gap-2"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         >
-        <div className="flex w-full max-w-full gap-1 items-stretch mt-[30px] mb-[110px]">
+        <div className="game-board-frame flex w-full max-w-full gap-1 items-stretch" data-ios-layout-wrapper="game-board">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">

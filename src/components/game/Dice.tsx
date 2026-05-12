@@ -9,6 +9,7 @@ interface DiceProps {
   rolling: boolean;
   onToggleLock: () => void;
   canLock: boolean;
+  size?: number;
 }
 
 const pipGridPositions: Record<number, number[]> = {
@@ -29,37 +30,19 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-const SIZE = 56;
-const HALF = SIZE / 2;
-const RADIUS = 12;
 const PIP_COLOR = '#1a2428';
 const ANIM_DURATION = 1.05;
 
-
-// Pre-compute face transforms (static)
-const FACES = [
-  { v: 1, t: `translateZ(${HALF}px)` },
-  { v: 6, t: `rotateY(180deg) translateZ(${HALF}px)` },
-  { v: 2, t: `rotateY(-90deg) translateZ(${HALF}px)` },
-  { v: 5, t: `rotateY(90deg) translateZ(${HALF}px)` },
-  { v: 3, t: `rotateX(-90deg) translateZ(${HALF}px)` },
-  { v: 4, t: `rotateX(90deg) translateZ(${HALF}px)` },
-];
-
-const PIP = 10;
-const GRID_INSET = 7;
-const GRID_SIZE = SIZE - GRID_INSET * 2;
-
-const Pip = memo(function Pip() {
+const Pip = memo(function Pip({ pipSize }: { pipSize: number }) {
   return (
     <div
       style={{
-        width: PIP,
-        height: PIP,
-        minWidth: PIP,
-        minHeight: PIP,
-        maxWidth: PIP,
-        maxHeight: PIP,
+        width: pipSize,
+        height: pipSize,
+        minWidth: pipSize,
+        minHeight: pipSize,
+        maxWidth: pipSize,
+        maxHeight: pipSize,
         borderRadius: 9999,
         backgroundColor: PIP_COLOR,
         boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
@@ -71,16 +54,23 @@ const Pip = memo(function Pip() {
 });
 
 // Memoized face component — never re-renders since faceValue is static per instance
-const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
+const DiceFace = memo(function DiceFace({ faceValue, size, radius, pipSize, gridInset, gridSize }: {
+  faceValue: number;
+  size: number;
+  radius: number;
+  pipSize: number;
+  gridInset: number;
+  gridSize: number;
+}) {
   const positions = new Set(pipGridPositions[faceValue] || []);
 
   return (
     <div
       style={{
         position: 'absolute',
-        width: SIZE,
-        height: SIZE,
-        borderRadius: RADIUS,
+        width: size,
+        height: size,
+        borderRadius: radius,
         background: 'linear-gradient(180deg, #ffffff 0%, #f2f4f6 100%)',
         border: '1px solid rgba(0,0,0,0.05)',
         boxShadow: 'inset 1px 1px 3px rgba(255,255,255,0.8), inset -1px -1px 2px rgba(0,0,0,0.02)',
@@ -90,18 +80,18 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
       <div
         style={{
           position: 'absolute',
-          left: GRID_INSET,
-          top: GRID_INSET,
-          width: GRID_SIZE,
-          height: GRID_SIZE,
+          left: gridInset,
+          top: gridInset,
+          width: gridSize,
+          height: gridSize,
           display: 'grid',
-          gridTemplateColumns: `repeat(3, ${Math.floor(GRID_SIZE / 3)}px)`,
-          gridTemplateRows: `repeat(3, ${Math.floor(GRID_SIZE / 3)}px)`,
+          gridTemplateColumns: `repeat(3, ${Math.floor(gridSize / 3)}px)`,
+          gridTemplateRows: `repeat(3, ${Math.floor(gridSize / 3)}px)`,
         }}
       >
         {Array.from({ length: 9 }, (_, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {positions.has(i + 1) ? <Pip /> : null}
+            {positions.has(i + 1) ? <Pip pipSize={pipSize} /> : null}
           </div>
         ))}
       </div>
@@ -109,12 +99,25 @@ const DiceFace = memo(function DiceFace({ faceValue }: { faceValue: number }) {
   );
 });
 
-export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProps) {
+export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 }: DiceProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinRotation, setSpinRotation] = useState(valueToRotation[value]);
   const [showSparkle, setShowSparkle] = useState(false);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
+  const half = size / 2;
+  const radius = Math.round(size * 0.214);
+  const pipSize = Math.round(size * 0.18);
+  const gridInset = Math.round(size * 0.125);
+  const gridSize = size - gridInset * 2;
+  const faces = useMemo(() => [
+    { v: 1, t: `translateZ(${half}px)` },
+    { v: 6, t: `rotateY(180deg) translateZ(${half}px)` },
+    { v: 2, t: `rotateY(-90deg) translateZ(${half}px)` },
+    { v: 5, t: `rotateY(90deg) translateZ(${half}px)` },
+    { v: 3, t: `rotateX(-90deg) translateZ(${half}px)` },
+    { v: 4, t: `rotateX(90deg) translateZ(${half}px)` },
+  ], [half]);
 
   const rollVar = useMemo(() => ({
     // More spins + sharper deceleration so the final face only resolves at the very end.
@@ -188,7 +191,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
         'relative flex flex-col items-center overflow-visible touch-manipulation p-0 m-0 bg-transparent border-0 outline-none',
         canLock ? 'cursor-pointer' : 'cursor-default',
       )}
-      style={{ width: SIZE, height: SIZE + 10, WebkitTapHighlightColor: 'transparent' }}
+      style={{ width: size, height: size + 10, WebkitTapHighlightColor: 'transparent' }}
     >
       {/* Lock sparkles */}
       <AnimatePresence>
@@ -217,10 +220,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           <motion.div
             className="absolute pointer-events-none"
             style={{
-              width: SIZE + 10, height: SIZE + 10, borderRadius: RADIUS + 5,
+              width: size + 10, height: size + 10, borderRadius: radius + 5,
               border: '2px solid hsl(36 82% 52%)',
-              left: '50%', top: HALF,
-              marginLeft: -(SIZE + 10) / 2, marginTop: -(SIZE + 10) / 2, zIndex: 49,
+              left: '50%', top: half,
+              marginLeft: -(size + 10) / 2, marginTop: -(size + 10) / 2, zIndex: 49,
             }}
             initial={{ scale: 0.8, opacity: 0.8 }}
             animate={{ scale: 1.3, opacity: 0 }}
@@ -233,9 +236,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       {/* Outer wrapper — shadow and glow */}
       <motion.div
         style={{
-          width: SIZE,
-          height: SIZE,
-          borderRadius: RADIUS,
+          width: size,
+          height: size,
+          borderRadius: radius,
           willChange: 'auto',
           boxShadow: locked
             ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 6px 14px rgba(0,0,0,0.18)'
@@ -244,12 +247,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
           opacity: canLock && !locked ? 0.5 : 1,
         }}
       >
-        <div style={{ perspective: 240, width: SIZE, height: SIZE, pointerEvents: 'none' }}>
+        <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
           <motion.div
             className="relative"
             style={{
-              width: SIZE,
-              height: SIZE,
+              width: size,
+              height: size,
               transformStyle: 'preserve-3d',
               willChange: isAnimating ? 'transform' : 'auto',
             }}
@@ -268,9 +271,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }
           >
-            {FACES.map(f => (
+            {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                <DiceFace faceValue={f.v} />
+                <DiceFace faceValue={f.v} size={size} radius={radius} pipSize={pipSize} gridInset={gridInset} gridSize={gridSize} />
               </div>
             ))}
           </motion.div>
@@ -280,7 +283,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock }: DiceProp
       {/* Ground shadow */}
       <motion.div
         style={{
-          width: SIZE * 0.55, height: 5, marginTop: 5, borderRadius: '50%',
+          width: size * 0.55, height: 5, marginTop: 5, borderRadius: '50%',
           pointerEvents: 'none',
           background: locked
             ? 'radial-gradient(ellipse, rgba(245,185,66,0.3), transparent)'

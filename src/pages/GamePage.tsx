@@ -275,8 +275,8 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="h-[100svh] max-h-[100svh] px-1 sm:px-4 pt-1 pb-2 sm:py-6 flex items-start sm:items-center justify-start sm:justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
-      style={{ height: '100dvh', maxHeight: '100dvh', WebkitOverflowScrolling: 'auto' }}
+      className="app-fixed-screen px-1 sm:px-4 pt-1 pb-2 sm:py-6 flex items-start sm:items-center justify-start sm:justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
+      style={{ WebkitOverflowScrolling: 'auto' }}
     >
       <GameOverOverlay
         show={gameState.gameOver}
@@ -365,6 +365,7 @@ export default function GamePage() {
               rollsLeft={gameState.rollsLeft}
               isRolling={gameState.isRolling}
               onToggleLock={isCurrentAi ? () => {} : toggleLock}
+              compact
             />
 
             {/* Bottom: Roll + Home + Forfeit */}

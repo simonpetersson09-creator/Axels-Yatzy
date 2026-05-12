@@ -6,6 +6,8 @@
 
 @layer base {
   :root {
+    --app-dvh: 100dvh;
+    --app-vw: 100vw;
     --background: 195 50% 14%;
     --foreground: 38 30% 90%;
 
@@ -87,6 +89,7 @@
        dvh as preferred (recalculated on orientation). */
     min-height: 100svh;
     min-height: 100dvh;
+    min-height: var(--app-dvh);
     margin: 0;
     padding: 0;
     overflow-x: hidden;
@@ -111,6 +114,24 @@
     /* Safe-area handled per-screen via .safe-top/.safe-bottom utilities,
        NOT on body — double-padding breaks 100dvh layout after rotation. */
   }
+  html.ios-viewport,
+  html.ios-viewport body,
+  html.ios-viewport #root {
+    height: var(--app-dvh);
+    min-height: var(--app-dvh);
+    max-height: var(--app-dvh);
+    width: var(--app-vw);
+    max-width: var(--app-vw);
+  }
+
+  html.ios-viewport {
+    background-attachment: scroll;
+  }
+
+  html.ios-viewport body {
+    background-attachment: scroll;
+    position: relative;
+  }
   #root {
     background-color: hsl(var(--background));
   }
@@ -123,10 +144,13 @@
   #root.game-scroll-lock {
     height: 100svh;
     height: 100dvh;
+    height: var(--app-dvh);
     min-height: 100svh;
     min-height: 100dvh;
+    min-height: var(--app-dvh);
     max-height: 100svh;
     max-height: 100dvh;
+    max-height: var(--app-dvh);
     width: 100%;
     overflow: hidden;
     overscroll-behavior: none;
@@ -146,6 +170,19 @@
 }
 
 @layer utilities {
+  .app-screen {
+    min-height: 100svh;
+    min-height: 100dvh;
+    min-height: var(--app-dvh);
+  }
+  .app-fixed-screen {
+    height: 100svh;
+    height: 100dvh;
+    height: var(--app-dvh);
+    max-height: 100svh;
+    max-height: 100dvh;
+    max-height: var(--app-dvh);
+  }
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);
   }

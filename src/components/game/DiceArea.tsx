@@ -7,14 +7,16 @@ interface DiceAreaProps {
   rollsLeft: number;
   isRolling: boolean;
   onToggleLock: (index: number) => void;
+  compact?: boolean;
 }
 
-export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock }: DiceAreaProps) {
+export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock, compact = false }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
+  const diceSize = compact ? 50 : 56;
 
   return (
-    <div className="mt-[60px] sm:mt-[72px] flex flex-col items-center justify-end pb-0 overflow-visible">
-      <div className="flex flex-col origin-top scale-[0.78] sm:scale-100" style={{ gap: 26 }}>
+    <div className="mt-[42px] sm:mt-[72px] flex flex-col items-center justify-end pb-0 overflow-visible">
+      <div className="flex flex-col" style={{ gap: compact ? 20 : 26 }}>
         {dice.map((value, index) => (
           <motion.div
             key={index}
@@ -29,6 +31,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock 
               rolling={isRolling}
               onToggleLock={() => onToggleLock(index)}
               canLock={hasRolled && rollsLeft > 0}
+              size={diceSize}
             />
           </motion.div>
         ))}

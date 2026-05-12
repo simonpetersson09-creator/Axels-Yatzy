@@ -26,7 +26,7 @@ export default function ResultsPage() {
     : null;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom">
+    <div className="app-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom overflow-y-auto overscroll-contain">
       <motion.div
         className="w-full max-w-sm space-y-8 text-center"
         initial={{ opacity: 0, y: 30 }}

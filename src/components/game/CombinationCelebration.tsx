@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation, type TranslationKey } from '@/lib/i18n';
 
 export type CombinationType = 'threeOfAKind' | 'fourOfAKind' | 'smallStraight' | 'largeStraight' | 'fullHouse';
 
 interface CombinationConfig {
-  label: string;
+  labelKey: TranslationKey;
   fontSize: string;
   fontWeight: string;
   gradient: string;
@@ -15,7 +16,7 @@ interface CombinationConfig {
 
 const CONFIGS: Record<CombinationType, CombinationConfig> = {
   threeOfAKind: {
-    label: 'Triss',
+    labelKey: 'celeb_threeOfAKind',
     fontSize: 'text-xl sm:text-2xl',
     fontWeight: 'font-bold',
     gradient: '',
@@ -25,7 +26,7 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
     color: 'hsl(220 15% 60%)',
   },
   smallStraight: {
-    label: 'Liten stege',
+    labelKey: 'celeb_smallStraight',
     fontSize: 'text-2xl sm:text-3xl',
     fontWeight: 'font-bold',
     gradient: 'linear-gradient(135deg, hsl(185 55% 58%), hsl(160 50% 48%))',
@@ -34,7 +35,7 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
     bounce: false,
   },
   fourOfAKind: {
-    label: 'Fyrtal!',
+    labelKey: 'celeb_fourOfAKind',
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
     gradient: 'linear-gradient(180deg, hsl(25 80% 58%), hsl(15 70% 45%))',
@@ -43,7 +44,7 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
     bounce: true,
   },
   largeStraight: {
-    label: 'Stor stege!',
+    labelKey: 'celeb_largeStraight',
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
     gradient: 'linear-gradient(135deg, hsl(175 65% 60%), hsl(210 70% 58%), hsl(185 60% 50%))',
@@ -52,7 +53,7 @@ const CONFIGS: Record<CombinationType, CombinationConfig> = {
     bounce: true,
   },
   fullHouse: {
-    label: 'Kåk!',
+    labelKey: 'celeb_fullHouse',
     fontSize: 'text-3xl sm:text-4xl',
     fontWeight: 'font-black',
     gradient: 'linear-gradient(135deg, hsl(42 90% 65%), hsl(36 82% 50%))',
@@ -74,6 +75,7 @@ interface CombinationCelebrationProps {
 }
 
 export function CombinationCelebration({ type }: CombinationCelebrationProps) {
+  const { t } = useTranslation();
   const config = type ? CONFIGS[type] : null;
 
   return (
@@ -136,7 +138,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
                 filter: config.shadow,
               }}
             >
-              {config.label}
+              {t(config.labelKey)}
             </span>
           </motion.div>
         </motion.div>

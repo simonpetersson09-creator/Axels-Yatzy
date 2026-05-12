@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Copy, Check, Users } from 'lucide-react';
 import type { Player } from '@/types/yatzy';
+import { useTranslation } from '@/lib/i18n';
 
 interface LobbyWaitingRoomProps {
   gameCode: string;
@@ -13,6 +14,7 @@ interface LobbyWaitingRoomProps {
 
 export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: LobbyWaitingRoomProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const isHost = myPlayerIndex === 0;
@@ -34,12 +36,12 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
-          <h1 className="text-2xl font-display font-bold">Väntar på spelare</h1>
+          <h1 className="text-2xl font-display font-bold">{t('waitingForPlayers')}</h1>
         </div>
 
         {/* Game code */}
         <div className="glass-card p-6 text-center space-y-3">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">Spelkod</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">{t('gameCode')}</p>
           <div className="flex items-center justify-center gap-3">
             <span className="text-4xl font-display font-bold text-gold-gradient tracking-[0.3em]">
               {gameCode}
@@ -48,7 +50,7 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
               {copied ? <Check className="w-5 h-5 text-game-success" /> : <Copy className="w-5 h-5 text-muted-foreground" />}
             </button>
           </div>
-          <p className="text-xs text-muted-foreground">Dela koden med dina vänner</p>
+          <p className="text-xs text-muted-foreground">{t('shareCode')}</p>
         </div>
 
         {/* Players list */}
@@ -56,7 +58,7 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              Spelare ({players.length}/4)
+              {t('playersOfMax', { count: players.length })}
             </span>
           </div>
           <div className="space-y-2">
@@ -72,9 +74,9 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
                   i === 0 ? 'bg-yatzy-player1' : i === 1 ? 'bg-yatzy-player2' : i === 2 ? 'bg-yatzy-player3' : 'bg-yatzy-player4'
                 }`} />
                 <span className="font-medium text-foreground">{player.name}</span>
-                {i === 0 && <span className="ml-auto text-[10px] text-primary font-bold uppercase tracking-wider">Värd</span>}
+                {i === 0 && <span className="ml-auto text-[10px] text-primary font-bold uppercase tracking-wider">{t('host')}</span>}
                 {i === myPlayerIndex && i !== 0 && (
-                  <span className="ml-auto text-[10px] text-game-success font-bold uppercase tracking-wider">Du</span>
+                  <span className="ml-auto text-[10px] text-game-success font-bold uppercase tracking-wider">{t('you')}</span>
                 )}
               </motion.div>
             ))}
@@ -89,16 +91,16 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            Starta spel
+            {t('startGame')}
           </motion.button>
         )}
 
         {isHost && players.length < 2 && (
-          <p className="text-center text-sm text-muted-foreground">Väntar på minst en spelare till...</p>
+          <p className="text-center text-sm text-muted-foreground">{t('waitingMorePlayers')}</p>
         )}
 
         {!isHost && (
-          <p className="text-center text-sm text-muted-foreground">Väntar på att värden startar spelet...</p>
+          <p className="text-center text-sm text-muted-foreground">{t('waitingForHost')}</p>
         )}
       </motion.div>
     </div>

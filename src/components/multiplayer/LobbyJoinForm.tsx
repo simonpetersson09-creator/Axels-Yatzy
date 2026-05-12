@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 const MAX_NAME_LENGTH = 20;
 const NAME_REGEX = /^[\p{L}\p{N}\s\-_.!]+$/u;
@@ -23,6 +24,7 @@ function sanitizeName(raw: string): string {
 
 export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: LobbyJoinFormProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [playerName, setPlayerName] = useState(() => getPlayerName());
   const [joinCode, setJoinCode] = useState('');
 
@@ -49,16 +51,16 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
-          <h1 className="text-2xl font-display font-bold">Multiplayer</h1>
+          <h1 className="text-2xl font-display font-bold">{t('multiplayer')}</h1>
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Ditt namn</label>
+          <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('yourName')}</label>
           <input
             type="text"
             value={playerName}
             onChange={e => setPlayerName(e.target.value.slice(0, MAX_NAME_LENGTH))}
-            placeholder="Ange ditt namn"
+            placeholder={t('enterYourName')}
             maxLength={MAX_NAME_LENGTH}
             className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-medium border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all"
           />
@@ -77,12 +79,12 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow disabled:opacity-50"
             whileTap={{ scale: 0.97 }}
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Skapa spel'}
+            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('createGame')}
           </motion.button>
 
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">eller</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t('or')}</span>
             <div className="flex-1 h-px bg-border" />
           </div>
 
@@ -90,7 +92,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             type="text"
             value={joinCode}
             onChange={e => setJoinCode(e.target.value.toUpperCase())}
-            placeholder="Ange spelkod"
+            placeholder={t('enterGameCode')}
             maxLength={6}
             className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all uppercase"
           />
@@ -100,7 +102,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             className="w-full py-4 rounded-2xl bg-secondary text-foreground font-display font-bold text-lg border border-border/50 disabled:opacity-50"
             whileTap={{ scale: 0.97 }}
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Gå med'}
+            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('joinGame')}
           </motion.button>
         </div>
       </motion.div>

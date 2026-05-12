@@ -13,9 +13,11 @@ import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/lib/i18n';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const {
     gameState, gameCode, status, myPlayerIndex, isMyTurn, error, localRolling,
@@ -134,7 +136,7 @@ export default function MultiplayerGamePage() {
             onClick={() => navigate('/')}
             className="px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-display font-bold"
           >
-            Tillbaka till menyn
+            {t('backToMenu')}
           </button>
         </div>
       </div>
@@ -146,7 +148,7 @@ export default function MultiplayerGamePage() {
       <div className="app-screen flex items-center justify-center safe-top safe-bottom">
         <div className="text-center space-y-3">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-muted-foreground text-sm">Laddar spel...</p>
+          <p className="text-muted-foreground text-sm">{t('loadingGame')}</p>
         </div>
       </div>
     );
@@ -212,7 +214,7 @@ export default function MultiplayerGamePage() {
       >
         {gameCode && (
           <p className="text-center text-[9px] text-muted-foreground/50 font-mono tracking-wider mt-1">
-            Kod: {gameCode}
+            {t('codeLabel', { code: gameCode })}
           </p>
         )}
 
@@ -319,7 +321,7 @@ export default function MultiplayerGamePage() {
                 <span className="pointer-events-none text-center leading-tight px-1">
                   {!isMyTurn
                     ? '⏳'
-                    : gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
+                    : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
                 </span>
               </button>
 
@@ -341,10 +343,10 @@ export default function MultiplayerGamePage() {
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   className="inline-flex items-center justify-center px-2 min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
-                  title="Till menyn"
-                  aria-label="Hem"
+                  title={t('toMenu')}
+                  aria-label={t('home')}
                 >
-                  <span className="pointer-events-none">Hem</span>
+                  <span className="pointer-events-none">{t('home')}</span>
                 </button>
                 <ForfeitButton
                   onConfirm={handleForfeit}
@@ -355,7 +357,7 @@ export default function MultiplayerGamePage() {
 
               {!isMyTurn && (
                 <p className="text-center text-[10px] text-muted-foreground/70 font-medium px-1 mt-1 leading-tight">
-                  Väntar på {currentPlayer.name}…
+                  {t('waitingForPlayer', { name: currentPlayer.name })}
                 </p>
               )}
             </div>

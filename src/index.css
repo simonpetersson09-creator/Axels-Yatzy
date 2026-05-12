@@ -228,14 +228,13 @@ html.capacitor-native.ios-viewport .game-layout-wrapper {
 
 .ios-game-layout {
   box-sizing: border-box;
-  display: grid;
-  align-items: start;
-  justify-items: center;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   width: 100%;
   height: min(100%, 100dvh);
-  max-height: 100dvh;
   max-height: 100%;
-  padding: 15px;
+  padding: 10px;
   overflow: hidden;
   touch-action: none;
 }
@@ -244,11 +243,11 @@ html.capacitor-native.ios-viewport .game-layout-wrapper {
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 84px;
-  gap: 6px;
+  column-gap: 8px;
   width: min(100%, 358px);
-  height: 100%;
   max-height: 100%;
   overflow: hidden;
+  align-items: start;
 }
 
 .ios-score-zone,
@@ -262,9 +261,10 @@ html.capacitor-native.ios-viewport .game-layout-wrapper {
 }
 
 .ios-side-zone {
-  display: grid;
-  grid-template-rows: minmax(58px, 82px) minmax(0, 1fr) 96px;
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .ios-player-zone,
@@ -280,9 +280,14 @@ html.capacitor-native.ios-viewport .game-layout-wrapper {
   gap: 2px;
 }
 
+.ios-dice-zone {
+  justify-content: start;
+}
+
 .ios-action-zone {
-  justify-content: center;
+  justify-content: start;
   gap: 6px;
+  margin-top: 4px;
 }
 
 html.ios-game-layout-debug-active {

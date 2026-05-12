@@ -74,9 +74,9 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
                   i === 0 ? 'bg-yatzy-player1' : i === 1 ? 'bg-yatzy-player2' : i === 2 ? 'bg-yatzy-player3' : 'bg-yatzy-player4'
                 }`} />
                 <span className="font-medium text-foreground">{player.name}</span>
-                {i === 0 && <span className="ml-auto text-[10px] text-primary font-bold uppercase tracking-wider">Värd</span>}
+                {i === 0 && <span className="ml-auto text-[10px] text-primary font-bold uppercase tracking-wider">{t('host')}</span>}
                 {i === myPlayerIndex && i !== 0 && (
-                  <span className="ml-auto text-[10px] text-game-success font-bold uppercase tracking-wider">Du</span>
+                  <span className="ml-auto text-[10px] text-game-success font-bold uppercase tracking-wider">{t('you')}</span>
                 )}
               </motion.div>
             ))}

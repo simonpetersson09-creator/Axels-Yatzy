@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Mr.B Yatzy',
   webDir: 'dist',
   ios: {
-    contentInset: 'always',
+    contentInset: 'never',
   },
 };
 

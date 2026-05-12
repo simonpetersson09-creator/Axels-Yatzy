@@ -275,7 +275,7 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
+      className="app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none"
       style={{
         WebkitOverflowScrolling: 'auto',
         padding: 'max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left))',
@@ -374,7 +374,7 @@ export default function GamePage() {
 
             {/* Bottom: Roll + Home + Forfeit */}
             <div
-              className="flex flex-col items-center gap-2 mt-auto"
+              className="flex flex-col items-center gap-2"
               style={{ isolation: 'isolate' }}
             >
               <button

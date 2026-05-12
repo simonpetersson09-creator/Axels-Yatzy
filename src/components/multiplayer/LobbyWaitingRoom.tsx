@@ -91,16 +91,16 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            Starta spel
+            {t('startGame')}
           </motion.button>
         )}
 
         {isHost && players.length < 2 && (
-          <p className="text-center text-sm text-muted-foreground">Väntar på minst en spelare till...</p>
+          <p className="text-center text-sm text-muted-foreground">{t('waitingMorePlayers')}</p>
         )}
 
         {!isHost && (
-          <p className="text-center text-sm text-muted-foreground">Väntar på att värden startar spelet...</p>
+          <p className="text-center text-sm text-muted-foreground">{t('waitingForHost')}</p>
         )}
       </motion.div>
     </div>

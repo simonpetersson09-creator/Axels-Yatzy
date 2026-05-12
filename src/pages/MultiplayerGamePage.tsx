@@ -214,7 +214,7 @@ export default function MultiplayerGamePage() {
       >
         {gameCode && (
           <p className="text-center text-[9px] text-muted-foreground/50 font-mono tracking-wider mt-1">
-            Kod: {gameCode}
+            {t('codeLabel', { code: gameCode })}
           </p>
         )}
 

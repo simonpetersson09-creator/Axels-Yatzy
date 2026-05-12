@@ -353,13 +353,17 @@ export function useMultiplayerGame() {
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
     try {
-      const { error } = await supabase.functions.invoke('submit-score', {
+      const { error } = await withTimeout(supabase.functions.invoke('submit-score', {
         body: { game_id: state.gameId, session_id: sessionId, category_id: categoryId },
-      });
+      }));
 
       if (error) {
         console.error('Submit score error:', error);
       }
+    } catch (err) {
+      console.error('Submit score failed:', err);
+      const msg = (err as Error)?.message === 'timeout' ? 'Anslutningen tog för lång tid. Försök igen.' : 'Kunde inte spara poäng';
+      if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
       submittingRef.current = false;
     }

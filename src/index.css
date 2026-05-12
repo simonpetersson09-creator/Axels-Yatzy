@@ -236,18 +236,26 @@
   animation: kasta-pulse-shadow 2.4s ease-in-out infinite;
 }
 
-/* On real iOS / Capacitor the notch safe-area padding pushes the game
-   container lower than in the Lovable desktop preview. Shift only the
-   outer game wrapper up on iOS, without changing safe-area padding or
-   any internal scoreboard/dice/button layout. */
-html.ios-viewport .ios-game-shift {
-  --ios-game-top-shift: 48px;
-  transform: translate3d(0, calc(-1 * var(--ios-game-top-shift)), 0);
-  will-change: transform;
+.game-layout-shell {
+  padding: 10px max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
 }
 
-html.ios-game-shift-debug-active {
-  --ios-game-shift-debug: active;
+.game-layout-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.game-board-frame {
+  margin: 0;
+}
+
+html.ios-viewport .game-layout-shell {
+  padding-top: 10px;
+}
+
+html.ios-game-layout-debug-active {
+  --ios-game-layout-debug: active;
 }
 
 @layer utilities {

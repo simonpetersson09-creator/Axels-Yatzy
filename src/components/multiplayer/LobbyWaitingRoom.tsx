@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Copy, Check, Users } from 'lucide-react';
 import type { Player } from '@/types/yatzy';
+import { useTranslation } from '@/lib/i18n';
 
 interface LobbyWaitingRoomProps {
   gameCode: string;

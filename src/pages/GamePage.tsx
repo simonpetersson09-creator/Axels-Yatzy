@@ -371,7 +371,6 @@ export default function GamePage() {
   ];
 
   const nativeIosGameLayout = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
-  const compactScoreBoard = true;
 
   const renderGameBoard = (nativeIos = false) => (
     <div
@@ -392,7 +391,6 @@ export default function GamePage() {
             aiChosenCategory={aiChosenCategory}
             selectionDisabled={isCurrentAi}
             nativeIos={nativeIos}
-            compactHeight={compactScoreBoard}
           />
           <CombinationCelebration type={activeCelebration} />
         </div>

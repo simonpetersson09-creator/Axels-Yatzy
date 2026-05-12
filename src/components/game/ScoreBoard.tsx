@@ -15,7 +15,6 @@ interface ScoreBoardProps {
   aiChosenCategory?: string | null;
   selectionDisabled?: boolean;
   nativeIos?: boolean;
-  compactHeight?: boolean;
 }
 
 export interface ScoreboardClickDebug {
@@ -161,12 +160,10 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled, nativeIos = false, compactHeight = nativeIos }: ScoreBoardProps) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled, nativeIos = false }: ScoreBoardProps) {
   const { t } = useTranslation();
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
-  const rowHeight = compactHeight ? 'h-[20px]' : ROW_H;
-  const sectionHeight = compactHeight ? 'h-[12px]' : 'h-[20px]';
-  const playerHeaderPadding = compactHeight ? 'py-0' : 'py-1';
+  const rowHeight = nativeIos ? 'h-[24px]' : ROW_H;
   const labelWidth = nativeIos ? 'w-[66px] min-w-[66px]' : LABEL_W;
   const colWidth = nativeIos ? 'min-w-[31px] w-[31px]' : COL_W;
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({
@@ -349,7 +346,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Player columns header */}
-      <div className={cn('flex border-b-2 border-yatzy-line-strong/40 bg-yatzy-section-header/50', playerHeaderPadding)}>
+      <div className={cn('flex border-b-2 border-yatzy-line-strong/40 py-1 bg-yatzy-section-header/50')}>
         <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 px-2 flex items-center', labelWidth, rowHeight)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];
@@ -371,8 +368,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
               {player ? (
                 <motion.div 
                   className={cn(
-                    'flex flex-col items-center gap-0.5 px-1 rounded-full transition-all duration-500 ease-out',
-                    nativeIos ? 'py-0.5' : 'py-1',
+                    'flex flex-col items-center gap-0.5 px-1 py-1 rounded-full transition-all duration-500 ease-out',
                     isCurrent 
                       ? `${color.activeBg} ${color.glow}` 
                       : ``
@@ -401,7 +397,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Upper section */}
-      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${sectionHeight}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${nativeIos ? 'h-[16px]' : 'h-[20px]'}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('upperSection')}</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
@@ -413,7 +409,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${sectionHeight}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${nativeIos ? 'h-[16px]' : 'h-[20px]'}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('lowerSection')}</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

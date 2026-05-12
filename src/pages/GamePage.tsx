@@ -299,7 +299,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex w-full max-w-full gap-2 items-start mt-[30px] mb-[30px]">
+        <div className="flex w-full max-w-full gap-2 items-stretch mt-[30px] mb-[30px]">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
@@ -374,7 +374,7 @@ export default function GamePage() {
 
             {/* Bottom: Roll + Home + Forfeit */}
             <div
-              className="flex flex-col items-center gap-2 mt-0"
+              className="flex flex-col items-center gap-2 mt-auto"
               style={{ isolation: 'isolate' }}
             >
               <button

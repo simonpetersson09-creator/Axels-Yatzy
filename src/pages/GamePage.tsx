@@ -405,7 +405,7 @@ export default function GamePage() {
                 <span className="pointer-events-none">
                   {isCurrentAi
                     ? '⏳'
-                    : gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
+                    : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
                 </span>
               </button>
 

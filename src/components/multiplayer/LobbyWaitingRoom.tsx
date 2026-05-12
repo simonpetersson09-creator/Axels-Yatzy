@@ -50,7 +50,7 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
               {copied ? <Check className="w-5 h-5 text-game-success" /> : <Copy className="w-5 h-5 text-muted-foreground" />}
             </button>
           </div>
-          <p className="text-xs text-muted-foreground">Dela koden med dina vänner</p>
+          <p className="text-xs text-muted-foreground">{t('shareCode')}</p>
         </div>
 
         {/* Players list */}

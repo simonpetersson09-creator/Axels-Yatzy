@@ -222,6 +222,34 @@ Deno.serve(async (req) => {
         multiplayerRate,
         forfeitRate,
       },
+      sessions: (() => {
+        const sessionsByDay = new Map<string, number>();
+        let durSum = 0;
+        let durCount = 0;
+        for (const s of normalizedSessions) {
+          const day = s.started_at.slice(0, 10);
+          sessionsByDay.set(day, (sessionsByDay.get(day) ?? 0) + 1);
+          if (typeof s.duration_seconds === "number") {
+            durSum += s.duration_seconds;
+            durCount++;
+          }
+        }
+        const sessionsPerDay = Array.from({ length: 30 }, (_, i) => {
+          const day = new Date(nowMs - (29 - i) * 86400000)
+            .toISOString()
+            .slice(0, 10);
+          return { day, sessions: sessionsByDay.get(day) ?? 0 };
+        });
+        const avgDurationSeconds = durCount > 0 ? durSum / durCount : 0;
+        const sessionsPerDayAvg =
+          sessionsPerDay.reduce((a, b) => a + b.sessions, 0) / sessionsPerDay.length;
+        return {
+          total: normalizedSessions.length,
+          avgDurationSeconds,
+          sessionsPerDayAvg,
+          perDay: sessionsPerDay,
+        };
+      })(),
       series,
       languages: Object.fromEntries(langs),
       platforms: Object.fromEntries(platforms),

@@ -5,7 +5,7 @@ import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, cl
 import { getRandomAiNames } from '@/lib/yatzy-ai';
 import { getPlayerName } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
-import { Play, Clock, Gamepad2, Trophy, Star } from 'lucide-react';
+import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 

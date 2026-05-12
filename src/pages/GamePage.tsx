@@ -16,6 +16,7 @@ import { CombinationCelebration } from '@/components/game/CombinationCelebration
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';
+import { trackEvent } from '@/lib/analytics';
 import { Home } from 'lucide-react';
 
 export default function GamePage() {
@@ -74,6 +75,7 @@ export default function GamePage() {
     hasStartedRef.current = true;
     if (location.state?.playerNames || !gameState) {
       startGame(playerNames);
+      trackEvent('game_started', { playerCount: playerNames.length, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -94,6 +96,7 @@ export default function GamePage() {
       const won = humanScore === maxScore && !aiPlayers.includes(0);
       const yatzys = (gameState.players[0].scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
       recordGameResult(humanScore, won, yatzys);
+      trackEvent('game_finished', { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
   }, [gameState?.gameOver]);
 
@@ -237,6 +240,7 @@ export default function GamePage() {
       const allSame = dice.every(d => d === dice[0]);
       if (allSame) {
         setShowYatzyCelebration(true);
+        trackEvent('yatzy_scored', undefined, { gameMode: 'single_player' });
       }
     }
     console.log('scoreboard-save-request', {

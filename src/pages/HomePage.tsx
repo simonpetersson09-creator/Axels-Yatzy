@@ -8,6 +8,7 @@ import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
+import { trackEvent } from '@/lib/analytics';
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -158,6 +159,7 @@ export default function HomePage() {
                         const aiNames = getRandomAiNames(opponents);
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
+                        trackEvent('quick_match_started', { opponents }, { gameMode: 'quick_match' });
                         navigate('/game', { state: { playerNames, aiPlayers } });
                       }}
                       className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"

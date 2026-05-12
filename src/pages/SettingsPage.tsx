@@ -11,6 +11,7 @@ import {
 } from '@/lib/profile';
 import { saveLocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
+import { trackEvent } from '@/lib/analytics';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
@@ -25,6 +26,9 @@ export default function SettingsPage() {
 
   // Re-render labels when language changes
   useEffect(() => { force(n => n + 1); }, [lang]);
+
+  // Track settings opened (once per mount)
+  useEffect(() => { trackEvent('settings_opened'); }, []);
 
   const saveName = () => {
     setProfileName(name);
@@ -55,6 +59,7 @@ export default function SettingsPage() {
   const changeLang = (l: Language) => {
     setLanguage(l);
     setLang(l);
+    trackEvent('language_changed', { language: l });
     toast.success(t('languageSaved'));
   };
 

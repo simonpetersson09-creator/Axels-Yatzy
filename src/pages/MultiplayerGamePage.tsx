@@ -14,6 +14,7 @@ import { playRollSound } from '@/lib/dice-sounds';
 import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';
+import { trackEvent } from '@/lib/analytics';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
@@ -114,6 +115,7 @@ export default function MultiplayerGamePage() {
         }
         const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
         recordGameResult(myScore, won, yatzys);
+        trackEvent('game_finished', { won, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
       }
 
       clearActiveGame();
@@ -175,7 +177,10 @@ export default function MultiplayerGamePage() {
     if (!isMyTurn) return;
     if (categoryId === 'yatzy') {
       const allSame = gameState.dice.every(d => d === gameState.dice[0]);
-      if (allSame) setShowYatzyCelebration(true);
+      if (allSame) {
+        setShowYatzyCelebration(true);
+        trackEvent('yatzy_scored', undefined, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+      }
     }
     selectCategory(categoryId as any);
   };

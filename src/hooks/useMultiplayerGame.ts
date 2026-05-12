@@ -4,6 +4,7 @@ import { getSessionId } from '@/lib/session';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 import { calculateScore } from '@/lib/yatzy-scoring';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import { trackEvent } from '@/lib/analytics';
 
 interface MultiplayerState {
   gameId: string | null;
@@ -209,6 +210,7 @@ export function useMultiplayerGame() {
     setState(prev => ({ ...prev, myPlayerIndex: result.player_index ?? 0 }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
+    trackEvent('multiplayer_room_created', { code: result.game_code }, { gameId: result.game_id, gameMode: 'multiplayer' });
     return result.game_code!;
   }, [sessionId, subscribeToGame, refreshGameState]);
 
@@ -239,6 +241,7 @@ export function useMultiplayerGame() {
     setState(prev => ({ ...prev, myPlayerIndex: playerIndex }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);
+    trackEvent('multiplayer_room_joined', { code: result.game_code }, { gameId: result.game_id, gameMode: 'multiplayer' });
     return true;
   }, [sessionId, subscribeToGame, refreshGameState]);
 
@@ -254,6 +257,8 @@ export function useMultiplayerGame() {
       console.error('Start game error:', error);
       const msg = data?.error || 'Kunde inte starta spelet';
       setState(prev => ({ ...prev, error: msg }));
+    } else {
+      trackEvent('game_started', undefined, { gameId: state.gameId, gameMode: 'multiplayer' });
     }
   }, [state.gameId, state.myPlayerIndex, sessionId]);
 
@@ -381,6 +386,7 @@ export function useMultiplayerGame() {
         console.error('Forfeit error:', error);
         throw new Error('Forfeit failed');
       }
+      trackEvent('game_forfeited', undefined, { gameId: state.gameId, gameMode: 'multiplayer' });
     } catch (err) {
       console.error('Forfeit failed:', err);
       throw err instanceof Error ? err : new Error('Forfeit failed');

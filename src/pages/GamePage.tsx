@@ -96,6 +96,7 @@ export default function GamePage() {
       const won = humanScore === maxScore && !aiPlayers.includes(0);
       const yatzys = (gameState.players[0].scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
       recordGameResult(humanScore, won, yatzys);
+      trackEvent('game_finished', { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
   }, [gameState?.gameOver]);
 

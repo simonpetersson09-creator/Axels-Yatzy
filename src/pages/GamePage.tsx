@@ -75,6 +75,7 @@ export default function GamePage() {
     hasStartedRef.current = true;
     if (location.state?.playerNames || !gameState) {
       startGame(playerNames);
+      trackEvent('game_started', { playerCount: playerNames.length, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

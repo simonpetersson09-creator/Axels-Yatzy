@@ -75,6 +75,7 @@ interface CombinationCelebrationProps {
 }
 
 export function CombinationCelebration({ type }: CombinationCelebrationProps) {
+  const { t } = useTranslation();
   const config = type ? CONFIGS[type] : null;
 
   return (

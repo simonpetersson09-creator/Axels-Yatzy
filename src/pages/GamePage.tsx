@@ -370,7 +370,10 @@ export default function GamePage() {
     { ring: 'ring-yatzy-player4', bg: 'bg-yatzy-player4', glow: 'shadow-[0_0_8px_hsl(350_65%_52%/0.5)]' },
   ];
 
-  const nativeIosGameLayout = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+  const iosPreviewParam = typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('iosPreview') === 'true';
+  const nativeIosGameLayout =
+    (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') || iosPreviewParam;
 
   const renderGameBoard = (nativeIos = false) => (
     <div
@@ -528,7 +531,7 @@ export default function GamePage() {
   );
 
   if (nativeIosGameLayout) {
-    return (
+    const layout = (
       <div
         key={orientationKey}
         className="ios-game-layout"
@@ -548,6 +551,32 @@ export default function GamePage() {
         {renderGameBoard(true)}
       </div>
     );
+
+    if (iosPreviewParam && !Capacitor.isNativePlatform()) {
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center gap-3 bg-background p-6">
+          <div className="text-xs font-mono uppercase tracking-widest text-primary">
+            iOS Preview Mode · iPhone 15 (393×852)
+          </div>
+          <div
+            style={{
+              width: 393,
+              height: 852,
+              border: '2px solid hsl(var(--primary))',
+              borderRadius: 40,
+              overflow: 'hidden',
+              position: 'relative',
+              background: 'hsl(var(--background))',
+              boxShadow: '0 20px 60px -10px hsl(0 0% 0% / 0.6)',
+            }}
+          >
+            {layout}
+          </div>
+        </div>
+      );
+    }
+
+    return layout;
   }
 
   return (

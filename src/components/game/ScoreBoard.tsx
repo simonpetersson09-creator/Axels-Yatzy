@@ -145,7 +145,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 
       <motion.span
         className={cn(
-          `${rowHeight === 'h-[28px]' ? 'text-[11px]' : 'text-[13px]'} tabular-nums leading-none`,
+          `${rowHeight !== ROW_H ? 'text-[10px]' : 'text-[13px]'} tabular-nums leading-none`,
           isScored && 'font-normal text-yatzy-text',
           canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-normal text-yatzy-highlight',
           canSelect && possibleScore === 0 && 'font-normal text-yatzy-text/25',

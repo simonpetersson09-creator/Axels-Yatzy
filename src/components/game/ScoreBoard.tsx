@@ -14,7 +14,6 @@ interface ScoreBoardProps {
   rollsLeft: number;
   aiChosenCategory?: string | null;
   selectionDisabled?: boolean;
-  nativeIos?: boolean;
 }
 
 export interface ScoreboardClickDebug {
@@ -49,7 +48,7 @@ const COL_W = 'min-w-[42px] w-[42px]';
 const LABEL_W = 'w-[80px] min-w-[80px]';
 const ROW_H = 'h-[34px]';
 
-function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor, rowHeight, colWidth }: {
+function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor }: {
   isScored: boolean;
   scoreValue: number | null | undefined;
   possibleScore: number | undefined;
@@ -58,8 +57,6 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   bgStyle?: React.CSSProperties;
   isAiChosen?: boolean;
   playerColor?: string;
-  rowHeight?: string;
-  colWidth?: string;
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);
@@ -84,7 +81,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   return (
     <div
       className={cn(
-        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-colors duration-300 ease-out flex items-center justify-center overflow-hidden rounded-[2px] pointer-events-none', rowHeight ?? ROW_H, colWidth ?? COL_W,
+        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-colors duration-300 ease-out flex items-center justify-center overflow-hidden rounded-[2px] pointer-events-none', ROW_H, COL_W,
         bgClass,
         isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
         canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25',
@@ -145,7 +142,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 
       <motion.span
         className={cn(
-          `${rowHeight !== ROW_H ? 'text-[10px]' : 'text-[13px]'} tabular-nums leading-none`,
+          'text-[13px] tabular-nums leading-none',
           isScored && 'font-normal text-yatzy-text',
           canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-normal text-yatzy-highlight',
           canSelect && possibleScore === 0 && 'font-normal text-yatzy-text/25',
@@ -160,14 +157,9 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled, nativeIos = false }: ScoreBoardProps) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled }: ScoreBoardProps) {
   const { t } = useTranslation();
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
-  // compactIOS: reduce row height + section-label height to shave ~20px total off the scoreboard on real iPhone
-  const rowHeight = nativeIos ? 'h-[22px]' : ROW_H;
-  const labelWidth = nativeIos ? 'w-[66px] min-w-[66px]' : LABEL_W;
-  const colWidth = nativeIos ? 'min-w-[31px] w-[31px]' : COL_W;
-  const sectionLabelH = nativeIos ? 'h-[13px]' : 'h-[20px]';
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({
     pointerType: 'unknown',
     clientX: null,
@@ -194,7 +186,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
     if (!player) {
       return (
-        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center', rowHeight, colWidth, 'bg-yatzy-bg/30')} />
+        <div key={`${cat.id}-empty-${slotIdx}`} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center', ROW_H, COL_W, 'bg-yatzy-bg/30')} />
       );
     }
 
@@ -214,8 +206,6 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         bgStyle={bg.style}
         isAiChosen={isCurrent && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
-        rowHeight={rowHeight}
-        colWidth={colWidth}
       />
     );
   };
@@ -294,10 +284,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
     >
       <div className={cn(
-        'flex-shrink-0 px-2 border-r border-yatzy-line/40 flex items-center', rowHeight, labelWidth,
+        'flex-shrink-0 px-2 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className={`${nativeIos ? 'text-[9px]' : 'text-[11px]'} font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full`}>{catName(cat.id)}</span>
+        <span className="text-[11px] font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full">{catName(cat.id)}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </button>
@@ -310,10 +300,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       isTotalRow ? 'border-t-2 border-yatzy-line-strong py-1' : 'border-b border-yatzy-line/50',
       isTotalRow ? 'bg-yatzy-header' : 'bg-yatzy-sum-row',
     )}>
-      <div className={cn('flex-shrink-0 px-2 border-r border-yatzy-line/40 flex items-center', rowHeight, labelWidth)}>
+      <div className={cn('flex-shrink-0 px-3 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W)}>
         <span className={cn(
           'uppercase tracking-wider leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full',
-          isTotalRow ? `${nativeIos ? 'text-[8px]' : 'text-[10px]'} font-medium text-yatzy-text` : `${nativeIos ? 'text-[8px]' : 'text-[9px]'} font-normal text-yatzy-text/50`,
+          isTotalRow ? 'text-[10px] font-medium text-yatzy-text' : 'text-[9px] font-normal text-yatzy-text/50',
         )}>{label}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => {
@@ -321,10 +311,10 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         const isCurrent = i === currentPlayerIndex;
         const bg = cellBg(i);
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', rowHeight, colWidth, bg.className)} style={bg.style}>
+          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', ROW_H, COL_W, bg.className)} style={bg.style}>
             <span className={cn(
               'tabular-nums leading-none',
-              isTotalRow ? `${nativeIos ? 'text-[11px]' : 'text-[13px]'} font-normal` : `${nativeIos ? 'text-[10px]' : 'text-[12px]'} font-normal`,
+              isTotalRow ? 'text-[13px] font-normal' : 'text-[12px] font-normal',
               player && isCurrent ? 'text-yatzy-text' : player ? 'text-yatzy-text/40' : 'text-yatzy-text/10',
             )}>
               {player ? getValue(player) : '–'}
@@ -343,13 +333,13 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       }}
     >
       {/* Header */}
-      <div className={cn('bg-yatzy-header border-b border-yatzy-line/50 px-3 text-center flex items-center justify-center', rowHeight)}>
-        <span className={`${nativeIos ? 'text-[12px]' : 'text-[15px]'} font-display font-bold text-yatzy-text tracking-[0.25em] uppercase`}>{t('appName')}</span>
+      <div className={cn('bg-yatzy-header border-b border-yatzy-line/50 px-4 text-center flex items-center justify-center', ROW_H)}>
+        <span className="font-display font-bold text-[15px] text-yatzy-text tracking-[0.25em] uppercase">{t('appName')}</span>
       </div>
 
       {/* Player columns header */}
       <div className={cn('flex border-b-2 border-yatzy-line-strong/40 py-1 bg-yatzy-section-header/50')}>
-        <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 px-2 flex items-center', labelWidth, rowHeight)} />
+        <div className={cn('flex-shrink-0 border-r border-yatzy-line/40 px-3 flex items-center', LABEL_W, ROW_H)} />
         {Array.from({ length: SLOT_COUNT }).map((_, i) => {
           const player = players[i];
           const color = PLAYER_COLORS[i];
@@ -360,7 +350,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
               key={i}
               className={cn(
                 'flex items-center justify-center relative overflow-hidden transition-all duration-500 ease-out',
-                colWidth,
+                COL_W,
               )}
               style={isCurrent && player ? {
                 backgroundColor: `hsl(${hsl} / 0.10)`,
@@ -379,19 +369,19 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <motion.div 
-                    className={cn(nativeIos ? 'w-2 h-2' : 'w-2.5 h-2.5', 'rounded-full', color.dot)}
+                    className={cn('w-2.5 h-2.5 rounded-full', color.dot)}
                     animate={isCurrent ? { scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] } : {}}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                   />
                   <span className={cn(
-                    `${nativeIos ? 'text-[8px]' : 'text-[10px]'} font-bold leading-none`,
+                    'text-[10px] font-bold leading-none',
                     isCurrent ? color.text : 'text-yatzy-text/50'
                   )}>
                     {color.label}
                   </span>
                 </motion.div>
               ) : (
-                <div className={`${nativeIos ? 'w-5 h-5' : 'w-6 h-6'} rounded-full bg-yatzy-line/10`} />
+                <div className="w-6 h-6 rounded-full bg-yatzy-line/10" />
               )}
             </div>
           );
@@ -399,7 +389,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Upper section */}
-      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${sectionLabelH}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('upperSection')}</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}
@@ -411,7 +401,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${sectionLabelH}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('lowerSection')}</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

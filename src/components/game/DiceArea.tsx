@@ -8,16 +8,15 @@ interface DiceAreaProps {
   isRolling: boolean;
   onToggleLock: (index: number) => void;
   compact?: boolean;
-  nativeIos?: boolean;
 }
 
-export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock, compact = false, nativeIos = false }: DiceAreaProps) {
+export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock, compact = false }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
-  const diceSize = nativeIos ? 44 : compact ? 50 : 56;
+  const diceSize = compact ? 50 : 56;
 
   return (
-    <div className={`${nativeIos ? 'mt-0 h-full justify-center' : 'mt-[42px] justify-end'} flex flex-col items-center pb-0 overflow-visible`}>
-      <div className="flex flex-col" style={{ gap: nativeIos ? 12 : compact ? 20 : 26 }}>
+    <div className="mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible">
+      <div className="flex flex-col" style={{ gap: compact ? 20 : 26 }}>
         {dice.map((value, index) => (
           <motion.div
             key={index}

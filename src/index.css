@@ -132,23 +132,76 @@
     background-attachment: scroll;
     position: relative;
   }
-  html.capacitor-native.ios-viewport .app-shell {
-    position: fixed;
-    inset: 0;
-    width: var(--app-vw);
-    height: var(--app-dvh);
-    max-height: var(--app-dvh);
-    overflow: hidden;
-  }
-
-html.capacitor-native.ios-game-route .app-shell {
-  box-sizing: border-box;
-  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
-}
   #root {
     background-color: hsl(var(--background));
   }
 
+  /* Desktop / Lovable preview: render the app inside a fixed iPhone 15
+     container (393×852) centered on the page. Real iOS / Capacitor never
+     gets this class, so on device the app stays fullscreen. */
+  html.preview-frame,
+  html.preview-frame body {
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-attachment: fixed;
+  }
+  html.preview-frame body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  html.preview-frame #root {
+    width: 393px;
+    height: 852px;
+    min-width: 393px;
+    min-height: 852px;
+    max-width: 393px;
+    max-height: 852px;
+    overflow: hidden;
+    position: relative;
+    border-radius: 28px;
+    box-shadow:
+      0 30px 80px -20px hsl(0 0% 0% / 0.7),
+      0 0 0 1px hsl(195 28% 24% / 0.6);
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(ellipse at 50% 0%, hsl(195 45% 20%) 0%, hsl(195 50% 14%) 70%);
+  }
+  /* Preview frame must lock to the container, never the window. */
+  html.preview-frame.game-scroll-lock,
+  html.preview-frame body.game-scroll-lock {
+    height: 100vh;
+    max-height: 100vh;
+  }
+  html.preview-frame #root.game-scroll-lock {
+    height: 852px;
+    max-height: 852px;
+  }
+
+  /* Hide the preview frame when the window is too small to fit it
+     (e.g. Lovable's mobile preview / a phone browser) — fall back to
+     fullscreen so layout still matches the device. */
+  @media (max-width: 392px), (max-height: 851px) {
+    html.preview-frame,
+    html.preview-frame body {
+      display: block;
+      height: var(--app-dvh, 100dvh);
+      max-height: var(--app-dvh, 100dvh);
+    }
+    html.preview-frame #root {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
   h1, h2, h3, h4 {
     font-family: 'Space Grotesk', sans-serif;
   }
@@ -182,133 +235,6 @@ html.capacitor-native.ios-game-route .app-shell {
 .kasta-pulse {
   animation: kasta-pulse-shadow 2.4s ease-in-out infinite;
 }
-
-.game-layout-shell {
-  padding: 10px max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
-}
-
-.game-layout-wrapper {
-  display: flex;
-  width: 100%;
-  justify-content: center;
-}
-
-.safe-area-wrapper,
-.ios-wrapper {
-  display: flex;
-  width: 100%;
-  min-height: 0;
-  justify-content: center;
-}
-
-.game-board-frame {
-  margin: 0;
-}
-
-html.ios-viewport:not(.capacitor-native) .game-layout-shell {
-  padding-top: 10px;
-}
-
-html.capacitor-native.ios-viewport .game-layout-shell {
-  position: fixed;
-  inset: 0;
-  width: var(--app-vw);
-  height: var(--app-dvh);
-  min-height: 0;
-  max-height: var(--app-dvh);
-  padding: 10px;
-}
-
-html.capacitor-native.ios-viewport .safe-area-wrapper,
-html.capacitor-native.ios-viewport .ios-wrapper,
-html.capacitor-native.ios-viewport .game-layout-wrapper {
-  height: 100%;
-  min-height: 0;
-}
-
-.ios-game-layout {
-  box-sizing: border-box;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: min(100%, 100dvh);
-  max-height: 100dvh;
-  max-height: 100%;
-  padding: 10px 10px 30px 10px;
-  overflow: hidden;
-  touch-action: none;
-}
-
-.ios-game-card {
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 84px;
-  gap: 6px;
-  width: min(100%, 358px);
-  height: 100%;
-  max-height: 100%;
-  overflow: hidden;
-}
-
-.ios-score-zone,
-.ios-side-zone,
-.ios-dice-zone,
-.ios-action-zone,
-.ios-player-zone {
-  box-sizing: border-box;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.ios-side-zone {
-  display: grid;
-  grid-template-rows: minmax(64px, 92px) minmax(0, 1fr) 112px;
-  gap: 6px;
-}
-
-.ios-player-zone,
-.ios-dice-zone,
-.ios-action-zone {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.ios-player-zone {
-  justify-content: start;
-  gap: 2px;
-}
-
-.ios-action-zone {
-  justify-content: end;
-  gap: 6px;
-}
-
-html.ios-game-layout-debug-active {
-  --ios-game-layout-debug: active;
-}
-
-html.capacitor-native.ios-game-layout-debug-active {
-  outline: 3px solid hsl(350 90% 55%);
-  outline-offset: -3px;
-}
-
-html.capacitor-native.ios-game-layout-debug-active body {
-  outline: 3px dashed hsl(120 85% 45%);
-  outline-offset: -7px;
-}
-
-html.capacitor-native.ios-game-layout-debug-active #root {
-  outline: 3px dotted hsl(210 95% 60%);
-  outline-offset: -11px;
-}
-
-html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="app-shell"] { outline: 2px solid hsl(290 90% 65%); outline-offset: -15px; }
-html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="game-shell"] { outline: 2px solid hsl(55 100% 55%); outline-offset: -19px; }
-html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="safe-area-wrapper"] { outline: 2px dashed hsl(185 100% 50%); outline-offset: -23px; }
-html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="ios-wrapper"] { outline: 2px dashed hsl(25 100% 55%); outline-offset: -27px; }
-html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="game-board-wrapper"] { outline: 2px solid hsl(0 100% 65%); outline-offset: -31px; }
-html.capacitor-native.ios-game-layout-debug-active [data-ios-layout-wrapper="game-board"] { outline: 2px solid hsl(145 90% 50%); outline-offset: -35px; }
 
 @layer utilities {
   .app-screen {

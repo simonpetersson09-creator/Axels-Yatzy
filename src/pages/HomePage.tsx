@@ -8,6 +8,7 @@ import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
+import { trackEvent } from '@/lib/analytics';
 
 const item = {
   hidden: { opacity: 0, y: 16 },

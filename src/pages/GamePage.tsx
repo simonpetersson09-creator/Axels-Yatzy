@@ -370,7 +370,10 @@ export default function GamePage() {
     { ring: 'ring-yatzy-player4', bg: 'bg-yatzy-player4', glow: 'shadow-[0_0_8px_hsl(350_65%_52%/0.5)]' },
   ];
 
-  const nativeIosGameLayout = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+  const isNativeIos = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+  // Also use the compact iOS layout in browser preview when viewport is phone-sized
+  const isPhoneViewport = typeof window !== 'undefined' && window.matchMedia('(max-width: 480px)').matches;
+  const nativeIosGameLayout = isNativeIos || isPhoneViewport;
 
   const renderGameBoard = (nativeIos = false) => (
     <div

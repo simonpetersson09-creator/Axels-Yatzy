@@ -15,6 +15,7 @@ interface ScoreBoardProps {
   aiChosenCategory?: string | null;
   selectionDisabled?: boolean;
   nativeIos?: boolean;
+  compactHeight?: boolean;
 }
 
 export interface ScoreboardClickDebug {
@@ -160,12 +161,12 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled, nativeIos = false }: ScoreBoardProps) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled, nativeIos = false, compactHeight = nativeIos }: ScoreBoardProps) {
   const { t } = useTranslation();
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
-  const rowHeight = nativeIos ? 'h-[20px]' : ROW_H;
-  const sectionHeight = nativeIos ? 'h-[12px]' : 'h-[20px]';
-  const playerHeaderPadding = nativeIos ? 'py-0' : 'py-1';
+  const rowHeight = compactHeight ? 'h-[20px]' : ROW_H;
+  const sectionHeight = compactHeight ? 'h-[12px]' : 'h-[20px]';
+  const playerHeaderPadding = compactHeight ? 'py-0' : 'py-1';
   const labelWidth = nativeIos ? 'w-[66px] min-w-[66px]' : LABEL_W;
   const colWidth = nativeIos ? 'min-w-[31px] w-[31px]' : COL_W;
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({

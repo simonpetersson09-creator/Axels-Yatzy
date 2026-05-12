@@ -299,7 +299,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex w-full max-w-full gap-1 items-start mt-[24px] mb-0">
+        <div className="flex w-full max-w-full gap-1 items-start mt-[40px] mb-0">
           {/* Left: Scoreboard */}
           <div className="ios-score-zone flex flex-col gap-3 self-start">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">

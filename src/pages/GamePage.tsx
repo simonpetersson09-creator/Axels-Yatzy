@@ -423,12 +423,12 @@ export default function GamePage() {
                   }}
                   onPointerCancel={() => { pressedButtonRef.current = null; }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="inline-flex items-center justify-center gap-1.5 px-4 min-h-[44px] rounded-xl text-[13px] font-semibold text-primary/90 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
+                  className="inline-flex items-center justify-center gap-1 px-2.5 min-h-[32px] rounded-lg text-[11px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                   title="Till menyn"
                   aria-label="Hem"
                 >
-                  <Home className="w-3.5 h-3.5 pointer-events-none" aria-hidden />
+                  <Home className="w-3 h-3 pointer-events-none" aria-hidden />
                   <span className="pointer-events-none">Hem</span>
                 </button>
                 <ForfeitButton

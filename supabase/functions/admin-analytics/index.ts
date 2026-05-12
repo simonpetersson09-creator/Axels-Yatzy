@@ -65,23 +65,28 @@ Deno.serve(async (req) => {
     const wauSet = new Set<string>();
     const mauSet = new Set<string>();
 
+    const uniqueSessions = new Set<string>();
+
     for (const e of evs) {
       const day = e.created_at.slice(0, 10);
       eventsByDay.set(day, (eventsByDay.get(day) ?? 0) + 1);
       eventCounts.set(e.event_name, (eventCounts.get(e.event_name) ?? 0) + 1);
       if (e.platform) platforms.set(e.platform, (platforms.get(e.platform) ?? 0) + 1);
 
-      if (e.local_user_id) {
-        const uid = e.local_user_id;
+      // Prefer the new device_id, fall back to legacy local_user_id rows.
+      const deviceId: string | null = e.device_id ?? e.local_user_id ?? null;
+      if (e.session_id) uniqueSessions.add(e.session_id);
+
+      if (deviceId) {
         if (!dauMap.has(day)) dauMap.set(day, new Set());
-        dauMap.get(day)!.add(uid);
+        dauMap.get(day)!.add(deviceId);
 
-        if (day >= day1) dauSet.add(uid);
-        if (day >= day7) wauSet.add(uid);
-        if (day >= day30) mauSet.add(uid);
+        if (day >= day1) dauSet.add(deviceId);
+        if (day >= day7) wauSet.add(deviceId);
+        if (day >= day30) mauSet.add(deviceId);
 
-        if (!userFirstSeen.has(uid) || day < userFirstSeen.get(uid)!) userFirstSeen.set(uid, day);
-        if (!userLastSeen.has(uid) || day > userLastSeen.get(uid)!) userLastSeen.set(uid, day);
+        if (!userFirstSeen.has(deviceId) || day < userFirstSeen.get(deviceId)!) userFirstSeen.set(deviceId, day);
+        if (!userLastSeen.has(deviceId) || day > userLastSeen.get(deviceId)!) userLastSeen.set(deviceId, day);
       }
 
       switch (e.event_name) {
@@ -90,8 +95,8 @@ Deno.serve(async (req) => {
           startedByDay.set(day, (startedByDay.get(day) ?? 0) + 1);
           if (e.game_mode === "quick") quickMatch++;
           else if (e.game_mode === "multiplayer") multiplayer++;
-          if (e.local_user_id)
-            userGameCount.set(e.local_user_id, (userGameCount.get(e.local_user_id) ?? 0) + 1);
+          if (deviceId)
+            userGameCount.set(deviceId, (userGameCount.get(deviceId) ?? 0) + 1);
           break;
         case "quick_match_started":
           quickMatch++;

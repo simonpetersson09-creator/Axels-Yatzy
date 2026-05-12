@@ -240,6 +240,7 @@ export default function GamePage() {
       const allSame = dice.every(d => d === dice[0]);
       if (allSame) {
         setShowYatzyCelebration(true);
+        trackEvent('yatzy_scored', undefined, { gameMode: 'single_player' });
       }
     }
     console.log('scoreboard-save-request', {

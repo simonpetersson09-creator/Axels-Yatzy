@@ -41,7 +41,7 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
 
         {/* Game code */}
         <div className="glass-card p-6 text-center space-y-3">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">Spelkod</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">{t('gameCode')}</p>
           <div className="flex items-center justify-center gap-3">
             <span className="text-4xl font-display font-bold text-gold-gradient tracking-[0.3em]">
               {gameCode}

@@ -17,7 +17,7 @@ export function playYatzySound() {
 
   const now = ctx.currentTime;
 
-  // Rising arpeggio — 4 quick notes
+  // Rising arpeggio — 4 quick notes (punchy, fast)
   const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
   notes.forEach((freq, i) => {
     const osc = ctx.createOscillator();
@@ -25,17 +25,17 @@ export function playYatzySound() {
     osc.frequency.value = freq;
 
     const gain = ctx.createGain();
-    const startTime = now + i * 0.09;
+    const startTime = now + i * 0.06;
     gain.gain.setValueAtTime(0, startTime);
-    gain.gain.linearRampToValueAtTime(0.15, startTime + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+    gain.gain.linearRampToValueAtTime(0.2, startTime + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.14);
 
     osc.connect(gain).connect(ctx.destination);
     osc.start(startTime);
-    osc.stop(startTime + 0.3);
+    osc.stop(startTime + 0.18);
   });
 
-  // Final shimmer chord
+  // Final shimmer chord (short, tight)
   const chordFreqs = [1047, 1319, 1568];
   chordFreqs.forEach((freq) => {
     const osc = ctx.createOscillator();
@@ -43,13 +43,13 @@ export function playYatzySound() {
     osc.frequency.value = freq;
 
     const gain = ctx.createGain();
-    const startTime = now + 0.35;
+    const startTime = now + 0.22;
     gain.gain.setValueAtTime(0, startTime);
-    gain.gain.linearRampToValueAtTime(0.08, startTime + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.6);
+    gain.gain.linearRampToValueAtTime(0.1, startTime + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
 
     osc.connect(gain).connect(ctx.destination);
     osc.start(startTime);
-    osc.stop(startTime + 0.65);
+    osc.stop(startTime + 0.4);
   });
 }

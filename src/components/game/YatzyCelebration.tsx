@@ -45,7 +45,7 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
       const timer = setTimeout(() => {
         setVisible(false);
         onComplete();
-      }, 2200);
+      }, 1300);
       return () => clearTimeout(timer);
     }
   }, [show, onComplete]);
@@ -93,10 +93,10 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
                 scale: [0, 1.2, 0.8],
               }}
               transition={{
-                duration: 1.8,
-                delay: p.delay,
+                duration: 1.0,
+                delay: p.delay * 0.4,
                 ease: 'easeOut',
-                y: { duration: 1.8, ease: [0.2, 0, 0.8, 1] },
+                y: { duration: 1.0, ease: [0.2, 0, 0.8, 1] },
               }}
             />
           ))}
@@ -107,7 +107,7 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
             initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: [0, 1.3, 1], rotate: [-10, 3, 0] }}
             exit={{ scale: 0, opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+            transition={{ duration: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
           >
             <span
               className="font-display font-black text-6xl sm:text-7xl tracking-wider"
@@ -125,7 +125,7 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
               style={{ color: 'hsl(42 90% 65%)', textShadow: '0 2px 10px rgba(245,185,66,0.4)' }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.15 }}
             >
               +50
             </motion.span>

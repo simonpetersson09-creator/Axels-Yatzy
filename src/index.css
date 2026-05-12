@@ -183,7 +183,7 @@
   /* Hide the preview frame when the window is too small to fit it
      (e.g. Lovable's mobile preview / a phone browser) — fall back to
      fullscreen so layout still matches the device. */
-  @media (max-width: 480px), (max-height: 880px) {
+  @media (max-width: 392px), (max-height: 851px) {
     html.preview-frame,
     html.preview-frame body {
       display: block;

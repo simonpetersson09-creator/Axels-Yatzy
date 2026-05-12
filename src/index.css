@@ -193,6 +193,29 @@
     max-height: 852px;
   }
 
+  /* Admin route: bypass the iPhone preview frame entirely so the
+     desktop dev-tool layout can use the full window width. */
+  html.preview-frame body.admin-route {
+    display: block;
+    overflow: auto;
+    height: auto;
+    max-height: none;
+  }
+  html.preview-frame.admin-route,
+  html.preview-frame body.admin-route,
+  html.preview-frame #root.admin-route {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+    overflow: visible;
+    border-radius: 0;
+    box-shadow: none;
+    background-image: none;
+  }
+
   /* Hide the preview frame when the window is too small to fit it
      (e.g. Lovable's mobile preview / a phone browser) — fall back to
      fullscreen so layout still matches the device. */

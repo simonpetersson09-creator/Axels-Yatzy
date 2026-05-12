@@ -86,7 +86,7 @@ export default function MultiplayerGamePage() {
     };
   }, []);
 
-  // Handle game finished — record stats and navigate to results
+  // Handle game finished — record stats and navigate to results (single source of truth)
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
       statsRecordedRef.current = true;
@@ -97,14 +97,24 @@ export default function MultiplayerGamePage() {
         scores: p.scores,
       }));
 
+      const isForfeit = !!gameState.forfeitedBy;
+
       if (myPlayerIndex !== null && myPlayerIndex >= 0) {
+        const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
-        const topScore = Math.max(...results.map(r => r.score));
-        const won = myScore === topScore && myScore > 0;
+        let won: boolean;
+        if (isForfeit) {
+          // Winner is anyone who did NOT forfeit
+          won = me?.name !== gameState.forfeitedBy;
+        } else {
+          const topScore = Math.max(...results.map(r => r.score));
+          won = myScore === topScore && myScore > 0;
+        }
         recordGameResult(myScore, won);
       }
 
-      const isForfeit = !!gameState.forfeitedBy;
+      clearActiveGame();
+
       navigate('/results', {
         state: {
           results,
@@ -168,36 +178,11 @@ export default function MultiplayerGamePage() {
   };
 
   const handleForfeit = async () => {
-    if (statsRecordedRef.current) return;
-    statsRecordedRef.current = true;
-
+    // Just call the RPC — the status==='finished' effect handles stats + navigation
     try {
       await forfeitGame();
-
-      if (myPlayerIndex !== null && myPlayerIndex >= 0) {
-        const myScore = getTotalScore(gameState.players[myPlayerIndex]?.scores ?? {});
-        recordGameResult(myScore, false);
-      }
-
-      clearActiveGame();
-
-      const myName = myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : 'Spelare';
-      const results = gameState.players.map(p => ({
-        name: p.name,
-        score: getTotalScore(p.scores),
-        scores: p.scores,
-      }));
-      navigate('/results', {
-        state: {
-          results,
-          forfeit: true,
-          forfeitPlayerName: myName,
-          isMultiplayer: true,
-        },
-      });
     } catch (err) {
       console.error('Forfeit failed:', err);
-      statsRecordedRef.current = false;
     }
   };
 

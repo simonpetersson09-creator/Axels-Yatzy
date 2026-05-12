@@ -18,6 +18,18 @@ interface MultiplayerState {
 const HEARTBEAT_INTERVAL_MS = 15_000;
 const INACTIVE_TIMEOUT_S = 60;
 const INACTIVE_CHECK_INTERVAL_MS = 10_000;
+const NETWORK_TIMEOUT_MS = 15_000;
+
+// Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
+function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('timeout')), ms);
+    promise.then(
+      (v) => { clearTimeout(t); resolve(v); },
+      (e) => { clearTimeout(t); reject(e); },
+    );
+  });
+}
 
 export function useMultiplayerGame() {
   const [state, setState] = useState<MultiplayerState>({
@@ -263,13 +275,17 @@ export function useMultiplayerGame() {
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
     try {
-      const { error } = await supabase.functions.invoke('roll-dice', {
+      const { error } = await withTimeout(supabase.functions.invoke('roll-dice', {
         body: { game_id: state.gameId, session_id: sessionId },
-      });
+      }));
 
       if (error) {
         console.error('Roll dice error:', error);
       }
+    } catch (err) {
+      console.error('Roll dice failed:', err);
+      const msg = (err as Error)?.message === 'timeout' ? 'Anslutningen tog för lång tid. Försök igen.' : 'Kunde inte kasta tärningarna';
+      if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
       rollingTimerRef.current = setTimeout(() => {
@@ -288,12 +304,13 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
-    const { error } = await supabase.functions.invoke('toggle-lock', {
-      body: { game_id: state.gameId, session_id: sessionId, dice_index: index },
-    });
-
-    if (error) {
-      console.error('Toggle lock error:', error);
+    try {
+      const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
+        body: { game_id: state.gameId, session_id: sessionId, dice_index: index },
+      }));
+      if (error) console.error('Toggle lock error:', error);
+    } catch (err) {
+      console.error('Toggle lock failed:', err);
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
@@ -336,13 +353,17 @@ export function useMultiplayerGame() {
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
     try {
-      const { error } = await supabase.functions.invoke('submit-score', {
+      const { error } = await withTimeout(supabase.functions.invoke('submit-score', {
         body: { game_id: state.gameId, session_id: sessionId, category_id: categoryId },
-      });
+      }));
 
       if (error) {
         console.error('Submit score error:', error);
       }
+    } catch (err) {
+      console.error('Submit score failed:', err);
+      const msg = (err as Error)?.message === 'timeout' ? 'Anslutningen tog för lång tid. Försök igen.' : 'Kunde inte spara poäng';
+      if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
       submittingRef.current = false;
     }
@@ -352,13 +373,17 @@ export function useMultiplayerGame() {
   const forfeitGame = useCallback(async () => {
     if (!state.gameId) return;
 
-    const { error } = await supabase.functions.invoke('forfeit-game', {
-      body: { game_id: state.gameId, session_id: sessionId },
-    });
-
-    if (error) {
-      console.error('Forfeit error:', error);
-      throw new Error('Forfeit failed');
+    try {
+      const { error } = await withTimeout(supabase.functions.invoke('forfeit-game', {
+        body: { game_id: state.gameId, session_id: sessionId },
+      }));
+      if (error) {
+        console.error('Forfeit error:', error);
+        throw new Error('Forfeit failed');
+      }
+    } catch (err) {
+      console.error('Forfeit failed:', err);
+      throw err instanceof Error ? err : new Error('Forfeit failed');
     }
   }, [state.gameId, sessionId]);
 
@@ -403,6 +428,33 @@ export function useMultiplayerGame() {
       cleanupTimers();
     }
   }, [state.status, cleanupTimers]);
+
+  // Foreground reconnect (iOS Capacitor / Safari): re-subscribe + refresh + heartbeat
+  // when the app comes back from background. Avoids dead realtime channels after suspend.
+  useEffect(() => {
+    const gameId = state.gameId;
+    if (!gameId || state.status === 'finished') return;
+
+    const handleForeground = () => {
+      if (document.visibilityState !== 'visible') return;
+      // Re-subscribe (cleanupChannel inside subscribeToGame avoids duplicates)
+      subscribeToGame(gameId);
+      // Pull latest state
+      refreshGameStateRef.current?.(gameId);
+      // Refresh presence
+      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+    };
+
+    document.addEventListener('visibilitychange', handleForeground);
+    window.addEventListener('pageshow', handleForeground);
+    window.addEventListener('focus', handleForeground);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleForeground);
+      window.removeEventListener('pageshow', handleForeground);
+      window.removeEventListener('focus', handleForeground);
+    };
+  }, [state.gameId, state.status, subscribeToGame, sessionId]);
 
   // Cleanup on unmount
   useEffect(() => {

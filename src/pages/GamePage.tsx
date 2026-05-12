@@ -382,13 +382,15 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <div className="game-layout-wrapper" data-ios-layout-wrapper="game-wrapper">
-        <motion.div
-          className="relative flex flex-col gap-2"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        >
+      <div className="safe-area-wrapper" data-ios-layout-wrapper="safe-area-wrapper">
+        <div className="ios-wrapper" data-ios-layout-wrapper="ios-wrapper">
+          <div className="game-layout-wrapper" data-ios-layout-wrapper="game-board-wrapper">
+            <motion.div
+              className="relative flex flex-col gap-2"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            >
         <div className="game-board-frame flex w-full max-w-full gap-1 items-stretch" data-ios-layout-wrapper="game-board">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
@@ -532,7 +534,9 @@ export default function GamePage() {
             </div>
           </div>
         </div>
-        </motion.div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );

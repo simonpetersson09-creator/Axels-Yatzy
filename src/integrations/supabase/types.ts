@@ -59,6 +59,39 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_sessions: {
+        Row: {
+          app_version: string | null
+          device_id: string | null
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          last_seen_at: string
+          platform: string | null
+          started_at: string
+        }
+        Insert: {
+          app_version?: string | null
+          device_id?: string | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id: string
+          last_seen_at?: string
+          platform?: string | null
+          started_at?: string
+        }
+        Update: {
+          app_version?: string | null
+          device_id?: string | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          last_seen_at?: string
+          platform?: string | null
+          started_at?: string
+        }
+        Relationships: []
+      }
       friend_match_results: {
         Row: {
           created_at: string

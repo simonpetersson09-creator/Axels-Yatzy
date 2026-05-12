@@ -144,8 +144,24 @@ export const sv = {
   avatarSaved: 'Profilbild sparad',
   avatarRemoved: 'Profilbild borttagen',
   languageSaved: 'Språk uppdaterat',
+  // Friend stats
+  friendStats: 'Vänstatistik',
+  friendStatsTitle: 'Vänstatistik',
+  friendStatsEmpty: 'Spela med en vän för att bygga upp statistik',
+  friendStatsBack: 'Tillbaka',
+  friendsMatches: 'matcher',
+  friendsWins: 'Vinster',
+  friendsLosses: 'Förluster',
+  friendsDraws: 'Oavgjorda',
+  friendsHighScore: 'Högsta poäng',
+  friendsLastMatch: 'Senaste match',
+  friendsLastResult: 'Senaste resultat',
+  friendsHeadToHead: 'Head-to-head',
+  friendsRecentMatches: 'Senaste matcher',
+  friendsYouWon: 'Vinst',
+  friendsYouLost: 'Förlust',
+  friendsDraw: 'Oavgjort',
 
-  // Not found
   notFound: 'Sidan kunde inte hittas',
   returnHome: 'Tillbaka till startsidan',
 };

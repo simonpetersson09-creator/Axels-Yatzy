@@ -531,7 +531,7 @@ export default function GamePage() {
   );
 
   if (nativeIosGameLayout) {
-    return (
+    const layout = (
       <div
         key={orientationKey}
         className="ios-game-layout"
@@ -551,6 +551,32 @@ export default function GamePage() {
         {renderGameBoard(true)}
       </div>
     );
+
+    if (iosPreviewParam && !Capacitor.isNativePlatform()) {
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center gap-3 bg-background p-6">
+          <div className="text-xs font-mono uppercase tracking-widest text-primary">
+            iOS Preview Mode · iPhone 15 (393×852)
+          </div>
+          <div
+            style={{
+              width: 393,
+              height: 852,
+              border: '2px solid hsl(var(--primary))',
+              borderRadius: 40,
+              overflow: 'hidden',
+              position: 'relative',
+              background: 'hsl(var(--background))',
+              boxShadow: '0 20px 60px -10px hsl(0 0% 0% / 0.6)',
+            }}
+          >
+            {layout}
+          </div>
+        </div>
+      );
+    }
+
+    return layout;
   }
 
   return (

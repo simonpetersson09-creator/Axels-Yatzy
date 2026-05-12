@@ -86,7 +86,7 @@ export default function MultiplayerGamePage() {
     };
   }, []);
 
-  // Handle game finished — record stats and navigate to results
+  // Handle game finished — record stats and navigate to results (single source of truth)
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
       statsRecordedRef.current = true;
@@ -97,14 +97,24 @@ export default function MultiplayerGamePage() {
         scores: p.scores,
       }));
 
+      const isForfeit = !!gameState.forfeitedBy;
+
       if (myPlayerIndex !== null && myPlayerIndex >= 0) {
+        const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
-        const topScore = Math.max(...results.map(r => r.score));
-        const won = myScore === topScore && myScore > 0;
+        let won: boolean;
+        if (isForfeit) {
+          // Winner is anyone who did NOT forfeit
+          won = me?.name !== gameState.forfeitedBy;
+        } else {
+          const topScore = Math.max(...results.map(r => r.score));
+          won = myScore === topScore && myScore > 0;
+        }
         recordGameResult(myScore, won);
       }
 
-      const isForfeit = !!gameState.forfeitedBy;
+      clearActiveGame();
+
       navigate('/results', {
         state: {
           results,

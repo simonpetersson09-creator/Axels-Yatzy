@@ -1,6 +1,9 @@
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, RotateCcw, Home } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { fireWinConfetti, tryHapticWin } from '@/lib/confetti';
+import { playWinSound } from '@/lib/win-sound';
 
 interface PlayerResult {
   name: string;
@@ -22,6 +25,29 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
   const winner = sorted[0];
   const isHumanPlayer = players.length > 0 && !aiPlayers.includes(0);
   const humanWon = isHumanPlayer && winner?.name === players[0]?.name;
+
+  // Trigger confetti + win sound + haptic exactly once per show-cycle when the
+  // local human player wins. Cleans up if the overlay closes early.
+  const firedRef = useRef(false);
+  const cleanupRef = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    if (!show) {
+      firedRef.current = false;
+      cleanupRef.current?.();
+      cleanupRef.current = null;
+      return;
+    }
+    if (humanWon && !firedRef.current) {
+      firedRef.current = true;
+      // Slight delay so confetti enters with the trophy reveal.
+      const timeout = window.setTimeout(() => {
+        cleanupRef.current = fireWinConfetti({ durationMs: 2800 });
+        playWinSound();
+        tryHapticWin();
+      }, 250);
+      return () => window.clearTimeout(timeout);
+    }
+  }, [show, humanWon]);
 
   return (
     <AnimatePresence>

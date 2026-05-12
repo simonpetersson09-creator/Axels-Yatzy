@@ -397,7 +397,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       </div>
 
       {/* Upper section */}
-      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${nativeIos ? 'h-[16px]' : 'h-[20px]'}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div className={`border-b border-yatzy-line/30 px-3 flex items-center justify-center ${nativeIos ? 'h-[14px]' : 'h-[20px]'}`} style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] font-normal text-black uppercase tracking-[0.15em]">{t('upperSection')}</span>
       </div>
       {upperCats.map((cat, idx) => renderRow(cat, idx))}

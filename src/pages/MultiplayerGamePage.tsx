@@ -116,6 +116,42 @@ export default function MultiplayerGamePage() {
         const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
         recordGameResult(myScore, won, yatzys);
         trackEvent('game_finished', { won, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+
+        // Save head-to-head friend stats — only host writes (avoids duplicates),
+        // only for true 1v1 multiplayer matches.
+        if (myPlayerIndex === 0 && gameState.players.length === 2 && gameId) {
+          (async () => {
+            try {
+              const { data: rows } = await supabase
+                .from('game_players')
+                .select('player_index, session_id')
+                .eq('game_id', gameId);
+              const idMap = new Map<number, string>();
+              (rows ?? []).forEach((r: any) => idMap.set(r.player_index, r.session_id));
+              const p1 = gameState.players[0];
+              const p2 = gameState.players[1];
+              const s1 = results[0].score;
+              const s2 = results[1].score;
+              const id1 = idMap.get(0) ?? `anon-${gameId}-0`;
+              const id2 = idMap.get(1) ?? `anon-${gameId}-1`;
+              let winnerId: string | null = null;
+              if (isForfeit) {
+                winnerId = p1.name === gameState.forfeitedBy ? id2
+                  : p2.name === gameState.forfeitedBy ? id1 : null;
+              } else if (s1 !== s2) {
+                winnerId = s1 > s2 ? id1 : id2;
+              }
+              saveFriendMatchResult({
+                gameId,
+                player1: { id: id1, name: p1.name, score: s1 },
+                player2: { id: id2, name: p2.name, score: s2 },
+                winnerId,
+              });
+            } catch (err) {
+              console.warn('[friend-stats] could not record match', err);
+            }
+          })();
+        }
       }
 
       clearActiveGame();

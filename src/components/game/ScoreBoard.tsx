@@ -14,6 +14,7 @@ interface ScoreBoardProps {
   rollsLeft: number;
   aiChosenCategory?: string | null;
   selectionDisabled?: boolean;
+  nativeIos?: boolean;
 }
 
 export interface ScoreboardClickDebug {
@@ -157,9 +158,12 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled }: ScoreBoardProps) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled, nativeIos = false }: ScoreBoardProps) {
   const { t } = useTranslation();
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
+  const rowHeight = nativeIos ? 'h-[28px]' : ROW_H;
+  const labelWidth = nativeIos ? 'w-[70px] min-w-[70px]' : LABEL_W;
+  const colWidth = nativeIos ? 'min-w-[34px] w-[34px]' : COL_W;
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({
     pointerType: 'unknown',
     clientX: null,

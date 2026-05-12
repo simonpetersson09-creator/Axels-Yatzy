@@ -1,14 +1,18 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/useMultiplayerGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
+import { YatzyCelebration } from '@/components/game/YatzyCelebration';
+import { CombinationCelebration } from '@/components/game/CombinationCelebration';
+import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
+import { playRollSound } from '@/lib/dice-sounds';
+import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { motion } from 'framer-motion';
-import { Home } from 'lucide-react';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
@@ -21,6 +25,13 @@ export default function MultiplayerGamePage() {
   const gameId = searchParams.get('gameId');
   const statsRecordedRef = useRef(false);
   const rejoinCalledRef = useRef<string | null>(null);
+  const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
+  useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
+
+  const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
+  const activeCelebration = useCombinationCelebration(gameState);
 
   useEffect(() => {
     if (gameId && !gameState && rejoinCalledRef.current !== gameId) {
@@ -39,6 +50,42 @@ export default function MultiplayerGamePage() {
     }
   }, [gameId, status]);
 
+  // Scroll-lock + touchmove prevent (same as GamePage)
+  useEffect(() => {
+    document.documentElement.classList.add('game-scroll-lock');
+    document.body.classList.add('game-scroll-lock');
+    document.getElementById('root')?.classList.add('game-scroll-lock');
+    const preventScroll = (e: TouchEvent) => e.preventDefault();
+    document.addEventListener('touchmove', preventScroll, { passive: false });
+    return () => {
+      document.removeEventListener('touchmove', preventScroll);
+      document.documentElement.classList.remove('game-scroll-lock');
+      document.body.classList.remove('game-scroll-lock');
+      document.getElementById('root')?.classList.remove('game-scroll-lock');
+    };
+  }, []);
+
+  // Force full re-layout on orientation/viewport change (iOS Safari/Capacitor fix)
+  const [orientationKey, setOrientationKey] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const bump = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setOrientationKey((k) => k + 1));
+      });
+    };
+    window.addEventListener('orientationchange', bump);
+    window.addEventListener('resize', bump);
+    window.visualViewport?.addEventListener('resize', bump);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('orientationchange', bump);
+      window.removeEventListener('resize', bump);
+      window.visualViewport?.removeEventListener('resize', bump);
+    };
+  }, []);
+
   // Handle game finished — record stats and navigate to results
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
@@ -50,7 +97,6 @@ export default function MultiplayerGamePage() {
         scores: p.scores,
       }));
 
-      // Record local stats for multiplayer
       if (myPlayerIndex !== null && myPlayerIndex >= 0) {
         const myScore = results[myPlayerIndex]?.score ?? 0;
         const topScore = Math.max(...results.map(r => r.score));
@@ -107,6 +153,20 @@ export default function MultiplayerGamePage() {
     { ring: 'ring-yatzy-player4', bg: 'bg-yatzy-player4', glow: 'shadow-[0_0_8px_hsl(350_65%_52%/0.5)]' },
   ];
 
+  const handleRoll = () => {
+    playRollSound();
+    roll();
+  };
+
+  const handleSelectCategory = (categoryId: string) => {
+    if (!isMyTurn) return;
+    if (categoryId === 'yatzy') {
+      const allSame = gameState.dice.every(d => d === gameState.dice[0]);
+      if (allSame) setShowYatzyCelebration(true);
+    }
+    selectCategory(categoryId as any);
+  };
+
   const handleForfeit = async () => {
     if (statsRecordedRef.current) return;
     statsRecordedRef.current = true;
@@ -114,7 +174,6 @@ export default function MultiplayerGamePage() {
     try {
       await forfeitGame();
 
-      // Record stats as loss AFTER server confirms
       if (myPlayerIndex !== null && myPlayerIndex >= 0) {
         const myScore = getTotalScore(gameState.players[myPlayerIndex]?.scores ?? {});
         recordGameResult(myScore, false);
@@ -142,54 +201,80 @@ export default function MultiplayerGamePage() {
     }
   };
 
+  const opponentName = myPlayerIndex !== null && gameState.players.length > 1
+    ? gameState.players.filter((_, i) => i !== myPlayerIndex).map(p => p.name).join(', ')
+    : undefined;
+
   return (
-    <div className="app-screen px-2 sm:px-4 py-2 sm:py-6 safe-top safe-bottom flex items-start justify-center overflow-x-hidden">
+    <div
+      key={orientationKey}
+      className="ios-game-layout app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none"
+      style={{
+        WebkitOverflowScrolling: 'auto',
+        padding: '10px max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left))',
+        boxSizing: 'border-box',
+      }}
+    >
+      <YatzyCelebration
+        show={showYatzyCelebration}
+        onComplete={() => setShowYatzyCelebration(false)}
+      />
       <motion.div
-        className="flex flex-col gap-4"
+        className="ios-game-card relative flex flex-col gap-2"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        {/* Game code */}
         {gameCode && (
-          <p className="text-center text-[9px] text-muted-foreground/50 font-mono tracking-wider">
+          <p className="text-center text-[9px] text-muted-foreground/50 font-mono tracking-wider mt-1">
             Kod: {gameCode}
           </p>
         )}
 
-        {/* Scoreboard + Players + Dice */}
-        <div className="flex gap-2 sm:gap-6 items-stretch">
-          <div className="game-shadow-soft rounded-lg overflow-hidden">
-            <ScoreBoard
-              players={gameState.players}
-              currentPlayerIndex={gameState.currentPlayerIndex}
-              possibleScores={possibleScores}
-              onSelectCategory={selectCategory}
-              rollsLeft={gameState.rollsLeft}
-              selectionDisabled={!isMyTurn}
-            />
+        <div className="flex w-full max-w-full gap-1 items-start mt-[40px] mb-0">
+          {/* Left: Scoreboard */}
+          <div className="ios-score-zone flex flex-col gap-3 self-start">
+            <div className="relative game-shadow-soft rounded-lg overflow-hidden">
+              <ScoreBoard
+                players={gameState.players}
+                currentPlayerIndex={gameState.currentPlayerIndex}
+                possibleScores={possibleScores}
+                onSelectCategory={handleSelectCategory}
+                rollsLeft={gameState.rollsLeft}
+                selectionDisabled={!isMyTurn}
+              />
+              <CombinationCelebration type={activeCelebration} />
+            </div>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="ios-side-zone flex w-[108px] flex-shrink-0 flex-col gap-2 self-start">
             {/* Player indicators */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1 h-[124px]">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const isMe = idx === myPlayerIndex;
                 const color = PLAYER_COLORS[idx];
+                const label = `P${idx + 1}`;
+                const showAvatar = isMe && !!avatarUrl;
                 return (
                   <motion.div
                     key={player.id}
-                    className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all ${
+                    className={`flex items-center gap-2.5 px-2 py-1 rounded-xl transition-all ${
                       isCurrent ? 'bg-secondary/80' : ''
                     }`}
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
-                    <div className={`w-5 h-5 rounded-full ${color.bg} ring-2 ring-offset-2 ring-offset-background ${
+                    <div className={`w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
-                    } transition-all`} />
-                    <span className={`text-[12px] font-semibold truncate max-w-[80px] ${
+                    } transition-all flex items-center justify-center`}>
+                      {showAvatar ? (
+                        <img src={avatarUrl!} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
+                      )}
+                    </div>
+                    <span className={`text-[12px] font-semibold truncate max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
                       {player.name}{isMe ? ' (du)' : ''}
@@ -214,55 +299,82 @@ export default function MultiplayerGamePage() {
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}
               isRolling={localRolling || gameState.isRolling}
-              onToggleLock={toggleLock}
+              onToggleLock={isMyTurn ? toggleLock : () => {}}
+              compact
             />
+
+            {/* Bottom: Roll + Home + Forfeit */}
+            <div
+              className="ios-action-zone flex flex-col items-center gap-2"
+              style={{ isolation: 'isolate', marginTop: '60px' }}
+            >
+              <button
+                type="button"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  pressedButtonRef.current = 'kasta';
+                  (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                }}
+                onPointerUp={(e) => {
+                  e.stopPropagation();
+                  if (pressedButtonRef.current !== 'kasta') return;
+                  pressedButtonRef.current = null;
+                  if (canRoll && !gameState.isRolling && !localRolling) handleRoll();
+                }}
+                onPointerCancel={() => { pressedButtonRef.current = null; }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                disabled={!canRoll || gameState.isRolling || localRolling}
+                className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
+                  canRoll && !gameState.isRolling && !localRolling
+                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
+                    : 'bg-secondary text-muted-foreground shadow-none'
+                }`}
+                style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
+              >
+                <span className="pointer-events-none text-center leading-tight px-1">
+                  {!isMyTurn
+                    ? '⏳'
+                    : gameState.rollsLeft === 3 ? 'Kasta' : gameState.rollsLeft === 0 ? '—' : 'Kasta'}
+                </span>
+              </button>
+
+              <div className="flex items-center justify-center gap-2 w-full mt-0" style={{ position: 'relative', zIndex: 2 }}>
+                <button
+                  type="button"
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    pressedButtonRef.current = 'home';
+                    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                  }}
+                  onPointerUp={(e) => {
+                    e.stopPropagation();
+                    if (pressedButtonRef.current !== 'home') return;
+                    pressedButtonRef.current = null;
+                    navigate('/');
+                  }}
+                  onPointerCancel={() => { pressedButtonRef.current = null; }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  className="inline-flex items-center justify-center px-2 min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
+                  style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+                  title="Till menyn"
+                  aria-label="Hem"
+                >
+                  <span className="pointer-events-none">Hem</span>
+                </button>
+                <ForfeitButton
+                  onConfirm={handleForfeit}
+                  playerName={opponentName}
+                  pressedButtonRef={pressedButtonRef}
+                />
+              </div>
+
+              {!isMyTurn && (
+                <p className="text-center text-[10px] text-muted-foreground/70 font-medium px-1 mt-1 leading-tight">
+                  Väntar på {currentPlayer.name}…
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-
-        {/* Roll count */}
-        <p className="text-center text-[11px] text-muted-foreground/60 font-medium tabular-nums tracking-wide">
-          {gameState.rollsLeft === 3
-            ? '\u00A0'
-            : gameState.rollsLeft === 0
-              ? 'Välj en kategori på brickan'
-              : `Kast ${3 - gameState.rollsLeft} / 3`}
-        </p>
-
-        {/* Home + Forfeit + Roll button row */}
-        <div className="flex gap-3 items-stretch">
-          <button
-            onClick={() => navigate('/')}
-            className="px-4 rounded-2xl bg-secondary hover:bg-secondary/80 transition-colors flex items-center justify-center"
-            title="Till menyn"
-          >
-            <Home className="w-4 h-4 text-muted-foreground" />
-          </button>
-          <ForfeitButton
-            onConfirm={handleForfeit}
-            playerName={
-              myPlayerIndex !== null && gameState.players.length > 1
-                ? gameState.players.filter((_, i) => i !== myPlayerIndex).map(p => p.name).join(', ')
-                : undefined
-            }
-          />
-          <motion.button
-            onClick={roll}
-            disabled={!canRoll || gameState.isRolling}
-            className={`flex-1 py-4 rounded-2xl font-display font-bold text-[15px] tracking-wide transition-all ${
-              canRoll && !gameState.isRolling
-                ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_28px_-4px_hsl(42_88%_52%/0.35),0_2px_8px_-2px_hsl(0_0%_0%/0.35)] active:scale-[0.97]'
-                : 'bg-secondary text-muted-foreground shadow-none'
-            }`}
-            whileTap={canRoll ? { scale: 0.97 } : {}}
-          >
-            {!isMyTurn
-              ? `Väntar på ${currentPlayer.name}...`
-              : gameState.rollsLeft === 3
-                ? 'Kasta'
-                : gameState.rollsLeft === 0
-                  ? 'Välj kategori'
-                  : 'Kasta igen'}
-          </motion.button>
         </div>
       </motion.div>
     </div>

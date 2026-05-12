@@ -20,6 +20,8 @@ interface Stats {
     forfeits: number;
     roomsCreated: number;
     roomsJoined: number;
+    uniqueDevices?: number;
+    uniqueSessions?: number;
     uniqueUsers: number;
   };
   activity: {
@@ -39,6 +41,9 @@ interface Stats {
   recent: {
     event_name: string;
     local_user_id: string | null;
+    device_id?: string | null;
+    session_id?: string | null;
+    auth_user_id?: string | null;
     game_mode: string | null;
     metadata: Record<string, unknown> | null;
     created_at: string;
@@ -194,7 +199,8 @@ export default function AdminPage() {
       { label: "DAU", value: n(a.dau), spark: series.slice(-14).map((s) => s.users) },
       { label: "WAU", value: n(a.wau) },
       { label: "MAU", value: n(a.mau) },
-      { label: "Unique users (30d)", value: n(t.uniqueUsers) },
+      { label: "Unique devices (30d)", value: n(t.uniqueDevices ?? t.uniqueUsers) },
+      { label: "Unique sessions (30d)", value: n(t.uniqueSessions) },
       { label: "Events (30d)", value: n(t.events), spark: series.map((s) => s.events) },
       { label: "Games started", value: n(t.started), spark: series.map((s) => s.started) },
       { label: "Games finished", value: n(t.finished), spark: series.map((s) => s.finished) },
@@ -379,7 +385,8 @@ export default function AdminPage() {
                   <th className="py-1 pr-4">Event</th>
                   <th className="py-1 pr-4">Mode</th>
                   <th className="py-1 pr-4">Platform</th>
-                  <th className="py-1 pr-4">User</th>
+                  <th className="py-1 pr-4">Device</th>
+                  <th className="py-1 pr-4">Session</th>
                   <th className="py-1">Metadata</th>
                 </tr>
               </thead>
@@ -392,7 +399,10 @@ export default function AdminPage() {
                     <td className="py-1 pr-4 font-mono">{e.event_name}</td>
                     <td className="py-1 pr-4">{e.game_mode ?? "—"}</td>
                     <td className="py-1 pr-4">{e.platform ?? "—"}</td>
-                    <td className="py-1 pr-4 font-mono">{e.local_user_id?.slice(0, 8) ?? "—"}</td>
+                    <td className="py-1 pr-4 font-mono">
+                      {(e.device_id ?? e.local_user_id)?.slice(0, 8) ?? "—"}
+                    </td>
+                    <td className="py-1 pr-4 font-mono">{e.session_id?.slice(0, 8) ?? "—"}</td>
                     <td className="py-1 font-mono text-muted-foreground">
                       {e.metadata ? JSON.stringify(e.metadata) : ""}
                     </td>

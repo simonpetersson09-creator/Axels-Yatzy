@@ -1,9 +1,16 @@
 // Silent, fire-and-forget analytics. Never throws. Never blocks UI.
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId } from '@/lib/session';
+import {
+  getAnalyticsSessionId,
+  getAuthUserId,
+  getDeviceIdSync,
+  initDeviceId,
+} from '@/lib/device';
 
-const LOCAL_USER_KEY = 'yatzy_local_user_id';
 const APP_VERSION = '1.0.0';
+
+// Resolve the persistent device id as early as possible.
+void initDeviceId();
 
 export type AnalyticsEvent =
   | 'app_opened'
@@ -20,25 +27,15 @@ export type AnalyticsEvent =
 interface QueuedEvent {
   event_name: string;
   session_id: string | null;
+  device_id: string | null;
+  auth_user_id: string | null;
+  // Kept for backwards-compatibility with existing rows / queries.
   local_user_id: string | null;
   game_id: string | null;
   game_mode: string | null;
   metadata: Record<string, unknown> | null;
   platform: string;
   app_version: string;
-}
-
-function getLocalUserId(): string {
-  try {
-    let id = localStorage.getItem(LOCAL_USER_KEY);
-    if (!id) {
-      id = crypto.randomUUID();
-      localStorage.setItem(LOCAL_USER_KEY, id);
-    }
-    return id;
-  } catch {
-    return 'anonymous';
-  }
 }
 
 function getPlatform(): string {
@@ -63,6 +60,17 @@ async function flush(): Promise<void> {
     flushTimer = null;
   }
   if (queue.length === 0) return;
+  // Make sure the device id is resolved before flushing the first batch
+  // so events sent during the brief init window get tagged correctly.
+  try {
+    const id = await initDeviceId();
+    for (const ev of queue) {
+      if (!ev.device_id) ev.device_id = id;
+      if (!ev.local_user_id) ev.local_user_id = id;
+    }
+  } catch {
+    // ignore; device id may stay null for these events
+  }
   const batch = queue.splice(0, MAX_BATCH);
   try {
     await supabase.from('analytics_events').insert(batch as any);
@@ -90,10 +98,15 @@ export function trackEvent(
   options?: TrackOptions,
 ): void {
   try {
+    const deviceId = getDeviceIdSync();
     queue.push({
       event_name: eventName,
-      session_id: getSessionId(),
-      local_user_id: getLocalUserId(),
+      session_id: getAnalyticsSessionId(),
+      device_id: deviceId,
+      auth_user_id: getAuthUserId(),
+      // Mirror device id into the legacy column so historical aggregates
+      // keep working until we fully retire `local_user_id`.
+      local_user_id: deviceId,
       game_id: options?.gameId ?? null,
       game_mode: options?.gameMode ?? null,
       metadata: metadata ?? null,

@@ -93,6 +93,48 @@ export function getTotalScore(scores: Record<string, number | null>): number {
   return allScores + bonus;
 }
 
+/**
+ * Roll a single fair die 1–6 using crypto.getRandomValues with rejection
+ * sampling (unbiased). Falls back to Math.random if crypto is unavailable.
+ * Each call is independent — no seed, no state, no carry-over.
+ */
+export function rollSingleDie(): number {
+  try {
+    const cryptoObj = (typeof globalThis !== 'undefined' ? (globalThis as any).crypto : undefined);
+    if (cryptoObj?.getRandomValues) {
+      const buf = new Uint8Array(1);
+      // Rejection sampling: 252 = 6 * 42, accept only values < 252 to avoid modulo bias.
+      // Loop is bounded statistically (P(reject) = 4/256 per draw).
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        cryptoObj.getRandomValues(buf);
+        if (buf[0] < 252) return (buf[0] % 6) + 1;
+      }
+    }
+  } catch {
+    // fall through
+  }
+  return Math.floor(Math.random() * 6) + 1;
+}
+
 export function rollDice(current: number[], locked: boolean[]): number[] {
-  return current.map((val, i) => locked[i] ? val : Math.floor(Math.random() * 6) + 1);
+  // Each non-locked die is rolled independently with a fresh random draw.
+  // Locked dice keep their previous value — that is the only carry-over.
+  return current.map((val, i) => (locked[i] ? val : rollSingleDie()));
+}
+
+/**
+ * Dev-only: roll N dice and return distribution counts for sides 1–6.
+ * Exposed on window.__diceDistribution in dev for quick verification.
+ */
+export function diceDistributionTest(n = 10000): { counts: Record<number, number>; pct: Record<number, string> } {
+  const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+  for (let i = 0; i < n; i++) counts[rollSingleDie()]++;
+  const pct: Record<number, string> = {} as any;
+  for (const k of [1, 2, 3, 4, 5, 6]) pct[k] = ((counts[k] / n) * 100).toFixed(2) + '%';
+  return { counts, pct };
+}
+
+if (typeof window !== 'undefined' && import.meta.env?.DEV) {
+  (window as any).__diceDistribution = diceDistributionTest;
 }

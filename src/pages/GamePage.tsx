@@ -122,6 +122,10 @@ export default function GamePage() {
 
     root.classList.add('ios-game-layout-debug-active');
     const logLayout = () => {
+      const safeAreaProbe = document.createElement('div');
+      safeAreaProbe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);';
+      document.body.appendChild(safeAreaProbe);
+      const safeAreaStyles = getComputedStyle(safeAreaProbe);
       const layoutShell = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-shell"]');
       const gameBoard = document.querySelector<HTMLElement>('[data-ios-layout-wrapper="game-board"]');
       const shellStyles = layoutShell ? getComputedStyle(layoutShell) : null;
@@ -130,8 +134,10 @@ export default function GamePage() {
         isCapacitor: Capacitor.isNativePlatform(),
         isIOS: root.classList.contains('ios-viewport'),
         viewportHeight: window.visualViewport?.height ?? window.innerHeight,
-        safeAreaTop: shellStyles?.paddingTop ?? null,
-        safeAreaBottom: shellStyles?.paddingBottom ?? null,
+        safeAreaTop: safeAreaStyles.paddingTop,
+        safeAreaBottom: safeAreaStyles.paddingBottom,
+        shellPaddingTop: shellStyles?.paddingTop ?? null,
+        shellPaddingBottom: shellStyles?.paddingBottom ?? null,
         activeLayoutClass: layoutShell?.className ?? 'missing-game-shell',
         activeBoardClass: gameBoard?.className ?? 'missing-game-board',
         boardTop: boardRect?.top ?? null,
@@ -139,6 +145,7 @@ export default function GamePage() {
         boardHeight: boardRect?.height ?? null,
         rootClasses: root.className,
       });
+      safeAreaProbe.remove();
     };
 
     const raf = requestAnimationFrame(logLayout);

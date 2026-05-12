@@ -169,7 +169,10 @@ export default function GamePage() {
           paddingTop: 'paddingTop' in row ? row.paddingTop : null,
           marginTop: 'marginTop' in row ? row.marginTop : null,
         }));
-      const suspectedPusher = contributors.reduce((max, row) => row.top > max.top ? row : max, contributors[0] ?? { name: 'none', top: 0 });
+      const suspectedPusher = contributors.reduce(
+        (max, row) => row.top > max.top ? row : max,
+        contributors[0] ?? { name: 'none', top: 0, offsetTop: null, paddingTop: null, marginTop: null },
+      );
 
       console.info('[ios-game-layout-debug:summary]', {
         isCapacitor: true,

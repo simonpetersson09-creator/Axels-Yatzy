@@ -59,6 +59,7 @@ export default function SettingsPage() {
   const changeLang = (l: Language) => {
     setLanguage(l);
     setLang(l);
+    trackEvent('language_changed', { language: l });
     toast.success(t('languageSaved'));
   };
 

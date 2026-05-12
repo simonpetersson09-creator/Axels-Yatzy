@@ -275,8 +275,12 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="app-fixed-screen px-1 sm:px-4 pt-1 pb-2 sm:py-6 flex items-start sm:items-center justify-start sm:justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
-      style={{ WebkitOverflowScrolling: 'auto' }}
+      className="app-fixed-screen flex items-start sm:items-center justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
+      style={{
+        WebkitOverflowScrolling: 'auto',
+        padding: 'max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left))',
+        boxSizing: 'border-box',
+      }}
     >
       <GameOverOverlay
         show={gameState.gameOver}

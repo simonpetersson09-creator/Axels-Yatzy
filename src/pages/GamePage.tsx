@@ -294,7 +294,7 @@ export default function GamePage() {
         onComplete={() => setShowYatzyCelebration(false)}
       />
       <motion.div
-        className="relative flex flex-col gap-2 sm:gap-4"
+        className="relative flex flex-col gap-2"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -374,7 +374,7 @@ export default function GamePage() {
 
             {/* Bottom: Roll + Home + Forfeit */}
             <div
-              className="flex flex-col items-center gap-2 mt-0 sm:gap-8 sm:mt-12"
+              className="flex flex-col items-center gap-2 mt-0"
               style={{ isolation: 'isolate' }}
             >
               <button
@@ -393,7 +393,7 @@ export default function GamePage() {
                 onPointerCancel={() => { pressedButtonRef.current = null; }}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 disabled={!canRoll || gameState.isRolling}
-                className={`relative w-[88px] h-[88px] sm:w-[92px] sm:h-[92px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
+                className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
                   canRoll && !gameState.isRolling
                     ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
                     : 'bg-secondary text-muted-foreground shadow-none'
@@ -407,7 +407,7 @@ export default function GamePage() {
                 </span>
               </button>
 
-              <div className="flex items-center gap-3 mt-0 sm:mt-[15px]" style={{ position: 'relative', zIndex: 2 }}>
+              <div className="flex items-center gap-3 mt-0" style={{ position: 'relative', zIndex: 2 }}>
                 <button
                   type="button"
                   onPointerDown={(e) => {

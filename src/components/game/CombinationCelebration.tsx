@@ -4,7 +4,7 @@ import { useTranslation, type TranslationKey } from '@/lib/i18n';
 export type CombinationType = 'threeOfAKind' | 'fourOfAKind' | 'smallStraight' | 'largeStraight' | 'fullHouse';
 
 interface CombinationConfig {
-  label: string;
+  labelKey: TranslationKey;
   fontSize: string;
   fontWeight: string;
   gradient: string;

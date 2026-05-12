@@ -43,9 +43,9 @@ const PLAYER_COLORS = [
 const PLAYER_HSL = ['36 82% 52%', '210 70% 52%', '155 60% 42%', '350 65% 52%'];
 
 const SLOT_COUNT = 4;
-const COL_W = 'min-w-[42px] w-[42px] sm:min-w-[56px] sm:w-[56px]';
-const LABEL_W = 'w-[80px] min-w-[80px] sm:w-[110px] sm:min-w-[110px]';
-const ROW_H = 'h-[28px] sm:h-[40px]';
+const COL_W = 'min-w-[42px] w-[42px]';
+const LABEL_W = 'w-[80px] min-w-[80px]';
+const ROW_H = 'h-[28px]';
 
 function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor }: {
   isScored: boolean;
@@ -96,7 +96,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
       {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && playerColor && (
         <motion.span
           aria-hidden
-          className="absolute inset-[2px] rounded-[6px] sm:rounded-[8px] pointer-events-none z-[5]"
+          className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5]"
           style={{
             border: `1.5px solid hsl(${playerColor})`,
             boxShadow: `0 0 6px hsl(${playerColor} / 0.55), inset 0 0 4px hsl(${playerColor} / 0.25)`,
@@ -141,7 +141,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 
       <motion.span
         className={cn(
-          'text-[13px] sm:text-[13px] tabular-nums leading-none',
+          'text-[13px] tabular-nums leading-none',
           isScored && 'font-normal text-yatzy-text',
           canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-normal text-yatzy-highlight',
           canSelect && possibleScore === 0 && 'font-normal text-yatzy-text/25',

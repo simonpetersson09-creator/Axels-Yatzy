@@ -1,7 +1,7 @@
 // Svenska — fallback-språk
 export const sv = {
   // App
-  appName: 'Mr.B Yatzy',
+  appName: 'Mr.B. Yatzy',
   tagline: 'Klassiskt tärningsspel i modern tappning',
   version: 'Version',
 

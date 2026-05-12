@@ -275,7 +275,7 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="app-fixed-screen flex items-start sm:items-center justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
+      className="app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
       style={{
         WebkitOverflowScrolling: 'auto',
         padding: 'max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left))',
@@ -299,7 +299,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex gap-2 sm:gap-6 items-start mt-2 sm:mt-10">
+        <div className="flex gap-2 items-start mt-2">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
@@ -316,9 +316,9 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 sm:gap-4">
+          <div className="flex flex-col gap-2">
             {/* Player indicators */}
-            <div className="flex flex-col gap-1 sm:gap-2 h-[124px] sm:h-[152px]">
+            <div className="flex flex-col gap-1 h-[124px]">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const color = PLAYER_COLORS[idx];
@@ -328,7 +328,7 @@ export default function GamePage() {
                 return (
                   <motion.div
                     key={player.id}
-                    className={`flex items-center gap-2.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl transition-all ${
+                    className={`flex items-center gap-2.5 px-2 py-1 rounded-xl transition-all ${
                       isCurrent ? 'bg-secondary/80' : ''
                     }`}
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
@@ -343,7 +343,7 @@ export default function GamePage() {
                         <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
                       )}
                     </div>
-                    <span className={`text-[12px] font-semibold truncate max-w-[64px] sm:max-w-[80px] ${
+                    <span className={`text-[12px] font-semibold truncate max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
                       {player.name}

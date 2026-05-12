@@ -148,7 +148,7 @@ export default function MultiplayerGamePage() {
       <div className="app-screen flex items-center justify-center safe-top safe-bottom">
         <div className="text-center space-y-3">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-muted-foreground text-sm">Laddar spel...</p>
+          <p className="text-muted-foreground text-sm">{t('loadingGame')}</p>
         </div>
       </div>
     );

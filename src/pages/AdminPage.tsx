@@ -20,6 +20,8 @@ interface Stats {
     forfeits: number;
     roomsCreated: number;
     roomsJoined: number;
+    uniqueDevices?: number;
+    uniqueSessions?: number;
     uniqueUsers: number;
   };
   activity: {

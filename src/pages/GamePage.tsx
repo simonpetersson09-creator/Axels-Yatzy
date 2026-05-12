@@ -22,6 +22,7 @@ export default function GamePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame();
+  const { t } = useTranslation();
 
   const incomingPlayerNames: string[] | undefined = location.state?.playerNames;
   const incomingAiPlayers: number[] | undefined = location.state?.aiPlayers;

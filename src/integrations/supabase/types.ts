@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          app_version: string | null
+          created_at: string
+          event_name: string
+          game_id: string | null
+          game_mode: string | null
+          id: string
+          local_user_id: string | null
+          metadata: Json | null
+          platform: string | null
+          session_id: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          created_at?: string
+          event_name: string
+          game_id?: string | null
+          game_mode?: string | null
+          id?: string
+          local_user_id?: string | null
+          metadata?: Json | null
+          platform?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          created_at?: string
+          event_name?: string
+          game_id?: string | null
+          game_mode?: string | null
+          id?: string
+          local_user_id?: string | null
+          metadata?: Json | null
+          platform?: string | null
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       game_players: {
         Row: {
           game_id: string

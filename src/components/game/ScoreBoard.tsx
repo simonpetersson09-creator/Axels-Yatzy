@@ -45,7 +45,7 @@ const PLAYER_HSL = ['36 82% 52%', '210 70% 52%', '155 60% 42%', '350 65% 52%'];
 const SLOT_COUNT = 4;
 const COL_W = 'min-w-[42px] w-[42px]';
 const LABEL_W = 'w-[80px] min-w-[80px]';
-const ROW_H = 'h-[28px]';
+const ROW_H = 'h-[40px]';
 
 function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor }: {
   isScored: boolean;

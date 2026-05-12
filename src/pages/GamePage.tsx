@@ -275,7 +275,7 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="app-fixed-screen flex items-end justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom pb-[30px]"
+      className="app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none safe-top safe-bottom"
       style={{
         WebkitOverflowScrolling: 'auto',
         padding: 'max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left))',
@@ -299,7 +299,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex w-full max-w-full gap-2 items-start mt-[38px]">
+        <div className="flex w-full max-w-full gap-2 items-start mt-[30px] mb-[30px]">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">

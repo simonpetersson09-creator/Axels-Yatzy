@@ -237,12 +237,17 @@
 }
 
 /* On real iOS / Capacitor the notch safe-area padding pushes the game
-   container ~30-50px lower than in the Lovable desktop preview (where
-   safe-area = 0). Shift the game content up on iOS so the visual top
-   spacing matches the preview, without changing the safe-area padding
-   itself (taps near the notch are still safe). */
+   container lower than in the Lovable desktop preview. Shift only the
+   outer game wrapper up on iOS, without changing safe-area padding or
+   any internal scoreboard/dice/button layout. */
 html.ios-viewport .ios-game-shift {
-  transform: translateY(-30px);
+  --ios-game-top-shift: 48px;
+  transform: translate3d(0, calc(-1 * var(--ios-game-top-shift)), 0);
+  will-change: transform;
+}
+
+html.ios-game-shift-debug-active {
+  --ios-game-shift-debug: active;
 }
 
 @layer utilities {

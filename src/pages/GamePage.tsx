@@ -115,6 +115,27 @@ export default function GamePage() {
     };
   }, []);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (!root.classList.contains('ios-viewport')) return;
+
+    root.classList.add('ios-game-shift-debug-active');
+    const shiftElement = document.querySelector<HTMLElement>('[data-ios-game-shift="outer-wrapper"]');
+    const shiftRect = shiftElement?.getBoundingClientRect();
+    console.info('[ios-game-shift-debug]', {
+      iosViewport: true,
+      shiftElement: shiftElement ? 'outer-wrapper' : 'missing',
+      rootClasses: root.className,
+      computedTransform: shiftElement ? getComputedStyle(shiftElement).transform : null,
+      visualTop: shiftRect?.top ?? null,
+      viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+    });
+
+    return () => {
+      root.classList.remove('ios-game-shift-debug-active');
+    };
+  }, []);
+
   // Force full re-layout on orientation change / viewport resize.
   // iOS Safari/Capacitor doesn't always recompute 100dvh, fixed positions,
   // or safe-area insets after rotating back to portrait. Bumping a key
@@ -295,13 +316,14 @@ export default function GamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
-      <motion.div
-        className="relative flex flex-col gap-2"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-      >
-        <div className="flex w-full max-w-full gap-1 items-stretch mt-[30px] mb-[80px] ios-game-shift">
+      <div className="ios-game-shift" data-ios-game-shift="outer-wrapper">
+        <motion.div
+          className="relative flex flex-col gap-2"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
+        <div className="flex w-full max-w-full gap-1 items-stretch mt-[30px] mb-[80px]">
           {/* Left: Scoreboard */}
           <div className="flex flex-col gap-3">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
@@ -444,7 +466,8 @@ export default function GamePage() {
             </div>
           </div>
         </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }

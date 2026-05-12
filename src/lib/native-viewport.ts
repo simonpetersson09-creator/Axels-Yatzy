@@ -15,9 +15,22 @@ const PREVIEW_H = 852;
 
 export function installNativeViewportSync() {
   const root = document.documentElement;
-  root.classList.toggle('capacitor-native', Capacitor.isNativePlatform());
-  root.classList.toggle('ios-viewport', isIos || isNativeIos);
+  const isNative = Capacitor.isNativePlatform();
+  const shouldUseIosViewport = isIos || isNativeIos;
+  root.classList.toggle('capacitor-native', isNative);
+  root.classList.toggle('ios-viewport', shouldUseIosViewport);
   root.classList.toggle('preview-frame', isPreviewFrame);
+
+  if (shouldUseIosViewport) {
+    root.classList.add('ios-viewport-debug-detected');
+    console.info('[ios-viewport-debug]', {
+      iosViewport: root.classList.contains('ios-viewport'),
+      capacitorNative: isNative,
+      capacitorPlatform: Capacitor.getPlatform(),
+      previewFrame: root.classList.contains('preview-frame'),
+      userAgent: navigator.userAgent,
+    });
+  }
 
   let raf = 0;
   const sync = () => {

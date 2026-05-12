@@ -304,12 +304,13 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
-    const { error } = await supabase.functions.invoke('toggle-lock', {
-      body: { game_id: state.gameId, session_id: sessionId, dice_index: index },
-    });
-
-    if (error) {
-      console.error('Toggle lock error:', error);
+    try {
+      const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
+        body: { game_id: state.gameId, session_id: sessionId, dice_index: index },
+      }));
+      if (error) console.error('Toggle lock error:', error);
+    } catch (err) {
+      console.error('Toggle lock failed:', err);
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 

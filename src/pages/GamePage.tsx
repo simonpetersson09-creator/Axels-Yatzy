@@ -533,7 +533,7 @@ export default function GamePage() {
   );
 
   if (nativeIosGameLayout) {
-    return (
+    const layout = (
       <div
         key={orientationKey}
         className="ios-game-layout"
@@ -553,6 +553,35 @@ export default function GamePage() {
         {renderGameBoard(true)}
       </div>
     );
+
+    if (iosPreviewMode && !isNativeIosRuntime) {
+      return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center gap-3 bg-background p-6">
+          <div className="text-xs font-semibold tracking-wide text-primary uppercase">
+            iOS Preview Mode · iPhone 15 (393×852)
+          </div>
+          <div
+            style={{ width: 393, height: 852 }}
+            className="relative overflow-hidden rounded-[44px] border-4 border-foreground/20 bg-background shadow-2xl"
+          >
+            {layout}
+          </div>
+          <button
+            onClick={() => {
+              window.localStorage.removeItem('iosPreview');
+              const url = new URL(window.location.href);
+              url.searchParams.delete('iosPreview');
+              window.location.href = url.toString();
+            }}
+            className="text-[11px] text-muted-foreground underline"
+          >
+            Exit iOS Preview
+          </button>
+        </div>
+      );
+    }
+
+    return layout;
   }
 
   return (

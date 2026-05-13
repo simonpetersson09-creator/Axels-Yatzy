@@ -326,9 +326,7 @@ export function useMultiplayerGame() {
   // Roll dice — calls server-side Edge Function. Animation timing is client-driven
   // and synced with Dice ANIM_DURATION (~1050 ms) so the rolling=false→true→false
   // pulse is clean and dice values never change mid-spin.
-  const ROLL_ANIM_MS = 1100;
-  const [localRolling, setLocalRolling] = useState(false);
-  const rollingGuardRef = useRef(false);
+  // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
 
   const flushPendingRoll = useCallback(() => {
     const buffered = pendingRollUpdateRef.current;

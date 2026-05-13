@@ -342,13 +342,6 @@ export default function MultiplayerGamePage() {
         trigger={showTurnTransition}
         onDismiss={() => setShowTurnTransition(false)}
       />
-      {gameId && (
-        <QuickChat
-          gameId={gameId}
-          myPlayerIndex={myPlayerIndex}
-          myName={(myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : null) || getProfileName() || 'Du'}
-        />
-      )}
       <motion.div
         className="ios-game-card relative flex flex-col gap-2"
         initial={{ opacity: 0, y: 12 }}

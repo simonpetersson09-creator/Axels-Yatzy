@@ -1,0 +1,1 @@
+DELETE FROM public.friend_match_results WHERE game_id LIKE 'demo%';

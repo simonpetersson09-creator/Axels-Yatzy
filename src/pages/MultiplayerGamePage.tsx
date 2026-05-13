@@ -425,8 +425,8 @@ export default function MultiplayerGamePage() {
               // Client-driven animation: while localRolling is true, ignore the
               // server is_rolling flag entirely so we get a single clean pulse.
               // For opponent turns, fall back to the server flag.
-              isRolling={localRolling || (!isMyTurn && gameState.isRolling)}
-              onToggleLock={isMyTurn ? toggleLock : () => {}}
+              isRolling={localRolling || remoteRolling || (!isMyTurn && gameState.isRolling)}
+              onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
               compact
             />
 

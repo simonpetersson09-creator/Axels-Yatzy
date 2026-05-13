@@ -8,6 +8,8 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
 import { pingTurnChange } from '@/lib/notifications';
 
+type RollDicePart = { dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number };
+
 interface MultiplayerState {
   gameId: string | null;
   gameCode: string | null;
@@ -22,6 +24,7 @@ const HEARTBEAT_INTERVAL_MS = 15_000;
 const INACTIVE_TIMEOUT_S = 60;
 const INACTIVE_CHECK_INTERVAL_MS = 10_000;
 const NETWORK_TIMEOUT_MS = 15_000;
+const LOCK_OPTIMISTIC_MS = 450;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {
@@ -34,6 +37,10 @@ function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T
   });
 }
 
+function sameArray<T>(a?: T[] | null, b?: T[] | null) {
+  return !!a && !!b && a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
 export function useMultiplayerGame() {
   const [state, setState] = useState<MultiplayerState>({
     gameId: null,
@@ -44,6 +51,9 @@ export function useMultiplayerGame() {
     error: null,
     loading: false,
   });
+
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -58,7 +68,9 @@ export function useMultiplayerGame() {
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
-  const pendingRollUpdateRef = useRef<{ dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number } | null>(null);
+  const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
+  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[] } | null>(null);
+  const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
   // reset dice) isn't briefly overwritten by a stale server snapshot.

@@ -130,6 +130,11 @@ export function useMultiplayerGame() {
       isRolling: game.is_rolling,
     };
 
+    const optimisticLock = pendingLockRef.current?.gameId === game.id ? pendingLockRef.current.lockedDice : null;
+    const visibleDicePart: RollDicePart = optimisticLock && !sameArray(optimisticLock, dicePart.lockedDice)
+      ? { ...dicePart, lockedDice: optimisticLock }
+      : dicePart;
+
     const restPart = {
       players,
       currentPlayerIndex: game.current_player_index,
@@ -150,7 +155,7 @@ export function useMultiplayerGame() {
         status: gameStatus,
         gameState: prev.gameState
           ? { ...prev.gameState, ...restPart }
-          : { ...dicePart, ...restPart },
+          : { ...visibleDicePart, ...restPart },
         loading: false,
         error: null,
       }));
@@ -171,7 +176,7 @@ export function useMultiplayerGame() {
       return;
     }
 
-    const gameStateNext: GameState = { ...dicePart, ...restPart };
+    const gameStateNext: GameState = { ...visibleDicePart, ...restPart };
 
     setState(prev => {
       const prevGS = prev.gameState;

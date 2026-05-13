@@ -401,37 +401,40 @@ export default function MultiplayerGamePage() {
               className="ios-action-zone flex flex-col items-center gap-2"
               style={{ isolation: 'isolate', marginTop: '60px' }}
             >
-              <button
-                type="button"
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  pressedButtonRef.current = 'kasta';
-                  (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-                }}
-                onPointerUp={(e) => {
-                  e.stopPropagation();
-                  if (pressedButtonRef.current !== 'kasta') return;
-                  pressedButtonRef.current = null;
-                  // Use localRolling as the single source of truth on my turn —
-                  // server is_rolling can lag/pulse and would block taps incorrectly.
-                  if (canRoll && !localRolling) handleRoll();
-                }}
-                onPointerCancel={() => { pressedButtonRef.current = null; }}
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                disabled={!canRoll || localRolling}
-                className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
-                  canRoll && !localRolling
-                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
-                    : 'bg-secondary text-muted-foreground shadow-none'
-                }`}
-                style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
-              >
-                <span className="pointer-events-none text-center leading-tight px-1">
-                  {!isMyTurn
-                    ? '⏳'
-                    : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
-                </span>
-              </button>
+              {/* Glow wrapper around kasta button when turn just changed to me */}
+              <div className={`rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
+                <button
+                  type="button"
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    pressedButtonRef.current = 'kasta';
+                    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                  }}
+                  onPointerUp={(e) => {
+                    e.stopPropagation();
+                    if (pressedButtonRef.current !== 'kasta') return;
+                    pressedButtonRef.current = null;
+                    // Use localRolling as the single source of truth on my turn —
+                    // server is_rolling can lag/pulse and would block taps incorrectly.
+                    if (canRoll && !localRolling) handleRoll();
+                  }}
+                  onPointerCancel={() => { pressedButtonRef.current = null; }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  disabled={!canRoll || localRolling}
+                  className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
+                    canRoll && !localRolling
+                      ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
+                      : 'bg-secondary text-muted-foreground shadow-none'
+                  }`}
+                  style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
+                >
+                  <span className="pointer-events-none text-center leading-tight px-1">
+                    {!isMyTurn
+                      ? '⏳'
+                      : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
+                  </span>
+                </button>
+              </div>
 
               <div className="flex items-center justify-center gap-2 w-full mt-0" style={{ position: 'relative', zIndex: 2 }}>
                 <button

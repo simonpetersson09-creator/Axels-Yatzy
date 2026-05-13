@@ -309,7 +309,32 @@ export function useMultiplayerGame() {
 
     const channel = supabase
       .channel(`yatzy-${gameId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
+        const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number };
+        const prevGS = stateRef.current.gameState;
+        const myIdx = stateRef.current.myPlayerIndex;
+        const opponentRolled =
+          prevGS &&
+          myIdx !== null &&
+          next.current_player_index !== undefined &&
+          next.round !== undefined &&
+          next.rolls_left !== undefined &&
+          next.dice &&
+          next.locked_dice &&
+          myIdx !== next.current_player_index &&
+          next.current_player_index === prevGS.currentPlayerIndex &&
+          next.round === prevGS.round &&
+          next.rolls_left < prevGS.rollsLeft &&
+          !rollingGuardRef.current &&
+          !remoteRollingGuardRef.current;
+        if (opponentRolled) {
+          startRemoteRolling({
+            dice: next.dice!,
+            lockedDice: next.locked_dice!,
+            rollsLeft: next.rolls_left!,
+            isRolling: !!next.is_rolling,
+          });
+        }
         debouncedRefresh(gameId);
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `game_id=eq.${gameId}` }, () => {
@@ -319,7 +344,7 @@ export function useMultiplayerGame() {
 
     channelRef.current = channel;
     startPresence(gameId);
-  }, [cleanupChannel, cleanupTimers, debouncedRefresh, startPresence]);
+  }, [cleanupChannel, cleanupTimers, debouncedRefresh, startPresence, startRemoteRolling]);
 
   // Create a new game via atomic RPC
   const createGame = useCallback(async (playerName: string) => {

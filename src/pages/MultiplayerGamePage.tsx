@@ -12,6 +12,7 @@ import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { QuickChat } from '@/components/game/QuickChat';
+import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { motion } from 'framer-motion';
@@ -34,6 +35,11 @@ export default function MultiplayerGamePage() {
   const rejoinCalledRef = useRef<string | null>(null);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const autoRollRef = useRef<string | null>(null);
+
+  const [showTurnTransition, setShowTurnTransition] = useState(false);
+  const [glowActive, setGlowActive] = useState(false);
+  const prevPlayerRef = useRef<number | null>(null);
+  const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
   useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
@@ -70,6 +76,13 @@ export default function MultiplayerGamePage() {
       document.documentElement.classList.remove('game-scroll-lock');
       document.body.classList.remove('game-scroll-lock');
       document.getElementById('root')?.classList.remove('game-scroll-lock');
+    };
+  }, []);
+
+  // Cleanup glow timer on unmount
+  useEffect(() => {
+    return () => {
+      if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
     };
   }, []);
 
@@ -121,6 +134,23 @@ export default function MultiplayerGamePage() {
     localRolling,
     roll,
   ]);
+  // Detect when turn changes to me and trigger transition overlay + glow.
+  // prevPlayerRef gates so we never fire on first observation (load/rejoin).
+  useEffect(() => {
+    if (!gameState || status !== 'playing' || myPlayerIndex === null) return;
+    const current = gameState.currentPlayerIndex;
+    const prev = prevPlayerRef.current;
+    prevPlayerRef.current = current;
+
+    if (prev === null) return; // first observation — skip
+    if (current === myPlayerIndex && prev !== myPlayerIndex) {
+      setShowTurnTransition(true);
+      setGlowActive(true);
+      if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
+      glowTimerRef.current = setTimeout(() => setGlowActive(false), 2600);
+    }
+  }, [gameState?.currentPlayerIndex, status, myPlayerIndex]);
+
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
       statsRecordedRef.current = true;
@@ -279,6 +309,10 @@ export default function MultiplayerGamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
+      <TurnTransition
+        trigger={showTurnTransition}
+        onDismiss={() => setShowTurnTransition(false)}
+      />
       {gameId && (
         <QuickChat
           gameId={gameId}
@@ -334,7 +368,7 @@ export default function MultiplayerGamePage() {
                   >
                     <div className={`w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
-                    } transition-all flex items-center justify-center`}>
+                    } ${isMe && glowActive ? 'animate-pulse-gold' : ''} transition-all flex items-center justify-center`}>
                       {showAvatar ? (
                         <img src={avatarUrl!} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -378,37 +412,40 @@ export default function MultiplayerGamePage() {
               className="ios-action-zone flex flex-col items-center gap-2"
               style={{ isolation: 'isolate', marginTop: '60px' }}
             >
-              <button
-                type="button"
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  pressedButtonRef.current = 'kasta';
-                  (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-                }}
-                onPointerUp={(e) => {
-                  e.stopPropagation();
-                  if (pressedButtonRef.current !== 'kasta') return;
-                  pressedButtonRef.current = null;
-                  // Use localRolling as the single source of truth on my turn —
-                  // server is_rolling can lag/pulse and would block taps incorrectly.
-                  if (canRoll && !localRolling) handleRoll();
-                }}
-                onPointerCancel={() => { pressedButtonRef.current = null; }}
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                disabled={!canRoll || localRolling}
-                className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
-                  canRoll && !localRolling
-                    ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
-                    : 'bg-secondary text-muted-foreground shadow-none'
-                }`}
-                style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
-              >
-                <span className="pointer-events-none text-center leading-tight px-1">
-                  {!isMyTurn
-                    ? '⏳'
-                    : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
-                </span>
-              </button>
+              {/* Glow wrapper around kasta button when turn just changed to me */}
+              <div className={`rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
+                <button
+                  type="button"
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    pressedButtonRef.current = 'kasta';
+                    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                  }}
+                  onPointerUp={(e) => {
+                    e.stopPropagation();
+                    if (pressedButtonRef.current !== 'kasta') return;
+                    pressedButtonRef.current = null;
+                    // Use localRolling as the single source of truth on my turn —
+                    // server is_rolling can lag/pulse and would block taps incorrectly.
+                    if (canRoll && !localRolling) handleRoll();
+                  }}
+                  onPointerCancel={() => { pressedButtonRef.current = null; }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  disabled={!canRoll || localRolling}
+                  className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
+                    canRoll && !localRolling
+                      ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
+                      : 'bg-secondary text-muted-foreground shadow-none'
+                  }`}
+                  style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
+                >
+                  <span className="pointer-events-none text-center leading-tight px-1">
+                    {!isMyTurn
+                      ? '⏳'
+                      : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
+                  </span>
+                </button>
+              </div>
 
               <div className="flex items-center justify-center gap-2 w-full mt-0" style={{ position: 'relative', zIndex: 2 }}>
                 <button

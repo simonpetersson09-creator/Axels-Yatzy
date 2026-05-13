@@ -437,7 +437,7 @@ export default function MultiplayerGamePage() {
 
             {/* Quick Chat */}
             {gameId && (
-              <div className="flex justify-center mt-3">
+              <div className="flex justify-center mt-2">
                 <QuickChat
                   gameId={gameId}
                   myPlayerIndex={myPlayerIndex}
@@ -450,7 +450,7 @@ export default function MultiplayerGamePage() {
             {/* Bottom: Roll + Home + Forfeit */}
             <div
               className="ios-action-zone flex flex-col items-center gap-2"
-              style={{ isolation: 'isolate', marginTop: '60px' }}
+              style={{ isolation: 'isolate', marginTop: '8px' }}
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
               <div className={`rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>

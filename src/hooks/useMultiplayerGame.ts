@@ -444,10 +444,17 @@ export function useMultiplayerGame() {
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return;
     if (!state.gameId || !state.gameState) return;
-    if (pendingLockPromiseRef.current) await pendingLockPromiseRef.current;
+    const locksConfirmed = await waitForPendingLocks();
+    if (!locksConfirmed) {
+      refreshGameStateRef.current?.(state.gameId);
+      return;
+    }
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState) return;
     const gs = latest.gameState;
+    const activeLockedDice = pendingLockRef.current?.gameId === latest.gameId
+      ? pendingLockRef.current.lockedDice
+      : gs.lockedDice;
     if (gs.rollsLeft <= 0) return;
     if (latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
@@ -466,7 +473,7 @@ export function useMultiplayerGame() {
       if (!error && data?.dice && typeof data?.rolls_left === 'number') {
         pendingRollUpdateRef.current = {
           dice: data.dice,
-          lockedDice: gs.rollsLeft === 3 ? [false, false, false, false, false] : gs.lockedDice,
+          lockedDice: gs.rollsLeft === 3 ? [false, false, false, false, false] : activeLockedDice,
           rollsLeft: data.rolls_left,
           isRolling: false,
         };
@@ -493,7 +500,7 @@ export function useMultiplayerGame() {
       rollingGuardRef.current = false;
       setLocalRolling(false);
     }, ROLL_ANIM_MS);
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll, waitForPendingLocks]);
 
   // Toggle lock — optimistic local update, server validates in background.
   // Rolls back via refresh on RPC failure.

@@ -26,7 +26,8 @@ export default function MultiplayerGamePage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const {
-    gameState, gameCode, status, myPlayerIndex, isMyTurn, error, localRolling,
+    gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
+    localRolling, remoteRolling, pendingCategory,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 

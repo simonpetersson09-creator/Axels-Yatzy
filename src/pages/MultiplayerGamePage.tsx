@@ -33,6 +33,7 @@ export default function MultiplayerGamePage() {
   const statsRecordedRef = useRef(false);
   const rejoinCalledRef = useRef<string | null>(null);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
+  const autoRollRef = useRef<string | null>(null);
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
   useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);

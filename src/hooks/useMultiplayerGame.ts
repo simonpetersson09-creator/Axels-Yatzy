@@ -92,17 +92,41 @@ export function useMultiplayerGame() {
     // Use stored myPlayerIndex instead of matching on session_id
     const gameStatus = game.status as 'waiting' | 'playing' | 'finished';
 
-    const gameState: GameState = {
-      players,
-      currentPlayerIndex: game.current_player_index,
+    const dicePart = {
       dice: game.dice as number[],
       lockedDice: game.locked_dice as boolean[],
       rollsLeft: game.rolls_left,
       isRolling: game.is_rolling,
+    };
+
+    const restPart = {
+      players,
+      currentPlayerIndex: game.current_player_index,
       gameOver: gameStatus === 'finished',
       round: game.round,
       forfeitedBy: game.forfeited_by ?? null,
     };
+
+    // If a local roll animation is in flight, buffer the new dice/roll fields.
+    // They will be flushed at the end of ROLL_ANIM_MS so the spin animation
+    // never sees its target value change mid-flight.
+    if (rollingGuardRef.current) {
+      pendingRollUpdateRef.current = dicePart;
+      setState(prev => ({
+        ...prev,
+        gameId: game.id,
+        gameCode: game.game_code,
+        status: gameStatus,
+        gameState: prev.gameState
+          ? { ...prev.gameState, ...restPart }
+          : { ...dicePart, ...restPart },
+        loading: false,
+        error: null,
+      }));
+      return;
+    }
+
+    const gameState: GameState = { ...dicePart, ...restPart };
 
     setState(prev => ({
       ...prev,

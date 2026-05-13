@@ -24,7 +24,7 @@ const HEARTBEAT_INTERVAL_MS = 15_000;
 const INACTIVE_TIMEOUT_S = 60;
 const INACTIVE_CHECK_INTERVAL_MS = 10_000;
 const NETWORK_TIMEOUT_MS = 15_000;
-const LOCK_OPTIMISTIC_MS = 450;
+const LOCK_OPTIMISTIC_MS = 1500;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {
@@ -159,6 +159,10 @@ export function useMultiplayerGame() {
     };
 
     const optimisticLock = pendingLockRef.current?.gameId === game.id ? pendingLockRef.current.lockedDice : null;
+    if (optimisticLock && sameArray(optimisticLock, dicePart.lockedDice)) {
+      pendingLockRef.current = null;
+      if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; }
+    }
     const visibleDicePart: RollDicePart = optimisticLock && !sameArray(optimisticLock, dicePart.lockedDice)
       ? { ...dicePart, lockedDice: optimisticLock }
       : dicePart;
@@ -447,8 +451,16 @@ export function useMultiplayerGame() {
     // Fire RPC in parallel — we don't await it for the animation timing
     const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {
       body: { game_id: latest.gameId, session_id: sessionId },
-    })).then(({ error }) => {
+    })).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
+      if (!error && data?.dice && typeof data?.rolls_left === 'number') {
+        pendingRollUpdateRef.current = {
+          dice: data.dice,
+          lockedDice: gs.rollsLeft === 3 ? [false, false, false, false, false] : gs.lockedDice,
+          rollsLeft: data.rolls_left,
+          isRolling: false,
+        };
+      }
       return { ok: !error } as const;
     }).catch((err) => {
       console.error('Roll dice failed:', err);

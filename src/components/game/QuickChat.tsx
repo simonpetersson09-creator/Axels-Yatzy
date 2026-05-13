@@ -22,6 +22,7 @@ interface QuickChatProps {
   gameId: string;
   myPlayerIndex: number | null;
   myName: string;
+  inline?: boolean;
 }
 
 const PLAYER_BUBBLE_COLORS = [

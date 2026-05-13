@@ -79,6 +79,13 @@ export default function MultiplayerGamePage() {
     };
   }, []);
 
+  // Cleanup glow timer on unmount
+  useEffect(() => {
+    return () => {
+      if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
+    };
+  }, []);
+
   // Force full re-layout on orientation/viewport change (iOS Safari/Capacitor fix)
   const [orientationKey, setOrientationKey] = useState(0);
   useEffect(() => {

@@ -64,6 +64,19 @@ export function useMultiplayerGame() {
   // reset dice) isn't briefly overwritten by a stale server snapshot.
   const pendingSubmitRef = useRef<{ key: string; gameId: string } | null>(null);
 
+  // Client-driven dice spin for the *opponent* — server.is_rolling stays false,
+  // so we synthesize a rolling pulse when realtime delivers fresh dice for the
+  // other player. Synced with Dice ANIM_DURATION (~1100 ms).
+  const ROLL_ANIM_MS = 1100;
+  const [localRolling, setLocalRolling] = useState(false);
+  const [remoteRolling, setRemoteRolling] = useState(false);
+  const rollingGuardRef = useRef(false);
+  const remoteRollingGuardRef = useRef(false);
+  // Pending category surfaces an `aiChosenCategory`-style highlight while the
+  // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
+  // pendingSubmitRef.
+  const [pendingCategory, setPendingCategory] = useState<string | null>(null);
+
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {
     if (channelRef.current) {

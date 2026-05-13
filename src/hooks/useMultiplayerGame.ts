@@ -50,6 +50,7 @@ export function useMultiplayerGame() {
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const remoteRollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const submittingRef = useRef(false);
   const mountedRef = useRef(true);
   const sessionId = getSessionId();

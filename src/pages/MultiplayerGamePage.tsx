@@ -38,6 +38,9 @@ export default function MultiplayerGamePage() {
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const autoRollRef = useRef<string | null>(null);
   const autoRollPendingRef = useRef<string | null>(null);
+  const autoRollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rollFnRef = useRef(roll);
+  useEffect(() => { rollFnRef.current = roll; }, [roll]);
 
   const [showTurnTransition, setShowTurnTransition] = useState(false);
   const [glowActive, setGlowActive] = useState(false);

@@ -12,7 +12,7 @@ interface TurnTransitionProps {
   visibleMs?: number;
 }
 
-const VISIBLE_MS = 1200;
+const VISIBLE_MS = 800;
 
 export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VISIBLE_MS }: TurnTransitionProps) {
   const [visible, setVisible] = useState(false);

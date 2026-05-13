@@ -498,18 +498,6 @@ export function useMultiplayerGame() {
     setLocalRolling(true);
     pendingRollUpdateRef.current = null;
 
-    // Broadcast roll-start so the opponent can begin their spin animation
-    // without waiting for the postgres_changes event.
-    try {
-      channelRef.current?.send({
-        type: 'broadcast',
-        event: 'roll_started',
-        payload: { player: state.myPlayerIndex },
-      });
-    } catch (err) {
-      // Non-fatal — opponent will still spin via postgres_changes fallback.
-    }
-
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
@@ -529,6 +517,19 @@ export function useMultiplayerGame() {
     }
     const gs = latest.gameState;
     const activeLockedDice = getPendingLockForTurn(latest.gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
+
+    // Broadcast roll-start so the opponent can begin their spin animation
+    // without waiting for the postgres_changes event. Sent AFTER lock-confirm
+    // so we never trigger a phantom spin on rollback.
+    try {
+      channelRef.current?.send({
+        type: 'broadcast',
+        event: 'roll_started',
+        payload: { player: latest.myPlayerIndex },
+      });
+    } catch (err) {
+      // Non-fatal — opponent will still spin via postgres_changes fallback.
+    }
 
     // Fire RPC in parallel — we don't await it for the animation timing
     const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {

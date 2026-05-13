@@ -5,6 +5,8 @@ import { playTurnHaptic } from '@/lib/haptics';
 interface TurnTransitionProps {
   /** Call this when it becomes the player's turn. */
   trigger: boolean;
+  /** Called after the overlay has finished its exit animation. */
+  onDismiss?: () => void;
   /** Player name to show, or omit for generic "Your turn". */
   playerName?: string;
 }

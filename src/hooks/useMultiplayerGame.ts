@@ -362,14 +362,9 @@ export function useMultiplayerGame() {
         // Only react to opponent broadcasts; ignore our own echo.
         if (typeof payload?.player === 'number' && payload.player === myIdx) return;
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
-        // Synthesize a rolling pulse immediately. Real dice values arrive via
-        // postgres_changes shortly after and are buffered until animation ends.
-        startRemoteRolling({
-          dice: prevGS.dice,
-          lockedDice: prevGS.lockedDice,
-          rollsLeft: Math.max(0, prevGS.rollsLeft - 1),
-          isRolling: true,
-        });
+        // Visual-only spin; the authoritative dice arrive via postgres_changes
+        // shortly after and are buffered until the spin ends.
+        startRemoteRolling();
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
         const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number };

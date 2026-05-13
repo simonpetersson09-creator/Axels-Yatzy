@@ -153,6 +153,26 @@ export default function MultiplayerGamePage() {
     }
   }, [gameState?.currentPlayerIndex, status, myPlayerIndex]);
 
+  // Trigger YatzyCelebration for ANY player when their yatzy slot fills with
+  // 50 — covers opponents on the local device. Local player already triggers
+  // it directly in handleSelectCategory; this dedupes via prevYatzyRef.
+  const prevYatzyRef = useRef<Map<string, number | null>>(new Map());
+  useEffect(() => {
+    if (!gameState || status !== 'playing') return;
+    const map = prevYatzyRef.current;
+    let triggered = false;
+    gameState.players.forEach(p => {
+      const cur = (p.scores as Record<string, number | null>).yatzy ?? null;
+      const prev = map.has(p.id) ? map.get(p.id)! : cur; // first observation = current
+      if (!map.has(p.id)) map.set(p.id, cur);
+      if (!triggered && prev !== 50 && cur === 50) {
+        triggered = true;
+        setShowYatzyCelebration(true);
+      }
+      map.set(p.id, cur);
+    });
+  }, [gameState?.players, status]);
+
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
       statsRecordedRef.current = true;

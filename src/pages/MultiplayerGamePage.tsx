@@ -294,6 +294,7 @@ export default function MultiplayerGamePage() {
 
   const handleSelectCategory = (categoryId: string) => {
     if (!isMyTurn) return;
+    playLightHaptic().catch(() => {});
     if (categoryId === 'yatzy') {
       const allSame = gameState.dice.every(d => d === gameState.dice[0]);
       if (allSame) {

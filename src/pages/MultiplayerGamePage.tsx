@@ -115,29 +115,65 @@ export default function MultiplayerGamePage() {
 
   // Auto-roll first throw at turn-start — mirrors GamePage behaviour.
   // Only fires for the active player, never when finished, never on opponent's turn.
+  // IMPORTANT: `roll` is intentionally read from a ref so this effect does not
+  // re-run (and cancel the pending timer) every time gameState updates.
   useEffect(() => {
     if (!gameState || status !== 'playing') return;
-    if (!isMyTurn) return;
-    if (gameState.gameOver) return;
-    if (gameState.isRolling || localRolling) return;
-    if (gameState.rollsLeft !== 3) return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
-    if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
+    const log = (msg: string, extra?: Record<string, unknown>) => {
+      console.log('[auto-roll]', msg, {
+        key,
+        currentPlayerIndex: gameState.currentPlayerIndex,
+        myPlayerIndex,
+        rollsLeft: gameState.rollsLeft,
+        round: gameState.round,
+        status,
+        localRolling,
+        remoteRolling,
+        isMyTurn,
+        gameOver: gameState.gameOver,
+        isRolling: gameState.isRolling,
+        autoRollRef: autoRollRef.current,
+        autoRollPendingRef: autoRollPendingRef.current,
+        ...extra,
+      });
+    };
+
+    if (!isMyTurn) { log('blocked: not my turn'); return; }
+    if (gameState.gameOver) { log('blocked: gameOver'); return; }
+    if (gameState.rollsLeft !== 3) { log('blocked: rollsLeft != 3'); return; }
+    if (localRolling || remoteRolling || gameState.isRolling) { log('blocked: rolling'); return; }
+    if (autoRollRef.current === key) { log('blocked: already auto-rolled this turn'); return; }
+    if (autoRollPendingRef.current === key) { log('blocked: pending'); return; }
+
+    log('scheduling auto-roll in 600ms');
     autoRollPendingRef.current = key;
-    const t = setTimeout(async () => {
-      const latest = gameState;
-      if (!latest || latest.rollsLeft !== 3 || latest.gameOver || latest.isRolling || localRolling) {
-        if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
+    if (autoRollTimerRef.current) clearTimeout(autoRollTimerRef.current);
+    autoRollTimerRef.current = setTimeout(async () => {
+      autoRollTimerRef.current = null;
+      // Re-check guards against latest state at fire-time
+      if (autoRollRef.current === key) {
+        console.log('[auto-roll] aborted at fire: already rolled', { key });
+        autoRollPendingRef.current = null;
         return;
       }
+      console.log('[auto-roll] firing', { key });
       playRollSound();
-      const rolled = await roll();
-      if (rolled) autoRollRef.current = key;
+      const rolled = await rollFnRef.current?.();
+      if (rolled) {
+        autoRollRef.current = key;
+        console.log('[auto-roll] success', { key });
+      } else {
+        console.log('[auto-roll] roll() returned false — will retry on next state update', { key });
+      }
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
     }, 600);
+
     return () => {
-      clearTimeout(t);
-      if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
+      // Only cancel if the turn-key is actually changing (component unmount or
+      // turn advanced). Re-runs within the same turn keep the existing timer.
+      // We detect by clearing pending+timer only when key no longer matches.
+      // The next effect-run will reschedule if needed.
     };
   }, [
     status,
@@ -148,8 +184,38 @@ export default function MultiplayerGamePage() {
     gameState?.gameOver,
     gameState?.isRolling,
     localRolling,
-    roll,
+    remoteRolling,
+    myPlayerIndex,
+    gameState,
   ]);
+
+  // Hard-reset auto-roll bookkeeping when the turn-key changes so a stale
+  // success from a previous turn never blocks the next turn's auto-roll.
+  const prevTurnKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!gameState) return;
+    const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
+    if (prevTurnKeyRef.current !== null && prevTurnKeyRef.current !== key) {
+      console.log('[auto-roll] turn changed — clearing refs', {
+        prev: prevTurnKeyRef.current,
+        next: key,
+      });
+      if (autoRollTimerRef.current) {
+        clearTimeout(autoRollTimerRef.current);
+        autoRollTimerRef.current = null;
+      }
+      autoRollPendingRef.current = null;
+      // autoRollRef stays as-is; fire-time guard checks against current key
+    }
+    prevTurnKeyRef.current = key;
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState]);
+
+  // Cleanup auto-roll timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoRollTimerRef.current) clearTimeout(autoRollTimerRef.current);
+    };
+  }, []);
   // Detect when turn changes to me and trigger transition overlay + glow.
   // prevPlayerRef gates so we never fire on first observation (load/rejoin).
   useEffect(() => {

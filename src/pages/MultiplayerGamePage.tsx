@@ -357,7 +357,7 @@ export default function MultiplayerGamePage() {
                   >
                     <div className={`w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
-                    } transition-all flex items-center justify-center`}>
+                    } ${isMe && glowActive ? 'animate-pulse-gold' : ''} transition-all flex items-center justify-center`}>
                       {showAvatar ? (
                         <img src={avatarUrl!} alt="" className="w-full h-full object-cover" />
                       ) : (

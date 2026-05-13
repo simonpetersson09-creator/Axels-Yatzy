@@ -549,9 +549,15 @@ export default function MultiplayerGamePage() {
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
                 >
                   <span className="pointer-events-none text-center leading-tight px-1">
-                    {!isMyTurn
-                      ? '⏳'
-                      : gameState.rollsLeft === 0 ? t('rollNoMore') : t('roll')}
+                  {!isMyTurn
+                    ? '⏳'
+                    : gameState.rollsLeft === 0
+                      ? t('rollNoMore')
+                      : gameState.rollsLeft === 3
+                        ? 'Kast 1'
+                        : gameState.rollsLeft === 2
+                          ? 'Kast 2'
+                          : 'Sista\nkastet'}
                   </span>
                 </button>
               </div>
@@ -586,11 +592,6 @@ export default function MultiplayerGamePage() {
                 />
               </div>
 
-              {!isMyTurn && (
-                <p className="text-center text-[10px] text-muted-foreground/70 font-medium px-1 mt-1 leading-tight">
-                  {t('waitingForPlayer', { name: currentPlayer.name })}
-                </p>
-              )}
             </div>
           </div>
         </div>

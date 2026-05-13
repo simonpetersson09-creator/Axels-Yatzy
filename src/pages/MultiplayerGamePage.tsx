@@ -164,9 +164,11 @@ export default function MultiplayerGamePage() {
       const rolled = await rollFnRef.current?.();
       if (rolled) {
         autoRollRef.current = key;
+        autoRollRetryCountRef.current.delete(key);
         console.log('[auto-roll] success', { key });
       } else {
-        console.log('[auto-roll] roll() returned false — will retry on next state update', { key });
+        console.log('[auto-roll] roll() returned false — scheduling failsafe retry', { key });
+        scheduleFailsafeRetry(key);
       }
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
     }, 600);

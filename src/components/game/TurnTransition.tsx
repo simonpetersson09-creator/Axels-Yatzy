@@ -9,11 +9,12 @@ interface TurnTransitionProps {
   onDismiss?: () => void;
   /** Player name to show, or omit for generic "Your turn". */
   playerName?: string;
+  visibleMs?: number;
 }
 
 const VISIBLE_MS = 1200;
 
-export function TurnTransition({ trigger, onDismiss, playerName }: TurnTransitionProps) {
+export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VISIBLE_MS }: TurnTransitionProps) {
   const [visible, setVisible] = useState(false);
   const [hapticFired, setHapticFired] = useState(false);
 
@@ -32,9 +33,9 @@ export function TurnTransition({ trigger, onDismiss, playerName }: TurnTransitio
       setHapticFired(true);
       playTurnHaptic().catch(() => {});
     }
-    const t = setTimeout(dismiss, VISIBLE_MS);
+    const t = setTimeout(dismiss, visibleMs);
     return () => clearTimeout(t);
-  }, [trigger, hapticFired, dismiss]);
+  }, [trigger, hapticFired, dismiss, visibleMs]);
 
   return (
     <AnimatePresence>

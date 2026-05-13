@@ -8,6 +8,8 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
 import { pingTurnChange } from '@/lib/notifications';
 
+type RollDicePart = { dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number };
+
 interface MultiplayerState {
   gameId: string | null;
   gameCode: string | null;
@@ -22,6 +24,7 @@ const HEARTBEAT_INTERVAL_MS = 15_000;
 const INACTIVE_TIMEOUT_S = 60;
 const INACTIVE_CHECK_INTERVAL_MS = 10_000;
 const NETWORK_TIMEOUT_MS = 15_000;
+const LOCK_OPTIMISTIC_MS = 1500;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {
@@ -34,6 +37,10 @@ function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T
   });
 }
 
+function sameArray<T>(a?: T[] | null, b?: T[] | null) {
+  return !!a && !!b && a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
 export function useMultiplayerGame() {
   const [state, setState] = useState<MultiplayerState>({
     gameId: null,
@@ -44,6 +51,9 @@ export function useMultiplayerGame() {
     error: null,
     loading: false,
   });
+
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -58,7 +68,10 @@ export function useMultiplayerGame() {
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
-  const pendingRollUpdateRef = useRef<{ dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number } | null>(null);
+  const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
+  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[] } | null>(null);
+  const pendingLockPromiseRef = useRef<Promise<void> | null>(null);
+  const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
   // reset dice) isn't briefly overwritten by a stale server snapshot.
@@ -76,6 +89,33 @@ export function useMultiplayerGame() {
   // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
   // pendingSubmitRef.
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
+
+  const flushPendingRoll = useCallback(() => {
+    const buffered = pendingRollUpdateRef.current;
+    pendingRollUpdateRef.current = null;
+    if (!buffered) return;
+    setState(prev => prev.gameState ? {
+      ...prev,
+      gameState: {
+        ...prev.gameState,
+        ...buffered,
+        lockedDice: pendingLockRef.current?.gameId === prev.gameId ? pendingLockRef.current.lockedDice : buffered.lockedDice,
+      },
+    } : prev);
+  }, []);
+
+  const startRemoteRolling = useCallback((dicePart: RollDicePart) => {
+    pendingRollUpdateRef.current = dicePart;
+    remoteRollingGuardRef.current = true;
+    setRemoteRolling(true);
+    if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
+    remoteRollingTimerRef.current = setTimeout(() => {
+      if (!mountedRef.current) return;
+      flushPendingRoll();
+      remoteRollingGuardRef.current = false;
+      setRemoteRolling(false);
+    }, ROLL_ANIM_MS);
+  }, [flushPendingRoll]);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {
@@ -118,6 +158,15 @@ export function useMultiplayerGame() {
       isRolling: game.is_rolling,
     };
 
+    const optimisticLock = pendingLockRef.current?.gameId === game.id ? pendingLockRef.current.lockedDice : null;
+    if (optimisticLock && sameArray(optimisticLock, dicePart.lockedDice)) {
+      pendingLockRef.current = null;
+      if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; }
+    }
+    const visibleDicePart: RollDicePart = optimisticLock && !sameArray(optimisticLock, dicePart.lockedDice)
+      ? { ...dicePart, lockedDice: optimisticLock }
+      : dicePart;
+
     const restPart = {
       players,
       currentPlayerIndex: game.current_player_index,
@@ -138,7 +187,7 @@ export function useMultiplayerGame() {
         status: gameStatus,
         gameState: prev.gameState
           ? { ...prev.gameState, ...restPart }
-          : { ...dicePart, ...restPart },
+          : { ...visibleDicePart, ...restPart },
         loading: false,
         error: null,
       }));
@@ -159,7 +208,7 @@ export function useMultiplayerGame() {
       return;
     }
 
-    const gameStateNext: GameState = { ...dicePart, ...restPart };
+    const gameStateNext: GameState = { ...visibleDicePart, ...restPart };
 
     setState(prev => {
       const prevGS = prev.gameState;
@@ -178,16 +227,7 @@ export function useMultiplayerGame() {
         dicePart.rollsLeft < prevGS.rollsLeft;
 
       if (opponentRolled) {
-        pendingRollUpdateRef.current = dicePart;
-        remoteRollingGuardRef.current = true;
-        setRemoteRolling(true);
-        if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
-        remoteRollingTimerRef.current = setTimeout(() => {
-          if (!mountedRef.current) return;
-          flushPendingRoll();
-          remoteRollingGuardRef.current = false;
-          setRemoteRolling(false);
-        }, ROLL_ANIM_MS);
+        startRemoteRolling(dicePart);
 
         return {
           ...prev,
@@ -210,7 +250,7 @@ export function useMultiplayerGame() {
         error: null,
       };
     });
-  }, []);
+  }, [startRemoteRolling]);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
   useEffect(() => {
@@ -273,7 +313,32 @@ export function useMultiplayerGame() {
 
     const channel = supabase
       .channel(`yatzy-${gameId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
+        const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number };
+        const prevGS = stateRef.current.gameState;
+        const myIdx = stateRef.current.myPlayerIndex;
+        const opponentRolled =
+          prevGS &&
+          myIdx !== null &&
+          next.current_player_index !== undefined &&
+          next.round !== undefined &&
+          next.rolls_left !== undefined &&
+          next.dice &&
+          next.locked_dice &&
+          myIdx !== next.current_player_index &&
+          next.current_player_index === prevGS.currentPlayerIndex &&
+          next.round === prevGS.round &&
+          next.rolls_left < prevGS.rollsLeft &&
+          !rollingGuardRef.current &&
+          !remoteRollingGuardRef.current;
+        if (opponentRolled) {
+          startRemoteRolling({
+            dice: next.dice!,
+            lockedDice: next.locked_dice!,
+            rollsLeft: next.rolls_left!,
+            isRolling: !!next.is_rolling,
+          });
+        }
         debouncedRefresh(gameId);
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `game_id=eq.${gameId}` }, () => {
@@ -283,7 +348,7 @@ export function useMultiplayerGame() {
 
     channelRef.current = channel;
     startPresence(gameId);
-  }, [cleanupChannel, cleanupTimers, debouncedRefresh, startPresence]);
+  }, [cleanupChannel, cleanupTimers, debouncedRefresh, startPresence, startRemoteRolling]);
 
   // Create a new game via atomic RPC
   const createGame = useCallback(async (playerName: string) => {
@@ -366,36 +431,36 @@ export function useMultiplayerGame() {
   // and synced with Dice ANIM_DURATION (~1050 ms) so the rolling=false→true→false
   // pulse is clean and dice values never change mid-spin.
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
-
-  const flushPendingRoll = useCallback(() => {
-    const buffered = pendingRollUpdateRef.current;
-    pendingRollUpdateRef.current = null;
-    if (!buffered) return;
-    setState(prev => prev.gameState ? {
-      ...prev,
-      gameState: { ...prev.gameState, ...buffered },
-    } : prev);
-  }, []);
-
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return;
     if (!state.gameId || !state.gameState) return;
-    const gs = state.gameState;
+    if (pendingLockPromiseRef.current) await pendingLockPromiseRef.current;
+    const latest = stateRef.current;
+    if (!latest.gameId || !latest.gameState) return;
+    const gs = latest.gameState;
     if (gs.rollsLeft <= 0) return;
-    if (state.myPlayerIndex !== gs.currentPlayerIndex) return;
+    if (latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     rollingGuardRef.current = true;
     setLocalRolling(true);
     pendingRollUpdateRef.current = null;
 
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: latest.gameId, p_session_id: sessionId }).then();
 
     // Fire RPC in parallel — we don't await it for the animation timing
     const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {
-      body: { game_id: state.gameId, session_id: sessionId },
-    })).then(({ error }) => {
+      body: { game_id: latest.gameId, session_id: sessionId },
+    })).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
+      if (!error && data?.dice && typeof data?.rolls_left === 'number') {
+        pendingRollUpdateRef.current = {
+          dice: data.dice,
+          lockedDice: gs.rollsLeft === 3 ? [false, false, false, false, false] : gs.lockedDice,
+          rollsLeft: data.rolls_left,
+          isRolling: false,
+        };
+      }
       return { ok: !error } as const;
     }).catch((err) => {
       console.error('Roll dice failed:', err);
@@ -432,6 +497,8 @@ export function useMultiplayerGame() {
     // Optimistic update — flip locally immediately so the lock animation triggers on tap.
     const optimisticLocks = [...gs.lockedDice];
     optimisticLocks[index] = !optimisticLocks[index];
+    pendingLockRef.current = { gameId, lockedDice: optimisticLocks };
+    if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     setState(prev => prev.gameState ? {
       ...prev,
       gameState: { ...prev.gameState, lockedDice: optimisticLocks },
@@ -440,19 +507,31 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
 
-    try {
+    const lockPromise = (async () => {
+      try {
       const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
         body: { game_id: gameId, session_id: sessionId, dice_index: index },
       }));
       if (error) {
         console.error('Toggle lock error:', error);
-        // Rollback by refreshing authoritative state
+        pendingLockRef.current = null;
         refreshGameStateRef.current?.(gameId);
+        return;
       }
+      lockTimerRef.current = setTimeout(() => {
+        if (pendingLockRef.current?.gameId === gameId && sameArray(pendingLockRef.current.lockedDice, optimisticLocks)) {
+          pendingLockRef.current = null;
+        }
+      }, LOCK_OPTIMISTIC_MS);
     } catch (err) {
       console.error('Toggle lock failed:', err);
+      pendingLockRef.current = null;
       refreshGameStateRef.current?.(gameId);
+    } finally {
+      if (pendingLockPromiseRef.current === lockPromise) pendingLockPromiseRef.current = null;
     }
+    })();
+    pendingLockPromiseRef.current = lockPromise;
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Get possible scores

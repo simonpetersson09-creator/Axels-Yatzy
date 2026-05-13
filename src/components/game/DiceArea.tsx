@@ -28,7 +28,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock,
             <Dice
               value={value}
               locked={lockedDice[index]}
-              rolling={isRolling}
+              rolling={isRolling && !lockedDice[index]}
               onToggleLock={() => onToggleLock(index)}
               canLock={hasRolled && rollsLeft > 0}
               size={diceSize}

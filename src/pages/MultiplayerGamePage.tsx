@@ -127,6 +127,23 @@ export default function MultiplayerGamePage() {
     localRolling,
     roll,
   ]);
+  // Detect when turn changes to me and trigger transition overlay + glow.
+  // prevPlayerRef gates so we never fire on first observation (load/rejoin).
+  useEffect(() => {
+    if (!gameState || status !== 'playing' || myPlayerIndex === null) return;
+    const current = gameState.currentPlayerIndex;
+    const prev = prevPlayerRef.current;
+    prevPlayerRef.current = current;
+
+    if (prev === null) return; // first observation — skip
+    if (current === myPlayerIndex && prev !== myPlayerIndex) {
+      setShowTurnTransition(true);
+      setGlowActive(true);
+      if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
+      glowTimerRef.current = setTimeout(() => setGlowActive(false), 2600);
+    }
+  }, [gameState?.currentPlayerIndex, status, myPlayerIndex]);
+
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
       statsRecordedRef.current = true;

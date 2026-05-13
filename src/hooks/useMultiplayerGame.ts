@@ -58,6 +58,10 @@ export function useMultiplayerGame() {
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
   const pendingRollUpdateRef = useRef<{ dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number } | null>(null);
+  // Set while a score-submit RPC is in flight. While set, realtime/refresh
+  // payloads are dropped so the optimistic UI (filled cell, advanced turn,
+  // reset dice) isn't briefly overwritten by a stale server snapshot.
+  const pendingSubmitRef = useRef<{ key: string; gameId: string } | null>(null);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {

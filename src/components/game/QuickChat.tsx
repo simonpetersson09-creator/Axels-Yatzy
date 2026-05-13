@@ -149,7 +149,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
     ? 'calc(env(safe-area-inset-bottom) + 80px)'
     : 'calc(env(safe-area-inset-bottom) + 76px)';
 
-  const bubbleStyle = inline ? undefined : { top: 'calc(env(safe-area-inset-top) + 12px)' };
+  const bubbleStyle = { top: 'calc(env(safe-area-inset-top) + 48px)' };
   const buttonStyle = inline
     ? { WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }
     : {

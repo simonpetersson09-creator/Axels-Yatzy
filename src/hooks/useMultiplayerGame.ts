@@ -411,21 +411,6 @@ export function useMultiplayerGame() {
   // and synced with Dice ANIM_DURATION (~1050 ms) so the rolling=false→true→false
   // pulse is clean and dice values never change mid-spin.
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
-
-  const flushPendingRoll = useCallback(() => {
-    const buffered = pendingRollUpdateRef.current;
-    pendingRollUpdateRef.current = null;
-    if (!buffered) return;
-    setState(prev => prev.gameState ? {
-      ...prev,
-      gameState: {
-        ...prev.gameState,
-        ...buffered,
-        lockedDice: pendingLockRef.current?.gameId === prev.gameId ? pendingLockRef.current.lockedDice : buffered.lockedDice,
-      },
-    } : prev);
-  }, []);
-
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return;
     if (!state.gameId || !state.gameState) return;

@@ -62,6 +62,7 @@ export default function GamePage() {
   useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
 
   const autoRollRef = useRef<string | null>(null);
+  const autoRollPendingRef = useRef<string | null>(null);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const aiTurnRef = useRef<string | null>(null);
   const gameStateRef = useRef(gameState);
@@ -150,13 +151,18 @@ export default function GamePage() {
     if (!gameState || gameState.gameOver || gameState.isRolling) return;
     if (gameState.rollsLeft !== 3) return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
-    if (autoRollRef.current === key) return;
-    autoRollRef.current = key;
+    if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
+    autoRollPendingRef.current = key;
     const t = setTimeout(() => {
+      autoRollRef.current = key;
+      autoRollPendingRef.current = null;
       playRollSound();
       roll();
     }, 600);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
+    };
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, roll]);
 
   // AI auto-play

@@ -69,8 +69,9 @@ export function useMultiplayerGame() {
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
   const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
-  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[] } | null>(null);
-  const pendingLockPromiseRef = useRef<Promise<void> | null>(null);
+  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[]; seq: number } | null>(null);
+  const pendingLockSeqRef = useRef(0);
+  const pendingLockPromisesRef = useRef<Set<Promise<boolean>>>(new Set());
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
@@ -108,6 +109,14 @@ export function useMultiplayerGame() {
     pendingRollUpdateRef.current = dicePart;
     remoteRollingGuardRef.current = true;
     setRemoteRolling(true);
+    setState(prev => prev.gameState ? {
+      ...prev,
+      gameState: {
+        ...prev.gameState,
+        lockedDice: dicePart.lockedDice,
+        isRolling: dicePart.isRolling,
+      },
+    } : prev);
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
     remoteRollingTimerRef.current = setTimeout(() => {
       if (!mountedRef.current) return;
@@ -116,6 +125,15 @@ export function useMultiplayerGame() {
       setRemoteRolling(false);
     }, ROLL_ANIM_MS);
   }, [flushPendingRoll]);
+
+  const waitForPendingLocks = useCallback(async () => {
+    let allLocksConfirmed = true;
+    while (pendingLockPromisesRef.current.size > 0) {
+      const results = await Promise.allSettled([...pendingLockPromisesRef.current]);
+      allLocksConfirmed = allLocksConfirmed && results.every(result => result.status === 'fulfilled' && result.value);
+    }
+    return allLocksConfirmed;
+  }, []);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {
@@ -432,14 +450,21 @@ export function useMultiplayerGame() {
   // pulse is clean and dice values never change mid-spin.
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
   const roll = useCallback(async () => {
-    if (rollingGuardRef.current) return;
-    if (!state.gameId || !state.gameState) return;
-    if (pendingLockPromiseRef.current) await pendingLockPromiseRef.current;
+    if (rollingGuardRef.current) return false;
+    if (!state.gameId || !state.gameState) return false;
+    const locksConfirmed = await waitForPendingLocks();
+    if (!locksConfirmed) {
+      refreshGameStateRef.current?.(state.gameId);
+      return false;
+    }
     const latest = stateRef.current;
-    if (!latest.gameId || !latest.gameState) return;
+    if (!latest.gameId || !latest.gameState) return false;
     const gs = latest.gameState;
-    if (gs.rollsLeft <= 0) return;
-    if (latest.myPlayerIndex !== gs.currentPlayerIndex) return;
+    const activeLockedDice = pendingLockRef.current?.gameId === latest.gameId
+      ? pendingLockRef.current.lockedDice
+      : gs.lockedDice;
+    if (gs.rollsLeft <= 0) return false;
+    if (latest.myPlayerIndex !== gs.currentPlayerIndex) return false;
 
     rollingGuardRef.current = true;
     setLocalRolling(true);
@@ -456,7 +481,7 @@ export function useMultiplayerGame() {
       if (!error && data?.dice && typeof data?.rolls_left === 'number') {
         pendingRollUpdateRef.current = {
           dice: data.dice,
-          lockedDice: gs.rollsLeft === 3 ? [false, false, false, false, false] : gs.lockedDice,
+          lockedDice: gs.rollsLeft === 3 ? [false, false, false, false, false] : activeLockedDice,
           rollsLeft: data.rolls_left,
           isRolling: false,
         };
@@ -474,30 +499,38 @@ export function useMultiplayerGame() {
     // Always wait the full animation duration before clearing localRolling.
     // Apply any buffered server dice values right at the end of the spin.
     if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
-    rollingTimerRef.current = setTimeout(async () => {
-      // Make sure the server response has landed before flipping back, otherwise
-      // we could clear localRolling before the new dice arrive.
-      await rpcPromise;
-      if (!mountedRef.current) return;
-      flushPendingRoll();
-      rollingGuardRef.current = false;
-      setLocalRolling(false);
-    }, ROLL_ANIM_MS);
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll]);
+    return new Promise<boolean>((resolve) => {
+      rollingTimerRef.current = setTimeout(async () => {
+        // Make sure the server response has landed before flipping back, otherwise
+        // we could clear localRolling before the new dice arrive.
+        const result = await rpcPromise;
+        if (!mountedRef.current) { resolve(false); return; }
+        flushPendingRoll();
+        rollingGuardRef.current = false;
+        setLocalRolling(false);
+        resolve(result.ok);
+      }, ROLL_ANIM_MS);
+    });
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll, waitForPendingLocks]);
 
   // Toggle lock — optimistic local update, server validates in background.
   // Rolls back via refresh on RPC failure.
   const toggleLock = useCallback(async (index: number) => {
     if (!state.gameId || !state.gameState || rollingGuardRef.current) return;
-    const gs = state.gameState;
-    if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
+    const latest = stateRef.current;
+    const gs = latest.gameState;
+    if (!latest.gameId || !gs) return;
+    if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
-    const gameId = state.gameId;
+    const gameId = latest.gameId;
+    const seq = pendingLockSeqRef.current + 1;
+    pendingLockSeqRef.current = seq;
 
     // Optimistic update — flip locally immediately so the lock animation triggers on tap.
-    const optimisticLocks = [...gs.lockedDice];
+    const baseLocks = pendingLockRef.current?.gameId === gameId ? pendingLockRef.current.lockedDice : gs.lockedDice;
+    const optimisticLocks = [...baseLocks];
     optimisticLocks[index] = !optimisticLocks[index];
-    pendingLockRef.current = { gameId, lockedDice: optimisticLocks };
+    pendingLockRef.current = { gameId, lockedDice: optimisticLocks, seq };
     if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     setState(prev => prev.gameState ? {
       ...prev,
@@ -507,31 +540,37 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
 
-    const lockPromise = (async () => {
+    const lockPromise = (async (): Promise<boolean> => {
       try {
-      const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
-        body: { game_id: gameId, session_id: sessionId, dice_index: index },
-      }));
-      if (error) {
-        console.error('Toggle lock error:', error);
-        pendingLockRef.current = null;
-        refreshGameStateRef.current?.(gameId);
-        return;
-      }
-      lockTimerRef.current = setTimeout(() => {
-        if (pendingLockRef.current?.gameId === gameId && sameArray(pendingLockRef.current.lockedDice, optimisticLocks)) {
+        const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
+          body: { game_id: gameId, session_id: sessionId, dice_index: index },
+        }));
+        if (error) {
+          console.error('Toggle lock error:', error);
+          if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq) {
+            pendingLockRef.current = null;
+          }
+          refreshGameStateRef.current?.(gameId);
+          return false;
+        }
+        lockTimerRef.current = setTimeout(() => {
+          if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq && sameArray(pendingLockRef.current.lockedDice, optimisticLocks)) {
+            pendingLockRef.current = null;
+          }
+        }, LOCK_OPTIMISTIC_MS);
+        return true;
+      } catch (err) {
+        console.error('Toggle lock failed:', err);
+        if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq) {
           pendingLockRef.current = null;
         }
-      }, LOCK_OPTIMISTIC_MS);
-    } catch (err) {
-      console.error('Toggle lock failed:', err);
-      pendingLockRef.current = null;
-      refreshGameStateRef.current?.(gameId);
-    } finally {
-      if (pendingLockPromiseRef.current === lockPromise) pendingLockPromiseRef.current = null;
-    }
+        refreshGameStateRef.current?.(gameId);
+        return false;
+      } finally {
+        pendingLockPromisesRef.current.delete(lockPromise);
+      }
     })();
-    pendingLockPromiseRef.current = lockPromise;
+    pendingLockPromisesRef.current.add(lockPromise);
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Get possible scores

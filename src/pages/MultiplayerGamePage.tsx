@@ -121,11 +121,16 @@ export default function MultiplayerGamePage() {
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
     if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
     autoRollPendingRef.current = key;
-    const t = setTimeout(() => {
-      autoRollPendingRef.current = null;
-      autoRollRef.current = key;
+    const t = setTimeout(async () => {
+      const latest = gameState;
+      if (!latest || latest.rollsLeft !== 3 || latest.gameOver || latest.isRolling || localRolling) {
+        if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
+        return;
+      }
       playRollSound();
-      roll();
+      const rolled = await roll();
+      if (rolled) autoRollRef.current = key;
+      if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
     }, 600);
     return () => {
       clearTimeout(t);

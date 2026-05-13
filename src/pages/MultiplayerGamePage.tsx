@@ -94,7 +94,33 @@ export default function MultiplayerGamePage() {
     };
   }, []);
 
-  // Handle game finished — record stats and navigate to results (single source of truth)
+  // Auto-roll first throw at turn-start — mirrors GamePage behaviour.
+  // Only fires for the active player, never when finished, never on opponent's turn.
+  useEffect(() => {
+    if (!gameState || status !== 'playing') return;
+    if (!isMyTurn) return;
+    if (gameState.gameOver) return;
+    if (gameState.isRolling || localRolling) return;
+    if (gameState.rollsLeft !== 3) return;
+    const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
+    if (autoRollRef.current === key) return;
+    autoRollRef.current = key;
+    const t = setTimeout(() => {
+      playRollSound();
+      roll();
+    }, 600);
+    return () => clearTimeout(t);
+  }, [
+    status,
+    isMyTurn,
+    gameState?.currentPlayerIndex,
+    gameState?.round,
+    gameState?.rollsLeft,
+    gameState?.gameOver,
+    gameState?.isRolling,
+    localRolling,
+    roll,
+  ]);
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
       statsRecordedRef.current = true;

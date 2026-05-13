@@ -273,7 +273,12 @@ export default function MultiplayerGamePage() {
         clearTimeout(autoRollTimerRef.current);
         autoRollTimerRef.current = null;
       }
+      if (autoRollRetryTimerRef.current) {
+        clearTimeout(autoRollRetryTimerRef.current);
+        autoRollRetryTimerRef.current = null;
+      }
       autoRollPendingRef.current = null;
+      autoRollRetryCountRef.current.clear();
       // autoRollRef stays as-is; fire-time guard checks against current key
     }
     prevTurnKeyRef.current = key;
@@ -283,6 +288,7 @@ export default function MultiplayerGamePage() {
   useEffect(() => {
     return () => {
       if (autoRollTimerRef.current) clearTimeout(autoRollTimerRef.current);
+      if (autoRollRetryTimerRef.current) clearTimeout(autoRollRetryTimerRef.current);
     };
   }, []);
   // Detect when turn changes to me and trigger transition overlay + glow.

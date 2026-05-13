@@ -39,6 +39,8 @@ export default function MultiplayerGamePage() {
   const autoRollRef = useRef<string | null>(null);
   const autoRollPendingRef = useRef<string | null>(null);
   const autoRollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoRollRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoRollRetryCountRef = useRef<Map<string, number>>(new Map());
   const rollFnRef = useRef(roll);
   useEffect(() => { rollFnRef.current = roll; }, [roll]);
 
@@ -149,6 +151,71 @@ export default function MultiplayerGamePage() {
     log('scheduling auto-roll in 600ms');
     autoRollPendingRef.current = key;
     if (autoRollTimerRef.current) clearTimeout(autoRollTimerRef.current);
+
+    const MAX_RETRIES = 3;
+
+    const scheduleFailsafeRetry = (k: string) => {
+      // Abort if turn already advanced or already rolled
+      const liveGs = gameState;
+      if (autoRollRef.current === k) {
+        console.log('[auto-roll] retry aborted: already rolled', { key: k });
+        return;
+      }
+      const count = (autoRollRetryCountRef.current.get(k) ?? 0) + 1;
+      if (count > MAX_RETRIES) {
+        console.log('[auto-roll] retry max reached', { key: k, count });
+        autoRollRetryCountRef.current.delete(k);
+        return;
+      }
+      autoRollRetryCountRef.current.set(k, count);
+      console.log('[auto-roll] retry scheduled', { key: k, attempt: count, delayMs: 1200 });
+
+      if (autoRollRetryTimerRef.current) clearTimeout(autoRollRetryTimerRef.current);
+      autoRollRetryTimerRef.current = setTimeout(async () => {
+        autoRollRetryTimerRef.current = null;
+        // Re-validate guards against latest state via stateRef-like snapshot:
+        // we read from closure but because the effect re-runs on every state
+        // update, this closure is the latest one for this turn-key. If the
+        // turn-key changed, prevTurnKeyRef effect will have cleared this timer.
+        if (autoRollRef.current === k) {
+          console.log('[auto-roll] retry aborted at fire: already rolled', { key: k });
+          return;
+        }
+        if (!liveGs) {
+          console.log('[auto-roll] retry aborted at fire: no gameState', { key: k });
+          return;
+        }
+        const liveKey = `${liveGs.currentPlayerIndex}-${liveGs.round}`;
+        if (liveKey !== k) {
+          console.log('[auto-roll] retry aborted at fire: turn changed', { key: k, liveKey });
+          return;
+        }
+        if (!isMyTurn || liveGs.rollsLeft !== 3 || liveGs.gameOver || status !== 'playing') {
+          console.log('[auto-roll] retry aborted at fire: guards failed', {
+            key: k, isMyTurn, rollsLeft: liveGs.rollsLeft, gameOver: liveGs.gameOver, status,
+          });
+          return;
+        }
+        if (localRolling || remoteRolling || liveGs.isRolling) {
+          console.log('[auto-roll] retry aborted at fire: rolling', { key: k });
+          // Reschedule once more — rolling state should clear soon
+          scheduleFailsafeRetry(k);
+          return;
+        }
+        console.log('[auto-roll] retry firing', { key: k, attempt: count });
+        playRollSound();
+        const rolled = await rollFnRef.current?.();
+        if (rolled) {
+          autoRollRef.current = k;
+          autoRollRetryCountRef.current.delete(k);
+          console.log('[auto-roll] retry success', { key: k, attempt: count });
+        } else {
+          console.log('[auto-roll] retry returned false — scheduling next retry', { key: k, attempt: count });
+          scheduleFailsafeRetry(k);
+        }
+      }, 1200);
+    };
+
     autoRollTimerRef.current = setTimeout(async () => {
       autoRollTimerRef.current = null;
       // Re-check guards against latest state at fire-time
@@ -162,9 +229,11 @@ export default function MultiplayerGamePage() {
       const rolled = await rollFnRef.current?.();
       if (rolled) {
         autoRollRef.current = key;
+        autoRollRetryCountRef.current.delete(key);
         console.log('[auto-roll] success', { key });
       } else {
-        console.log('[auto-roll] roll() returned false — will retry on next state update', { key });
+        console.log('[auto-roll] roll() returned false — scheduling failsafe retry', { key });
+        scheduleFailsafeRetry(key);
       }
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
     }, 600);
@@ -204,7 +273,12 @@ export default function MultiplayerGamePage() {
         clearTimeout(autoRollTimerRef.current);
         autoRollTimerRef.current = null;
       }
+      if (autoRollRetryTimerRef.current) {
+        clearTimeout(autoRollRetryTimerRef.current);
+        autoRollRetryTimerRef.current = null;
+      }
       autoRollPendingRef.current = null;
+      autoRollRetryCountRef.current.clear();
       // autoRollRef stays as-is; fire-time guard checks against current key
     }
     prevTurnKeyRef.current = key;
@@ -214,6 +288,7 @@ export default function MultiplayerGamePage() {
   useEffect(() => {
     return () => {
       if (autoRollTimerRef.current) clearTimeout(autoRollTimerRef.current);
+      if (autoRollRetryTimerRef.current) clearTimeout(autoRollRetryTimerRef.current);
     };
   }, []);
   // Detect when turn changes to me and trigger transition overlay + glow.

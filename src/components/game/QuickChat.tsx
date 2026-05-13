@@ -171,7 +171,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.9, transition: { duration: 0.25 } }}
               transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-              className={`max-w-[260px] px-3.5 py-2 rounded-2xl shadow-lg backdrop-blur-sm flex items-baseline gap-2 ${
+              className={`${inline ? 'max-w-[180px]' : 'max-w-[260px]'} px-3.5 py-2 rounded-2xl shadow-lg backdrop-blur-sm flex items-baseline gap-2 ${
                 PLAYER_BUBBLE_COLORS[b.fromPlayerIndex] ?? 'bg-secondary text-foreground'
               }`}
             >

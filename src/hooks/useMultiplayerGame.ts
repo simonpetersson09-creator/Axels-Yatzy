@@ -131,6 +131,20 @@ export function useMultiplayerGame() {
       return;
     }
 
+    // While a score submit is in flight we keep the optimistic state intact.
+    // The RPC resolution path will trigger a fresh refresh once it completes.
+    if (pendingSubmitRef.current) {
+      setState(prev => ({
+        ...prev,
+        gameId: game.id,
+        gameCode: game.game_code,
+        status: gameStatus,
+        loading: false,
+        error: null,
+      }));
+      return;
+    }
+
     const gameState: GameState = { ...dicePart, ...restPart };
 
     setState(prev => ({

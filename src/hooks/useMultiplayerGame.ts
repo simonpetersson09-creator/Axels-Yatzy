@@ -506,15 +506,20 @@ export function useMultiplayerGame() {
   // Rolls back via refresh on RPC failure.
   const toggleLock = useCallback(async (index: number) => {
     if (!state.gameId || !state.gameState || rollingGuardRef.current) return;
-    const gs = state.gameState;
+    const latest = stateRef.current;
+    const gs = latest.gameState;
+    if (!latest.gameId || !gs) return;
     if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
-    const gameId = state.gameId;
+    const gameId = latest.gameId;
+    const seq = pendingLockSeqRef.current + 1;
+    pendingLockSeqRef.current = seq;
 
     // Optimistic update — flip locally immediately so the lock animation triggers on tap.
-    const optimisticLocks = [...gs.lockedDice];
+    const baseLocks = pendingLockRef.current?.gameId === gameId ? pendingLockRef.current.lockedDice : gs.lockedDice;
+    const optimisticLocks = [...baseLocks];
     optimisticLocks[index] = !optimisticLocks[index];
-    pendingLockRef.current = { gameId, lockedDice: optimisticLocks };
+    pendingLockRef.current = { gameId, lockedDice: optimisticLocks, seq };
     if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     setState(prev => prev.gameState ? {
       ...prev,
@@ -524,31 +529,37 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
 
-    const lockPromise = (async () => {
+    const lockPromise = (async (): Promise<boolean> => {
       try {
-      const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
-        body: { game_id: gameId, session_id: sessionId, dice_index: index },
-      }));
-      if (error) {
-        console.error('Toggle lock error:', error);
-        pendingLockRef.current = null;
-        refreshGameStateRef.current?.(gameId);
-        return;
-      }
-      lockTimerRef.current = setTimeout(() => {
-        if (pendingLockRef.current?.gameId === gameId && sameArray(pendingLockRef.current.lockedDice, optimisticLocks)) {
+        const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
+          body: { game_id: gameId, session_id: sessionId, dice_index: index },
+        }));
+        if (error) {
+          console.error('Toggle lock error:', error);
+          if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq) {
+            pendingLockRef.current = null;
+          }
+          refreshGameStateRef.current?.(gameId);
+          return false;
+        }
+        lockTimerRef.current = setTimeout(() => {
+          if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq && sameArray(pendingLockRef.current.lockedDice, optimisticLocks)) {
+            pendingLockRef.current = null;
+          }
+        }, LOCK_OPTIMISTIC_MS);
+        return true;
+      } catch (err) {
+        console.error('Toggle lock failed:', err);
+        if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq) {
           pendingLockRef.current = null;
         }
-      }, LOCK_OPTIMISTIC_MS);
-    } catch (err) {
-      console.error('Toggle lock failed:', err);
-      pendingLockRef.current = null;
-      refreshGameStateRef.current?.(gameId);
-    } finally {
-      if (pendingLockPromiseRef.current === lockPromise) pendingLockPromiseRef.current = null;
-    }
+        refreshGameStateRef.current?.(gameId);
+        return false;
+      } finally {
+        pendingLockPromisesRef.current.delete(lockPromise);
+      }
     })();
-    pendingLockPromiseRef.current = lockPromise;
+    pendingLockPromisesRef.current.add(lockPromise);
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Get possible scores

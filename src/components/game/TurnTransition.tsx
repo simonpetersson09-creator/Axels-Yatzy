@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playTurnHaptic } from '@/lib/haptics';
 
@@ -16,26 +16,21 @@ const VISIBLE_MS = 800;
 
 export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VISIBLE_MS }: TurnTransitionProps) {
   const [visible, setVisible] = useState(false);
-  const [hapticFired, setHapticFired] = useState(false);
-
-  const dismiss = useCallback(() => {
-    setVisible(false);
-    setHapticFired(false);
-    onDismiss?.();
-  }, [onDismiss]);
+  // Keep onDismiss in a ref so the timer effect does not restart on every
+  // parent render (inline arrow callbacks have a new identity each render).
+  const onDismissRef = useRef(onDismiss);
+  useEffect(() => { onDismissRef.current = onDismiss; }, [onDismiss]);
 
   useEffect(() => {
     if (!trigger) return;
-    // Show overlay
     setVisible(true);
-    // Fire haptic once per trigger
-    if (!hapticFired) {
-      setHapticFired(true);
-      playTurnHaptic().catch(() => {});
-    }
-    const t = setTimeout(dismiss, visibleMs);
+    playTurnHaptic().catch(() => {});
+    const t = setTimeout(() => {
+      setVisible(false);
+      onDismissRef.current?.();
+    }, visibleMs);
     return () => clearTimeout(t);
-  }, [trigger, hapticFired, dismiss, visibleMs]);
+  }, [trigger, visibleMs]);
 
   return (
     <AnimatePresence>

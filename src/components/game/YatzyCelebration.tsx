@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playYatzySound } from '@/lib/yatzy-celebration-sound';
 
@@ -37,6 +37,9 @@ function useConfetti(show: boolean) {
 export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
   const [visible, setVisible] = useState(false);
   const confetti = useConfetti(show);
+  // Stash callback in a ref so timer doesn't restart on every parent render.
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
 
   useEffect(() => {
     if (show) {
@@ -44,11 +47,11 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
       playYatzySound();
       const timer = setTimeout(() => {
         setVisible(false);
-        onComplete();
+        onCompleteRef.current?.();
       }, 1300);
       return () => clearTimeout(timer);
     }
-  }, [show, onComplete]);
+  }, [show]);
 
   return (
     <AnimatePresence>

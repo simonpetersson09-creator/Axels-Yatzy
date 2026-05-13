@@ -21,14 +21,33 @@ const COMBINATION_CHECKS: {
 export function useCombinationCelebration(gameState: GameState | null) {
   const [activeCelebration, setActiveCelebration] = useState<CombinationType | null>(null);
   const prevIsRollingRef = useRef(false);
+  const prevRollKeyRef = useRef<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     if (!gameState) return;
+
+    // Two trigger paths so this works in both Snabb match (driven by
+    // gameState.isRolling) and multiplayer (server is_rolling is always
+    // false — instead we observe that a fresh roll landed by tracking
+    // currentPlayerIndex + round + rollsLeft + dice).
     const wasRolling = prevIsRollingRef.current;
     prevIsRollingRef.current = gameState.isRolling;
 
-    if (!wasRolling || gameState.isRolling) return;
+    const rollKey = `${gameState.currentPlayerIndex}:${gameState.round}:${gameState.rollsLeft}:${gameState.dice.join(',')}`;
+    const prevKey = prevRollKeyRef.current;
+    prevRollKeyRef.current = rollKey;
+
+    const isRollLanding = !wasRolling && !gameState.isRolling
+      ? false // fall through to key-based detection
+      : (wasRolling && !gameState.isRolling);
+
+    // Skip on first observation to avoid firing on initial load / rejoin.
+    const isNewRoll = prevKey !== null && prevKey !== rollKey
+      && gameState.rollsLeft < 3
+      && gameState.dice.some(d => d !== 1); // ignore the reset-to-[1,1,1,1,1]
+
+    if (!isRollLanding && !isNewRoll) return;
 
     const currentPlayer = gameState.players[gameState.currentPlayerIndex];
     const dice = gameState.dice;
@@ -49,7 +68,13 @@ export function useCombinationCelebration(gameState: GameState | null) {
       timeoutRef.current = setTimeout(() => setActiveCelebration(null), check.duration);
       break; // Only show one celebration
     }
-  }, [gameState?.isRolling]);
+  }, [
+    gameState?.isRolling,
+    gameState?.currentPlayerIndex,
+    gameState?.round,
+    gameState?.rollsLeft,
+    gameState?.dice.join(','),
+  ]);
 
   useEffect(() => {
     return () => {

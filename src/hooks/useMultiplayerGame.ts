@@ -69,7 +69,7 @@ export function useMultiplayerGame() {
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
   const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
-  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[]; seq: number } | null>(null);
+  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[]; seq: number; playerIndex: number; round: number } | null>(null);
   const pendingLockSeqRef = useRef(0);
   const pendingLockPromisesRef = useRef<Set<Promise<boolean>>>(new Set());
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -91,6 +91,14 @@ export function useMultiplayerGame() {
   // pendingSubmitRef.
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
+  const getPendingLockForTurn = useCallback((gameId: string | null, playerIndex?: number, round?: number) => {
+    const pending = pendingLockRef.current;
+    if (!pending || pending.gameId !== gameId) return null;
+    if (typeof playerIndex === 'number' && pending.playerIndex !== playerIndex) return null;
+    if (typeof round === 'number' && pending.round !== round) return null;
+    return pending.lockedDice;
+  }, []);
+
   const flushPendingRoll = useCallback(() => {
     const buffered = pendingRollUpdateRef.current;
     pendingRollUpdateRef.current = null;
@@ -100,21 +108,26 @@ export function useMultiplayerGame() {
       gameState: {
         ...prev.gameState,
         ...buffered,
-        lockedDice: pendingLockRef.current?.gameId === prev.gameId ? pendingLockRef.current.lockedDice : buffered.lockedDice,
+        lockedDice: getPendingLockForTurn(prev.gameId, prev.gameState.currentPlayerIndex, prev.gameState.round) ?? buffered.lockedDice,
       },
     } : prev);
-  }, []);
+  }, [getPendingLockForTurn]);
 
   const startRemoteRolling = useCallback((dicePart: RollDicePart) => {
-    pendingRollUpdateRef.current = dicePart;
+    const prevGS = stateRef.current.gameState;
+    const visibleDicePart = {
+      ...dicePart,
+      lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? dicePart.lockedDice,
+    };
+    pendingRollUpdateRef.current = visibleDicePart;
     remoteRollingGuardRef.current = true;
     setRemoteRolling(true);
     setState(prev => prev.gameState ? {
       ...prev,
       gameState: {
         ...prev.gameState,
-        lockedDice: dicePart.lockedDice,
-        isRolling: dicePart.isRolling,
+        lockedDice: visibleDicePart.lockedDice,
+        isRolling: visibleDicePart.isRolling,
       },
     } : prev);
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
@@ -124,7 +137,7 @@ export function useMultiplayerGame() {
       remoteRollingGuardRef.current = false;
       setRemoteRolling(false);
     }, ROLL_ANIM_MS);
-  }, [flushPendingRoll]);
+  }, [flushPendingRoll, getPendingLockForTurn]);
 
   const waitForPendingLocks = useCallback(async () => {
     let allLocksConfirmed = true;

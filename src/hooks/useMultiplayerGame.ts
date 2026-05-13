@@ -70,6 +70,7 @@ export function useMultiplayerGame() {
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
   const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
   const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[] } | null>(null);
+  const pendingLockPromiseRef = useRef<Promise<void> | null>(null);
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,

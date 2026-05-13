@@ -39,6 +39,8 @@ export default function MultiplayerGamePage() {
   const autoRollRef = useRef<string | null>(null);
   const autoRollPendingRef = useRef<string | null>(null);
   const autoRollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoRollRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoRollRetryCountRef = useRef<Map<string, number>>(new Map());
   const rollFnRef = useRef(roll);
   useEffect(() => { rollFnRef.current = roll; }, [roll]);
 

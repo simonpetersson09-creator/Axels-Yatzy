@@ -113,23 +113,33 @@ export function useMultiplayerGame() {
     } : prev);
   }, [getPendingLockForTurn]);
 
-  const startRemoteRolling = useCallback((dicePart: RollDicePart) => {
+  // Start the remote spin animation. If `dicePart` is provided we pre-buffer
+  // the authoritative dice/rolls_left so they snap in at the end of the spin.
+  // If omitted (broadcast-triggered), we only show the visual spin and rely on
+  // a subsequent postgres_changes payload to populate the buffer. This avoids
+  // committing synthetic placeholder values if the actual update never arrives.
+  const startRemoteRolling = useCallback((dicePart?: RollDicePart) => {
     const prevGS = stateRef.current.gameState;
-    const visibleDicePart = {
-      ...dicePart,
-      lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? dicePart.lockedDice,
-    };
-    pendingRollUpdateRef.current = visibleDicePart;
+    if (dicePart) {
+      const visibleDicePart = {
+        ...dicePart,
+        lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? dicePart.lockedDice,
+      };
+      pendingRollUpdateRef.current = visibleDicePart;
+      setState(prev => prev.gameState ? {
+        ...prev,
+        gameState: {
+          ...prev.gameState,
+          lockedDice: visibleDicePart.lockedDice,
+          isRolling: visibleDicePart.isRolling,
+        },
+      } : prev);
+    } else {
+      // Broadcast path — only flip the visual rolling flag; do NOT mutate
+      // dice/lockedDice/isRolling in state and do NOT pre-fill the buffer.
+    }
     remoteRollingGuardRef.current = true;
     setRemoteRolling(true);
-    setState(prev => prev.gameState ? {
-      ...prev,
-      gameState: {
-        ...prev.gameState,
-        lockedDice: visibleDicePart.lockedDice,
-        isRolling: visibleDicePart.isRolling,
-      },
-    } : prev);
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
     remoteRollingTimerRef.current = setTimeout(() => {
       if (!mountedRef.current) return;
@@ -352,14 +362,9 @@ export function useMultiplayerGame() {
         // Only react to opponent broadcasts; ignore our own echo.
         if (typeof payload?.player === 'number' && payload.player === myIdx) return;
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
-        // Synthesize a rolling pulse immediately. Real dice values arrive via
-        // postgres_changes shortly after and are buffered until animation ends.
-        startRemoteRolling({
-          dice: prevGS.dice,
-          lockedDice: prevGS.lockedDice,
-          rollsLeft: Math.max(0, prevGS.rollsLeft - 1),
-          isRolling: true,
-        });
+        // Visual-only spin; the authoritative dice arrive via postgres_changes
+        // shortly after and are buffered until the spin ends.
+        startRemoteRolling();
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
         const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number };
@@ -493,18 +498,6 @@ export function useMultiplayerGame() {
     setLocalRolling(true);
     pendingRollUpdateRef.current = null;
 
-    // Broadcast roll-start so the opponent can begin their spin animation
-    // without waiting for the postgres_changes event.
-    try {
-      channelRef.current?.send({
-        type: 'broadcast',
-        event: 'roll_started',
-        payload: { player: state.myPlayerIndex },
-      });
-    } catch (err) {
-      // Non-fatal — opponent will still spin via postgres_changes fallback.
-    }
-
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
@@ -524,6 +517,19 @@ export function useMultiplayerGame() {
     }
     const gs = latest.gameState;
     const activeLockedDice = getPendingLockForTurn(latest.gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
+
+    // Broadcast roll-start so the opponent can begin their spin animation
+    // without waiting for the postgres_changes event. Sent AFTER lock-confirm
+    // so we never trigger a phantom spin on rollback.
+    try {
+      channelRef.current?.send({
+        type: 'broadcast',
+        event: 'roll_started',
+        payload: { player: latest.myPlayerIndex },
+      });
+    } catch (err) {
+      // Non-fatal — opponent will still spin via postgres_changes fallback.
+    }
 
     // Fire RPC in parallel — we don't await it for the animation timing
     const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {

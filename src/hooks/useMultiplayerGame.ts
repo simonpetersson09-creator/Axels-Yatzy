@@ -90,6 +90,33 @@ export function useMultiplayerGame() {
   // pendingSubmitRef.
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
+  const flushPendingRoll = useCallback(() => {
+    const buffered = pendingRollUpdateRef.current;
+    pendingRollUpdateRef.current = null;
+    if (!buffered) return;
+    setState(prev => prev.gameState ? {
+      ...prev,
+      gameState: {
+        ...prev.gameState,
+        ...buffered,
+        lockedDice: pendingLockRef.current?.gameId === prev.gameId ? pendingLockRef.current.lockedDice : buffered.lockedDice,
+      },
+    } : prev);
+  }, []);
+
+  const startRemoteRolling = useCallback((dicePart: RollDicePart) => {
+    pendingRollUpdateRef.current = dicePart;
+    remoteRollingGuardRef.current = true;
+    setRemoteRolling(true);
+    if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
+    remoteRollingTimerRef.current = setTimeout(() => {
+      if (!mountedRef.current) return;
+      flushPendingRoll();
+      remoteRollingGuardRef.current = false;
+      setRemoteRolling(false);
+    }, ROLL_ANIM_MS);
+  }, [flushPendingRoll]);
+
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {
     if (channelRef.current) {

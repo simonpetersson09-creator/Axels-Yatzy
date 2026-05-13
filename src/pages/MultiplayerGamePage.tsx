@@ -36,6 +36,11 @@ export default function MultiplayerGamePage() {
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const autoRollRef = useRef<string | null>(null);
 
+  const [showTurnTransition, setShowTurnTransition] = useState(false);
+  const [glowActive, setGlowActive] = useState(false);
+  const prevPlayerRef = useRef<number | null>(null);
+  const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
   useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
 

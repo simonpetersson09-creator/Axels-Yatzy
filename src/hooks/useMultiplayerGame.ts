@@ -54,6 +54,9 @@ export function useMultiplayerGame() {
   const sessionId = getSessionId();
   // Use ref to avoid stale closure in debouncedRefresh
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
+  // Buffer for server dice/roll fields received during a local roll animation.
+  // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
+  const pendingRollUpdateRef = useRef<{ dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number } | null>(null);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {
@@ -89,17 +92,41 @@ export function useMultiplayerGame() {
     // Use stored myPlayerIndex instead of matching on session_id
     const gameStatus = game.status as 'waiting' | 'playing' | 'finished';
 
-    const gameState: GameState = {
-      players,
-      currentPlayerIndex: game.current_player_index,
+    const dicePart = {
       dice: game.dice as number[],
       lockedDice: game.locked_dice as boolean[],
       rollsLeft: game.rolls_left,
       isRolling: game.is_rolling,
+    };
+
+    const restPart = {
+      players,
+      currentPlayerIndex: game.current_player_index,
       gameOver: gameStatus === 'finished',
       round: game.round,
       forfeitedBy: game.forfeited_by ?? null,
     };
+
+    // If a local roll animation is in flight, buffer the new dice/roll fields.
+    // They will be flushed at the end of ROLL_ANIM_MS so the spin animation
+    // never sees its target value change mid-flight.
+    if (rollingGuardRef.current) {
+      pendingRollUpdateRef.current = dicePart;
+      setState(prev => ({
+        ...prev,
+        gameId: game.id,
+        gameCode: game.game_code,
+        status: gameStatus,
+        gameState: prev.gameState
+          ? { ...prev.gameState, ...restPart }
+          : { ...dicePart, ...restPart },
+        loading: false,
+        error: null,
+      }));
+      return;
+    }
+
+    const gameState: GameState = { ...dicePart, ...restPart };
 
     setState(prev => ({
       ...prev,
@@ -263,9 +290,22 @@ export function useMultiplayerGame() {
     }
   }, [state.gameId, state.myPlayerIndex, sessionId]);
 
-  // Roll dice — calls server-side Edge Function
+  // Roll dice — calls server-side Edge Function. Animation timing is client-driven
+  // and synced with Dice ANIM_DURATION (~1050 ms) so the rolling=false→true→false
+  // pulse is clean and dice values never change mid-spin.
+  const ROLL_ANIM_MS = 1100;
   const [localRolling, setLocalRolling] = useState(false);
   const rollingGuardRef = useRef(false);
+
+  const flushPendingRoll = useCallback(() => {
+    const buffered = pendingRollUpdateRef.current;
+    pendingRollUpdateRef.current = null;
+    if (!buffered) return;
+    setState(prev => prev.gameState ? {
+      ...prev,
+      gameState: { ...prev.gameState, ...buffered },
+    } : prev);
+  }, []);
 
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return;
@@ -276,47 +316,72 @@ export function useMultiplayerGame() {
 
     rollingGuardRef.current = true;
     setLocalRolling(true);
+    pendingRollUpdateRef.current = null;
 
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
 
-    try {
-      const { error } = await withTimeout(supabase.functions.invoke('roll-dice', {
-        body: { game_id: state.gameId, session_id: sessionId },
-      }));
-
-      if (error) {
-        console.error('Roll dice error:', error);
-      }
-    } catch (err) {
+    // Fire RPC in parallel — we don't await it for the animation timing
+    const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {
+      body: { game_id: state.gameId, session_id: sessionId },
+    })).then(({ error }) => {
+      if (error) console.error('Roll dice error:', error);
+      return { ok: !error } as const;
+    }).catch((err) => {
       console.error('Roll dice failed:', err);
-      const msg = (err as Error)?.message === 'timeout' ? 'Anslutningen tog för lång tid. Försök igen.' : 'Kunde inte kasta tärningarna';
+      const msg = (err as Error)?.message === 'timeout'
+        ? 'Anslutningen tog för lång tid. Försök igen.'
+        : 'Kunde inte kasta tärningarna';
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
-    } finally {
-      if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
-      rollingTimerRef.current = setTimeout(() => {
-        rollingGuardRef.current = false;
-        if (mountedRef.current) setLocalRolling(false);
-      }, 400);
-    }
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
+      return { ok: false } as const;
+    });
 
-  // Toggle lock — server-side validated
+    // Always wait the full animation duration before clearing localRolling.
+    // Apply any buffered server dice values right at the end of the spin.
+    if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+    rollingTimerRef.current = setTimeout(async () => {
+      // Make sure the server response has landed before flipping back, otherwise
+      // we could clear localRolling before the new dice arrive.
+      await rpcPromise;
+      if (!mountedRef.current) return;
+      flushPendingRoll();
+      rollingGuardRef.current = false;
+      setLocalRolling(false);
+    }, ROLL_ANIM_MS);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll]);
+
+  // Toggle lock — optimistic local update, server validates in background.
+  // Rolls back via refresh on RPC failure.
   const toggleLock = useCallback(async (index: number) => {
     if (!state.gameId || !state.gameState || rollingGuardRef.current) return;
     const gs = state.gameState;
     if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
 
+    const gameId = state.gameId;
+
+    // Optimistic update — flip locally immediately so the lock animation triggers on tap.
+    const optimisticLocks = [...gs.lockedDice];
+    optimisticLocks[index] = !optimisticLocks[index];
+    setState(prev => prev.gameState ? {
+      ...prev,
+      gameState: { ...prev.gameState, lockedDice: optimisticLocks },
+    } : prev);
+
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
 
     try {
       const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
-        body: { game_id: state.gameId, session_id: sessionId, dice_index: index },
+        body: { game_id: gameId, session_id: sessionId, dice_index: index },
       }));
-      if (error) console.error('Toggle lock error:', error);
+      if (error) {
+        console.error('Toggle lock error:', error);
+        // Rollback by refreshing authoritative state
+        refreshGameStateRef.current?.(gameId);
+      }
     } catch (err) {
       console.error('Toggle lock failed:', err);
+      refreshGameStateRef.current?.(gameId);
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 

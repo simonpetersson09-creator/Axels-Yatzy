@@ -37,6 +37,7 @@ export default function MultiplayerGamePage() {
   const rejoinCalledRef = useRef<string | null>(null);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const autoRollRef = useRef<string | null>(null);
+  const autoRollPendingRef = useRef<string | null>(null);
 
   const [showTurnTransition, setShowTurnTransition] = useState(false);
   const [glowActive, setGlowActive] = useState(false);
@@ -118,13 +119,18 @@ export default function MultiplayerGamePage() {
     if (gameState.isRolling || localRolling) return;
     if (gameState.rollsLeft !== 3) return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
-    if (autoRollRef.current === key) return;
-    autoRollRef.current = key;
+    if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
+    autoRollPendingRef.current = key;
     const t = setTimeout(() => {
+      autoRollPendingRef.current = null;
+      autoRollRef.current = key;
       playRollSound();
       roll();
     }, 600);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
+    };
   }, [
     status,
     isMyTurn,
@@ -277,7 +283,7 @@ export default function MultiplayerGamePage() {
   }
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-  const possibleScores = isMyTurn && !localRolling ? getPossibleScores() : null;
+  const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn;
 
   const PLAYER_COLORS = [

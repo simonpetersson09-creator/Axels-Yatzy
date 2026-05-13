@@ -558,6 +558,7 @@ export function useMultiplayerGame() {
       setTimeout(() => {
         pendingSubmitRef.current = null;
         submittingRef.current = false;
+        if (mountedRef.current) setPendingCategory(null);
         if (!mountedRef.current) return;
         if (!rpcOk) {
           refreshGameStateRef.current?.(gameId);

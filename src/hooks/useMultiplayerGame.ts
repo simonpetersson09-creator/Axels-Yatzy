@@ -129,7 +129,7 @@ export function useMultiplayerGame() {
     // If a local roll animation is in flight, buffer the new dice/roll fields.
     // They will be flushed at the end of ROLL_ANIM_MS so the spin animation
     // never sees its target value change mid-flight.
-    if (rollingGuardRef.current) {
+    if (rollingGuardRef.current || remoteRollingGuardRef.current) {
       pendingRollUpdateRef.current = dicePart;
       setState(prev => ({
         ...prev,

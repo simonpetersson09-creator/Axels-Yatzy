@@ -13,7 +13,7 @@ interface TurnTransitionProps {
 
 const VISIBLE_MS = 1200;
 
-export function TurnTransition({ trigger, playerName }: TurnTransitionProps) {
+export function TurnTransition({ trigger, onDismiss, playerName }: TurnTransitionProps) {
   const [visible, setVisible] = useState(false);
   const [hapticFired, setHapticFired] = useState(false);
 

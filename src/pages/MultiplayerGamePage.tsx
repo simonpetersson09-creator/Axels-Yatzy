@@ -342,13 +342,6 @@ export default function MultiplayerGamePage() {
         trigger={showTurnTransition}
         onDismiss={() => setShowTurnTransition(false)}
       />
-      {gameId && (
-        <QuickChat
-          gameId={gameId}
-          myPlayerIndex={myPlayerIndex}
-          myName={(myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : null) || getProfileName() || 'Du'}
-        />
-      )}
       <motion.div
         className="ios-game-card relative flex flex-col gap-2"
         initial={{ opacity: 0, y: 12 }}
@@ -436,6 +429,18 @@ export default function MultiplayerGamePage() {
               onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
               compact
             />
+
+            {/* Quick Chat */}
+            {gameId && (
+              <div className="flex justify-center mt-3">
+                <QuickChat
+                  gameId={gameId}
+                  myPlayerIndex={myPlayerIndex}
+                  myName={(myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : null) || getProfileName() || 'Du'}
+                  inline
+                />
+              </div>
+            )}
 
             {/* Bottom: Roll + Home + Forfeit */}
             <div

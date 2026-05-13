@@ -690,6 +690,8 @@ export function useMultiplayerGame() {
     ...state,
     isMyTurn,
     localRolling,
+    remoteRolling,
+    pendingCategory,
     createGame,
     joinGame,
     startGame,

@@ -223,16 +223,7 @@ export function useMultiplayerGame() {
         dicePart.rollsLeft < prevGS.rollsLeft;
 
       if (opponentRolled) {
-        pendingRollUpdateRef.current = dicePart;
-        remoteRollingGuardRef.current = true;
-        setRemoteRolling(true);
-        if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
-        remoteRollingTimerRef.current = setTimeout(() => {
-          if (!mountedRef.current) return;
-          flushPendingRoll();
-          remoteRollingGuardRef.current = false;
-          setRemoteRolling(false);
-        }, ROLL_ANIM_MS);
+        startRemoteRolling(dicePart);
 
         return {
           ...prev,
@@ -255,7 +246,7 @@ export function useMultiplayerGame() {
         error: null,
       };
     });
-  }, []);
+  }, [startRemoteRolling]);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
   useEffect(() => {

@@ -520,7 +520,7 @@ export function useMultiplayerGame() {
     const latest = stateRef.current;
     const gs = latest.gameState;
     if (!latest.gameId || !gs) return;
-    if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
+    if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     const gameId = latest.gameId;
     const seq = pendingLockSeqRef.current + 1;

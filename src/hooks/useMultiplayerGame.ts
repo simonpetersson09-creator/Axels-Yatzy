@@ -391,13 +391,18 @@ export function useMultiplayerGame() {
     if (!buffered) return;
     setState(prev => prev.gameState ? {
       ...prev,
-      gameState: { ...prev.gameState, ...buffered },
+      gameState: {
+        ...prev.gameState,
+        ...buffered,
+        lockedDice: pendingLockRef.current?.gameId === prev.gameId ? pendingLockRef.current.lockedDice : buffered.lockedDice,
+      },
     } : prev);
   }, []);
 
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return;
     if (!state.gameId || !state.gameState) return;
+    if (pendingLockPromiseRef.current) await pendingLockPromiseRef.current;
     const gs = state.gameState;
     if (gs.rollsLeft <= 0) return;
     if (state.myPlayerIndex !== gs.currentPlayerIndex) return;

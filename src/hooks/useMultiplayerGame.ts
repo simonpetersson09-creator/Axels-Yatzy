@@ -113,23 +113,33 @@ export function useMultiplayerGame() {
     } : prev);
   }, [getPendingLockForTurn]);
 
-  const startRemoteRolling = useCallback((dicePart: RollDicePart) => {
+  // Start the remote spin animation. If `dicePart` is provided we pre-buffer
+  // the authoritative dice/rolls_left so they snap in at the end of the spin.
+  // If omitted (broadcast-triggered), we only show the visual spin and rely on
+  // a subsequent postgres_changes payload to populate the buffer. This avoids
+  // committing synthetic placeholder values if the actual update never arrives.
+  const startRemoteRolling = useCallback((dicePart?: RollDicePart) => {
     const prevGS = stateRef.current.gameState;
-    const visibleDicePart = {
-      ...dicePart,
-      lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? dicePart.lockedDice,
-    };
-    pendingRollUpdateRef.current = visibleDicePart;
+    if (dicePart) {
+      const visibleDicePart = {
+        ...dicePart,
+        lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? dicePart.lockedDice,
+      };
+      pendingRollUpdateRef.current = visibleDicePart;
+      setState(prev => prev.gameState ? {
+        ...prev,
+        gameState: {
+          ...prev.gameState,
+          lockedDice: visibleDicePart.lockedDice,
+          isRolling: visibleDicePart.isRolling,
+        },
+      } : prev);
+    } else {
+      // Broadcast path — only flip the visual rolling flag; do NOT mutate
+      // dice/lockedDice/isRolling in state and do NOT pre-fill the buffer.
+    }
     remoteRollingGuardRef.current = true;
     setRemoteRolling(true);
-    setState(prev => prev.gameState ? {
-      ...prev,
-      gameState: {
-        ...prev.gameState,
-        lockedDice: visibleDicePart.lockedDice,
-        isRolling: visibleDicePart.isRolling,
-      },
-    } : prev);
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
     remoteRollingTimerRef.current = setTimeout(() => {
       if (!mountedRef.current) return;

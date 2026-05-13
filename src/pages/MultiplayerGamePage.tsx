@@ -430,6 +430,18 @@ export default function MultiplayerGamePage() {
               compact
             />
 
+            {/* Quick Chat */}
+            {gameId && (
+              <div className="flex justify-center mt-3">
+                <QuickChat
+                  gameId={gameId}
+                  myPlayerIndex={myPlayerIndex}
+                  myName={(myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : null) || getProfileName() || 'Du'}
+                  inline
+                />
+              </div>
+            )}
+
             {/* Bottom: Roll + Home + Forfeit */}
             <div
               className="ios-action-zone flex flex-col items-center gap-2"

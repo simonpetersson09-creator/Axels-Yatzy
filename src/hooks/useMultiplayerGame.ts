@@ -69,8 +69,9 @@ export function useMultiplayerGame() {
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
   const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
-  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[] } | null>(null);
-  const pendingLockPromiseRef = useRef<Promise<void> | null>(null);
+  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[]; seq: number } | null>(null);
+  const pendingLockSeqRef = useRef(0);
+  const pendingLockPromisesRef = useRef<Set<Promise<boolean>>>(new Set());
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
@@ -116,6 +117,15 @@ export function useMultiplayerGame() {
       setRemoteRolling(false);
     }, ROLL_ANIM_MS);
   }, [flushPendingRoll]);
+
+  const waitForPendingLocks = useCallback(async () => {
+    let allLocksConfirmed = true;
+    while (pendingLockPromisesRef.current.size > 0) {
+      const results = await Promise.allSettled([...pendingLockPromisesRef.current]);
+      allLocksConfirmed = allLocksConfirmed && results.every(result => result.status === 'fulfilled' && result.value);
+    }
+    return allLocksConfirmed;
+  }, []);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {

@@ -457,6 +457,8 @@ export function useMultiplayerGame() {
     // Optimistic update — flip locally immediately so the lock animation triggers on tap.
     const optimisticLocks = [...gs.lockedDice];
     optimisticLocks[index] = !optimisticLocks[index];
+    pendingLockRef.current = { gameId, lockedDice: optimisticLocks };
+    if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     setState(prev => prev.gameState ? {
       ...prev,
       gameState: { ...prev.gameState, lockedDice: optimisticLocks },
@@ -465,19 +467,31 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
 
-    try {
+    const lockPromise = (async () => {
+      try {
       const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
         body: { game_id: gameId, session_id: sessionId, dice_index: index },
       }));
       if (error) {
         console.error('Toggle lock error:', error);
-        // Rollback by refreshing authoritative state
+        pendingLockRef.current = null;
         refreshGameStateRef.current?.(gameId);
+        return;
       }
+      lockTimerRef.current = setTimeout(() => {
+        if (pendingLockRef.current?.gameId === gameId && sameArray(pendingLockRef.current.lockedDice, optimisticLocks)) {
+          pendingLockRef.current = null;
+        }
+      }, LOCK_OPTIMISTIC_MS);
     } catch (err) {
       console.error('Toggle lock failed:', err);
+      pendingLockRef.current = null;
       refreshGameStateRef.current?.(gameId);
+    } finally {
+      if (pendingLockPromiseRef.current === lockPromise) pendingLockPromiseRef.current = null;
     }
+    })();
+    pendingLockPromiseRef.current = lockPromise;
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Get possible scores

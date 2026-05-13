@@ -69,7 +69,7 @@ export function useMultiplayerGame() {
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
   const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
-  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[]; seq: number } | null>(null);
+  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[]; seq: number; playerIndex: number; round: number } | null>(null);
   const pendingLockSeqRef = useRef(0);
   const pendingLockPromisesRef = useRef<Set<Promise<boolean>>>(new Set());
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -91,6 +91,14 @@ export function useMultiplayerGame() {
   // pendingSubmitRef.
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
+  const getPendingLockForTurn = useCallback((gameId: string | null, playerIndex?: number, round?: number) => {
+    const pending = pendingLockRef.current;
+    if (!pending || pending.gameId !== gameId) return null;
+    if (typeof playerIndex === 'number' && pending.playerIndex !== playerIndex) return null;
+    if (typeof round === 'number' && pending.round !== round) return null;
+    return pending.lockedDice;
+  }, []);
+
   const flushPendingRoll = useCallback(() => {
     const buffered = pendingRollUpdateRef.current;
     pendingRollUpdateRef.current = null;
@@ -100,21 +108,26 @@ export function useMultiplayerGame() {
       gameState: {
         ...prev.gameState,
         ...buffered,
-        lockedDice: pendingLockRef.current?.gameId === prev.gameId ? pendingLockRef.current.lockedDice : buffered.lockedDice,
+        lockedDice: getPendingLockForTurn(prev.gameId, prev.gameState.currentPlayerIndex, prev.gameState.round) ?? buffered.lockedDice,
       },
     } : prev);
-  }, []);
+  }, [getPendingLockForTurn]);
 
   const startRemoteRolling = useCallback((dicePart: RollDicePart) => {
-    pendingRollUpdateRef.current = dicePart;
+    const prevGS = stateRef.current.gameState;
+    const visibleDicePart = {
+      ...dicePart,
+      lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? dicePart.lockedDice,
+    };
+    pendingRollUpdateRef.current = visibleDicePart;
     remoteRollingGuardRef.current = true;
     setRemoteRolling(true);
     setState(prev => prev.gameState ? {
       ...prev,
       gameState: {
         ...prev.gameState,
-        lockedDice: dicePart.lockedDice,
-        isRolling: dicePart.isRolling,
+        lockedDice: visibleDicePart.lockedDice,
+        isRolling: visibleDicePart.isRolling,
       },
     } : prev);
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
@@ -124,7 +137,7 @@ export function useMultiplayerGame() {
       remoteRollingGuardRef.current = false;
       setRemoteRolling(false);
     }, ROLL_ANIM_MS);
-  }, [flushPendingRoll]);
+  }, [flushPendingRoll, getPendingLockForTurn]);
 
   const waitForPendingLocks = useCallback(async () => {
     let allLocksConfirmed = true;
@@ -176,7 +189,7 @@ export function useMultiplayerGame() {
       isRolling: game.is_rolling,
     };
 
-    const optimisticLock = pendingLockRef.current?.gameId === game.id ? pendingLockRef.current.lockedDice : null;
+    const optimisticLock = getPendingLockForTurn(game.id, game.current_player_index, game.round);
     if (optimisticLock && sameArray(optimisticLock, dicePart.lockedDice)) {
       pendingLockRef.current = null;
       if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; }
@@ -268,7 +281,7 @@ export function useMultiplayerGame() {
         error: null,
       };
     });
-  }, [startRemoteRolling]);
+  }, [startRemoteRolling, getPendingLockForTurn]);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
   useEffect(() => {
@@ -460,9 +473,7 @@ export function useMultiplayerGame() {
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState) return false;
     const gs = latest.gameState;
-    const activeLockedDice = pendingLockRef.current?.gameId === latest.gameId
-      ? pendingLockRef.current.lockedDice
-      : gs.lockedDice;
+    const activeLockedDice = getPendingLockForTurn(latest.gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
     if (gs.rollsLeft <= 0) return false;
     if (latest.myPlayerIndex !== gs.currentPlayerIndex) return false;
 
@@ -511,7 +522,7 @@ export function useMultiplayerGame() {
         resolve(result.ok);
       }, ROLL_ANIM_MS);
     });
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll, waitForPendingLocks]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll, waitForPendingLocks, getPendingLockForTurn]);
 
   // Toggle lock — optimistic local update, server validates in background.
   // Rolls back via refresh on RPC failure.
@@ -527,10 +538,10 @@ export function useMultiplayerGame() {
     pendingLockSeqRef.current = seq;
 
     // Optimistic update — flip locally immediately so the lock animation triggers on tap.
-    const baseLocks = pendingLockRef.current?.gameId === gameId ? pendingLockRef.current.lockedDice : gs.lockedDice;
+    const baseLocks = getPendingLockForTurn(gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
     const optimisticLocks = [...baseLocks];
     optimisticLocks[index] = !optimisticLocks[index];
-    pendingLockRef.current = { gameId, lockedDice: optimisticLocks, seq };
+    pendingLockRef.current = { gameId, lockedDice: optimisticLocks, seq, playerIndex: gs.currentPlayerIndex, round: gs.round };
     if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     setState(prev => prev.gameState ? {
       ...prev,
@@ -571,7 +582,7 @@ export function useMultiplayerGame() {
       }
     })();
     pendingLockPromisesRef.current.add(lockPromise);
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, getPendingLockForTurn]);
 
   // Get possible scores
   const getPossibleScores = useCallback((): Record<CategoryId, number> | null => {

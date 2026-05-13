@@ -138,7 +138,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
   const onCooldown = cooldownLeft > 0;
 
   const bubblePositionClasses = inline
-    ? 'pointer-events-none absolute left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center gap-1.5 bottom-[calc(100%+6px)]'
+    ? 'pointer-events-none fixed left-1/2 -translate-x-1/2 z-[80] flex flex-col items-center gap-1.5'
     : 'pointer-events-none fixed left-1/2 -translate-x-1/2 z-[80] flex flex-col items-center gap-1.5';
 
   const buttonPositionClasses = inline

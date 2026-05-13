@@ -482,24 +482,48 @@ export function useMultiplayerGame() {
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return false;
     if (!state.gameId || !state.gameState) return false;
-    const locksConfirmed = await waitForPendingLocks();
-    if (!locksConfirmed) {
-      refreshGameStateRef.current?.(state.gameId);
-      return false;
-    }
-    const latest = stateRef.current;
-    if (!latest.gameId || !latest.gameState) return false;
-    const gs = latest.gameState;
-    const activeLockedDice = getPendingLockForTurn(latest.gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
-    if (gs.rollsLeft <= 0) return false;
-    if (latest.myPlayerIndex !== gs.currentPlayerIndex) return false;
+    const initialGs = state.gameState;
+    if (initialGs.rollsLeft <= 0) return false;
+    if (state.myPlayerIndex !== initialGs.currentPlayerIndex) return false;
 
+    // Start the local animation IMMEDIATELY for instant feedback. We still
+    // await pending lock RPCs before firing the roll RPC so the server sees
+    // the correct locked state, but the spin is already on screen.
     rollingGuardRef.current = true;
     setLocalRolling(true);
     pendingRollUpdateRef.current = null;
 
+    // Broadcast roll-start so the opponent can begin their spin animation
+    // without waiting for the postgres_changes event.
+    try {
+      channelRef.current?.send({
+        type: 'broadcast',
+        event: 'roll_started',
+        payload: { player: state.myPlayerIndex },
+      });
+    } catch (err) {
+      // Non-fatal — opponent will still spin via postgres_changes fallback.
+    }
+
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: latest.gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
+
+    const locksConfirmed = await waitForPendingLocks();
+    if (!locksConfirmed) {
+      // Roll back the animation — server state is unknown.
+      rollingGuardRef.current = false;
+      setLocalRolling(false);
+      refreshGameStateRef.current?.(state.gameId);
+      return false;
+    }
+    const latest = stateRef.current;
+    if (!latest.gameId || !latest.gameState) {
+      rollingGuardRef.current = false;
+      setLocalRolling(false);
+      return false;
+    }
+    const gs = latest.gameState;
+    const activeLockedDice = getPendingLockForTurn(latest.gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
 
     // Fire RPC in parallel — we don't await it for the animation timing
     const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {

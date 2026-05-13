@@ -109,6 +109,14 @@ export function useMultiplayerGame() {
     pendingRollUpdateRef.current = dicePart;
     remoteRollingGuardRef.current = true;
     setRemoteRolling(true);
+    setState(prev => prev.gameState ? {
+      ...prev,
+      gameState: {
+        ...prev.gameState,
+        lockedDice: dicePart.lockedDice,
+        isRolling: dicePart.isRolling,
+      },
+    } : prev);
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
     remoteRollingTimerRef.current = setTimeout(() => {
       if (!mountedRef.current) return;
@@ -442,21 +450,21 @@ export function useMultiplayerGame() {
   // pulse is clean and dice values never change mid-spin.
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
   const roll = useCallback(async () => {
-    if (rollingGuardRef.current) return;
-    if (!state.gameId || !state.gameState) return;
+    if (rollingGuardRef.current) return false;
+    if (!state.gameId || !state.gameState) return false;
     const locksConfirmed = await waitForPendingLocks();
     if (!locksConfirmed) {
       refreshGameStateRef.current?.(state.gameId);
-      return;
+      return false;
     }
     const latest = stateRef.current;
-    if (!latest.gameId || !latest.gameState) return;
+    if (!latest.gameId || !latest.gameState) return false;
     const gs = latest.gameState;
     const activeLockedDice = pendingLockRef.current?.gameId === latest.gameId
       ? pendingLockRef.current.lockedDice
       : gs.lockedDice;
-    if (gs.rollsLeft <= 0) return;
-    if (latest.myPlayerIndex !== gs.currentPlayerIndex) return;
+    if (gs.rollsLeft <= 0) return false;
+    if (latest.myPlayerIndex !== gs.currentPlayerIndex) return false;
 
     rollingGuardRef.current = true;
     setLocalRolling(true);
@@ -491,15 +499,18 @@ export function useMultiplayerGame() {
     // Always wait the full animation duration before clearing localRolling.
     // Apply any buffered server dice values right at the end of the spin.
     if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
-    rollingTimerRef.current = setTimeout(async () => {
-      // Make sure the server response has landed before flipping back, otherwise
-      // we could clear localRolling before the new dice arrive.
-      await rpcPromise;
-      if (!mountedRef.current) return;
-      flushPendingRoll();
-      rollingGuardRef.current = false;
-      setLocalRolling(false);
-    }, ROLL_ANIM_MS);
+    return new Promise<boolean>((resolve) => {
+      rollingTimerRef.current = setTimeout(async () => {
+        // Make sure the server response has landed before flipping back, otherwise
+        // we could clear localRolling before the new dice arrive.
+        const result = await rpcPromise;
+        if (!mountedRef.current) { resolve(false); return; }
+        flushPendingRoll();
+        rollingGuardRef.current = false;
+        setLocalRolling(false);
+        resolve(result.ok);
+      }, ROLL_ANIM_MS);
+    });
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll, waitForPendingLocks]);
 
   // Toggle lock — optimistic local update, server validates in background.

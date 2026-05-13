@@ -20,7 +20,8 @@ export function TurnTransition({ trigger, playerName }: TurnTransitionProps) {
   const dismiss = useCallback(() => {
     setVisible(false);
     setHapticFired(false);
-  }, []);
+    onDismiss?.();
+  }, [onDismiss]);
 
   useEffect(() => {
     if (!trigger) return;

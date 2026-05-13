@@ -159,18 +159,57 @@ export function useMultiplayerGame() {
       return;
     }
 
-    const gameState: GameState = { ...dicePart, ...restPart };
+    const gameStateNext: GameState = { ...dicePart, ...restPart };
 
-    setState(prev => ({
-      ...prev,
-      gameId: game.id,
-      gameCode: game.game_code,
-      status: gameStatus,
-      // myPlayerIndex is set by createGame/joinGame/rejoinGame, not here
-      gameState,
-      loading: false,
-      error: null,
-    }));
+    setState(prev => {
+      const prevGS = prev.gameState;
+      const myIdx = prev.myPlayerIndex;
+      const isMyTurnNow = myIdx !== null && myIdx === restPart.currentPlayerIndex;
+
+      // Detect an OPPONENT roll: rolls_left dropped while still their turn.
+      // Synthesize a client-side rolling pulse and buffer the new dice values
+      // so they only resolve at the end of the spin.
+      const opponentRolled =
+        prevGS &&
+        !rollingGuardRef.current &&
+        !isMyTurnNow &&
+        restPart.currentPlayerIndex === prevGS.currentPlayerIndex &&
+        restPart.round === prevGS.round &&
+        dicePart.rollsLeft < prevGS.rollsLeft;
+
+      if (opponentRolled) {
+        pendingRollUpdateRef.current = dicePart;
+        remoteRollingGuardRef.current = true;
+        setRemoteRolling(true);
+        if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
+        remoteRollingTimerRef.current = setTimeout(() => {
+          if (!mountedRef.current) return;
+          flushPendingRoll();
+          remoteRollingGuardRef.current = false;
+          setRemoteRolling(false);
+        }, ROLL_ANIM_MS);
+
+        return {
+          ...prev,
+          gameId: game.id,
+          gameCode: game.game_code,
+          status: gameStatus,
+          gameState: { ...prevGS, ...restPart },
+          loading: false,
+          error: null,
+        };
+      }
+
+      return {
+        ...prev,
+        gameId: game.id,
+        gameCode: game.game_code,
+        status: gameStatus,
+        gameState: gameStateNext,
+        loading: false,
+        error: null,
+      };
+    });
   }, []);
 
   // Keep ref in sync so debouncedRefresh always calls latest version

@@ -364,6 +364,7 @@ export default function MultiplayerGamePage() {
                 possibleScores={possibleScores}
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
+                aiChosenCategory={pendingCategory}
                 selectionDisabled={!isMyTurn}
               />
               <CombinationCelebration type={activeCelebration} />

@@ -403,20 +403,22 @@ export function useMultiplayerGame() {
     if (rollingGuardRef.current) return;
     if (!state.gameId || !state.gameState) return;
     if (pendingLockPromiseRef.current) await pendingLockPromiseRef.current;
-    const gs = state.gameState;
+    const latest = stateRef.current;
+    if (!latest.gameId || !latest.gameState) return;
+    const gs = latest.gameState;
     if (gs.rollsLeft <= 0) return;
-    if (state.myPlayerIndex !== gs.currentPlayerIndex) return;
+    if (latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     rollingGuardRef.current = true;
     setLocalRolling(true);
     pendingRollUpdateRef.current = null;
 
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: latest.gameId, p_session_id: sessionId }).then();
 
     // Fire RPC in parallel — we don't await it for the animation timing
     const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {
-      body: { game_id: state.gameId, session_id: sessionId },
+      body: { game_id: latest.gameId, session_id: sessionId },
     })).then(({ error }) => {
       if (error) console.error('Roll dice error:', error);
       return { ok: !error } as const;

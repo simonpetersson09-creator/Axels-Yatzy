@@ -54,6 +54,9 @@ export function useMultiplayerGame() {
   const sessionId = getSessionId();
   // Use ref to avoid stale closure in debouncedRefresh
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
+  // Buffer for server dice/roll fields received during a local roll animation.
+  // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
+  const pendingRollUpdateRef = useRef<{ dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number } | null>(null);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {

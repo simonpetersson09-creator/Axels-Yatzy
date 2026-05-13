@@ -365,7 +365,10 @@ export default function MultiplayerGamePage() {
               dice={gameState.dice}
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}
-              isRolling={localRolling || gameState.isRolling}
+              // Client-driven animation: while localRolling is true, ignore the
+              // server is_rolling flag entirely so we get a single clean pulse.
+              // For opponent turns, fall back to the server flag.
+              isRolling={localRolling || (!isMyTurn && gameState.isRolling)}
               onToggleLock={isMyTurn ? toggleLock : () => {}}
               compact
             />

@@ -189,7 +189,7 @@ export function useMultiplayerGame() {
       isRolling: game.is_rolling,
     };
 
-    const optimisticLock = pendingLockRef.current?.gameId === game.id ? pendingLockRef.current.lockedDice : null;
+    const optimisticLock = getPendingLockForTurn(game.id, game.current_player_index, game.round);
     if (optimisticLock && sameArray(optimisticLock, dicePart.lockedDice)) {
       pendingLockRef.current = null;
       if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; }
@@ -473,9 +473,7 @@ export function useMultiplayerGame() {
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState) return false;
     const gs = latest.gameState;
-    const activeLockedDice = pendingLockRef.current?.gameId === latest.gameId
-      ? pendingLockRef.current.lockedDice
-      : gs.lockedDice;
+    const activeLockedDice = getPendingLockForTurn(latest.gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
     if (gs.rollsLeft <= 0) return false;
     if (latest.myPlayerIndex !== gs.currentPlayerIndex) return false;
 
@@ -540,10 +538,10 @@ export function useMultiplayerGame() {
     pendingLockSeqRef.current = seq;
 
     // Optimistic update — flip locally immediately so the lock animation triggers on tap.
-    const baseLocks = pendingLockRef.current?.gameId === gameId ? pendingLockRef.current.lockedDice : gs.lockedDice;
+    const baseLocks = getPendingLockForTurn(gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
     const optimisticLocks = [...baseLocks];
     optimisticLocks[index] = !optimisticLocks[index];
-    pendingLockRef.current = { gameId, lockedDice: optimisticLocks, seq };
+    pendingLockRef.current = { gameId, lockedDice: optimisticLocks, seq, playerIndex: gs.currentPlayerIndex, round: gs.round };
     if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     setState(prev => prev.gameState ? {
       ...prev,

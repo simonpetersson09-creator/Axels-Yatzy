@@ -517,6 +517,7 @@ export function useMultiplayerGame() {
     }
 
     pendingSubmitRef.current = { key: `${gs.currentPlayerIndex}:${categoryId}`, gameId };
+    setPendingCategory(categoryId);
 
     setState(prev => prev.gameState ? {
       ...prev,

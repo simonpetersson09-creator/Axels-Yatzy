@@ -281,7 +281,7 @@ export function useMultiplayerGame() {
         error: null,
       };
     });
-  }, [startRemoteRolling]);
+  }, [startRemoteRolling, getPendingLockForTurn]);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
   useEffect(() => {
@@ -522,7 +522,7 @@ export function useMultiplayerGame() {
         resolve(result.ok);
       }, ROLL_ANIM_MS);
     });
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll, waitForPendingLocks]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll, waitForPendingLocks, getPendingLockForTurn]);
 
   // Toggle lock — optimistic local update, server validates in background.
   // Rolls back via refresh on RPC failure.
@@ -582,7 +582,7 @@ export function useMultiplayerGame() {
       }
     })();
     pendingLockPromisesRef.current.add(lockPromise);
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, getPendingLockForTurn]);
 
   // Get possible scores
   const getPossibleScores = useCallback((): Record<CategoryId, number> | null => {

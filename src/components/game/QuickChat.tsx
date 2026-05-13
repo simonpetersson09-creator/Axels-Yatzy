@@ -32,7 +32,7 @@ const PLAYER_BUBBLE_COLORS = [
   'bg-yatzy-player4/95 text-white',
 ];
 
-export function QuickChat({ gameId, myPlayerIndex, myName }: QuickChatProps) {
+export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: QuickChatProps) {
   const [open, setOpen] = useState(false);
   const [bubbles, setBubbles] = useState<IncomingBubble[]>([]);
   const [cooldownLeft, setCooldownLeft] = useState(0);

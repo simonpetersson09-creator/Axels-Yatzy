@@ -438,24 +438,83 @@ export function useMultiplayerGame() {
     });
 
     submittingRef.current = true;
+    const gameId = state.gameId;
+
+    // ── Optimistic UI ───────────────────────────────────────────────────────
+    // Mirror useYatzyGame.selectCategory exactly so multiplayer feels as
+    // responsive as Snabb match: fill the cell, advance the turn, reset dice
+    // and rollsLeft locally — server is still authoritative and will either
+    // confirm this state or trigger a rollback via refreshGameState.
+    const optimisticScore = calculateScore(gs.dice, categoryId);
+    const updatedPlayers = gs.players.map((p, i) => {
+      if (i !== gs.currentPlayerIndex) return p;
+      return { ...p, scores: { ...p.scores, [categoryId]: optimisticScore } };
+    });
+    const allDone = updatedPlayers.every(p =>
+      CATEGORIES.every(cat => p.scores[cat.id] !== undefined && p.scores[cat.id] !== null)
+    );
+    let nextPlayerIndex = (gs.currentPlayerIndex + 1) % gs.players.length;
+    if (!allDone) {
+      for (let i = 0; i < gs.players.length; i++) {
+        const candidate = (gs.currentPlayerIndex + 1 + i) % gs.players.length;
+        const hasOpen = CATEGORIES.some(cat =>
+          updatedPlayers[candidate].scores[cat.id] === undefined ||
+          updatedPlayers[candidate].scores[cat.id] === null
+        );
+        if (hasOpen) { nextPlayerIndex = candidate; break; }
+      }
+    }
+
+    pendingSubmitRef.current = { key: `${gs.currentPlayerIndex}:${categoryId}`, gameId };
+
+    setState(prev => prev.gameState ? {
+      ...prev,
+      gameState: {
+        ...prev.gameState,
+        players: updatedPlayers,
+        currentPlayerIndex: allDone ? prev.gameState.currentPlayerIndex : nextPlayerIndex,
+        dice: [1, 1, 1, 1, 1],
+        lockedDice: [false, false, false, false, false],
+        rollsLeft: 3,
+        isRolling: false,
+        gameOver: allDone,
+        round: nextPlayerIndex === 0 && !allDone ? prev.gameState.round + 1 : prev.gameState.round,
+      },
+    } : prev);
 
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
 
+    let rpcOk = true;
     try {
       const { error } = await withTimeout(supabase.functions.invoke('submit-score', {
-        body: { game_id: state.gameId, session_id: sessionId, category_id: categoryId },
+        body: { game_id: gameId, session_id: sessionId, category_id: categoryId },
       }));
-
       if (error) {
+        rpcOk = false;
         console.error('Submit score error:', error);
       }
     } catch (err) {
+      rpcOk = false;
       console.error('Submit score failed:', err);
       const msg = (err as Error)?.message === 'timeout' ? 'Anslutningen tog för lång tid. Försök igen.' : 'Kunde inte spara poäng';
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
-      submittingRef.current = false;
+      // Hold the optimistic state through the cell-fill animation, then
+      // reconcile with the authoritative server snapshot. On RPC failure
+      // this acts as the rollback path.
+      setTimeout(() => {
+        pendingSubmitRef.current = null;
+        submittingRef.current = false;
+        if (!mountedRef.current) return;
+        if (!rpcOk) {
+          refreshGameStateRef.current?.(gameId);
+        } else {
+          // Pull authoritative state in case the realtime payload arrived
+          // while we were holding it back.
+          refreshGameStateRef.current?.(gameId);
+        }
+      }, SUBMIT_ANIM_MS);
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 

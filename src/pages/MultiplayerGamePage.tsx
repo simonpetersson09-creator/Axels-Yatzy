@@ -11,6 +11,7 @@ import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
+import { playLightHaptic } from '@/lib/haptics';
 import { QuickChat } from '@/components/game/QuickChat';
 import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';
@@ -26,7 +27,8 @@ export default function MultiplayerGamePage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const {
-    gameState, gameCode, status, myPlayerIndex, isMyTurn, error, localRolling,
+    gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
+    localRolling, remoteRolling, pendingCategory,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 
@@ -151,6 +153,26 @@ export default function MultiplayerGamePage() {
     }
   }, [gameState?.currentPlayerIndex, status, myPlayerIndex]);
 
+  // Trigger YatzyCelebration for ANY player when their yatzy slot fills with
+  // 50 — covers opponents on the local device. Local player already triggers
+  // it directly in handleSelectCategory; this dedupes via prevYatzyRef.
+  const prevYatzyRef = useRef<Map<string, number | null>>(new Map());
+  useEffect(() => {
+    if (!gameState || status !== 'playing') return;
+    const map = prevYatzyRef.current;
+    let triggered = false;
+    gameState.players.forEach(p => {
+      const cur = (p.scores as Record<string, number | null>).yatzy ?? null;
+      const prev = map.has(p.id) ? map.get(p.id)! : cur; // first observation = current
+      if (!map.has(p.id)) map.set(p.id, cur);
+      if (!triggered && prev !== 50 && cur === 50) {
+        triggered = true;
+        setShowYatzyCelebration(true);
+      }
+      map.set(p.id, cur);
+    });
+  }, [gameState?.players, status]);
+
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
       statsRecordedRef.current = true;
@@ -272,6 +294,7 @@ export default function MultiplayerGamePage() {
 
   const handleSelectCategory = (categoryId: string) => {
     if (!isMyTurn) return;
+    playLightHaptic().catch(() => {});
     if (categoryId === 'yatzy') {
       const allSame = gameState.dice.every(d => d === gameState.dice[0]);
       if (allSame) {
@@ -342,6 +365,7 @@ export default function MultiplayerGamePage() {
                 possibleScores={possibleScores}
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
+                aiChosenCategory={pendingCategory}
                 selectionDisabled={!isMyTurn}
               />
               <CombinationCelebration type={activeCelebration} />
@@ -402,8 +426,8 @@ export default function MultiplayerGamePage() {
               // Client-driven animation: while localRolling is true, ignore the
               // server is_rolling flag entirely so we get a single clean pulse.
               // For opponent turns, fall back to the server flag.
-              isRolling={localRolling || (!isMyTurn && gameState.isRolling)}
-              onToggleLock={isMyTurn ? toggleLock : () => {}}
+              isRolling={localRolling || remoteRolling || (!isMyTurn && gameState.isRolling)}
+              onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
               compact
             />
 

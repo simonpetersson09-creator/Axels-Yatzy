@@ -50,6 +50,7 @@ export function useMultiplayerGame() {
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const remoteRollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const submittingRef = useRef(false);
   const mountedRef = useRef(true);
   const sessionId = getSessionId();
@@ -62,6 +63,19 @@ export function useMultiplayerGame() {
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
   // reset dice) isn't briefly overwritten by a stale server snapshot.
   const pendingSubmitRef = useRef<{ key: string; gameId: string } | null>(null);
+
+  // Client-driven dice spin for the *opponent* — server.is_rolling stays false,
+  // so we synthesize a rolling pulse when realtime delivers fresh dice for the
+  // other player. Synced with Dice ANIM_DURATION (~1100 ms).
+  const ROLL_ANIM_MS = 1100;
+  const [localRolling, setLocalRolling] = useState(false);
+  const [remoteRolling, setRemoteRolling] = useState(false);
+  const rollingGuardRef = useRef(false);
+  const remoteRollingGuardRef = useRef(false);
+  // Pending category surfaces an `aiChosenCategory`-style highlight while the
+  // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
+  // pendingSubmitRef.
+  const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {
@@ -115,7 +129,7 @@ export function useMultiplayerGame() {
     // If a local roll animation is in flight, buffer the new dice/roll fields.
     // They will be flushed at the end of ROLL_ANIM_MS so the spin animation
     // never sees its target value change mid-flight.
-    if (rollingGuardRef.current) {
+    if (rollingGuardRef.current || remoteRollingGuardRef.current) {
       pendingRollUpdateRef.current = dicePart;
       setState(prev => ({
         ...prev,
@@ -145,18 +159,57 @@ export function useMultiplayerGame() {
       return;
     }
 
-    const gameState: GameState = { ...dicePart, ...restPart };
+    const gameStateNext: GameState = { ...dicePart, ...restPart };
 
-    setState(prev => ({
-      ...prev,
-      gameId: game.id,
-      gameCode: game.game_code,
-      status: gameStatus,
-      // myPlayerIndex is set by createGame/joinGame/rejoinGame, not here
-      gameState,
-      loading: false,
-      error: null,
-    }));
+    setState(prev => {
+      const prevGS = prev.gameState;
+      const myIdx = prev.myPlayerIndex;
+      const isMyTurnNow = myIdx !== null && myIdx === restPart.currentPlayerIndex;
+
+      // Detect an OPPONENT roll: rolls_left dropped while still their turn.
+      // Synthesize a client-side rolling pulse and buffer the new dice values
+      // so they only resolve at the end of the spin.
+      const opponentRolled =
+        prevGS &&
+        !rollingGuardRef.current &&
+        !isMyTurnNow &&
+        restPart.currentPlayerIndex === prevGS.currentPlayerIndex &&
+        restPart.round === prevGS.round &&
+        dicePart.rollsLeft < prevGS.rollsLeft;
+
+      if (opponentRolled) {
+        pendingRollUpdateRef.current = dicePart;
+        remoteRollingGuardRef.current = true;
+        setRemoteRolling(true);
+        if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
+        remoteRollingTimerRef.current = setTimeout(() => {
+          if (!mountedRef.current) return;
+          flushPendingRoll();
+          remoteRollingGuardRef.current = false;
+          setRemoteRolling(false);
+        }, ROLL_ANIM_MS);
+
+        return {
+          ...prev,
+          gameId: game.id,
+          gameCode: game.game_code,
+          status: gameStatus,
+          gameState: { ...prevGS, ...restPart },
+          loading: false,
+          error: null,
+        };
+      }
+
+      return {
+        ...prev,
+        gameId: game.id,
+        gameCode: game.game_code,
+        status: gameStatus,
+        gameState: gameStateNext,
+        loading: false,
+        error: null,
+      };
+    });
   }, []);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
@@ -312,9 +365,7 @@ export function useMultiplayerGame() {
   // Roll dice — calls server-side Edge Function. Animation timing is client-driven
   // and synced with Dice ANIM_DURATION (~1050 ms) so the rolling=false→true→false
   // pulse is clean and dice values never change mid-spin.
-  const ROLL_ANIM_MS = 1100;
-  const [localRolling, setLocalRolling] = useState(false);
-  const rollingGuardRef = useRef(false);
+  // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
 
   const flushPendingRoll = useCallback(() => {
     const buffered = pendingRollUpdateRef.current;
@@ -466,6 +517,7 @@ export function useMultiplayerGame() {
     }
 
     pendingSubmitRef.current = { key: `${gs.currentPlayerIndex}:${categoryId}`, gameId };
+    setPendingCategory(categoryId);
 
     setState(prev => prev.gameState ? {
       ...prev,
@@ -506,6 +558,7 @@ export function useMultiplayerGame() {
       setTimeout(() => {
         pendingSubmitRef.current = null;
         submittingRef.current = false;
+        if (mountedRef.current) setPendingCategory(null);
         if (!mountedRef.current) return;
         if (!rpcOk) {
           refreshGameStateRef.current?.(gameId);
@@ -614,6 +667,7 @@ export function useMultiplayerGame() {
       cleanupChannel();
       cleanupTimers();
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+      if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
     };
   }, [cleanupChannel, cleanupTimers]);
 
@@ -637,6 +691,8 @@ export function useMultiplayerGame() {
     ...state,
     isMyTurn,
     localRolling,
+    remoteRolling,
+    pendingCategory,
     createGame,
     joinGame,
     startGame,

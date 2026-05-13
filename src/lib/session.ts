@@ -2,7 +2,12 @@ const SESSION_KEY = 'yatzy_session_id';
 const PLAYER_NAME_KEY = 'yatzy_player_name';
 
 export function getSessionId(): string {
-  return '00000000-0000-4000-8000-000000000001';
+  let id = localStorage.getItem(SESSION_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(SESSION_KEY, id);
+  }
+  return id;
 }
 
 // Kept as a thin wrapper for backwards compatibility.

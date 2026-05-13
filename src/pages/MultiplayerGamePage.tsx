@@ -302,6 +302,10 @@ export default function MultiplayerGamePage() {
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
       />
+      <TurnTransition
+        trigger={showTurnTransition}
+        onDismiss={() => setShowTurnTransition(false)}
+      />
       {gameId && (
         <QuickChat
           gameId={gameId}

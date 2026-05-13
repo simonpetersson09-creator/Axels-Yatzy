@@ -667,6 +667,7 @@ export function useMultiplayerGame() {
       cleanupChannel();
       cleanupTimers();
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+      if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
     };
   }, [cleanupChannel, cleanupTimers]);
 

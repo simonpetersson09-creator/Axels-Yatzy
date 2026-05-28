@@ -13,8 +13,14 @@ import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
 import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import FriendStatsPage from "./pages/FriendStatsPage";
 import LegalPage from "./pages/LegalPage";
+import ComingSoonPage from "./pages/ComingSoonPage";
 import NotFound from "./pages/NotFound";
 import { lazy, Suspense } from "react";
+
+// The full app is only exposed inside the native iOS build (Capacitor) and
+// in dev/preview. On the public web deployment we show a Coming Soon
+// placeholder and only keep /legal reachable.
+const APP_ENABLED = import.meta.env.DEV || Capacitor.isNativePlatform();
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
@@ -30,14 +36,20 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/setup" element={<GameSetupPage />} />
-          <Route path="/game" element={<GamePage />} />
-          <Route path="/results" element={<ResultsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
-          <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
-          <Route path="/friend-stats" element={<FriendStatsPage />} />
+          {APP_ENABLED ? (
+            <>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/setup" element={<GameSetupPage />} />
+              <Route path="/game" element={<GamePage />} />
+              <Route path="/results" element={<ResultsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
+              <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
+              <Route path="/friend-stats" element={<FriendStatsPage />} />
+            </>
+          ) : (
+            <Route path="/" element={<ComingSoonPage />} />
+          )}
           <Route path="/legal" element={<LegalPage />} />
           {ADMIN_ENABLED && AdminPage && (
             <Route
@@ -49,7 +61,7 @@ const App = () => (
               }
             />
           )}
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={APP_ENABLED ? <NotFound /> : <ComingSoonPage />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

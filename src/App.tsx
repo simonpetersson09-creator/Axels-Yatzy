@@ -12,6 +12,7 @@ import SettingsPage from "./pages/SettingsPage";
 import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
 import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import FriendStatsPage from "./pages/FriendStatsPage";
+import LegalPage from "./pages/LegalPage";
 import NotFound from "./pages/NotFound";
 import { lazy, Suspense } from "react";
 
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
           <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
           <Route path="/friend-stats" element={<FriendStatsPage />} />
+          <Route path="/legal" element={<LegalPage />} />
           {ADMIN_ENABLED && AdminPage && (
             <Route
               path="/admin"

@@ -12,7 +12,7 @@ import {
 import { saveLocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
+import { getNotificationPrefs, setNotificationPrefs, sendTestNotification } from '@/lib/notifications';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {

@@ -21,8 +21,6 @@ interface MultiplayerState {
 }
 
 const HEARTBEAT_INTERVAL_MS = 15_000;
-const INACTIVE_TIMEOUT_S = 60;
-const INACTIVE_CHECK_INTERVAL_MS = 10_000;
 const NETWORK_TIMEOUT_MS = 15_000;
 const LOCK_OPTIMISTIC_MS = 1500;
 

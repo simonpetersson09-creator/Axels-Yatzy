@@ -64,21 +64,12 @@ export async function initNotifications(): Promise<void> {
   try {
     const { PushNotifications } = await import('@capacitor/push-notifications');
 
-    const perm = await PushNotifications.checkPermissions();
-    let granted = perm.receive === 'granted';
-    if (!granted) {
-      const req = await PushNotifications.requestPermissions();
-      granted = req.receive === 'granted';
-      trackEvent(granted ? 'notification_permission_granted' : 'notification_permission_denied');
-    }
-    if (!granted) return;
-
-    await PushNotifications.register();
-
+    // CRITICAL: attach listeners BEFORE register() — otherwise the 'registration'
+    // event can fire before the listener is attached and the token is lost silently.
     PushNotifications.addListener('registration', async (token) => {
       try {
         const deviceId = await initDeviceId();
-        await supabase.from('push_tokens').upsert(
+        const { error } = await supabase.from('push_tokens').upsert(
           {
             device_id: deviceId,
             session_id: getSessionId(),
@@ -89,13 +80,21 @@ export async function initNotifications(): Promise<void> {
           },
           { onConflict: 'device_id,token' },
         );
+        if (error) {
+          console.warn('[notifications] upsert push_token error', error);
+          trackEvent('push_token_save_failed', { error: error.message });
+        } else {
+          trackEvent('push_token_registered', { platform: Capacitor.getPlatform() });
+        }
       } catch (err) {
         console.warn('[notifications] failed to save push token', err);
+        trackEvent('push_token_save_failed', { error: String(err) });
       }
     });
 
     PushNotifications.addListener('registrationError', (err) => {
       console.warn('[notifications] registration error', err);
+      trackEvent('push_registration_error', { error: JSON.stringify(err) });
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', async (action) => {
@@ -120,10 +119,37 @@ export async function initNotifications(): Promise<void> {
         }, 200);
       }
     });
+
+    const perm = await PushNotifications.checkPermissions();
+    let granted = perm.receive === 'granted';
+    if (!granted) {
+      const req = await PushNotifications.requestPermissions();
+      granted = req.receive === 'granted';
+      trackEvent(granted ? 'notification_permission_granted' : 'notification_permission_denied');
+    }
+    if (!granted) return;
+
+    await PushNotifications.register();
   } catch (err) {
     console.warn('[notifications] init failed', err);
   }
 }
+
+/** Ask the server to send a test notification to this device. Returns diagnostic info. */
+export async function sendTestNotification(): Promise<{ ok: boolean; info: unknown }> {
+  try {
+    const deviceId = getDeviceIdSync();
+    const sessionId = getSessionId();
+    const { data, error } = await supabase.functions.invoke('notify-test', {
+      body: { device_id: deviceId, session_id: sessionId },
+    });
+    if (error) return { ok: false, info: { error: error.message } };
+    return { ok: !!(data as { delivered?: boolean })?.delivered, info: data };
+  } catch (err) {
+    return { ok: false, info: { error: String(err) } };
+  }
+}
+
 
 /** Fire-and-forget: ask the server to send a turn notification for `gameId`. */
 export async function pingTurnChange(gameId: string): Promise<void> {

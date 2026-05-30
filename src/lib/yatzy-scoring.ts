@@ -135,6 +135,8 @@ export function diceDistributionTest(n = 10000): { counts: Record<number, number
   return { counts, pct };
 }
 
-if (typeof window !== 'undefined' && import.meta.env?.DEV) {
+if (typeof window !== 'undefined') {
+  // Available in dev AND production so users can verify dice fairness
+  // from devtools: __diceDistribution(10000) → uniform ~16.67% per side.
   (window as any).__diceDistribution = diceDistributionTest;
 }

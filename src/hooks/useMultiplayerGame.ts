@@ -21,8 +21,6 @@ interface MultiplayerState {
 }
 
 const HEARTBEAT_INTERVAL_MS = 15_000;
-const INACTIVE_TIMEOUT_S = 60;
-const INACTIVE_CHECK_INTERVAL_MS = 10_000;
 const NETWORK_TIMEOUT_MS = 15_000;
 const LOCK_OPTIMISTIC_MS = 1500;
 
@@ -317,35 +315,10 @@ export function useMultiplayerGame() {
     }, HEARTBEAT_INTERVAL_MS);
   }, [sessionId]);
 
-  // Only the "next player" after the current player polls skip_inactive_turn.
-  // This reduces N× polling to exactly 1×. If the designated poller disconnects,
-  // they become inactive → get skipped → a new next-player takes over. Self-healing.
-  useEffect(() => {
-    if (inactiveCheckRef.current) { clearInterval(inactiveCheckRef.current); inactiveCheckRef.current = null; }
-
-    const gs = state.gameState;
-    const gameId = state.gameId;
-    if (!gs || !gameId || state.status !== 'playing' || state.myPlayerIndex === null) return;
-
-    const playerCount = gs.players.length;
-    if (playerCount < 2) return;
-
-    const nextPlayerIndex = (gs.currentPlayerIndex + 1) % playerCount;
-    const iAmDesignatedPoller = state.myPlayerIndex === nextPlayerIndex;
-
-    if (!iAmDesignatedPoller) return;
-
-    inactiveCheckRef.current = setInterval(async () => {
-      await supabase.rpc('skip_inactive_turn', {
-        p_game_id: gameId,
-        p_timeout_seconds: INACTIVE_TIMEOUT_S,
-      });
-    }, INACTIVE_CHECK_INTERVAL_MS);
-
-    return () => {
-      if (inactiveCheckRef.current) { clearInterval(inactiveCheckRef.current); inactiveCheckRef.current = null; }
-    };
-  }, [state.gameId, state.status, state.myPlayerIndex, state.gameState?.currentPlayerIndex, state.gameState?.players.length]);
+  // Auto-skip vid inaktivitet är AVSTÄNGT.
+  // Vänspel pausas i stället tills spelaren kommer tillbaka — ingen AI eller
+  // automatisk nollning av kategorier. Motspelaren kan använda forfeit-knappen
+  // om hen vill avsluta ett övergivet spel manuellt.
 
   // Subscribe to realtime changes (single channel for both lobby + game)
   const subscribeToGame = useCallback((gameId: string) => {

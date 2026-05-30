@@ -12,7 +12,7 @@ import {
 import { saveLocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
+import { getNotificationPrefs, setNotificationPrefs, sendTestNotification } from '@/lib/notifications';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
@@ -240,6 +240,33 @@ export default function SettingsPage() {
               value={notifPrefs.reminderNotifications}
               onChange={(v) => updateNotifPref('reminderNotifications', v)}
             />
+            <div className="border-t border-border/40" />
+            <motion.button
+              onClick={async () => {
+                toast.loading('Skickar testnotis…', { id: 'test-notif' });
+                const res = await sendTestNotification();
+                const info = res.info as Record<string, unknown>;
+                if (res.ok) {
+                  toast.success('Notis skickad — kolla låsskärmen', { id: 'test-notif' });
+                } else {
+                  const stage = (info?.stage as string) ?? 'okänt';
+                  const hint = (info?.hint as string) ?? '';
+                  toast.error(`Misslyckades (${stage})${hint ? ': ' + hint : ''}`, {
+                    id: 'test-notif',
+                    duration: 8000,
+                  });
+                }
+                console.log('[test-notif] result', res);
+              }}
+              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary transition-colors"
+              whileTap={{ scale: 0.985 }}
+            >
+              <Bell className="w-4 h-4 text-primary" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-foreground">Skicka testnotis</div>
+                <div className="text-xs text-muted-foreground">Verifiera att pushkedjan fungerar</div>
+              </div>
+            </motion.button>
           </Card>
         </Section>
 

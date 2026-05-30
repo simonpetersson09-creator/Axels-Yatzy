@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Users, Trophy, X, Minus } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, X, Minus, Play } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
@@ -152,47 +152,63 @@ export default function FriendStatsPage() {
               const lastWon = o.lastMatch.winner_id === myId;
               const lastDraw = o.lastMatch.winner_id === null;
               return (
-                <motion.button
+                <motion.div
                   key={o.opponentId}
-                  onClick={() => setSelected(o.opponentId)}
-                  className="w-full text-left p-4 rounded-2xl bg-secondary/60 border border-border/50 active:bg-secondary transition"
-                  whileTap={{ scale: 0.98 }}
+                  className="w-full p-4 rounded-2xl bg-secondary/60 border border-border/50"
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="font-display font-bold text-foreground truncate">
-                        {o.opponentName}
+                  <button
+                    onClick={() => setSelected(o.opponentId)}
+                    className="w-full text-left active:opacity-80 transition"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-display font-bold text-foreground truncate">
+                          {o.opponentName}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground mt-0.5">
+                          {o.matches} {t('friendsMatches')} · {t('friendsHighScore')}: {o.myHigh}
+                        </div>
                       </div>
-                      <div className="text-[11px] text-muted-foreground mt-0.5">
-                        {o.matches} {t('friendsMatches')} · {t('friendsHighScore')}: {o.myHigh}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold tabular-nums">
-                      <span className="px-2 py-0.5 rounded-md bg-game-success/15 text-game-success">
-                        {o.wins}
-                      </span>
-                      <span className="px-2 py-0.5 rounded-md bg-destructive/15 text-destructive">
-                        {o.losses}
-                      </span>
-                      {o.draws > 0 && (
-                        <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
-                          {o.draws}
+                      <div className="flex items-center gap-1.5 text-[11px] font-bold tabular-nums">
+                        <span className="px-2 py-0.5 rounded-md bg-game-success/15 text-game-success">
+                          {o.wins}
                         </span>
-                      )}
+                        <span className="px-2 py-0.5 rounded-md bg-destructive/15 text-destructive">
+                          {o.losses}
+                        </span>
+                        {o.draws > 0 && (
+                          <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
+                            {o.draws}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-2.5 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                    <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
-                    <span className={`font-bold ${
-                      lastDraw ? 'text-muted-foreground'
-                        : lastWon ? 'text-game-success' : 'text-destructive'
-                    }`}>
-                      {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
-                    </span>
-                  </div>
-                </motion.button>
+                    <div className="mt-2.5 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
+                      <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
+                      <span className={`font-bold ${
+                        lastDraw ? 'text-muted-foreground'
+                          : lastWon ? 'text-game-success' : 'text-destructive'
+                      }`}>
+                        {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
+                      </span>
+                    </div>
+                  </button>
+                  <motion.button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate('/multiplayer', {
+                        state: { inviteFriendName: o.opponentName },
+                      });
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                    className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm"
+                  >
+                    <Play className="w-3.5 h-3.5" />
+                    Spela med vän
+                  </motion.button>
+                </motion.div>
               );
             })}
           </div>

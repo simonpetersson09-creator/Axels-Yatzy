@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -24,6 +24,8 @@ function sanitizeName(raw: string): string {
 
 export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: LobbyJoinFormProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const inviteFriendName = (location.state as { inviteFriendName?: string } | null)?.inviteFriendName;
   const { t } = useTranslation();
   const [playerName, setPlayerName] = useState(() => getPlayerName());
   const [joinCode, setJoinCode] = useState('');
@@ -53,6 +55,12 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           </button>
           <h1 className="text-2xl font-display font-bold">{t('multiplayer')}</h1>
         </div>
+
+        {inviteFriendName && (
+          <div className="p-3 rounded-xl bg-primary/10 border border-primary/30 text-sm text-foreground">
+            Skapa ett spel och dela koden med <span className="font-bold">{inviteFriendName}</span> för att spela igen.
+          </div>
+        )}
 
         <div className="space-y-3">
           <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('yourName')}</label>

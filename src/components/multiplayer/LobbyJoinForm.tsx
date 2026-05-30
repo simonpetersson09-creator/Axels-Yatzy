@@ -24,6 +24,8 @@ function sanitizeName(raw: string): string {
 
 export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: LobbyJoinFormProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const inviteFriendName = (location.state as { inviteFriendName?: string } | null)?.inviteFriendName;
   const { t } = useTranslation();
   const [playerName, setPlayerName] = useState(() => getPlayerName());
   const [joinCode, setJoinCode] = useState('');

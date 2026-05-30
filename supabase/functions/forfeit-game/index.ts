@@ -44,6 +44,15 @@ Deno.serve(async (req) => {
       return json({ error: result.error }, 400);
     }
 
+    // Fire-and-forget push to the opponent(s). Never block the response.
+    if (result.game_ended) {
+      supabase.functions
+        .invoke("notify-forfeit", {
+          body: { game_id, forfeited_session_id: session_id },
+        })
+        .catch((e) => console.warn("[forfeit-game] notify-forfeit failed", e));
+    }
+
     return json({
       success: true,
       game_ended: result.game_ended,

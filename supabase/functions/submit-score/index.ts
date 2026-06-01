@@ -47,7 +47,6 @@ Deno.serve(async (req) => {
     }
 
     // Fire-and-forget turn-change notification to the next player.
-    // Triggered server-side so the public notify-* endpoints don't need to be exposed.
     if (!result.game_over) {
       const internalSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "";
       if (internalSecret) {
@@ -58,6 +57,13 @@ Deno.serve(async (req) => {
           })
           .catch((e) => console.warn("[submit-score] notify-turn-change failed", e));
       }
+    } else {
+      // Record canonical friend match result server-side (scores derived from DB).
+      supabase
+        .rpc("record_friend_match", { p_game_id: game_id, p_session_id: session_id })
+        .then(({ error: recErr }: { error: { message: string } | null }) => {
+          if (recErr) console.warn("[submit-score] record_friend_match failed", recErr.message);
+        });
     }
 
     return json({

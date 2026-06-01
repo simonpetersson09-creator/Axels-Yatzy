@@ -104,10 +104,10 @@ export async function initNotifications(): Promise<void> {
       trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: data.game_id });
       if (notifId) {
         try {
-          await supabase
-            .from('notification_log')
-            .update({ opened_at: new Date().toISOString() })
-            .eq('id', notifId);
+          const deviceId = await initDeviceId();
+          await supabase.functions.invoke('notifications-write', {
+            body: { action: 'mark_opened', notification_id: notifId, device_id: deviceId },
+          });
         } catch {
           /* ignore */
         }

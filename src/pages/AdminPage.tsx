@@ -158,10 +158,20 @@ function LineChart({
   );
 }
 
+const ADMIN_KEY_STORAGE = "lovable.admin.key";
+
 export default function AdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [adminKey, setAdminKey] = useState<string>(() => {
+    try {
+      return localStorage.getItem(ADMIN_KEY_STORAGE) ?? "";
+    } catch {
+      return "";
+    }
+  });
+  const [authed, setAuthed] = useState<boolean>(false);
 
   // Bypass the iPhone preview frame for /admin
   useEffect(() => {
@@ -175,24 +185,68 @@ export default function AdminPage() {
     };
   }, []);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("admin-analytics");
-        if (!mounted) return;
-        if (error) setError(error.message);
-        else setStats(data as Stats);
-      } catch (e) {
-        if (mounted) setError(String(e));
-      } finally {
-        if (mounted) setLoading(false);
+  const loadStats = async (key: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-analytics", {
+        headers: { "x-admin-key": key },
+      });
+      if (error) {
+        setError(error.message || "Unauthorized");
+        setAuthed(false);
+        return;
       }
-    })();
-    return () => {
-      mounted = false;
-    };
+      if (data && typeof data === "object" && "error" in (data as Record<string, unknown>)) {
+        setError(String((data as { error: unknown }).error));
+        setAuthed(false);
+        return;
+      }
+      setStats(data as Stats);
+      setAuthed(true);
+      try { localStorage.setItem(ADMIN_KEY_STORAGE, key); } catch { /* ignore */ }
+    } catch (e) {
+      setError(String(e));
+      setAuthed(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Auto-try with stored key on mount
+  useEffect(() => {
+    if (adminKey) void loadStats(adminKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-background p-8 text-foreground">
+        <div className="mx-auto max-w-sm space-y-4">
+          <h1 className="text-xl font-bold">Admin access</h1>
+          <p className="text-sm text-muted-foreground">
+            Enter the admin key to view analytics.
+          </p>
+          <input
+            type="password"
+            value={adminKey}
+            onChange={(e) => setAdminKey(e.target.value)}
+            placeholder="Admin key"
+            className="w-full rounded-md border border-border bg-secondary/30 px-3 py-2 text-sm"
+            onKeyDown={(e) => { if (e.key === "Enter" && adminKey) void loadStats(adminKey); }}
+          />
+          <button
+            onClick={() => adminKey && loadStats(adminKey)}
+            disabled={!adminKey || loading}
+            className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+          >
+            {loading ? "Verifying…" : "Unlock"}
+          </button>
+          {error && <div className="text-xs text-destructive">{error}</div>}
+        </div>
+      </div>
+    );
+  }
 
   const kpis = useMemo(() => {
     if (!stats) return [];

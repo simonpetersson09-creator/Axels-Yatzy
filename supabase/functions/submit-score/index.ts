@@ -46,6 +46,20 @@ Deno.serve(async (req) => {
       return json({ error: result.error }, 400);
     }
 
+    // Fire-and-forget turn-change notification to the next player.
+    // Triggered server-side so the public notify-* endpoints don't need to be exposed.
+    if (!result.game_over) {
+      const internalSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "";
+      if (internalSecret) {
+        supabase.functions
+          .invoke("notify-turn-change", {
+            body: { game_id, sender_session_id: session_id },
+            headers: { "x-internal-secret": internalSecret },
+          })
+          .catch((e) => console.warn("[submit-score] notify-turn-change failed", e));
+      }
+    }
+
     return json({
       success: true,
       score: result.score,

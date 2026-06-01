@@ -19,9 +19,9 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { device_id, session_id } = await req.json().catch(() => ({}));
-    if (!device_id && !session_id) {
-      return json({ error: "device_id or session_id required" }, 400);
+    const { device_id } = await req.json().catch(() => ({}));
+    if (!device_id || typeof device_id !== "string") {
+      return json({ error: "device_id required" }, 400);
     }
 
     const supabase = createClient(
@@ -29,16 +29,18 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Find the most recent push token for this device/session
-    const query = supabase
+    // Only allow sending a test push to a device_id that has a registered
+    // token. device_ids are random UUIDs the client generates locally and are
+    // not exposed via the public Data API, so this prevents using the
+    // endpoint to spam arbitrary players (whose session_ids are public).
+    const { data: token, error: tokenErr } = await supabase
       .from("push_tokens")
       .select("device_id, session_id, token, platform, enabled, updated_at")
       .eq("enabled", true)
+      .eq("device_id", device_id)
       .order("updated_at", { ascending: false })
-      .limit(1);
-    if (device_id) query.eq("device_id", device_id);
-    else query.eq("session_id", session_id);
-    const { data: token, error: tokenErr } = await query.maybeSingle();
+      .limit(1)
+      .maybeSingle();
 
     if (tokenErr) {
       return json({ stage: "lookup_token", error: tokenErr.message }, 200);

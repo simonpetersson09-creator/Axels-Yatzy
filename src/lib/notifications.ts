@@ -37,11 +37,13 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
   }
   const deviceId = await initDeviceId();
   try {
-    await supabase.from('notification_preferences').upsert({
-      device_id: deviceId,
-      turn_notifications: prefs.turnNotifications,
-      reminder_notifications: prefs.reminderNotifications,
-      updated_at: new Date().toISOString(),
+    await supabase.functions.invoke('notifications-write', {
+      body: {
+        action: 'set_prefs',
+        device_id: deviceId,
+        turn_notifications: prefs.turnNotifications,
+        reminder_notifications: prefs.reminderNotifications,
+      },
     });
   } catch (err) {
     console.warn('[notifications] failed to sync prefs', err);
@@ -69,19 +71,17 @@ export async function initNotifications(): Promise<void> {
     PushNotifications.addListener('registration', async (token) => {
       try {
         const deviceId = await initDeviceId();
-        const { error } = await supabase.from('push_tokens').upsert(
-          {
+        const { error } = await supabase.functions.invoke('notifications-write', {
+          body: {
+            action: 'register_token',
             device_id: deviceId,
             session_id: getSessionId(),
             platform: Capacitor.getPlatform(),
             token: token.value,
-            enabled: true,
-            updated_at: new Date().toISOString(),
           },
-          { onConflict: 'device_id,token' },
-        );
+        });
         if (error) {
-          console.warn('[notifications] upsert push_token error', error);
+          console.warn('[notifications] register push_token error', error);
           trackEvent('push_token_save_failed', { error: error.message });
         } else {
           trackEvent('push_token_registered', { platform: Capacitor.getPlatform() });
@@ -104,10 +104,10 @@ export async function initNotifications(): Promise<void> {
       trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: data.game_id });
       if (notifId) {
         try {
-          await supabase
-            .from('notification_log')
-            .update({ opened_at: new Date().toISOString() })
-            .eq('id', notifId);
+          const deviceId = await initDeviceId();
+          await supabase.functions.invoke('notifications-write', {
+            body: { action: 'mark_opened', notification_id: notifId, device_id: deviceId },
+          });
         } catch {
           /* ignore */
         }

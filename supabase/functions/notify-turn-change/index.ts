@@ -22,8 +22,14 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
+  // Internal-only endpoint. Only other edge functions (submit-score, etc.) may call it.
+  const expectedSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET");
+  if (!expectedSecret || req.headers.get("x-internal-secret") !== expectedSecret) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
   try {
-    const { game_id, sender_device_id } = await req.json().catch(() => ({}));
+    const { game_id, sender_session_id, sender_device_id } = await req.json().catch(() => ({}));
     if (!game_id) return json({ error: "game_id required" }, 400);
 
     const supabase = createClient(

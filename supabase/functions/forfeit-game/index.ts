@@ -53,6 +53,13 @@ Deno.serve(async (req) => {
           headers: { "x-internal-secret": internalSecret },
         })
         .catch((e) => console.warn("[forfeit-game] notify-forfeit failed", e));
+
+      // Record canonical friend match result server-side.
+      supabase
+        .rpc("record_friend_match", { p_game_id: game_id, p_session_id: session_id })
+        .then(({ error: recErr }: { error: { message: string } | null }) => {
+          if (recErr) console.warn("[forfeit-game] record_friend_match failed", recErr.message);
+        });
     }
 
     return json({

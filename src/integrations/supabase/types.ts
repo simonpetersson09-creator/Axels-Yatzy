@@ -360,6 +360,10 @@ export type Database = {
         Args: { p_dice_index: number; p_game_id: string; p_session_id: string }
         Returns: Json
       }
+      record_friend_match: {
+        Args: { p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
       skip_inactive_turn: {
         Args: { p_game_id: string; p_timeout_seconds?: number }
         Returns: Json

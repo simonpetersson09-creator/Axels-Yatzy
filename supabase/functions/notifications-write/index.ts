@@ -31,10 +31,31 @@ Deno.serve(async (req) => {
     if (action === "register_token") {
       const { device_id, session_id, platform, token } = body;
       if (!device_id || !token || !platform) return json({ error: "missing fields" }, 400);
+
+      // Anti-hijack: session_id is publicly readable from game_players, so we
+      // cannot trust the client to supply any session_id. Reject if the
+      // supplied session_id is already claimed by a different device_id
+      // (first-write-wins per session_id).
+      let safe_session_id: string | null = session_id ?? null;
+      if (safe_session_id) {
+        const { data: existing } = await supabase
+          .from("push_tokens")
+          .select("device_id")
+          .eq("session_id", safe_session_id)
+          .neq("device_id", device_id)
+          .limit(1)
+          .maybeSingle();
+        if (existing) {
+          // Silently drop the session binding rather than fail — the device
+          // still gets its token registered, just without a session link.
+          safe_session_id = null;
+        }
+      }
+
       const { error } = await supabase.from("push_tokens").upsert(
         {
           device_id,
-          session_id: session_id ?? null,
+          session_id: safe_session_id,
           platform,
           token,
           enabled: true,

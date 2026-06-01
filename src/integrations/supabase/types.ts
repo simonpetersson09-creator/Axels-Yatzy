@@ -319,6 +319,21 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          key: string
+          last_request_at: string
+        }
+        Insert: {
+          key: string
+          last_request_at?: string
+        }
+        Update: {
+          key?: string
+          last_request_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

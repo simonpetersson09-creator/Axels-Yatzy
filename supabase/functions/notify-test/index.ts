@@ -29,6 +29,30 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    // Rate limit: max 1 test notification per device per 45 seconds
+    const rateKey = `notify-test:${device_id}`;
+    const { data: rateRow } = await supabase
+      .from("rate_limits")
+      .select("last_request_at")
+      .eq("key", rateKey)
+      .maybeSingle();
+
+    if (rateRow) {
+      const lastMs = new Date(rateRow.last_request_at).getTime();
+      const nowMs = Date.now();
+      if (nowMs - lastMs < 45_000) {
+        const waitSec = Math.ceil((45_000 - (nowMs - lastMs)) / 1000);
+        return json(
+          { stage: "rate_limited", error: `Vänta ${waitSec}s innan nästa testnotis.` },
+          429,
+        );
+      }
+    }
+
+    await supabase
+      .from("rate_limits")
+      .upsert({ key: rateKey, last_request_at: new Date().toISOString() }, { onConflict: "key" });
+
     // Only allow sending a test push to a device_id that has a registered
     // token. device_ids are random UUIDs the client generates locally and are
     // not exposed via the public Data API, so this prevents using the

@@ -37,11 +37,13 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
   }
   const deviceId = await initDeviceId();
   try {
-    await supabase.from('notification_preferences').upsert({
-      device_id: deviceId,
-      turn_notifications: prefs.turnNotifications,
-      reminder_notifications: prefs.reminderNotifications,
-      updated_at: new Date().toISOString(),
+    await supabase.functions.invoke('notifications-write', {
+      body: {
+        action: 'set_prefs',
+        device_id: deviceId,
+        turn_notifications: prefs.turnNotifications,
+        reminder_notifications: prefs.reminderNotifications,
+      },
     });
   } catch (err) {
     console.warn('[notifications] failed to sync prefs', err);

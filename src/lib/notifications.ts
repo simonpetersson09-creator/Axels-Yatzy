@@ -71,19 +71,17 @@ export async function initNotifications(): Promise<void> {
     PushNotifications.addListener('registration', async (token) => {
       try {
         const deviceId = await initDeviceId();
-        const { error } = await supabase.from('push_tokens').upsert(
-          {
+        const { error } = await supabase.functions.invoke('notifications-write', {
+          body: {
+            action: 'register_token',
             device_id: deviceId,
             session_id: getSessionId(),
             platform: Capacitor.getPlatform(),
             token: token.value,
-            enabled: true,
-            updated_at: new Date().toISOString(),
           },
-          { onConflict: 'device_id,token' },
-        );
+        });
         if (error) {
-          console.warn('[notifications] upsert push_token error', error);
+          console.warn('[notifications] register push_token error', error);
           trackEvent('push_token_save_failed', { error: error.message });
         } else {
           trackEvent('push_token_registered', { platform: Capacitor.getPlatform() });

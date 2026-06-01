@@ -95,6 +95,11 @@ Deno.serve(async (req) => {
     }
     if (!allowed) return json({ skipped: "preferences disabled" });
 
+    // Also skip if the recipient is literally the submitter (shouldn't happen, but safe).
+    if (sender_session_id && sender_session_id === player.session_id) {
+      return json({ skipped: "sender is recipient session" });
+    }
+
     const title = "Din tur 🎲";
     const body = `Det är din tur mot ${opponentName}`;
 

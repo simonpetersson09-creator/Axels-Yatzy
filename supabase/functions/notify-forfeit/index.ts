@@ -18,6 +18,12 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
+  // Internal-only endpoint. Only other edge functions (forfeit-game) may call it.
+  const expectedSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET");
+  if (!expectedSecret || req.headers.get("x-internal-secret") !== expectedSecret) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
   try {
     const { game_id, forfeited_session_id } = await req.json().catch(() => ({}));
     if (!game_id) return json({ error: "game_id required" }, 400);

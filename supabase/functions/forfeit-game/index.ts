@@ -46,9 +46,11 @@ Deno.serve(async (req) => {
 
     // Fire-and-forget push to the opponent(s). Never block the response.
     if (result.game_ended) {
+      const internalSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "";
       supabase.functions
         .invoke("notify-forfeit", {
           body: { game_id, forfeited_session_id: session_id },
+          headers: { "x-internal-secret": internalSecret },
         })
         .catch((e) => console.warn("[forfeit-game] notify-forfeit failed", e));
     }

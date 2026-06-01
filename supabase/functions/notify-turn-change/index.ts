@@ -22,8 +22,14 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
+  // Internal-only endpoint. Only other edge functions (submit-score, etc.) may call it.
+  const expectedSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET");
+  if (!expectedSecret || req.headers.get("x-internal-secret") !== expectedSecret) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
   try {
-    const { game_id, sender_device_id } = await req.json().catch(() => ({}));
+    const { game_id, sender_session_id, sender_device_id } = await req.json().catch(() => ({}));
     if (!game_id) return json({ error: "game_id required" }, 400);
 
     const supabase = createClient(
@@ -88,6 +94,11 @@ Deno.serve(async (req) => {
       }
     }
     if (!allowed) return json({ skipped: "preferences disabled" });
+
+    // Also skip if the recipient is literally the submitter (shouldn't happen, but safe).
+    if (sender_session_id && sender_session_id === player.session_id) {
+      return json({ skipped: "sender is recipient session" });
+    }
 
     const title = "Din tur 🎲";
     const body = `Det är din tur mot ${opponentName}`;

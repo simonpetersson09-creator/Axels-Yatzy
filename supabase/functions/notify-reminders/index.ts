@@ -21,6 +21,12 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
+  // Internal-only endpoint. Cron / scheduler must include the shared secret.
+  const expectedSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET");
+  if (!expectedSecret || req.headers.get("x-internal-secret") !== expectedSecret) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,

@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.svenskasolparksprojekt.yatzy',
+  appId: 'com.simonpetersson.axelsyatzy',
   appName: 'Mr.B Yatzy',
   webDir: 'dist',
   ios: {

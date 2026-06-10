@@ -82,9 +82,14 @@ export async function initNotifications(): Promise<void> {
   try {
     const { PushNotifications } = await import('@capacitor/push-notifications');
 
+    // Diagnostic: detect when register() silently never produces a callback
+    // (classic symptom of AppDelegate.swift missing the APNs forwarding).
+    let registrationCallbackFired = false;
+
     // CRITICAL: attach listeners BEFORE register() — otherwise the 'registration'
     // event can fire before the listener is attached and the token is lost silently.
     PushNotifications.addListener('registration', async (token) => {
+      registrationCallbackFired = true;
       try {
         const deviceId = await initDeviceId();
         const { error } = await supabase.functions.invoke('notifications-write', {

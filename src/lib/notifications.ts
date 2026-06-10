@@ -185,6 +185,18 @@ export async function initNotifications(): Promise<void> {
     if (!granted) return;
 
     await PushNotifications.register();
+    trackEvent('push_register_called');
+
+    // If neither 'registration' nor 'registrationError' fires within 15s,
+    // APNs callbacks are not reaching the plugin — almost always means
+    // AppDelegate.swift lacks the capacitorDidRegisterForRemoteNotifications
+    // forwarding, or the binary lacks the aps-environment entitlement.
+    setTimeout(() => {
+      if (!registrationCallbackFired) {
+        console.warn('[notifications] no registration callback within 15s');
+        trackEvent('push_registration_timeout');
+      }
+    }, 15_000);
   } catch (err) {
     console.warn('[notifications] init failed', err);
   }

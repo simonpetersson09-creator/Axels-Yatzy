@@ -2,12 +2,28 @@
 // and reads/writes user preferences. Safe on web (no-ops gracefully).
 
 import { Capacitor } from '@capacitor/core';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
 import { getSessionId } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 
 const PREFS_KEY = 'yatzy_notif_prefs_v1';
+
+// Track which notifications we've already surfaced so the foreground toast
+// and the tap-handler never double-fire for the same payload.
+const handledNotificationIds = new Set<string>();
+function markHandled(id: string | undefined): boolean {
+  if (!id) return false;
+  if (handledNotificationIds.has(id)) return true;
+  handledNotificationIds.add(id);
+  // Cap memory — keep last ~200 ids.
+  if (handledNotificationIds.size > 200) {
+    const first = handledNotificationIds.values().next().value;
+    if (first) handledNotificationIds.delete(first);
+  }
+  return false;
+}
 
 export interface NotificationPrefs {
   turnNotifications: boolean;

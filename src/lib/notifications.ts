@@ -82,9 +82,14 @@ export async function initNotifications(): Promise<void> {
   try {
     const { PushNotifications } = await import('@capacitor/push-notifications');
 
+    // Diagnostic: detect when register() silently never produces a callback
+    // (classic symptom of AppDelegate.swift missing the APNs forwarding).
+    let registrationCallbackFired = false;
+
     // CRITICAL: attach listeners BEFORE register() — otherwise the 'registration'
     // event can fire before the listener is attached and the token is lost silently.
     PushNotifications.addListener('registration', async (token) => {
+      registrationCallbackFired = true;
       try {
         const deviceId = await initDeviceId();
         const { error } = await supabase.functions.invoke('notifications-write', {
@@ -109,6 +114,7 @@ export async function initNotifications(): Promise<void> {
     });
 
     PushNotifications.addListener('registrationError', (err) => {
+      registrationCallbackFired = true;
       console.warn('[notifications] registration error', err);
       trackEvent('push_registration_error', { error: JSON.stringify(err) });
     });
@@ -179,6 +185,18 @@ export async function initNotifications(): Promise<void> {
     if (!granted) return;
 
     await PushNotifications.register();
+    trackEvent('push_register_called');
+
+    // If neither 'registration' nor 'registrationError' fires within 15s,
+    // APNs callbacks are not reaching the plugin — almost always means
+    // AppDelegate.swift lacks the capacitorDidRegisterForRemoteNotifications
+    // forwarding, or the binary lacks the aps-environment entitlement.
+    setTimeout(() => {
+      if (!registrationCallbackFired) {
+        console.warn('[notifications] no registration callback within 15s');
+        trackEvent('push_registration_timeout');
+      }
+    }, 15_000);
   } catch (err) {
     console.warn('[notifications] init failed', err);
   }

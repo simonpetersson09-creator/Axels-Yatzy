@@ -197,16 +197,3 @@ export async function sendTestNotification(): Promise<{ ok: boolean; info: unkno
     return { ok: false, info: { error: String(err) } };
   }
 }
-
-
-/** Fire-and-forget: ask the server to send a turn notification for `gameId`. */
-export async function pingTurnChange(gameId: string): Promise<void> {
-  try {
-    const deviceId = getDeviceIdSync();
-    await supabase.functions.invoke('notify-turn-change', {
-      body: { game_id: gameId, sender_device_id: deviceId },
-    });
-  } catch {
-    /* never throw — notifications are best-effort */
-  }
-}

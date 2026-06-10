@@ -383,6 +383,16 @@ export type Database = {
         Args: { p_game_id: string; p_timeout_seconds?: number }
         Returns: Json
       }
+      update_analytics_session: {
+        Args: {
+          p_device_id: string
+          p_duration_seconds?: number
+          p_ended_at?: string
+          p_id: string
+          p_last_seen_at?: string
+        }
+        Returns: undefined
+      }
       validate_friend_match: {
         Args: { p_game_id: string; p_p1_id: string; p_p2_id: string }
         Returns: boolean

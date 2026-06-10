@@ -113,11 +113,44 @@ export async function initNotifications(): Promise<void> {
       trackEvent('push_registration_error', { error: JSON.stringify(err) });
     });
 
+    // Foreground delivery: iOS does NOT show a banner automatically while the
+    // app is open, so surface an in-app toast that the user can tap to jump
+    // into the matching game.
+    PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      const data = (notification.data ?? {}) as Record<string, string | undefined>;
+      const notifId = data.notification_id;
+      // Dedupe vs tap-handler (which fires markHandled too).
+      if (markHandled(notifId)) return;
+
+      const kind = data.kind ?? 'turn';
+      const gameId = data.game_id;
+      const title = notification.title?.trim() || (kind === 'reminder' ? 'Påminnelse' : 'Det är din tur');
+      const body = notification.body?.trim() || '';
+
+      trackEvent('push_notification_received_foreground', { kind, game_id: gameId });
+
+      const showToast = kind === 'reminder' ? toast.message : toast;
+      showToast(title, {
+        description: body || undefined,
+        action: gameId
+          ? {
+              label: 'Öppna',
+              onClick: () => {
+                trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: gameId, source: 'foreground_toast' });
+                window.location.href = `/multiplayer-game?gameId=${gameId}`;
+              },
+            }
+          : undefined,
+      });
+    });
+
     PushNotifications.addListener('pushNotificationActionPerformed', async (action) => {
       const data = action.notification?.data ?? {};
       const kind = (data.kind as string | undefined) ?? 'turn';
       const notifId = data.notification_id as string | undefined;
-      trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: data.game_id });
+      // Mark handled so a racing foreground-receive doesn't also toast.
+      markHandled(notifId);
+      trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: data.game_id, source: 'tap' });
       if (notifId) {
         try {
           const deviceId = await initDeviceId();

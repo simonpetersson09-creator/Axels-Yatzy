@@ -65,7 +65,16 @@ async function updateSession(
   patch: { last_seen_at?: string; ended_at?: string; duration_seconds?: number },
 ): Promise<void> {
   try {
-    await supabase.from('analytics_sessions').update(patch as any).eq('id', id);
+    await initDeviceId();
+    const deviceId = getDeviceIdSync();
+    if (!deviceId) return;
+    await supabase.rpc('update_analytics_session' as any, {
+      p_id: id,
+      p_device_id: deviceId,
+      p_last_seen_at: patch.last_seen_at ?? null,
+      p_ended_at: patch.ended_at ?? null,
+      p_duration_seconds: patch.duration_seconds ?? null,
+    });
   } catch {
     // ignore
   }

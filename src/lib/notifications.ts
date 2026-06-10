@@ -114,6 +114,7 @@ export async function initNotifications(): Promise<void> {
     });
 
     PushNotifications.addListener('registrationError', (err) => {
+      registrationCallbackFired = true;
       console.warn('[notifications] registration error', err);
       trackEvent('push_registration_error', { error: JSON.stringify(err) });
     });

@@ -27,15 +27,15 @@ Deno.serve(async (req) => {
   const providedSecret = (req.headers.get("x-internal-secret") ?? "").trim();
   if (!expectedSecret || providedSecret !== expectedSecret) {
     // Diagnostic: log hashes + lengths only (never the values themselves).
-    const md5 = async (s: string) => {
-      const buf = await crypto.subtle.digest("MD5", new TextEncoder().encode(s));
+    const sha256 = async (s: string) => {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
       return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
     };
     console.warn(
       "[notify-reminders] unauthorized — env_len=", expectedSecret.length,
-      "env_md5=", expectedSecret ? await md5(expectedSecret) : "(empty)",
+      "env_sha256=", expectedSecret ? await sha256(expectedSecret) : "(empty)",
       "hdr_len=", providedSecret.length,
-      "hdr_md5=", providedSecret ? await md5(providedSecret) : "(empty)",
+      "hdr_sha256=", providedSecret ? await sha256(providedSecret) : "(empty)",
     );
     return json({ error: "Unauthorized" }, 401);
   }

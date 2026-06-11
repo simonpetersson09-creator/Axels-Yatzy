@@ -43,8 +43,12 @@ Deno.serve(async (req) => {
       if (nowMs - lastMs < 45_000) {
         const waitSec = Math.ceil((45_000 - (nowMs - lastMs)) / 1000);
         return json(
-          { stage: "rate_limited", error: `Vänta ${waitSec}s innan nästa testnotis.` },
-          429,
+          {
+            stage: "rate_limited",
+            delivered: false,
+            hint: `Vänta ${waitSec}s innan nästa testnotis.`,
+          },
+          200,
         );
       }
     }
@@ -165,7 +169,10 @@ async function buildApnsJwt(args: { keyId: string; teamId: string; authKey: stri
   const enc = (obj: object) =>
     btoa(JSON.stringify(obj)).replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
   const signingInput = `${enc(header)}.${enc(payload)}`;
-  const pem = args.authKey.replace(/-----[^-]+-----/g, "").replace(/\s+/g, "");
+  const pem = args.authKey
+    .replace(/\\n/g, "\n")
+    .replace(/-----[^-]+-----/g, "")
+    .replace(/[^A-Za-z0-9+/=]/g, "");
   const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
   const key = await crypto.subtle.importKey(
     "pkcs8",

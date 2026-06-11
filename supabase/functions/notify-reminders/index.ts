@@ -22,29 +22,30 @@ Deno.serve(async (req) => {
     });
 
   // Internal-only endpoint. Cron / scheduler must include the shared secret.
-  // Trim both sides to tolerate accidental whitespace/newlines from copy-paste.
+  // Accepts either the env secret or the Vault secret (cron reads from Vault).
   const expectedSecret = (Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "").trim();
   const providedSecret = (req.headers.get("x-internal-secret") ?? "").trim();
-  if (!expectedSecret || providedSecret !== expectedSecret) {
-    // Diagnostic: log hashes + lengths only (never the values themselves).
-    const sha256 = async (s: string) => {
-      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-      return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
-    };
-    console.warn(
-      "[notify-reminders] unauthorized — env_len=", expectedSecret.length,
-      "env_sha256=", expectedSecret ? await sha256(expectedSecret) : "(empty)",
-      "hdr_len=", providedSecret.length,
-      "hdr_sha256=", providedSecret ? await sha256(providedSecret) : "(empty)",
+
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+
+  let authorized = Boolean(expectedSecret) && providedSecret === expectedSecret;
+  if (!authorized && providedSecret) {
+    const { data: vaultMatch, error: vaultErr } = await supabase.rpc(
+      "internal_secret_matches",
+      { p_secret: providedSecret },
     );
+    if (vaultErr) console.warn("[notify-reminders] vault check failed", vaultErr.message);
+    authorized = vaultMatch === true;
+  }
+  if (!authorized) {
+    console.warn("[notify-reminders] unauthorized request rejected");
     return json({ error: "Unauthorized" }, 401);
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
 
     const { data: games } = await supabase
       .from("games")

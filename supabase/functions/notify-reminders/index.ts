@@ -101,7 +101,15 @@ Deno.serve(async (req) => {
           .select("reminder_notifications")
           .eq("device_id", token.device_id)
           .maybeSingle();
-        if (prefs && prefs.reminder_notifications === false) continue;
+        if (prefs && prefs.reminder_notifications === false) {
+          skipped.push({ game_id: game.id, reason: "preferences disabled" });
+          continue;
+        }
+      }
+
+      if (!token?.token) {
+        skipped.push({ game_id: game.id, reason: "no push token" });
+        // still log attempt below for analytics, but don't count as sent
       }
 
       const title = "Din match väntar 👀";
@@ -121,7 +129,10 @@ Deno.serve(async (req) => {
         })
         .select()
         .single();
-      if (insertErr) continue;
+      if (insertErr) {
+        skipped.push({ game_id: game.id, reason: `log insert failed: ${insertErr.message}` });
+        continue;
+      }
 
       let delivered = false;
       if (token?.token) {
@@ -147,11 +158,16 @@ Deno.serve(async (req) => {
         app_version: "1.0.0",
       });
 
-      sent++;
+      if (delivered) sent++;
     }
 
-    return json({ checked: games.length, sent });
+    console.log(
+      `[notify-reminders] done — checked=${games.length}, sent=${sent}, skipped=${skipped.length}`,
+      JSON.stringify(skipped),
+    );
+    return json({ checked: games.length, sent, skipped });
   } catch (err) {
+    console.error("[notify-reminders] error", err);
     return json({ error: (err as Error).message }, 500);
   }
 });

@@ -22,8 +22,21 @@ Deno.serve(async (req) => {
     });
 
   // Internal-only endpoint. Cron / scheduler must include the shared secret.
-  const expectedSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET");
-  if (!expectedSecret || req.headers.get("x-internal-secret") !== expectedSecret) {
+  // Trim both sides to tolerate accidental whitespace/newlines from copy-paste.
+  const expectedSecret = (Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "").trim();
+  const providedSecret = (req.headers.get("x-internal-secret") ?? "").trim();
+  if (!expectedSecret || providedSecret !== expectedSecret) {
+    // Diagnostic: log hashes + lengths only (never the values themselves).
+    const sha256 = async (s: string) => {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+      return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    };
+    console.warn(
+      "[notify-reminders] unauthorized — env_len=", expectedSecret.length,
+      "env_sha256=", expectedSecret ? await sha256(expectedSecret) : "(empty)",
+      "hdr_len=", providedSecret.length,
+      "hdr_sha256=", providedSecret ? await sha256(providedSecret) : "(empty)",
+    );
     return json({ error: "Unauthorized" }, 401);
   }
 

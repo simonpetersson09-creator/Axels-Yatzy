@@ -38,9 +38,11 @@ Deno.serve(async (req) => {
       .select("id, current_player_index, round, status")
       .eq("status", "playing");
 
-    if (!games || games.length === 0) return json({ checked: 0, sent: 0 });
+    console.log(`[notify-reminders] starting run, found ${games?.length ?? 0} playing games`);
+    if (!games || games.length === 0) return json({ checked: 0, sent: 0, skipped: [] });
 
     let sent = 0;
+    const skipped: { game_id: string; reason: string }[] = [];
     const cutoff = new Date(Date.now() - INACTIVE_MIN_MINUTES * 60_000).toISOString();
     const cooldown = new Date(Date.now() - REMINDER_COOLDOWN_HOURS * 3_600_000).toISOString();
 
@@ -51,8 +53,14 @@ Deno.serve(async (req) => {
         .eq("game_id", game.id)
         .eq("player_index", game.current_player_index)
         .single();
-      if (!current) continue;
-      if (new Date(current.last_active_at).toISOString() > cutoff) continue;
+      if (!current) {
+        skipped.push({ game_id: game.id, reason: "current player not found" });
+        continue;
+      }
+      if (new Date(current.last_active_at).toISOString() > cutoff) {
+        skipped.push({ game_id: game.id, reason: `active within ${INACTIVE_MIN_MINUTES}min` });
+        continue;
+      }
 
       // Check cooldown
       const { data: recent } = await supabase
@@ -63,7 +71,10 @@ Deno.serve(async (req) => {
         .eq("kind", "reminder")
         .gte("sent_at", cooldown)
         .limit(1);
-      if (recent && recent.length > 0) continue;
+      if (recent && recent.length > 0) {
+        skipped.push({ game_id: game.id, reason: `cooldown (<${REMINDER_COOLDOWN_HOURS}h)` });
+        continue;
+      }
 
       const { data: opp } = await supabase
         .from("game_players")
@@ -90,7 +101,15 @@ Deno.serve(async (req) => {
           .select("reminder_notifications")
           .eq("device_id", token.device_id)
           .maybeSingle();
-        if (prefs && prefs.reminder_notifications === false) continue;
+        if (prefs && prefs.reminder_notifications === false) {
+          skipped.push({ game_id: game.id, reason: "preferences disabled" });
+          continue;
+        }
+      }
+
+      if (!token?.token) {
+        skipped.push({ game_id: game.id, reason: "no push token" });
+        // still log attempt below for analytics, but don't count as sent
       }
 
       const title = "Din match väntar 👀";
@@ -110,7 +129,10 @@ Deno.serve(async (req) => {
         })
         .select()
         .single();
-      if (insertErr) continue;
+      if (insertErr) {
+        skipped.push({ game_id: game.id, reason: `log insert failed: ${insertErr.message}` });
+        continue;
+      }
 
       let delivered = false;
       if (token?.token) {
@@ -136,11 +158,16 @@ Deno.serve(async (req) => {
         app_version: "1.0.0",
       });
 
-      sent++;
+      if (delivered) sent++;
     }
 
-    return json({ checked: games.length, sent });
+    console.log(
+      `[notify-reminders] done — checked=${games.length}, sent=${sent}, skipped=${skipped.length}`,
+      JSON.stringify(skipped),
+    );
+    return json({ checked: games.length, sent, skipped });
   } catch (err) {
+    console.error("[notify-reminders] error", err);
     return json({ error: (err as Error).message }, 500);
   }
 });

@@ -347,6 +347,7 @@ export type Database = {
         Args: { p_game_id: string; p_session_id: string }
         Returns: undefined
       }
+      internal_secret_matches: { Args: { p_secret: string }; Returns: boolean }
       join_game: {
         Args: {
           p_game_code: string

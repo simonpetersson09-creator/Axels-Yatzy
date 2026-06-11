@@ -108,6 +108,20 @@ Deno.serve(async (req) => {
       data: { kind: "test" },
     });
 
+    // Safe key diagnostics (no secret material leaked)
+    const rawKey = Deno.env.get("APNS_AUTH_KEY") ?? "";
+    let derFirstByte = -1;
+    let derLen = -1;
+    try {
+      const stripped = rawKey
+        .replace(/\\n/g, "\n")
+        .replace(/-----[^-]+-----/g, "")
+        .replace(/[^A-Za-z0-9+/=]/g, "");
+      const der = atob(stripped);
+      derLen = der.length;
+      derFirstByte = der.charCodeAt(0);
+    } catch (_e) { /* ignore */ }
+
     return json({
       stage: "sent",
       delivered: apnsResult.ok,
@@ -115,6 +129,14 @@ Deno.serve(async (req) => {
       apns_reason: apnsResult.reason,
       token_platform: token.platform,
       token_updated_at: token.updated_at,
+      key_debug: {
+        length: rawKey.length,
+        has_begin: rawKey.includes("BEGIN"),
+        has_literal_backslash_n: rawKey.includes("\\n"),
+        has_newline: rawKey.includes("\n"),
+        der_len: derLen,
+        der_first_byte: derFirstByte,
+      },
     });
   } catch (err) {
     return json({ stage: "exception", error: (err as Error).message }, 500);

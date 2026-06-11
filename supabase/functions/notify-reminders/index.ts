@@ -38,9 +38,11 @@ Deno.serve(async (req) => {
       .select("id, current_player_index, round, status")
       .eq("status", "playing");
 
-    if (!games || games.length === 0) return json({ checked: 0, sent: 0 });
+    console.log(`[notify-reminders] starting run, found ${games?.length ?? 0} playing games`);
+    if (!games || games.length === 0) return json({ checked: 0, sent: 0, skipped: [] });
 
     let sent = 0;
+    const skipped: { game_id: string; reason: string }[] = [];
     const cutoff = new Date(Date.now() - INACTIVE_MIN_MINUTES * 60_000).toISOString();
     const cooldown = new Date(Date.now() - REMINDER_COOLDOWN_HOURS * 3_600_000).toISOString();
 
@@ -51,8 +53,14 @@ Deno.serve(async (req) => {
         .eq("game_id", game.id)
         .eq("player_index", game.current_player_index)
         .single();
-      if (!current) continue;
-      if (new Date(current.last_active_at).toISOString() > cutoff) continue;
+      if (!current) {
+        skipped.push({ game_id: game.id, reason: "current player not found" });
+        continue;
+      }
+      if (new Date(current.last_active_at).toISOString() > cutoff) {
+        skipped.push({ game_id: game.id, reason: `active within ${INACTIVE_MIN_MINUTES}min` });
+        continue;
+      }
 
       // Check cooldown
       const { data: recent } = await supabase
@@ -63,7 +71,10 @@ Deno.serve(async (req) => {
         .eq("kind", "reminder")
         .gte("sent_at", cooldown)
         .limit(1);
-      if (recent && recent.length > 0) continue;
+      if (recent && recent.length > 0) {
+        skipped.push({ game_id: game.id, reason: `cooldown (<${REMINDER_COOLDOWN_HOURS}h)` });
+        continue;
+      }
 
       const { data: opp } = await supabase
         .from("game_players")

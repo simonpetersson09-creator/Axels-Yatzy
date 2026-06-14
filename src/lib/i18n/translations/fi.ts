@@ -101,6 +101,7 @@ export const fi: typeof sv = {
   waitingForPlayers: 'Odotetaan pelaajia',
   gameCode: 'Pelikoodi',
   shareCode: 'Jaa koodi kavereillesi',
+  scanQR: 'Skannaa QR-koodi liittyäksesi',
   playersOfMax: 'Pelaajat ({count}/4)',
   host: 'Isäntä',
   waitingMorePlayers: 'Odotetaan vähintään yhtä pelaajaa lisää…',

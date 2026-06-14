@@ -101,6 +101,7 @@ export const da: typeof sv = {
   waitingForPlayers: 'Venter på spillere',
   gameCode: 'Spilkode',
   shareCode: 'Del koden med dine venner',
+  scanQR: 'Scan QR-koden for at deltage',
   playersOfMax: 'Spillere ({count}/4)',
   host: 'Vært',
   waitingMorePlayers: 'Venter på mindst én spiller mere…',

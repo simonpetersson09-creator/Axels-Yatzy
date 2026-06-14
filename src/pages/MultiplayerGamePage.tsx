@@ -472,17 +472,23 @@ export default function MultiplayerGamePage() {
   const handleRoll = () => {
     playRollSound();
     roll();
+    // Heavy "thud" when the dice settle (matches the ~1100ms roll animation)
+    setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1050);
   };
 
   const handleSelectCategory = (categoryId: string) => {
     if (!isMyTurn) return;
-    playLightHaptic().catch(() => {});
     if (categoryId === 'yatzy') {
       const allSame = gameState.dice.every(d => d === gameState.dice[0]);
       if (allSame) {
         setShowYatzyCelebration(true);
         trackEvent('yatzy_scored', undefined, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+        playSuccessHaptic().catch(() => {});
+      } else {
+        playLightHaptic().catch(() => {});
       }
+    } else {
+      playLightHaptic().catch(() => {});
     }
     selectCategory(categoryId as any);
   };

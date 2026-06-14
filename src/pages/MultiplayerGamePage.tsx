@@ -11,7 +11,7 @@ import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
-import { playLightHaptic } from '@/lib/haptics';
+import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { QuickChat } from '@/components/game/QuickChat';
 import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';

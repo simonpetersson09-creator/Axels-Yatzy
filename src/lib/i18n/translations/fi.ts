@@ -155,4 +155,44 @@ export const fi: typeof sv = {
 
   notFound: 'Sivua ei löytynyt',
   returnHome: 'Takaisin etusivulle',
+
+  // Invites
+  inviteTitle: 'Pelikutsu',
+  inviteWantsToPlay: '{name} haluaa pelata Yatzya kanssasi',
+  moreInvitesWaiting: '+{count} muuta kutsua odottaa',
+  decline: 'Hylkää',
+  accept: 'Hyväksy',
+  invCancelledBy: '{name} peruutti kutsun',
+  invAcceptedOpenFromHome: '{name} hyväksyi! Avaa kutsu etusivulta.',
+  invAccepted: '{name} hyväksyi!',
+  invDeclinedByOther: '{name} ei voinut pelata juuri nyt',
+  invDeclinedToast: 'Hylkäsit kutsun pelaajalta {name}',
+  errSendInvite: 'Kutsua ei voitu lähettää',
+  rematchSentTo: 'Uusintakutsu lähetetty pelaajalle {name}',
+  sendingInvite: 'Lähetetään kutsua…',
+  inviteToGame: 'Kutsu peliin',
+  inviteWaitingTitle: 'Odotetaan pelaajaa {name}…',
+  inviteWaitingDesc: 'Peli alkaa automaattisesti, kun kutsu hyväksytään. Se vanhenee 10 minuutin kuluttua.',
+  lobbyShareCodeAgain: 'Luo peli ja jaa koodi pelaajalle {name} pelataksesi uudelleen.',
+
+  // Chat / turns
+  quickMessages: 'Pikaviestit',
+  close: 'Sulje',
+  waitCooldown: 'Odota {sec}s ennen seuraavaa viestiä',
+  yourTurnLabel: 'Sinun vuorosi',
+  waitingForOpponent: 'Odotetaan pelaajaa {name}',
+  onlineNow: 'Paikalla nyt',
+
+  // Settings — notifications
+  notifications: 'Ilmoitukset',
+  notifTurnLabel: 'Ilmoita kun on minun vuoroni',
+  notifTurnDesc: 'Saat push-ilmoituksen, kun vastustaja on heittänyt',
+  notifReminderLabel: 'Muistutukset odottavista peleistä',
+  notifReminderDesc: 'Tönäisemme sinua, jos peli pysähtyy',
+
+  // Multiplayer errors
+  maxActiveGames: 'Sinulla on jo {max} aktiivista kaveripeliä. Päätä yksi ennen uuden aloittamista.',
+  errTimeout: 'Yhteys kesti liian kauan. Yritä uudelleen.',
+  errRollDice: 'Noppia ei voitu heittää',
+  errSubmitScore: 'Pisteitä ei voitu tallentaa',
 };

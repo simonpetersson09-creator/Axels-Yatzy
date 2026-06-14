@@ -155,4 +155,44 @@ export const no: typeof sv = {
 
   notFound: 'Siden ble ikke funnet',
   returnHome: 'Tilbake til startsiden',
+
+  // Invites
+  inviteTitle: 'Spillinvitasjon',
+  inviteWantsToPlay: '{name} vil spille Yatzy med deg',
+  moreInvitesWaiting: '+{count} flere invitasjoner venter',
+  decline: 'Avslå',
+  accept: 'Godta',
+  invCancelledBy: '{name} avbrøt invitasjonen',
+  invAcceptedOpenFromHome: '{name} godtok! Åpne invitasjonen fra startsiden.',
+  invAccepted: '{name} godtok!',
+  invDeclinedByOther: '{name} kunne ikke spille akkurat nå',
+  invDeclinedToast: 'Avslo invitasjon fra {name}',
+  errSendInvite: 'Kunne ikke sende invitasjon',
+  rematchSentTo: 'Omkamp-invitasjon sendt til {name}',
+  sendingInvite: 'Sender invitasjon…',
+  inviteToGame: 'Inviter til spill',
+  inviteWaitingTitle: 'Venter på {name}…',
+  inviteWaitingDesc: 'Spillet starter automatisk når invitasjonen godtas. Den utløper etter 10 minutter.',
+  lobbyShareCodeAgain: 'Opprett et spill og del koden med {name} for å spille igjen.',
+
+  // Chat / turns
+  quickMessages: 'Hurtigmeldinger',
+  close: 'Lukk',
+  waitCooldown: 'Vent {sec}s før neste melding',
+  yourTurnLabel: 'Din tur',
+  waitingForOpponent: 'Venter på {name}',
+  onlineNow: 'Pålogget nå',
+
+  // Settings — notifications
+  notifications: 'Varsler',
+  notifTurnLabel: 'Varsel når det er min tur',
+  notifTurnDesc: 'Få push når motspilleren har kastet',
+  notifReminderLabel: 'Påminnelser om ventende kamper',
+  notifReminderDesc: 'Vi gir deg et dult hvis kampen står stille',
+
+  // Multiplayer errors
+  maxActiveGames: 'Du har allerede {max} aktive vennespill. Avslutt ett før du starter nytt.',
+  errTimeout: 'Tilkoblingen tok for lang tid. Prøv igjen.',
+  errRollDice: 'Kunne ikke kaste terningene',
+  errSubmitScore: 'Kunne ikke lagre poeng',
 };

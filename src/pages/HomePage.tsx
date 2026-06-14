@@ -210,7 +210,7 @@ export default function HomePage() {
                           {!isLocal && status?.opponentOnline && (
                             <motion.span
                               className="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]"
-                              aria-label="Online nu"
+                              aria-label={t('onlineNow')}
                               animate={{ opacity: [1, 0.55, 1] }}
                               transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
                             />
@@ -223,12 +223,12 @@ export default function HomePage() {
                             animate={{ scale: [1, 1.08, 1] }}
                             transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
                           >
-                            Din tur
+                            {t('yourTurnLabel')}
                           </motion.span>
                         )}
                         {opponentTurn && opponent && (
                           <span className="text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-muted/60 text-muted-foreground">
-                            Väntar på {opponent}
+                            {t('waitingForOpponent', { name: opponent })}
                           </span>
                         )}
                       </div>

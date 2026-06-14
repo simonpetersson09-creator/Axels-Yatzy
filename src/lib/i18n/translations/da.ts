@@ -155,4 +155,44 @@ export const da: typeof sv = {
 
   notFound: 'Siden blev ikke fundet',
   returnHome: 'Tilbage til forsiden',
+
+  // Invites
+  inviteTitle: 'Spilinvitation',
+  inviteWantsToPlay: '{name} vil spille Yatzy med dig',
+  moreInvitesWaiting: '+{count} flere invitationer venter',
+  decline: 'Afvis',
+  accept: 'Acceptér',
+  invCancelledBy: '{name} annullerede invitationen',
+  invAcceptedOpenFromHome: '{name} accepterede! Åbn invitationen fra forsiden.',
+  invAccepted: '{name} accepterede!',
+  invDeclinedByOther: '{name} kunne ikke spille lige nu',
+  invDeclinedToast: 'Afviste invitation fra {name}',
+  errSendInvite: 'Kunne ikke sende invitation',
+  rematchSentTo: 'Omkamp-invitation sendt til {name}',
+  sendingInvite: 'Sender invitation…',
+  inviteToGame: 'Invitér til spil',
+  inviteWaitingTitle: 'Venter på {name}…',
+  inviteWaitingDesc: 'Spillet starter automatisk, når invitationen accepteres. Den udløber efter 10 minutter.',
+  lobbyShareCodeAgain: 'Opret et spil og del koden med {name} for at spille igen.',
+
+  // Chat / turns
+  quickMessages: 'Hurtigbeskeder',
+  close: 'Luk',
+  waitCooldown: 'Vent {sec}s før næste besked',
+  yourTurnLabel: 'Din tur',
+  waitingForOpponent: 'Venter på {name}',
+  onlineNow: 'Online nu',
+
+  // Settings — notifications
+  notifications: 'Notifikationer',
+  notifTurnLabel: 'Notifikation når det er min tur',
+  notifTurnDesc: 'Få push når modspilleren har kastet',
+  notifReminderLabel: 'Påmindelser om ventende kampe',
+  notifReminderDesc: 'Vi prikker dig på skulderen, hvis kampen står stille',
+
+  // Multiplayer errors
+  maxActiveGames: 'Du har allerede {max} aktive venne-spil. Afslut ét, før du starter et nyt.',
+  errTimeout: 'Forbindelsen tog for lang tid. Prøv igen.',
+  errRollDice: 'Kunne ikke kaste terningerne',
+  errSubmitScore: 'Kunne ikke gemme score',
 };

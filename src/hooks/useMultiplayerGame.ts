@@ -7,6 +7,7 @@ import { calculateScore } from '@/lib/yatzy-scoring';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
 import { getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
+import { t } from '@/lib/i18n';
 
 
 type RollDicePart = { dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number };
@@ -385,7 +386,7 @@ export function useMultiplayerGame() {
       setState(prev => ({
         ...prev,
         loading: false,
-        error: `Du har redan ${MAX_ACTIVE_MULTIPLAYER_GAMES} aktiva vänspel. Avsluta något innan du startar nytt.`,
+        error: t('maxActiveGames', { max: MAX_ACTIVE_MULTIPLAYER_GAMES }),
       }));
       return null;
     }
@@ -398,14 +399,14 @@ export function useMultiplayerGame() {
     });
 
     if (rpcErr || !data) {
-      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte skapa spel' }));
+      setState(prev => ({ ...prev, loading: false, error: t('errCreateGame') }));
       return null;
     }
 
     const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string; player_index?: number };
 
     if (!result.success) {
-      setState(prev => ({ ...prev, loading: false, error: result.error || 'Kunde inte skapa spel' }));
+      setState(prev => ({ ...prev, loading: false, error: result.error || t('errCreateGame') }));
       return null;
     }
 
@@ -425,7 +426,7 @@ export function useMultiplayerGame() {
       setState(prev => ({
         ...prev,
         loading: false,
-        error: `Du har redan ${MAX_ACTIVE_MULTIPLAYER_GAMES} aktiva vänspel. Avsluta något innan du startar nytt.`,
+        error: t('maxActiveGames', { max: MAX_ACTIVE_MULTIPLAYER_GAMES }),
       }));
       return false;
     }
@@ -439,14 +440,14 @@ export function useMultiplayerGame() {
     });
 
     if (rpcErr || !data) {
-      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte gå med i spelet' }));
+      setState(prev => ({ ...prev, loading: false, error: t('errJoinGame') }));
       return false;
     }
 
     const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string };
 
     if (!result.success) {
-      setState(prev => ({ ...prev, loading: false, error: result.error || 'Kunde inte gå med' }));
+      setState(prev => ({ ...prev, loading: false, error: result.error || t('errJoinGame') }));
       return false;
     }
 
@@ -544,8 +545,8 @@ export function useMultiplayerGame() {
     }).catch((err) => {
       console.error('Roll dice failed:', err);
       const msg = (err as Error)?.message === 'timeout'
-        ? 'Anslutningen tog för lång tid. Försök igen.'
-        : 'Kunde inte kasta tärningarna';
+        ? t('errTimeout')
+        : t('errRollDice');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
       return { ok: false } as const;
     });
@@ -721,7 +722,7 @@ export function useMultiplayerGame() {
     } catch (err) {
       rpcOk = false;
       console.error('Submit score failed:', err);
-      const msg = (err as Error)?.message === 'timeout' ? 'Anslutningen tog för lång tid. Försök igen.' : 'Kunde inte spara poäng';
+      const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
       // Hold the optimistic state through the cell-fill animation, then
@@ -772,14 +773,14 @@ export function useMultiplayerGame() {
     });
 
     if (rpcErr || !data) {
-      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte validera spelåtkomst' }));
+      setState(prev => ({ ...prev, loading: false, error: t('errValidate') }));
       return;
     }
 
     const result = data as { valid: boolean; error?: string; player_index?: number };
 
     if (!result.valid) {
-      setState(prev => ({ ...prev, loading: false, error: result.error || 'Åtkomst nekad' }));
+      setState(prev => ({ ...prev, loading: false, error: result.error || t('errAccessDenied') }));
       return;
     }
 
@@ -793,7 +794,7 @@ export function useMultiplayerGame() {
       // H3 fix: cleanup on failure
       cleanupChannel();
       cleanupTimers();
-      setState(prev => ({ ...prev, loading: false, error: 'Kunde inte återansluta till spelet' }));
+      setState(prev => ({ ...prev, loading: false, error: t('errRejoin') }));
     }
   }, [sessionId, subscribeToGame, refreshGameState, cleanupChannel, cleanupTimers]);
 

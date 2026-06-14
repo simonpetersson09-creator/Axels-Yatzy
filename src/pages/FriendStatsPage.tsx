@@ -56,7 +56,7 @@ export default function FriendStatsPage() {
     const res = await sendInvite({ toSessionId: opponentId, toName: opponentName });
     setInviting(null);
     if (!res.ok) {
-      toast.error(res.error ?? 'Kunde inte skicka inbjudan');
+      toast.error(res.error ?? t('errSendInvite'));
       return;
     }
     setPendingInvite({ inviteId: res.inviteId!, opponentName });
@@ -229,12 +229,12 @@ export default function FriendStatsPage() {
                     {inviting === o.opponentId ? (
                       <>
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        Skickar inbjudan…
+                        {t('sendingInvite')}
                       </>
                     ) : (
                       <>
                         <Send className="w-3.5 h-3.5" />
-                        Bjud in till spel
+                        {t('inviteToGame')}
                       </>
                     )}
                   </motion.button>
@@ -335,17 +335,17 @@ export default function FriendStatsPage() {
               </div>
               <div className="space-y-1">
                 <h2 className="text-lg font-display font-black text-foreground">
-                  Väntar på {pendingInvite.opponentName}…
+                  {t('inviteWaitingTitle', { name: pendingInvite.opponentName })}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Spelet startar automatiskt när inbjudan accepteras. Den går ut efter 10 minuter.
+                  {t('inviteWaitingDesc')}
                 </p>
               </div>
               <button
                 onClick={cancelInvite}
                 className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
               >
-                Avbryt
+                {t('cancel')}
               </button>
             </motion.div>
           </motion.div>

@@ -9,6 +9,7 @@ import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
+import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
@@ -233,6 +234,8 @@ export default function GamePage() {
   const handleRoll = useCallback(() => {
     playRollSound();
     roll();
+    // Heavy "thud" when the dice settle (matches the 1100ms roll animation)
+    setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1050);
   }, [roll]);
 
   const handleSelectCategory = useCallback((categoryId: string, debug?: ScoreboardClickDebug) => {
@@ -247,7 +250,12 @@ export default function GamePage() {
       if (allSame) {
         setShowYatzyCelebration(true);
         trackEvent('yatzy_scored', undefined, { gameMode: 'single_player' });
+        playSuccessHaptic().catch(() => {});
+      } else {
+        playLightHaptic().catch(() => {});
       }
+    } else {
+      playLightHaptic().catch(() => {});
     }
     console.log('scoreboard-save-request', {
       clickedRowText: debug?.rowText ?? null,
@@ -381,7 +389,7 @@ export default function GamePage() {
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}
               isRolling={gameState.isRolling}
-              onToggleLock={isCurrentAi ? () => {} : toggleLock}
+              onToggleLock={isCurrentAi ? () => {} : (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); }}
               compact
             />
 

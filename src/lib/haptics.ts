@@ -1,7 +1,7 @@
 // Lightweight haptic feedback helper.
 // Prefers Capacitor Haptics on native iOS, falls back to navigator.vibrate on web.
 
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 let hapticsAvailable: boolean | null = null;
 
@@ -46,5 +46,37 @@ export async function playLightHaptic() {
   }
   if ('vibrate' in navigator) {
     navigator.vibrate(5);
+  }
+}
+
+/** Solid "thud" when dice land after a roll. */
+export async function playDiceLandHaptic() {
+  const native = await checkHaptics();
+  if (native) {
+    try {
+      await Haptics.impact({ style: ImpactStyle.Heavy });
+      return;
+    } catch {
+      // fall through
+    }
+  }
+  if ('vibrate' in navigator) {
+    navigator.vibrate(25);
+  }
+}
+
+/** Success pulse for scoring a category or hitting Yatzy. */
+export async function playSuccessHaptic() {
+  const native = await checkHaptics();
+  if (native) {
+    try {
+      await Haptics.notification({ type: NotificationType.Success });
+      return;
+    } catch {
+      // fall through
+    }
+  }
+  if ('vibrate' in navigator) {
+    navigator.vibrate([10, 40, 20]);
   }
 }

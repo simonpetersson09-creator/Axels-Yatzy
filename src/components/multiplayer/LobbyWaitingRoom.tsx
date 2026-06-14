@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Copy, Check, Users } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import type { Player } from '@/types/yatzy';
 import { useTranslation } from '@/lib/i18n';
 
@@ -51,6 +52,12 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
             </button>
           </div>
           <p className="text-xs text-muted-foreground">{t('shareCode')}</p>
+          <div className="flex flex-col items-center gap-2 pt-2">
+            <div className="bg-white p-2 rounded-xl">
+              <QRCodeSVG value={`${window.location.origin}/multiplayer?code=${gameCode}`} size={140} />
+            </div>
+            <p className="text-xs text-muted-foreground">{t('scanQR')}</p>
+          </div>
         </div>
 
         {/* Players list */}

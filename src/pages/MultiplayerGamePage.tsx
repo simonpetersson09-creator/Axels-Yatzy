@@ -421,6 +421,7 @@ export default function MultiplayerGamePage() {
             results,
             isMultiplayer: true,
             rematchOpponent,
+            gameId,
             ...(isForfeit ? { forfeit: true, forfeitPlayerName: gameState.forfeitedBy } : {}),
           },
         });

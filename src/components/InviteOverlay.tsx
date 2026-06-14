@@ -166,8 +166,7 @@ export default function InviteOverlay() {
                   {t('inviteTitle')}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  <span className="font-bold text-foreground">{incoming.from_name}</span>{' '}
-                  {t('inviteWantsToPlay', { name: '' }).replace(/^\s+/, '')}
+                  {t('inviteWantsToPlay', { name: incoming.from_name })}
                 </p>
                 {queue.length > 1 && (
                   <p className="text-[11px] text-muted-foreground/70 pt-1">

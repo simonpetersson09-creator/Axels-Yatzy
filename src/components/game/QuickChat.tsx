@@ -4,6 +4,7 @@ import { MessageCircle, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { QUICK_MESSAGES, playQuickMessagePop, type QuickMessage } from '@/lib/quick-messages';
 import { trackEvent } from '@/lib/analytics';
+import { useTranslation } from '@/lib/i18n';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 const COOLDOWN_MS = 4000;

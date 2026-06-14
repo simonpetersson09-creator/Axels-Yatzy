@@ -1,5 +1,6 @@
 // Global overlay that listens for incoming friend invites and lets the user
-// accept/decline them. Mounted once near the app root.
+// accept/decline them. Mounted once near the app root. Queues multiple pending
+// invites and shows them one at a time.
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,12 +12,18 @@ import { toast } from 'sonner';
 
 export default function InviteOverlay() {
   const navigate = useNavigate();
-  const [incoming, setIncoming] = useState<InviteRow | null>(null);
+  const [queue, setQueue] = useState<InviteRow[]>([]);
   const [busy, setBusy] = useState(false);
   const handledRef = useRef<Set<string>>(new Set());
   const sessionId = getSessionId();
+  const incoming = queue[0] ?? null;
 
-  // Look for any outstanding pending invite on mount (e.g. app was closed)
+  const enqueue = useCallback((row: InviteRow) => {
+    if (handledRef.current.has(row.id)) return;
+    setQueue((cur) => (cur.some((r) => r.id === row.id) ? cur : [...cur, row]));
+  }, []);
+
+  // Look for ALL outstanding pending invites on mount (e.g. app was closed).
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -26,10 +33,12 @@ export default function InviteOverlay() {
         .eq('to_session_id', sessionId)
         .eq('status', 'pending')
         .gt('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false })
-        .limit(1);
-      if (!cancelled && data?.[0] && !handledRef.current.has(data[0].id)) {
-        setIncoming(data[0] as InviteRow);
+        .order('created_at', { ascending: true });
+      if (cancelled || !data) return;
+      for (const row of data) {
+        if (!handledRef.current.has(row.id)) {
+          setQueue((cur) => (cur.some((r) => r.id === row.id) ? cur : [...cur, row as InviteRow]));
+        }
       }
     })();
     return () => { cancelled = true; };
@@ -45,8 +54,7 @@ export default function InviteOverlay() {
         (payload) => {
           const row = payload.new as InviteRow;
           if (row.status !== 'pending') return;
-          if (handledRef.current.has(row.id)) return;
-          setIncoming((cur) => cur ?? row);
+          enqueue(row);
         },
       )
       .on(
@@ -55,26 +63,24 @@ export default function InviteOverlay() {
         (payload) => {
           const row = payload.new as InviteRow;
           if (row.status === 'pending') return;
-          // If shown invite is no longer pending (cancelled/expired), close overlay
-          setIncoming((cur) => {
-            if (cur && cur.id === row.id) {
-              handledRef.current.add(row.id);
-              if (row.status === 'cancelled') {
-                toast.message(`${row.from_name} avbröt inbjudan`);
-              }
-              return null;
+          setQueue((cur) => {
+            const idx = cur.findIndex((r) => r.id === row.id);
+            if (idx === -1) return cur;
+            handledRef.current.add(row.id);
+            if (row.status === 'cancelled' && idx === 0) {
+              toast.message(`${row.from_name} avbröt inbjudan`);
             }
-            return cur;
+            const next = [...cur];
+            next.splice(idx, 1);
+            return next;
           });
         },
       )
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [sessionId]);
+  }, [sessionId, enqueue]);
 
   // Realtime: outbound invites I sent — auto-navigate when accepted
-  // Tracks which invite IDs are "active" (sender is actively waiting) to avoid
-  // hijacking the user mid-game if an old invite gets accepted later.
   useEffect(() => {
     const ch = supabase
       .channel(`invites-out-${sessionId}`)
@@ -83,11 +89,9 @@ export default function InviteOverlay() {
         { event: 'UPDATE', schema: 'public', table: 'game_invites', filter: `from_session_id=eq.${sessionId}` },
         (payload) => {
           const row = payload.new as InviteRow;
-          // Only react if invite was created very recently (sender is presumably still waiting)
           const ageMs = Date.now() - new Date(row.created_at).getTime();
-          if (ageMs > 11 * 60_000) return; // outside the 10-min expiry window
+          if (ageMs > 11 * 60_000) return;
           if (row.status === 'accepted' && row.game_id) {
-            // Don't yank user out of an active multiplayer game view
             if (window.location.pathname.startsWith('/multiplayer-game')) {
               toast.success(`${row.to_name} accepterade! Öppna inbjudan från startsidan.`);
               return;
@@ -111,13 +115,12 @@ export default function InviteOverlay() {
       handledRef.current.add(incoming.id);
       const res = await respondInvite({ inviteId: incoming.id, action });
       setBusy(false);
+      const inv = incoming;
+      setQueue((cur) => cur.filter((r) => r.id !== inv.id));
       if (!res.ok) {
         toast.error(res.error ?? 'Något gick fel');
-        setIncoming(null);
         return;
       }
-      const inv = incoming;
-      setIncoming(null);
       if (action === 'accept' && res.gameId) {
         navigate(`/multiplayer-game?gameId=${res.gameId}`);
       } else if (action === 'decline') {
@@ -131,6 +134,7 @@ export default function InviteOverlay() {
     <AnimatePresence>
       {incoming && (
         <motion.div
+          key={incoming.id}
           className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -156,6 +160,11 @@ export default function InviteOverlay() {
                 <p className="text-sm text-muted-foreground">
                   <span className="font-bold text-foreground">{incoming.from_name}</span> vill spela Yatzy med dig
                 </p>
+                {queue.length > 1 && (
+                  <p className="text-[11px] text-muted-foreground/70 pt-1">
+                    +{queue.length - 1} fler inbjudan{queue.length - 1 === 1 ? '' : 'ar'} väntar
+                  </p>
+                )}
               </div>
               <div className="w-full flex gap-2.5 pt-2">
                 <button

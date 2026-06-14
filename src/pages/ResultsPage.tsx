@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trophy, Flag, Swords, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { sendInvite } from '@/lib/invites';
+import { supabase } from '@/integrations/supabase/client';
+import { getSessionId } from '@/lib/session';
 import { toast } from 'sonner';
 
 interface PlayerResult {
@@ -26,8 +28,33 @@ export default function ResultsPage() {
   const aiPlayers: number[] = location.state?.aiPlayers || [];
   const isMultiplayer: boolean = location.state?.isMultiplayer || false;
   const rematchOpponent: RematchOpponent | undefined = location.state?.rematchOpponent;
+  const gameId: string | undefined = location.state?.gameId;
   const playerNames: string[] = results.map(r => r.name);
   const [inviting, setInviting] = useState(false);
+
+  // Backfill: ensure friend_match_results row exists for this match.
+  // submit-score / forfeit-game normally write it server-side, but if that
+  // call failed (network blip etc.) either player can retry from here.
+  useEffect(() => {
+    if (!isMultiplayer || !gameId || results.length !== 2) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: existing } = await supabase
+          .from('friend_match_results')
+          .select('id')
+          .eq('game_id', gameId)
+          .maybeSingle();
+        if (cancelled || existing) return;
+        await supabase.functions.invoke('backfill-friend-match', {
+          body: { game_id: gameId, session_id: getSessionId() },
+        });
+      } catch (err) {
+        console.warn('[results] backfill-friend-match failed', err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [isMultiplayer, gameId, results.length]);
 
   const sorted = [...results].sort((a, b) => b.score - a.score);
   const winner = sorted[0];

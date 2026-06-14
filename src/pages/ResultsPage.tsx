@@ -1,11 +1,19 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, Flag } from 'lucide-react';
+import { Trophy, Flag, Swords, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { sendInvite } from '@/lib/invites';
+import { toast } from 'sonner';
 
 interface PlayerResult {
   name: string;
   score: number;
+}
+
+interface RematchOpponent {
+  sessionId: string;
+  name: string;
 }
 
 export default function ResultsPage() {
@@ -17,7 +25,9 @@ export default function ResultsPage() {
   const forfeitPlayerName: string = location.state?.forfeitPlayerName || '';
   const aiPlayers: number[] = location.state?.aiPlayers || [];
   const isMultiplayer: boolean = location.state?.isMultiplayer || false;
+  const rematchOpponent: RematchOpponent | undefined = location.state?.rematchOpponent;
   const playerNames: string[] = results.map(r => r.name);
+  const [inviting, setInviting] = useState(false);
 
   const sorted = [...results].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
@@ -25,6 +35,20 @@ export default function ResultsPage() {
   const forfeitWinner = forfeit && results.length > 1
     ? [...results].filter(r => r.name !== forfeitPlayerName).sort((a, b) => b.score - a.score)[0] ?? null
     : null;
+
+  const handleRematch = async () => {
+    if (!rematchOpponent || inviting) return;
+    setInviting(true);
+    const res = await sendInvite({ toSessionId: rematchOpponent.sessionId, toName: rematchOpponent.name });
+    setInviting(false);
+    if (!res.ok) {
+      toast.error(res.error ?? 'Kunde inte skicka inbjudan');
+      return;
+    }
+    toast.success(`Revanschinbjudan skickad till ${rematchOpponent.name}`);
+    navigate('/');
+  };
+
 
   return (
     <div className="app-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom overflow-y-auto overscroll-contain">

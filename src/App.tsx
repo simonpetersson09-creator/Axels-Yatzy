@@ -30,6 +30,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <InviteOverlay />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/setup" element={<GameSetupPage />} />

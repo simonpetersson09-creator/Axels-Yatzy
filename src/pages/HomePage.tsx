@@ -1,10 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getActiveGame, isGameExpired, getTimeRemaining, formatTimeRemaining, clearActiveGame } from '@/lib/active-game';
+import {
+  getActiveGames,
+  isGameExpired,
+  getTimeRemaining,
+  formatTimeRemaining,
+  removeActiveGame,
+  clearLocalActiveGame,
+  type ActiveGame,
+} from '@/lib/active-game';
 import { getRandomAiNames } from '@/lib/yatzy-ai';
-import { getPlayerName } from '@/lib/session';
+import { getPlayerName, getSessionId } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
+import { supabase } from '@/integrations/supabase/client';
 import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
@@ -15,57 +24,102 @@ const item = {
   show: { opacity: 1, y: 0 },
 };
 
+interface GameStatus {
+  myTurn?: boolean;
+  opponentName?: string;
+  finished?: boolean;
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [activeGame, setActiveGameState] = useState(() => getActiveGame());
-  const [timeLeft, setTimeLeft] = useState('');
+  const [activeGames, setActiveGames] = useState<ActiveGame[]>(() => getActiveGames());
+  const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
 
   useEffect(() => {
-    const onFocus = () => setStats(getLocalStats());
+    const onFocus = () => {
+      setStats(getLocalStats());
+      setActiveGames(getActiveGames());
+    };
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, []);
 
+  // Expiry sweep + ticking time labels
   useEffect(() => {
-    if (!activeGame) return;
-
-    const update = () => {
-      const game = getActiveGame();
-      if (!game) {
-        setActiveGameState(null);
-        return;
+    if (activeGames.length === 0) return;
+    const tick = () => {
+      const fresh = getActiveGames();
+      let changed = fresh.length !== activeGames.length;
+      for (const g of fresh) {
+        if (isGameExpired(g)) {
+          if (g.type === 'local') clearLocalActiveGame();
+          else if (g.gameId) removeActiveGame(g.gameId);
+          changed = true;
+          toast.error(t('matchExpired'));
+        }
       }
-      if (isGameExpired(game)) {
-        clearActiveGame();
-        setActiveGameState(null);
-        toast.error(t('matchExpired'));
-        return;
-      }
-      setTimeLeft(formatTimeRemaining(getTimeRemaining(game)));
+      if (changed) setActiveGames(getActiveGames());
+      else setActiveGames([...fresh]); // refresh references so time labels recompute
     };
-
-    update();
-    const interval = setInterval(update, 30_000);
+    const interval = setInterval(tick, 30_000);
     return () => clearInterval(interval);
-  }, [activeGame, t]);
+  }, [activeGames.length, t]);
 
-  const resumeGame = () => {
-    if (!activeGame) return;
-    if (isGameExpired(activeGame)) {
-      clearActiveGame();
-      setActiveGameState(null);
+  // Fetch fresh server status for each multiplayer entry: whose turn, finished, opponent name.
+  useEffect(() => {
+    const mp = activeGames.filter(g => g.type === 'multiplayer' && g.gameId);
+    if (mp.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const sessionId = getSessionId();
+      const ids = mp.map(g => g.gameId!) as string[];
+      const [{ data: games }, { data: players }] = await Promise.all([
+        supabase.from('games').select('id, status, current_player_index').in('id', ids),
+        supabase.from('game_players').select('game_id, session_id, player_index, player_name').in('game_id', ids),
+      ]);
+      if (cancelled) return;
+      const next: Record<string, GameStatus> = {};
+      let removed = false;
+      for (const id of ids) {
+        const g = games?.find(x => x.id === id);
+        if (!g) continue;
+        if (g.status === 'finished') {
+          removeActiveGame(id);
+          removed = true;
+          continue;
+        }
+        const me = players?.find(p => p.game_id === id && p.session_id === sessionId);
+        const opponent = players?.find(p => p.game_id === id && p.session_id !== sessionId);
+        next[id] = {
+          myTurn: me ? me.player_index === g.current_player_index : false,
+          opponentName: opponent?.player_name,
+          finished: false,
+        };
+      }
+      if (removed) setActiveGames(getActiveGames());
+      setStatuses(next);
+    })();
+    return () => { cancelled = true; };
+  }, [activeGames]);
+
+  const resumeGame = (game: ActiveGame) => {
+    if (isGameExpired(game)) {
+      if (game.type === 'local') clearLocalActiveGame();
+      else if (game.gameId) removeActiveGame(game.gameId);
+      setActiveGames(getActiveGames());
       toast.error(t('matchExpired'));
       return;
     }
-    if (activeGame.type === 'local') {
+    if (game.type === 'local') {
       navigate('/game');
-    } else if (activeGame.type === 'multiplayer' && activeGame.gameId) {
-      navigate(`/multiplayer-game?gameId=${activeGame.gameId}`);
+    } else if (game.type === 'multiplayer' && game.gameId) {
+      navigate(`/multiplayer-game?gameId=${game.gameId}`);
     }
   };
+
 
   return (
     <div className="app-fixed-screen flex flex-col items-center justify-center px-6 py-3 safe-top safe-bottom relative overflow-hidden">

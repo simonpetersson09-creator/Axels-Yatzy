@@ -28,7 +28,10 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
   const inviteFriendName = (location.state as { inviteFriendName?: string } | null)?.inviteFriendName;
   const { t } = useTranslation();
   const [playerName, setPlayerName] = useState(() => getPlayerName());
-  const [joinCode, setJoinCode] = useState('');
+  const [joinCode, setJoinCode] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('code')?.toUpperCase() ?? '';
+  });
 
   const handleCreate = () => {
     const name = sanitizeName(playerName) || 'Spelare 1';

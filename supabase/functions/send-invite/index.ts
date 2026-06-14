@@ -71,13 +71,15 @@ Deno.serve(async (req) => {
       invite = inserted;
     }
 
-    // Push to recipient
+    // Push to recipient (sanitize name)
+    const safeName = String(from_name).slice(0, 20);
     const title = "Spelinbjudan 🎲";
-    const body = `${from_name} vill spela Yatzy med dig`;
+    const body = `${safeName} vill spela Yatzy med dig`;
     const { delivered, deviceId } = await pushToSession(supabase, to_session_id, {
       title, body,
-      data: { kind: "invite", invite_id: invite.id, from_name },
+      data: { kind: "invite", invite_id: invite.id, from_name: safeName },
     });
+
 
     await supabase.from("analytics_events").insert({
       event_name: "invite_sent",

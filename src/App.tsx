@@ -15,6 +15,7 @@ import FriendStatsPage from "./pages/FriendStatsPage";
 import LegalPage from "./pages/LegalPage";
 import NotFound from "./pages/NotFound";
 import { lazy, Suspense } from "react";
+import InviteOverlay from "./components/InviteOverlay";
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.

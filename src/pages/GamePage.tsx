@@ -389,7 +389,7 @@ export default function GamePage() {
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}
               isRolling={gameState.isRolling}
-              onToggleLock={isCurrentAi ? () => {} : toggleLock}
+              onToggleLock={isCurrentAi ? () => {} : (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); }}
               compact
             />
 

@@ -6,7 +6,7 @@ const SUBMIT_ANIM_MS = 700;
 import { calculateScore } from '@/lib/yatzy-scoring';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
-import { countActiveMultiplayerGames, getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
+import { getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
 
 
 type RollDicePart = { dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number };

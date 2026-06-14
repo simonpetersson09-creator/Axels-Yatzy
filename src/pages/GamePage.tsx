@@ -250,7 +250,12 @@ export default function GamePage() {
       if (allSame) {
         setShowYatzyCelebration(true);
         trackEvent('yatzy_scored', undefined, { gameMode: 'single_player' });
+        playSuccessHaptic().catch(() => {});
+      } else {
+        playLightHaptic().catch(() => {});
       }
+    } else {
+      playLightHaptic().catch(() => {});
     }
     console.log('scoreboard-save-request', {
       clickedRowText: debug?.rowText ?? null,

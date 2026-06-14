@@ -35,7 +35,7 @@ export default function InviteOverlay() {
     return () => { cancelled = true; };
   }, [sessionId]);
 
-  // Realtime: any new pending invite addressed to me
+  // Realtime: incoming invites addressed to me — INSERT (new) + UPDATE (cancelled/expired)
   useEffect(() => {
     const ch = supabase
       .channel(`invites-in-${sessionId}`)
@@ -49,11 +49,32 @@ export default function InviteOverlay() {
           setIncoming((cur) => cur ?? row);
         },
       )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'game_invites', filter: `to_session_id=eq.${sessionId}` },
+        (payload) => {
+          const row = payload.new as InviteRow;
+          if (row.status === 'pending') return;
+          // If shown invite is no longer pending (cancelled/expired), close overlay
+          setIncoming((cur) => {
+            if (cur && cur.id === row.id) {
+              handledRef.current.add(row.id);
+              if (row.status === 'cancelled') {
+                toast.message(`${row.from_name} avbröt inbjudan`);
+              }
+              return null;
+            }
+            return cur;
+          });
+        },
+      )
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [sessionId]);
 
   // Realtime: outbound invites I sent — auto-navigate when accepted
+  // Tracks which invite IDs are "active" (sender is actively waiting) to avoid
+  // hijacking the user mid-game if an old invite gets accepted later.
   useEffect(() => {
     const ch = supabase
       .channel(`invites-out-${sessionId}`)
@@ -62,7 +83,15 @@ export default function InviteOverlay() {
         { event: 'UPDATE', schema: 'public', table: 'game_invites', filter: `from_session_id=eq.${sessionId}` },
         (payload) => {
           const row = payload.new as InviteRow;
+          // Only react if invite was created very recently (sender is presumably still waiting)
+          const ageMs = Date.now() - new Date(row.created_at).getTime();
+          if (ageMs > 11 * 60_000) return; // outside the 10-min expiry window
           if (row.status === 'accepted' && row.game_id) {
+            // Don't yank user out of an active multiplayer game view
+            if (window.location.pathname.startsWith('/multiplayer-game')) {
+              toast.success(`${row.to_name} accepterade! Öppna inbjudan från startsidan.`);
+              return;
+            }
             toast.success(`${row.to_name} accepterade!`);
             navigate(`/multiplayer-game?gameId=${row.game_id}`);
           } else if (row.status === 'declined') {
@@ -73,6 +102,7 @@ export default function InviteOverlay() {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [sessionId, navigate]);
+
 
   const handle = useCallback(
     async (action: 'accept' | 'decline') => {

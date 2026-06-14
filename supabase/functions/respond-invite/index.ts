@@ -59,14 +59,24 @@ Deno.serve(async (req) => {
     const res = data as { success: boolean; error?: string; noop?: boolean };
     if (!res.success) return json({ error: res.error }, 400);
 
-    // If invitee declined, notify sender
-    if (!res.noop && invite.to_session_id === session_id) {
-      await pushToSession(supabase, invite.from_session_id, {
-        title: "Inbjudan avböjd",
-        body: `${invite.to_name} kan inte spela just nu`,
-        data: { kind: "invite_declined", invite_id },
-      });
+    if (!res.noop) {
+      if (invite.to_session_id === session_id) {
+        // Invitee declined → notify sender
+        await pushToSession(supabase, invite.from_session_id, {
+          title: "Inbjudan avböjd",
+          body: `${invite.to_name} kan inte spela just nu`,
+          data: { kind: "invite_declined", invite_id },
+        });
+      } else if (invite.from_session_id === session_id) {
+        // Sender cancelled → notify recipient (silent data push closes overlay via realtime UPDATE)
+        await pushToSession(supabase, invite.to_session_id, {
+          title: "Inbjudan avbruten",
+          body: `${invite.from_name} avbröt inbjudan`,
+          data: { kind: "invite_cancelled", invite_id },
+        });
+      }
     }
+
     return json({ success: true, action });
   } catch (err) {
     return json({ error: (err as Error).message }, 500);

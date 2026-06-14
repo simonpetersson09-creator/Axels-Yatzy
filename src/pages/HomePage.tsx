@@ -162,26 +162,47 @@ export default function HomePage() {
         </motion.div>
 
         <div className="w-full space-y-2 sm:space-y-3">
-          {activeGame && (
-            <motion.div variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
-              <motion.button
-                onClick={resumeGame}
-                className="w-full py-3 sm:py-4 rounded-2xl bg-game-success text-white font-display font-bold text-base sm:text-lg shadow-lg flex items-center justify-center gap-2 active:shadow-md transition-shadow"
-                whileTap={{ scale: 0.97 }}
-              >
-                <Play className="w-5 h-5" />
-                <span className="truncate">{t('resumeMatch')}</span>
-              </motion.button>
-              {timeLeft && (
-                <div className="flex items-center justify-center gap-1.5 mt-2">
-                  <Clock className="w-3 h-3 text-muted-foreground/60" />
-                  <span className="text-[11px] text-muted-foreground/60 tabular-nums truncate">
-                    {t('ongoingMatchRemaining', { time: timeLeft })}
-                  </span>
-                </div>
-              )}
+          {activeGames.length > 0 && (
+            <motion.div className="space-y-2" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
+              {activeGames.map((game) => {
+                const isLocal = game.type === 'local';
+                const status = !isLocal && game.gameId ? statuses[game.gameId] : undefined;
+                const opponent = status?.opponentName ?? game.opponentName;
+                const myTurn = status?.myTurn === true;
+                const timeLeft = formatTimeRemaining(getTimeRemaining(game));
+                const key = isLocal ? 'local' : game.gameId!;
+                return (
+                  <motion.button
+                    key={key}
+                    onClick={() => resumeGame(game)}
+                    className="w-full px-4 py-3 rounded-2xl bg-game-success/95 text-white shadow-lg active:shadow-md transition-shadow flex items-center gap-3 text-left"
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center">
+                      <Play className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-display font-bold text-sm sm:text-base truncate">
+                          {isLocal ? t('resumeMatch') : (opponent ?? t('resumeMatch'))}
+                        </span>
+                        {myTurn && (
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-white text-game-success">
+                            Din tur
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 mt-0.5 text-[11px] text-white/75 tabular-nums">
+                        <Clock className="w-3 h-3" />
+                        <span className="truncate">{t('ongoingMatchRemaining', { time: timeLeft })}</span>
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
             </motion.div>
           )}
+
           <motion.button
             onClick={() => setShowQuickMatch(true)}
             className="w-full py-3 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"

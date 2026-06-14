@@ -58,7 +58,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
 
         {inviteFriendName && (
           <div className="p-3 rounded-xl bg-primary/10 border border-primary/30 text-sm text-foreground">
-            Skapa ett spel och dela koden med <span className="font-bold">{inviteFriendName}</span> för att spela igen.
+            {t('lobbyShareCodeAgain', { name: inviteFriendName })}
           </div>
         )}
 

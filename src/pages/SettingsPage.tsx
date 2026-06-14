@@ -223,20 +223,20 @@ export default function SettingsPage() {
         </Section>
 
         {/* Notifications */}
-        <Section title="Notiser">
+        <Section title={t('notifications')}>
           <Card>
             <ToggleRow
               icon={<Bell className="w-4 h-4 text-primary" />}
-              label="Notis när det är min tur"
-              description="Få push när motspelaren har slagit"
+              label={t('notifTurnLabel')}
+              description={t('notifTurnDesc')}
               value={notifPrefs.turnNotifications}
               onChange={(v) => updateNotifPref('turnNotifications', v)}
             />
             <div className="border-t border-border/40" />
             <ToggleRow
               icon={<BellRing className="w-4 h-4 text-primary" />}
-              label="Påminnelser om väntande matcher"
-              description="Vi knackar dig på axeln om matchen står still"
+              label={t('notifReminderLabel')}
+              description={t('notifReminderDesc')}
               value={notifPrefs.reminderNotifications}
               onChange={(v) => updateNotifPref('reminderNotifications', v)}
             />

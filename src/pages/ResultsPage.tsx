@@ -69,10 +69,10 @@ export default function ResultsPage() {
     const res = await sendInvite({ toSessionId: rematchOpponent.sessionId, toName: rematchOpponent.name });
     setInviting(false);
     if (!res.ok) {
-      toast.error(res.error ?? 'Kunde inte skicka inbjudan');
+      toast.error(res.error ?? t('errSendInvite'));
       return;
     }
-    toast.success(`Revanschinbjudan skickad till ${rematchOpponent.name}`);
+    toast.success(t('rematchSentTo', { name: rematchOpponent.name }));
     navigate('/');
   };
 

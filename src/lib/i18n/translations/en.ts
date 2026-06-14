@@ -155,4 +155,44 @@ export const en: typeof sv = {
 
   notFound: 'Page not found',
   returnHome: 'Return to home',
+
+  // Invites
+  inviteTitle: 'Game invitation',
+  inviteWantsToPlay: '{name} wants to play Yatzy with you',
+  moreInvitesWaiting: '+{count} more invitations waiting',
+  decline: 'Decline',
+  accept: 'Accept',
+  invCancelledBy: '{name} cancelled the invitation',
+  invAcceptedOpenFromHome: '{name} accepted! Open the invitation from the home screen.',
+  invAccepted: '{name} accepted!',
+  invDeclinedByOther: '{name} could not play right now',
+  invDeclinedToast: 'Declined invitation from {name}',
+  errSendInvite: 'Could not send invitation',
+  rematchSentTo: 'Rematch invitation sent to {name}',
+  sendingInvite: 'Sending invitation…',
+  inviteToGame: 'Invite to game',
+  inviteWaitingTitle: 'Waiting for {name}…',
+  inviteWaitingDesc: 'The game starts automatically when the invitation is accepted. It expires after 10 minutes.',
+  lobbyShareCodeAgain: 'Create a game and share the code with {name} to play again.',
+
+  // Chat / turns
+  quickMessages: 'Quick messages',
+  close: 'Close',
+  waitCooldown: 'Wait {sec}s before the next message',
+  yourTurnLabel: 'Your turn',
+  waitingForOpponent: 'Waiting for {name}',
+  onlineNow: 'Online now',
+
+  // Settings — notifications
+  notifications: 'Notifications',
+  notifTurnLabel: 'Notify when it\u2019s my turn',
+  notifTurnDesc: 'Get a push when the opponent has rolled',
+  notifReminderLabel: 'Reminders for pending matches',
+  notifReminderDesc: 'We\u2019ll nudge you if the match goes idle',
+
+  // Multiplayer errors
+  maxActiveGames: 'You already have {max} active friend games. Finish one before starting a new.',
+  errTimeout: 'The connection took too long. Please try again.',
+  errRollDice: 'Could not roll the dice',
+  errSubmitScore: 'Could not save the score',
 };

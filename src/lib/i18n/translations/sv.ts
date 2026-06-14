@@ -164,6 +164,46 @@ export const sv = {
 
   notFound: 'Sidan kunde inte hittas',
   returnHome: 'Tillbaka till startsidan',
+
+  // Invites
+  inviteTitle: 'Spelinbjudan',
+  inviteWantsToPlay: '{name} vill spela Yatzy med dig',
+  moreInvitesWaiting: '+{count} fler inbjudningar väntar',
+  decline: 'Avböj',
+  accept: 'Acceptera',
+  invCancelledBy: '{name} avbröt inbjudan',
+  invAcceptedOpenFromHome: '{name} accepterade! Öppna inbjudan från startsidan.',
+  invAccepted: '{name} accepterade!',
+  invDeclinedByOther: '{name} kunde inte spela just nu',
+  invDeclinedToast: 'Avböjde inbjudan från {name}',
+  errSendInvite: 'Kunde inte skicka inbjudan',
+  rematchSentTo: 'Revanschinbjudan skickad till {name}',
+  sendingInvite: 'Skickar inbjudan…',
+  inviteToGame: 'Bjud in till spel',
+  inviteWaitingTitle: 'Väntar på {name}…',
+  inviteWaitingDesc: 'Spelet startar automatiskt när inbjudan accepteras. Den går ut efter 10 minuter.',
+  lobbyShareCodeAgain: 'Skapa ett spel och dela koden med {name} för att spela igen.',
+
+  // Chat / turns
+  quickMessages: 'Snabbmeddelanden',
+  close: 'Stäng',
+  waitCooldown: 'Vänta {sec}s innan nästa meddelande',
+  yourTurnLabel: 'Din tur',
+  waitingForOpponent: 'Väntar på {name}',
+  onlineNow: 'Online nu',
+
+  // Settings — notifications
+  notifications: 'Notiser',
+  notifTurnLabel: 'Notis när det är min tur',
+  notifTurnDesc: 'Få push när motspelaren har slagit',
+  notifReminderLabel: 'Påminnelser om väntande matcher',
+  notifReminderDesc: 'Vi knackar dig på axeln om matchen står still',
+
+  // Multiplayer errors
+  maxActiveGames: 'Du har redan {max} aktiva vänspel. Avsluta något innan du startar nytt.',
+  errTimeout: 'Anslutningen tog för lång tid. Försök igen.',
+  errRollDice: 'Kunde inte kasta tärningarna',
+  errSubmitScore: 'Kunde inte spara poäng',
 };
 
 export type TranslationKey = keyof typeof sv;

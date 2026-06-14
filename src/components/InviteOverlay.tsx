@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { respondInvite, type InviteRow } from '@/lib/invites';
 import { toast } from 'sonner';
+import { t } from '@/lib/i18n';
 
 export default function InviteOverlay() {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ export default function InviteOverlay() {
             if (idx === -1) return cur;
             handledRef.current.add(row.id);
             if (row.status === 'cancelled' && idx === 0) {
-              toast.message(`${row.from_name} avbröt inbjudan`);
+              toast.message(t('invCancelledBy', { name: row.from_name }));
             }
             const next = [...cur];
             next.splice(idx, 1);
@@ -93,13 +94,13 @@ export default function InviteOverlay() {
           if (ageMs > 11 * 60_000) return;
           if (row.status === 'accepted' && row.game_id) {
             if (window.location.pathname.startsWith('/multiplayer-game')) {
-              toast.success(`${row.to_name} accepterade! Öppna inbjudan från startsidan.`);
+              toast.success(t('invAcceptedOpenFromHome', { name: row.to_name }));
               return;
             }
-            toast.success(`${row.to_name} accepterade!`);
+            toast.success(t('invAccepted', { name: row.to_name }));
             navigate(`/multiplayer-game?gameId=${row.game_id}`);
           } else if (row.status === 'declined') {
-            toast.message(`${row.to_name} kunde inte spela just nu`);
+            toast.message(t('invDeclinedByOther', { name: row.to_name }));
           }
         },
       )
@@ -118,13 +119,13 @@ export default function InviteOverlay() {
       const inv = incoming;
       setQueue((cur) => cur.filter((r) => r.id !== inv.id));
       if (!res.ok) {
-        toast.error(res.error ?? 'Något gick fel');
+        toast.error(res.error ?? t('errGeneric'));
         return;
       }
       if (action === 'accept' && res.gameId) {
         navigate(`/multiplayer-game?gameId=${res.gameId}`);
       } else if (action === 'decline') {
-        toast.message(`Avböjde inbjudan från ${inv.from_name}`);
+        toast.message(t('invDeclinedToast', { name: inv.from_name }));
       }
     },
     [incoming, busy, navigate],
@@ -162,14 +163,15 @@ export default function InviteOverlay() {
               </motion.div>
               <div className="space-y-1">
                 <h2 className="text-lg font-display font-black text-foreground">
-                  Spelinbjudan
+                  {t('inviteTitle')}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  <span className="font-bold text-foreground">{incoming.from_name}</span> vill spela Yatzy med dig
+                  <span className="font-bold text-foreground">{incoming.from_name}</span>{' '}
+                  {t('inviteWantsToPlay', { name: '' }).replace(/^\s+/, '')}
                 </p>
                 {queue.length > 1 && (
                   <p className="text-[11px] text-muted-foreground/70 pt-1">
-                    +{queue.length - 1} fler inbjudan{queue.length - 1 === 1 ? '' : 'ar'} väntar
+                    {t('moreInvitesWaiting', { count: queue.length - 1 })}
                   </p>
                 )}
               </div>
@@ -179,14 +181,14 @@ export default function InviteOverlay() {
                   disabled={busy}
                   className="flex-1 py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold inline-flex items-center justify-center gap-2 active:scale-95 transition disabled:opacity-50"
                 >
-                  <X className="w-4 h-4" /> Avböj
+                  <X className="w-4 h-4" /> {t('decline')}
                 </button>
                 <button
                   onClick={() => handle('accept')}
                   disabled={busy}
                   className="flex-1 py-3.5 rounded-2xl bg-primary text-primary-foreground font-display font-bold inline-flex items-center justify-center gap-2 active:scale-95 transition disabled:opacity-50"
                 >
-                  <Check className="w-4 h-4" /> Acceptera
+                  <Check className="w-4 h-4" /> {t('accept')}
                 </button>
               </div>
             </div>

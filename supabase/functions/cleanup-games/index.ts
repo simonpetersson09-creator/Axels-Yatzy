@@ -29,17 +29,24 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Delete game_players for stale waiting games (>1 hour) and old finished games (>24 hours)
+    // Cleanup criteria:
+    //  - waiting games older than 1 hour (lobby never started)
+    //  - finished games older than 24 hours
+    //  - playing games inactive (updated_at) older than 14 days (truly abandoned)
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
     const { data: staleGames, error: fetchErr } = await supabase
       .from("games")
       .select("id")
       .or(
-        `and(status.eq.waiting,created_at.lt.${new Date(Date.now() - 60 * 60 * 1000).toISOString()}),and(status.eq.finished,updated_at.lt.${new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()})`
+        `and(status.eq.waiting,created_at.lt.${oneHourAgo}),and(status.eq.finished,updated_at.lt.${oneDayAgo}),and(status.eq.playing,updated_at.lt.${fourteenDaysAgo})`
       );
 
     if (fetchErr || !staleGames || staleGames.length === 0) {
       return json({ cleaned: 0 });
     }
+
 
     const ids = staleGames.map((g) => g.id);
 

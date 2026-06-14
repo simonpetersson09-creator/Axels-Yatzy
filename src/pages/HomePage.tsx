@@ -164,35 +164,63 @@ export default function HomePage() {
         <div className="w-full space-y-2 sm:space-y-3">
           {activeGames.length > 0 && (
             <motion.div className="space-y-2" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
-              {activeGames.map((game) => {
+              {[...activeGames].sort((a, b) => {
+                // "Din tur"-spel överst
+                const aTurn = !!(a.gameId && statuses[a.gameId]?.myTurn);
+                const bTurn = !!(b.gameId && statuses[b.gameId]?.myTurn);
+                if (aTurn === bTurn) return 0;
+                return aTurn ? -1 : 1;
+              }).map((game) => {
                 const isLocal = game.type === 'local';
                 const status = !isLocal && game.gameId ? statuses[game.gameId] : undefined;
                 const opponent = status?.opponentName ?? game.opponentName;
                 const myTurn = status?.myTurn === true;
+                const opponentTurn = !isLocal && status && status.myTurn === false;
                 const timeLeft = formatTimeRemaining(getTimeRemaining(game));
                 const key = isLocal ? 'local' : game.gameId!;
                 return (
                   <motion.button
                     key={key}
                     onClick={() => resumeGame(game)}
-                    className="w-full px-4 py-3 rounded-2xl bg-game-success/95 text-white shadow-lg active:shadow-md transition-shadow flex items-center gap-3 text-left"
+                    className={`w-full px-4 py-3 rounded-2xl shadow-lg active:shadow-md transition-shadow flex items-center gap-3 text-left ${
+                      myTurn
+                        ? 'bg-game-success/95 text-white ring-2 ring-game-gold/60'
+                        : opponentTurn
+                          ? 'bg-secondary/80 text-foreground'
+                          : 'bg-game-success/95 text-white'
+                    }`}
                     whileTap={{ scale: 0.97 }}
+                    animate={myTurn ? { boxShadow: ['0 4px 16px hsl(36 78% 55% / 0.20)', '0 4px 24px hsl(36 78% 55% / 0.50)', '0 4px 16px hsl(36 78% 55% / 0.20)'] } : undefined}
+                    transition={myTurn ? { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } : undefined}
                   >
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center">
-                      <Play className="w-5 h-5" />
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
+                      myTurn ? 'bg-white/15' : opponentTurn ? 'bg-muted/60' : 'bg-white/15'
+                    }`}>
+                      <Play className={`w-5 h-5 ${opponentTurn ? 'text-muted-foreground' : ''}`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-display font-bold text-sm sm:text-base truncate">
                           {isLocal ? t('resumeMatch') : (opponent ?? t('resumeMatch'))}
                         </span>
                         {myTurn && (
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-white text-game-success">
+                          <motion.span
+                            className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-game-gold text-background"
+                            animate={{ scale: [1, 1.08, 1] }}
+                            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                          >
                             Din tur
+                          </motion.span>
+                        )}
+                        {opponentTurn && opponent && (
+                          <span className="text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-muted/60 text-muted-foreground">
+                            Väntar på {opponent}
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1 mt-0.5 text-[11px] text-white/75 tabular-nums">
+                      <div className={`flex items-center gap-1 mt-0.5 text-[11px] tabular-nums ${
+                        opponentTurn ? 'text-muted-foreground' : 'text-white/75'
+                      }`}>
                         <Clock className="w-3 h-3" />
                         <span className="truncate">{t('ongoingMatchRemaining', { time: timeLeft })}</span>
                       </div>
@@ -202,6 +230,7 @@ export default function HomePage() {
               })}
             </motion.div>
           )}
+
 
           <motion.button
             onClick={() => setShowQuickMatch(true)}

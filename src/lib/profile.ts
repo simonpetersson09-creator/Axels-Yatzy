@@ -9,11 +9,11 @@ export type Language = 'sv' | 'fi' | 'no' | 'da' | 'en' | 'es';
 
 export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'sv', label: 'Svenska', flag: '🇸🇪' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
   { code: 'fi', label: 'Suomi', flag: '🇫🇮' },
   { code: 'no', label: 'Norsk', flag: '🇳🇴' },
   { code: 'da', label: 'Dansk', flag: '🇩🇰' },
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
 ];
 
 export function getProfileName(): string {

@@ -392,7 +392,7 @@ export default function MultiplayerGamePage() {
         }
       }
 
-      clearActiveGame();
+      if (gameId) removeActiveGame(gameId);
 
       navigate('/results', {
         state: {

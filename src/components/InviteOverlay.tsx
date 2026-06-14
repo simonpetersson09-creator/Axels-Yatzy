@@ -1,10 +1,10 @@
 // Global overlay that listens for incoming friend invites and lets the user
 // accept/decline them. Mounted once near the app root. Queues multiple pending
 // invites and shows them one at a time.
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gamepad2, Check, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { respondInvite, type InviteRow } from '@/lib/invites';

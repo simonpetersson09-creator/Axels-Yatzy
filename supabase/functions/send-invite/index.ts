@@ -73,8 +73,8 @@ Deno.serve(async (req) => {
 
     // Push to recipient (sanitize name)
     const safeName = String(from_name).slice(0, 20);
-    const title = "Spelinbjudan 🎲";
-    const body = `${safeName} vill spela Yatzy med dig`;
+    const title = `${safeName} utmanar dig 🎲`;
+    const body = `Tryck för att spela Yatzy`;
     const { delivered, deviceId } = await pushToSession(supabase, to_session_id, {
       title, body,
       data: { kind: "invite", invite_id: invite.id, from_name: safeName },

@@ -100,8 +100,8 @@ Deno.serve(async (req) => {
       return json({ skipped: "sender is recipient session" });
     }
 
-    const title = "Din tur 🎲";
-    const body = `Det är din tur mot ${opponentName}`;
+    const title = `${opponentName} väntar 🎲`;
+    const body = `Det är din tur i Yatzy-matchen`;
 
     // Idempotent insert via unique partial index
     const { data: logRow, error: insertErr } = await supabase

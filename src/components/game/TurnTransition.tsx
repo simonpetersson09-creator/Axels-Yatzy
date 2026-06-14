@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playTurnHaptic } from '@/lib/haptics';
+import { useTranslation } from '@/lib/i18n';
 
 interface TurnTransitionProps {
   /** Call this when it becomes the player's turn. */
@@ -15,6 +16,7 @@ interface TurnTransitionProps {
 const VISIBLE_MS = 800;
 
 export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VISIBLE_MS }: TurnTransitionProps) {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   // Keep onDismiss in a ref so the timer effect does not restart on every
   // parent render (inline arrow callbacks have a new identity each render).
@@ -71,7 +73,7 @@ export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VIS
                 textShadow: '0 2px 8px hsl(42 80% 40% / 0.35)',
               }}
             >
-              {playerName ? `${playerName}` : 'Din tur'}
+              {playerName ? `${playerName}` : t('yourTurnLabel')}
             </p>
           </motion.div>
         </motion.div>

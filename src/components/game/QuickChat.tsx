@@ -34,6 +34,7 @@ const PLAYER_BUBBLE_COLORS = [
 ];
 
 export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: QuickChatProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [bubbles, setBubbles] = useState<IncomingBubble[]>([]);
   const [cooldownLeft, setCooldownLeft] = useState(0);
@@ -193,7 +194,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        aria-label="Snabbmeddelanden"
+        aria-label={t('quickMessages')}
         className={buttonPositionClasses}
         style={buttonStyle}
       >
@@ -226,11 +227,11 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
               }}
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
-                <p className="text-sm font-display font-bold">Snabbmeddelanden</p>
+                <p className="text-sm font-display font-bold">{t('quickMessages')}</p>
                 <button
                   onClick={() => setOpen(false)}
                   className="p-1 rounded-lg active:bg-secondary"
-                  aria-label="Stäng"
+                  aria-label={t('close')}
                 >
                   <X className="w-4 h-4 text-muted-foreground" />
                 </button>
@@ -254,7 +255,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
               </div>
               {onCooldown && (
                 <p className="px-4 pb-3 text-[10px] text-muted-foreground/70 text-center">
-                  Vänta {Math.ceil(cooldownLeft / 1000)}s innan nästa meddelande
+                  {t('waitCooldown', { sec: Math.ceil(cooldownLeft / 1000) })}
                 </p>
               )}
             </motion.div>

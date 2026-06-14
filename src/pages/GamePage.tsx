@@ -9,6 +9,7 @@ import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
+import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';

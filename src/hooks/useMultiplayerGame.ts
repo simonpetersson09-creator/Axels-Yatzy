@@ -419,7 +419,18 @@ export function useMultiplayerGame() {
 
   // Join existing game
   const joinGame = useCallback(async (code: string, playerName: string) => {
+    // Allow rejoining a game we're already tracking; only block when at cap with a new code.
+    const existing = getMultiplayerActiveGames();
+    if (existing.length >= MAX_ACTIVE_MULTIPLAYER_GAMES) {
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: `Du har redan ${MAX_ACTIVE_MULTIPLAYER_GAMES} aktiva vänspel. Avsluta något innan du startar nytt.`,
+      }));
+      return false;
+    }
     setState(prev => ({ ...prev, loading: true, error: null }));
+
 
     const { data, error: rpcErr } = await supabase.rpc('join_game', {
       p_game_code: code.toUpperCase(),

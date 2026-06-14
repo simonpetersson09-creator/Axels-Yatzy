@@ -67,8 +67,8 @@ export default function MultiplayerGamePage() {
     if (gameId && status === 'playing') {
       setActiveGame({ type: 'multiplayer', gameId, timestamp: Date.now() });
     }
-    if (status === 'finished') {
-      clearActiveGame();
+    if (status === 'finished' && gameId) {
+      removeActiveGame(gameId);
     }
   }, [gameId, status]);
 

@@ -8,13 +8,19 @@ export interface ApnsArgs {
   category?: string;
 }
 
-export async function sendApns(args: ApnsArgs): Promise<boolean> {
+export interface ApnsResult {
+  ok: boolean;
+  status?: number;
+  reason?: string;
+}
+
+export async function sendApns(args: ApnsArgs): Promise<ApnsResult> {
   const keyId = Deno.env.get("APNS_KEY_ID");
   const teamId = Deno.env.get("APNS_TEAM_ID");
   const bundleId = Deno.env.get("APNS_BUNDLE_ID");
   const authKey = Deno.env.get("APNS_AUTH_KEY");
   const env = Deno.env.get("APNS_ENV") ?? "production";
-  if (!keyId || !teamId || !bundleId || !authKey) return false;
+  if (!keyId || !teamId || !bundleId || !authKey) return { ok: false, reason: "secrets_missing" };
 
   try {
     const jwt = await buildApnsJwt({ keyId, teamId, authKey });
@@ -41,13 +47,38 @@ export async function sendApns(args: ApnsArgs): Promise<boolean> {
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
-      console.warn("[apns] delivery failed", res.status, await res.text());
-      return false;
+      const text = await res.text();
+      let reason: string | undefined;
+      try { reason = JSON.parse(text)?.reason; } catch { reason = text; }
+      console.warn("[apns] delivery failed", res.status, reason);
+      return { ok: false, status: res.status, reason };
     }
-    return true;
+    return { ok: true, status: res.status };
   } catch (err) {
     console.warn("[apns] error", err);
-    return false;
+    return { ok: false, reason: (err as Error).message };
+  }
+}
+
+// APNs returns 410 (Unregistered) or 400 BadDeviceToken when a token is no longer valid.
+export function isStaleTokenResult(r: ApnsResult): boolean {
+  if (r.status === 410) return true;
+  if (r.reason === "Unregistered" || r.reason === "BadDeviceToken") return true;
+  return false;
+}
+
+// deno-lint-ignore no-explicit-any
+export async function disableTokenIfStale(supabase: any, tokenValue: string, result: ApnsResult): Promise<void> {
+  if (!isStaleTokenResult(result) || !tokenValue) return;
+  try {
+    const { error } = await supabase
+      .from("push_tokens")
+      .update({ enabled: false })
+      .eq("token", tokenValue);
+    if (error) console.warn("[apns] failed to disable stale token", error.message);
+    else console.log("[apns] disabled stale token (APNs reason:", result.reason ?? result.status, ")");
+  } catch (err) {
+    console.warn("[apns] disable stale token threw", err);
   }
 }
 
@@ -73,8 +104,9 @@ async function buildApnsJwt(a: { keyId: string; teamId: string; authKey: string 
   return `${signingInput}.${sigB64}`;
 }
 
+// deno-lint-ignore no-explicit-any
 export async function pushToSession(
-  supabase: { from: (t: string) => { select: (s: string) => { eq: (c: string, v: unknown) => { eq: (c: string, v: unknown) => { order: (c: string, o: { ascending: boolean }) => { limit: (n: number) => { maybeSingle: () => Promise<{ data: { token: string; device_id: string; platform: string } | null }> } } } } } } },
+  supabase: any,
   sessionId: string,
   args: Omit<ApnsArgs, "deviceToken">,
 ): Promise<{ delivered: boolean; deviceId: string | null }> {
@@ -87,6 +119,7 @@ export async function pushToSession(
     .limit(1)
     .maybeSingle();
   if (!token?.token) return { delivered: false, deviceId: token?.device_id ?? null };
-  const delivered = await sendApns({ ...args, deviceToken: token.token });
-  return { delivered, deviceId: token.device_id };
+  const result = await sendApns({ ...args, deviceToken: token.token });
+  await disableTokenIfStale(supabase, token.token, result);
+  return { delivered: result.ok, deviceId: token.device_id };
 }

@@ -150,14 +150,18 @@ Deno.serve(async (req) => {
 
       let delivered = false;
       if (token?.token) {
-        delivered = await sendApns({
+        const apns = await sendApns({
           deviceToken: token.token,
           title,
           body,
           data: { game_id: game.id, kind: "reminder", notification_id: logRow.id },
         });
+        delivered = apns.ok;
         if (delivered) {
           await supabase.from("notification_log").update({ delivered: true }).eq("id", logRow.id);
+        } else if (apns.status === 410 || apns.reason === "Unregistered" || apns.reason === "BadDeviceToken") {
+          await supabase.from("push_tokens").update({ enabled: false }).eq("token", token.token);
+          console.log("[notify-reminders] disabled stale token", apns.reason ?? apns.status);
         }
       }
 
@@ -193,13 +197,13 @@ interface ApnsArgs {
   data: Record<string, string>;
 }
 
-async function sendApns(args: ApnsArgs): Promise<boolean> {
+async function sendApns(args: ApnsArgs): Promise<{ ok: boolean; status?: number; reason?: string }> {
   const keyId = Deno.env.get("APNS_KEY_ID");
   const teamId = Deno.env.get("APNS_TEAM_ID");
   const bundleId = Deno.env.get("APNS_BUNDLE_ID");
   const authKey = Deno.env.get("APNS_AUTH_KEY");
   const env = Deno.env.get("APNS_ENV") ?? "production";
-  if (!keyId || !teamId || !bundleId || !authKey) return false;
+  if (!keyId || !teamId || !bundleId || !authKey) return { ok: false, reason: "secrets_missing" };
 
   try {
     const jwt = await buildApnsJwt({ keyId, teamId, authKey });
@@ -219,13 +223,16 @@ async function sendApns(args: ApnsArgs): Promise<boolean> {
       }),
     });
     if (!res.ok) {
-      console.warn("[apns] reminder failed", res.status, await res.text());
-      return false;
+      const text = await res.text();
+      let reason: string | undefined;
+      try { reason = JSON.parse(text)?.reason; } catch { reason = text; }
+      console.warn("[apns] reminder failed", res.status, reason);
+      return { ok: false, status: res.status, reason };
     }
-    return true;
+    return { ok: true, status: res.status };
   } catch (err) {
     console.warn("[apns] reminder error", err);
-    return false;
+    return { ok: false, reason: (err as Error).message };
   }
 }
 

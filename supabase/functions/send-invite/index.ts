@@ -27,15 +27,17 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Block if sender already has 3 active games
-    const { count: activeCount } = await supabase
+    // Block if sender already has 3 active games (distinct game_ids)
+    const { data: activeRows } = await supabase
       .from("game_players")
-      .select("game_id, games!inner(status)", { count: "exact", head: true })
+      .select("game_id, games!inner(status)")
       .eq("session_id", from_session_id)
       .in("games.status", ["waiting", "playing"]);
-    if ((activeCount ?? 0) >= 3) {
+    const activeCount = new Set((activeRows ?? []).map((r: { game_id: string }) => r.game_id)).size;
+    if (activeCount >= 3) {
       return json({ error: "Du har redan 3 aktiva spel. Avsluta något först." }, 400);
     }
+
 
     // Expire stale invites; reuse existing pending invite if one already exists
     await supabase
@@ -69,13 +71,15 @@ Deno.serve(async (req) => {
       invite = inserted;
     }
 
-    // Push to recipient
+    // Push to recipient (sanitize name)
+    const safeName = String(from_name).slice(0, 20);
     const title = "Spelinbjudan 🎲";
-    const body = `${from_name} vill spela Yatzy med dig`;
+    const body = `${safeName} vill spela Yatzy med dig`;
     const { delivered, deviceId } = await pushToSession(supabase, to_session_id, {
       title, body,
-      data: { kind: "invite", invite_id: invite.id, from_name },
+      data: { kind: "invite", invite_id: invite.id, from_name: safeName },
     });
+
 
     await supabase.from("analytics_events").insert({
       event_name: "invite_sent",

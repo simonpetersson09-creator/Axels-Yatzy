@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gamepad2, Check, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { respondInvite, type InviteRow } from '@/lib/invites';
@@ -150,9 +150,16 @@ export default function InviteOverlay() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-14 h-14 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center">
-                <Gamepad2 className="w-7 h-7 text-primary" />
-              </div>
+              <motion.div
+                className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/60 border-2 border-primary/40 flex items-center justify-center shadow-lg shadow-primary/30"
+                initial={{ scale: 0.6, rotate: -8 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 320, damping: 18 }}
+              >
+                <span className="text-2xl font-display font-black text-primary-foreground select-none">
+                  {(incoming.from_name?.trim()?.charAt(0) || '?').toUpperCase()}
+                </span>
+              </motion.div>
               <div className="space-y-1">
                 <h2 className="text-lg font-display font-black text-foreground">
                   Spelinbjudan

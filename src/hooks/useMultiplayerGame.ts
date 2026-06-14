@@ -379,7 +379,18 @@ export function useMultiplayerGame() {
 
   // Create a new game via atomic RPC
   const createGame = useCallback(async (playerName: string) => {
+    // Enforce a soft cap so users don't accumulate forgotten games that keep pinging them.
+    const existing = getMultiplayerActiveGames();
+    if (existing.length >= MAX_ACTIVE_MULTIPLAYER_GAMES) {
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: `Du har redan ${MAX_ACTIVE_MULTIPLAYER_GAMES} aktiva vänspel. Avsluta något innan du startar nytt.`,
+      }));
+      return null;
+    }
     setState(prev => ({ ...prev, loading: true, error: null }));
+
 
     const { data, error: rpcErr } = await supabase.rpc('create_game_with_code', {
       p_player_name: playerName,

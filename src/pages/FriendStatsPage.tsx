@@ -220,15 +220,23 @@ export default function FriendStatsPage() {
                   <motion.button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate('/multiplayer', {
-                        state: { inviteFriendName: o.opponentName },
-                      });
+                      handleInvite(o.opponentId, o.opponentName);
                     }}
+                    disabled={inviting === o.opponentId || !!pendingInvite}
                     whileTap={{ scale: 0.97 }}
-                    className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm"
+                    className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-50"
                   >
-                    <Play className="w-3.5 h-3.5" />
-                    Spela med vän
+                    {inviting === o.opponentId ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Skickar inbjudan…
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        Bjud in till spel
+                      </>
+                    )}
                   </motion.button>
                 </motion.div>
               );

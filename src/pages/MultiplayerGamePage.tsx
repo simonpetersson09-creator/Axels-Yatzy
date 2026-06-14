@@ -400,29 +400,32 @@ export default function MultiplayerGamePage() {
 
       if (gameId) removeActiveGame(gameId);
 
-      // Pass opponent info for rematch button (only true 1v1 multiplayer)
-      let rematchOpponent: { sessionId: string; name: string } | undefined;
-      if (myPlayerIndex !== null && gameState.players.length === 2 && gameId) {
-        try {
-          const { data: rows } = await supabase
-            .from('game_players')
-            .select('player_index, session_id, player_name')
-            .eq('game_id', gameId);
-          const oppRow = (rows ?? []).find((r: any) => r.player_index !== myPlayerIndex);
-          if (oppRow?.session_id && oppRow?.player_name) {
-            rematchOpponent = { sessionId: oppRow.session_id, name: oppRow.player_name };
-          }
-        } catch { /* ignore — rematch button just won't appear */ }
-      }
+      // Pass opponent info for rematch button (only true 1v1 multiplayer).
+      // Resolve async then navigate.
+      (async () => {
+        let rematchOpponent: { sessionId: string; name: string } | undefined;
+        if (myPlayerIndex !== null && gameState.players.length === 2 && gameId) {
+          try {
+            const { data: rows } = await supabase
+              .from('game_players')
+              .select('player_index, session_id, player_name')
+              .eq('game_id', gameId);
+            const oppRow = (rows ?? []).find((r: any) => r.player_index !== myPlayerIndex);
+            if (oppRow?.session_id && oppRow?.player_name) {
+              rematchOpponent = { sessionId: oppRow.session_id, name: oppRow.player_name };
+            }
+          } catch { /* ignore — rematch button just won't appear */ }
+        }
+        navigate('/results', {
+          state: {
+            results,
+            isMultiplayer: true,
+            rematchOpponent,
+            ...(isForfeit ? { forfeit: true, forfeitPlayerName: gameState.forfeitedBy } : {}),
+          },
+        });
+      })();
 
-      navigate('/results', {
-        state: {
-          results,
-          isMultiplayer: true,
-          rematchOpponent,
-          ...(isForfeit ? { forfeit: true, forfeitPlayerName: gameState.forfeitedBy } : {}),
-        },
-      });
 
     }
   }, [status, gameState, myPlayerIndex, navigate]);

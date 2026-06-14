@@ -106,16 +106,19 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      const delivered = await sendApns({
+      const apns = await sendApns({
         deviceToken: token.token,
         title,
         body,
         data: { game_id, kind: "forfeit", notification_id: logRow.id },
       });
-      if (delivered) {
+      if (apns.ok) {
         await supabase.from("notification_log").update({ delivered: true }).eq("id", logRow.id);
+      } else if (apns.status === 410 || apns.reason === "Unregistered" || apns.reason === "BadDeviceToken") {
+        await supabase.from("push_tokens").update({ enabled: false }).eq("token", token.token);
+        console.log("[notify-forfeit] disabled stale token", apns.reason ?? apns.status);
       }
-      results.push({ session_id: r.session_id, delivered });
+      results.push({ session_id: r.session_id, delivered: apns.ok });
     }
 
     return json({ success: true, results });
@@ -131,7 +134,7 @@ interface ApnsArgs {
   data: Record<string, string>;
 }
 
-async function sendApns(args: ApnsArgs): Promise<boolean> {
+async function sendApns(args: ApnsArgs): Promise<{ ok: boolean; status?: number; reason?: string }> {
   const keyId = Deno.env.get("APNS_KEY_ID");
   const teamId = Deno.env.get("APNS_TEAM_ID");
   const bundleId = Deno.env.get("APNS_BUNDLE_ID");
@@ -139,8 +142,7 @@ async function sendApns(args: ApnsArgs): Promise<boolean> {
   const env = Deno.env.get("APNS_ENV") ?? "production";
 
   if (!keyId || !teamId || !bundleId || !authKey) {
-    console.log("[apns] secrets missing — skipping push delivery");
-    return false;
+    return { ok: false, reason: "secrets_missing" };
   }
 
   try {
@@ -148,11 +150,7 @@ async function sendApns(args: ApnsArgs): Promise<boolean> {
     const host = env === "sandbox" ? "api.sandbox.push.apple.com" : "api.push.apple.com";
     const url = `https://${host}/3/device/${args.deviceToken}`;
     const payload = {
-      aps: {
-        alert: { title: args.title, body: args.body },
-        sound: "default",
-        "mutable-content": 1,
-      },
+      aps: { alert: { title: args.title, body: args.body }, sound: "default", "mutable-content": 1 },
       ...args.data,
     };
     const res = await fetch(url, {
@@ -168,13 +166,15 @@ async function sendApns(args: ApnsArgs): Promise<boolean> {
     });
     if (!res.ok) {
       const text = await res.text();
-      console.warn("[apns] delivery failed", res.status, text);
-      return false;
+      let reason: string | undefined;
+      try { reason = JSON.parse(text)?.reason; } catch { reason = text; }
+      console.warn("[apns] delivery failed", res.status, reason);
+      return { ok: false, status: res.status, reason };
     }
-    return true;
+    return { ok: true, status: res.status };
   } catch (err) {
     console.warn("[apns] error", err);
-    return false;
+    return { ok: false, reason: (err as Error).message };
   }
 }
 

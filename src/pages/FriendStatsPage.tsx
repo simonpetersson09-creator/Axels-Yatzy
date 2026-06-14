@@ -47,6 +47,26 @@ export default function FriendStatsPage() {
 
   const [rows, setRows] = useState<FriendMatchRow[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  const [inviting, setInviting] = useState<string | null>(null);
+  const [pendingInvite, setPendingInvite] = useState<{ inviteId: string; opponentName: string } | null>(null);
+
+  const handleInvite = async (opponentId: string, opponentName: string) => {
+    if (inviting) return;
+    setInviting(opponentId);
+    const res = await sendInvite({ toSessionId: opponentId, toName: opponentName });
+    setInviting(null);
+    if (!res.ok) {
+      toast.error(res.error ?? 'Kunde inte skicka inbjudan');
+      return;
+    }
+    setPendingInvite({ inviteId: res.inviteId!, opponentName });
+  };
+
+  const cancelInvite = async () => {
+    if (!pendingInvite) return;
+    await respondInvite({ inviteId: pendingInvite.inviteId, action: 'decline' });
+    setPendingInvite(null);
+  };
 
   useEffect(() => {
     let cancelled = false;

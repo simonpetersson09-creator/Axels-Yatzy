@@ -74,7 +74,6 @@ Deno.serve(async (req) => {
     const body = `${from_name} vill spela Yatzy med dig`;
     const { delivered, deviceId } = await pushToSession(supabase, to_session_id, {
       title, body,
-      category: "GAME_INVITE",
       data: { kind: "invite", invite_id: invite.id, from_name },
     });
 

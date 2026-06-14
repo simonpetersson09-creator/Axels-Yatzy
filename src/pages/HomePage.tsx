@@ -206,7 +206,15 @@ export default function HomePage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-display font-bold text-sm sm:text-base truncate">
+                        <span className="font-display font-bold text-sm sm:text-base truncate inline-flex items-center gap-1.5">
+                          {!isLocal && status?.opponentOnline && (
+                            <motion.span
+                              className="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]"
+                              aria-label="Online nu"
+                              animate={{ opacity: [1, 0.55, 1] }}
+                              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                            />
+                          )}
                           {isLocal ? t('resumeMatch') : (opponent ?? t('resumeMatch'))}
                         </span>
                         {myTurn && (

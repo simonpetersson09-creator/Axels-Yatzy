@@ -8,7 +8,7 @@ import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
-import { setActiveGame, clearActiveGame } from '@/lib/active-game';
+import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { playLightHaptic } from '@/lib/haptics';

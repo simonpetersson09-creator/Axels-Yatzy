@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Users, Trophy, X, Minus, Play } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Users, Trophy, X, Minus, Send, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
+import { sendInvite, respondInvite } from '@/lib/invites';
+import { toast } from 'sonner';
 
 interface FriendMatchRow {
   id: string;
@@ -45,6 +47,26 @@ export default function FriendStatsPage() {
 
   const [rows, setRows] = useState<FriendMatchRow[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  const [inviting, setInviting] = useState<string | null>(null);
+  const [pendingInvite, setPendingInvite] = useState<{ inviteId: string; opponentName: string } | null>(null);
+
+  const handleInvite = async (opponentId: string, opponentName: string) => {
+    if (inviting) return;
+    setInviting(opponentId);
+    const res = await sendInvite({ toSessionId: opponentId, toName: opponentName });
+    setInviting(null);
+    if (!res.ok) {
+      toast.error(res.error ?? 'Kunde inte skicka inbjudan');
+      return;
+    }
+    setPendingInvite({ inviteId: res.inviteId!, opponentName });
+  };
+
+  const cancelInvite = async () => {
+    if (!pendingInvite) return;
+    await respondInvite({ inviteId: pendingInvite.inviteId, action: 'decline' });
+    setPendingInvite(null);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -198,15 +220,23 @@ export default function FriendStatsPage() {
                   <motion.button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate('/multiplayer', {
-                        state: { inviteFriendName: o.opponentName },
-                      });
+                      handleInvite(o.opponentId, o.opponentName);
                     }}
+                    disabled={inviting === o.opponentId || !!pendingInvite}
                     whileTap={{ scale: 0.97 }}
-                    className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm"
+                    className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-50"
                   >
-                    <Play className="w-3.5 h-3.5" />
-                    Spela med vän
+                    {inviting === o.opponentId ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Skickar inbjudan…
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        Bjud in till spel
+                      </>
+                    )}
                   </motion.button>
                 </motion.div>
               );
@@ -285,6 +315,42 @@ export default function FriendStatsPage() {
           </motion.div>
         )}
       </div>
+
+      <AnimatePresence>
+        {pendingInvite && (
+          <motion.div
+            className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="w-full max-w-sm rounded-3xl bg-card border border-border/60 p-6 shadow-2xl text-center space-y-4"
+              initial={{ y: 30, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 30, opacity: 0, scale: 0.95 }}
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/15 border border-primary/30">
+                <Loader2 className="w-6 h-6 text-primary animate-spin" />
+              </div>
+              <div className="space-y-1">
+                <h2 className="text-lg font-display font-black text-foreground">
+                  Väntar på {pendingInvite.opponentName}…
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Spelet startar automatiskt när inbjudan accepteras. Den går ut efter 10 minuter.
+                </p>
+              </div>
+              <button
+                onClick={cancelInvite}
+                className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
+              >
+                Avbryt
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

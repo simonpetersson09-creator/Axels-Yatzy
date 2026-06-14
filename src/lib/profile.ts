@@ -5,7 +5,7 @@ const NAME_KEY = 'yatzy_player_name';
 const AVATAR_KEY = 'yatzy_player_avatar'; // data URL (jpeg/png)
 const LANG_KEY = 'yatzy_language';
 
-export type Language = 'sv' | 'fi' | 'no' | 'da' | 'en';
+export type Language = 'sv' | 'fi' | 'no' | 'da' | 'en' | 'es';
 
 export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'sv', label: 'Svenska', flag: '🇸🇪' },
@@ -13,6 +13,7 @@ export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'no', label: 'Norsk', flag: '🇳🇴' },
   { code: 'da', label: 'Dansk', flag: '🇩🇰' },
   { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
 ];
 
 export function getProfileName(): string {

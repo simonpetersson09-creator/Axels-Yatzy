@@ -27,8 +27,11 @@ const item = {
 interface GameStatus {
   myTurn?: boolean;
   opponentName?: string;
+  opponentOnline?: boolean;
   finished?: boolean;
 }
+
+const ONLINE_THRESHOLD_MS = 90_000; // 90s
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -78,11 +81,12 @@ export default function HomePage() {
       const ids = mp.map(g => g.gameId!) as string[];
       const [{ data: games }, { data: players }] = await Promise.all([
         supabase.from('games').select('id, status, current_player_index').in('id', ids),
-        supabase.from('game_players').select('game_id, session_id, player_index, player_name').in('game_id', ids),
+        supabase.from('game_players').select('game_id, session_id, player_index, player_name, last_active_at').in('game_id', ids),
       ]);
       if (cancelled) return;
       const next: Record<string, GameStatus> = {};
       let removed = false;
+      const now = Date.now();
       for (const id of ids) {
         const g = games?.find(x => x.id === id);
         if (!g) continue;
@@ -93,9 +97,11 @@ export default function HomePage() {
         }
         const me = players?.find(p => p.game_id === id && p.session_id === sessionId);
         const opponent = players?.find(p => p.game_id === id && p.session_id !== sessionId);
+        const opponentActiveMs = opponent?.last_active_at ? new Date(opponent.last_active_at).getTime() : 0;
         next[id] = {
           myTurn: me ? me.player_index === g.current_player_index : false,
           opponentName: opponent?.player_name,
+          opponentOnline: opponent ? (now - opponentActiveMs) < ONLINE_THRESHOLD_MS : false,
           finished: false,
         };
       }

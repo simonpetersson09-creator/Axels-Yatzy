@@ -315,6 +315,42 @@ export default function FriendStatsPage() {
           </motion.div>
         )}
       </div>
+
+      <AnimatePresence>
+        {pendingInvite && (
+          <motion.div
+            className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="w-full max-w-sm rounded-3xl bg-card border border-border/60 p-6 shadow-2xl text-center space-y-4"
+              initial={{ y: 30, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 30, opacity: 0, scale: 0.95 }}
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/15 border border-primary/30">
+                <Loader2 className="w-6 h-6 text-primary animate-spin" />
+              </div>
+              <div className="space-y-1">
+                <h2 className="text-lg font-display font-black text-foreground">
+                  Väntar på {pendingInvite.opponentName}…
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Spelet startar automatiskt när inbjudan accepteras. Den går ut efter 10 minuter.
+                </p>
+              </div>
+              <button
+                onClick={cancelInvite}
+                className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
+              >
+                Avbryt
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

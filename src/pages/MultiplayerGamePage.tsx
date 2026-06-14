@@ -8,7 +8,7 @@ import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
-import { setActiveGame, clearActiveGame } from '@/lib/active-game';
+import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { playLightHaptic } from '@/lib/haptics';
@@ -65,12 +65,18 @@ export default function MultiplayerGamePage() {
   // Track active game
   useEffect(() => {
     if (gameId && status === 'playing') {
-      setActiveGame({ type: 'multiplayer', gameId, timestamp: Date.now() });
+      const opponent = gameState?.players?.find((_, i) => i !== myPlayerIndex);
+      setActiveGame({
+        type: 'multiplayer',
+        gameId,
+        timestamp: Date.now(),
+        opponentName: opponent?.name,
+      });
     }
-    if (status === 'finished') {
-      clearActiveGame();
+    if (status === 'finished' && gameId) {
+      removeActiveGame(gameId);
     }
-  }, [gameId, status]);
+  }, [gameId, status, gameState, myPlayerIndex]);
 
   // Scroll-lock + touchmove prevent (same as GamePage)
   useEffect(() => {
@@ -392,7 +398,7 @@ export default function MultiplayerGamePage() {
         }
       }
 
-      clearActiveGame();
+      if (gameId) removeActiveGame(gameId);
 
       navigate('/results', {
         state: {

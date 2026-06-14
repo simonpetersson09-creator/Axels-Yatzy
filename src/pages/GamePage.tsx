@@ -6,7 +6,7 @@ import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBo
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
-import { setActiveGame, clearActiveGame } from '@/lib/active-game';
+import { setActiveGame, clearLocalActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
@@ -89,7 +89,7 @@ export default function GamePage() {
 
   useEffect(() => {
     if (gameState?.gameOver) {
-      clearActiveGame();
+      clearLocalActiveGame();
       // Record local stats for human player (index 0)
       const humanScore = getTotalScore(gameState.players[0].scores);
       const allScores = gameState.players.map(p => getTotalScore(p.scores));
@@ -214,7 +214,7 @@ export default function GamePage() {
 
   const handleForfeit = useCallback(() => {
     if (!gameState) return;
-    clearActiveGame();
+    clearLocalActiveGame();
     const results = gameState.players.map(p => ({
       name: p.name,
       score: getTotalScore(p.scores),

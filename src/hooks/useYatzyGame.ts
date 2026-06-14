@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { GameState, Player, CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, rollDice } from '@/lib/yatzy-scoring';
-import { setActiveGame, updateLastRollTime, saveGameState, loadGameState, clearActiveGame } from '@/lib/active-game';
+import { setActiveGame, updateLastRollTime, saveGameState, loadGameState, clearLocalActiveGame } from '@/lib/active-game';
 
 function createPlayer(name: string, index: number): Player {
   return {
@@ -125,7 +125,7 @@ export function useYatzyGame() {
       }
 
       if (gameOver) {
-        clearActiveGame();
+        clearLocalActiveGame();
       }
 
       return {
@@ -142,7 +142,7 @@ export function useYatzyGame() {
   }, []);
 
   const resetGame = useCallback(() => {
-    clearActiveGame();
+    clearLocalActiveGame();
     setGameState(null);
   }, []);
 

@@ -65,12 +65,18 @@ export default function MultiplayerGamePage() {
   // Track active game
   useEffect(() => {
     if (gameId && status === 'playing') {
-      setActiveGame({ type: 'multiplayer', gameId, timestamp: Date.now() });
+      const opponent = gameState?.players?.find((_, i) => i !== myPlayerIndex);
+      setActiveGame({
+        type: 'multiplayer',
+        gameId,
+        timestamp: Date.now(),
+        opponentName: opponent?.name,
+      });
     }
     if (status === 'finished' && gameId) {
       removeActiveGame(gameId);
     }
-  }, [gameId, status]);
+  }, [gameId, status, gameState, myPlayerIndex]);
 
   // Scroll-lock + touchmove prevent (same as GamePage)
   useEffect(() => {

@@ -134,6 +134,53 @@ export type Database = {
         }
         Relationships: []
       }
+      game_invites: {
+        Row: {
+          created_at: string
+          expires_at: string
+          from_name: string
+          from_session_id: string
+          game_id: string | null
+          id: string
+          responded_at: string | null
+          status: Database["public"]["Enums"]["invite_status"]
+          to_name: string
+          to_session_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          from_name: string
+          from_session_id: string
+          game_id?: string | null
+          id?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["invite_status"]
+          to_name: string
+          to_session_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          from_name?: string
+          from_session_id?: string
+          game_id?: string | null
+          id?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["invite_status"]
+          to_name?: string
+          to_session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_invites_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_players: {
         Row: {
           game_id: string
@@ -339,8 +386,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_invite: {
+        Args: { p_invite_id: string; p_session_id: string }
+        Returns: Json
+      }
       create_game_with_code: {
         Args: { p_player_name: string; p_session_id: string }
+        Returns: Json
+      }
+      decline_invite: {
+        Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
       }
       heartbeat: {
@@ -405,6 +460,12 @@ export type Database = {
     }
     Enums: {
       game_status: "waiting" | "playing" | "finished"
+      invite_status:
+        | "pending"
+        | "accepted"
+        | "declined"
+        | "cancelled"
+        | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -533,6 +594,13 @@ export const Constants = {
   public: {
     Enums: {
       game_status: ["waiting", "playing", "finished"],
+      invite_status: [
+        "pending",
+        "accepted",
+        "declined",
+        "cancelled",
+        "expired",
+      ],
     },
   },
 } as const

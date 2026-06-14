@@ -126,9 +126,33 @@ export default function ResultsPage() {
         </div>
 
         <div className="space-y-3">
+          {isMultiplayer && rematchOpponent && (
+            <motion.button
+              onClick={handleRematch}
+              disabled={inviting}
+              className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow flex items-center justify-center gap-2 disabled:opacity-60"
+              whileTap={{ scale: 0.97 }}
+            >
+              {inviting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Skickar…
+                </>
+              ) : (
+                <>
+                  <Swords className="w-5 h-5" />
+                  Revansch mot {rematchOpponent.name}
+                </>
+              )}
+            </motion.button>
+          )}
           <motion.button
             onClick={() => isMultiplayer ? navigate('/multiplayer') : navigate('/game', { state: { playerNames, aiPlayers } })}
-            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow"
+            className={`w-full py-4 rounded-2xl font-display font-bold text-lg game-shadow ${
+              isMultiplayer && rematchOpponent
+                ? 'bg-secondary text-secondary-foreground'
+                : 'bg-primary text-primary-foreground'
+            }`}
             whileTap={{ scale: 0.97 }}
           >
             {isMultiplayer ? t('newMatch') : t('rematch')}
@@ -148,6 +172,7 @@ export default function ResultsPage() {
             {t('toHome')}
           </motion.button>
         </div>
+
       </motion.div>
     </div>
   );

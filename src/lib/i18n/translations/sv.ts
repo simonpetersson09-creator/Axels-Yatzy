@@ -146,8 +146,8 @@ export const sv = {
   avatarRemoved: 'Profilbild borttagen',
   languageSaved: 'Språk uppdaterat',
   // Friend stats
-  friendStats: 'Vänstatistik',
-  friendStatsTitle: 'Vänstatistik',
+  friendStats: 'Vänner och statistik',
+  friendStatsTitle: 'Vänner och statistik',
   friendStatsEmpty: 'Spela med en vän för att bygga upp statistik',
   friendStatsBack: 'Tillbaka',
   friendsMatches: 'matcher',

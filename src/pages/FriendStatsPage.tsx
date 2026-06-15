@@ -291,6 +291,14 @@ export default function FriendStatsPage() {
               </div>
             </div>
 
+            <button
+              onClick={() => setConfirmRemove(selected)}
+              className="w-full py-3 rounded-2xl bg-destructive/10 text-destructive border border-destructive/25 font-display font-bold text-sm active:bg-destructive/20 transition inline-flex items-center justify-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              {t('removeFriend')}
+            </button>
+
             <div className="space-y-1.5">
               <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-1">
                 {t('friendsRecentMatches')}

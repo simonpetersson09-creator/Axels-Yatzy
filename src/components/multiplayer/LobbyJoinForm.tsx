@@ -33,6 +33,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     const params = new URLSearchParams(window.location.search);
     return params.get('code')?.toUpperCase() ?? '';
   });
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const handleCreate = () => {
     const name = sanitizeName(playerName) || 'Spelare 1';

@@ -6,8 +6,11 @@ import { no } from './translations/no';
 import { da } from './translations/da';
 import { fi } from './translations/fi';
 import { es } from './translations/es';
+import { fr } from './translations/fr';
+import { it } from './translations/it';
+import { de } from './translations/de';
 
-const DICTS: Record<Language, typeof sv> = { sv, en, no, da, fi, es };
+const DICTS: Record<Language, typeof sv> = { sv, en, no, da, fi, es, fr, it, de };
 
 export type { TranslationKey } from './translations/sv';
 

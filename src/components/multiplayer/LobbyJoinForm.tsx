@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, ScanLine } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { QRScanner } from './QRScanner';
 
 const MAX_NAME_LENGTH = 20;
 const NAME_REGEX = /^[\p{L}\p{N}\s\-_.!]+$/u;
@@ -32,6 +33,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     const params = new URLSearchParams(window.location.search);
     return params.get('code')?.toUpperCase() ?? '';
   });
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const handleCreate = () => {
     const name = sanitizeName(playerName) || 'Spelare 1';
@@ -99,14 +101,25 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          <input
-            type="text"
-            value={joinCode}
-            onChange={e => setJoinCode(e.target.value.toUpperCase())}
-            placeholder={t('enterGameCode')}
-            maxLength={6}
-            className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all uppercase"
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={joinCode}
+              onChange={e => setJoinCode(e.target.value.toUpperCase())}
+              placeholder={t('enterGameCode')}
+              maxLength={6}
+              className="flex-1 px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all uppercase"
+            />
+            <motion.button
+              onClick={() => setScannerOpen(true)}
+              disabled={loading}
+              className="px-4 py-3 rounded-xl bg-secondary text-foreground border border-border/50 hover:bg-accent transition-colors disabled:opacity-50 flex items-center justify-center"
+              whileTap={{ scale: 0.95 }}
+              title={t('scanQR')}
+            >
+              <ScanLine className="w-5 h-5 text-muted-foreground" />
+            </motion.button>
+          </div>
           <motion.button
             onClick={handleJoin}
             disabled={loading || joinCode.length < 6}
@@ -116,6 +129,11 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('joinGame')}
           </motion.button>
         </div>
+        <QRScanner
+          open={scannerOpen}
+          onClose={() => setScannerOpen(false)}
+          onScan={code => setJoinCode(code)}
+        />
       </motion.div>
     </div>
   );

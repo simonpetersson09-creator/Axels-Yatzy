@@ -175,6 +175,7 @@ export const da: typeof sv = {
   rematchSentTo: 'Omkamp-invitation sendt til {name}',
   sendingInvite: 'Sender invitation…',
   inviteToGame: 'Invitér til spil',
+  inviteSent: 'Invitation sendt',
   inviteWaitingTitle: 'Venter på {name}…',
   inviteWaitingDesc: 'Spillet starter automatisk, når invitationen accepteres. Den udløber efter 10 minutter.',
   lobbyShareCodeAgain: 'Opret et spil og del koden med {name} for at spille igen.',

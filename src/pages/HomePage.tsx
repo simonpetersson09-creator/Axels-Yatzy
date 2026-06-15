@@ -51,6 +51,54 @@ export default function HomePage() {
     return () => window.removeEventListener('focus', onFocus);
   }, []);
 
+  // Sync server-side active multiplayer games into the local list so games
+  // created while the app was closed (e.g. friend accepted an invite) show up.
+  useEffect(() => {
+    let cancelled = false;
+    const sync = async () => {
+      const sessionId = getSessionId();
+      const { data, error } = await supabase
+        .from('game_players')
+        .select('game_id, player_name, session_id, games!inner(id, status)')
+        .eq('session_id', sessionId)
+        .in('games.status', ['waiting', 'playing']);
+      if (cancelled || error || !data) return;
+      const serverGameIds = new Set<string>();
+      // Fetch opponent names in one round-trip
+      const gameIds = data.map((r: { game_id: string }) => r.game_id);
+      let opponents: Record<string, string> = {};
+      if (gameIds.length > 0) {
+        const { data: others } = await supabase
+          .from('game_players')
+          .select('game_id, player_name, session_id')
+          .in('game_id', gameIds)
+          .neq('session_id', sessionId);
+        for (const o of others ?? []) {
+          opponents[o.game_id] = o.player_name;
+        }
+      }
+      let changed = false;
+      const existing = new Set(getActiveGames().filter(g => g.gameId).map(g => g.gameId!));
+      for (const row of data) {
+        const gid = row.game_id as string;
+        serverGameIds.add(gid);
+        if (!existing.has(gid)) {
+          setActiveGame({
+            type: 'multiplayer',
+            gameId: gid,
+            timestamp: Date.now(),
+            opponentName: opponents[gid],
+          });
+          changed = true;
+        }
+      }
+      if (changed && !cancelled) setActiveGames(getActiveGames());
+    };
+    void sync();
+    return () => { cancelled = true; };
+  }, []);
+
+
   // Expiry sweep + ticking time labels
   useEffect(() => {
     if (activeGames.length === 0) return;

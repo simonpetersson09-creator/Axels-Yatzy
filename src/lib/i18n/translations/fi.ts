@@ -175,6 +175,7 @@ export const fi: typeof sv = {
   rematchSentTo: 'Uusintakutsu lähetetty pelaajalle {name}',
   sendingInvite: 'Lähetetään kutsua…',
   inviteToGame: 'Kutsu peliin',
+  inviteSent: 'Kutsu lähetetty',
   inviteWaitingTitle: 'Odotetaan pelaajaa {name}…',
   inviteWaitingDesc: 'Peli alkaa automaattisesti, kun kutsu hyväksytään. Se vanhenee 10 minuutin kuluttua.',
   lobbyShareCodeAgain: 'Luo peli ja jaa koodi pelaajalle {name} pelataksesi uudelleen.',

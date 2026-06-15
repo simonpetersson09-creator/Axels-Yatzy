@@ -50,6 +50,10 @@ export default function FriendStatsPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [inviting, setInviting] = useState<string | null>(null);
   const [pendingInvite, setPendingInvite] = useState<{ inviteId: string; opponentName: string } | null>(null);
+  // Map: opponent session_id -> { inviteId, gameId? } for invites I've sent that are still "active"
+  // (pending OR accepted-but-match-not-finished). Reset when invite is declined/expired/cancelled
+  // or when the resulting match finishes.
+  const [activeInvites, setActiveInvites] = useState<Record<string, { inviteId: string; gameId?: string }>>({});
   const [hiddenFriends, setHiddenFriends] = useState<string[]>(() => getHiddenFriends());
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
 
@@ -63,6 +67,7 @@ export default function FriendStatsPage() {
       return;
     }
     setPendingInvite({ inviteId: res.inviteId!, opponentName });
+    setActiveInvites((cur) => ({ ...cur, [opponentId]: { inviteId: res.inviteId! } }));
   };
 
   const cancelInvite = async () => {
@@ -89,6 +94,100 @@ export default function FriendStatsPage() {
       }
     })();
     return () => { cancelled = true; };
+  }, [myId]);
+
+  // Load active invites I've sent + subscribe to realtime changes.
+  // An invite stays "active" while pending; once accepted it stays "active" until the
+  // resulting match finishes; declined/expired/cancelled clears it immediately.
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadActive = async () => {
+      const { data: invites } = await supabase
+        .from('game_invites')
+        .select('id, to_session_id, status, game_id, expires_at')
+        .eq('from_session_id', myId)
+        .in('status', ['pending', 'accepted']);
+      if (cancelled || !invites) return;
+
+      const now = Date.now();
+      const next: Record<string, { inviteId: string; gameId?: string }> = {};
+      const acceptedGameIds: string[] = [];
+      for (const inv of invites) {
+        if (inv.status === 'pending') {
+          if (inv.expires_at && new Date(inv.expires_at).getTime() < now) continue;
+          next[inv.to_session_id] = { inviteId: inv.id };
+        } else if (inv.status === 'accepted' && inv.game_id) {
+          next[inv.to_session_id] = { inviteId: inv.id, gameId: inv.game_id };
+          acceptedGameIds.push(inv.game_id);
+        }
+      }
+      // Drop any whose game is already finished
+      if (acceptedGameIds.length > 0) {
+        const { data: games } = await supabase
+          .from('games')
+          .select('id, status')
+          .in('id', acceptedGameIds);
+        const finished = new Set((games ?? []).filter((g) => g.status === 'finished').map((g) => g.id));
+        for (const k of Object.keys(next)) {
+          const gid = next[k].gameId;
+          if (gid && finished.has(gid)) delete next[k];
+        }
+      }
+      if (!cancelled) setActiveInvites(next);
+    };
+
+    loadActive();
+
+    const invChan = supabase
+      .channel(`stats-invites-out-${myId}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'game_invites', filter: `from_session_id=eq.${myId}` },
+        (payload) => {
+          const row = payload.new as { id: string; to_session_id: string; status: string; game_id: string | null };
+          setActiveInvites((cur) => {
+            const next = { ...cur };
+            if (row.status === 'accepted') {
+              next[row.to_session_id] = { inviteId: row.id, gameId: row.game_id ?? undefined };
+            } else if (row.status === 'pending') {
+              next[row.to_session_id] = { inviteId: row.id };
+            } else {
+              // declined / expired / cancelled
+              delete next[row.to_session_id];
+            }
+            return next;
+          });
+        },
+      )
+      .subscribe();
+
+    const gameChan = supabase
+      .channel(`stats-games-${myId}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'games' },
+        (payload) => {
+          const row = payload.new as { id: string; status: string };
+          if (row.status !== 'finished') return;
+          setActiveInvites((cur) => {
+            let changed = false;
+            const next: typeof cur = {};
+            for (const [oppId, v] of Object.entries(cur)) {
+              if (v.gameId === row.id) { changed = true; continue; }
+              next[oppId] = v;
+            }
+            return changed ? next : cur;
+          });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(invChan);
+      supabase.removeChannel(gameChan);
+    };
   }, [myId]);
 
   const opponents = useMemo<OpponentSummary[]>(() => {
@@ -232,27 +331,38 @@ export default function FriendStatsPage() {
                       </span>
                     </div>
                   </button>
-                  <motion.button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleInvite(o.opponentId, o.opponentName);
-                    }}
-                    disabled={inviting === o.opponentId || !!pendingInvite}
-                    whileTap={{ scale: 0.97 }}
-                    className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-50"
-                  >
-                    {inviting === o.opponentId ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        {t('sendingInvite')}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        {t('inviteToGame')}
-                      </>
-                    )}
-                  </motion.button>
+                  {(() => {
+                    const alreadyInvited = !!activeInvites[o.opponentId];
+                    const isSending = inviting === o.opponentId;
+                    return (
+                      <motion.button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleInvite(o.opponentId, o.opponentName);
+                        }}
+                        disabled={isSending || alreadyInvited || !!pendingInvite}
+                        whileTap={{ scale: 0.97 }}
+                        className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-60"
+                      >
+                        {isSending ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            {t('sendingInvite')}
+                          </>
+                        ) : alreadyInvited ? (
+                          <>
+                            <Send className="w-3.5 h-3.5" />
+                            {t('inviteSent')}
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-3.5 h-3.5" />
+                            {t('inviteToGame')}
+                          </>
+                        )}
+                      </motion.button>
+                    );
+                  })()}
                 </motion.div>
               );
             })}

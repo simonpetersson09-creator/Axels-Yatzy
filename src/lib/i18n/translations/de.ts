@@ -172,6 +172,7 @@ export const de: typeof sv = {
   rematchSentTo: 'Revanche-Einladung an {name} gesendet',
   sendingInvite: 'Einladung wird gesendet…',
   inviteToGame: 'Zum Spiel einladen',
+  inviteSent: 'Einladung gesendet',
   inviteWaitingTitle: 'Warte auf {name}…',
   inviteWaitingDesc: 'Das Spiel startet automatisch, sobald die Einladung angenommen wird. Sie läuft nach 10 Minuten ab.',
   lobbyShareCodeAgain: 'Erstelle ein Spiel und teile den Code mit {name}, um wieder zu spielen.',

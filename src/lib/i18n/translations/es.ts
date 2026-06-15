@@ -175,6 +175,7 @@ export const es: typeof sv = {
   rematchSentTo: 'Invitación de revancha enviada a {name}',
   sendingInvite: 'Enviando invitación…',
   inviteToGame: 'Invitar a la partida',
+  inviteSent: 'Invitación enviada',
   inviteWaitingTitle: 'Esperando a {name}…',
   inviteWaitingDesc: 'La partida empieza automáticamente cuando se acepta. Caduca en 10 minutos.',
   lobbyShareCodeAgain: 'Crea una partida y comparte el código con {name} para volver a jugar.',

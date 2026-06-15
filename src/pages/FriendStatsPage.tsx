@@ -116,7 +116,9 @@ export default function FriendStatsPage() {
       if (cur.matches === 1) cur.opponentName = oppName;
       map.set(oppId, cur);
     }
-    return Array.from(map.values()).sort((a, b) => b.matches - a.matches);
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(b.lastMatch.created_at).getTime() - new Date(a.lastMatch.created_at).getTime()
+    );
   }, [rows, myId]);
 
   const detailMatches = useMemo(() => {

@@ -146,8 +146,8 @@ export const sv = {
   avatarRemoved: 'Profilbild borttagen',
   languageSaved: 'Språk uppdaterat',
   // Friend stats
-  friendStats: 'Vänstatistik',
-  friendStatsTitle: 'Vänstatistik',
+  friendStats: 'Vänner och statistik',
+  friendStatsTitle: 'Vänner och statistik',
   friendStatsEmpty: 'Spela med en vän för att bygga upp statistik',
   friendStatsBack: 'Tillbaka',
   friendsMatches: 'matcher',
@@ -163,7 +163,7 @@ export const sv = {
   friendsYouLost: 'Förlust',
   friendsDraw: 'Oavgjort',
   removeFriend: 'Ta bort vän',
-  removeFriendConfirm: 'Är du säker på att du vill ta bort {name} från vänstatistiken?',
+  removeFriendConfirm: 'Är du säker på att du vill ta bort {name} från vänner och statistik?',
   friendRemoved: 'Vän borttagen',
 
   notFound: 'Sidan kunde inte hittas',

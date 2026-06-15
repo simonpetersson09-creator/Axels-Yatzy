@@ -138,7 +138,12 @@ export default function HomePage() {
       const now = Date.now();
       for (const id of ids) {
         const g = games?.find(x => x.id === id);
-        if (!g) continue;
+        if (!g) {
+          // Game no longer exists in DB (deleted/cleaned) — prune from local list
+          removeActiveGame(id);
+          removed = true;
+          continue;
+        }
         if (g.status === 'finished') {
           removeActiveGame(id);
           removed = true;

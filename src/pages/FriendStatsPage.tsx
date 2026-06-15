@@ -133,6 +133,14 @@ export default function FriendStatsPage() {
 
   const detailSummary = opponents.find(o => o.opponentId === selected) ?? null;
 
+  const handleRemove = (opponentId: string) => {
+    hideFriend(opponentId);
+    setHiddenFriends(getHiddenFriends());
+    setSelected(null);
+    setConfirmRemove(null);
+    toast.success(t('friendRemoved'));
+  };
+
   return (
     <div className="app-screen flex flex-col px-5 safe-top safe-bottom overflow-y-auto overscroll-contain">
       <div className="w-full max-w-md mx-auto py-6 space-y-5">

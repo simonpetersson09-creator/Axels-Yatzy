@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ScanLine } from 'lucide-react';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
 import { useTranslation } from '@/lib/i18n';
 
 interface QRScannerProps {
@@ -13,63 +13,99 @@ interface QRScannerProps {
 export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
   const { t } = useTranslation();
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const handledRef = useRef(false);
+  const startedRef = useRef(false);
+
+  // Keep latest callbacks in refs so the effect doesn't re-run on every render
+  const onScanRef = useRef(onScan);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onScanRef.current = onScan;
+    onCloseRef.current = onClose;
+  }, [onScan, onClose]);
+
   const [error, setError] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
     if (!open) return;
 
+    let cancelled = false;
+    handledRef.current = false;
+    startedRef.current = false;
     setError(null);
     setScanning(true);
 
-    const scanner = new Html5Qrcode('qr-reader');
+    const scanner = new Html5Qrcode('qr-reader', { verbose: false });
     scannerRef.current = scanner;
+
+    const handleDecoded = (decodedText: string) => {
+      if (handledRef.current) return;
+      let code: string | null = null;
+      try {
+        const url = new URL(decodedText);
+        const c = url.searchParams.get('code');
+        if (c && /^[A-Z0-9]{6}$/i.test(c)) code = c.toUpperCase();
+      } catch {
+        const raw = decodedText.trim().toUpperCase();
+        if (/^[A-Z0-9]{6}$/.test(raw)) code = raw;
+      }
+      if (!code) return;
+      handledRef.current = true;
+      const finish = () => {
+        onScanRef.current(code!);
+        onCloseRef.current();
+      };
+      if (startedRef.current && scanner.getState() === Html5QrcodeScannerState.SCANNING) {
+        scanner.stop().then(finish).catch(finish);
+      } else {
+        finish();
+      }
+    };
 
     scanner
       .start(
         { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 200, height: 200 } },
-        (decodedText) => {
-          try {
-            const url = new URL(decodedText);
-            const code = url.searchParams.get('code');
-            if (code && /^[A-Z0-9]{6}$/i.test(code)) {
-              scanner.stop().then(() => {
-                onScan(code.toUpperCase());
-                onClose();
-              });
-            }
-          } catch {
-            // Not a valid URL — try treating the whole text as a code
-            const raw = decodedText.trim().toUpperCase();
-            if (/^[A-Z0-9]{6}$/.test(raw)) {
-              scanner.stop().then(() => {
-                onScan(raw);
-                onClose();
-              });
-            }
-          }
-        },
+        { fps: 10, qrbox: { width: 220, height: 220 } },
+        handleDecoded,
         () => {
-          // Intentionally ignore decode failures (no QR in frame)
-        }
+          // Ignore per-frame decode failures
+        },
       )
+      .then(() => {
+        if (cancelled) {
+          scanner.stop().catch(() => {});
+          return;
+        }
+        startedRef.current = true;
+      })
       .catch((err) => {
-        setScanning(false);
-        if (typeof err === 'string' && err.includes('Permission')) {
-          setError(t('errGeneric'));
-        } else {
+        console.error('[QRScanner] start failed', err);
+        if (!cancelled) {
+          setScanning(false);
           setError(t('errGeneric'));
         }
       });
 
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch(() => {});
-        scannerRef.current = null;
+      cancelled = true;
+      const s = scannerRef.current;
+      scannerRef.current = null;
+      if (!s) return;
+      try {
+        if (s.getState() === Html5QrcodeScannerState.SCANNING) {
+          s.stop()
+            .then(() => s.clear())
+            .catch(() => {});
+        } else {
+          try { s.clear(); } catch { /* noop */ }
+        }
+      } catch {
+        // noop
       }
     };
-  }, [open, onScan, onClose, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
     <AnimatePresence>
@@ -95,7 +131,7 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
           </div>
 
           {/* Camera view */}
-          <div className="flex-1 relative flex items-center justify-center">
+          <div className="flex-1 relative flex items-center justify-center overflow-hidden">
             <div id="qr-reader" className="w-full h-full" />
 
             {/* Corner brackets overlay */}

@@ -50,6 +50,10 @@ export default function FriendStatsPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [inviting, setInviting] = useState<string | null>(null);
   const [pendingInvite, setPendingInvite] = useState<{ inviteId: string; opponentName: string } | null>(null);
+  // Map: opponent session_id -> { inviteId, gameId? } for invites I've sent that are still "active"
+  // (pending OR accepted-but-match-not-finished). Reset when invite is declined/expired/cancelled
+  // or when the resulting match finishes.
+  const [activeInvites, setActiveInvites] = useState<Record<string, { inviteId: string; gameId?: string }>>({});
   const [hiddenFriends, setHiddenFriends] = useState<string[]>(() => getHiddenFriends());
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
 
@@ -63,6 +67,7 @@ export default function FriendStatsPage() {
       return;
     }
     setPendingInvite({ inviteId: res.inviteId!, opponentName });
+    setActiveInvites((cur) => ({ ...cur, [opponentId]: { inviteId: res.inviteId! } }));
   };
 
   const cancelInvite = async () => {

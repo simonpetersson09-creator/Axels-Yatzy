@@ -331,27 +331,38 @@ export default function FriendStatsPage() {
                       </span>
                     </div>
                   </button>
-                  <motion.button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleInvite(o.opponentId, o.opponentName);
-                    }}
-                    disabled={inviting === o.opponentId || !!pendingInvite}
-                    whileTap={{ scale: 0.97 }}
-                    className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-50"
-                  >
-                    {inviting === o.opponentId ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        {t('sendingInvite')}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        {t('inviteToGame')}
-                      </>
-                    )}
-                  </motion.button>
+                  {(() => {
+                    const alreadyInvited = !!activeInvites[o.opponentId];
+                    const isSending = inviting === o.opponentId;
+                    return (
+                      <motion.button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleInvite(o.opponentId, o.opponentName);
+                        }}
+                        disabled={isSending || alreadyInvited || !!pendingInvite}
+                        whileTap={{ scale: 0.97 }}
+                        className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-60"
+                      >
+                        {isSending ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            {t('sendingInvite')}
+                          </>
+                        ) : alreadyInvited ? (
+                          <>
+                            <Send className="w-3.5 h-3.5" />
+                            {t('inviteSent')}
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-3.5 h-3.5" />
+                            {t('inviteToGame')}
+                          </>
+                        )}
+                      </motion.button>
+                    );
+                  })()}
                 </motion.div>
               );
             })}

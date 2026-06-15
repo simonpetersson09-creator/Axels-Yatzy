@@ -64,23 +64,33 @@ export default function HomePage() {
         .in('games.status', ['waiting', 'playing']);
       if (cancelled || error || !data) return;
       const serverGameIds = new Set<string>();
-      // Fetch opponent names in one round-trip
+      // Fetch player counts/opponent names in one round-trip
       const gameIds = data.map((r: { game_id: string }) => r.game_id);
       let opponents: Record<string, string> = {};
+      let playerCounts: Record<string, number> = {};
       if (gameIds.length > 0) {
-        const { data: others } = await supabase
+        const { data: gamePlayers } = await supabase
           .from('game_players')
           .select('game_id, player_name, session_id')
-          .in('game_id', gameIds)
-          .neq('session_id', sessionId);
-        for (const o of others ?? []) {
-          opponents[o.game_id] = o.player_name;
+          .in('game_id', gameIds);
+        for (const p of gamePlayers ?? []) {
+          playerCounts[p.game_id] = (playerCounts[p.game_id] ?? 0) + 1;
+          if (p.session_id !== sessionId) opponents[p.game_id] = p.player_name;
         }
       }
       let changed = false;
       const existing = new Set(getActiveGames().filter(g => g.gameId).map(g => g.gameId!));
       for (const row of data) {
         const gid = row.game_id as string;
+        const gameStatus = Array.isArray(row.games) ? row.games[0]?.status : row.games?.status;
+        const isSoloWaitingRoom = gameStatus === 'waiting' && (playerCounts[gid] ?? 0) < 2;
+        if (isSoloWaitingRoom) {
+          if (existing.has(gid)) {
+            removeActiveGame(gid);
+            changed = true;
+          }
+          continue;
+        }
         serverGameIds.add(gid);
         if (!existing.has(gid)) {
           setActiveGame({

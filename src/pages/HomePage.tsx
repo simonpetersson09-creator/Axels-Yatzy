@@ -66,8 +66,8 @@ export default function HomePage() {
       const serverGameIds = new Set<string>();
       // Fetch player counts/opponent names in one round-trip
       const gameIds = data.map((r: { game_id: string }) => r.game_id);
-      let opponents: Record<string, string> = {};
-      let playerCounts: Record<string, number> = {};
+      const opponents: Record<string, string> = {};
+      const playerCounts: Record<string, number> = {};
       if (gameIds.length > 0) {
         const { data: gamePlayers } = await supabase
           .from('game_players')

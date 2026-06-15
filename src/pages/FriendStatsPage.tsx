@@ -93,10 +93,12 @@ export default function FriendStatsPage() {
 
   const opponents = useMemo<OpponentSummary[]>(() => {
     if (!rows) return [];
+    const hidden = new Set(hiddenFriends);
     const map = new Map<string, OpponentSummary>();
     for (const r of rows) {
       const iAmP1 = r.player_1_id === myId;
       const oppId = iAmP1 ? r.player_2_id : r.player_1_id;
+      if (hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
       const myScore = iAmP1 ? r.player_1_score : r.player_2_score;
       const won = r.winner_id === myId;
@@ -122,7 +124,7 @@ export default function FriendStatsPage() {
     return Array.from(map.values()).sort(
       (a, b) => new Date(b.lastMatch.created_at).getTime() - new Date(a.lastMatch.created_at).getTime()
     );
-  }, [rows, myId]);
+  }, [rows, myId, hiddenFriends]);
 
   const detailMatches = useMemo(() => {
     if (!selected || !rows) return [];

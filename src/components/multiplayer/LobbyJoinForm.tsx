@@ -129,6 +129,11 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('joinGame')}
           </motion.button>
         </div>
+        <QRScanner
+          open={scannerOpen}
+          onClose={() => setScannerOpen(false)}
+          onScan={code => setJoinCode(code)}
+        />
       </motion.div>
     </div>
   );

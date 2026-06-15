@@ -8,6 +8,7 @@ import {
   formatTimeRemaining,
   removeActiveGame,
   clearLocalActiveGame,
+  setActiveGame,
   type ActiveGame,
 } from '@/lib/active-game';
 import { getRandomAiNames } from '@/lib/yatzy-ai';

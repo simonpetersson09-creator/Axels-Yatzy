@@ -373,6 +373,48 @@ export default function FriendStatsPage() {
             </motion.div>
           </motion.div>
         )}
+
+        {confirmRemove && (
+          <motion.div
+            className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="w-full max-w-sm rounded-3xl bg-card border border-border/60 p-6 shadow-2xl text-center space-y-4"
+              initial={{ y: 30, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 30, opacity: 0, scale: 0.95 }}
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-destructive/15 border border-destructive/30">
+                <Trash2 className="w-6 h-6 text-destructive" />
+              </div>
+              <div className="space-y-1">
+                <h2 className="text-lg font-display font-black text-foreground">
+                  {t('removeFriend')}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {t('removeFriendConfirm', { name: detailSummary?.opponentName ?? '' })}
+                </p>
+              </div>
+              <div className="space-y-2.5">
+                <button
+                  onClick={() => handleRemove(confirmRemove)}
+                  className="w-full py-3.5 rounded-2xl bg-destructive text-destructive-foreground font-display font-bold active:scale-95 transition"
+                >
+                  {t('removeFriend')}
+                </button>
+                <button
+                  onClick={() => setConfirmRemove(null)}
+                  className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
+                >
+                  {t('cancel')}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

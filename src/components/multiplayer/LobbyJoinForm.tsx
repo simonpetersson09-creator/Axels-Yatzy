@@ -101,14 +101,25 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          <input
-            type="text"
-            value={joinCode}
-            onChange={e => setJoinCode(e.target.value.toUpperCase())}
-            placeholder={t('enterGameCode')}
-            maxLength={6}
-            className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all uppercase"
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={joinCode}
+              onChange={e => setJoinCode(e.target.value.toUpperCase())}
+              placeholder={t('enterGameCode')}
+              maxLength={6}
+              className="flex-1 px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all uppercase"
+            />
+            <motion.button
+              onClick={() => setScannerOpen(true)}
+              disabled={loading}
+              className="px-4 py-3 rounded-xl bg-secondary text-foreground border border-border/50 hover:bg-accent transition-colors disabled:opacity-50 flex items-center justify-center"
+              whileTap={{ scale: 0.95 }}
+              title={t('scanQR')}
+            >
+              <ScanLine className="w-5 h-5 text-muted-foreground" />
+            </motion.button>
+          </div>
           <motion.button
             onClick={handleJoin}
             disabled={loading || joinCode.length < 6}

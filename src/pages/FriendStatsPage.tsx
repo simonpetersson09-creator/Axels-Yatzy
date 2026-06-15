@@ -50,6 +50,8 @@ export default function FriendStatsPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [inviting, setInviting] = useState<string | null>(null);
   const [pendingInvite, setPendingInvite] = useState<{ inviteId: string; opponentName: string } | null>(null);
+  const [hiddenFriends, setHiddenFriends] = useState<string[]>(() => getHiddenFriends());
+  const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
 
   const handleInvite = async (opponentId: string, opponentName: string) => {
     if (inviting) return;

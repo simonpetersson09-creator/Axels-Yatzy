@@ -151,6 +151,9 @@ export const de: typeof sv = {
   friendsYouWon: 'Sieg',
   friendsYouLost: 'Niederlage',
   friendsDraw: 'Unentschieden',
+  removeFriend: 'Freund entfernen',
+  removeFriendConfirm: 'Möchtest du {name} wirklich aus der Freundesstatistik entfernen?',
+  friendRemoved: 'Freund entfernt',
 
   notFound: 'Seite nicht gefunden',
   returnHome: 'Zur Startseite',

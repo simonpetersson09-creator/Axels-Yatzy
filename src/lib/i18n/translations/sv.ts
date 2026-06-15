@@ -162,6 +162,9 @@ export const sv = {
   friendsYouWon: 'Vinst',
   friendsYouLost: 'Förlust',
   friendsDraw: 'Oavgjort',
+  removeFriend: 'Ta bort vän',
+  removeFriendConfirm: 'Är du säker på att du vill ta bort {name} från vänstatistiken?',
+  friendRemoved: 'Vän borttagen',
 
   notFound: 'Sidan kunde inte hittas',
   returnHome: 'Tillbaka till startsidan',

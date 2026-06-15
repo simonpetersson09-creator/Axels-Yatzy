@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, ScanLine } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { QRScanner } from './QRScanner';
 
 const MAX_NAME_LENGTH = 20;
 const NAME_REGEX = /^[\p{L}\p{N}\s\-_.!]+$/u;

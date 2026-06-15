@@ -153,6 +153,9 @@ export const fi: typeof sv = {
   friendsYouWon: 'Voitto',
   friendsYouLost: 'Tappio',
   friendsDraw: 'Tasapeli',
+  removeFriend: 'Poista kaveri',
+  removeFriendConfirm: 'Haluatko varmasti poistaa {name} kaveritilastoista?',
+  friendRemoved: 'Kaveri poistettu',
 
   notFound: 'Sivua ei löytynyt',
   returnHome: 'Takaisin etusivulle',

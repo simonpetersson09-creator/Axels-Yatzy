@@ -153,6 +153,9 @@ export const da: typeof sv = {
   friendsYouWon: 'Sejr',
   friendsYouLost: 'Tab',
   friendsDraw: 'Uafgjort',
+  removeFriend: 'Fjern ven',
+  removeFriendConfirm: 'Er du sikker på, at du vil fjerne {name} fra venstatistikken?',
+  friendRemoved: 'Ven fjernet',
 
   notFound: 'Siden blev ikke fundet',
   returnHome: 'Tilbage til forsiden',

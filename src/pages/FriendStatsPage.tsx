@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Users, Trophy, X, Minus, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, X, Minus, Send, Loader2, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
 import { sendInvite, respondInvite } from '@/lib/invites';
+import { getHiddenFriends, hideFriend } from '@/lib/friend-stats';
 import { toast } from 'sonner';
 
 interface FriendMatchRow {
@@ -49,6 +50,8 @@ export default function FriendStatsPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [inviting, setInviting] = useState<string | null>(null);
   const [pendingInvite, setPendingInvite] = useState<{ inviteId: string; opponentName: string } | null>(null);
+  const [hiddenFriends, setHiddenFriends] = useState<string[]>(() => getHiddenFriends());
+  const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
 
   const handleInvite = async (opponentId: string, opponentName: string) => {
     if (inviting) return;
@@ -90,10 +93,12 @@ export default function FriendStatsPage() {
 
   const opponents = useMemo<OpponentSummary[]>(() => {
     if (!rows) return [];
+    const hidden = new Set(hiddenFriends);
     const map = new Map<string, OpponentSummary>();
     for (const r of rows) {
       const iAmP1 = r.player_1_id === myId;
       const oppId = iAmP1 ? r.player_2_id : r.player_1_id;
+      if (hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
       const myScore = iAmP1 ? r.player_1_score : r.player_2_score;
       const won = r.winner_id === myId;
@@ -119,7 +124,7 @@ export default function FriendStatsPage() {
     return Array.from(map.values()).sort(
       (a, b) => new Date(b.lastMatch.created_at).getTime() - new Date(a.lastMatch.created_at).getTime()
     );
-  }, [rows, myId]);
+  }, [rows, myId, hiddenFriends]);
 
   const detailMatches = useMemo(() => {
     if (!selected || !rows) return [];
@@ -127,6 +132,14 @@ export default function FriendStatsPage() {
   }, [selected, rows]);
 
   const detailSummary = opponents.find(o => o.opponentId === selected) ?? null;
+
+  const handleRemove = (opponentId: string) => {
+    hideFriend(opponentId);
+    setHiddenFriends(getHiddenFriends());
+    setSelected(null);
+    setConfirmRemove(null);
+    toast.success(t('friendRemoved'));
+  };
 
   return (
     <div className="app-screen flex flex-col px-5 safe-top safe-bottom overflow-y-auto overscroll-contain">
@@ -278,6 +291,14 @@ export default function FriendStatsPage() {
               </div>
             </div>
 
+            <button
+              onClick={() => setConfirmRemove(selected)}
+              className="w-full py-3 rounded-2xl bg-destructive/10 text-destructive border border-destructive/25 font-display font-bold text-sm active:bg-destructive/20 transition inline-flex items-center justify-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              {t('removeFriend')}
+            </button>
+
             <div className="space-y-1.5">
               <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-1">
                 {t('friendsRecentMatches')}
@@ -349,6 +370,48 @@ export default function FriendStatsPage() {
               >
                 {t('cancel')}
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {confirmRemove && (
+          <motion.div
+            className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="w-full max-w-sm rounded-3xl bg-card border border-border/60 p-6 shadow-2xl text-center space-y-4"
+              initial={{ y: 30, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 30, opacity: 0, scale: 0.95 }}
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-destructive/15 border border-destructive/30">
+                <Trash2 className="w-6 h-6 text-destructive" />
+              </div>
+              <div className="space-y-1">
+                <h2 className="text-lg font-display font-black text-foreground">
+                  {t('removeFriend')}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {t('removeFriendConfirm', { name: detailSummary?.opponentName ?? '' })}
+                </p>
+              </div>
+              <div className="space-y-2.5">
+                <button
+                  onClick={() => handleRemove(confirmRemove)}
+                  className="w-full py-3.5 rounded-2xl bg-destructive text-destructive-foreground font-display font-bold active:scale-95 transition"
+                >
+                  {t('removeFriend')}
+                </button>
+                <button
+                  onClick={() => setConfirmRemove(null)}
+                  className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
+                >
+                  {t('cancel')}
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

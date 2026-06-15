@@ -153,6 +153,9 @@ export const es: typeof sv = {
   friendsYouWon: 'Ganada',
   friendsYouLost: 'Perdida',
   friendsDraw: 'Empate',
+  removeFriend: 'Eliminar amigo',
+  removeFriendConfirm: '¿Seguro que quieres eliminar a {name} de las estadísticas de amigos?',
+  friendRemoved: 'Amigo eliminado',
 
   notFound: 'Página no encontrada',
   returnHome: 'Volver al inicio',

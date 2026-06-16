@@ -170,7 +170,6 @@ export default function MultiplayerGamePage() {
 
     const scheduleFailsafeRetry = (k: string) => {
       // Abort if turn already advanced or already rolled
-      const liveGs = gameState;
       if (autoRollRef.current === k) {
         console.log('[auto-roll] retry aborted: already rolled', { key: k });
         return;
@@ -187,10 +186,11 @@ export default function MultiplayerGamePage() {
       if (autoRollRetryTimerRef.current) clearTimeout(autoRollRetryTimerRef.current);
       autoRollRetryTimerRef.current = setTimeout(async () => {
         autoRollRetryTimerRef.current = null;
-        // Re-validate guards against latest state via stateRef-like snapshot:
-        // we read from closure but because the effect re-runs on every state
-        // update, this closure is the latest one for this turn-key. If the
-        // turn-key changed, prevTurnKeyRef effect will have cleared this timer.
+        // Read the LATEST state at fire-time via liveStateRef — closure values
+        // may be 1200 ms stale and would otherwise allow a spurious roll on
+        // a freshly advanced turn.
+        const live = liveStateRef.current;
+        const liveGs = live.gameState;
         if (autoRollRef.current === k) {
           console.log('[auto-roll] retry aborted at fire: already rolled', { key: k });
           return;
@@ -204,15 +204,14 @@ export default function MultiplayerGamePage() {
           console.log('[auto-roll] retry aborted at fire: turn changed', { key: k, liveKey });
           return;
         }
-        if (!isMyTurn || liveGs.rollsLeft !== 3 || liveGs.gameOver || status !== 'playing') {
+        if (!live.isMyTurn || liveGs.rollsLeft !== 3 || liveGs.gameOver || live.status !== 'playing') {
           console.log('[auto-roll] retry aborted at fire: guards failed', {
-            key: k, isMyTurn, rollsLeft: liveGs.rollsLeft, gameOver: liveGs.gameOver, status,
+            key: k, isMyTurn: live.isMyTurn, rollsLeft: liveGs.rollsLeft, gameOver: liveGs.gameOver, status: live.status,
           });
           return;
         }
-        if (localRolling || remoteRolling || liveGs.isRolling) {
+        if (live.localRolling || live.remoteRolling || liveGs.isRolling) {
           console.log('[auto-roll] retry aborted at fire: rolling', { key: k });
-          // Reschedule once more — rolling state should clear soon
           scheduleFailsafeRetry(k);
           return;
         }

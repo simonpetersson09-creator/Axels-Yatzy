@@ -359,16 +359,23 @@ export default function FriendStatsPage() {
         {rows !== null && !selected && opponents.length > 0 && (
           <div className="space-y-2.5">
             {opponents.map((o) => {
-              const myScore = o.lastMatch.player_1_id === myId
-                ? o.lastMatch.player_1_score : o.lastMatch.player_2_score;
-              const oppScore = o.lastMatch.player_1_id === myId
-                ? o.lastMatch.player_2_score : o.lastMatch.player_1_score;
-              const lastWon = o.lastMatch.winner_id === myId;
-              const lastDraw = o.lastMatch.winner_id === null;
+              const hasFinished = o.matches > 0;
+              const myScore = hasFinished
+                ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_1_score : o.lastMatch.player_2_score) ?? 0
+                : 0;
+              const oppScore = hasFinished
+                ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_2_score : o.lastMatch.player_1_score) ?? 0
+                : 0;
+              const lastWon = hasFinished && o.lastMatch.winner_id === myId;
+              const lastDraw = hasFinished && o.lastMatch.winner_id === null;
               return (
                 <motion.div
                   key={o.opponentId}
-                  className="w-full p-4 rounded-2xl bg-secondary/60 border border-border/50"
+                  className={`w-full p-4 rounded-2xl border ${
+                    o.ongoingMatch
+                      ? 'bg-primary/10 border-primary/40'
+                      : 'bg-secondary/60 border-border/50'
+                  }`}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
@@ -399,15 +406,27 @@ export default function FriendStatsPage() {
                         )}
                       </div>
                     </div>
-                    <div className="mt-2.5 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                      <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
-                      <span className={`font-bold ${
-                        lastDraw ? 'text-muted-foreground'
-                          : lastWon ? 'text-game-success' : 'text-destructive'
-                      }`}>
-                        {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
-                      </span>
-                    </div>
+                    {o.ongoingMatch ? (
+                      <div className="mt-2.5 pt-2.5 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">
+                        <span className="flex items-center gap-1.5 text-primary font-bold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                          Pågående match
+                        </span>
+                        <span className="text-muted-foreground normal-case tracking-normal">
+                          {formatDate(o.ongoingMatch.created_at)}
+                        </span>
+                      </div>
+                    ) : hasFinished ? (
+                      <div className="mt-2.5 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
+                        <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
+                        <span className={`font-bold ${
+                          lastDraw ? 'text-muted-foreground'
+                            : lastWon ? 'text-game-success' : 'text-destructive'
+                        }`}>
+                          {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
+                        </span>
+                      </div>
+                    ) : null}
                   </button>
                   {(() => {
                     const alreadyInvited = !!activeInvites[o.opponentId];

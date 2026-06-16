@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMultiplayerGame } from '@/hooks/useMultiplayerGame';
+import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { LobbyJoinForm } from '@/components/multiplayer/LobbyJoinForm';
 import { LobbyWaitingRoom } from '@/components/multiplayer/LobbyWaitingRoom';
 

@@ -49,6 +49,30 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     savePlayerName(name);
     onJoinGame(joinCode.toUpperCase(), name);
   };
+  const handleOpenScanner = async () => {
+    // On native iOS/Android, getUserMedia inside WKWebView/Chrome WebView doesn't
+    // always trigger the native permission prompt reliably (especially after an
+    // app update where the webview origin may have shifted). Request native
+    // camera permission explicitly first so the OS dialog is guaranteed to
+    // appear, then open the scanner UI.
+    if (Capacitor.isNativePlatform()) {
+      try {
+        let status = await Camera.checkPermissions();
+        if (status.camera !== 'granted' && status.camera !== 'limited') {
+          status = await Camera.requestPermissions({ permissions: ['camera'] });
+        }
+        if (status.camera !== 'granted' && status.camera !== 'limited') {
+          toast.error('Kameran är blockerad. Tillåt kameraåtkomst för Mr.B Yatzy i Inställningar.');
+          return;
+        }
+      } catch (err) {
+        console.warn('[lobby] camera permission check failed', err);
+        // Fall through and let the scanner try anyway — better than blocking.
+      }
+    }
+    setScannerOpen(true);
+  };
+
 
   return (
     <div className="app-screen px-6 py-8 safe-top safe-bottom overflow-y-auto overscroll-contain">

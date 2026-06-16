@@ -44,6 +44,13 @@ export default function MultiplayerGamePage() {
   const autoRollRetryCountRef = useRef<Map<string, number>>(new Map());
   const rollFnRef = useRef(roll);
   useEffect(() => { rollFnRef.current = roll; }, [roll]);
+  // Always-current snapshot of gameState/flags so deferred timers (auto-roll
+  // retry) don't act on stale closure data when a turn advances within their
+  // delay window.
+  const liveStateRef = useRef({ gameState, isMyTurn, localRolling, remoteRolling, status });
+  useEffect(() => {
+    liveStateRef.current = { gameState, isMyTurn, localRolling, remoteRolling, status };
+  }, [gameState, isMyTurn, localRolling, remoteRolling, status]);
 
   const [showTurnTransition, setShowTurnTransition] = useState(false);
   const [glowActive, setGlowActive] = useState(false);
@@ -163,7 +170,6 @@ export default function MultiplayerGamePage() {
 
     const scheduleFailsafeRetry = (k: string) => {
       // Abort if turn already advanced or already rolled
-      const liveGs = gameState;
       if (autoRollRef.current === k) {
         console.log('[auto-roll] retry aborted: already rolled', { key: k });
         return;
@@ -180,10 +186,11 @@ export default function MultiplayerGamePage() {
       if (autoRollRetryTimerRef.current) clearTimeout(autoRollRetryTimerRef.current);
       autoRollRetryTimerRef.current = setTimeout(async () => {
         autoRollRetryTimerRef.current = null;
-        // Re-validate guards against latest state via stateRef-like snapshot:
-        // we read from closure but because the effect re-runs on every state
-        // update, this closure is the latest one for this turn-key. If the
-        // turn-key changed, prevTurnKeyRef effect will have cleared this timer.
+        // Read the LATEST state at fire-time via liveStateRef — closure values
+        // may be 1200 ms stale and would otherwise allow a spurious roll on
+        // a freshly advanced turn.
+        const live = liveStateRef.current;
+        const liveGs = live.gameState;
         if (autoRollRef.current === k) {
           console.log('[auto-roll] retry aborted at fire: already rolled', { key: k });
           return;
@@ -197,15 +204,14 @@ export default function MultiplayerGamePage() {
           console.log('[auto-roll] retry aborted at fire: turn changed', { key: k, liveKey });
           return;
         }
-        if (!isMyTurn || liveGs.rollsLeft !== 3 || liveGs.gameOver || status !== 'playing') {
+        if (!live.isMyTurn || liveGs.rollsLeft !== 3 || liveGs.gameOver || live.status !== 'playing') {
           console.log('[auto-roll] retry aborted at fire: guards failed', {
-            key: k, isMyTurn, rollsLeft: liveGs.rollsLeft, gameOver: liveGs.gameOver, status,
+            key: k, isMyTurn: live.isMyTurn, rollsLeft: liveGs.rollsLeft, gameOver: liveGs.gameOver, status: live.status,
           });
           return;
         }
-        if (localRolling || remoteRolling || liveGs.isRolling) {
+        if (live.localRolling || live.remoteRolling || liveGs.isRolling) {
           console.log('[auto-roll] retry aborted at fire: rolling', { key: k });
-          // Reschedule once more — rolling state should clear soon
           scheduleFailsafeRetry(k);
           return;
         }
@@ -352,6 +358,7 @@ export default function MultiplayerGamePage() {
         const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
         let won: boolean;
+        let isDraw = false;
         if (isForfeit) {
           // Prefer the stable session id; fall back to name for legacy rows.
           won = gameState.forfeitedBySessionId
@@ -359,11 +366,15 @@ export default function MultiplayerGamePage() {
             : me?.name !== gameState.forfeitedBy;
         } else {
           const topScore = Math.max(...results.map(r => r.score));
-          won = myScore === topScore && myScore > 0;
+          const winnersAtTop = results.filter(r => r.score === topScore && topScore > 0).length;
+          // A tie at the top is a draw — must NOT be counted as a win for
+          // either player (server records winner_id = NULL in the same case).
+          isDraw = winnersAtTop > 1;
+          won = !isDraw && myScore === topScore && myScore > 0;
         }
         const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
         recordGameResult(myScore, won, yatzys);
-        trackEvent('game_finished', { won, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+        trackEvent('game_finished', { won, draw: isDraw, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
 
         // Save head-to-head friend stats — only host writes (avoids duplicates),
         // only for true 1v1 multiplayer matches.

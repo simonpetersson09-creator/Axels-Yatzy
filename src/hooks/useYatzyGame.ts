@@ -61,7 +61,7 @@ export function useYatzyGame() {
 
   const toggleLock = useCallback((index: number) => {
     setGameState(prev => {
-      if (!prev || prev.rollsLeft === 3 || prev.rollsLeft === 0 && false) return prev;
+      if (!prev || prev.rollsLeft === 3 || prev.rollsLeft === 0) return prev;
       const newLocked = [...prev.lockedDice];
       newLocked[index] = !newLocked[index];
       return { ...prev, lockedDice: newLocked };

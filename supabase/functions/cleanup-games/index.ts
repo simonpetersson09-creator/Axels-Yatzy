@@ -43,10 +43,13 @@ Deno.serve(async (req) => {
         `and(status.eq.waiting,created_at.lt.${oneHourAgo}),and(status.eq.finished,updated_at.lt.${oneDayAgo}),and(status.eq.playing,updated_at.lt.${fourteenDaysAgo})`
       );
 
-    if (fetchErr || !staleGames || staleGames.length === 0) {
+    if (fetchErr) {
+      console.error("Failed to fetch stale games:", fetchErr);
+      return json({ error: "Failed to fetch stale games", details: fetchErr.message }, 500);
+    }
+    if (!staleGames || staleGames.length === 0) {
       return json({ cleaned: 0 });
     }
-
 
     const ids = staleGames.map((g) => g.id);
 
@@ -58,6 +61,7 @@ Deno.serve(async (req) => {
 
     if (delPlayersErr) {
       console.error("Failed to delete game_players:", delPlayersErr);
+      return json({ error: "Failed to delete game_players", details: delPlayersErr.message, attempted: ids.length }, 500);
     }
 
     const { error: delGamesErr } = await supabase
@@ -67,6 +71,7 @@ Deno.serve(async (req) => {
 
     if (delGamesErr) {
       console.error("Failed to delete games:", delGamesErr);
+      return json({ error: "Failed to delete games", details: delGamesErr.message, attempted: ids.length }, 500);
     }
 
     return json({ cleaned: ids.length });

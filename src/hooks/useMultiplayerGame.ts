@@ -219,6 +219,7 @@ export function useMultiplayerGame() {
       gameOver: gameStatus === 'finished',
       round: game.round,
       forfeitedBy: game.forfeited_by ?? null,
+      forfeitedBySessionId: (game as { forfeited_by_session_id?: string | null }).forfeited_by_session_id ?? null,
     };
 
     // If a local roll animation is in flight, buffer the new dice/roll fields.
@@ -449,15 +450,22 @@ export function useMultiplayerGame() {
       return false;
     }
 
-    const result = data as { success: boolean; error?: string; game_id?: string; game_code?: string };
+    const result = data as {
+      success: boolean;
+      error?: string;
+      game_id?: string;
+      game_code?: string;
+      player_index?: number;
+      already_joined?: boolean;
+    };
 
     if (!result.success) {
       setState(prev => ({ ...prev, loading: false, error: result.error || t('errJoinGame') }));
       return false;
     }
 
-    // C3 fix: set myPlayerIndex from join result
-    const playerIndex = (result as any).player_index ?? null;
+    // Persist the assigned seat so turn-gating works without a refresh round-trip.
+    const playerIndex = typeof result.player_index === 'number' ? result.player_index : null;
     setState(prev => ({ ...prev, myPlayerIndex: playerIndex }));
     subscribeToGame(result.game_id!);
     await refreshGameState(result.game_id!);

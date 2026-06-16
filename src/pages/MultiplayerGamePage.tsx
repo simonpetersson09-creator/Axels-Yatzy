@@ -21,6 +21,7 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { saveFriendMatchResult } from '@/lib/friend-stats';
 import { supabase } from '@/integrations/supabase/client';
+import { getSessionId } from '@/lib/session';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
@@ -344,15 +345,18 @@ export default function MultiplayerGamePage() {
         scores: p.scores,
       }));
 
-      const isForfeit = !!gameState.forfeitedBy;
+      const isForfeit = !!gameState.forfeitedBy || !!gameState.forfeitedBySessionId;
+      const mySessionId = getSessionId();
 
       if (myPlayerIndex !== null && myPlayerIndex >= 0) {
         const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
         let won: boolean;
         if (isForfeit) {
-          // Winner is anyone who did NOT forfeit
-          won = me?.name !== gameState.forfeitedBy;
+          // Prefer the stable session id; fall back to name for legacy rows.
+          won = gameState.forfeitedBySessionId
+            ? mySessionId !== gameState.forfeitedBySessionId
+            : me?.name !== gameState.forfeitedBy;
         } else {
           const topScore = Math.max(...results.map(r => r.score));
           won = myScore === topScore && myScore > 0;
@@ -380,8 +384,13 @@ export default function MultiplayerGamePage() {
               const id2 = idMap.get(1) ?? `anon-${gameId}-1`;
               let winnerId: string | null = null;
               if (isForfeit) {
-                winnerId = p1.name === gameState.forfeitedBy ? id2
-                  : p2.name === gameState.forfeitedBy ? id1 : null;
+                if (gameState.forfeitedBySessionId) {
+                  winnerId = gameState.forfeitedBySessionId === id1 ? id2
+                    : gameState.forfeitedBySessionId === id2 ? id1 : null;
+                } else {
+                  winnerId = p1.name === gameState.forfeitedBy ? id2
+                    : p2.name === gameState.forfeitedBy ? id1 : null;
+                }
               } else if (s1 !== s2) {
                 winnerId = s1 > s2 ? id1 : id2;
               }

@@ -234,6 +234,7 @@ export type Database = {
           current_player_index: number
           dice: number[]
           forfeited_by: string | null
+          forfeited_by_session_id: string | null
           game_code: string
           id: string
           is_rolling: boolean
@@ -249,6 +250,7 @@ export type Database = {
           current_player_index?: number
           dice?: number[]
           forfeited_by?: string | null
+          forfeited_by_session_id?: string | null
           game_code: string
           id?: string
           is_rolling?: boolean
@@ -264,6 +266,7 @@ export type Database = {
           current_player_index?: number
           dice?: number[]
           forfeited_by?: string | null
+          forfeited_by_session_id?: string | null
           game_code?: string
           id?: string
           is_rolling?: boolean

@@ -50,6 +50,7 @@ export interface GameState {
   gameOver: boolean;
   round: number;
   forfeitedBy?: string | null;
+  forfeitedBySessionId?: string | null;
 }
 
 export interface PlayerStats {

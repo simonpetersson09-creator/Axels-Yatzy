@@ -110,6 +110,7 @@ export const sv = {
   waitingForPlayers: 'Väntar på spelare',
   gameCode: 'Spelkod',
   shareCode: 'Dela koden med dina vänner',
+  shareInvite: 'Dela inbjudan',
   scanQR: 'Skanna QR-koden för att gå med',
   playersOfMax: 'Spelare ({count}/4)',
   host: 'Värd',

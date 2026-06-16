@@ -101,6 +101,7 @@ export const no: typeof sv = {
   waitingForPlayers: 'Venter på spillere',
   gameCode: 'Spillkode',
   shareCode: 'Del koden med vennene dine',
+  shareInvite: 'Del invitasjon',
   scanQR: 'Skann QR-koden for å bli med',
   playersOfMax: 'Spillere ({count}/4)',
   host: 'Vert',

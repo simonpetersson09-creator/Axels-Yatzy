@@ -140,8 +140,9 @@ export default function InviteOverlay() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={() => !busy && handle('decline')}
         >
+          {/* Backdrop tap does NOT decline — that requires an explicit button
+              press. Misplaced taps used to permanently decline invites. */}
           <motion.div
             className="w-full max-w-sm rounded-3xl bg-card border border-border/60 p-6 shadow-2xl"
             initial={{ y: 40, opacity: 0, scale: 0.95 }}

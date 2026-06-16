@@ -837,11 +837,20 @@ export function useMultiplayerGame() {
     };
   }, [state.gameId, state.status, subscribeToGame, sessionId]);
 
-  // Cleanup on unmount
-  useEffect(() => {
+  // Track mount state. useLayoutEffect runs synchronously after commit and
+  // BEFORE any user-event handlers can fire, so async work always observes
+  // mountedRef === true. The cleanup flips it back to false immediately on
+  // unmount so stale callbacks bail.
+  useLayoutEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+    };
+  }, []);
+
+  // Cleanup channels/timers on unmount
+  useEffect(() => {
+    return () => {
       cleanupChannel();
       cleanupTimers();
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);

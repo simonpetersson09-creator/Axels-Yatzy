@@ -217,9 +217,11 @@ export default function FriendStatsPage() {
     if (!rows) return [];
     const hidden = new Set(hiddenFriends);
     const map = new Map<string, OpponentSummary>();
+    const sourceTracker = new Map<string, Set<string>>();
     for (const r of rows) {
       const iAmP1 = r.player_1_id === myId;
-      const oppId = iAmP1 ? r.player_2_id : r.player_1_id;
+      const rawOppId = iAmP1 ? r.player_2_id : r.player_1_id;
+      const oppId = resolveFriendId(rawOppId, aliasMap);
       if (hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
       const myScore = iAmP1 ? r.player_1_score : r.player_2_score;
@@ -227,31 +229,44 @@ export default function FriendStatsPage() {
       const lost = r.winner_id !== null && r.winner_id !== myId;
       const draw = r.winner_id === null;
 
-      const cur = map.get(oppId) ?? {
+      const cur: OpponentSummary = map.get(oppId) ?? {
         opponentId: oppId,
         opponentName: oppName,
         matches: 0, wins: 0, losses: 0, draws: 0,
         myHigh: 0,
         lastMatch: r,
+        mergedSourceIds: [],
       };
       cur.matches += 1;
       if (won) cur.wins += 1;
       if (lost) cur.losses += 1;
       if (draw) cur.draws += 1;
       if (myScore > cur.myHigh) cur.myHigh = myScore;
-      // Use most recent name (rows already ordered desc)
       if (cur.matches === 1) cur.opponentName = oppName;
+      // Track which raw ids merged into this canonical card (excluding the canonical itself)
+      if (rawOppId !== oppId) {
+        let set = sourceTracker.get(oppId);
+        if (!set) { set = new Set(); sourceTracker.set(oppId, set); }
+        set.add(rawOppId);
+      }
       map.set(oppId, cur);
+    }
+    for (const [id, set] of sourceTracker) {
+      const entry = map.get(id);
+      if (entry) entry.mergedSourceIds = Array.from(set);
     }
     return Array.from(map.values()).sort(
       (a, b) => new Date(b.lastMatch.created_at).getTime() - new Date(a.lastMatch.created_at).getTime()
     );
-  }, [rows, myId, hiddenFriends]);
+  }, [rows, myId, hiddenFriends, aliasMap]);
 
   const detailMatches = useMemo(() => {
     if (!selected || !rows) return [];
-    return rows.filter(r => r.player_1_id === selected || r.player_2_id === selected);
-  }, [selected, rows]);
+    return rows.filter((r) => {
+      const oppRaw = r.player_1_id === myId ? r.player_2_id : r.player_1_id;
+      return resolveFriendId(oppRaw, aliasMap) === selected;
+    });
+  }, [selected, rows, myId, aliasMap]);
 
   const detailSummary = opponents.find(o => o.opponentId === selected) ?? null;
 

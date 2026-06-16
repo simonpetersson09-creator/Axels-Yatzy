@@ -345,15 +345,18 @@ export default function MultiplayerGamePage() {
         scores: p.scores,
       }));
 
-      const isForfeit = !!gameState.forfeitedBy;
+      const isForfeit = !!gameState.forfeitedBy || !!gameState.forfeitedBySessionId;
+      const mySessionId = getSessionId();
 
       if (myPlayerIndex !== null && myPlayerIndex >= 0) {
         const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
         let won: boolean;
         if (isForfeit) {
-          // Winner is anyone who did NOT forfeit
-          won = me?.name !== gameState.forfeitedBy;
+          // Prefer the stable session id; fall back to name for legacy rows.
+          won = gameState.forfeitedBySessionId
+            ? mySessionId !== gameState.forfeitedBySessionId
+            : me?.name !== gameState.forfeitedBy;
         } else {
           const topScore = Math.max(...results.map(r => r.score));
           won = myScore === topScore && myScore > 0;

@@ -62,7 +62,12 @@ export function useMultiplayerGame() {
   const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const remoteRollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const submittingRef = useRef(false);
-  const mountedRef = useRef(true);
+  // Initialized false; set to true in a layout effect below so that on a
+  // fresh instance (or React Strict Mode remount) any in-flight async
+  // callbacks from a *previous* instance bail out instead of writing into
+  // the new one. The layout effect runs synchronously after commit so all
+  // user-triggered async work starts with mountedRef === true.
+  const mountedRef = useRef(false);
   const sessionId = getSessionId();
   // Use ref to avoid stale closure in debouncedRefresh
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);

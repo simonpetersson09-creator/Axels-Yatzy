@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import { MultiplayerProvider } from "./hooks/MultiplayerProvider";
 import { lazy, Suspense } from "react";
 import InviteOverlay from "./components/InviteOverlay";
+import NotificationNavigator from "./components/NotificationNavigator";
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
@@ -32,6 +33,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <InviteOverlay />
+        <NotificationNavigator />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/setup" element={<GameSetupPage />} />

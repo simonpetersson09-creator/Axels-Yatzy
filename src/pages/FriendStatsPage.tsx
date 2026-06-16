@@ -122,24 +122,29 @@ export default function FriendStatsPage() {
     load();
 
     // Realtime: refresh on any change to a friend-match row that involves me.
-    const chan = supabase
-      .channel(`friend-matches-${myId}`)
+    // Split into two filtered channels (one per slot) so the server only sends
+    // rows that actually involve this device, instead of streaming every row.
+    const chanP1 = supabase
+      .channel(`friend-matches-p1-${myId}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'friend_match_results' },
-        (payload) => {
-          const row = (payload.new ?? payload.old) as Partial<FriendMatchRow> | null;
-          if (!row) return;
-          if (row.player_1_id === myId || row.player_2_id === myId) {
-            load();
-          }
-        },
+        { event: '*', schema: 'public', table: 'friend_match_results', filter: `player_1_id=eq.${myId}` },
+        () => load(),
+      )
+      .subscribe();
+    const chanP2 = supabase
+      .channel(`friend-matches-p2-${myId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'friend_match_results', filter: `player_2_id=eq.${myId}` },
+        () => load(),
       )
       .subscribe();
 
     return () => {
       cancelled = true;
-      supabase.removeChannel(chan);
+      supabase.removeChannel(chanP1);
+      supabase.removeChannel(chanP2);
     };
   }, [myId]);
 

@@ -14,6 +14,7 @@ import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import FriendStatsPage from "./pages/FriendStatsPage";
 import LegalPage from "./pages/LegalPage";
 import NotFound from "./pages/NotFound";
+import { MultiplayerProvider } from "./hooks/MultiplayerProvider";
 import { lazy, Suspense } from "react";
 import InviteOverlay from "./components/InviteOverlay";
 

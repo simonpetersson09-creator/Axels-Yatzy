@@ -80,6 +80,12 @@ export default function FriendStatsPage() {
     setPendingInvite(null);
   };
 
+  const reopenInvite = (opponentId: string, opponentName: string) => {
+    const inv = activeInvites[opponentId];
+    if (!inv) return;
+    setPendingInvite({ inviteId: inv.inviteId, opponentName });
+  };
+
   useEffect(() => {
     let cancelled = false;
     (async () => {

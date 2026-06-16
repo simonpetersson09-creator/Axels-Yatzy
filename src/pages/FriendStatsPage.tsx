@@ -548,22 +548,31 @@ export default function FriendStatsPage() {
               </h2>
               <div className="space-y-1.5">
                 {detailMatches.map((r) => {
-                  const myScore = r.player_1_id === myId ? r.player_1_score : r.player_2_score;
-                  const oppScore = r.player_1_id === myId ? r.player_2_score : r.player_1_score;
-                  const won = r.winner_id === myId;
-                  const draw = r.winner_id === null;
-                  const tag = draw ? t('friendsDraw') : won ? t('friendsYouWon') : t('friendsYouLost');
+                  const isOngoing = r.status === 'ongoing';
+                  const myScore = (r.player_1_id === myId ? r.player_1_score : r.player_2_score) ?? 0;
+                  const oppScore = (r.player_1_id === myId ? r.player_2_score : r.player_1_score) ?? 0;
+                  const won = !isOngoing && r.winner_id === myId;
+                  const draw = !isOngoing && r.winner_id === null;
+                  const tag = isOngoing
+                    ? 'Pågående'
+                    : draw ? t('friendsDraw') : won ? t('friendsYouWon') : t('friendsYouLost');
                   return (
                     <div
                       key={r.id}
-                      className="flex items-center justify-between p-3 rounded-xl bg-secondary/40 border border-border/40"
+                      className={`flex items-center justify-between p-3 rounded-xl border ${
+                        isOngoing
+                          ? 'bg-primary/10 border-primary/30'
+                          : 'bg-secondary/40 border-border/40'
+                      }`}
                     >
                       <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                          draw ? 'bg-muted text-muted-foreground'
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded inline-flex items-center gap-1 ${
+                          isOngoing ? 'bg-primary/20 text-primary'
+                            : draw ? 'bg-muted text-muted-foreground'
                             : won ? 'bg-game-success/20 text-game-success'
                             : 'bg-destructive/20 text-destructive'
                         }`}>
+                          {isOngoing && <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />}
                           {tag}
                         </span>
                         <span className="text-[11px] text-muted-foreground">
@@ -571,7 +580,7 @@ export default function FriendStatsPage() {
                         </span>
                       </div>
                       <span className="font-display font-bold tabular-nums text-foreground">
-                        {myScore} – {oppScore}
+                        {isOngoing ? '— – —' : `${myScore} – ${oppScore}`}
                       </span>
                     </div>
                   );

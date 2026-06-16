@@ -219,6 +219,7 @@ export function useMultiplayerGame() {
       gameOver: gameStatus === 'finished',
       round: game.round,
       forfeitedBy: game.forfeited_by ?? null,
+      forfeitedBySessionId: (game as { forfeited_by_session_id?: string | null }).forfeited_by_session_id ?? null,
     };
 
     // If a local roll animation is in flight, buffer the new dice/roll fields.

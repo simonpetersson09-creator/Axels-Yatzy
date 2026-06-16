@@ -168,9 +168,9 @@ export async function initNotifications(): Promise<void> {
         }
       }
       if (data.game_id && typeof window !== 'undefined') {
-        // Defer navigation to next tick so app is mounted
+        // Defer to next tick so the app is mounted and the router listener attached
         setTimeout(() => {
-          window.location.href = `/multiplayer-game?gameId=${data.game_id}`;
+          window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: `/multiplayer-game?gameId=${data.game_id}` } }));
         }, 200);
       }
     });

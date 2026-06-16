@@ -21,6 +21,7 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { saveFriendMatchResult } from '@/lib/friend-stats';
 import { supabase } from '@/integrations/supabase/client';
+import { getSessionId } from '@/lib/session';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();

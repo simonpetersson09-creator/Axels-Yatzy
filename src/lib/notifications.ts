@@ -143,7 +143,7 @@ export async function initNotifications(): Promise<void> {
               label: 'Öppna',
               onClick: () => {
                 trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: gameId, source: 'foreground_toast' });
-                window.location.href = `/multiplayer-game?gameId=${gameId}`;
+                window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: `/multiplayer-game?gameId=${gameId}` } }));
               },
             }
           : undefined,

@@ -248,10 +248,11 @@ export default function FriendStatsPage() {
       const oppId = resolveFriendId(rawOppId, aliasMap);
       if (hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
-      const myScore = iAmP1 ? r.player_1_score : r.player_2_score;
-      const won = r.winner_id === myId;
-      const lost = r.winner_id !== null && r.winner_id !== myId;
-      const draw = r.winner_id === null;
+      const isOngoing = r.status === 'ongoing';
+      const myScore = (iAmP1 ? r.player_1_score : r.player_2_score) ?? 0;
+      const won = !isOngoing && r.winner_id === myId;
+      const lost = !isOngoing && r.winner_id !== null && r.winner_id !== myId;
+      const draw = !isOngoing && r.winner_id === null;
 
       const cur: OpponentSummary = map.get(oppId) ?? {
         opponentId: oppId,
@@ -259,15 +260,26 @@ export default function FriendStatsPage() {
         matches: 0, wins: 0, losses: 0, draws: 0,
         myHigh: 0,
         lastMatch: r,
+        ongoingMatch: null,
         mergedSourceIds: [],
       };
-      cur.matches += 1;
-      if (won) cur.wins += 1;
-      if (lost) cur.losses += 1;
-      if (draw) cur.draws += 1;
-      if (myScore > cur.myHigh) cur.myHigh = myScore;
-      if (cur.matches === 1) cur.opponentName = oppName;
-      // Track which raw ids merged into this canonical card (excluding the canonical itself)
+
+      if (isOngoing) {
+        // Keep only the most recent ongoing match (rows are desc by created_at)
+        if (!cur.ongoingMatch) cur.ongoingMatch = r;
+      } else {
+        cur.matches += 1;
+        if (won) cur.wins += 1;
+        if (lost) cur.losses += 1;
+        if (draw) cur.draws += 1;
+        if (myScore > cur.myHigh) cur.myHigh = myScore;
+        // Track most recent finished match as lastMatch
+        if (cur.matches === 1) {
+          cur.lastMatch = r;
+          cur.opponentName = oppName;
+        }
+      }
+
       if (rawOppId !== oppId) {
         let set = sourceTracker.get(oppId);
         if (!set) { set = new Set(); sourceTracker.set(oppId, set); }
@@ -279,9 +291,13 @@ export default function FriendStatsPage() {
       const entry = map.get(id);
       if (entry) entry.mergedSourceIds = Array.from(set);
     }
-    return Array.from(map.values()).sort(
-      (a, b) => new Date(b.lastMatch.created_at).getTime() - new Date(a.lastMatch.created_at).getTime()
-    );
+    return Array.from(map.values()).sort((a, b) => {
+      // Ongoing matches always float to the top, then by most recent activity
+      if (!!a.ongoingMatch !== !!b.ongoingMatch) return a.ongoingMatch ? -1 : 1;
+      const aT = (a.ongoingMatch ?? a.lastMatch).created_at;
+      const bT = (b.ongoingMatch ?? b.lastMatch).created_at;
+      return new Date(bT).getTime() - new Date(aT).getTime();
+    });
   }, [rows, myId, hiddenFriends, aliasMap]);
 
   const detailMatches = useMemo(() => {

@@ -138,7 +138,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
               className="flex-1 px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all uppercase"
             />
             <motion.button
-              onClick={() => setScannerOpen(true)}
+              onClick={handleOpenScanner}
               disabled={loading}
               className="px-4 py-3 rounded-xl bg-secondary text-foreground border border-border/50 hover:bg-accent transition-colors disabled:opacity-50 flex items-center justify-center"
               whileTap={{ scale: 0.95 }}

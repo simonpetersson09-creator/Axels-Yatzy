@@ -46,16 +46,23 @@ Deno.serve(async (req) => {
       return json({ error: result.error }, 400);
     }
 
-    // Fire-and-forget turn-change notification to the next player.
+    // Background turn-change notification. Must use EdgeRuntime.waitUntil so the
+    // promise survives after the Response is returned — plain fire-and-forget
+    // gets killed by the Deno runtime and the push never reaches APNs.
     if (!result.game_over) {
       const internalSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "";
       if (internalSecret) {
-        supabase.functions
+        const notifyPromise = supabase.functions
           .invoke("notify-turn-change", {
             body: { game_id, sender_session_id: session_id },
             headers: { "x-internal-secret": internalSecret },
           })
           .catch((e) => console.warn("[submit-score] notify-turn-change failed", e));
+        // @ts-ignore EdgeRuntime is provided by Supabase Edge Runtime
+        if (typeof EdgeRuntime !== "undefined" && EdgeRuntime?.waitUntil) {
+          // @ts-ignore
+          EdgeRuntime.waitUntil(notifyPromise);
+        }
       }
     } else {
       // Record canonical friend match result server-side (scores derived from DB).

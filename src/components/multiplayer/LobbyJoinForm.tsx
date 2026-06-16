@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ScanLine } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { QRScanner } from './QRScanner';
+import { Capacitor } from '@capacitor/core';
+import { Camera } from '@capacitor/camera';
+import { toast } from 'sonner';
 
 const MAX_NAME_LENGTH = 20;
 const NAME_REGEX = /^[\p{L}\p{N}\s\-_.!]+$/u;

@@ -95,41 +95,47 @@ export type Database = {
       friend_match_results: {
         Row: {
           created_at: string
+          finished_at: string | null
           game_id: string | null
           game_mode: string
           id: string
           player_1_id: string
           player_1_name: string
-          player_1_score: number
+          player_1_score: number | null
           player_2_id: string
           player_2_name: string
-          player_2_score: number
+          player_2_score: number | null
+          status: string
           winner_id: string | null
         }
         Insert: {
           created_at?: string
+          finished_at?: string | null
           game_id?: string | null
           game_mode?: string
           id?: string
           player_1_id: string
           player_1_name: string
-          player_1_score?: number
+          player_1_score?: number | null
           player_2_id: string
           player_2_name: string
-          player_2_score?: number
+          player_2_score?: number | null
+          status?: string
           winner_id?: string | null
         }
         Update: {
           created_at?: string
+          finished_at?: string | null
           game_id?: string | null
           game_mode?: string
           id?: string
           player_1_id?: string
           player_1_name?: string
-          player_1_score?: number
+          player_1_score?: number | null
           player_2_id?: string
           player_2_name?: string
-          player_2_score?: number
+          player_2_score?: number | null
+          status?: string
           winner_id?: string | null
         }
         Relationships: []
@@ -411,6 +417,10 @@ export type Database = {
           p_session_id: string
         }
         Returns: Json
+      }
+      maybe_create_ongoing_friend_match: {
+        Args: { p_game_id: string }
+        Returns: undefined
       }
       perform_forfeit: {
         Args: { p_game_id: string; p_session_id: string }

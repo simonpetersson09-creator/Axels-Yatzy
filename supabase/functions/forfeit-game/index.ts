@@ -44,15 +44,23 @@ Deno.serve(async (req) => {
       return json({ error: result.error }, 400);
     }
 
-    // Fire-and-forget push to the opponent(s). Never block the response.
+    // Background push to opponent(s). Use EdgeRuntime.waitUntil so the promise
+    // survives after the Response is returned (plain fire-and-forget is killed
+    // by the Deno runtime and the notification never reaches APNs).
     if (result.game_ended) {
       const internalSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "";
-      supabase.functions
+      const notifyPromise = supabase.functions
         .invoke("notify-forfeit", {
           body: { game_id, forfeited_session_id: session_id },
           headers: { "x-internal-secret": internalSecret },
         })
         .catch((e) => console.warn("[forfeit-game] notify-forfeit failed", e));
+      // @ts-ignore EdgeRuntime is provided by Supabase Edge Runtime
+      if (typeof EdgeRuntime !== "undefined" && EdgeRuntime?.waitUntil) {
+        // @ts-ignore
+        EdgeRuntime.waitUntil(notifyPromise);
+      }
+
 
       // Record canonical friend match result server-side.
       // Await so the row is persisted before the function shuts down.

@@ -65,7 +65,13 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
               {copied ? <Check className="w-5 h-5 text-game-success" /> : <Copy className="w-5 h-5 text-muted-foreground" />}
             </button>
           </div>
-          <p className="text-xs text-muted-foreground">{t('shareCode')}</p>
+          <button
+            onClick={shareInvite}
+            className="w-full py-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2 text-sm font-semibold text-foreground"
+          >
+            <Share2 className="w-4 h-4" />
+            {t('shareInvite')}
+          </button>
           <div className="flex flex-col items-center gap-2 pt-2">
             <div className="bg-white p-2 rounded-xl">
               <QRCodeSVG value={`${window.location.origin}/multiplayer?code=${gameCode}`} size={140} />

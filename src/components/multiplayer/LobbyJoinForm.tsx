@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ScanLine } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { QRScanner } from './QRScanner';
+import { Capacitor } from '@capacitor/core';
+import { Camera } from '@capacitor/camera';
+import { toast } from 'sonner';
 
 const MAX_NAME_LENGTH = 20;
 const NAME_REGEX = /^[\p{L}\p{N}\s\-_.!]+$/u;
@@ -46,6 +49,30 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     savePlayerName(name);
     onJoinGame(joinCode.toUpperCase(), name);
   };
+  const handleOpenScanner = async () => {
+    // On native iOS/Android, getUserMedia inside WKWebView/Chrome WebView doesn't
+    // always trigger the native permission prompt reliably (especially after an
+    // app update where the webview origin may have shifted). Request native
+    // camera permission explicitly first so the OS dialog is guaranteed to
+    // appear, then open the scanner UI.
+    if (Capacitor.isNativePlatform()) {
+      try {
+        let status = await Camera.checkPermissions();
+        if (status.camera !== 'granted' && status.camera !== 'limited') {
+          status = await Camera.requestPermissions({ permissions: ['camera'] });
+        }
+        if (status.camera !== 'granted' && status.camera !== 'limited') {
+          toast.error('Kameran är blockerad. Tillåt kameraåtkomst för Mr.B Yatzy i Inställningar.');
+          return;
+        }
+      } catch (err) {
+        console.warn('[lobby] camera permission check failed', err);
+        // Fall through and let the scanner try anyway — better than blocking.
+      }
+    }
+    setScannerOpen(true);
+  };
+
 
   return (
     <div className="app-screen px-6 py-8 safe-top safe-bottom overflow-y-auto overscroll-contain">
@@ -111,7 +138,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
               className="flex-1 px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all uppercase"
             />
             <motion.button
-              onClick={() => setScannerOpen(true)}
+              onClick={handleOpenScanner}
               disabled={loading}
               className="px-4 py-3 rounded-xl bg-secondary text-foreground border border-border/50 hover:bg-accent transition-colors disabled:opacity-50 flex items-center justify-center"
               whileTap={{ scale: 0.95 }}

@@ -176,6 +176,7 @@ export const no: typeof sv = {
   sendingInvite: 'Sender invitasjon…',
   inviteToGame: 'Inviter til spill',
   inviteSent: 'Invitasjon sendt',
+  minimize: 'Minimer',
   inviteWaitingTitle: 'Venter på {name}…',
   inviteWaitingDesc: 'Spillet starter automatisk når invitasjonen godtas. Den utløper etter 10 minutter.',
   lobbyShareCodeAgain: 'Opprett et spill og del koden med {name} for å spille igjen.',

@@ -80,6 +80,12 @@ export default function FriendStatsPage() {
     setPendingInvite(null);
   };
 
+  const reopenInvite = (opponentId: string, opponentName: string) => {
+    const inv = activeInvites[opponentId];
+    if (!inv) return;
+    setPendingInvite({ inviteId: inv.inviteId, opponentName });
+  };
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -342,9 +348,13 @@ export default function FriendStatsPage() {
                       <motion.button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleInvite(o.opponentId, o.opponentName);
+                          if (alreadyInvited) {
+                            reopenInvite(o.opponentId, o.opponentName);
+                          } else {
+                            handleInvite(o.opponentId, o.opponentName);
+                          }
                         }}
-                        disabled={isSending || alreadyInvited || !!pendingInvite}
+                        disabled={isSending || !!pendingInvite}
                         whileTap={{ scale: 0.97 }}
                         className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-60"
                       >

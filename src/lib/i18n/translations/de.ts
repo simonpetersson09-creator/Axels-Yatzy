@@ -101,6 +101,7 @@ export const de: typeof sv = {
   waitingForPlayers: 'Warte auf Spieler',
   gameCode: 'Spielcode',
   shareCode: 'Teile den Code mit deinen Freunden',
+  shareInvite: 'Einladung teilen',
   scanQR: 'Scanne den QR-Code zum Beitreten',
   playersOfMax: 'Spieler ({count}/4)',
   host: 'Host',

@@ -185,6 +185,7 @@ export const sv = {
   sendingInvite: 'Skickar inbjudan…',
   inviteToGame: 'Bjud in till spel',
   inviteSent: 'Inbjudan skickad',
+  minimize: 'Minimera',
   inviteWaitingTitle: 'Väntar på {name}…',
   inviteWaitingDesc: 'Spelet startar automatiskt när inbjudan accepteras. Den går ut efter 10 minuter.',
   lobbyShareCodeAgain: 'Skapa ett spel och dela koden med {name} för att spela igen.',

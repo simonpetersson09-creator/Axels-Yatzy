@@ -176,6 +176,7 @@ export const fi: typeof sv = {
   sendingInvite: 'Lähetetään kutsua…',
   inviteToGame: 'Kutsu peliin',
   inviteSent: 'Kutsu lähetetty',
+  minimize: 'Pienennä',
   inviteWaitingTitle: 'Odotetaan pelaajaa {name}…',
   inviteWaitingDesc: 'Peli alkaa automaattisesti, kun kutsu hyväksytään. Se vanhenee 10 minuutin kuluttua.',
   lobbyShareCodeAgain: 'Luo peli ja jaa koodi pelaajalle {name} pelataksesi uudelleen.',

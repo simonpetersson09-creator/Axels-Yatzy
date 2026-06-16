@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Users, Trophy, X, Minus, Send, Loader2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, X, Minus, Send, Loader2, Trash2, Minimize } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
@@ -73,6 +73,10 @@ export default function FriendStatsPage() {
   const cancelInvite = async () => {
     if (!pendingInvite) return;
     await respondInvite({ inviteId: pendingInvite.inviteId, action: 'decline' });
+    setPendingInvite(null);
+  };
+
+  const minimizeInvite = () => {
     setPendingInvite(null);
   };
 
@@ -474,12 +478,21 @@ export default function FriendStatsPage() {
                   {t('inviteWaitingDesc')}
                 </p>
               </div>
-              <button
-                onClick={cancelInvite}
-                className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
-              >
-                {t('cancel')}
-              </button>
+              <div className="w-full flex gap-2.5">
+                <button
+                  onClick={minimizeInvite}
+                  className="flex-1 py-3.5 rounded-2xl bg-primary text-primary-foreground font-display font-bold active:scale-95 transition inline-flex items-center justify-center gap-2"
+                >
+                  <Minimize className="w-4 h-4" />
+                  {t('minimize')}
+                </button>
+                <button
+                  onClick={cancelInvite}
+                  className="flex-1 py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
+                >
+                  {t('cancel')}
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

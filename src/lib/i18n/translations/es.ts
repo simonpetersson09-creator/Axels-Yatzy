@@ -176,6 +176,7 @@ export const es: typeof sv = {
   sendingInvite: 'Enviando invitación…',
   inviteToGame: 'Invitar a la partida',
   inviteSent: 'Invitación enviada',
+  minimize: 'Minimizar',
   inviteWaitingTitle: 'Esperando a {name}…',
   inviteWaitingDesc: 'La partida empieza automáticamente cuando se acepta. Caduca en 10 minutos.',
   lobbyShareCodeAgain: 'Crea una partida y comparte el código con {name} para volver a jugar.',

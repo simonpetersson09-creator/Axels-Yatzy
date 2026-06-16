@@ -173,6 +173,7 @@ export const it: typeof sv = {
   sendingInvite: 'Invio invito…',
   inviteToGame: 'Invita a giocare',
   inviteSent: 'Invito inviato',
+  minimize: 'Minimizza',
   inviteWaitingTitle: 'In attesa di {name}…',
   inviteWaitingDesc: 'La partita inizia automaticamente quando l’invito viene accettato. Scade dopo 10 minuti.',
   lobbyShareCodeAgain: 'Crea una partita e condividi il codice con {name} per giocare di nuovo.',

@@ -30,7 +30,7 @@ interface FriendMatchRow {
 }
 
 interface OpponentSummary {
-  opponentId: string;
+  opponentId: string;          // canonical id (post-alias resolution)
   opponentName: string;
   matches: number;
   wins: number;
@@ -38,6 +38,7 @@ interface OpponentSummary {
   draws: number;
   myHigh: number;
   lastMatch: FriendMatchRow;
+  mergedSourceIds: string[];   // raw session_ids that were merged into this card
 }
 
 function formatDate(iso: string, locale = 'sv-SE') {

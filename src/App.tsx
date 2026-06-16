@@ -33,6 +33,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <InviteOverlay />
+        <NotificationNavigator />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/setup" element={<GameSetupPage />} />

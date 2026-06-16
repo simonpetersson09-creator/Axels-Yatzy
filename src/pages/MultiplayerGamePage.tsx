@@ -358,6 +358,7 @@ export default function MultiplayerGamePage() {
         const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
         let won: boolean;
+        let isDraw = false;
         if (isForfeit) {
           // Prefer the stable session id; fall back to name for legacy rows.
           won = gameState.forfeitedBySessionId
@@ -365,11 +366,15 @@ export default function MultiplayerGamePage() {
             : me?.name !== gameState.forfeitedBy;
         } else {
           const topScore = Math.max(...results.map(r => r.score));
-          won = myScore === topScore && myScore > 0;
+          const winnersAtTop = results.filter(r => r.score === topScore && topScore > 0).length;
+          // A tie at the top is a draw — must NOT be counted as a win for
+          // either player (server records winner_id = NULL in the same case).
+          isDraw = winnersAtTop > 1;
+          won = !isDraw && myScore === topScore && myScore > 0;
         }
         const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
         recordGameResult(myScore, won, yatzys);
-        trackEvent('game_finished', { won, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+        trackEvent('game_finished', { won, draw: isDraw, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
 
         // Save head-to-head friend stats — only host writes (avoids duplicates),
         // only for true 1v1 multiplayer matches.

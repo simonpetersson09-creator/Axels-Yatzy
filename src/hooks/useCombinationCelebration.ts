@@ -18,19 +18,20 @@ const COMBINATION_CHECKS: {
   { type: 'threeOfAKind', category: 'threeOfAKind', duration: 4500, excludeIf: ['fourOfAKind', 'fullHouse'] },
 ];
 
+// Must be >= dice ANIM_DURATION (1.05s) + max jitter (~0.05s) so the
+// celebration only appears after the dice have visibly stopped spinning.
+const DICE_LAND_DELAY_MS = 1150;
+
 export function useCombinationCelebration(gameState: GameState | null) {
   const [activeCelebration, setActiveCelebration] = useState<CombinationType | null>(null);
   const prevIsRollingRef = useRef(false);
   const prevRollKeyRef = useRef<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const pendingRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     if (!gameState) return;
 
-    // Two trigger paths so this works in both Snabb match (driven by
-    // gameState.isRolling) and multiplayer (server is_rolling is always
-    // false — instead we observe that a fresh roll landed by tracking
-    // currentPlayerIndex + round + rollsLeft + dice).
     const wasRolling = prevIsRollingRef.current;
     prevIsRollingRef.current = gameState.isRolling;
 
@@ -38,35 +39,37 @@ export function useCombinationCelebration(gameState: GameState | null) {
     const prevKey = prevRollKeyRef.current;
     prevRollKeyRef.current = rollKey;
 
-    const isRollLanding = !wasRolling && !gameState.isRolling
-      ? false // fall through to key-based detection
-      : (wasRolling && !gameState.isRolling);
+    const isRollLanding = wasRolling && !gameState.isRolling;
 
-    // Skip on first observation to avoid firing on initial load / rejoin.
     const isNewRoll = prevKey !== null && prevKey !== rollKey
       && gameState.rollsLeft < 3
-      && gameState.dice.some(d => d !== 1); // ignore the reset-to-[1,1,1,1,1]
+      && gameState.dice.some(d => d !== 1);
 
     if (!isRollLanding && !isNewRoll) return;
 
     const currentPlayer = gameState.players[gameState.currentPlayerIndex];
     const dice = gameState.dice;
 
-    // Find highest-priority matching combination
     for (const check of COMBINATION_CHECKS) {
       const score = calculateScore(dice, check.category as any);
       if (score === 0) continue;
       if (currentPlayer.scores[check.category] != null) continue;
 
-      // Skip if a higher combo also matches (e.g. skip triss when fyrtal exists)
       if (check.excludeIf?.some(ex => calculateScore(dice, ex as any) > 0)) continue;
 
-      // Clear any existing timeout
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (pendingRef.current) clearTimeout(pendingRef.current);
 
-      setActiveCelebration(check.type);
-      timeoutRef.current = setTimeout(() => setActiveCelebration(null), check.duration);
-      break; // Only show one celebration
+      // Wait for the dice to visibly stop spinning before celebrating.
+      // For the explicit isRolling→false transition (local snabb match) the
+      // dice have already landed; for key-based detection (multiplayer +
+      // optimistic local) we delay until the dice animation finishes.
+      const delay = isRollLanding ? 0 : DICE_LAND_DELAY_MS;
+      pendingRef.current = setTimeout(() => {
+        setActiveCelebration(check.type);
+        timeoutRef.current = setTimeout(() => setActiveCelebration(null), check.duration);
+      }, delay);
+      break;
     }
   }, [
     gameState?.isRolling,
@@ -79,6 +82,7 @@ export function useCombinationCelebration(gameState: GameState | null) {
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (pendingRef.current) clearTimeout(pendingRef.current);
     };
   }, []);
 

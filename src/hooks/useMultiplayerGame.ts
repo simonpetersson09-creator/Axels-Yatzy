@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
@@ -62,7 +62,12 @@ export function useMultiplayerGame() {
   const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const remoteRollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const submittingRef = useRef(false);
-  const mountedRef = useRef(true);
+  // Initialized false; set to true in a layout effect below so that on a
+  // fresh instance (or React Strict Mode remount) any in-flight async
+  // callbacks from a *previous* instance bail out instead of writing into
+  // the new one. The layout effect runs synchronously after commit so all
+  // user-triggered async work starts with mountedRef === true.
+  const mountedRef = useRef(false);
   const sessionId = getSessionId();
   // Use ref to avoid stale closure in debouncedRefresh
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
@@ -832,11 +837,20 @@ export function useMultiplayerGame() {
     };
   }, [state.gameId, state.status, subscribeToGame, sessionId]);
 
-  // Cleanup on unmount
-  useEffect(() => {
+  // Track mount state. useLayoutEffect runs synchronously after commit and
+  // BEFORE any user-event handlers can fire, so async work always observes
+  // mountedRef === true. The cleanup flips it back to false immediately on
+  // unmount so stale callbacks bail.
+  useLayoutEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+    };
+  }, []);
+
+  // Cleanup channels/timers on unmount
+  useEffect(() => {
+    return () => {
       cleanupChannel();
       cleanupTimers();
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);

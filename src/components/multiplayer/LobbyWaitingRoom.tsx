@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Copy, Check, Users } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Users, Share2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { Share } from '@capacitor/share';
 import type { Player } from '@/types/yatzy';
 import { useTranslation } from '@/lib/i18n';
 

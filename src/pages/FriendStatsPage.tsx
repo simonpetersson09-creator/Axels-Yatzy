@@ -76,6 +76,10 @@ export default function FriendStatsPage() {
     setPendingInvite(null);
   };
 
+  const minimizeInvite = () => {
+    setPendingInvite(null);
+  };
+
   useEffect(() => {
     let cancelled = false;
     (async () => {

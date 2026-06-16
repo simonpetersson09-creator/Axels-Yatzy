@@ -443,6 +443,38 @@ export default function FriendStatsPage() {
               </div>
             </div>
 
+            {detailSummary.mergedSourceIds.length > 0 && (
+              <div className="p-3 rounded-2xl bg-primary/5 border border-primary/20 space-y-2">
+                <div className="text-[10px] uppercase tracking-wider text-primary font-bold">
+                  Hopslagna kort ({detailSummary.mergedSourceIds.length})
+                </div>
+                <div className="space-y-1.5">
+                  {detailSummary.mergedSourceIds.map((srcId) => (
+                    <div key={srcId} className="flex items-center justify-between gap-2 text-xs">
+                      <span className="text-muted-foreground font-mono truncate">
+                        …{srcId.slice(-8)}
+                      </span>
+                      <button
+                        onClick={() => { unmergeFriend(srcId); toast.success('Hopslagning ångrad'); }}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/80 text-foreground active:scale-95 transition"
+                      >
+                        <Unlink className="w-3 h-3" />
+                        Ångra
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => setMergePickerOpen(true)}
+              className="w-full py-3 rounded-2xl bg-primary/10 text-primary border border-primary/25 font-display font-bold text-sm active:bg-primary/20 transition inline-flex items-center justify-center gap-2"
+            >
+              <Combine className="w-4 h-4" />
+              Slå ihop med dubblettkort
+            </button>
+
             <button
               onClick={() => setConfirmRemove(selected)}
               className="w-full py-3 rounded-2xl bg-destructive/10 text-destructive border border-destructive/25 font-display font-bold text-sm active:bg-destructive/20 transition inline-flex items-center justify-center gap-2"

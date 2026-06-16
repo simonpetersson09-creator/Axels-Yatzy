@@ -384,8 +384,13 @@ export default function MultiplayerGamePage() {
               const id2 = idMap.get(1) ?? `anon-${gameId}-1`;
               let winnerId: string | null = null;
               if (isForfeit) {
-                winnerId = p1.name === gameState.forfeitedBy ? id2
-                  : p2.name === gameState.forfeitedBy ? id1 : null;
+                if (gameState.forfeitedBySessionId) {
+                  winnerId = gameState.forfeitedBySessionId === id1 ? id2
+                    : gameState.forfeitedBySessionId === id2 ? id1 : null;
+                } else {
+                  winnerId = p1.name === gameState.forfeitedBy ? id2
+                    : p2.name === gameState.forfeitedBy ? id1 : null;
+                }
               } else if (s1 !== s2) {
                 winnerId = s1 > s2 ? id1 : id2;
               }

@@ -68,7 +68,8 @@ export function useMultiplayerGame() {
   // the new one. The layout effect runs synchronously after commit so all
   // user-triggered async work starts with mountedRef === true.
   const mountedRef = useRef(false);
-  const sessionId = getSessionId();
+  // localStorage read once per hook lifetime instead of on every render.
+  const sessionId = useMemo(() => getSessionId(), []);
   // Use ref to avoid stale closure in debouncedRefresh
   const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
   // Buffer for server dice/roll fields received during a local roll animation.

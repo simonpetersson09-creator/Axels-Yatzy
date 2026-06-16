@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Users, Trophy, X, Minus, Send, Loader2, Trash2, Minimize } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, X, Minus, Send, Loader2, Trash2, Minimize, Combine, Unlink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
 import { sendInvite, respondInvite } from '@/lib/invites';
 import { getHiddenFriends, hideFriend } from '@/lib/friend-stats';
+import {
+  getFriendAliases,
+  resolveFriendId,
+  mergeFriend,
+  unmergeFriend,
+  subscribeFriendAliases,
+} from '@/lib/friend-aliases';
 import { toast } from 'sonner';
 
 interface FriendMatchRow {

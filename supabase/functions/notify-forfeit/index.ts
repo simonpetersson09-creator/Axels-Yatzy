@@ -35,21 +35,28 @@ Deno.serve(async (req) => {
 
     const { data: game } = await supabase
       .from("games")
-      .select("id, status, forfeited_by, round")
+      .select("id, status, forfeited_by, forfeited_by_session_id, round")
       .eq("id", game_id)
       .single();
-    if (!game || game.status !== "finished" || !game.forfeited_by) {
+    if (!game || game.status !== "finished" || (!game.forfeited_by && !game.forfeited_by_session_id)) {
       return json({ skipped: "game not in forfeited state" });
     }
 
-    // Recipients = all players whose session is not the one that forfeited
+    // Recipients = all players whose session is not the one that forfeited.
+    // Prefer the stable session id stored on the game row; fall back to the
+    // explicit parameter passed by perform_forfeit's caller.
+    const forfeitedSessionId: string | null =
+      (game as { forfeited_by_session_id?: string | null }).forfeited_by_session_id ??
+      forfeited_session_id ??
+      null;
+
     const { data: players } = await supabase
       .from("game_players")
       .select("session_id, player_name, player_index")
       .eq("game_id", game_id);
 
     const recipients = (players ?? []).filter(
-      (p) => !forfeited_session_id || p.session_id !== forfeited_session_id,
+      (p) => !forfeitedSessionId || p.session_id !== forfeitedSessionId,
     );
 
     const results: Array<{ session_id: string; delivered: boolean; reason?: string }> = [];

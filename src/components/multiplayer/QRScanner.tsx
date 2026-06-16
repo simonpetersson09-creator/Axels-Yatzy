@@ -56,7 +56,13 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
         onScanRef.current(code!);
         onCloseRef.current();
       };
-      if (startedRef.current && scanner.getState() === Html5QrcodeScannerState.SCANNING) {
+      // Always attempt to stop the underlying camera stream. A fast decode can
+      // fire before scanner.start().then() has had a chance to flip
+      // startedRef — in that case getState() still reports SCANNING and the
+      // stream needs to be stopped to release the camera.
+      let state: Html5QrcodeScannerState | null = null;
+      try { state = scanner.getState(); } catch { /* not initialised yet */ }
+      if (state === Html5QrcodeScannerState.SCANNING) {
         scanner.stop().then(finish).catch(finish);
       } else {
         finish();
@@ -73,11 +79,13 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
         },
       )
       .then(() => {
-        if (cancelled) {
-          scanner.stop().catch(() => {});
-          return;
-        }
         startedRef.current = true;
+        // If the component unmounted OR a code was decoded during start-up,
+        // stop the stream now — the success path already returned without
+        // being able to stop it.
+        if (cancelled || handledRef.current) {
+          scanner.stop().catch(() => {});
+        }
       })
       .catch((err: unknown) => {
         console.error('[QRScanner] start failed', err);

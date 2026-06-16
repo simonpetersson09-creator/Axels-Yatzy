@@ -21,24 +21,27 @@ interface FriendMatchRow {
   game_id: string | null;
   player_1_id: string;
   player_1_name: string;
-  player_1_score: number;
+  player_1_score: number | null;
   player_2_id: string;
   player_2_name: string;
-  player_2_score: number;
+  player_2_score: number | null;
   winner_id: string | null;
   created_at: string;
+  status: 'ongoing' | 'finished';
+  finished_at: string | null;
 }
 
 interface OpponentSummary {
-  opponentId: string;          // canonical id (post-alias resolution)
+  opponentId: string;
   opponentName: string;
   matches: number;
   wins: number;
   losses: number;
   draws: number;
   myHigh: number;
-  lastMatch: FriendMatchRow;
-  mergedSourceIds: string[];   // raw session_ids that were merged into this card
+  lastMatch: FriendMatchRow;          // most recent finished match (for stats line)
+  ongoingMatch: FriendMatchRow | null; // active match if any
+  mergedSourceIds: string[];
 }
 
 function formatDate(iso: string, locale = 'sv-SE') {

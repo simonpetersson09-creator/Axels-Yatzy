@@ -21,24 +21,27 @@ interface FriendMatchRow {
   game_id: string | null;
   player_1_id: string;
   player_1_name: string;
-  player_1_score: number;
+  player_1_score: number | null;
   player_2_id: string;
   player_2_name: string;
-  player_2_score: number;
+  player_2_score: number | null;
   winner_id: string | null;
   created_at: string;
+  status: 'ongoing' | 'finished';
+  finished_at: string | null;
 }
 
 interface OpponentSummary {
-  opponentId: string;          // canonical id (post-alias resolution)
+  opponentId: string;
   opponentName: string;
   matches: number;
   wins: number;
   losses: number;
   draws: number;
   myHigh: number;
-  lastMatch: FriendMatchRow;
-  mergedSourceIds: string[];   // raw session_ids that were merged into this card
+  lastMatch: FriendMatchRow;          // most recent finished match (for stats line)
+  ongoingMatch: FriendMatchRow | null; // active match if any
+  mergedSourceIds: string[];
 }
 
 function formatDate(iso: string, locale = 'sv-SE') {
@@ -101,7 +104,7 @@ export default function FriendStatsPage() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const load = async () => {
       const { data, error } = await supabase
         .from('friend_match_results')
         .select('*')
@@ -115,8 +118,29 @@ export default function FriendStatsPage() {
       } else {
         setRows((data ?? []) as FriendMatchRow[]);
       }
-    })();
-    return () => { cancelled = true; };
+    };
+    load();
+
+    // Realtime: refresh on any change to a friend-match row that involves me.
+    const chan = supabase
+      .channel(`friend-matches-${myId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'friend_match_results' },
+        (payload) => {
+          const row = (payload.new ?? payload.old) as Partial<FriendMatchRow> | null;
+          if (!row) return;
+          if (row.player_1_id === myId || row.player_2_id === myId) {
+            load();
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(chan);
+    };
   }, [myId]);
 
   // Load active invites I've sent + subscribe to realtime changes.
@@ -224,10 +248,11 @@ export default function FriendStatsPage() {
       const oppId = resolveFriendId(rawOppId, aliasMap);
       if (hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
-      const myScore = iAmP1 ? r.player_1_score : r.player_2_score;
-      const won = r.winner_id === myId;
-      const lost = r.winner_id !== null && r.winner_id !== myId;
-      const draw = r.winner_id === null;
+      const isOngoing = r.status === 'ongoing';
+      const myScore = (iAmP1 ? r.player_1_score : r.player_2_score) ?? 0;
+      const won = !isOngoing && r.winner_id === myId;
+      const lost = !isOngoing && r.winner_id !== null && r.winner_id !== myId;
+      const draw = !isOngoing && r.winner_id === null;
 
       const cur: OpponentSummary = map.get(oppId) ?? {
         opponentId: oppId,
@@ -235,15 +260,26 @@ export default function FriendStatsPage() {
         matches: 0, wins: 0, losses: 0, draws: 0,
         myHigh: 0,
         lastMatch: r,
+        ongoingMatch: null,
         mergedSourceIds: [],
       };
-      cur.matches += 1;
-      if (won) cur.wins += 1;
-      if (lost) cur.losses += 1;
-      if (draw) cur.draws += 1;
-      if (myScore > cur.myHigh) cur.myHigh = myScore;
-      if (cur.matches === 1) cur.opponentName = oppName;
-      // Track which raw ids merged into this canonical card (excluding the canonical itself)
+
+      if (isOngoing) {
+        // Keep only the most recent ongoing match (rows are desc by created_at)
+        if (!cur.ongoingMatch) cur.ongoingMatch = r;
+      } else {
+        cur.matches += 1;
+        if (won) cur.wins += 1;
+        if (lost) cur.losses += 1;
+        if (draw) cur.draws += 1;
+        if (myScore > cur.myHigh) cur.myHigh = myScore;
+        // Track most recent finished match as lastMatch
+        if (cur.matches === 1) {
+          cur.lastMatch = r;
+          cur.opponentName = oppName;
+        }
+      }
+
       if (rawOppId !== oppId) {
         let set = sourceTracker.get(oppId);
         if (!set) { set = new Set(); sourceTracker.set(oppId, set); }
@@ -255,9 +291,13 @@ export default function FriendStatsPage() {
       const entry = map.get(id);
       if (entry) entry.mergedSourceIds = Array.from(set);
     }
-    return Array.from(map.values()).sort(
-      (a, b) => new Date(b.lastMatch.created_at).getTime() - new Date(a.lastMatch.created_at).getTime()
-    );
+    return Array.from(map.values()).sort((a, b) => {
+      // Ongoing matches always float to the top, then by most recent activity
+      if (!!a.ongoingMatch !== !!b.ongoingMatch) return a.ongoingMatch ? -1 : 1;
+      const aT = (a.ongoingMatch ?? a.lastMatch).created_at;
+      const bT = (b.ongoingMatch ?? b.lastMatch).created_at;
+      return new Date(bT).getTime() - new Date(aT).getTime();
+    });
   }, [rows, myId, hiddenFriends, aliasMap]);
 
   const detailMatches = useMemo(() => {
@@ -319,16 +359,23 @@ export default function FriendStatsPage() {
         {rows !== null && !selected && opponents.length > 0 && (
           <div className="space-y-2.5">
             {opponents.map((o) => {
-              const myScore = o.lastMatch.player_1_id === myId
-                ? o.lastMatch.player_1_score : o.lastMatch.player_2_score;
-              const oppScore = o.lastMatch.player_1_id === myId
-                ? o.lastMatch.player_2_score : o.lastMatch.player_1_score;
-              const lastWon = o.lastMatch.winner_id === myId;
-              const lastDraw = o.lastMatch.winner_id === null;
+              const hasFinished = o.matches > 0;
+              const myScore = hasFinished
+                ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_1_score : o.lastMatch.player_2_score) ?? 0
+                : 0;
+              const oppScore = hasFinished
+                ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_2_score : o.lastMatch.player_1_score) ?? 0
+                : 0;
+              const lastWon = hasFinished && o.lastMatch.winner_id === myId;
+              const lastDraw = hasFinished && o.lastMatch.winner_id === null;
               return (
                 <motion.div
                   key={o.opponentId}
-                  className="w-full p-4 rounded-2xl bg-secondary/60 border border-border/50"
+                  className={`w-full p-4 rounded-2xl border ${
+                    o.ongoingMatch
+                      ? 'bg-primary/10 border-primary/40'
+                      : 'bg-secondary/60 border-border/50'
+                  }`}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
@@ -359,15 +406,27 @@ export default function FriendStatsPage() {
                         )}
                       </div>
                     </div>
-                    <div className="mt-2.5 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                      <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
-                      <span className={`font-bold ${
-                        lastDraw ? 'text-muted-foreground'
-                          : lastWon ? 'text-game-success' : 'text-destructive'
-                      }`}>
-                        {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
-                      </span>
-                    </div>
+                    {o.ongoingMatch ? (
+                      <div className="mt-2.5 pt-2.5 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">
+                        <span className="flex items-center gap-1.5 text-primary font-bold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                          Pågående match
+                        </span>
+                        <span className="text-muted-foreground normal-case tracking-normal">
+                          {formatDate(o.ongoingMatch.created_at)}
+                        </span>
+                      </div>
+                    ) : hasFinished ? (
+                      <div className="mt-2.5 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
+                        <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
+                        <span className={`font-bold ${
+                          lastDraw ? 'text-muted-foreground'
+                            : lastWon ? 'text-game-success' : 'text-destructive'
+                        }`}>
+                          {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
+                        </span>
+                      </div>
+                    ) : null}
                   </button>
                   {(() => {
                     const alreadyInvited = !!activeInvites[o.opponentId];
@@ -489,22 +548,31 @@ export default function FriendStatsPage() {
               </h2>
               <div className="space-y-1.5">
                 {detailMatches.map((r) => {
-                  const myScore = r.player_1_id === myId ? r.player_1_score : r.player_2_score;
-                  const oppScore = r.player_1_id === myId ? r.player_2_score : r.player_1_score;
-                  const won = r.winner_id === myId;
-                  const draw = r.winner_id === null;
-                  const tag = draw ? t('friendsDraw') : won ? t('friendsYouWon') : t('friendsYouLost');
+                  const isOngoing = r.status === 'ongoing';
+                  const myScore = (r.player_1_id === myId ? r.player_1_score : r.player_2_score) ?? 0;
+                  const oppScore = (r.player_1_id === myId ? r.player_2_score : r.player_1_score) ?? 0;
+                  const won = !isOngoing && r.winner_id === myId;
+                  const draw = !isOngoing && r.winner_id === null;
+                  const tag = isOngoing
+                    ? 'Pågående'
+                    : draw ? t('friendsDraw') : won ? t('friendsYouWon') : t('friendsYouLost');
                   return (
                     <div
                       key={r.id}
-                      className="flex items-center justify-between p-3 rounded-xl bg-secondary/40 border border-border/40"
+                      className={`flex items-center justify-between p-3 rounded-xl border ${
+                        isOngoing
+                          ? 'bg-primary/10 border-primary/30'
+                          : 'bg-secondary/40 border-border/40'
+                      }`}
                     >
                       <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                          draw ? 'bg-muted text-muted-foreground'
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded inline-flex items-center gap-1 ${
+                          isOngoing ? 'bg-primary/20 text-primary'
+                            : draw ? 'bg-muted text-muted-foreground'
                             : won ? 'bg-game-success/20 text-game-success'
                             : 'bg-destructive/20 text-destructive'
                         }`}>
+                          {isOngoing && <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />}
                           {tag}
                         </span>
                         <span className="text-[11px] text-muted-foreground">
@@ -512,7 +580,7 @@ export default function FriendStatsPage() {
                         </span>
                       </div>
                       <span className="font-display font-bold tabular-nums text-foreground">
-                        {myScore} – {oppScore}
+                        {isOngoing ? '— – —' : `${myScore} – ${oppScore}`}
                       </span>
                     </div>
                   );

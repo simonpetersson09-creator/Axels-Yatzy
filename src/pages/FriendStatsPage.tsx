@@ -104,7 +104,7 @@ export default function FriendStatsPage() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const load = async () => {
       const { data, error } = await supabase
         .from('friend_match_results')
         .select('*')
@@ -118,8 +118,29 @@ export default function FriendStatsPage() {
       } else {
         setRows((data ?? []) as FriendMatchRow[]);
       }
-    })();
-    return () => { cancelled = true; };
+    };
+    load();
+
+    // Realtime: refresh on any change to a friend-match row that involves me.
+    const chan = supabase
+      .channel(`friend-matches-${myId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'friend_match_results' },
+        (payload) => {
+          const row = (payload.new ?? payload.old) as Partial<FriendMatchRow> | null;
+          if (!row) return;
+          if (row.player_1_id === myId || row.player_2_id === myId) {
+            load();
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(chan);
+    };
   }, [myId]);
 
   // Load active invites I've sent + subscribe to realtime changes.

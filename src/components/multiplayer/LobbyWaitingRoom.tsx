@@ -27,6 +27,19 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const shareInvite = async () => {
+    const joinUrl = `${window.location.origin}/multiplayer?code=${gameCode}`;
+    try {
+      await Share.share({
+        title: 'Mr.B. Yatzy',
+        text: `${t('gameCode')}: ${gameCode}`,
+        url: joinUrl,
+      });
+    } catch {
+      // User cancelled or share not available — silently ignore
+    }
+  };
+
   return (
     <div className="app-screen px-6 py-8 safe-top safe-bottom overflow-y-auto overscroll-contain">
       <motion.div

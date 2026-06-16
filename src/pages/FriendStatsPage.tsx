@@ -567,6 +567,71 @@ export default function FriendStatsPage() {
           </motion.div>
         )}
 
+        {mergePickerOpen && detailSummary && (
+          <motion.div
+            className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMergePickerOpen(false)}
+          >
+            <motion.div
+              className="w-full max-w-sm rounded-3xl bg-card border border-border/60 p-6 shadow-2xl space-y-4 max-h-[80vh] overflow-y-auto"
+              initial={{ y: 30, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 30, opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center space-y-1">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/15 border border-primary/30">
+                  <Combine className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-lg font-display font-black text-foreground">
+                  Slå ihop med {detailSummary.opponentName}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Välj ett dubblettkort som ska slås ihop in i det här. All historik räknas sedan som samma vän.
+                </p>
+              </div>
+              <div className="space-y-2">
+                {opponents.filter((o) => o.opponentId !== selected).length === 0 && (
+                  <p className="text-center text-sm text-muted-foreground py-4">
+                    Inga andra vänner att slå ihop.
+                  </p>
+                )}
+                {opponents
+                  .filter((o) => o.opponentId !== selected)
+                  .map((o) => (
+                    <button
+                      key={o.opponentId}
+                      onClick={() => {
+                        mergeFriend(o.opponentId, selected!);
+                        setMergePickerOpen(false);
+                        toast.success(`${o.opponentName} hopslagen med ${detailSummary.opponentName}`);
+                      }}
+                      className="w-full p-3 rounded-xl bg-secondary/60 border border-border/40 flex items-center justify-between active:scale-[0.98] transition"
+                    >
+                      <div className="text-left min-w-0">
+                        <div className="font-display font-bold text-foreground truncate">{o.opponentName}</div>
+                        <div className="text-[11px] text-muted-foreground">
+                          {o.matches} matcher · senast {formatDate(o.lastMatch.created_at)}
+                        </div>
+                      </div>
+                      <Combine className="w-4 h-4 text-primary flex-shrink-0 ml-2" />
+                    </button>
+                  ))}
+              </div>
+              <button
+                onClick={() => setMergePickerOpen(false)}
+                className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
+              >
+                {t('cancel')}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+
+
         {confirmRemove && (
           <motion.div
             className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm"

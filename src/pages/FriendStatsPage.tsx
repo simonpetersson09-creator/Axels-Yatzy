@@ -64,6 +64,11 @@ export default function FriendStatsPage() {
   const [activeInvites, setActiveInvites] = useState<Record<string, { inviteId: string; gameId?: string }>>({});
   const [hiddenFriends, setHiddenFriends] = useState<string[]>(() => getHiddenFriends());
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
+  const [aliasVersion, setAliasVersion] = useState(0);
+  const [mergePickerOpen, setMergePickerOpen] = useState(false);
+
+  useEffect(() => subscribeFriendAliases(() => setAliasVersion((v) => v + 1)), []);
+  const aliasMap = useMemo(() => getFriendAliases(), [aliasVersion]);
 
   const handleInvite = async (opponentId: string, opponentName: string) => {
     if (inviting) return;

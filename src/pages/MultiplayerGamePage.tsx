@@ -44,6 +44,13 @@ export default function MultiplayerGamePage() {
   const autoRollRetryCountRef = useRef<Map<string, number>>(new Map());
   const rollFnRef = useRef(roll);
   useEffect(() => { rollFnRef.current = roll; }, [roll]);
+  // Always-current snapshot of gameState/flags so deferred timers (auto-roll
+  // retry) don't act on stale closure data when a turn advances within their
+  // delay window.
+  const liveStateRef = useRef({ gameState, isMyTurn, localRolling, remoteRolling, status });
+  useEffect(() => {
+    liveStateRef.current = { gameState, isMyTurn, localRolling, remoteRolling, status };
+  }, [gameState, isMyTurn, localRolling, remoteRolling, status]);
 
   const [showTurnTransition, setShowTurnTransition] = useState(false);
   const [glowActive, setGlowActive] = useState(false);

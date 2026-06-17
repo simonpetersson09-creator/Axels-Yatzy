@@ -87,11 +87,12 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
         paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',
       }}
     >
-      <motion.div
-        className="max-w-sm mx-auto space-y-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
+      <div className="max-w-sm mx-auto">
+        <motion.div
+          className="space-y-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />

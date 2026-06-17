@@ -517,14 +517,14 @@ export function useMultiplayerGame() {
     pendingRollUpdateRef.current = null;
 
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: initial.gameId, p_session_id: sessionId }).then();
 
     const locksConfirmed = await waitForPendingLocks();
     if (!locksConfirmed) {
       // Roll back the animation — server state is unknown.
       rollingGuardRef.current = false;
       setLocalRolling(false);
-      refreshGameStateRef.current?.(state.gameId);
+      refreshGameStateRef.current?.(initial.gameId);
       return false;
     }
     const latest = stateRef.current;

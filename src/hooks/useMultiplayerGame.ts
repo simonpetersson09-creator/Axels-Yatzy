@@ -666,9 +666,11 @@ export function useMultiplayerGame() {
   // Select category — calls server-side Edge Function
   const selectCategory = useCallback(async (categoryId: CategoryId, debug?: { rowText?: string; clickedCategoryId?: CategoryId; renderedRowIndex?: number | null; score?: number | null }) => {
     if (submittingRef.current) return;
-    if (!state.gameId || !state.gameState || rollingGuardRef.current) return;
-    const gs = state.gameState;
-    if (gs.rollsLeft === 3 || state.myPlayerIndex !== gs.currentPlayerIndex) return;
+    // M-NEW-2: read latest state via ref to avoid stale closure guards
+    const latest = stateRef.current;
+    if (!latest.gameId || !latest.gameState || rollingGuardRef.current) return;
+    const gs = latest.gameState;
+    if (gs.rollsLeft === 3 || latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     const currentPlayer = gs.players[gs.currentPlayerIndex];
     if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return;
@@ -683,7 +685,7 @@ export function useMultiplayerGame() {
     });
 
     submittingRef.current = true;
-    const gameId = state.gameId;
+    const gameId = latest.gameId;
 
     // ── Optimistic UI ───────────────────────────────────────────────────────
     // Mirror useYatzyGame.selectCategory exactly so multiplayer feels as

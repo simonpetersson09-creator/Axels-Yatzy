@@ -67,7 +67,10 @@ Deno.serve(async (req) => {
     const cutoff = new Date(Date.now() - INACTIVE_MIN_MINUTES * 60_000).toISOString();
     const cooldown = new Date(Date.now() - REMINDER_COOLDOWN_HOURS * 3_600_000).toISOString();
 
-    for (const game of games) {
+    // M4: process each game's lookup chain concurrently. Each game still does
+    // its 4–5 sequential queries (they depend on each other), but games no
+    // longer block each other on network latency.
+    const perGame = async (game: typeof games[number]) => {
       const { data: current } = await supabase
         .from("game_players")
         .select("session_id, player_name, player_index, last_active_at")
@@ -75,15 +78,12 @@ Deno.serve(async (req) => {
         .eq("player_index", game.current_player_index)
         .single();
       if (!current) {
-        skipped.push({ game_id: game.id, reason: "current player not found" });
-        continue;
+        return { skipped: { game_id: game.id, reason: "current player not found" } };
       }
       if (new Date(current.last_active_at).toISOString() > cutoff) {
-        skipped.push({ game_id: game.id, reason: `active within ${INACTIVE_MIN_MINUTES}min` });
-        continue;
+        return { skipped: { game_id: game.id, reason: `active within ${INACTIVE_MIN_MINUTES}min` } };
       }
 
-      // Check cooldown
       const { data: recent } = await supabase
         .from("notification_log")
         .select("id")
@@ -93,28 +93,28 @@ Deno.serve(async (req) => {
         .gte("sent_at", cooldown)
         .limit(1);
       if (recent && recent.length > 0) {
-        skipped.push({ game_id: game.id, reason: `cooldown (<${REMINDER_COOLDOWN_HOURS}h)` });
-        continue;
+        return { skipped: { game_id: game.id, reason: `cooldown (<${REMINDER_COOLDOWN_HOURS}h)` } };
       }
 
-      const { data: opp } = await supabase
-        .from("game_players")
-        .select("player_name")
-        .eq("game_id", game.id)
-        .neq("player_index", game.current_player_index)
-        .order("player_index")
-        .limit(1)
-        .maybeSingle();
+      const [{ data: opp }, { data: token }] = await Promise.all([
+        supabase
+          .from("game_players")
+          .select("player_name")
+          .eq("game_id", game.id)
+          .neq("player_index", game.current_player_index)
+          .order("player_index")
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("push_tokens")
+          .select("device_id, token, platform")
+          .eq("session_id", current.session_id)
+          .eq("enabled", true)
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
       const opponentName = opp?.player_name ?? "Din motståndare";
-
-      const { data: token } = await supabase
-        .from("push_tokens")
-        .select("device_id, token, platform")
-        .eq("session_id", current.session_id)
-        .eq("enabled", true)
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
 
       if (token?.device_id) {
         const { data: prefs } = await supabase
@@ -123,14 +123,8 @@ Deno.serve(async (req) => {
           .eq("device_id", token.device_id)
           .maybeSingle();
         if (prefs && prefs.reminder_notifications === false) {
-          skipped.push({ game_id: game.id, reason: "preferences disabled" });
-          continue;
+          return { skipped: { game_id: game.id, reason: "preferences disabled" } };
         }
-      }
-
-      if (!token?.token) {
-        skipped.push({ game_id: game.id, reason: "no push token" });
-        // still log attempt below for analytics, but don't count as sent
       }
 
       const title = "Din match väntar 👀";
@@ -151,8 +145,7 @@ Deno.serve(async (req) => {
         .select()
         .single();
       if (insertErr) {
-        skipped.push({ game_id: game.id, reason: `log insert failed: ${insertErr.message}` });
-        continue;
+        return { skipped: { game_id: game.id, reason: `log insert failed: ${insertErr.message}` } };
       }
 
       let delivered = false;
@@ -183,7 +176,13 @@ Deno.serve(async (req) => {
         app_version: "1.0.0",
       });
 
-      if (delivered) sent++;
+      return { delivered };
+    };
+
+    const results = await Promise.all(games.map(perGame));
+    for (const r of results) {
+      if (r.skipped) skipped.push(r.skipped);
+      if (r.delivered) sent++;
     }
 
     console.log(

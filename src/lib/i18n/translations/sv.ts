@@ -44,8 +44,7 @@ export const sv = {
   rollNoMore: '—',
   roll1: 'Kast 1',
   roll2: 'Kast 2',
-  rollLast: 'Sista
-kastet',
+  rollLast: 'Sista\nkastet',
   youSuffix: ' (du)',
   ongoingMatch: 'Pågående match',
   selectCategory: 'Välj kategori',

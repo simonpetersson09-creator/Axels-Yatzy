@@ -40,8 +40,7 @@ export const da: typeof sv = {
   rollNoMore: '—',
   roll1: 'Kast 1',
   roll2: 'Kast 2',
-  rollLast: 'Sidste
-kast',
+  rollLast: 'Sidste\nkast',
   youSuffix: ' (dig)',
   ongoingMatch: 'Igangværende kamp',
   selectCategory: 'Vælg kategori',

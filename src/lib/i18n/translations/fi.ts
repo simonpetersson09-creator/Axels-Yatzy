@@ -40,8 +40,7 @@ export const fi: typeof sv = {
   rollNoMore: '—',
   roll1: 'Heitto 1',
   roll2: 'Heitto 2',
-  rollLast: 'Viimeinen
-heitto',
+  rollLast: 'Viimeinen\nheitto',
   youSuffix: ' (sinä)',
   ongoingMatch: 'Käynnissä oleva peli',
   selectCategory: 'Valitse luokka',

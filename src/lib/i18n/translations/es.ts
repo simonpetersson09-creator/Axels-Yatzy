@@ -40,8 +40,7 @@ export const es: typeof sv = {
   rollNoMore: '—',
   roll1: 'Tirada 1',
   roll2: 'Tirada 2',
-  rollLast: 'Última
-tirada',
+  rollLast: 'Última\ntirada',
   youSuffix: ' (tú)',
   ongoingMatch: 'Partida en curso',
   selectCategory: 'Elige categoría',

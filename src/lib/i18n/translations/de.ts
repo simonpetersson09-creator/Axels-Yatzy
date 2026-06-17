@@ -40,8 +40,7 @@ export const de: typeof sv = {
   rollNoMore: '—',
   roll1: 'Wurf 1',
   roll2: 'Wurf 2',
-  rollLast: 'Letzter
-Wurf',
+  rollLast: 'Letzter\nWurf',
   youSuffix: ' (du)',
   ongoingMatch: 'Laufendes Spiel',
   selectCategory: 'Kategorie wählen',

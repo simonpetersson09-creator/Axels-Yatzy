@@ -211,7 +211,10 @@ export default function GamePage() {
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, roll, selectCategory, setLocks]);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
-  const activeCelebration = useCombinationCelebration(gameState);
+  const { activeCelebration, yatzyTrigger } = useCombinationCelebration(gameState);
+  useEffect(() => {
+    if (yatzyTrigger > 0) setShowYatzyCelebration(true);
+  }, [yatzyTrigger]);
 
   const handleForfeit = useCallback(() => {
     if (!gameState) return;
@@ -248,7 +251,7 @@ export default function GamePage() {
       const dice = gameState.dice;
       const allSame = dice.every(d => d === dice[0]);
       if (allSame) {
-        setShowYatzyCelebration(true);
+        // Celebration shown when dice landed; just analytics + haptic here.
         trackEvent('yatzy_scored', undefined, { gameMode: 'single_player' });
         playSuccessHaptic().catch(() => {});
       } else {

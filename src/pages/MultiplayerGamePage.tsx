@@ -61,7 +61,10 @@ export default function MultiplayerGamePage() {
   useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
-  const activeCelebration = useCombinationCelebration(gameState);
+  const { activeCelebration, yatzyTrigger } = useCombinationCelebration(gameState);
+  useEffect(() => {
+    if (yatzyTrigger > 0) setShowYatzyCelebration(true);
+  }, [yatzyTrigger]);
 
   useEffect(() => {
     if (gameId && !gameState && rejoinCalledRef.current !== gameId) {
@@ -321,25 +324,8 @@ export default function MultiplayerGamePage() {
     }
   }, [gameState?.currentPlayerIndex, status, myPlayerIndex]);
 
-  // Trigger YatzyCelebration for ANY player when their yatzy slot fills with
-  // 50 — covers opponents on the local device. Local player already triggers
-  // it directly in handleSelectCategory; this dedupes via prevYatzyRef.
-  const prevYatzyRef = useRef<Map<string, number | null>>(new Map());
-  useEffect(() => {
-    if (!gameState || status !== 'playing') return;
-    const map = prevYatzyRef.current;
-    let triggered = false;
-    gameState.players.forEach(p => {
-      const cur = (p.scores as Record<string, number | null>).yatzy ?? null;
-      const prev = map.has(p.id) ? map.get(p.id)! : cur; // first observation = current
-      if (!map.has(p.id)) map.set(p.id, cur);
-      if (!triggered && prev !== 50 && cur === 50) {
-        triggered = true;
-        setShowYatzyCelebration(true);
-      }
-      map.set(p.id, cur);
-    });
-  }, [gameState?.players, status]);
+  // YatzyCelebration is now triggered on dice land via useCombinationCelebration
+  // for both the local player and opponents (everyone sees the same dice state).
 
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
@@ -513,7 +499,7 @@ export default function MultiplayerGamePage() {
     if (categoryId === 'yatzy') {
       const allSame = gameState.dice.every(d => d === gameState.dice[0]);
       if (allSame) {
-        setShowYatzyCelebration(true);
+        // Celebration shown when dice landed; just analytics + haptic here.
         trackEvent('yatzy_scored', undefined, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
         playSuccessHaptic().catch(() => {});
       } else {

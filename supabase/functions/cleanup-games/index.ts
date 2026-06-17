@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
       return json({ error: "Failed to fetch stale games", details: fetchErr.message }, 500);
     }
     if (!staleGames || staleGames.length === 0) {
-      return json({ cleaned: 0, finalized: stalePlaying?.length ?? 0 });
+      return json({ cleaned: 0, finalized: finalizedCount });
     }
 
     const ids = staleGames.map((g) => g.id);
@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
       return json({ error: "Failed to delete games", details: delGamesErr.message, attempted: ids.length }, 500);
     }
 
-    return json({ cleaned: ids.length, finalized: stalePlaying?.length ?? 0 });
+    return json({ cleaned: ids.length, finalized: finalizedCount });
   } catch (err) {
     console.error("Cleanup error:", err);
     return json({ error: "Cleanup failed" }, 500);

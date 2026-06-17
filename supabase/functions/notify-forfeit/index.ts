@@ -2,6 +2,7 @@
 // Best-effort: never throws; logs to notification_log with kind='forfeit'.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { sendApns } from "../_shared/apns.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

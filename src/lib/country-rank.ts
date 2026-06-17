@@ -1,7 +1,75 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from './session';
-import { getProfileCountry, type Language } from './profile';
+import {
+  getProfileCountry,
+  setProfileCountry,
+  getLanguage,
+  type Language,
+} from './profile';
 import { getLocalStats } from './local-stats';
+
+// Rough fallback by UI language when IP geo is unavailable.
+const LANG_TO_COUNTRY: Record<Language, string> = {
+  sv: 'SE', fi: 'FI', no: 'NO', da: 'DK',
+  en: 'GB', es: 'ES', fr: 'FR', it: 'IT', de: 'DE',
+};
+
+function guessFromLocale(): string | null {
+  try {
+    const tags = (navigator.languages?.length ? navigator.languages : [navigator.language]) ?? [];
+    for (const tag of tags) {
+      const region = new Intl.Locale(tag).maximize().region;
+      if (region && /^[A-Z]{2}$/.test(region)) return region;
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+/**
+ * Best-effort one-time auto-fill of the player's country on first launch.
+ * Tries IP geolocation, then browser locale, then UI language. Never overwrites
+ * a value the player has set themselves in Settings.
+ */
+export async function initProfileCountry(): Promise<void> {
+  if (getProfileCountry()) return;
+
+  // 1) IP-based geo lookup (short timeout, silent failure)
+  const endpoints = [
+    'https://ipapi.co/country/',
+    'https://get.geojs.io/v1/ip/country',
+  ];
+  for (const url of endpoints) {
+    if (getProfileCountry()) return;
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 2500);
+      const res = await fetch(url, { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) continue;
+      const code = (await res.text()).trim().toUpperCase();
+      if (/^[A-Z]{2}$/.test(code)) {
+        setProfileCountry(code);
+        return;
+      }
+    } catch {
+      /* try next */
+    }
+  }
+
+  // 2) Browser locale (e.g. "sv-SE" → "SE")
+  const fromLocale = guessFromLocale();
+  if (fromLocale) {
+    setProfileCountry(fromLocale);
+    return;
+  }
+
+  // 3) UI language mapping
+  const fromLang = LANG_TO_COUNTRY[getLanguage()];
+  if (fromLang) setProfileCountry(fromLang);
+}
+
 
 export function countryToFlag(code: string): string {
   if (!code || code.length !== 2) return '🏳️';

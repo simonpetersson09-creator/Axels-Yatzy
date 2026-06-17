@@ -61,7 +61,9 @@ export function useYatzyGame() {
     });
     // Update last roll time for 48h expiry
     updateLastRollTime();
-    setTimeout(() => {
+    if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
+    rollTimeoutRef.current = setTimeout(() => {
+      rollTimeoutRef.current = null;
       setGameState(prev => prev ? { ...prev, isRolling: false } : prev);
     }, 1100);
   }, []);

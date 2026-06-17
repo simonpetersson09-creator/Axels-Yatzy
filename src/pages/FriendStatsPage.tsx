@@ -214,11 +214,27 @@ export default function FriendStatsPage() {
       )
       .subscribe();
 
-    const gameChan = supabase
-      .channel(`stats-games-${myId}`)
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(invChan);
+    };
+  }, [myId]);
+
+  // Realtime: only watch finished-status flips for games we actually care about
+  // (those linked to currently-active invites). Avoids the previous unfiltered
+  // table-wide subscription that leaked every game UPDATE to every client.
+  const activeGameIds = useMemo(
+    () => Object.values(activeInvites).map((v) => v.gameId).filter(Boolean).join(','),
+    [activeInvites],
+  );
+  useEffect(() => {
+    if (!activeGameIds) return;
+    const ids = activeGameIds.split(',');
+    const chan = supabase
+      .channel(`stats-games-scoped-${myId}-${activeGameIds}`)
       .on(
         'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'games' },
+        { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=in.(${ids.join(',')})` },
         (payload) => {
           const row = payload.new as { id: string; status: string };
           if (row.status !== 'finished') return;
@@ -234,13 +250,8 @@ export default function FriendStatsPage() {
         },
       )
       .subscribe();
-
-    return () => {
-      cancelled = true;
-      supabase.removeChannel(invChan);
-      supabase.removeChannel(gameChan);
-    };
-  }, [myId]);
+    return () => { supabase.removeChannel(chan); };
+  }, [activeGameIds, myId]);
 
   const opponents = useMemo<OpponentSummary[]>(() => {
     if (!rows) return [];

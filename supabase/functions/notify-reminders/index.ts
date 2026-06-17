@@ -22,17 +22,24 @@ Deno.serve(async (req) => {
     });
 
   // Internal-only endpoint. Cron / scheduler must include the shared secret.
-  // Accepts either the env secret or the Vault secret (cron reads from Vault).
+  // Defense-in-depth: short-circuit on the env secret BEFORE constructing the
+  // service-role client. Only fall back to the Vault lookup (which needs the
+  // client) when the env secret is absent or doesn't match.
   const expectedSecret = (Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "").trim();
   const providedSecret = (req.headers.get("x-internal-secret") ?? "").trim();
+  if (!providedSecret) {
+    console.warn("[notify-reminders] unauthorized request rejected (no secret)");
+    return json({ error: "Unauthorized" }, 401);
+  }
+
+  let authorized = Boolean(expectedSecret) && providedSecret === expectedSecret;
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  let authorized = Boolean(expectedSecret) && providedSecret === expectedSecret;
-  if (!authorized && providedSecret) {
+  if (!authorized) {
     const { data: vaultMatch, error: vaultErr } = await supabase.rpc(
       "internal_secret_matches",
       { p_secret: providedSecret },

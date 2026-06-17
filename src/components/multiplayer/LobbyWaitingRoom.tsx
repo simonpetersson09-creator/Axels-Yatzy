@@ -38,12 +38,11 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
 
     try {
       if (isNative) {
-        const { value: canShare } = await Share.canShare();
-        if (!canShare) throw new Error('Share not available');
         await Share.share({
           title: 'Mr.B. Yatzy',
           text,
-          dialogTitle: 'Mr.B. Yatzy',
+          url: joinUrl,
+          dialogTitle: 'Dela inbjudan',
         });
         return;
       }
@@ -55,6 +54,7 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
       toast.success('Inbjudan kopierad');
     } catch (err: any) {
       if (err?.message?.toLowerCase?.().includes('cancel')) return;
+      if (err?.name === 'AbortError') return;
       console.error('[shareInvite] failed', err);
       try {
         await navigator.clipboard.writeText(text);

@@ -120,45 +120,49 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
     { v: 4, t: `rotateX(90deg) translateZ(${half}px)` },
   ], [half]);
 
-  const rollVar = useMemo(() => ({
+  const makeRollVar = () => ({
     // More spins + sharper deceleration so the final face only resolves at the very end.
     spinsX: (4 + Math.floor(Math.random() * 3)) * 360,
     spinsY: (4 + Math.floor(Math.random() * 3)) * 360,
     dt: (Math.random() - 0.5) * 0.1,
     bounceY: -5 - Math.random() * 6,
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [rolling, value]);
+  });
+  const rollVarRef = useRef(makeRollVar());
+  const [rollVar, setRollVar] = useState(rollVarRef.current);
 
   const dur = ANIM_DURATION + rollVar.dt;
 
   useEffect(() => {
     if (rolling && !locked && !rollingRef.current) {
       rollingRef.current = true;
+      // Freeze a new set of random seeds for this roll only — prevents
+      // re-randomization mid-animation that caused a visible second "settle" spin.
+      const fresh = makeRollVar();
+      rollVarRef.current = fresh;
+      setRollVar(fresh);
+      const thisDur = ANIM_DURATION + fresh.dt;
       setIsAnimating(true);
-      // Always advance forward from the dice's current rotation: full spins
-      // plus the smallest positive offset that lands on the correct face.
-      // This prevents Framer Motion from tweening backward when the spin
-      // ends, which previously made dice appear to "flip sides" mid-stop.
       const base = valueToRotation[value];
       const cur = rotationRef.current;
       const mod = (n: number) => ((n % 360) + 360) % 360;
       const newTarget = {
-        rotateX: cur.rotateX + rollVar.spinsX + mod(base.rotateX - cur.rotateX),
-        rotateY: cur.rotateY + rollVar.spinsY + mod(base.rotateY - cur.rotateY),
+        rotateX: cur.rotateX + fresh.spinsX + mod(base.rotateX - cur.rotateX),
+        rotateY: cur.rotateY + fresh.spinsY + mod(base.rotateY - cur.rotateY),
       };
       rotationRef.current = newTarget;
       setSpinRotation(newTarget);
-      playRollSound(dur);
+      playRollSound(thisDur);
       const t = setTimeout(() => {
         setIsAnimating(false);
         rollingRef.current = false;
         playLandSound();
-      }, dur * 1000);
+      }, thisDur * 1000);
       return () => clearTimeout(t);
     } else if (!rolling) {
       rollingRef.current = false;
     }
-  }, [rolling, value, locked, rollVar, dur]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rolling, value, locked]);
 
   useEffect(() => {
     if (locked && !prevLockedRef.current) {

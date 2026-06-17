@@ -501,10 +501,13 @@ export function useMultiplayerGame() {
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return false;
-    if (!state.gameId || !state.gameState) return false;
-    const initialGs = state.gameState;
+    // M9: read latest state from ref so stale closures (after rapid renders)
+    // don't gate the roll against an outdated snapshot.
+    const initial = stateRef.current;
+    if (!initial.gameId || !initial.gameState) return false;
+    const initialGs = initial.gameState;
     if (initialGs.rollsLeft <= 0) return false;
-    if (state.myPlayerIndex !== initialGs.currentPlayerIndex) return false;
+    if (initial.myPlayerIndex !== initialGs.currentPlayerIndex) return false;
 
     // Start the local animation IMMEDIATELY for instant feedback. We still
     // await pending lock RPCs before firing the roll RPC so the server sees

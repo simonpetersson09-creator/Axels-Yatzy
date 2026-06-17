@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Users, Trophy, X, Minus, Send, Loader2, Trash2, Minimize, Combine, Unlink } from 'lucide-react';
+import { ArrowLeft, Trophy, X, Minus, Trash2, Combine, Unlink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
-import { sendInvite, respondInvite } from '@/lib/invites';
 import { getHiddenFriends, hideFriend } from '@/lib/friend-stats';
 import {
   getFriendAliases,
@@ -39,32 +38,26 @@ interface OpponentSummary {
   losses: number;
   draws: number;
   myHigh: number;
-  lastMatch: FriendMatchRow;          // most recent finished match (for stats line)
-  ongoingMatch: FriendMatchRow | null; // active match if any
+  lastMatch: FriendMatchRow;
+  ongoingMatch: FriendMatchRow | null;
   mergedSourceIds: string[];
 }
 
 function formatDate(iso: string, locale = 'sv-SE') {
   try {
-    return new Date(iso).toLocaleDateString(locale, {
-      day: 'numeric', month: 'short',
-    });
+    return new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short' });
   } catch { return ''; }
 }
 
 export default function FriendStatsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const myId = getSessionId();
 
+  const selected = (location.state as { selectedId?: string } | null)?.selectedId ?? null;
+
   const [rows, setRows] = useState<FriendMatchRow[] | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [inviting, setInviting] = useState<string | null>(null);
-  const [pendingInvite, setPendingInvite] = useState<{ inviteId: string; opponentName: string } | null>(null);
-  // Map: opponent session_id -> { inviteId, gameId? } for invites I've sent that are still "active"
-  // (pending OR accepted-but-match-not-finished). Reset when invite is declined/expired/cancelled
-  // or when the resulting match finishes.
-  const [activeInvites, setActiveInvites] = useState<Record<string, { inviteId: string; gameId?: string }>>({});
   const [hiddenFriends, setHiddenFriends] = useState<string[]>(() => getHiddenFriends());
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
   const [aliasVersion, setAliasVersion] = useState(0);
@@ -73,36 +66,8 @@ export default function FriendStatsPage() {
   useEffect(() => subscribeFriendAliases(() => setAliasVersion((v) => v + 1)), []);
   const aliasMap = useMemo(() => getFriendAliases(), [aliasVersion]);
 
-  const handleInvite = async (opponentId: string, opponentName: string) => {
-    if (inviting) return;
-    setInviting(opponentId);
-    const res = await sendInvite({ toSessionId: opponentId, toName: opponentName });
-    setInviting(null);
-    if (!res.ok) {
-      toast.error(res.error ?? t('errSendInvite'));
-      return;
-    }
-    setPendingInvite({ inviteId: res.inviteId!, opponentName });
-    setActiveInvites((cur) => ({ ...cur, [opponentId]: { inviteId: res.inviteId! } }));
-  };
-
-  const cancelInvite = async () => {
-    if (!pendingInvite) return;
-    await respondInvite({ inviteId: pendingInvite.inviteId, action: 'decline' });
-    setPendingInvite(null);
-  };
-
-  const minimizeInvite = () => {
-    setPendingInvite(null);
-  };
-
-  const reopenInvite = (opponentId: string, opponentName: string) => {
-    const inv = activeInvites[opponentId];
-    if (!inv) return;
-    setPendingInvite({ inviteId: inv.inviteId, opponentName });
-  };
-
   useEffect(() => {
+    if (!selected) return;
     let cancelled = false;
     const load = async () => {
       const { data, error } = await supabase
@@ -120,138 +85,24 @@ export default function FriendStatsPage() {
       }
     };
     load();
-
-    // Realtime: refresh on any change to a friend-match row that involves me.
-    // Split into two filtered channels (one per slot) so the server only sends
-    // rows that actually involve this device, instead of streaming every row.
     const chanP1 = supabase
-      .channel(`friend-matches-p1-${myId}`)
-      .on(
-        'postgres_changes',
+      .channel(`friend-detail-p1-${myId}`)
+      .on('postgres_changes',
         { event: '*', schema: 'public', table: 'friend_match_results', filter: `player_1_id=eq.${myId}` },
         () => load(),
-      )
-      .subscribe();
+      ).subscribe();
     const chanP2 = supabase
-      .channel(`friend-matches-p2-${myId}`)
-      .on(
-        'postgres_changes',
+      .channel(`friend-detail-p2-${myId}`)
+      .on('postgres_changes',
         { event: '*', schema: 'public', table: 'friend_match_results', filter: `player_2_id=eq.${myId}` },
         () => load(),
-      )
-      .subscribe();
-
+      ).subscribe();
     return () => {
       cancelled = true;
       supabase.removeChannel(chanP1);
       supabase.removeChannel(chanP2);
     };
-  }, [myId]);
-
-  // Load active invites I've sent + subscribe to realtime changes.
-  // An invite stays "active" while pending; once accepted it stays "active" until the
-  // resulting match finishes; declined/expired/cancelled clears it immediately.
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadActive = async () => {
-      const { data: invites } = await supabase
-        .from('game_invites')
-        .select('id, to_session_id, status, game_id, expires_at')
-        .eq('from_session_id', myId)
-        .in('status', ['pending', 'accepted']);
-      if (cancelled || !invites) return;
-
-      const now = Date.now();
-      const next: Record<string, { inviteId: string; gameId?: string }> = {};
-      const acceptedGameIds: string[] = [];
-      for (const inv of invites) {
-        if (inv.status === 'pending') {
-          if (inv.expires_at && new Date(inv.expires_at).getTime() < now) continue;
-          next[inv.to_session_id] = { inviteId: inv.id };
-        } else if (inv.status === 'accepted' && inv.game_id) {
-          next[inv.to_session_id] = { inviteId: inv.id, gameId: inv.game_id };
-          acceptedGameIds.push(inv.game_id);
-        }
-      }
-      // Drop any whose game is already finished
-      if (acceptedGameIds.length > 0) {
-        const { data: games } = await supabase
-          .from('games')
-          .select('id, status')
-          .in('id', acceptedGameIds);
-        const finished = new Set((games ?? []).filter((g) => g.status === 'finished').map((g) => g.id));
-        for (const k of Object.keys(next)) {
-          const gid = next[k].gameId;
-          if (gid && finished.has(gid)) delete next[k];
-        }
-      }
-      if (!cancelled) setActiveInvites(next);
-    };
-
-    loadActive();
-
-    const invChan = supabase
-      .channel(`stats-invites-out-${myId}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'game_invites', filter: `from_session_id=eq.${myId}` },
-        (payload) => {
-          const row = payload.new as { id: string; to_session_id: string; status: string; game_id: string | null };
-          setActiveInvites((cur) => {
-            const next = { ...cur };
-            if (row.status === 'accepted') {
-              next[row.to_session_id] = { inviteId: row.id, gameId: row.game_id ?? undefined };
-            } else if (row.status === 'pending') {
-              next[row.to_session_id] = { inviteId: row.id };
-            } else {
-              // declined / expired / cancelled
-              delete next[row.to_session_id];
-            }
-            return next;
-          });
-        },
-      )
-      .subscribe();
-
-    return () => {
-      cancelled = true;
-      supabase.removeChannel(invChan);
-    };
-  }, [myId]);
-
-  // Realtime: only watch finished-status flips for games we actually care about
-  // (those linked to currently-active invites). Avoids the previous unfiltered
-  // table-wide subscription that leaked every game UPDATE to every client.
-  const activeGameIds = useMemo(
-    () => Object.values(activeInvites).map((v) => v.gameId).filter(Boolean).join(','),
-    [activeInvites],
-  );
-  useEffect(() => {
-    if (!activeGameIds) return;
-    const ids = activeGameIds.split(',');
-    const chan = supabase
-      .channel(`stats-games-scoped-${myId}-${activeGameIds}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=in.(${ids.join(',')})` },
-        (payload) => {
-          const row = payload.new as { id: string; status: string };
-          if (row.status !== 'finished') return;
-          setActiveInvites((cur) => {
-            let changed = false;
-            const next: typeof cur = {};
-            for (const [oppId, v] of Object.entries(cur)) {
-              if (v.gameId === row.id) { changed = true; continue; }
-              next[oppId] = v;
-            }
-            return changed ? next : cur;
-          });
-        },
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(chan); };
-  }, [activeGameIds, myId]);
+  }, [myId, selected]);
 
   const opponents = useMemo<OpponentSummary[]>(() => {
     if (!rows) return [];
@@ -281,7 +132,6 @@ export default function FriendStatsPage() {
       };
 
       if (isOngoing) {
-        // Keep only the most recent ongoing match (rows are desc by created_at)
         if (!cur.ongoingMatch) cur.ongoingMatch = r;
       } else {
         cur.matches += 1;
@@ -289,7 +139,6 @@ export default function FriendStatsPage() {
         if (lost) cur.losses += 1;
         if (draw) cur.draws += 1;
         if (myScore > cur.myHigh) cur.myHigh = myScore;
-        // Track most recent finished match as lastMatch
         if (cur.matches === 1) {
           cur.lastMatch = r;
           cur.opponentName = oppName;
@@ -307,13 +156,7 @@ export default function FriendStatsPage() {
       const entry = map.get(id);
       if (entry) entry.mergedSourceIds = Array.from(set);
     }
-    return Array.from(map.values()).sort((a, b) => {
-      // Ongoing matches always float to the top, then by most recent activity
-      if (!!a.ongoingMatch !== !!b.ongoingMatch) return a.ongoingMatch ? -1 : 1;
-      const aT = (a.ongoingMatch ?? a.lastMatch).created_at;
-      const bT = (b.ongoingMatch ?? b.lastMatch).created_at;
-      return new Date(bT).getTime() - new Date(aT).getTime();
-    });
+    return Array.from(map.values());
   }, [rows, myId, hiddenFriends, aliasMap]);
 
   const detailMatches = useMemo(() => {
@@ -329,24 +172,29 @@ export default function FriendStatsPage() {
   const handleRemove = (opponentId: string) => {
     hideFriend(opponentId);
     setHiddenFriends(getHiddenFriends());
-    setSelected(null);
     setConfirmRemove(null);
     toast.success(t('friendRemoved'));
+    navigate('/multiplayer');
   };
+
+  // No friend selected → list now lives in the multiplayer lobby.
+  if (!selected) {
+    return <Navigate to="/multiplayer" replace />;
+  }
 
   return (
     <div className="app-screen flex flex-col px-5 safe-top safe-bottom overflow-y-auto overscroll-contain">
       <div className="w-full max-w-md mx-auto py-6 space-y-5">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => (selected ? setSelected(null) : navigate('/'))}
+            onClick={() => navigate('/multiplayer')}
             className="w-10 h-10 rounded-full bg-secondary/60 flex items-center justify-center active:scale-95 transition"
             aria-label={t('friendStatsBack')}
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </button>
           <h1 className="text-xl font-display font-black text-foreground">
-            {selected && detailSummary ? detailSummary.opponentName : t('friendStatsTitle')}
+            {detailSummary ? detailSummary.opponentName : t('friendStatsTitle')}
           </h1>
         </div>
 
@@ -356,138 +204,7 @@ export default function FriendStatsPage() {
           </div>
         )}
 
-        {rows !== null && opponents.length === 0 && (
-          <motion.div
-            className="text-center py-16 space-y-3"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary/60 border border-border/50">
-              <Users className="w-7 h-7 text-muted-foreground" />
-            </div>
-            <p className="text-muted-foreground text-sm px-6">
-              {t('friendStatsEmpty')}
-            </p>
-          </motion.div>
-        )}
-
-        {/* Opponent list */}
-        {rows !== null && !selected && opponents.length > 0 && (
-          <div className="space-y-2.5">
-            {opponents.map((o) => {
-              const hasFinished = o.matches > 0;
-              const myScore = hasFinished
-                ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_1_score : o.lastMatch.player_2_score) ?? 0
-                : 0;
-              const oppScore = hasFinished
-                ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_2_score : o.lastMatch.player_1_score) ?? 0
-                : 0;
-              const lastWon = hasFinished && o.lastMatch.winner_id === myId;
-              const lastDraw = hasFinished && o.lastMatch.winner_id === null;
-              return (
-                <motion.div
-                  key={o.opponentId}
-                  className={`w-full p-4 rounded-2xl border ${
-                    o.ongoingMatch
-                      ? 'bg-primary/10 border-primary/40'
-                      : 'bg-secondary/60 border-border/50'
-                  }`}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <button
-                    onClick={() => setSelected(o.opponentId)}
-                    className="w-full text-left active:opacity-80 transition"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="font-display font-bold text-foreground truncate">
-                          {o.opponentName}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground mt-0.5">
-                          {o.matches} {t('friendsMatches')} · {t('friendsHighScore')}: {o.myHigh}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-[11px] font-bold tabular-nums">
-                        <span className="px-2 py-0.5 rounded-md bg-game-success/15 text-game-success">
-                          {o.wins}
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-destructive/15 text-destructive">
-                          {o.losses}
-                        </span>
-                        {o.draws > 0 && (
-                          <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
-                            {o.draws}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {o.ongoingMatch ? (
-                      <div className="mt-2.5 pt-2.5 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                        <span className="flex items-center gap-1.5 text-primary font-bold">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                          {t('ongoingMatch')}
-                        </span>
-                        <span className="text-muted-foreground normal-case tracking-normal">
-                          {formatDate(o.ongoingMatch.created_at)}
-                        </span>
-                      </div>
-                    ) : hasFinished ? (
-                      <div className="mt-2.5 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                        <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
-                        <span className={`font-bold ${
-                          lastDraw ? 'text-muted-foreground'
-                            : lastWon ? 'text-game-success' : 'text-destructive'
-                        }`}>
-                          {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
-                        </span>
-                      </div>
-                    ) : null}
-                  </button>
-                  {(() => {
-                    const alreadyInvited = !!activeInvites[o.opponentId];
-                    const isSending = inviting === o.opponentId;
-                    return (
-                      <motion.button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (alreadyInvited) {
-                            reopenInvite(o.opponentId, o.opponentName);
-                          } else {
-                            handleInvite(o.opponentId, o.opponentName);
-                          }
-                        }}
-                        disabled={isSending || !!pendingInvite}
-                        whileTap={{ scale: 0.97 }}
-                        className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-60"
-                      >
-                        {isSending ? (
-                          <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            {t('sendingInvite')}
-                          </>
-                        ) : alreadyInvited ? (
-                          <>
-                            <Send className="w-3.5 h-3.5" />
-                            {t('inviteSent')}
-                          </>
-                        ) : (
-                          <>
-                            <Send className="w-3.5 h-3.5" />
-                            {t('inviteToGame')}
-                          </>
-                        )}
-                      </motion.button>
-                    );
-                  })()}
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Detail head-to-head */}
-        {selected && detailSummary && (
+        {rows !== null && detailSummary && (
           <motion.div
             className="space-y-4"
             initial={{ opacity: 0, y: 8 }}
@@ -526,9 +243,7 @@ export default function FriendStatsPage() {
                 <div className="space-y-1.5">
                   {detailSummary.mergedSourceIds.map((srcId) => (
                     <div key={srcId} className="flex items-center justify-between gap-2 text-xs">
-                      <span className="text-muted-foreground font-mono truncate">
-                        …{srcId.slice(-8)}
-                      </span>
+                      <span className="text-muted-foreground font-mono truncate">…{srcId.slice(-8)}</span>
                       <button
                         onClick={() => { unmergeFriend(srcId); toast.success('Hopslagning ångrad'); }}
                         className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/80 text-foreground active:scale-95 transition"
@@ -605,52 +320,15 @@ export default function FriendStatsPage() {
             </div>
           </motion.div>
         )}
+
+        {rows !== null && !detailSummary && (
+          <div className="text-center py-16 text-muted-foreground text-sm">
+            {t('friendStatsEmpty')}
+          </div>
+        )}
       </div>
 
       <AnimatePresence>
-        {pendingInvite && (
-          <motion.div
-            className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="w-full max-w-sm rounded-3xl bg-card border border-border/60 p-6 shadow-2xl text-center space-y-4"
-              initial={{ y: 30, opacity: 0, scale: 0.95 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 30, opacity: 0, scale: 0.95 }}
-            >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/15 border border-primary/30">
-                <Loader2 className="w-6 h-6 text-primary animate-spin" />
-              </div>
-              <div className="space-y-1">
-                <h2 className="text-lg font-display font-black text-foreground">
-                  {t('inviteWaitingTitle', { name: pendingInvite.opponentName })}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {t('inviteWaitingDesc')}
-                </p>
-              </div>
-              <div className="w-full flex gap-2.5">
-                <button
-                  onClick={minimizeInvite}
-                  className="flex-1 py-3.5 rounded-2xl bg-primary text-primary-foreground font-display font-bold active:scale-95 transition inline-flex items-center justify-center gap-2"
-                >
-                  <Minimize className="w-4 h-4" />
-                  {t('minimize')}
-                </button>
-                <button
-                  onClick={cancelInvite}
-                  className="flex-1 py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
-                >
-                  {t('cancel')}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-
         {mergePickerOpen && detailSummary && (
           <motion.div
             className="fixed inset-0 z-[90] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm"
@@ -714,7 +392,6 @@ export default function FriendStatsPage() {
             </motion.div>
           </motion.div>
         )}
-
 
         {confirmRemove && (
           <motion.div

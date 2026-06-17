@@ -62,11 +62,8 @@ Deno.serve(async (req) => {
       }
 
 
-      // Record canonical friend match result server-side.
-      // Await so the row is persisted before the function shuts down.
-      const { error: recErr } = await supabase
-        .rpc("record_friend_match", { p_game_id: game_id, p_session_id: session_id });
-      if (recErr) console.warn("[forfeit-game] record_friend_match failed", recErr.message);
+      // friend_match_results is recorded by the AFTER UPDATE trigger on `games`
+      // (trg_games_finished_record_match) — no explicit RPC call needed.
     }
 
     return json({

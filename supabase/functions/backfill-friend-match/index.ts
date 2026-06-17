@@ -31,6 +31,24 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    // M8: rate-limit per (session, game) — max 1 call per 5 seconds. Prevents
+    // a buggy client from looping into the SECURITY DEFINER RPC.
+    const rateKey = `backfill-friend-match:${session_id}:${game_id}`;
+    const { data: rateRow } = await supabase
+      .from("rate_limits")
+      .select("last_request_at")
+      .eq("key", rateKey)
+      .maybeSingle();
+    if (rateRow) {
+      const lastMs = new Date(rateRow.last_request_at).getTime();
+      if (Date.now() - lastMs < 5_000) {
+        return json({ error: "Försök igen om en stund" }, 429);
+      }
+    }
+    await supabase
+      .from("rate_limits")
+      .upsert({ key: rateKey, last_request_at: new Date().toISOString() }, { onConflict: "key" });
+
     // Validate caller belongs to the game
     const { data: player } = await supabase
       .from("game_players")

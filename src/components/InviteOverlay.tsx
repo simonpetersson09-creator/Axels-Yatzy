@@ -55,6 +55,9 @@ export default function InviteOverlay() {
         (payload) => {
           const row = payload.new as InviteRow;
           if (row.status !== 'pending') return;
+          // M6: ignore invites that are already past their TTL — server-side
+          // expiry can lag and the row would briefly surface here otherwise.
+          if (row.expires_at && new Date(row.expires_at).getTime() <= Date.now()) return;
           enqueue(row);
         },
       )

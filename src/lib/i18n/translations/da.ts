@@ -118,6 +118,11 @@ export const da: typeof sv = {
   errAccessDenied: 'Adgang nægtet',
   errRejoin: 'Kunne ikke gentilslutte spillet',
   errGeneric: 'Noget gik galt',
+  errCameraBlocked: 'Kameraet er blokeret. Tillad kameraadgang for Mr.B Yatzy i Indstillinger.',
+  errCameraNotFound: 'Ingen kamera fundet på enheden.',
+  errCameraInUse: 'Kameraet bruges af en anden app. Luk andre apps og prøv igen.',
+  errCameraInsecure: 'Kameraet kræver en sikker forbindelse (HTTPS).',
+  errCameraStart: 'Kunne ikke starte kameraet: {msg}',
 
   settings: 'Indstillinger',
   profile: 'Profil',

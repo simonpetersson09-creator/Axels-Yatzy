@@ -61,6 +61,9 @@ export function useMultiplayerGame() {
   const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const remoteRollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // M2: tracks the post-submit cell-fill animation timer so unmount can clear it
+  // and rapid submits don't leak overlapping timers.
+  const submitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const submittingRef = useRef(false);
   // Initialized false; set to true in a layout effect below so that on a
   // fresh instance (or React Strict Mode remount) any in-flight async
@@ -498,10 +501,13 @@ export function useMultiplayerGame() {
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return false;
-    if (!state.gameId || !state.gameState) return false;
-    const initialGs = state.gameState;
+    // M9: read latest state from ref so stale closures (after rapid renders)
+    // don't gate the roll against an outdated snapshot.
+    const initial = stateRef.current;
+    if (!initial.gameId || !initial.gameState) return false;
+    const initialGs = initial.gameState;
     if (initialGs.rollsLeft <= 0) return false;
-    if (state.myPlayerIndex !== initialGs.currentPlayerIndex) return false;
+    if (initial.myPlayerIndex !== initialGs.currentPlayerIndex) return false;
 
     // Start the local animation IMMEDIATELY for instant feedback. We still
     // await pending lock RPCs before firing the roll RPC so the server sees
@@ -511,14 +517,14 @@ export function useMultiplayerGame() {
     pendingRollUpdateRef.current = null;
 
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: state.gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: initial.gameId, p_session_id: sessionId }).then();
 
     const locksConfirmed = await waitForPendingLocks();
     if (!locksConfirmed) {
       // Roll back the animation — server state is unknown.
       rollingGuardRef.current = false;
       setLocalRolling(false);
-      refreshGameStateRef.current?.(state.gameId);
+      refreshGameStateRef.current?.(initial.gameId);
       return false;
     }
     const latest = stateRef.current;
@@ -740,21 +746,16 @@ export function useMultiplayerGame() {
       const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
-      // Hold the optimistic state through the cell-fill animation, then
-      // reconcile with the authoritative server snapshot. On RPC failure
-      // this acts as the rollback path.
-      setTimeout(() => {
+      // M2: Hold optimistic state through cell-fill animation via a tracked
+      // timer so unmount and rapid resubmits cancel cleanly.
+      if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+      submitTimerRef.current = setTimeout(() => {
+        submitTimerRef.current = null;
         pendingSubmitRef.current = null;
         submittingRef.current = false;
-        if (mountedRef.current) setPendingCategory(null);
         if (!mountedRef.current) return;
-        if (!rpcOk) {
-          refreshGameStateRef.current?.(gameId);
-        } else {
-          // Pull authoritative state in case the realtime payload arrived
-          // while we were holding it back.
-          refreshGameStateRef.current?.(gameId);
-        }
+        setPendingCategory(null);
+        refreshGameStateRef.current?.(gameId);
       }, SUBMIT_ANIM_MS);
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
@@ -865,6 +866,7 @@ export function useMultiplayerGame() {
       cleanupTimers();
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
       if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
+      if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
     };
   }, [cleanupChannel, cleanupTimers]);
 

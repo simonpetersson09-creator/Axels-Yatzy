@@ -128,6 +128,11 @@ export const sv = {
   errAccessDenied: 'Åtkomst nekad',
   errRejoin: 'Kunde inte återansluta till spelet',
   errGeneric: 'Något gick fel',
+  errCameraBlocked: 'Kameran är blockerad. Tillåt kameraåtkomst för Mr.B Yatzy i Inställningar.',
+  errCameraNotFound: 'Ingen kamera hittades på enheten.',
+  errCameraInUse: 'Kameran används av en annan app. Stäng andra appar och försök igen.',
+  errCameraInsecure: 'Kameran kräver en säker anslutning (HTTPS).',
+  errCameraStart: 'Kunde inte starta kameran: {msg}',
 
   // Settings
   settings: 'Inställningar',

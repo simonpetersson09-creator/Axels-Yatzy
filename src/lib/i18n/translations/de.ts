@@ -118,6 +118,11 @@ export const de: typeof sv = {
   errAccessDenied: 'Zugriff verweigert',
   errRejoin: 'Konnte dem Spiel nicht wieder beitreten',
   errGeneric: 'Etwas ist schiefgelaufen',
+  errCameraBlocked: 'Die Kamera ist blockiert. Erlaube Kamerazugriff für Mr.B Yatzy in den Einstellungen.',
+  errCameraNotFound: 'Keine Kamera auf dem Gerät gefunden.',
+  errCameraInUse: 'Die Kamera wird von einer anderen App verwendet. Schließe andere Apps und versuche es erneut.',
+  errCameraInsecure: 'Die Kamera benötigt eine sichere Verbindung (HTTPS).',
+  errCameraStart: 'Kamera konnte nicht gestartet werden: {msg}',
 
   settings: 'Einstellungen',
   profile: 'Profil',

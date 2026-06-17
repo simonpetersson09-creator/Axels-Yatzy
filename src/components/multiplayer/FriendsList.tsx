@@ -327,15 +327,13 @@ export function FriendsList() {
           const alreadyInvited = !!activeInvites[o.opponentId];
           const isSending = inviting === o.opponentId;
           return (
-            <motion.div
+            <div
               key={o.opponentId}
               className={`w-full p-4 rounded-2xl border ${
                 o.ongoingMatch
                   ? 'bg-primary/10 border-primary/40'
                   : 'bg-secondary/60 border-border/50'
               }`}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
             >
               <button
                 onClick={() => navigate('/friend-stats', { state: { selectedId: o.opponentId } })}
@@ -380,7 +378,7 @@ export function FriendsList() {
                   </div>
                 ) : null}
               </button>
-              <motion.button
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   if (alreadyInvited) {
@@ -390,7 +388,6 @@ export function FriendsList() {
                   }
                 }}
                 disabled={isSending || !!pendingInvite}
-                whileTap={{ scale: 0.97 }}
                 className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-60"
               >
                 {isSending ? (
@@ -409,8 +406,8 @@ export function FriendsList() {
                     {t('inviteToGame')}
                   </>
                 )}
-              </motion.button>
-            </motion.div>
+              </button>
+            </div>
           );
         })}
       </div>

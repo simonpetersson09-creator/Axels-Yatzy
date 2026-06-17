@@ -95,15 +95,15 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
         const msg = (err as { message?: string })?.message ?? String(err);
         let friendly = t('errGeneric');
         if (name === 'NotAllowedError' || /permission|denied|not allowed/i.test(msg)) {
-          friendly = 'Kameran är blockerad. Tillåt kameraåtkomst för Mr.B Yatzy i Inställningar.';
+          friendly = t('errCameraBlocked');
         } else if (name === 'NotFoundError' || /no camera|not found/i.test(msg)) {
-          friendly = 'Ingen kamera hittades på enheten.';
+          friendly = t('errCameraNotFound');
         } else if (name === 'NotReadableError' || /in use|busy/i.test(msg)) {
-          friendly = 'Kameran används av en annan app. Stäng andra appar och försök igen.';
+          friendly = t('errCameraInUse');
         } else if (/secure|https/i.test(msg)) {
-          friendly = 'Kameran kräver en säker anslutning (HTTPS).';
+          friendly = t('errCameraInsecure');
         } else if (msg) {
-          friendly = `Kunde inte starta kameran: ${msg}`;
+          friendly = t('errCameraStart', { msg });
         }
         setError(friendly);
       });

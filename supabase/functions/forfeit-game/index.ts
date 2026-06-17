@@ -49,16 +49,18 @@ Deno.serve(async (req) => {
     // by the Deno runtime and the notification never reaches APNs).
     if (result.game_ended) {
       const internalSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "";
-      const notifyPromise = supabase.functions
-        .invoke("notify-forfeit", {
-          body: { game_id, forfeited_session_id: session_id },
-          headers: { "x-internal-secret": internalSecret },
-        })
-        .catch((e) => console.warn("[forfeit-game] notify-forfeit failed", e));
-      // @ts-ignore EdgeRuntime is provided by Supabase Edge Runtime
-      if (typeof EdgeRuntime !== "undefined" && EdgeRuntime?.waitUntil) {
-        // @ts-ignore
-        EdgeRuntime.waitUntil(notifyPromise);
+      if (internalSecret) {
+        const notifyPromise = supabase.functions
+          .invoke("notify-forfeit", {
+            body: { game_id, forfeited_session_id: session_id },
+            headers: { "x-internal-secret": internalSecret },
+          })
+          .catch((e) => console.warn("[forfeit-game] notify-forfeit failed", e));
+        // @ts-ignore EdgeRuntime is provided by Supabase Edge Runtime
+        if (typeof EdgeRuntime !== "undefined" && EdgeRuntime?.waitUntil) {
+          // @ts-ignore
+          EdgeRuntime.waitUntil(notifyPromise);
+        }
       }
 
 

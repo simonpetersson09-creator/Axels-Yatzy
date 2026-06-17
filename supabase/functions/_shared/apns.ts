@@ -82,7 +82,7 @@ export async function disableTokenIfStale(supabase: any, tokenValue: string, res
   }
 }
 
-async function buildApnsJwt(a: { keyId: string; teamId: string; authKey: string }): Promise<string> {
+export async function buildApnsJwt(a: { keyId: string; teamId: string; authKey: string }): Promise<string> {
   const header = { alg: "ES256", kid: a.keyId };
   const payload = { iss: a.teamId, iat: Math.floor(Date.now() / 1000) };
   const enc = (o: object) =>

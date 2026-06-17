@@ -29,7 +29,7 @@ export default function MultiplayerGamePage() {
   const [searchParams] = useSearchParams();
   const {
     gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
-    localRolling, remoteRolling, pendingCategory,
+    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 
@@ -562,6 +562,7 @@ export default function MultiplayerGamePage() {
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
                 aiChosenCategory={pendingCategory}
+                aiChosenPlayerIndex={pendingPlayerIndex}
                 selectionDisabled={!isMyTurn}
               />
               <CombinationCelebration type={activeCelebration} />

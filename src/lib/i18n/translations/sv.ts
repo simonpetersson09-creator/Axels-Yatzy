@@ -28,6 +28,9 @@ export const sv = {
   statWinrate: 'Vinst-%',
   statYatzy: 'Yatzy',
   statStreak: 'Svit',
+  countryRankLabel: 'Din placering',
+  countryRankIn: 'i',
+  countryRankPlayers: 'spelare',
   goSettings: 'Inställningar',
   matchExpired: 'Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.',
 

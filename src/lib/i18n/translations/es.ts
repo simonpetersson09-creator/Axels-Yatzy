@@ -26,6 +26,9 @@ export const es: typeof sv = {
   statWinrate: 'Victorias %',
   statYatzy: 'Yatzys',
   statStreak: 'Racha',
+  countryRankLabel: 'Tu ranking',
+  countryRankIn: 'en',
+  countryRankPlayers: 'jugadores',
   goSettings: 'Ajustes',
   matchExpired: 'La partida se terminó porque pasaron 48 horas sin actividad.',
 

@@ -107,7 +107,8 @@ export default function GamePage() {
       recordGameResult(humanScore, won, yatzys);
       trackEvent('game_finished', { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
-  }, [gameState?.gameOver]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.gameOver, aiPlayers]);
 
   useEffect(() => {
     document.documentElement.classList.add('game-scroll-lock');

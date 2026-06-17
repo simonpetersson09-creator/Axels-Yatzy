@@ -90,7 +90,7 @@ export function useMultiplayerGame() {
   // Client-driven dice spin for the *opponent* — server.is_rolling stays false,
   // so we synthesize a rolling pulse when realtime delivers fresh dice for the
   // other player. Synced with Dice ANIM_DURATION (~1100 ms).
-  const ROLL_ANIM_MS = 1100;
+  const ROLL_ANIM_MS = 1150;
   const [localRolling, setLocalRolling] = useState(false);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);

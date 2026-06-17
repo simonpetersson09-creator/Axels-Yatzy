@@ -65,7 +65,7 @@ export function useYatzyGame() {
     rollTimeoutRef.current = setTimeout(() => {
       rollTimeoutRef.current = null;
       setGameState(prev => prev ? { ...prev, isRolling: false } : prev);
-    }, 1100);
+    }, 1150);
   }, []);
 
   const toggleLock = useCallback((index: number) => {

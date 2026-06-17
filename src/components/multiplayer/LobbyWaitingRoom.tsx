@@ -30,15 +30,38 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
   };
 
   const shareInvite = async () => {
-    const joinUrl = `${window.location.origin}/multiplayer?code=${gameCode}`;
+    const webOrigin = 'https://mrb-yatzy.lovable.app';
+    const isNative = Capacitor.isNativePlatform();
+    const origin = isNative ? webOrigin : window.location.origin;
+    const joinUrl = `${origin}/multiplayer?code=${gameCode}`;
+    const text = `${t('gameCode')}: ${gameCode}\n${joinUrl}`;
+
     try {
-      await Share.share({
-        title: 'Mr.B. Yatzy',
-        text: `${t('gameCode')}: ${gameCode}`,
-        url: joinUrl,
-      });
-    } catch {
-      // User cancelled or share not available — silently ignore
+      if (isNative) {
+        const { value: canShare } = await Share.canShare();
+        if (!canShare) throw new Error('Share not available');
+        await Share.share({
+          title: 'Mr.B. Yatzy',
+          text,
+          dialogTitle: 'Mr.B. Yatzy',
+        });
+        return;
+      }
+      if (navigator.share) {
+        await navigator.share({ title: 'Mr.B. Yatzy', text, url: joinUrl });
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      toast.success(t('inviteCopied') ?? 'Inbjudan kopierad');
+    } catch (err: any) {
+      if (err?.message?.toLowerCase?.().includes('cancel')) return;
+      console.error('[shareInvite] failed', err);
+      try {
+        await navigator.clipboard.writeText(text);
+        toast.success(t('inviteCopied') ?? 'Inbjudan kopierad');
+      } catch {
+        toast.error('Kunde inte dela inbjudan');
+      }
     }
   };
 

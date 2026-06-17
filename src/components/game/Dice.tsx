@@ -31,7 +31,7 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 };
 
 const PIP_COLOR = '#1a2428';
-const ANIM_DURATION = 1.05;
+const ANIM_DURATION = 1.35;
 
 const Pip = memo(function Pip({ pipSize }: { pipSize: number }) {
   return (

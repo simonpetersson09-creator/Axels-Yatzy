@@ -438,9 +438,7 @@ export default function HomePage() {
 
           {countryRank && (
             <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-secondary/60 border border-border/50">
-              <span className="text-2xl leading-none shrink-0" aria-hidden>{countryToFlag(countryRank.country)}</span>
-              <span className="text-xl leading-none shrink-0" aria-hidden>🏆</span>
-              <div className="flex flex-col items-center text-center">
+              <div className="flex flex-col items-center text-center flex-1">
                 <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                   {t('countryRankLabel')}
                 </div>
@@ -448,6 +446,8 @@ export default function HomePage() {
                   #{countryRank.rank} {t('countryRankIn')} {countryName(countryRank.country, getLanguage())}
                 </div>
               </div>
+              <span className="text-2xl leading-none shrink-0" aria-hidden>{countryToFlag(countryRank.country)}</span>
+              <span className="text-xl leading-none shrink-0" aria-hidden>🏆</span>
             </div>
           )}
         </motion.div>

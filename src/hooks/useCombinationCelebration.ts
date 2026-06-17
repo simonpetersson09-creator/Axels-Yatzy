@@ -10,12 +10,15 @@ const COMBINATION_CHECKS: {
   duration: number;
   excludeIf?: string[];
 }[] = [
-  // Highest priority first — only one celebration shown per roll
-  { type: 'fullHouse', category: 'fullHouse', duration: 4500 },
-  { type: 'largeStraight', category: 'largeStraight', duration: 4500 },
-  { type: 'fourOfAKind', category: 'fourOfAKind', duration: 4500 },
-  { type: 'smallStraight', category: 'smallStraight', duration: 4500 },
-  { type: 'threeOfAKind', category: 'threeOfAKind', duration: 4500, excludeIf: ['fourOfAKind', 'fullHouse'] },
+  // Highest priority first — only one celebration shown per roll.
+  // Yatzy has its own dedicated celebration (YatzyCelebration), so any
+  // combination that would also trigger on 5-of-a-kind must exclude 'yatzy'
+  // to avoid showing e.g. "Fyrtal" when the player actually rolled a Yatzy.
+  { type: 'fullHouse', category: 'fullHouse', duration: 4500, excludeIf: ['yatzy'] },
+  { type: 'largeStraight', category: 'largeStraight', duration: 4500, excludeIf: ['yatzy'] },
+  { type: 'fourOfAKind', category: 'fourOfAKind', duration: 4500, excludeIf: ['yatzy'] },
+  { type: 'smallStraight', category: 'smallStraight', duration: 4500, excludeIf: ['yatzy'] },
+  { type: 'threeOfAKind', category: 'threeOfAKind', duration: 4500, excludeIf: ['fourOfAKind', 'fullHouse', 'yatzy'] },
 ];
 
 // Must be >= dice ANIM_DURATION (1.05s) + max jitter (~0.05s) so the

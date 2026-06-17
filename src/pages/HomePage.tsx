@@ -437,13 +437,15 @@ export default function HomePage() {
           </div>
 
           {countryRank && (
-            <div className="flex flex-col items-center text-center gap-1 py-3 px-4 rounded-2xl bg-secondary/60 border border-border/50">
-              <span className="text-2xl leading-none" aria-hidden>{countryToFlag(countryRank.country)}</span>
-              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('countryRankLabel')}
-              </div>
-              <div className="font-display font-bold text-foreground text-sm sm:text-base">
-                🏆 #{countryRank.rank} {t('countryRankIn')} {countryName(countryRank.country, getLanguage())}
+            <div className="flex items-center gap-3 py-3 px-4 rounded-2xl bg-secondary/60 border border-border/50">
+              <span className="text-3xl leading-none shrink-0" aria-hidden>{countryToFlag(countryRank.country)}</span>
+              <div className="flex flex-col items-center text-center flex-1 min-w-0">
+                <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  {t('countryRankLabel')}
+                </div>
+                <div className="font-display font-bold text-foreground text-sm sm:text-base">
+                  🏆 #{countryRank.rank} {t('countryRankIn')} {countryName(countryRank.country, getLanguage())}
+                </div>
               </div>
             </div>
           )}

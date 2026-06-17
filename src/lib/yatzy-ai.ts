@@ -193,9 +193,19 @@ function bestPlacementValue(
   const filledCount = CATEGORIES.length - available.length;
   const lateGameFactor = Math.max(0.25, 1 - filledCount / CATEGORIES.length);
 
+  // ── Late-game shift ────────────────────────────────────────────
+  // When very few categories remain, future opportunity cost shrinks
+  // (we will rarely get a "better" version of this hand). Pull baselines
+  // down and soften premium-protection so the AI takes immediate points.
+  const remaining = available.length;
+  const veryLate = remaining <= 3;
+  const baselineScale = veryLate ? Math.max(0.35, remaining / 5) : 1;
+  const sacrificeScale = veryLate ? Math.max(0.45, remaining / 5) : 1;
+  const loyaltyScale = veryLate ? Math.max(0.4, remaining / 5) : 1;
+
   for (const catId of available) {
     const raw = calculateScore(dice, catId);
-    const baseline = BASELINE_EV[catId];
+    const baseline = BASELINE_EV[catId] * baselineScale;
 
     // Marginal value of placing here = score earned now minus
     // what we'd typically score for that slot later.
@@ -205,13 +215,14 @@ function bestPlacementValue(
     // instead of just baseline EV. This keeps yatzy/chance/full-house safe
     // and pushes the AI toward dumping ones/twos/straights first.
     if (raw === 0) {
-      let penalty = SACRIFICE_PENALTY[catId];
+      let penalty = SACRIFICE_PENALTY[catId] * sacrificeScale;
       // Yatzy in particular gets extra protection while plenty of turns remain.
       if (catId === 'yatzy') penalty *= lateGameFactor * 2 + 0.5;
       value = -penalty;
     }
 
-    // Upper bonus pressure
+    // Upper bonus pressure (already gated by bonus.reachable, so an
+    // unreachable bonus contributes no pressure — just face value).
     if (catId in UPPER_FACE) {
       const target = UPPER_TARGET[catId];
       const face = UPPER_FACE[catId];
@@ -228,14 +239,16 @@ function bestPlacementValue(
         // Surplus still nice but not critical
         value += Math.max(0, surplus) * 0.3;
       }
+      // If bonus is unreachable: no pressure adjustment at all.
     }
 
     // Strong premium hands deserve a small "loyalty" bump so the AI
     // doesn't dump them into chance/upper when both options score similarly.
-    if (catId === 'yatzy' && raw === 50) value += 5;
-    if (catId === 'largeStraight' && raw === 20) value += 3;
-    if (catId === 'smallStraight' && raw === 15) value += 2;
-    if (catId === 'fullHouse' && raw > 0) value += 2;
+    // Scaled down in late game so we don't over-hoard with no turns left.
+    if (catId === 'yatzy' && raw === 50) value += 5 * loyaltyScale;
+    if (catId === 'largeStraight' && raw === 20) value += 3 * loyaltyScale;
+    if (catId === 'smallStraight' && raw === 15) value += 2 * loyaltyScale;
+    if (catId === 'fullHouse' && raw > 0) value += 2 * loyaltyScale;
 
     if (value > bestValue) {
       bestValue = value;
@@ -365,9 +378,10 @@ function generateCandidateLocks(dice: number[], available: Set<string>): boolean
     }
   }
 
-  // Straight building
+  // Straight building (only worth considering if a straight slot is still open)
+  const straightsOpen = available.has('smallStraight') || available.has('largeStraight');
   const run = longestRun(dice);
-  if (run.length >= 2) add(lockIndicesForValues(dice, run));
+  if (straightsOpen && run.length >= 2) add(lockIndicesForValues(dice, run));
   // Specifically lock sub-runs for small/large straight
   if (available.has('smallStraight')) {
     const wanted = [1, 2, 3, 4, 5].filter(v => dice.includes(v));
@@ -400,8 +414,10 @@ function generateCandidateLocks(dice: number[], available: Set<string>): boolean
 // ─── EV evaluation for a keep pattern ────────────────────
 
 function MC_SAMPLES(rollsRemaining: number): number {
-  // More rolls left = more variance, more samples needed
-  return rollsRemaining >= 2 ? 90 : 60;
+  // More rolls left = more variance, more samples needed.
+  // Moderately boosted from 90/60 → 140/90 for steadier EV estimates
+  // without making decisions visibly slow.
+  return rollsRemaining >= 2 ? 140 : 90;
 }
 
 function evaluateKeepEV(

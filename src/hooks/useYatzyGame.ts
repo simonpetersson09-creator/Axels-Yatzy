@@ -137,6 +137,13 @@ export function useYatzyGame() {
         clearLocalActiveGame();
       }
 
+      // Detect "wrap" around the player list. We must bump the round whenever
+      // we loop back — not only when nextPlayerIndex === 0 — because the
+      // first player can finish their card before the others, in which case
+      // the cycle never lands on index 0 again. Without this bump, the
+      // round-derived keys in GamePage (auto-roll + AI effects) stay
+      // identical between cycles and the AI players freeze.
+      const wrapped = !gameOver && nextPlayerIndex <= prev.currentPlayerIndex;
       return {
         ...prev,
         players: updatedPlayers,
@@ -145,7 +152,7 @@ export function useYatzyGame() {
         lockedDice: [false, false, false, false, false],
         rollsLeft: 3,
         gameOver,
-        round: nextPlayerIndex === 0 && !gameOver ? prev.round + 1 : prev.round,
+        round: wrapped ? prev.round + 1 : prev.round,
       };
     });
   }, []);

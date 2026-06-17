@@ -29,6 +29,10 @@ export const de: typeof sv = {
   countryRankLabel: 'Dein Rang',
   countryRankIn: 'in',
   countryRankPlayers: 'Spieler',
+  countrySection: 'Land',
+  countryLabel: 'Land',
+  countryNotSet: 'Nicht festgelegt',
+  countryClear: 'Land entfernen',
   goSettings: 'Einstellungen',
   matchExpired: 'Das Spiel wurde beendet, weil 48 Stunden ohne Aktivität vergangen sind.',
 

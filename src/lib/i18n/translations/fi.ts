@@ -29,6 +29,10 @@ export const fi: typeof sv = {
   countryRankLabel: 'Sijoituksesi',
   countryRankIn: 'maassa',
   countryRankPlayers: 'pelaajaa',
+  countrySection: 'Maa',
+  countryLabel: 'Maa',
+  countryNotSet: 'Ei asetettu',
+  countryClear: 'Poista maa',
   goSettings: 'Asetukset',
   matchExpired: 'Peli päättyi, koska 48 tuntia kului ilman toimintaa.',
 

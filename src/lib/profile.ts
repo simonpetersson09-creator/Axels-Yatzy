@@ -1,8 +1,10 @@
-// Local-only profile (name, avatar) + language preference.
+// Local-only profile (name, avatar, country) + language preference.
 // All data persisted in localStorage. No auth, no server.
 
 const NAME_KEY = 'yatzy_player_name';
 const AVATAR_KEY = 'yatzy_player_avatar'; // data URL (jpeg/png)
+const LANG_KEY = 'yatzy_language';
+const COUNTRY_KEY = 'yatzy_player_country'; // ISO-3166 alpha-2, e.g. "SE"
 const LANG_KEY = 'yatzy_language';
 
 export type Language = 'sv' | 'fi' | 'no' | 'da' | 'en' | 'es' | 'fr' | 'it' | 'de';

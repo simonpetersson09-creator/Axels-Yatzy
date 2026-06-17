@@ -188,7 +188,16 @@ export function useMultiplayerGame() {
       supabase.from('game_players').select('id, game_id, player_name, player_index, scores').eq('game_id', gameId).order('player_index'),
     ]);
 
-    if (gameRes.error || playersRes.error) return;
+    if (gameRes.error || playersRes.error) {
+      console.warn('[multiplayer] refreshGameState failed', {
+        gameError: gameRes.error?.message,
+        playersError: playersRes.error?.message,
+      });
+      // Clear any pending submit guard so the next realtime payload isn't
+      // permanently ignored if the DB blip leaves the ref stuck.
+      pendingSubmitRef.current = null;
+      return;
+    }
 
     const game = gameRes.data;
     const dbPlayers = playersRes.data;
@@ -726,7 +735,12 @@ export function useMultiplayerGame() {
         rollsLeft: 3,
         isRolling: false,
         gameOver: allDone,
-        round: nextPlayerIndex === 0 && !allDone ? prev.gameState.round + 1 : prev.gameState.round,
+        // Bump round whenever the player index wraps around (not just to 0),
+        // since earlier-finished players are skipped. Keeps turn-keys unique
+        // so auto-roll/AI effects don't dedupe across cycles.
+        round: !allDone && nextPlayerIndex <= prev.gameState.currentPlayerIndex
+          ? prev.gameState.round + 1
+          : prev.gameState.round,
       },
     } : prev);
 
@@ -869,6 +883,7 @@ export function useMultiplayerGame() {
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
       if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
       if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+      if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; }
     };
   }, [cleanupChannel, cleanupTimers]);
 

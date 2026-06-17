@@ -19,6 +19,8 @@ import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame } from 'luci
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { syncCountryRank, countryToFlag, countryName, type CountryRank } from '@/lib/country-rank';
+import { getLanguage } from '@/lib/profile';
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -41,6 +43,16 @@ export default function HomePage() {
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
+  const [countryRank, setCountryRank] = useState<CountryRank | null>(null);
+
+  // Sync country ranking whenever the games_played count changes.
+  useEffect(() => {
+    let cancelled = false;
+    void syncCountryRank(stats.gamesPlayed).then(res => {
+      if (!cancelled) setCountryRank(res);
+    });
+    return () => { cancelled = true; };
+  }, [stats.gamesPlayed]);
 
   useEffect(() => {
     const onFocus = () => {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Player, CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, rollDice } from '@/lib/yatzy-scoring';
 import { setActiveGame, updateLastRollTime, saveGameState, loadGameState, clearLocalActiveGame } from '@/lib/active-game';

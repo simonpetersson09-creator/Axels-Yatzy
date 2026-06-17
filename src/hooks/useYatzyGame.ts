@@ -145,7 +145,7 @@ export function useYatzyGame() {
         lockedDice: [false, false, false, false, false],
         rollsLeft: 3,
         gameOver,
-        round: nextPlayerIndex === 0 ? prev.round + 1 : prev.round,
+        round: nextPlayerIndex === 0 && !gameOver ? prev.round + 1 : prev.round,
       };
     });
   }, []);

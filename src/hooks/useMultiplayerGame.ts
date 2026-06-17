@@ -99,6 +99,7 @@ export function useMultiplayerGame() {
   // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
   // pendingSubmitRef.
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
+  const [pendingPlayerIndex, setPendingPlayerIndex] = useState<number | null>(null);
 
   const getPendingLockForTurn = useCallback((gameId: string | null, playerIndex?: number, round?: number) => {
     const pending = pendingLockRef.current;
@@ -732,6 +733,7 @@ export function useMultiplayerGame() {
 
     pendingSubmitRef.current = { key: `${gs.currentPlayerIndex}:${categoryId}`, gameId };
     setPendingCategory(categoryId);
+    setPendingPlayerIndex(gs.currentPlayerIndex);
 
     setState(prev => prev.gameState ? {
       ...prev,
@@ -780,6 +782,7 @@ export function useMultiplayerGame() {
         submittingRef.current = false;
         if (!mountedRef.current) return;
         setPendingCategory(null);
+        setPendingPlayerIndex(null);
         refreshGameStateRef.current?.(gameId);
       }, SUBMIT_ANIM_MS);
     }
@@ -908,6 +911,7 @@ export function useMultiplayerGame() {
     localRolling,
     remoteRolling,
     pendingCategory,
+    pendingPlayerIndex,
     createGame,
     joinGame,
     startGame,

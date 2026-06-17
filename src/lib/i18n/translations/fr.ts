@@ -118,6 +118,11 @@ export const fr: typeof sv = {
   errAccessDenied: 'Accès refusé',
   errRejoin: 'Impossible de rejoindre la partie',
   errGeneric: 'Une erreur est survenue',
+  errCameraBlocked: "L'appareil photo est bloqué. Autorisez l'accès à l'appareil photo pour Mr.B Yatzy dans les Réglages.",
+  errCameraNotFound: "Aucun appareil photo trouvé sur l'appareil.",
+  errCameraInUse: "L'appareil photo est utilisé par une autre application. Fermez les autres applications et réessayez.",
+  errCameraInsecure: "L'appareil photo nécessite une connexion sécurisée (HTTPS).",
+  errCameraStart: "Impossible de démarrer l'appareil photo : {msg}",
 
   settings: 'Paramètres',
   profile: 'Profil',

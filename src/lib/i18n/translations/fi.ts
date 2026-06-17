@@ -118,6 +118,11 @@ export const fi: typeof sv = {
   errAccessDenied: 'Pääsy evätty',
   errRejoin: 'Peliin ei voitu liittyä uudelleen',
   errGeneric: 'Jokin meni pieleen',
+  errCameraBlocked: 'Kamera on estetty. Salli kameran käyttö Mr.B Yatzylle Asetuksissa.',
+  errCameraNotFound: 'Laitteesta ei löytynyt kameraa.',
+  errCameraInUse: 'Kamera on toisen sovelluksen käytössä. Sulje muut sovellukset ja yritä uudelleen.',
+  errCameraInsecure: 'Kamera vaatii suojatun yhteyden (HTTPS).',
+  errCameraStart: 'Kameraa ei voitu käynnistää: {msg}',
 
   settings: 'Asetukset',
   profile: 'Profiili',

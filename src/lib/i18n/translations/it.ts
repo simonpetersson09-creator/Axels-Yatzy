@@ -118,6 +118,11 @@ export const it: typeof sv = {
   errAccessDenied: 'Accesso negato',
   errRejoin: 'Impossibile rientrare nella partita',
   errGeneric: 'Qualcosa è andato storto',
+  errCameraBlocked: 'La fotocamera è bloccata. Consenti l\'accesso alla fotocamera per Mr.B Yatzy nelle Impostazioni.',
+  errCameraNotFound: 'Nessuna fotocamera trovata sul dispositivo.',
+  errCameraInUse: "La fotocamera è in uso da un'altra app. Chiudi le altre app e riprova.",
+  errCameraInsecure: 'La fotocamera richiede una connessione sicura (HTTPS).',
+  errCameraStart: 'Impossibile avviare la fotocamera: {msg}',
 
   settings: 'Impostazioni',
   profile: 'Profilo',

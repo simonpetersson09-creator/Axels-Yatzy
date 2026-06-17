@@ -118,6 +118,11 @@ export const es: typeof sv = {
   errAccessDenied: 'Acceso denegado',
   errRejoin: 'No se pudo volver a entrar',
   errGeneric: 'Algo salió mal',
+  errCameraBlocked: 'La cámara está bloqueada. Permite el acceso a la cámara para Mr.B Yatzy en Ajustes.',
+  errCameraNotFound: 'No se encontró ninguna cámara en el dispositivo.',
+  errCameraInUse: 'La cámara está siendo usada por otra app. Cierra otras apps e inténtalo de nuevo.',
+  errCameraInsecure: 'La cámara requiere una conexión segura (HTTPS).',
+  errCameraStart: 'No se pudo iniciar la cámara: {msg}',
 
   settings: 'Ajustes',
   profile: 'Perfil',

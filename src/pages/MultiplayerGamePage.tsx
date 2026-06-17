@@ -615,7 +615,7 @@ export default function MultiplayerGamePage() {
                     <span className={`text-[12px] font-semibold truncate max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
-                      {player.name}{isMe ? ' (du)' : ''}
+                      {player.name}{isMe ? t('youSuffix') : ''}
                     </span>
                     {isCurrent && (
                       <motion.span

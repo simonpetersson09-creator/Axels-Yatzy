@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, User, Camera, Trash2, Check, Bell, BellRing } from 'lucide-react';
+import { ArrowLeft, User, Camera, Trash2, Check, Bell, BellRing, Globe } from 'lucide-react';
 import {
   getProfileName, setProfileName,
   getProfileAvatar, setProfileAvatar,
   getLanguage, setLanguage,
+  getProfileCountry, setProfileCountry,
   fileToAvatarDataUrl,
-  LANGUAGES, type Language,
+  LANGUAGES, COUNTRIES, type Language,
 } from '@/lib/profile';
+import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank';
 import { saveLocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
@@ -22,6 +24,8 @@ export default function SettingsPage() {
   const [name, setName] = useState(() => getProfileName());
   const [avatar, setAvatar] = useState<string | null>(() => getProfileAvatar());
   const [lang, setLang] = useState<Language>(() => getLanguage());
+  const [country, setCountry] = useState<string | null>(() => getProfileCountry());
+  const [countryPickerOpen, setCountryPickerOpen] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [notifPrefs, setNotifPrefsState] = useState(() => getNotificationPrefs());
   const [, force] = useState(0);
@@ -70,6 +74,15 @@ export default function SettingsPage() {
     trackEvent('language_changed', { language: l });
     toast.success(t('languageSaved'));
   };
+
+  const changeCountry = (code: string | null) => {
+    setProfileCountry(code);
+    setCountry(code);
+    setCountryPickerOpen(false);
+    // Sync immediately so the home card reflects the new country on return.
+    void syncCountryRank();
+  };
+
 
   const resetStats = () => {
     if (!confirm(t('resetStatsConfirm'))) return;

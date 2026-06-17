@@ -85,6 +85,17 @@ Deno.serve(async (req) => {
       const title = "Spelet är slut 🏳️";
       const body = `${game.forfeited_by} gav upp — du vinner!`;
 
+      // M3: short-circuit BEFORE writing to notification_log so disabled
+      // recipients don't accumulate phantom log rows on every forfeit.
+      if (!allowed) {
+        results.push({ session_id: r.session_id, delivered: false, reason: "prefs_off" });
+        continue;
+      }
+      if (!token?.token) {
+        results.push({ session_id: r.session_id, delivered: false, reason: "no_token" });
+        continue;
+      }
+
       const { data: logRow, error: insertErr } = await supabase
         .from("notification_log")
         .insert({
@@ -102,14 +113,6 @@ Deno.serve(async (req) => {
 
       if (insertErr) {
         results.push({ session_id: r.session_id, delivered: false, reason: insertErr.message });
-        continue;
-      }
-      if (!allowed) {
-        results.push({ session_id: r.session_id, delivered: false, reason: "prefs_off" });
-        continue;
-      }
-      if (!token?.token) {
-        results.push({ session_id: r.session_id, delivered: false, reason: "no_token" });
         continue;
       }
 

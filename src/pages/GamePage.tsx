@@ -68,6 +68,13 @@ export default function GamePage() {
   const aiTurnRef = useRef<string | null>(null);
   const gameStateRef = useRef(gameState);
   gameStateRef.current = gameState;
+  // Route AI actions through refs so nested setTimeouts always invoke the
+  // latest function reference, even if a future refactor adds deps to roll/
+  // selectCategory. Prevents phantom rolls after a turn changes.
+  const rollFnRef = useRef(roll);
+  rollFnRef.current = roll;
+  const selectCategoryFnRef = useRef(selectCategory);
+  selectCategoryFnRef.current = selectCategory;
   const [aiThinking, setAiThinking] = useState(false);
   const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
 
@@ -184,6 +191,7 @@ export default function GamePage() {
     setAiThinking(true);
     const delay = 1400 + Math.random() * 600;
 
+    let innerTimer: ReturnType<typeof setTimeout> | null = null;
     const t = setTimeout(() => {
       const gs = gameStateRef.current;
       if (!gs) return;
@@ -192,23 +200,26 @@ export default function GamePage() {
         const cat = aiPickCategory(gs.dice, currentPlayer.scores);
         setAiChosenCategory(cat);
         setAiThinking(false);
-        setTimeout(() => {
-          selectCategory(cat);
+        innerTimer = setTimeout(() => {
+          selectCategoryFnRef.current(cat);
           setAiChosenCategory(null);
         }, 2600);
       } else {
         const currentPlayer = gs.players[gs.currentPlayerIndex];
         const locks = aiDecideLocks(gs.dice, currentPlayer.scores, gs.rollsLeft);
         setLocks(locks);
-        setTimeout(() => {
+        innerTimer = setTimeout(() => {
           playRollSound();
-          roll();
+          rollFnRef.current();
         }, 1000);
       }
     }, delay);
 
-    return () => clearTimeout(t);
-  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, roll, selectCategory, setLocks]);
+    return () => {
+      clearTimeout(t);
+      if (innerTimer) clearTimeout(innerTimer);
+    };
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, setLocks]);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
   const { activeCelebration, yatzyTrigger } = useCombinationCelebration(gameState);

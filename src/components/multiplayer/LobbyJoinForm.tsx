@@ -181,7 +181,8 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           onClose={() => setScannerOpen(false)}
           onScan={code => setJoinCode(code)}
         />
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }

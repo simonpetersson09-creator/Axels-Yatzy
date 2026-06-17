@@ -24,6 +24,10 @@ Deno.serve(async (req) => {
       return json({ error: "game_id, session_id and dice_index required" }, 400);
     }
 
+    if (typeof dice_index !== "number" || !Number.isInteger(dice_index) || dice_index < 0 || dice_index > 4) {
+      return json({ error: "dice_index must be an integer between 0 and 4" }, 400);
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!

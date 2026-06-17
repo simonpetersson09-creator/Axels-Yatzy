@@ -440,15 +440,24 @@ export function useMultiplayerGame() {
 
   // Join existing game
   const joinGame = useCallback(async (code: string, playerName: string) => {
-    // Allow rejoining a game we're already tracking; only block when at cap with a new code.
+    // Allow rejoining a game we're already tracking; only block when at cap with a NEW code.
     const existing = getMultiplayerActiveGames();
     if (existing.length >= MAX_ACTIVE_MULTIPLAYER_GAMES) {
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: t('maxActiveGames', { max: MAX_ACTIVE_MULTIPLAYER_GAMES }),
-      }));
-      return false;
+      const { data: lookup } = await supabase
+        .from('games')
+        .select('id')
+        .eq('game_code', code.toUpperCase())
+        .maybeSingle();
+      const trackedIds = new Set(existing.map(g => g.gameId).filter(Boolean));
+      const isRejoin = lookup?.id ? trackedIds.has(lookup.id) : false;
+      if (!isRejoin) {
+        setState(prev => ({
+          ...prev,
+          loading: false,
+          error: t('maxActiveGames', { max: MAX_ACTIVE_MULTIPLAYER_GAMES }),
+        }));
+        return false;
+      }
     }
     setState(prev => ({ ...prev, loading: true, error: null }));
 

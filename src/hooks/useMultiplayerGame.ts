@@ -746,21 +746,16 @@ export function useMultiplayerGame() {
       const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
-      // Hold the optimistic state through the cell-fill animation, then
-      // reconcile with the authoritative server snapshot. On RPC failure
-      // this acts as the rollback path.
-      setTimeout(() => {
+      // M2: Hold optimistic state through cell-fill animation via a tracked
+      // timer so unmount and rapid resubmits cancel cleanly.
+      if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+      submitTimerRef.current = setTimeout(() => {
+        submitTimerRef.current = null;
         pendingSubmitRef.current = null;
         submittingRef.current = false;
-        if (mountedRef.current) setPendingCategory(null);
         if (!mountedRef.current) return;
-        if (!rpcOk) {
-          refreshGameStateRef.current?.(gameId);
-        } else {
-          // Pull authoritative state in case the realtime payload arrived
-          // while we were holding it back.
-          refreshGameStateRef.current?.(gameId);
-        }
+        setPendingCategory(null);
+        refreshGameStateRef.current?.(gameId);
       }, SUBMIT_ANIM_MS);
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);

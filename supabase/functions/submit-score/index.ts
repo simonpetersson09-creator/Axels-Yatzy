@@ -64,13 +64,10 @@ Deno.serve(async (req) => {
           EdgeRuntime.waitUntil(notifyPromise);
         }
       }
-    } else {
-      // Record canonical friend match result server-side (scores derived from DB).
-      // Await so the row is persisted before the function shuts down.
-      const { error: recErr } = await supabase
-        .rpc("record_friend_match", { p_game_id: game_id, p_session_id: session_id });
-      if (recErr) console.warn("[submit-score] record_friend_match failed", recErr.message);
     }
+    // game_over case: the AFTER UPDATE trigger on `games`
+    // (trg_games_finished_record_match) records the friend_match_results row
+    // server-side. No client/edge call needed here.
 
     return json({
       success: true,

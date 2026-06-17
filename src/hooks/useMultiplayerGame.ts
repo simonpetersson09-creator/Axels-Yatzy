@@ -156,12 +156,13 @@ export function useMultiplayerGame() {
   }, [flushPendingRoll, getPendingLockForTurn]);
 
   const waitForPendingLocks = useCallback(async () => {
-    let allLocksConfirmed = true;
-    while (pendingLockPromisesRef.current.size > 0) {
-      const results = await Promise.allSettled([...pendingLockPromisesRef.current]);
-      allLocksConfirmed = allLocksConfirmed && results.every(result => result.status === 'fulfilled' && result.value);
-    }
-    return allLocksConfirmed;
+    // Snapshot the pending promises ONCE on entry. If we re-read the live ref
+    // between awaits, rapid toggleLock calls can keep adding new promises and
+    // livelock the loop, permanently blocking roll().
+    const snapshot = [...pendingLockPromisesRef.current];
+    if (snapshot.length === 0) return true;
+    const results = await Promise.allSettled(snapshot);
+    return results.every(result => result.status === 'fulfilled' && result.value);
   }, []);
 
   // Cleanup any existing channel

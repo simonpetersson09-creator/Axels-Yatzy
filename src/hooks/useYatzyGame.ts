@@ -16,6 +16,13 @@ export function useYatzyGame() {
     // Try to restore saved game on mount
     return loadGameState<GameState>();
   });
+  const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
+    };
+  }, []);
 
   // Persist game state on every change
   useEffect(() => {

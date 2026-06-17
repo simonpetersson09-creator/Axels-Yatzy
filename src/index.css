@@ -257,10 +257,6 @@
     overflow: hidden;
     overscroll-behavior: none;
   }
-
-  body.game-scroll-lock {
-    touch-action: none;
-  }
 }
 
 @keyframes kasta-pulse-shadow {

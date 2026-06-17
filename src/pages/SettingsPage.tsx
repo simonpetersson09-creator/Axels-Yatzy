@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, User, Camera, Trash2, Check, Bell, BellRing } from 'lucide-react';
+import { ArrowLeft, User, Camera, Trash2, Check, Bell, BellRing, Globe } from 'lucide-react';
 import {
   getProfileName, setProfileName,
   getProfileAvatar, setProfileAvatar,
   getLanguage, setLanguage,
+  getProfileCountry, setProfileCountry,
   fileToAvatarDataUrl,
-  LANGUAGES, type Language,
+  LANGUAGES, COUNTRIES, type Language,
 } from '@/lib/profile';
+import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank';
 import { saveLocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
@@ -22,6 +24,8 @@ export default function SettingsPage() {
   const [name, setName] = useState(() => getProfileName());
   const [avatar, setAvatar] = useState<string | null>(() => getProfileAvatar());
   const [lang, setLang] = useState<Language>(() => getLanguage());
+  const [country, setCountry] = useState<string | null>(() => getProfileCountry());
+  const [countryPickerOpen, setCountryPickerOpen] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [notifPrefs, setNotifPrefsState] = useState(() => getNotificationPrefs());
   const [, force] = useState(0);
@@ -70,6 +74,15 @@ export default function SettingsPage() {
     trackEvent('language_changed', { language: l });
     toast.success(t('languageSaved'));
   };
+
+  const changeCountry = (code: string | null) => {
+    setProfileCountry(code);
+    setCountry(code);
+    setCountryPickerOpen(false);
+    // Sync immediately so the home card reflects the new country on return.
+    void syncCountryRank();
+  };
+
 
   const resetStats = () => {
     if (!confirm(t('resetStatsConfirm'))) return;
@@ -221,6 +234,73 @@ export default function SettingsPage() {
             ))}
           </Card>
         </Section>
+
+        {/* Country */}
+        <Section title={t('countrySection')}>
+          <Card>
+            <button
+              type="button"
+              onClick={() => setCountryPickerOpen(o => !o)}
+              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
+            >
+              <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">{t('countryLabel')}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {country
+                    ? `${countryToFlag(country)} ${countryName(country, lang)}`
+                    : t('countryNotSet')}
+                </p>
+              </div>
+            </button>
+            <AnimatePresence>
+              {countryPickerOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="border-t border-border/40 overflow-hidden"
+                >
+                  <div className="max-h-72 overflow-y-auto overscroll-contain">
+                    {country && (
+                      <motion.button
+                        onClick={() => changeCountry(null)}
+                        className="w-full px-4 py-3 flex items-center gap-3 text-left active:bg-destructive/10 transition-colors border-b border-border/40"
+                        whileTap={{ scale: 0.985 }}
+                      >
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                        <span className="text-sm font-medium text-destructive">{t('countryClear')}</span>
+                      </motion.button>
+                    )}
+                    {[...COUNTRIES]
+                      .map(c => ({ code: c, name: countryName(c, lang) }))
+                      .sort((a, b) => a.name.localeCompare(b.name, lang))
+                      .map(({ code, name }, idx) => (
+                        <motion.button
+                          key={code}
+                          onClick={() => changeCountry(code)}
+                          className={`w-full px-4 py-3 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors ${
+                            idx > 0 ? 'border-t border-border/40' : ''
+                          }`}
+                          whileTap={{ scale: 0.985 }}
+                        >
+                          <span className="text-xl leading-none">{countryToFlag(code)}</span>
+                          <span className="flex-1 text-sm font-medium">{name}</span>
+                          {country === code && (
+                            <span className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                              <Check className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={3} />
+                            </span>
+                          )}
+                        </motion.button>
+                      ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Card>
+        </Section>
+
+
 
         {/* Notifications */}
         <Section title={t('notifications')}>

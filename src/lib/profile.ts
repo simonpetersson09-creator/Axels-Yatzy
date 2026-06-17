@@ -1,9 +1,10 @@
-// Local-only profile (name, avatar) + language preference.
+// Local-only profile (name, avatar, country) + language preference.
 // All data persisted in localStorage. No auth, no server.
 
 const NAME_KEY = 'yatzy_player_name';
 const AVATAR_KEY = 'yatzy_player_avatar'; // data URL (jpeg/png)
 const LANG_KEY = 'yatzy_language';
+const COUNTRY_KEY = 'yatzy_player_country'; // ISO-3166 alpha-2, e.g. "SE"
 
 export type Language = 'sv' | 'fi' | 'no' | 'da' | 'en' | 'es' | 'fr' | 'it' | 'de';
 
@@ -42,6 +43,28 @@ export function getLanguage(): Language {
 }
 export function setLanguage(lang: Language): void {
   localStorage.setItem(LANG_KEY, lang);
+  window.dispatchEvent(new Event('profile-changed'));
+}
+
+// A curated list of countries shown in the settings picker.
+// ISO-3166-1 alpha-2 codes. Labels are resolved via Intl.DisplayNames in the UI.
+export const COUNTRIES: string[] = [
+  'SE','NO','DK','FI','IS','GB','IE','US','CA','AU','NZ',
+  'DE','NL','BE','LU','FR','ES','PT','IT','CH','AT',
+  'PL','CZ','SK','HU','RO','BG','GR','HR','SI','EE','LV','LT',
+  'BR','MX','AR','CL','JP','KR','CN','IN','ZA','TR','UA',
+];
+
+export function getProfileCountry(): string | null {
+  const v = localStorage.getItem(COUNTRY_KEY);
+  return v && /^[A-Z]{2}$/.test(v) ? v : null;
+}
+export function setProfileCountry(code: string | null): void {
+  if (code && /^[A-Z]{2}$/i.test(code)) {
+    localStorage.setItem(COUNTRY_KEY, code.toUpperCase());
+  } else {
+    localStorage.removeItem(COUNTRY_KEY);
+  }
   window.dispatchEvent(new Event('profile-changed'));
 }
 

@@ -29,6 +29,10 @@ export const no: typeof sv = {
   countryRankLabel: 'Din rangering',
   countryRankIn: 'i',
   countryRankPlayers: 'spillere',
+  countrySection: 'Land',
+  countryLabel: 'Land',
+  countryNotSet: 'Ikke angitt',
+  countryClear: 'Fjern land',
   goSettings: 'Innstillinger',
   matchExpired: 'Kampen ble avsluttet fordi 48 timer har gått uten aktivitet.',
 

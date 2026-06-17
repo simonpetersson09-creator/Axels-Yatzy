@@ -31,6 +31,10 @@ export const sv = {
   countryRankLabel: 'Din placering',
   countryRankIn: 'i',
   countryRankPlayers: 'spelare',
+  countrySection: 'Land',
+  countryLabel: 'Land',
+  countryNotSet: 'Inte angivet',
+  countryClear: 'Ta bort land',
   goSettings: 'Inställningar',
   matchExpired: 'Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.',
 

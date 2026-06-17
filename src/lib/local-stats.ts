@@ -90,4 +90,7 @@ export function recordGameResult(playerScore: number, won: boolean, yatzysThisGa
   if (playerScore > stats.highScore) stats.highScore = playerScore;
   if (yatzysThisGame > 0) stats.yatzyCount += yatzysThisGame;
   saveLocalStats(stats);
+  // Update the player's personal country ranking after every finished match.
+  // Lazy import to keep this module free of network deps until needed.
+  void import('./country-rank').then(m => m.syncCountryRank(stats.gamesPlayed)).catch(() => {});
 }

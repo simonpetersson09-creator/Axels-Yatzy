@@ -34,13 +34,21 @@ Deno.serve(async (req) => {
 
   let authorized = Boolean(expectedSecret) && providedSecret === expectedSecret;
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-  );
+  // M-NEW-1: Lazily construct the service-role client. Avoid creating it
+  // when a request is unauthenticated.
+  let supabase: ReturnType<typeof createClient> | null = null;
+  const getSupabase = () => {
+    if (!supabase) {
+      supabase = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+    }
+    return supabase!;
+  };
 
   if (!authorized) {
-    const { data: vaultMatch, error: vaultErr } = await supabase.rpc(
+    const { data: vaultMatch, error: vaultErr } = await getSupabase().rpc(
       "internal_secret_matches",
       { p_secret: providedSecret },
     );
@@ -51,6 +59,11 @@ Deno.serve(async (req) => {
     console.warn("[notify-reminders] unauthorized request rejected");
     return json({ error: "Unauthorized" }, 401);
   }
+
+  // Ensure client is available for downstream code that references `supabase`.
+  supabase = getSupabase();
+
+
 
   try {
 

@@ -34,10 +34,8 @@ Deno.serve(async (req) => {
 
   let authorized = Boolean(expectedSecret) && providedSecret === expectedSecret;
 
-  // M-NEW-1: Only construct the service-role client AFTER the env-secret
-  // fast path has been evaluated, and only when needed for the Vault check
-  // or downstream work. This prevents creating an admin client for
-  // unauthenticated requests.
+  // M-NEW-1: Lazily construct the service-role client. Avoid creating it
+  // when a request is unauthenticated.
   let supabase: ReturnType<typeof createClient> | null = null;
   const getSupabase = () => {
     if (!supabase) {
@@ -46,7 +44,7 @@ Deno.serve(async (req) => {
         Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       );
     }
-    return supabase;
+    return supabase!;
   };
 
   if (!authorized) {
@@ -61,6 +59,10 @@ Deno.serve(async (req) => {
     console.warn("[notify-reminders] unauthorized request rejected");
     return json({ error: "Unauthorized" }, 401);
   }
+
+  // Ensure client is available for downstream code that references `supabase`.
+  supabase = getSupabase();
+
 
 
   try {

@@ -150,6 +150,7 @@ export const it: typeof sv = {
   friendStatsTitle: 'Statistiche amici',
   friendStatsEmpty: 'Gioca con un amico per costruire le statistiche',
   friendStatsBack: 'Indietro',
+  myFriends: 'I miei amici',
   friendsMatches: 'partite',
   friendsWins: 'Vittorie',
   friendsLosses: 'Sconfitte',

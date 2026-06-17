@@ -343,7 +343,19 @@ export default function MultiplayerGamePage() {
 
   useEffect(() => {
     if (status === 'finished' && gameState && !statsRecordedRef.current) {
+      // M7: persist across remounts so navigating back to a finished match
+      // (or hot reloads in dev) doesn't double-record local stats / friend
+      // match rows. Server-side UPSERT (UNIQUE game_id) already dedupes
+      // friend_match_results, but local recordGameResult does not.
+      const persistKey = gameId ? `stats-recorded:${gameId}` : null;
+      try {
+        if (persistKey && sessionStorage.getItem(persistKey) === '1') {
+          statsRecordedRef.current = true;
+          return;
+        }
+      } catch { /* sessionStorage unavailable — fall through */ }
       statsRecordedRef.current = true;
+      try { if (persistKey) sessionStorage.setItem(persistKey, '1'); } catch { /* noop */ }
 
       const results = gameState.players.map(p => ({
         name: p.name,

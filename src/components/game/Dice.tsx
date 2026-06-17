@@ -144,15 +144,19 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
       const t = setTimeout(() => {
         setIsAnimating(false);
         rollingRef.current = false;
-        setSpinRotation(valueToRotation[value]);
+        // NOTE: do NOT reset spinRotation to valueToRotation[value] here.
+        // `target` is base + N*360, so modulo 360 the face is already correct.
+        // Resetting would force framer-motion to tween thousands of degrees
+        // backwards in 0.45s — that caused the visible "snap-back" jank.
         playLandSound();
       }, dur * 1000);
       return () => clearTimeout(t);
     } else if (!rolling) {
       rollingRef.current = false;
-      setSpinRotation(valueToRotation[value]);
+      // Same reasoning as above — leave spinRotation alone.
     }
   }, [rolling, value, locked, target, dur]);
+
 
   useEffect(() => {
     if (locked && !prevLockedRef.current) {
@@ -254,7 +258,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
               width: size,
               height: size,
               transformStyle: 'preserve-3d',
-              willChange: isAnimating ? 'transform' : 'auto',
+              // Stable will-change avoids layer creation/destruction mid-spin,
+              // which is a common source of jank on iOS Safari / Capacitor.
+              willChange: 'transform',
+              transform: 'translateZ(0)',
             }}
             animate={{
               rotateX: spinRotation.rotateX,

@@ -77,8 +77,15 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
 
   return (
     <div
-      className="app-fixed-screen px-6 py-8 safe-top safe-bottom overflow-y-auto overscroll-contain"
-      style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
+      className="overflow-y-auto overscroll-contain px-6"
+      style={{
+        height: 'var(--app-dvh, 100dvh)',
+        maxHeight: 'var(--app-dvh, 100dvh)',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        paddingTop: 'calc(32px + env(safe-area-inset-top))',
+        paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',
+      }}
     >
       <motion.div
         className="max-w-sm mx-auto space-y-8"

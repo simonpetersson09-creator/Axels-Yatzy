@@ -77,14 +77,22 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
 
   return (
     <div
-      className="app-fixed-screen px-6 py-8 safe-top safe-bottom overflow-y-auto overscroll-contain"
-      style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
+      className="overflow-y-auto overscroll-contain px-6"
+      style={{
+        height: 'var(--app-dvh, 100dvh)',
+        maxHeight: 'var(--app-dvh, 100dvh)',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        paddingTop: 'calc(32px + env(safe-area-inset-top))',
+        paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',
+      }}
     >
-      <motion.div
-        className="max-w-sm mx-auto space-y-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
+      <div className="max-w-sm mx-auto">
+        <motion.div
+          className="space-y-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
@@ -173,7 +181,8 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           onClose={() => setScannerOpen(false)}
           onScan={code => setJoinCode(code)}
         />
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }

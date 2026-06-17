@@ -27,10 +27,12 @@ const DICE_LAND_DELAY_MS = 1150;
 
 export function useCombinationCelebration(gameState: GameState | null) {
   const [activeCelebration, setActiveCelebration] = useState<CombinationType | null>(null);
+  const [yatzyTrigger, setYatzyTrigger] = useState(0);
   const prevIsRollingRef = useRef(false);
   const prevRollKeyRef = useRef<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const yatzyPendingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!gameState) return;
@@ -52,6 +54,19 @@ export function useCombinationCelebration(gameState: GameState | null) {
 
     const currentPlayer = gameState.players[gameState.currentPlayerIndex];
     const dice = gameState.dice;
+    const delay = isRollLanding ? 0 : DICE_LAND_DELAY_MS;
+
+    // Yatzy (5-of-a-kind) gets its own dedicated celebration. Trigger it on
+    // dice landing, regardless of whether the yatzy slot is already filled —
+    // rolling a yatzy is always worth celebrating.
+    const isYatzy = dice.length === 5 && dice.every(d => d === dice[0]) && dice[0] !== 0;
+    if (isYatzy) {
+      if (yatzyPendingRef.current) clearTimeout(yatzyPendingRef.current);
+      yatzyPendingRef.current = setTimeout(() => {
+        setYatzyTrigger(t => t + 1);
+      }, delay);
+      return;
+    }
 
     for (const check of COMBINATION_CHECKS) {
       const score = calculateScore(dice, check.category as any);
@@ -63,11 +78,6 @@ export function useCombinationCelebration(gameState: GameState | null) {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (pendingRef.current) clearTimeout(pendingRef.current);
 
-      // Wait for the dice to visibly stop spinning before celebrating.
-      // For the explicit isRolling→false transition (local snabb match) the
-      // dice have already landed; for key-based detection (multiplayer +
-      // optimistic local) we delay until the dice animation finishes.
-      const delay = isRollLanding ? 0 : DICE_LAND_DELAY_MS;
       pendingRef.current = setTimeout(() => {
         setActiveCelebration(check.type);
         timeoutRef.current = setTimeout(() => setActiveCelebration(null), check.duration);
@@ -86,8 +96,9 @@ export function useCombinationCelebration(gameState: GameState | null) {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (pendingRef.current) clearTimeout(pendingRef.current);
+      if (yatzyPendingRef.current) clearTimeout(yatzyPendingRef.current);
     };
   }, []);
 
-  return activeCelebration;
+  return { activeCelebration, yatzyTrigger };
 }

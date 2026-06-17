@@ -131,9 +131,9 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "dice-roll": "dice-roll 0.6s ease-out",
-        "bounce-in": "bounce-in 0.5s ease-out",
-        "slide-up": "slide-up 0.4s ease-out",
+        "dice-roll": "dice-roll 0.8s ease-out",
+        "bounce-in": "bounce-in 0.6s ease-out",
+        "slide-up": "slide-up 0.5s ease-out",
         "pulse-gold": "pulse-gold 2s infinite",
       },
     },

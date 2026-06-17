@@ -13,6 +13,7 @@ interface ScoreBoardProps {
   onSelectCategory: (id: CategoryId, debug?: ScoreboardClickDebug) => void;
   rollsLeft: number;
   aiChosenCategory?: string | null;
+  aiChosenPlayerIndex?: number | null;
   selectionDisabled?: boolean;
 }
 
@@ -224,7 +225,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         canSelect={canSelect}
         bgClass={bg.className}
         bgStyle={bg.style}
-        isAiChosen={isCurrent && aiChosenCategory === cat.id}
+        isAiChosen={slotIdx === aiChosenPlayerIndex && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
       />
     );

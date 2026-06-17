@@ -76,6 +76,20 @@ Deno.serve(async (req) => {
 
     const ids = staleGames.map((g) => g.id);
 
+    // M-NEW-3: Mark any linked game_invites as 'expired' before deleting the
+    // games they reference. The FK from game_invites.game_id is ON DELETE SET
+    // NULL (or similar), so without this step those invite rows would survive
+    // pointing at a deleted game. Doing this BEFORE the games delete keeps the
+    // status consistent in case a client is mid-read.
+    const { error: invErr } = await supabase
+      .from("game_invites")
+      .update({ status: "expired" })
+      .in("game_id", ids)
+      .neq("status", "expired");
+    if (invErr) {
+      console.warn("Failed to expire linked invites:", invErr.message);
+    }
+
     const { error: delGamesErr } = await supabase
       .from("games")
       .delete()
@@ -85,6 +99,7 @@ Deno.serve(async (req) => {
       console.error("Failed to delete games:", delGamesErr);
       return json({ error: "Failed to delete games", details: delGamesErr.message, attempted: ids.length }, 500);
     }
+
 
     return json({ cleaned: ids.length, finalized: finalizedCount });
   } catch (err) {

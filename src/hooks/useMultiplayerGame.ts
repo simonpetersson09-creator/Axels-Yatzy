@@ -61,6 +61,9 @@ export function useMultiplayerGame() {
   const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const remoteRollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // M2: tracks the post-submit cell-fill animation timer so unmount can clear it
+  // and rapid submits don't leak overlapping timers.
+  const submitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const submittingRef = useRef(false);
   // Initialized false; set to true in a layout effect below so that on a
   // fresh instance (or React Strict Mode remount) any in-flight async

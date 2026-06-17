@@ -13,6 +13,7 @@ interface ScoreBoardProps {
   onSelectCategory: (id: CategoryId, debug?: ScoreboardClickDebug) => void;
   rollsLeft: number;
   aiChosenCategory?: string | null;
+  aiChosenPlayerIndex?: number | null;
   selectionDisabled?: boolean;
 }
 
@@ -157,7 +158,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, selectionDisabled }: ScoreBoardProps) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, aiChosenPlayerIndex, selectionDisabled }: ScoreBoardProps) {
   const { t } = useTranslation();
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({
@@ -224,7 +225,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         canSelect={canSelect}
         bgClass={bg.className}
         bgStyle={bg.style}
-        isAiChosen={isCurrent && aiChosenCategory === cat.id}
+        isAiChosen={slotIdx === aiChosenPlayerIndex && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
       />
     );

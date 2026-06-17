@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Copy, Check, Users, Share2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
+import { toast } from 'sonner';
 import type { Player } from '@/types/yatzy';
 import { useTranslation } from '@/lib/i18n';
 

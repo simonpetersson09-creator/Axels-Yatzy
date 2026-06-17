@@ -435,6 +435,23 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+
+          {countryRank && (
+            <div className="flex items-center gap-3 py-3 px-4 rounded-2xl bg-secondary/60 border border-border/50">
+              <span className="text-2xl leading-none" aria-hidden>{countryToFlag(countryRank.country)}</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  {t('countryRankLabel')}
+                </div>
+                <div className="font-display font-bold text-foreground text-sm sm:text-base truncate">
+                  🏆 #{countryRank.rank} {t('countryRankIn')} {countryName(countryRank.country, getLanguage())}
+                </div>
+              </div>
+              <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">
+                {countryRank.total} {t('countryRankPlayers')}
+              </span>
+            </div>
+          )}
         </motion.div>
 
         <motion.div

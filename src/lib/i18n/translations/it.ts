@@ -38,6 +38,12 @@ export const it: typeof sv = {
   roll: 'Lancia',
   rollAgain: 'Rilancia',
   rollNoMore: '—',
+  roll1: 'Lancio 1',
+  roll2: 'Lancio 2',
+  rollLast: 'Ultimo
+lancio',
+  youSuffix: ' (tu)',
+  ongoingMatch: 'Partita in corso',
   selectCategory: 'Scegli categoria',
   selectCategoryFromBoard: 'Scegli una categoria sul tabellone',
   rollCounter: 'Lancio {n} / 3',

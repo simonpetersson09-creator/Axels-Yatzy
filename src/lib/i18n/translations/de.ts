@@ -38,6 +38,12 @@ export const de: typeof sv = {
   roll: 'Würfeln',
   rollAgain: 'Nochmal würfeln',
   rollNoMore: '—',
+  roll1: 'Wurf 1',
+  roll2: 'Wurf 2',
+  rollLast: 'Letzter
+Wurf',
+  youSuffix: ' (du)',
+  ongoingMatch: 'Laufendes Spiel',
   selectCategory: 'Kategorie wählen',
   selectCategoryFromBoard: 'Wähle eine Kategorie auf dem Blatt',
   rollCounter: 'Wurf {n} / 3',

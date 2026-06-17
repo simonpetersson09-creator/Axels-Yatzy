@@ -38,6 +38,12 @@ export const no: typeof sv = {
   roll: 'Kast',
   rollAgain: 'Kast igjen',
   rollNoMore: '—',
+  roll1: 'Kast 1',
+  roll2: 'Kast 2',
+  rollLast: 'Siste
+kast',
+  youSuffix: ' (du)',
+  ongoingMatch: 'Pågående kamp',
   selectCategory: 'Velg kategori',
   selectCategoryFromBoard: 'Velg en kategori på arket',
   rollCounter: 'Kast {n} / 3',

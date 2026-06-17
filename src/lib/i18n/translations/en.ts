@@ -38,6 +38,12 @@ export const en: typeof sv = {
   roll: 'Roll',
   rollAgain: 'Roll again',
   rollNoMore: '—',
+  roll1: 'Roll 1',
+  roll2: 'Roll 2',
+  rollLast: 'Last
+roll',
+  youSuffix: ' (you)',
+  ongoingMatch: 'Ongoing match',
   selectCategory: 'Pick category',
   selectCategoryFromBoard: 'Pick a category on the sheet',
   rollCounter: 'Roll {n} / 3',

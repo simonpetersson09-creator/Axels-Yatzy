@@ -38,6 +38,12 @@ export const fi: typeof sv = {
   roll: 'Heitä',
   rollAgain: 'Heitä uudelleen',
   rollNoMore: '—',
+  roll1: 'Heitto 1',
+  roll2: 'Heitto 2',
+  rollLast: 'Viimeinen
+heitto',
+  youSuffix: ' (sinä)',
+  ongoingMatch: 'Käynnissä oleva peli',
   selectCategory: 'Valitse luokka',
   selectCategoryFromBoard: 'Valitse luokka taulukosta',
   rollCounter: 'Heitto {n} / 3',

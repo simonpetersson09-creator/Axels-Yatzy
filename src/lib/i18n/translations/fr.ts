@@ -38,6 +38,12 @@ export const fr: typeof sv = {
   roll: 'Lancer',
   rollAgain: 'Relancer',
   rollNoMore: '—',
+  roll1: 'Lancer 1',
+  roll2: 'Lancer 2',
+  rollLast: 'Dernier
+lancer',
+  youSuffix: ' (toi)',
+  ongoingMatch: 'Partie en cours',
   selectCategory: 'Choisir une catégorie',
   selectCategoryFromBoard: 'Choisissez une catégorie sur la feuille',
   rollCounter: 'Lancer {n} / 3',

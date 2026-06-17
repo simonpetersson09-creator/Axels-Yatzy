@@ -39,29 +39,23 @@ Deno.serve(async (req) => {
 
     // 1) Mark abandoned 'playing' games as finished FIRST so the
     //    trg_games_finished_record_match trigger fires and friend_match_results
-    //    gets a final row. Otherwise the row would stay 'ongoing' forever.
-    const { data: stalePlaying, error: stalePlayingErr } = await supabase
+    //    gets a final row. We do NOT set forfeited_by here — that field steers
+    //    record_friend_match's winner logic and a system string ("Inaktiv")
+    //    would always make player_index=0 win. Leaving it NULL lets the score
+    //    comparison decide (typically a 0-0 draw for fully abandoned games).
+    //    Single UPDATE … RETURNING avoids a TOCTOU race between SELECT and UPDATE.
+    const { data: finalized, error: finishErr } = await supabase
       .from("games")
-      .select("id")
+      .update({ status: "finished" })
       .eq("status", "playing")
-      .lt("updated_at", fourteenDaysAgo);
+      .lt("updated_at", fourteenDaysAgo)
+      .select("id");
 
-    if (stalePlayingErr) {
-      console.error("Failed to fetch stale playing games:", stalePlayingErr);
-      return json({ error: "Failed to fetch stale playing games", details: stalePlayingErr.message }, 500);
+    if (finishErr) {
+      console.error("Failed to finalize stale playing games:", finishErr);
+      return json({ error: "Failed to finalize stale playing games", details: finishErr.message }, 500);
     }
-
-    if (stalePlaying && stalePlaying.length > 0) {
-      const playingIds = stalePlaying.map((g) => g.id);
-      const { error: finishErr } = await supabase
-        .from("games")
-        .update({ status: "finished", forfeited_by: "Inaktiv" })
-        .in("id", playingIds);
-      if (finishErr) {
-        console.error("Failed to finalize stale playing games:", finishErr);
-        return json({ error: "Failed to finalize stale playing games", details: finishErr.message }, 500);
-      }
-    }
+    const finalizedCount = finalized?.length ?? 0;
 
     // 2) Now fetch everything safe to delete: old waiting + old finished.
     //    FK game_players.game_id ON DELETE CASCADE handles player rows.

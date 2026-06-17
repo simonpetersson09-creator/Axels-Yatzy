@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
@@ -50,6 +50,21 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     savePlayerName(name);
     onJoinGame(joinCode.toUpperCase(), name);
   };
+
+  // Auto-join when arriving via shared invite link (?code=XXXXXX) and we already have a saved name
+  const autoJoinedRef = useRef(false);
+  useEffect(() => {
+    if (autoJoinedRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code')?.toUpperCase();
+    if (!code || code.length < 6) return;
+    const savedName = sanitizeName(getPlayerName());
+    if (!savedName) return; // let the user type their name first
+    if (loading) return;
+    autoJoinedRef.current = true;
+    onJoinGame(code, savedName);
+  }, [loading, onJoinGame]);
+
   const handleOpenScanner = async () => {
     // On native iOS/Android, getUserMedia inside WKWebView/Chrome WebView doesn't
     // always trigger the native permission prompt reliably (especially after an

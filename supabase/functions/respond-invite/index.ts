@@ -32,6 +32,17 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!invite) return json({ error: "Inbjudan finns inte" }, 404);
 
+    // Caller must be a party to the invite. Accept requires the recipient
+    // specifically; decline can be either party (sender = cancel).
+    const isRecipient = invite.to_session_id === session_id;
+    const isSender = invite.from_session_id === session_id;
+    if (!isRecipient && !isSender) {
+      return json({ error: "Inbjudan rör inte dig" }, 403);
+    }
+    if (action === "accept" && !isRecipient) {
+      return json({ error: "Bara mottagaren kan acceptera" }, 403);
+    }
+
     if (action === "accept") {
       const { data, error } = await supabase.rpc("accept_invite", {
         p_invite_id: invite_id,

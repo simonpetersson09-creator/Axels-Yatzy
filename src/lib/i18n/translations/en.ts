@@ -26,6 +26,9 @@ export const en: typeof sv = {
   statWinrate: 'Win rate',
   statYatzy: 'Yatzys',
   statStreak: 'Streak',
+  countryRankLabel: 'Your rank',
+  countryRankIn: 'in',
+  countryRankPlayers: 'players',
   goSettings: 'Settings',
   matchExpired: 'The match was ended because 48 hours passed without activity.',
 

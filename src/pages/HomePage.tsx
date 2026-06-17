@@ -19,6 +19,8 @@ import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame } from 'luci
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { syncCountryRank, countryToFlag, countryName, type CountryRank } from '@/lib/country-rank';
+import { getLanguage } from '@/lib/profile';
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -41,6 +43,16 @@ export default function HomePage() {
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
+  const [countryRank, setCountryRank] = useState<CountryRank | null>(null);
+
+  // Sync country ranking whenever the games_played count changes.
+  useEffect(() => {
+    let cancelled = false;
+    void syncCountryRank(stats.gamesPlayed).then(res => {
+      if (!cancelled) setCountryRank(res);
+    });
+    return () => { cancelled = true; };
+  }, [stats.gamesPlayed]);
 
   useEffect(() => {
     const onFocus = () => {
@@ -423,6 +435,23 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+
+          {countryRank && (
+            <div className="flex items-center gap-3 py-3 px-4 rounded-2xl bg-secondary/60 border border-border/50">
+              <span className="text-2xl leading-none" aria-hidden>{countryToFlag(countryRank.country)}</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  {t('countryRankLabel')}
+                </div>
+                <div className="font-display font-bold text-foreground text-sm sm:text-base truncate">
+                  🏆 #{countryRank.rank} {t('countryRankIn')} {countryName(countryRank.country, getLanguage())}
+                </div>
+              </div>
+              <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">
+                {countryRank.total} {t('countryRankPlayers')}
+              </span>
+            </div>
+          )}
         </motion.div>
 
         <motion.div

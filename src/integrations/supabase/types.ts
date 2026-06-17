@@ -342,6 +342,27 @@ export type Database = {
         }
         Relationships: []
       }
+      player_country_stats: {
+        Row: {
+          country: string
+          games_played: number
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          country: string
+          games_played?: number
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          country?: string
+          games_played?: number
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       push_tokens: {
         Row: {
           created_at: string
@@ -408,6 +429,7 @@ export type Database = {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
       }
+      get_country_rank: { Args: { p_session_id: string }; Returns: Json }
       heartbeat: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: undefined
@@ -464,6 +486,14 @@ export type Database = {
           p_ended_at?: string
           p_id: string
           p_last_seen_at?: string
+        }
+        Returns: undefined
+      }
+      upsert_player_country_stats: {
+        Args: {
+          p_country: string
+          p_games_played: number
+          p_session_id: string
         }
         Returns: undefined
       }

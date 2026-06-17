@@ -26,6 +26,9 @@ export const no: typeof sv = {
   statWinrate: 'Seier-%',
   statYatzy: 'Yatzyer',
   statStreak: 'Rekke',
+  countryRankLabel: 'Din rangering',
+  countryRankIn: 'i',
+  countryRankPlayers: 'spillere',
   goSettings: 'Innstillinger',
   matchExpired: 'Kampen ble avsluttet fordi 48 timer har gått uten aktivitet.',
 

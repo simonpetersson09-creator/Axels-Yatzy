@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Player, CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, rollDice } from '@/lib/yatzy-scoring';
 import { setActiveGame, updateLastRollTime, saveGameState, loadGameState, clearLocalActiveGame } from '@/lib/active-game';
@@ -16,6 +16,13 @@ export function useYatzyGame() {
     // Try to restore saved game on mount
     return loadGameState<GameState>();
   });
+  const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
+    };
+  }, []);
 
   // Persist game state on every change
   useEffect(() => {
@@ -54,7 +61,9 @@ export function useYatzyGame() {
     });
     // Update last roll time for 48h expiry
     updateLastRollTime();
-    setTimeout(() => {
+    if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
+    rollTimeoutRef.current = setTimeout(() => {
+      rollTimeoutRef.current = null;
       setGameState(prev => prev ? { ...prev, isRolling: false } : prev);
     }, 1100);
   }, []);

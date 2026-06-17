@@ -36,11 +36,40 @@ Deno.serve(async (req) => {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+
+    // 1) Mark abandoned 'playing' games as finished FIRST so the
+    //    trg_games_finished_record_match trigger fires and friend_match_results
+    //    gets a final row. Otherwise the row would stay 'ongoing' forever.
+    const { data: stalePlaying, error: stalePlayingErr } = await supabase
+      .from("games")
+      .select("id")
+      .eq("status", "playing")
+      .lt("updated_at", fourteenDaysAgo);
+
+    if (stalePlayingErr) {
+      console.error("Failed to fetch stale playing games:", stalePlayingErr);
+      return json({ error: "Failed to fetch stale playing games", details: stalePlayingErr.message }, 500);
+    }
+
+    if (stalePlaying && stalePlaying.length > 0) {
+      const playingIds = stalePlaying.map((g) => g.id);
+      const { error: finishErr } = await supabase
+        .from("games")
+        .update({ status: "finished", forfeited_by: "Inaktiv" })
+        .in("id", playingIds);
+      if (finishErr) {
+        console.error("Failed to finalize stale playing games:", finishErr);
+        return json({ error: "Failed to finalize stale playing games", details: finishErr.message }, 500);
+      }
+    }
+
+    // 2) Now fetch everything safe to delete: old waiting + old finished.
+    //    FK game_players.game_id ON DELETE CASCADE handles player rows.
     const { data: staleGames, error: fetchErr } = await supabase
       .from("games")
       .select("id")
       .or(
-        `and(status.eq.waiting,created_at.lt.${oneHourAgo}),and(status.eq.finished,updated_at.lt.${oneDayAgo}),and(status.eq.playing,updated_at.lt.${fourteenDaysAgo})`
+        `and(status.eq.waiting,created_at.lt.${oneHourAgo}),and(status.eq.finished,updated_at.lt.${oneDayAgo})`
       );
 
     if (fetchErr) {
@@ -48,21 +77,10 @@ Deno.serve(async (req) => {
       return json({ error: "Failed to fetch stale games", details: fetchErr.message }, 500);
     }
     if (!staleGames || staleGames.length === 0) {
-      return json({ cleaned: 0 });
+      return json({ cleaned: 0, finalized: stalePlaying?.length ?? 0 });
     }
 
     const ids = staleGames.map((g) => g.id);
-
-    // Delete players first (no FK cascade since RLS blocks direct deletes, use service role)
-    const { error: delPlayersErr } = await supabase
-      .from("game_players")
-      .delete()
-      .in("game_id", ids);
-
-    if (delPlayersErr) {
-      console.error("Failed to delete game_players:", delPlayersErr);
-      return json({ error: "Failed to delete game_players", details: delPlayersErr.message, attempted: ids.length }, 500);
-    }
 
     const { error: delGamesErr } = await supabase
       .from("games")
@@ -74,7 +92,7 @@ Deno.serve(async (req) => {
       return json({ error: "Failed to delete games", details: delGamesErr.message, attempted: ids.length }, 500);
     }
 
-    return json({ cleaned: ids.length });
+    return json({ cleaned: ids.length, finalized: stalePlaying?.length ?? 0 });
   } catch (err) {
     console.error("Cleanup error:", err);
     return json({ error: "Cleanup failed" }, 500);

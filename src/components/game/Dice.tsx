@@ -105,6 +105,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   const [showSparkle, setShowSparkle] = useState(false);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
+  const rotationRef = useRef(valueToRotation[value]);
   const half = size / 2;
   const radius = Math.round(size * 0.214);
   const pipSize = Math.round(size * 0.18);
@@ -130,29 +131,34 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
 
   const dur = ANIM_DURATION + rollVar.dt;
 
-  const target = useMemo(() => {
-    const b = valueToRotation[value];
-    return { rotateX: b.rotateX + rollVar.spinsX, rotateY: b.rotateY + rollVar.spinsY };
-  }, [value, rollVar]);
-
   useEffect(() => {
     if (rolling && !locked && !rollingRef.current) {
       rollingRef.current = true;
       setIsAnimating(true);
-      setSpinRotation(target);
+      // Always advance forward from the dice's current rotation: full spins
+      // plus the smallest positive offset that lands on the correct face.
+      // This prevents Framer Motion from tweening backward when the spin
+      // ends, which previously made dice appear to "flip sides" mid-stop.
+      const base = valueToRotation[value];
+      const cur = rotationRef.current;
+      const mod = (n: number) => ((n % 360) + 360) % 360;
+      const newTarget = {
+        rotateX: cur.rotateX + rollVar.spinsX + mod(base.rotateX - cur.rotateX),
+        rotateY: cur.rotateY + rollVar.spinsY + mod(base.rotateY - cur.rotateY),
+      };
+      rotationRef.current = newTarget;
+      setSpinRotation(newTarget);
       playRollSound(dur);
       const t = setTimeout(() => {
         setIsAnimating(false);
         rollingRef.current = false;
-        setSpinRotation(valueToRotation[value]);
         playLandSound();
       }, dur * 1000);
       return () => clearTimeout(t);
     } else if (!rolling) {
       rollingRef.current = false;
-      setSpinRotation(valueToRotation[value]);
     }
-  }, [rolling, value, locked, target, dur]);
+  }, [rolling, value, locked, rollVar, dur]);
 
   useEffect(() => {
     if (locked && !prevLockedRef.current) {

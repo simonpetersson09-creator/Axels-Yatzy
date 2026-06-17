@@ -426,7 +426,7 @@ export default function FriendStatsPage() {
                       <div className="mt-2.5 pt-2.5 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">
                         <span className="flex items-center gap-1.5 text-primary font-bold">
                           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                          Pågående match
+                          {t('ongoingMatch')}
                         </span>
                         <span className="text-muted-foreground normal-case tracking-normal">
                           {formatDate(o.ongoingMatch.created_at)}

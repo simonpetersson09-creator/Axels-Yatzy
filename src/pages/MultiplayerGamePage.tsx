@@ -615,7 +615,7 @@ export default function MultiplayerGamePage() {
                     <span className={`text-[12px] font-semibold truncate max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
-                      {player.name}{isMe ? ' (du)' : ''}
+                      {player.name}{isMe ? t('youSuffix') : ''}
                     </span>
                     {isCurrent && (
                       <motion.span
@@ -694,10 +694,10 @@ export default function MultiplayerGamePage() {
                     : gameState.rollsLeft === 0
                       ? t('rollNoMore')
                       : gameState.rollsLeft === 3
-                        ? 'Kast 1'
+                        ? t('roll1')
                         : gameState.rollsLeft === 2
-                          ? 'Kast 2'
-                          : 'Sista\nkastet'}
+                          ? t('roll2')
+                          : t('rollLast')}
                   </span>
                 </button>
               </div>

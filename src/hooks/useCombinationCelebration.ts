@@ -26,8 +26,8 @@ export function useCombinationCelebration(gameState: GameState | null) {
   const [activeCelebration, setActiveCelebration] = useState<CombinationType | null>(null);
   const prevIsRollingRef = useRef(false);
   const prevRollKeyRef = useRef<string | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-  const pendingRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!gameState) return;

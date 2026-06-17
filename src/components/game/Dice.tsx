@@ -126,7 +126,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
     dt: (Math.random() - 0.5) * 0.1,
     bounceY: -5 - Math.random() * 6,
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [value]);
+  }), [rolling, value]);
 
   const dur = ANIM_DURATION + rollVar.dt;
 
@@ -144,14 +144,13 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
       const t = setTimeout(() => {
         setIsAnimating(false);
         rollingRef.current = false;
-        // Keep spinRotation at `target` — it already lands on the correct face
-        // (base + N*360°). Resetting to base would animate backwards 5–6 spins
-        // in 0.45s and make dice appear to "change sides" after landing.
+        setSpinRotation(valueToRotation[value]);
         playLandSound();
       }, dur * 1000);
       return () => clearTimeout(t);
     } else if (!rolling) {
       rollingRef.current = false;
+      setSpinRotation(valueToRotation[value]);
     }
   }, [rolling, value, locked, target, dur]);
 

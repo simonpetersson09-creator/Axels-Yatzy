@@ -499,22 +499,26 @@ export function useMultiplayerGame() {
     return true;
   }, [sessionId, subscribeToGame, refreshGameState]);
 
-  // Start the game (host only) — server-side validated
+  // Start the game (host only) — server-side validated.
+  // Reads latest state via ref so a batched state update right before the host
+  // taps Start can't drop a valid gameId/myPlayerIndex via stale closure.
   const startGame = useCallback(async () => {
-    if (!state.gameId || state.myPlayerIndex !== 0) return;
+    const latest = stateRef.current;
+    const gameId = latest.gameId;
+    if (!gameId || latest.myPlayerIndex !== 0) return;
 
     const { data, error } = await supabase.functions.invoke('start-game', {
-      body: { game_id: state.gameId, session_id: sessionId },
+      body: { game_id: gameId, session_id: sessionId },
     });
 
     if (error) {
       console.error('Start game error:', error);
       const msg = data?.error || 'Kunde inte starta spelet';
-      setState(prev => ({ ...prev, error: msg }));
+      if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } else {
-      trackEvent('game_started', undefined, { gameId: state.gameId, gameMode: 'multiplayer' });
+      trackEvent('game_started', undefined, { gameId, gameMode: 'multiplayer' });
     }
-  }, [state.gameId, state.myPlayerIndex, sessionId]);
+  }, [sessionId]);
 
   // Roll dice — calls server-side Edge Function. Animation timing is client-driven
   // and synced with Dice ANIM_DURATION (~1050 ms) so the rolling=false→true→false

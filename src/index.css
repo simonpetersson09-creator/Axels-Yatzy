@@ -281,21 +281,28 @@
     max-height: 100dvh;
     max-height: var(--app-dvh);
   }
+  /* Fullscreen scroll container for non-game screens.
+     Positioned `fixed` so it becomes the WebView's top-level scroller —
+     this works around an iOS WKWebView bug where nested overflow:auto
+     inside a locked (overflow:hidden + fixed-height) html/body/#root
+     swallows vertical touch pans and refuses to scroll. */
   .mobile-scroll-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
     height: 100svh;
     height: 100dvh;
     height: var(--app-dvh);
-    max-height: 100svh;
-    max-height: 100dvh;
-    max-height: var(--app-dvh);
-    min-height: 0;
-    width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     box-sizing: border-box;
+    z-index: 1;
   }
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);

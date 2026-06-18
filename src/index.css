@@ -281,11 +281,7 @@
     max-height: 100dvh;
     max-height: var(--app-dvh);
   }
-  /* Fullscreen scroll container for non-game screens.
-     Positioned `fixed` so it becomes the WebView's top-level scroller —
-     this works around an iOS WKWebView bug where nested overflow:auto
-     inside a locked (overflow:hidden + fixed-height) html/body/#root
-     swallows vertical touch pans and refuses to scroll. */
+  /* Fullscreen scroll container for non-game screens. */
   .mobile-scroll-screen {
     position: fixed;
     top: 0;
@@ -304,11 +300,37 @@
     box-sizing: border-box;
     z-index: 1;
   }
+  /* Multiplayer lobby must use normal document flow on iOS/Capacitor.
+     A fixed inner overflow container can be ignored by WKWebView when
+     html/body/#root are height-locked for the dice table. */
+  .multiplayer-lobby-screen {
+    min-height: 100svh;
+    min-height: 100dvh;
+    min-height: var(--app-dvh);
+    overflow: visible;
+    touch-action: auto;
+    box-sizing: border-box;
+  }
   .multiplayer-scroll-unlocked {
+    height: auto !important;
+    max-height: none !important;
     overflow-y: auto !important;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-y !important;
+    touch-action: auto !important;
+  }
+  html.ios-viewport.multiplayer-scroll-unlocked,
+  html.ios-viewport body.multiplayer-scroll-unlocked,
+  html.ios-viewport #root.multiplayer-scroll-unlocked {
+    height: auto !important;
+    min-height: var(--app-dvh) !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+  }
+  html.preview-frame #root.multiplayer-scroll-unlocked {
+    height: 852px !important;
+    max-height: 852px !important;
+    overflow-y: auto !important;
   }
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);

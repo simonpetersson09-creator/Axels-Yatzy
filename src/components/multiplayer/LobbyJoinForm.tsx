@@ -92,7 +92,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
 
   return (
     <div
-      className="mobile-scroll-screen px-6"
+      className="multiplayer-lobby-screen px-6"
       style={{
         paddingTop: 'calc(32px + env(safe-area-inset-top))',
         paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',

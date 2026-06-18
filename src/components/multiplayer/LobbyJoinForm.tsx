@@ -92,9 +92,8 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
 
   return (
     <div
-      className="app-fixed-screen overflow-y-scroll overscroll-contain px-6"
+      className="mobile-scroll-screen px-6"
       style={{
-        WebkitOverflowScrolling: 'touch',
         paddingTop: 'calc(32px + env(safe-area-inset-top))',
         paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',
       }}

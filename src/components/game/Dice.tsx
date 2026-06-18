@@ -173,6 +173,27 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
     prevLockedRef.current = locked;
   }, [locked]);
 
+  // Re-sync rotation when `value` changes (incl. mid-spin). Without this the
+  // dice keeps spinning toward the OLD target if the authoritative server
+  // dice land after the local animation started — user sees stale faces
+  // (e.g. all 1s after the first roll, or wrong pips when scoring).
+  useEffect(() => {
+    const base = valueToRotation[value];
+    const cur = rotationRef.current;
+    const mod = (n: number) => ((n % 360) + 360) % 360;
+    const deltaX = (base.rotateX - mod(cur.rotateX) + 360) % 360;
+    const deltaY = (base.rotateY - mod(cur.rotateY) + 360) % 360;
+    if (deltaX === 0 && deltaY === 0) return;
+    const retarget = {
+      rotateX: cur.rotateX + deltaX,
+      rotateY: cur.rotateY + deltaY,
+    };
+    rotationRef.current = retarget;
+    setSpinRotation(retarget);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+
   const handleToggle = () => {
     if (!canLock) return;
     onToggleLock();

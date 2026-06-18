@@ -124,7 +124,15 @@ export function trackEvent(
 }
 
 // Flush on page hide so we don't lose tail events.
-if (typeof window !== 'undefined') {
+// Guard against double-registration: React Strict Mode (dev) double-mounts
+// modules under HMR can otherwise attach the same listeners twice and cause
+// duplicate batch inserts.
+declare global {
+  // eslint-disable-next-line no-var
+  var __lovableAnalyticsListenersAttached: boolean | undefined;
+}
+if (typeof window !== 'undefined' && !globalThis.__lovableAnalyticsListenersAttached) {
+  globalThis.__lovableAnalyticsListenersAttached = true;
   const handleHide = () => { void flush(); };
   window.addEventListener('pagehide', handleHide);
   window.addEventListener('visibilitychange', () => {

@@ -58,6 +58,10 @@ export default function ResultsPage() {
 
   const sorted = [...results].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
+  // Detect a tie at the top so we don't announce a false winner. The server
+  // sets winner_id = NULL in this case; the client used to render sorted[0]
+  // (the alphabetically/insertion-first player) as the winner.
+  const isDraw = !forfeit && sorted.length > 1 && sorted.filter(p => p.score === winner.score).length > 1;
 
   const forfeitWinner = forfeit && results.length > 1
     ? [...results].filter(r => r.name !== forfeitPlayerName).sort((a, b) => b.score - a.score)[0] ?? null
@@ -114,6 +118,10 @@ export default function ResultsPage() {
                 </p>
               )}
             </>
+          ) : isDraw ? (
+            <h1 className="text-3xl font-display font-black text-gold-gradient">
+              {`${t('gameOver')} – ${winner.score}–${winner.score}`}
+            </h1>
           ) : (
             <h1 className="text-3xl font-display font-black text-gold-gradient">
               {results.length > 1 ? t('playerWins', { name: winner?.name ?? '' }) : t('gameOver')}

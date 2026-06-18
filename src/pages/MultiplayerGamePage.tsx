@@ -69,7 +69,12 @@ export default function MultiplayerGamePage() {
   useEffect(() => {
     if (gameId && !gameState && rejoinCalledRef.current !== gameId) {
       rejoinCalledRef.current = gameId;
-      rejoinGame(gameId);
+      // Reset the guard on failure so the user (or a follow-up effect run)
+      // can retry instead of being stuck on an infinite spinner.
+      Promise.resolve(rejoinGame(gameId)).catch((err) => {
+        console.error('[multiplayer] rejoin failed', err);
+        if (rejoinCalledRef.current === gameId) rejoinCalledRef.current = null;
+      });
     }
   }, [gameId, gameState, rejoinGame]);
 

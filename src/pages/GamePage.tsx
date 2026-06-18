@@ -102,7 +102,9 @@ export default function GamePage() {
       const humanScore = getTotalScore(gameState.players[0].scores);
       const allScores = gameState.players.map(p => getTotalScore(p.scores));
       const maxScore = Math.max(...allScores);
-      const won = humanScore === maxScore && !aiPlayers.includes(0);
+      const winnersCount = allScores.filter(s => s === maxScore).length;
+      // Only count as win if human is sole max-scorer (ties = no win)
+      const won = humanScore === maxScore && winnersCount === 1 && !aiPlayers.includes(0);
       const yatzys = (gameState.players[0].scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
       recordGameResult(humanScore, won, yatzys);
       trackEvent('game_finished', { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });

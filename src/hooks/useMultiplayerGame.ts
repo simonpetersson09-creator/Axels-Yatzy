@@ -855,24 +855,44 @@ export function useMultiplayerGame() {
     const gameId = state.gameId;
     if (!gameId || state.status === 'finished') return;
 
-    const handleForeground = () => {
+    // Debounce rapid-fire resume events. iOS fires visibilitychange + pageshow
+    // (and sometimes focus) in quick succession on app resume — without
+    // coalescing they each tear down and rebuild the realtime channel and
+    // restart the heartbeat interval, leaving the channel/timers in a bad state.
+    let coalesceTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastRunAt = 0;
+
+    const runForeground = () => {
+      coalesceTimer = null;
+      lastRunAt = Date.now();
       if (document.visibilityState !== 'visible') return;
       // Re-subscribe (cleanupChannel inside subscribeToGame avoids duplicates)
       subscribeToGame(gameId);
       // Pull latest state
       refreshGameStateRef.current?.(gameId);
       // Refresh presence
-      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId })
+        .then(({ error }) => {
+          if (error) console.warn('[multiplayer] foreground heartbeat failed', error);
+        });
+    };
+
+    const handleForeground = () => {
+      // Skip if we just ran (another resume event firing back-to-back)
+      if (Date.now() - lastRunAt < 1000) return;
+      if (coalesceTimer) return;
+      coalesceTimer = setTimeout(runForeground, 150);
     };
 
     document.addEventListener('visibilitychange', handleForeground);
     window.addEventListener('pageshow', handleForeground);
-    window.addEventListener('focus', handleForeground);
+    // Note: 'focus' intentionally omitted — fires too aggressively (tab switches,
+    // devtools focus, in-app clicks) and is already covered by visibilitychange.
 
     return () => {
+      if (coalesceTimer) clearTimeout(coalesceTimer);
       document.removeEventListener('visibilitychange', handleForeground);
       window.removeEventListener('pageshow', handleForeground);
-      window.removeEventListener('focus', handleForeground);
     };
   }, [state.gameId, state.status, subscribeToGame, sessionId]);
 

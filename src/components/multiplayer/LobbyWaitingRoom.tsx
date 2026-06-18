@@ -66,7 +66,13 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
   };
 
   return (
-    <div className="app-screen px-6 py-8 safe-top safe-bottom overflow-y-auto overscroll-contain">
+    <div
+      className="mobile-scroll-screen px-6"
+      style={{
+        paddingTop: 'calc(32px + env(safe-area-inset-top))',
+        paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',
+      }}
+    >
       <motion.div
         className="max-w-sm mx-auto space-y-8"
         initial={{ opacity: 0, y: 20 }}

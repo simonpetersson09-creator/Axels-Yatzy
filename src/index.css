@@ -281,6 +281,22 @@
     max-height: 100dvh;
     max-height: var(--app-dvh);
   }
+  .mobile-scroll-screen {
+    height: 100svh;
+    height: 100dvh;
+    height: var(--app-dvh);
+    max-height: 100svh;
+    max-height: 100dvh;
+    max-height: var(--app-dvh);
+    min-height: 0;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    box-sizing: border-box;
+  }
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);
   }

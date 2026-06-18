@@ -15,7 +15,7 @@ export default function MultiplayerLobbyPage() {
   useEffect(() => {
     document.documentElement.classList.remove('game-scroll-lock');
     document.body.classList.remove('game-scroll-lock');
-    document.getElementById('root')?.classList.remove('game-scroll-lock');
+    document.getElementById("root")?.classList.remove("game-scroll-lock");
   }, []);
 
   // Navigate to game when status transitions to 'playing'

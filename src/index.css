@@ -93,7 +93,7 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
   }
   html {
     background-color: hsl(var(--background));
@@ -303,6 +303,12 @@
     touch-action: pan-y;
     box-sizing: border-box;
     z-index: 1;
+  }
+  .multiplayer-scroll-unlocked {
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y !important;
   }
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);

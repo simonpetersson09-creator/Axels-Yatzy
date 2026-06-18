@@ -529,7 +529,7 @@ export default function MultiplayerGamePage() {
   return (
     <div
       key={orientationKey}
-      className="ios-game-layout app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none"
+      className="ios-game-layout app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none"
       style={{
         WebkitOverflowScrolling: 'auto',
         padding: '10px max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left))',

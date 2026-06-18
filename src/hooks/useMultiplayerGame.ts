@@ -320,9 +320,11 @@ export function useMultiplayerGame() {
   }, [refreshGameState]);
 
   // Debounced refresh — uses ref to avoid stale closure (BUG 10 fix)
+  // Guards against mountedRef so we never call setState on an unmounted provider.
   const debouncedRefresh = useCallback((gameId: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
+      if (!mountedRef.current) return;
       refreshGameStateRef.current?.(gameId);
     }, 100);
   }, []);
@@ -773,18 +775,31 @@ export function useMultiplayerGame() {
       const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } finally {
-      // M2: Hold optimistic state through cell-fill animation via a tracked
-      // timer so unmount and rapid resubmits cancel cleanly.
-      if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
-      submitTimerRef.current = setTimeout(() => {
-        submitTimerRef.current = null;
+      if (!rpcOk) {
+        // On failure release locks immediately so user can retry / navigate
+        // without being blocked by the 700ms cell-fill timer.
+        if (submitTimerRef.current) { clearTimeout(submitTimerRef.current); submitTimerRef.current = null; }
         pendingSubmitRef.current = null;
         submittingRef.current = false;
-        if (!mountedRef.current) return;
-        setPendingCategory(null);
-        setPendingPlayerIndex(null);
+        if (mountedRef.current) {
+          setPendingCategory(null);
+          setPendingPlayerIndex(null);
+        }
         refreshGameStateRef.current?.(gameId);
-      }, SUBMIT_ANIM_MS);
+      } else {
+        // M2: Hold optimistic state through cell-fill animation via a tracked
+        // timer so unmount and rapid resubmits cancel cleanly.
+        if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+        submitTimerRef.current = setTimeout(() => {
+          submitTimerRef.current = null;
+          pendingSubmitRef.current = null;
+          submittingRef.current = false;
+          if (!mountedRef.current) return;
+          setPendingCategory(null);
+          setPendingPlayerIndex(null);
+          refreshGameStateRef.current?.(gameId);
+        }, SUBMIT_ANIM_MS);
+      }
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 

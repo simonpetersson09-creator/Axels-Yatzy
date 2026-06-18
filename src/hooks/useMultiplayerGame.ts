@@ -616,8 +616,10 @@ export function useMultiplayerGame() {
 
   // Toggle lock — optimistic local update, server validates in background.
   // Rolls back via refresh on RPC failure.
+  // Reads latest state via ref so stale closures from rapid renders can't
+  // turn this into a silent no-op.
   const toggleLock = useCallback(async (index: number) => {
-    if (!state.gameId || !state.gameState || rollingGuardRef.current) return;
+    if (rollingGuardRef.current) return;
     const latest = stateRef.current;
     const gs = latest.gameState;
     if (!latest.gameId || !gs) return;
@@ -639,7 +641,8 @@ export function useMultiplayerGame() {
     } : prev);
 
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId })
+      .then(({ error }) => { if (error) console.warn('[multiplayer] toggleLock heartbeat failed', error); });
 
     const lockPromise = (async (): Promise<boolean> => {
       try {
@@ -672,7 +675,7 @@ export function useMultiplayerGame() {
       }
     })();
     pendingLockPromisesRef.current.add(lockPromise);
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, getPendingLockForTurn]);
+  }, [sessionId, getPendingLockForTurn]);
 
   // Get possible scores
   const getPossibleScores = useCallback((): Record<CategoryId, number> | null => {

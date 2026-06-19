@@ -612,20 +612,22 @@ export function useMultiplayerGame() {
       return { ok: false } as const;
     });
 
-    // Always wait the full animation duration before clearing localRolling.
-    // Apply any buffered server dice values right at the end of the spin.
+    // Wait for BOTH the animation duration AND the server response before
+    // clearing localRolling. If the server is slower than the animation, we
+    // keep spinning until values arrive — prevents a visible secondary
+    // "settle" rotation when the response lands after isRolling went false.
     if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+    const animPromise = new Promise<void>((resolve) => {
+      rollingTimerRef.current = setTimeout(() => resolve(), ROLL_ANIM_MS);
+    });
     return new Promise<boolean>((resolve) => {
-      rollingTimerRef.current = setTimeout(async () => {
-        // Make sure the server response has landed before flipping back, otherwise
-        // we could clear localRolling before the new dice arrive.
-        const result = await rpcPromise;
+      Promise.all([animPromise, rpcPromise]).then(([, result]) => {
         if (!mountedRef.current) { resolve(false); return; }
         flushPendingRoll();
         rollingGuardRef.current = false;
         setLocalRolling(false);
         resolve(result.ok);
-      }, ROLL_ANIM_MS);
+      });
     });
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, flushPendingRoll, waitForPendingLocks, getPendingLockForTurn]);
 

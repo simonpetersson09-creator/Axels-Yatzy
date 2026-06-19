@@ -580,9 +580,24 @@ export function useMultiplayerGame() {
     })).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
       if (!error && data?.dice && typeof data?.rolls_left === 'number') {
+        const newLocked = gs.rollsLeft === 3 ? [false, false, false, false, false] : activeLockedDice;
+        // Apply authoritative dice values to state IMMEDIATELY (mid-spin) so
+        // the Dice component re-targets the rotation smoothly — matches the
+        // single-player feel where final values are known at spin start.
+        // rollsLeft/isRolling stay buffered so the spin completes visually.
+        if (mountedRef.current) {
+          setState(prev => prev.gameState ? {
+            ...prev,
+            gameState: {
+              ...prev.gameState,
+              dice: data.dice,
+              lockedDice: newLocked,
+            },
+          } : prev);
+        }
         pendingRollUpdateRef.current = {
           dice: data.dice,
-          lockedDice: gs.rollsLeft === 3 ? [false, false, false, false, false] : activeLockedDice,
+          lockedDice: newLocked,
           rollsLeft: data.rolls_left,
           isRolling: false,
         };

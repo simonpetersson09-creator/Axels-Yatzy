@@ -127,9 +127,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   const rollingRef = useRef(false);
   const rotationRef = useRef(valueToRotation[value]);
   const half = size / 2;
-  const radius = Math.round(size * 0.214);
+  const radius = Math.round(size * 0.24);
   const pipSize = Math.round(size * 0.18);
-  const gridInset = Math.round(size * 0.125);
+  const gridInset = Math.round(size * 0.13);
   const gridSize = size - gridInset * 2;
   const faces = useMemo(() => [
     { v: 1, t: `translateZ(${half}px)` },

@@ -22,14 +22,6 @@ interface DiceProps {
   size?: number;
 }
 
-const pipGridPositions: Record<number, number[]> = {
-  1: [5],
-  2: [1, 9],
-  3: [1, 5, 9],
-  4: [1, 3, 7, 9],
-  5: [1, 3, 5, 7, 9],
-  6: [1, 4, 7, 3, 6, 9],
-};
 
 const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   1: { rotateX: 0, rotateY: 0 },

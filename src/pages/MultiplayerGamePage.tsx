@@ -23,6 +23,9 @@ import { saveFriendMatchResult } from '@/lib/friend-stats';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 
+const DEBUG = false;
+
+
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();

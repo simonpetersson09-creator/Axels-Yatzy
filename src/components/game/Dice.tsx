@@ -58,18 +58,18 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         background: [
           // top-left sheen
           'radial-gradient(circle at 22% 18%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 45%)',
-          // bottom-right shadow falloff for volume
-          'radial-gradient(circle at 88% 92%, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 55%)',
-          // base ivory body with directional gradient
-          'linear-gradient(135deg, #ffffff 0%, #f4f1ea 55%, #d9d3c5 100%)',
-        ].join(', '),
-        boxShadow: [
-          // top-left edge highlight (light from upper-left)
-          'inset 2px 2px 2.5px rgba(255,255,255,0.95)',
-          // bottom-right inner shadow for chamfered edge
-          'inset -2.5px -3px 4px rgba(0,0,0,0.22)',
-          // crisp outline
-          'inset 0 0 0 1px rgba(0,0,0,0.10)',
+        // bottom-right highlight falloff for volume
+        'radial-gradient(circle at 88% 92%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 55%)',
+        // base ivory body with directional gradient
+        'linear-gradient(135deg, #ffffff 0%, #f4f1ea 55%, #d9d3c5 100%)',
+      ].join(', '),
+      boxShadow: [
+        // top-left edge highlight (light from upper-left)
+        'inset 2px 2px 2.5px rgba(255,255,255,0.95)',
+        // bottom-right inner highlight for chamfered edge
+        'inset -2.5px -3px 4px rgba(255,255,255,0.22)',
+        // crisp outline
+        'inset 0 0 0 1px rgba(255,255,255,0.10)',
         ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',

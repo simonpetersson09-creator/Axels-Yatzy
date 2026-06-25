@@ -37,14 +37,14 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 
 const ANIM_DURATION = 1.35;
 
-// Pure CSS white die face with black pips — no pre-rendered art, no perspective conflicts.
+// Pure CSS ivory die face with deep black pips — premium 3D look, no pre-rendered art.
 const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = Math.round(size * 0.22);
-  const pipSize = Math.max(5, Math.round(size * 0.15));
-  const pad = Math.round(size * 0.16);
+  const radius = Math.round(size * 0.2);
+  const pipSize = Math.max(6, Math.round(size * 0.17));
+  const pad = Math.round(size * 0.15);
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
     <div
@@ -56,20 +56,20 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
         background: [
-          // top-left sheen
-          'radial-gradient(circle at 22% 18%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 45%)',
-          // bottom-right warm shadow for volume
-          'radial-gradient(circle at 88% 92%, rgba(90,82,72,0.10) 0%, rgba(90,82,72,0) 55%)',
-          // base ivory body with directional gradient
-          'linear-gradient(135deg, #ffffff 0%, #f4f1ea 55%, #d9d3c5 100%)',
+          // bright top-left specular highlight
+          'radial-gradient(circle at 20% 15%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 50%)',
+          // bottom-right ambient occlusion / shaded face
+          'radial-gradient(circle at 92% 95%, rgba(120,108,92,0.30) 0%, rgba(120,108,92,0) 60%)',
+          // ivory body with directional gradient (lit from upper-left)
+          'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
         ].join(', '),
         boxShadow: [
-          // top-left edge highlight (light from upper-left)
-          'inset 2px 2px 2.5px rgba(255,255,255,0.9)',
-          // bottom-right inner shadow for depth — very soft so corners stay white
-          'inset -2px -2.5px 3px rgba(0,0,0,0.08)',
-          // white rim to keep corners bright
-          'inset 0 0 0 1px rgba(255,255,255,0.85)',
+          // bright bevel highlight (top-left)
+          'inset 2.5px 2.5px 3px rgba(255,255,255,0.95)',
+          // deeper bevel shadow (bottom-right) — sells the rounded edge
+          'inset -2.5px -3px 4px rgba(80,70,55,0.28)',
+          // crisp white rim to keep corners bright (matches reference)
+          'inset 0 0 0 1px rgba(255,255,255,0.9)',
         ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',
@@ -77,14 +77,14 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         overflow: 'hidden',
       }}
     >
-      {/* Glossy top sheen overlay */}
+      {/* Glossy top sheen — subtle */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           borderRadius: radius,
           background:
-            'linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.0) 38%)',
+            'linear-gradient(160deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 40%)',
           pointerEvents: 'none',
         }}
       />
@@ -114,14 +114,17 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
                     width: pipSize,
                     height: pipSize,
                     borderRadius: '50%',
-                    background: 'radial-gradient(circle at 38% 32%, #1a1a1a 0%, #000000 100%)',
+                    // Solid black pip (no transparency in color)
+                    background: '#000',
                     boxShadow: [
-                      // deep recess shadow (top-left dark rim)
-                      'inset 1.5px 2px 2.5px rgba(0,0,0,0.75)',
-                      // bottom-right highlight rim (light bouncing off recess)
-                      'inset -1px -1.5px 1.5px rgba(255,255,255,0.16)',
-                      // tiny cast shadow on the die surface around the pip
-                      '0 1px 1.5px rgba(0,0,0,0.3)',
+                      // strong recess shadow (top-left dark rim sells the depth)
+                      'inset 2px 2.5px 3px rgba(0,0,0,0.9)',
+                      // bottom-right highlight rim — light bouncing off recess edge
+                      'inset -1px -1.5px 1.5px rgba(255,255,255,0.22)',
+                      // soft cast shadow on die surface around the pip
+                      '0 1.5px 2px rgba(0,0,0,0.45)',
+                      // tiny outer ring for contact definition
+                      '0 0 0 0.5px rgba(0,0,0,0.25)',
                     ].join(', '),
                   }}
                 />
@@ -133,6 +136,7 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
     </div>
   );
 });
+
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 }: DiceProps) {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -161,6 +165,13 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   });
   const rollVarRef = useRef(makeRollVar());
   const [rollVar, setRollVar] = useState(rollVarRef.current);
+  // Per-die resting tilt — slight randomisation so dice in a row don't look mechanically identical.
+  const restTilt = useRef({
+    tx: (Math.random() - 0.5) * 8, // ±4°
+    ty: (Math.random() - 0.5) * 10, // ±5°
+    tz: (Math.random() - 0.5) * 12, // ±6°
+  }).current;
+
 
   const dur = ANIM_DURATION + rollVar.dt;
 
@@ -311,15 +322,16 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         }}
       >
         <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
-          {/* Permanent tilt — reveals two side edges so the cube reads as 3D at rest */}
+          {/* Permanent tilt with per-die randomised lean — reveals two side faces (premium 3D-rendered look) */}
           <div
             style={{
               width: size,
               height: size,
               transformStyle: 'preserve-3d',
-              transform: 'rotateX(-14deg) rotateY(18deg)',
+              transform: `rotateX(${-18 + restTilt.tx}deg) rotateY(${22 + restTilt.ty}deg) rotateZ(${restTilt.tz}deg)`,
             }}
           >
+
             <motion.div
               className="relative"
               style={{

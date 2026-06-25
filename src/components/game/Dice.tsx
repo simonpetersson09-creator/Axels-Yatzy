@@ -307,7 +307,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           width: size,
           height: size,
           borderRadius: radius,
-          position: 'relative',
           willChange: 'auto',
           boxShadow: locked
             ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18)'
@@ -316,18 +315,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           opacity: canLock && !locked ? 0.5 : 1,
         }}
       >
-        {/* Ivory backing plate — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            borderRadius: radius,
-            background: 'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        />
-        <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none', position: 'relative', zIndex: 1 }}>
+        <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
           <motion.div
             className="relative"
             style={{
@@ -353,12 +341,26 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
+                {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: radius,
+                    background: 'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
+                    transform: 'translateZ(-1px)',
+                    pointerEvents: 'none',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                  }}
+                />
                 <DiceFace faceValue={f.v} size={size} />
               </div>
             ))}
           </motion.div>
         </div>
       </motion.div>
+
 
 
       {/* Ground shadow — bigger, softer, with blur for a premium "resting on felt" look */}

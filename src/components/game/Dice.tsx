@@ -30,7 +30,7 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-const PIP_COLOR = '#1a2428';
+const PIP_COLOR = '#15191c';
 const ANIM_DURATION = 1.35;
 
 const Pip = memo(function Pip({ pipSize }: { pipSize: number }) {
@@ -44,8 +44,11 @@ const Pip = memo(function Pip({ pipSize }: { pipSize: number }) {
         maxWidth: pipSize,
         maxHeight: pipSize,
         borderRadius: 9999,
-        backgroundColor: PIP_COLOR,
-        boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
+        // Subtle radial so the pip reads as a recessed sphere, not a flat disc.
+        background:
+          'radial-gradient(circle at 35% 30%, #3a4147 0%, #1d2326 45%, #0c1012 100%)',
+        boxShadow:
+          'inset 0 0.5px 1px rgba(255,255,255,0.18), inset 0 -0.5px 1px rgba(0,0,0,0.55), 0 0.5px 0.5px rgba(255,255,255,0.55)',
         flexShrink: 0,
         flexGrow: 0,
       }}

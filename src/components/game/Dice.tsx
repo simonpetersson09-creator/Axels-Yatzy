@@ -361,9 +361,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         </div>
       </motion.div>
 
-
-
       {/* Ground shadow — bigger, softer, with blur for a premium "resting on felt" look */}
+
       <motion.div
         style={{
           width: size * 0.78,

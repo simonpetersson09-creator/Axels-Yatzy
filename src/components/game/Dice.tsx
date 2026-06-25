@@ -315,15 +315,16 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         }}
       >
         <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
-          {/* Permanent tilt — reveals two side edges so the cube reads as 3D at rest */}
+          {/* Permanent tilt with per-die randomised lean — reveals two side faces (premium 3D-rendered look) */}
           <div
             style={{
               width: size,
               height: size,
               transformStyle: 'preserve-3d',
-              transform: 'rotateX(-14deg) rotateY(18deg)',
+              transform: `rotateX(${-18 + restTilt.tx}deg) rotateY(${22 + restTilt.ty}deg) rotateZ(${restTilt.tz}deg)`,
             }}
           >
+
             <motion.div
               className="relative"
               style={{

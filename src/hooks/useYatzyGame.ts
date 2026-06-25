@@ -103,14 +103,8 @@ export function useYatzyGame() {
       if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return prev;
 
       const score = calculateScore(prev.dice, categoryId);
-      console.log('scoreboard-category-saved', {
-        clickedRowText: debug?.rowText ?? null,
-        clickedCategoryId: debug?.clickedCategoryId ?? categoryId,
-        renderedRowIndex: debug?.renderedRowIndex ?? null,
-        actualSavedCategory: categoryId,
-        currentPlayer: currentPlayer.name,
-        score,
-      });
+
+
       const updatedPlayers = prev.players.map((p, i) => {
         if (i !== prev.currentPlayerIndex) return p;
         return { ...p, scores: { ...p.scores, [categoryId]: score } };

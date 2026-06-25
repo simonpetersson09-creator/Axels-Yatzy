@@ -267,14 +267,8 @@ export default function GamePage() {
     } else {
       playLightHaptic().catch(() => {});
     }
-    console.log('scoreboard-save-request', {
-      clickedRowText: debug?.rowText ?? null,
-      clickedCategoryId: debug?.clickedCategoryId ?? categoryId,
-      renderedRowIndex: debug?.renderedRowIndex ?? null,
-      actualSavedCategory: categoryId,
-      currentPlayer: gameState.players[gameState.currentPlayerIndex]?.name ?? null,
-      score: debug?.score ?? null,
-    });
+
+
     selectCategory(categoryId as any, debug);
   }, [gameState, selectCategory, aiPlayers]);
 

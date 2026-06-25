@@ -2,16 +2,18 @@ import { useState, useEffect, useMemo, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { playRollSound, playLandSound } from '@/lib/dice-sounds';
-import face1Asset from '@/assets/dice/face-1.png.asset.json';
-import face2Asset from '@/assets/dice/face-2.png.asset.json';
-import face3Asset from '@/assets/dice/face-3.png.asset.json';
-import face4Asset from '@/assets/dice/face-4.png.asset.json';
-import face5Asset from '@/assets/dice/face-5.png.asset.json';
-import face6Asset from '@/assets/dice/face-6.png.asset.json';
 
-const FACE_IMAGES: Record<number, string> = {
-  1: face1Asset.url, 2: face2Asset.url, 3: face3Asset.url,
-  4: face4Asset.url, 5: face5Asset.url, 6: face6Asset.url,
+// Pip layout per face (3x3 grid positions, 0-8 indices)
+// 0 1 2
+// 3 4 5
+// 6 7 8
+const PIP_POSITIONS: Record<number, number[]> = {
+  1: [4],
+  2: [0, 8],
+  3: [0, 4, 8],
+  4: [0, 2, 6, 8],
+  5: [0, 2, 4, 6, 8],
+  6: [0, 2, 3, 5, 6, 8],
 };
 
 interface DiceProps {

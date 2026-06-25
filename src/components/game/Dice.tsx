@@ -2,6 +2,16 @@ import { useState, useEffect, useMemo, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { playRollSound, playLandSound } from '@/lib/dice-sounds';
+import face1 from '@/assets/dice/face-1.png';
+import face2 from '@/assets/dice/face-2.png';
+import face3 from '@/assets/dice/face-3.png';
+import face4 from '@/assets/dice/face-4.png';
+import face5 from '@/assets/dice/face-5.png';
+import face6 from '@/assets/dice/face-6.png';
+
+const FACE_IMAGES: Record<number, string> = {
+  1: face1, 2: face2, 3: face3, 4: face4, 5: face5, 6: face6,
+};
 
 interface DiceProps {
   value: number;

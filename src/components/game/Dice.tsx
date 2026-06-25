@@ -114,15 +114,14 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
                     width: pipSize,
                     height: pipSize,
                     borderRadius: '50%',
-                    background:
-                      'radial-gradient(circle at 38% 32%, #3a3a3a 0%, #0d0d0d 55%, #000 100%)',
+                    background: 'radial-gradient(circle at 38% 32%, #1a1a1a 0%, #000000 100%)',
                     boxShadow: [
                       // deep recess shadow (top-left dark rim)
-                      'inset 1.5px 2px 2.5px rgba(0,0,0,0.85)',
+                      'inset 1.5px 2px 2.5px rgba(0,0,0,0.75)',
                       // bottom-right highlight rim (light bouncing off recess)
-                      'inset -1px -1.5px 1.5px rgba(255,255,255,0.18)',
+                      'inset -1px -1.5px 1.5px rgba(255,255,255,0.16)',
                       // tiny cast shadow on the die surface around the pip
-                      '0 1px 1.5px rgba(0,0,0,0.35)',
+                      '0 1px 1.5px rgba(0,0,0,0.3)',
                     ].join(', '),
                   }}
                 />

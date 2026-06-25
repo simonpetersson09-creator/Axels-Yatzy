@@ -331,18 +331,22 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         </div>
       </motion.div>
 
-      {/* Ground shadow */}
+      {/* Ground shadow — bigger, softer, with blur for a premium "resting on felt" look */}
       <motion.div
         style={{
-          width: size * 0.55, height: 5, marginTop: 5, borderRadius: '50%',
+          width: size * 0.78,
+          height: 7,
+          marginTop: 4,
+          borderRadius: '50%',
           pointerEvents: 'none',
+          filter: 'blur(2.5px)',
           background: locked
-            ? 'radial-gradient(ellipse, rgba(245,185,66,0.3), transparent)'
-            : 'radial-gradient(ellipse, rgba(0,0,0,0.22), transparent)',
+            ? 'radial-gradient(ellipse, rgba(245,185,66,0.35), rgba(245,185,66,0.08) 55%, transparent 75%)'
+            : 'radial-gradient(ellipse, rgba(0,0,0,0.32), rgba(0,0,0,0.10) 55%, transparent 75%)',
         }}
         animate={{
-          scaleX: isAnimating ? [1, 0.6, 1.15, 0.95, 1] : locked ? 1.1 : 1,
-          opacity: isAnimating ? [0.5, 0.15, 0.5, 0.45, 0.5] : 0.5,
+          scaleX: isAnimating ? [1, 0.65, 1.12, 0.97, 1] : locked ? 1.08 : 1,
+          opacity: isAnimating ? [0.55, 0.2, 0.55, 0.5, 0.55] : 0.55,
         }}
         transition={
           isAnimating

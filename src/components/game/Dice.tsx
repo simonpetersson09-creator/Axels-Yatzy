@@ -55,15 +55,39 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         borderRadius: radius,
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
-        background:
-          'radial-gradient(circle at 30% 25%, #ffffff 0%, #f7f5f0 55%, #e8e3d8 100%)',
-        boxShadow:
-          'inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.06)',
+        background: [
+          // top-left sheen
+          'radial-gradient(circle at 22% 18%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 45%)',
+          // bottom-right shadow falloff for volume
+          'radial-gradient(circle at 88% 92%, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 55%)',
+          // base ivory body with directional gradient
+          'linear-gradient(135deg, #ffffff 0%, #f4f1ea 55%, #d9d3c5 100%)',
+        ].join(', '),
+        boxShadow: [
+          // top-left edge highlight (light from upper-left)
+          'inset 2px 2px 2.5px rgba(255,255,255,0.95)',
+          // bottom-right inner shadow for chamfered edge
+          'inset -2.5px -3px 4px rgba(0,0,0,0.22)',
+          // crisp outline
+          'inset 0 0 0 1px rgba(0,0,0,0.10)',
+        ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
+        overflow: 'hidden',
       }}
     >
+      {/* Glossy top sheen overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          background:
+            'linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.0) 38%)',
+          pointerEvents: 'none',
+        }}
+      />
       <div
         style={{
           position: 'absolute',
@@ -91,9 +115,15 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
                     height: pipSize,
                     borderRadius: '50%',
                     background:
-                      'radial-gradient(circle at 35% 30%, #4a4a4a 0%, #1a1a1a 60%, #000 100%)',
-                    boxShadow:
-                      'inset 0 1px 1.5px rgba(255,255,255,0.25), inset 0 -1px 1px rgba(0,0,0,0.5), 0 0.5px 1px rgba(0,0,0,0.3)',
+                      'radial-gradient(circle at 38% 32%, #3a3a3a 0%, #0d0d0d 55%, #000 100%)',
+                    boxShadow: [
+                      // deep recess shadow (top-left dark rim)
+                      'inset 1.5px 2px 2.5px rgba(0,0,0,0.85)',
+                      // bottom-right highlight rim (light bouncing off recess)
+                      'inset -1px -1.5px 1.5px rgba(255,255,255,0.18)',
+                      // tiny cast shadow on the die surface around the pip
+                      '0 1px 1.5px rgba(0,0,0,0.35)',
+                    ].join(', '),
                   }}
                 />
               )}

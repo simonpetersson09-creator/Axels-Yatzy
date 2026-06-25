@@ -315,8 +315,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
             transition={
               isAnimating
                 ? {
-                    rotateX: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
-                    rotateY: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
+                    rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
+                    rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }

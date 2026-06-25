@@ -312,35 +312,45 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         }}
       >
         <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
-          <motion.div
-            className="relative"
+          {/* Permanent tilt — reveals two side edges so the cube reads as 3D at rest */}
+          <div
             style={{
               width: size,
               height: size,
               transformStyle: 'preserve-3d',
-              willChange: isAnimating ? 'transform' : 'auto',
+              transform: 'rotateX(-14deg) rotateY(18deg)',
             }}
-            animate={{
-              rotateX: spinRotation.rotateX,
-              rotateY: spinRotation.rotateY,
-              y: isAnimating ? [0, rollVar.bounceY, 2, -1, 0] : 0,
-            }}
-            transition={
-              isAnimating
-                ? {
-                    rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
-                    rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
-                    y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
-                  }
-                : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
-            }
           >
-            {faces.map(f => (
-              <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                <DiceFace faceValue={f.v} size={size} />
-              </div>
-            ))}
-          </motion.div>
+            <motion.div
+              className="relative"
+              style={{
+                width: size,
+                height: size,
+                transformStyle: 'preserve-3d',
+                willChange: isAnimating ? 'transform' : 'auto',
+              }}
+              animate={{
+                rotateX: spinRotation.rotateX,
+                rotateY: spinRotation.rotateY,
+                y: isAnimating ? [0, rollVar.bounceY, 2, -1, 0] : 0,
+              }}
+              transition={
+                isAnimating
+                  ? {
+                      rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
+                      rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
+                      y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
+                    }
+                  : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+              }
+            >
+              {faces.map(f => (
+                <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
+                  <DiceFace faceValue={f.v} size={size} />
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </motion.div>
 

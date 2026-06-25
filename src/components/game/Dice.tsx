@@ -37,28 +37,71 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 
 const ANIM_DURATION = 1.35;
 
-// Image-based face — true 3D-rendered look. Each face is a pre-rendered PNG.
+// Pure CSS white die face with black pips — no pre-rendered art, no perspective conflicts.
 const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
+  const radius = Math.round(size * 0.22);
+  const pipSize = Math.max(5, Math.round(size * 0.15));
+  const pad = Math.round(size * 0.16);
+  const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
-    <img
-      src={FACE_IMAGES[faceValue]}
-      alt=""
-      draggable={false}
+    <div
       style={{
         position: 'absolute',
         width: size,
         height: size,
+        borderRadius: radius,
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
+        background:
+          'radial-gradient(circle at 30% 25%, #ffffff 0%, #f7f5f0 55%, #e8e3d8 100%)',
+        boxShadow:
+          'inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.06)',
+        pointerEvents: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
-        pointerEvents: 'none',
-        display: 'block',
       }}
-    />
+    >
+      <div
+        style={{
+          position: 'absolute',
+          inset: pad,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gridTemplateRows: 'repeat(3, 1fr)',
+        }}
+      >
+        {Array.from({ length: 9 }).map((_, i) => {
+          const show = positions.includes(i);
+          return (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {show && (
+                <div
+                  style={{
+                    width: pipSize,
+                    height: pipSize,
+                    borderRadius: '50%',
+                    background:
+                      'radial-gradient(circle at 35% 30%, #4a4a4a 0%, #1a1a1a 60%, #000 100%)',
+                    boxShadow:
+                      'inset 0 1px 1.5px rgba(255,255,255,0.25), inset 0 -1px 1px rgba(0,0,0,0.5), 0 0.5px 1px rgba(0,0,0,0.3)',
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 });
 

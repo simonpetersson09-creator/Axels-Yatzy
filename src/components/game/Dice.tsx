@@ -165,6 +165,13 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   });
   const rollVarRef = useRef(makeRollVar());
   const [rollVar, setRollVar] = useState(rollVarRef.current);
+  // Per-die resting tilt — slight randomisation so dice in a row don't look mechanically identical.
+  const restTilt = useRef({
+    tx: (Math.random() - 0.5) * 8, // ±4°
+    ty: (Math.random() - 0.5) * 10, // ±5°
+    tz: (Math.random() - 0.5) * 12, // ±6°
+  }).current;
+
 
   const dur = ANIM_DURATION + rollVar.dt;
 

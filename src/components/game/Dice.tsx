@@ -57,19 +57,19 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         WebkitBackfaceVisibility: 'hidden',
         background: [
           // top-left sheen
-          'radial-gradient(circle at 22% 18%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 45%)',
-          // bottom-right shadow falloff for volume
-          'radial-gradient(circle at 88% 92%, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 55%)',
+          'radial-gradient(circle at 22% 18%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 45%)',
+          // bottom-right warm shadow for volume
+          'radial-gradient(circle at 88% 92%, rgba(90,82,72,0.10) 0%, rgba(90,82,72,0) 55%)',
           // base ivory body with directional gradient
           'linear-gradient(135deg, #ffffff 0%, #f4f1ea 55%, #d9d3c5 100%)',
         ].join(', '),
         boxShadow: [
           // top-left edge highlight (light from upper-left)
-          'inset 2px 2px 2.5px rgba(255,255,255,0.95)',
-          // bottom-right inner shadow for chamfered edge
-          'inset -2.5px -3px 4px rgba(0,0,0,0.22)',
-          // crisp outline
-          'inset 0 0 0 1px rgba(0,0,0,0.10)',
+          'inset 2px 2px 2.5px rgba(255,255,255,0.9)',
+          // bottom-right inner shadow for depth — very soft so corners stay white
+          'inset -2px -2.5px 3px rgba(0,0,0,0.08)',
+          // white rim to keep corners bright
+          'inset 0 0 0 1px rgba(255,255,255,0.85)',
         ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',

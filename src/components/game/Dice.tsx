@@ -141,11 +141,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   ], [half]);
 
   const makeRollVar = () => ({
-    // More spins + sharper deceleration so the final face only resolves at the very end.
-    spinsX: (4 + Math.floor(Math.random() * 3)) * 360,
-    spinsY: (4 + Math.floor(Math.random() * 3)) * 360,
+    // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.
+    spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
+    spinsY: (2 + Math.floor(Math.random() * 2)) * 360,
     dt: (Math.random() - 0.5) * 0.1,
-    bounceY: -5 - Math.random() * 6,
+    bounceY: -4 - Math.random() * 4,
   });
   const rollVarRef = useRef(makeRollVar());
   const [rollVar, setRollVar] = useState(rollVarRef.current);

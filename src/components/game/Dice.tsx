@@ -30,7 +30,7 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-const PIP_COLOR = '#1a2428';
+const PIP_COLOR = '#15191c';
 const ANIM_DURATION = 1.35;
 
 const Pip = memo(function Pip({ pipSize }: { pipSize: number }) {
@@ -44,8 +44,11 @@ const Pip = memo(function Pip({ pipSize }: { pipSize: number }) {
         maxWidth: pipSize,
         maxHeight: pipSize,
         borderRadius: 9999,
-        backgroundColor: PIP_COLOR,
-        boxShadow: '0 0.5px 1px rgba(0,0,0,0.15)',
+        // Subtle radial so the pip reads as a recessed sphere, not a flat disc.
+        background:
+          'radial-gradient(circle at 35% 30%, #3a4147 0%, #1d2326 45%, #0c1012 100%)',
+        boxShadow:
+          'inset 0 0.5px 1px rgba(255,255,255,0.18), inset 0 -0.5px 1px rgba(0,0,0,0.55), 0 0.5px 0.5px rgba(255,255,255,0.55)',
         flexShrink: 0,
         flexGrow: 0,
       }}
@@ -71,12 +74,29 @@ const DiceFace = memo(function DiceFace({ faceValue, size, radius, pipSize, grid
         width: size,
         height: size,
         borderRadius: radius,
-        background: 'linear-gradient(180deg, #ffffff 0%, #f2f4f6 100%)',
-        border: '1px solid rgba(0,0,0,0.05)',
-        boxShadow: 'inset 1px 1px 3px rgba(255,255,255,0.8), inset -1px -1px 2px rgba(0,0,0,0.02)',
+        // Premium ivory face with directional light from top-left.
+        background:
+          'radial-gradient(120% 120% at 28% 18%, #ffffff 0%, #fafbfc 38%, #eceff2 78%, #dfe3e7 100%)',
+        border: '1px solid rgba(0,0,0,0.06)',
+        // Inner highlight on the top edge + faint inner shadow on the bottom edge gives a beveled, rounded-cube look.
+        boxShadow:
+          'inset 0 1.5px 1.5px rgba(255,255,255,0.95), inset 0 -1.5px 2px rgba(0,0,0,0.07), inset 1px 0 1.5px rgba(255,255,255,0.45), inset -1px 0 1.5px rgba(0,0,0,0.05)',
         backfaceVisibility: 'hidden',
+        overflow: 'hidden',
       }}
     >
+      {/* Soft specular highlight in the top-left corner — sells the 3D plastic look. */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          background:
+            'radial-gradient(60% 45% at 25% 15%, rgba(255,255,255,0.55), rgba(255,255,255,0) 70%)',
+          pointerEvents: 'none',
+        }}
+      />
       <div
         style={{
           position: 'absolute',
@@ -107,9 +127,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   const rollingRef = useRef(false);
   const rotationRef = useRef(valueToRotation[value]);
   const half = size / 2;
-  const radius = Math.round(size * 0.214);
+  const radius = Math.round(size * 0.24);
   const pipSize = Math.round(size * 0.18);
-  const gridInset = Math.round(size * 0.125);
+  const gridInset = Math.round(size * 0.13);
   const gridSize = size - gridInset * 2;
   const faces = useMemo(() => [
     { v: 1, t: `translateZ(${half}px)` },
@@ -121,11 +141,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   ], [half]);
 
   const makeRollVar = () => ({
-    // More spins + sharper deceleration so the final face only resolves at the very end.
-    spinsX: (4 + Math.floor(Math.random() * 3)) * 360,
-    spinsY: (4 + Math.floor(Math.random() * 3)) * 360,
+    // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.
+    spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
+    spinsY: (2 + Math.floor(Math.random() * 2)) * 360,
     dt: (Math.random() - 0.5) * 0.1,
-    bounceY: -5 - Math.random() * 6,
+    bounceY: -4 - Math.random() * 4,
   });
   const rollVarRef = useRef(makeRollVar());
   const [rollVar, setRollVar] = useState(rollVarRef.current);
@@ -272,8 +292,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           borderRadius: radius,
           willChange: 'auto',
           boxShadow: locked
-            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 6px 14px rgba(0,0,0,0.18)'
-            : '0 6px 14px rgba(0,0,0,0.18)',
+            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18)'
+            : '0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18)',
           transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
           opacity: canLock && !locked ? 0.5 : 1,
         }}
@@ -295,8 +315,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
             transition={
               isAnimating
                 ? {
-                    rotateX: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
-                    rotateY: { duration: dur, ease: [0.55, 0.05, 0.85, 0.4] },
+                    rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
+                    rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
@@ -311,18 +331,22 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         </div>
       </motion.div>
 
-      {/* Ground shadow */}
+      {/* Ground shadow — bigger, softer, with blur for a premium "resting on felt" look */}
       <motion.div
         style={{
-          width: size * 0.55, height: 5, marginTop: 5, borderRadius: '50%',
+          width: size * 0.78,
+          height: 7,
+          marginTop: 4,
+          borderRadius: '50%',
           pointerEvents: 'none',
+          filter: 'blur(2.5px)',
           background: locked
-            ? 'radial-gradient(ellipse, rgba(245,185,66,0.3), transparent)'
-            : 'radial-gradient(ellipse, rgba(0,0,0,0.22), transparent)',
+            ? 'radial-gradient(ellipse, rgba(245,185,66,0.35), rgba(245,185,66,0.08) 55%, transparent 75%)'
+            : 'radial-gradient(ellipse, rgba(0,0,0,0.32), rgba(0,0,0,0.10) 55%, transparent 75%)',
         }}
         animate={{
-          scaleX: isAnimating ? [1, 0.6, 1.15, 0.95, 1] : locked ? 1.1 : 1,
-          opacity: isAnimating ? [0.5, 0.15, 0.5, 0.45, 0.5] : 0.5,
+          scaleX: isAnimating ? [1, 0.65, 1.12, 0.97, 1] : locked ? 1.08 : 1,
+          opacity: isAnimating ? [0.55, 0.2, 0.55, 0.5, 0.55] : 0.55,
         }}
         transition={
           isAnimating

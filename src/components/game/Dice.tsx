@@ -74,12 +74,29 @@ const DiceFace = memo(function DiceFace({ faceValue, size, radius, pipSize, grid
         width: size,
         height: size,
         borderRadius: radius,
-        background: 'linear-gradient(180deg, #ffffff 0%, #f2f4f6 100%)',
-        border: '1px solid rgba(0,0,0,0.05)',
-        boxShadow: 'inset 1px 1px 3px rgba(255,255,255,0.8), inset -1px -1px 2px rgba(0,0,0,0.02)',
+        // Premium ivory face with directional light from top-left.
+        background:
+          'radial-gradient(120% 120% at 28% 18%, #ffffff 0%, #fafbfc 38%, #eceff2 78%, #dfe3e7 100%)',
+        border: '1px solid rgba(0,0,0,0.06)',
+        // Inner highlight on the top edge + faint inner shadow on the bottom edge gives a beveled, rounded-cube look.
+        boxShadow:
+          'inset 0 1.5px 1.5px rgba(255,255,255,0.95), inset 0 -1.5px 2px rgba(0,0,0,0.07), inset 1px 0 1.5px rgba(255,255,255,0.45), inset -1px 0 1.5px rgba(0,0,0,0.05)',
         backfaceVisibility: 'hidden',
+        overflow: 'hidden',
       }}
     >
+      {/* Soft specular highlight in the top-left corner — sells the 3D plastic look. */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          background:
+            'radial-gradient(60% 45% at 25% 15%, rgba(255,255,255,0.55), rgba(255,255,255,0) 70%)',
+          pointerEvents: 'none',
+        }}
+      />
       <div
         style={{
           position: 'absolute',

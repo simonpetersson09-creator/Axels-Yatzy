@@ -272,7 +272,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                <DiceFace faceValue={f.v} size={size} radius={radius} pipSize={pipSize} gridInset={gridInset} gridSize={gridSize} />
+                <DiceFace faceValue={f.v} size={size} />
               </div>
             ))}
           </motion.div>

@@ -2,6 +2,16 @@ import { useState, useEffect, useMemo, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { playRollSound, playLandSound } from '@/lib/dice-sounds';
+import face1 from '@/assets/dice/face-1.png';
+import face2 from '@/assets/dice/face-2.png';
+import face3 from '@/assets/dice/face-3.png';
+import face4 from '@/assets/dice/face-4.png';
+import face5 from '@/assets/dice/face-5.png';
+import face6 from '@/assets/dice/face-6.png';
+
+const FACE_IMAGES: Record<number, string> = {
+  1: face1, 2: face2, 3: face3, 4: face4, 5: face5, 6: face6,
+};
 
 interface DiceProps {
   value: number;
@@ -12,14 +22,6 @@ interface DiceProps {
   size?: number;
 }
 
-const pipGridPositions: Record<number, number[]> = {
-  1: [5],
-  2: [1, 9],
-  3: [1, 5, 9],
-  4: [1, 3, 7, 9],
-  5: [1, 3, 5, 7, 9],
-  6: [1, 4, 7, 3, 6, 9],
-};
 
 const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   1: { rotateX: 0, rotateY: 0 },
@@ -30,92 +32,30 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-const PIP_COLOR = '#15191c';
 const ANIM_DURATION = 1.35;
 
-const Pip = memo(function Pip({ pipSize }: { pipSize: number }) {
-  return (
-    <div
-      style={{
-        width: pipSize,
-        height: pipSize,
-        minWidth: pipSize,
-        minHeight: pipSize,
-        maxWidth: pipSize,
-        maxHeight: pipSize,
-        borderRadius: 9999,
-        // Subtle radial so the pip reads as a recessed sphere, not a flat disc.
-        background:
-          'radial-gradient(circle at 35% 30%, #3a4147 0%, #1d2326 45%, #0c1012 100%)',
-        boxShadow:
-          'inset 0 0.5px 1px rgba(255,255,255,0.18), inset 0 -0.5px 1px rgba(0,0,0,0.55), 0 0.5px 0.5px rgba(255,255,255,0.55)',
-        flexShrink: 0,
-        flexGrow: 0,
-      }}
-    />
-  );
-});
-
-// Memoized face component — never re-renders since faceValue is static per instance
-const DiceFace = memo(function DiceFace({ faceValue, size, radius, pipSize, gridInset, gridSize }: {
+// Image-based face — true 3D-rendered look. Each face is a pre-rendered PNG.
+const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
-  radius: number;
-  pipSize: number;
-  gridInset: number;
-  gridSize: number;
 }) {
-  const positions = new Set(pipGridPositions[faceValue] || []);
-
   return (
-    <div
+    <img
+      src={FACE_IMAGES[faceValue]}
+      alt=""
+      draggable={false}
       style={{
         position: 'absolute',
         width: size,
         height: size,
-        borderRadius: radius,
-        // Premium ivory face with directional light from top-left.
-        background:
-          'radial-gradient(120% 120% at 28% 18%, #ffffff 0%, #fafbfc 38%, #eceff2 78%, #dfe3e7 100%)',
-        border: '1px solid rgba(0,0,0,0.06)',
-        // Inner highlight on the top edge + faint inner shadow on the bottom edge gives a beveled, rounded-cube look.
-        boxShadow:
-          'inset 0 1.5px 1.5px rgba(255,255,255,0.95), inset 0 -1.5px 2px rgba(0,0,0,0.07), inset 1px 0 1.5px rgba(255,255,255,0.45), inset -1px 0 1.5px rgba(0,0,0,0.05)',
         backfaceVisibility: 'hidden',
-        overflow: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        pointerEvents: 'none',
+        display: 'block',
       }}
-    >
-      {/* Soft specular highlight in the top-left corner — sells the 3D plastic look. */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: radius,
-          background:
-            'radial-gradient(60% 45% at 25% 15%, rgba(255,255,255,0.55), rgba(255,255,255,0) 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          left: gridInset,
-          top: gridInset,
-          width: gridSize,
-          height: gridSize,
-          display: 'grid',
-          gridTemplateColumns: `repeat(3, ${Math.floor(gridSize / 3)}px)`,
-          gridTemplateRows: `repeat(3, ${Math.floor(gridSize / 3)}px)`,
-        }}
-      >
-        {Array.from({ length: 9 }, (_, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {positions.has(i + 1) ? <Pip pipSize={pipSize} /> : null}
-          </div>
-        ))}
-      </div>
-    </div>
+    />
   );
 });
 
@@ -128,9 +68,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   const rotationRef = useRef(valueToRotation[value]);
   const half = size / 2;
   const radius = Math.round(size * 0.24);
-  const pipSize = Math.round(size * 0.18);
-  const gridInset = Math.round(size * 0.13);
-  const gridSize = size - gridInset * 2;
   const faces = useMemo(() => [
     { v: 1, t: `translateZ(${half}px)` },
     { v: 6, t: `rotateY(180deg) translateZ(${half}px)` },
@@ -324,7 +261,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                <DiceFace faceValue={f.v} size={size} radius={radius} pipSize={pipSize} gridInset={gridInset} gridSize={gridSize} />
+                <DiceFace faceValue={f.v} size={size} />
               </div>
             ))}
           </motion.div>

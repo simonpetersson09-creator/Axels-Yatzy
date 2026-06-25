@@ -23,6 +23,9 @@ import { saveFriendMatchResult } from '@/lib/friend-stats';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 
+const DEBUG = false;
+
+
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -142,7 +145,7 @@ export default function MultiplayerGamePage() {
     if (!gameState || status !== 'playing') return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
     const log = (msg: string, extra?: Record<string, unknown>) => {
-      console.log('[auto-roll]', msg, {
+      DEBUG && console.log('[auto-roll]', msg, {
         key,
         currentPlayerIndex: gameState.currentPlayerIndex,
         myPlayerIndex,
@@ -176,17 +179,17 @@ export default function MultiplayerGamePage() {
     const scheduleFailsafeRetry = (k: string) => {
       // Abort if turn already advanced or already rolled
       if (autoRollRef.current === k) {
-        console.log('[auto-roll] retry aborted: already rolled', { key: k });
+        DEBUG && console.log('[auto-roll] retry aborted: already rolled', { key: k });
         return;
       }
       const count = (autoRollRetryCountRef.current.get(k) ?? 0) + 1;
       if (count > MAX_RETRIES) {
-        console.log('[auto-roll] retry max reached', { key: k, count });
+        DEBUG && console.log('[auto-roll] retry max reached', { key: k, count });
         autoRollRetryCountRef.current.delete(k);
         return;
       }
       autoRollRetryCountRef.current.set(k, count);
-      console.log('[auto-roll] retry scheduled', { key: k, attempt: count, delayMs: 1200 });
+      DEBUG && console.log('[auto-roll] retry scheduled', { key: k, attempt: count, delayMs: 1200 });
 
       if (autoRollRetryTimerRef.current) clearTimeout(autoRollRetryTimerRef.current);
       autoRollRetryTimerRef.current = setTimeout(async () => {
@@ -197,38 +200,38 @@ export default function MultiplayerGamePage() {
         const live = liveStateRef.current;
         const liveGs = live.gameState;
         if (autoRollRef.current === k) {
-          console.log('[auto-roll] retry aborted at fire: already rolled', { key: k });
+          DEBUG && console.log('[auto-roll] retry aborted at fire: already rolled', { key: k });
           return;
         }
         if (!liveGs) {
-          console.log('[auto-roll] retry aborted at fire: no gameState', { key: k });
+          DEBUG && console.log('[auto-roll] retry aborted at fire: no gameState', { key: k });
           return;
         }
         const liveKey = `${liveGs.currentPlayerIndex}-${liveGs.round}`;
         if (liveKey !== k) {
-          console.log('[auto-roll] retry aborted at fire: turn changed', { key: k, liveKey });
+          DEBUG && console.log('[auto-roll] retry aborted at fire: turn changed', { key: k, liveKey });
           return;
         }
         if (!live.isMyTurn || liveGs.rollsLeft !== 3 || liveGs.gameOver || live.status !== 'playing') {
-          console.log('[auto-roll] retry aborted at fire: guards failed', {
+          DEBUG && console.log('[auto-roll] retry aborted at fire: guards failed', {
             key: k, isMyTurn: live.isMyTurn, rollsLeft: liveGs.rollsLeft, gameOver: liveGs.gameOver, status: live.status,
           });
           return;
         }
         if (live.localRolling || live.remoteRolling || liveGs.isRolling) {
-          console.log('[auto-roll] retry aborted at fire: rolling', { key: k });
+          DEBUG && console.log('[auto-roll] retry aborted at fire: rolling', { key: k });
           scheduleFailsafeRetry(k);
           return;
         }
-        console.log('[auto-roll] retry firing', { key: k, attempt: count });
+        DEBUG && console.log('[auto-roll] retry firing', { key: k, attempt: count });
         playRollSound();
         const rolled = await rollFnRef.current?.();
         if (rolled) {
           autoRollRef.current = k;
           autoRollRetryCountRef.current.delete(k);
-          console.log('[auto-roll] retry success', { key: k, attempt: count });
+          DEBUG && console.log('[auto-roll] retry success', { key: k, attempt: count });
         } else {
-          console.log('[auto-roll] retry returned false — scheduling next retry', { key: k, attempt: count });
+          DEBUG && console.log('[auto-roll] retry returned false — scheduling next retry', { key: k, attempt: count });
           scheduleFailsafeRetry(k);
         }
       }, 1200);
@@ -238,19 +241,19 @@ export default function MultiplayerGamePage() {
       autoRollTimerRef.current = null;
       // Re-check guards against latest state at fire-time
       if (autoRollRef.current === key) {
-        console.log('[auto-roll] aborted at fire: already rolled', { key });
+        DEBUG && console.log('[auto-roll] aborted at fire: already rolled', { key });
         autoRollPendingRef.current = null;
         return;
       }
-      console.log('[auto-roll] firing', { key });
+      DEBUG && console.log('[auto-roll] firing', { key });
       playRollSound();
       const rolled = await rollFnRef.current?.();
       if (rolled) {
         autoRollRef.current = key;
         autoRollRetryCountRef.current.delete(key);
-        console.log('[auto-roll] success', { key });
+        DEBUG && console.log('[auto-roll] success', { key });
       } else {
-        console.log('[auto-roll] roll() returned false — scheduling failsafe retry', { key });
+        DEBUG && console.log('[auto-roll] roll() returned false — scheduling failsafe retry', { key });
         scheduleFailsafeRetry(key);
       }
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
@@ -283,7 +286,7 @@ export default function MultiplayerGamePage() {
     if (!gameState) return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
     if (prevTurnKeyRef.current !== null && prevTurnKeyRef.current !== key) {
-      console.log('[auto-roll] turn changed — clearing refs', {
+      DEBUG && console.log('[auto-roll] turn changed — clearing refs', {
         prev: prevTurnKeyRef.current,
         next: key,
       });

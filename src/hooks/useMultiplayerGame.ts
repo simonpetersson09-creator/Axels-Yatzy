@@ -720,14 +720,8 @@ export function useMultiplayerGame() {
     const currentPlayer = gs.players[gs.currentPlayerIndex];
     if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return;
 
-    console.log('scoreboard-category-saved', {
-      clickedRowText: debug?.rowText ?? null,
-      clickedCategoryId: debug?.clickedCategoryId ?? categoryId,
-      renderedRowIndex: debug?.renderedRowIndex ?? null,
-      actualSavedCategory: categoryId,
-      currentPlayer: currentPlayer.name,
-      score: debug?.score ?? null,
-    });
+
+
 
     submittingRef.current = true;
     const gameId = latest.gameId;

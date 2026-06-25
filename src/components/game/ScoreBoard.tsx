@@ -264,7 +264,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
           : true,
       };
 
-      console.log('scoreboard-row-click', debug);
+      
 
       if (!canSelectRow) return;
       // Sound is played by the filled-count effect above so that all players

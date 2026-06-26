@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
-import { DiceArea } from '@/components/game/DiceArea';
+import { Dice3DScene } from '@/components/game/Dice3DScene';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
@@ -626,7 +626,7 @@ export default function MultiplayerGamePage() {
             </div>
 
             {/* Dice */}
-            <DiceArea
+            <Dice3DScene
               dice={gameState.dice}
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}

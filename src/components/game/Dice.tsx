@@ -1,12 +1,9 @@
 import { useState, useEffect, useMemo, useRef, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useMotionValueEvent } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { playRollSound, playLandSound } from '@/lib/dice-sounds';
 
 // Pip layout per face (3x3 grid positions, 0-8 indices)
-// 0 1 2
-// 3 4 5
-// 6 7 8
 const PIP_POSITIONS: Record<number, number[]> = {
   1: [4],
   2: [0, 8],
@@ -37,7 +34,9 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 
 const ANIM_DURATION = 1.5;
 
-// Pure CSS ivory die face with deep black pips — premium 3D look, no pre-rendered art.
+// Pure CSS ivory die face. Highlight position is driven by CSS variables
+// (--lx / --ly) on the cube root, so the glint truly *moves* across the face
+// as the dice rotates (premium dynamic specular).
 const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
@@ -55,20 +54,11 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         borderRadius: radius,
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
-        background: [
-          // bright top-left specular highlight
-          'radial-gradient(circle at 22% 18%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 45%)',
-          // bottom-right ambient occlusion / shaded face
-          'radial-gradient(circle at 90% 92%, rgba(100,88,72,0.34) 0%, rgba(100,88,72,0) 62%)',
-          // ivory body with directional gradient (lit from upper-left)
-          'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
-        ].join(', '),
+        // Ivory body
+        background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
         boxShadow: [
-          // bright rounded-edge highlight (top-left)
           'inset 3.5px 3.5px 5px rgba(255,255,255,0.98)',
-          // deeper rounded-edge shadow (bottom-right) — stronger 3D volume
           'inset -3.5px -4px 6px rgba(70,60,48,0.34)',
-          // crisp white rim keeps corners bright
           'inset 0 0 0 1.5px rgba(255,255,255,0.95)',
         ].join(', '),
         pointerEvents: 'none',
@@ -77,14 +67,37 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         overflow: 'hidden',
       }}
     >
-      {/* Glossy top sheen — subtle */}
+      {/* Dynamic moving specular highlight — position driven by --lx/--ly on cube root */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           borderRadius: radius,
           background:
-            'linear-gradient(155deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 38%)',
+            'radial-gradient(circle at var(--lx, 22%) var(--ly, 18%), rgba(255,255,255,1) 0%, rgba(255,255,255,0) 48%)',
+          pointerEvents: 'none',
+          mixBlendMode: 'screen',
+        }}
+      />
+      {/* Opposite ambient occlusion — also driven by light vars */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          background:
+            'radial-gradient(circle at var(--sx, 90%) var(--sy, 92%), rgba(95,82,65,0.32) 0%, rgba(95,82,65,0) 62%)',
+          pointerEvents: 'none',
+        }}
+      />
+      {/* Subtle glossy sheen */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          background:
+            'linear-gradient(155deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 38%)',
           pointerEvents: 'none',
         }}
       />
@@ -114,16 +127,11 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
                     width: pipSize,
                     height: pipSize,
                     borderRadius: '50%',
-                    // Solid black pip (no transparency in color)
                     background: '#000',
                     boxShadow: [
-                      // strong recess shadow (top-left dark rim sells the depth)
                       'inset 2px 2.5px 3px rgba(0,0,0,0.9)',
-                      // bottom-right highlight rim — light bouncing off recess edge
                       'inset -1px -1.5px 1.5px rgba(255,255,255,0.22)',
-                      // soft cast shadow on die surface around the pip
                       '0 1.5px 2px rgba(0,0,0,0.45)',
-                      // tiny outer ring for contact definition
                       '0 0 0 0.5px rgba(0,0,0,0.25)',
                     ].join(', '),
                   }}
@@ -145,6 +153,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
   const rotationRef = useRef(valueToRotation[value]);
+  const cubeRef = useRef<HTMLDivElement | null>(null);
   const half = size / 2;
   const radius = Math.round(size * 0.28);
   const faces = useMemo(() => [
@@ -157,7 +166,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   ], [half]);
 
   const makeRollVar = () => ({
-    // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.
     spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
     spinsY: (2 + Math.floor(Math.random() * 2)) * 360,
     dt: (Math.random() - 0.5) * 0.1,
@@ -169,11 +177,46 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
 
   const dur = ANIM_DURATION + rollVar.dt;
 
+  // #3 — Dynamic light: track live rotation values, project a virtual light
+  // direction onto the cube and expose it as CSS vars (--lx/--ly + --sx/--sy)
+  // so highlights/shadows on every face shift as the dice tumbles.
+  const rotXMV = useMotionValue(spinRotation.rotateX);
+  const rotYMV = useMotionValue(spinRotation.rotateY);
+
+  const applyLight = (rx: number, ry: number) => {
+    // Normalize to -180..180
+    const norm = (n: number) => {
+      const m = ((n + 180) % 360 + 360) % 360 - 180;
+      return m;
+    };
+    const nx = norm(rx);
+    const ny = norm(ry);
+    // Move highlight opposite to rotation (light stays fixed in world space).
+    // Range ~10%..90% so it stays inside the face.
+    const lx = 50 - (ny / 180) * 40;
+    const ly = 50 - (nx / 180) * 40;
+    const sx = 100 - lx;
+    const sy = 100 - ly;
+    const el = cubeRef.current;
+    if (el) {
+      el.style.setProperty('--lx', `${lx}%`);
+      el.style.setProperty('--ly', `${ly}%`);
+      el.style.setProperty('--sx', `${sx}%`);
+      el.style.setProperty('--sy', `${sy}%`);
+    }
+  };
+
+  useMotionValueEvent(rotXMV, 'change', v => applyLight(v, rotYMV.get()));
+  useMotionValueEvent(rotYMV, 'change', v => applyLight(rotXMV.get(), v));
+
+  useEffect(() => {
+    applyLight(spinRotation.rotateX, spinRotation.rotateY);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (rolling && !locked && !rollingRef.current) {
       rollingRef.current = true;
-      // Freeze a new set of random seeds for this roll only — prevents
-      // re-randomization mid-animation that caused a visible second "settle" spin.
       const fresh = makeRollVar();
       rollVarRef.current = fresh;
       setRollVar(fresh);
@@ -210,10 +253,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
     prevLockedRef.current = locked;
   }, [locked]);
 
-  // Re-sync rotation when `value` changes (incl. mid-spin). Without this the
-  // dice keeps spinning toward the OLD target if the authoritative server
-  // dice land after the local animation started — user sees stale faces
-  // (e.g. all 1s after the first roll, or wrong pips when scoring).
   useEffect(() => {
     const base = valueToRotation[value];
     const cur = rotationRef.current;
@@ -239,7 +278,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
     }
   };
 
-  // Fewer sparkles (5 instead of 8)
   const sparkles = useMemo(() =>
     Array.from({ length: 5 }, (_, i) => {
       const a = (i / 5) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
@@ -301,7 +339,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         )}
       </AnimatePresence>
 
-      {/* Outer wrapper — shadow and glow */}
+      {/* Outer wrapper — lock glow only (no drop-shadow; contact shadow is below) */}
       <motion.div
         style={{
           width: size,
@@ -309,20 +347,23 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           borderRadius: radius,
           willChange: 'auto',
           boxShadow: locked
-            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18)'
-            : '0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18)',
+            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3)'
+            : 'none',
           transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
           opacity: canLock && !locked ? 0.5 : 1,
         }}
       >
         <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
           <motion.div
+            ref={cubeRef}
             className="relative"
             style={{
               width: size,
               height: size,
               transformStyle: 'preserve-3d',
               willChange: isAnimating ? 'transform' : 'auto',
+              rotateX: rotXMV,
+              rotateY: rotYMV,
             }}
             animate={{
               rotateX: spinRotation.rotateX,
@@ -341,7 +382,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
+                {/* Ivory backing plate behind this face so transparent rounded corners don't show table */}
                 <div
                   style={{
                     position: 'absolute',
@@ -361,27 +402,30 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         </div>
       </motion.div>
 
-      {/* Ground shadow — bigger, softer, with blur for a premium "resting on felt" look */}
-
+      {/* #4 — Real contact shadow: separate elliptical div that squashes & darkens
+          on the landing bounce, then settles. Gives genuine "weight on table" feel. */}
       <motion.div
         style={{
-          width: size * 0.78,
-          height: 7,
+          width: size * 0.82,
+          height: 8,
           marginTop: 4,
           borderRadius: '50%',
           pointerEvents: 'none',
-          filter: 'blur(2.5px)',
+          filter: 'blur(3px)',
           background: locked
-            ? 'radial-gradient(ellipse, rgba(245,185,66,0.35), rgba(245,185,66,0.08) 55%, transparent 75%)'
-            : 'radial-gradient(ellipse, rgba(0,0,0,0.32), rgba(0,0,0,0.10) 55%, transparent 75%)',
+            ? 'radial-gradient(ellipse, rgba(245,185,66,0.4), rgba(245,185,66,0.08) 55%, transparent 75%)'
+            : 'radial-gradient(ellipse, rgba(0,0,0,0.55), rgba(0,0,0,0.14) 55%, transparent 75%)',
         }}
         animate={{
-          scaleX: isAnimating ? [1, 0.65, 1.12, 0.97, 1] : locked ? 1.08 : 1,
-          opacity: isAnimating ? [0.55, 0.2, 0.55, 0.5, 0.55] : 0.55,
+          // Shadow shrinks while die is airborne, then SLAMS bigger+darker at the
+          // landing keyframe (0.78), then settles.
+          scaleX: isAnimating ? [1, 0.55, 1.25, 1.05, 1] : locked ? 1.08 : 1,
+          scaleY: isAnimating ? [1, 0.45, 1.35, 1.05, 1] : 1,
+          opacity: isAnimating ? [0.6, 0.18, 0.85, 0.62, 0.6] : 0.6,
         }}
         transition={
           isAnimating
-            ? { duration: dur, times: [0, 0.55, 0.75, 0.9, 1], ease: 'easeOut' }
+            ? { duration: dur, times: [0, 0.55, 0.78, 0.9, 1], ease: 'easeOut' }
             : { duration: 0.3, ease: 'easeOut' }
         }
       />

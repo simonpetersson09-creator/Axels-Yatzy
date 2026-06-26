@@ -68,6 +68,10 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           'inset 3.5px 3.5px 5px rgba(255,255,255,0.98)',
           // deeper rounded-edge shadow (bottom-right) — stronger 3D volume
           'inset -3.5px -4px 6px rgba(70,60,48,0.34)',
+          // chamfer accent: top-right corner light bounce
+          'inset -2px 2px 3px rgba(255,255,255,0.55)',
+          // chamfer accent: bottom-left corner soft shadow
+          'inset 2px -2px 3px rgba(90,78,62,0.22)',
           // crisp white rim keeps corners bright
           'inset 0 0 0 1.5px rgba(255,255,255,0.95)',
         ].join(', '),
@@ -77,6 +81,23 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         overflow: 'hidden',
       }}
     >
+      {/* Chamfer facet ring — conic gradient simulates angled bevel light at all 4 corners */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          padding: Math.max(2, Math.round(size * 0.04)),
+          background:
+            'conic-gradient(from 135deg at 50% 50%, rgba(255,255,255,0.55), rgba(255,255,255,0.05) 25%, rgba(60,50,38,0.35) 50%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.55))',
+          WebkitMask:
+            'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+          pointerEvents: 'none',
+          opacity: 0.85,
+        }}
+      />
       {/* Glossy top sheen — subtle */}
       <div
         style={{
@@ -88,6 +109,7 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           pointerEvents: 'none',
         }}
       />
+
       <div
         style={{
           position: 'absolute',

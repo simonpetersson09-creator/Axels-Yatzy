@@ -386,14 +386,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
             : 'radial-gradient(ellipse, rgba(0,0,0,0.32), rgba(0,0,0,0.10) 55%, transparent 75%)',
         }}
         animate={{
-          scaleX: isAnimating ? [1, 0.65, 1.12, 0.97, 1] : locked ? 1.08 : 1,
-          opacity: isAnimating ? [0.55, 0.2, 0.55, 0.5, 0.55] : 0.55,
+          scaleX: locked ? 1.08 : 1,
+          opacity: 0.55,
         }}
-        transition={
-          isAnimating
-            ? { duration: dur, times: [0, 0.55, 0.75, 0.9, 1], ease: 'easeOut' }
-            : { duration: 0.3, ease: 'easeOut' }
-        }
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+
       />
     </button>
   );

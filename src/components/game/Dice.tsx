@@ -147,16 +147,15 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   const rotationRef = useRef(valueToRotation[value]);
   const half = size / 2;
   const radius = Math.round(size * 0.28);
-  // Per-face overlay tone simulating a fixed light from upper-left-front.
-  // tone < 0 = shade (darken), tone > 0 = highlight (brighten). Range ~ -0.32..+0.22
   const faces = useMemo(() => [
-    { v: 1, t: `translateZ(${half}px)`,                         tone:  0.00 }, // front — neutral
-    { v: 6, t: `rotateY(180deg) translateZ(${half}px)`,         tone: -0.30 }, // back — deepest shade
-    { v: 2, t: `rotateY(-90deg) translateZ(${half}px)`,         tone: -0.14 }, // right — mid shade
-    { v: 5, t: `rotateY(90deg) translateZ(${half}px)`,          tone:  0.10 }, // left — light side
-    { v: 3, t: `rotateX(-90deg) translateZ(${half}px)`,         tone:  0.20 }, // top — brightest
-    { v: 4, t: `rotateX(90deg) translateZ(${half}px)`,          tone: -0.24 }, // bottom — shaded
+    { v: 1, t: `translateZ(${half}px)` },
+    { v: 6, t: `rotateY(180deg) translateZ(${half}px)` },
+    { v: 2, t: `rotateY(-90deg) translateZ(${half}px)` },
+    { v: 5, t: `rotateY(90deg) translateZ(${half}px)` },
+    { v: 3, t: `rotateX(-90deg) translateZ(${half}px)` },
+    { v: 4, t: `rotateX(90deg) translateZ(${half}px)` },
   ], [half]);
+
 
   const makeRollVar = () => ({
     // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.

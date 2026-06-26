@@ -57,9 +57,13 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         // Ivory body
         background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
         boxShadow: [
+          // #2 chamfered edges: double inset ring (bright outer + faint dark inner) simulates a bevel
+          'inset 0 0 0 1px rgba(255,255,255,0.95)',
+          'inset 0 0 0 2px rgba(210,198,178,0.55)',
           'inset 3.5px 3.5px 5px rgba(255,255,255,0.98)',
           'inset -3.5px -4px 6px rgba(70,60,48,0.34)',
-          'inset 0 0 0 1.5px rgba(255,255,255,0.95)',
+          // soft chamfer glow along top/left edge
+          'inset 1px 1px 0 rgba(255,255,255,0.85)',
         ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',
@@ -99,6 +103,20 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           background:
             'linear-gradient(155deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 38%)',
           pointerEvents: 'none',
+        }}
+      />
+      {/* #5 Material grain — subtle SVG noise to kill the plastic look */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          pointerEvents: 'none',
+          opacity: 0.22,
+          mixBlendMode: 'multiply',
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.55  0 0 0 0 0.50  0 0 0 0 0.42  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+          backgroundSize: '80px 80px',
         }}
       />
       <div
@@ -369,6 +387,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,
               y: isAnimating ? [0, rollVar.bounceY, 2, -1, 0] : 0,
+              // #6 Landing bounce: tiny squash on impact then settle
+              scale: isAnimating ? [1, 1, 0.96, 1.03, 1] : 1,
+              // #7 Motion blur during fastest part of the spin, off at rest/landing
+              filter: isAnimating
+                ? ['blur(0px)', 'blur(0.7px)', 'blur(0.3px)', 'blur(0px)', 'blur(0px)']
+                : 'blur(0px)',
             }}
             transition={
               isAnimating
@@ -376,6 +400,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
                     rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
+                    scale: { duration: dur, times: [0, 0.55, 0.78, 0.9, 1], ease: 'easeOut' },
+                    filter: { duration: dur, times: [0, 0.3, 0.65, 0.85, 1], ease: 'easeOut' },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }

@@ -301,7 +301,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
         )}
       </AnimatePresence>
 
-      {/* Outer wrapper — shadow and glow */}
+      {/* Outer wrapper — shadow and glow + crisp 1px edge highlight */}
       <motion.div
         style={{
           width: size,
@@ -309,11 +309,22 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           borderRadius: radius,
           willChange: 'auto',
           boxShadow: locked
-            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18)'
-            : '0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18)',
+            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)'
+            : '0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)',
           transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
           opacity: canLock && !locked ? 0.5 : 1,
         }}
+        animate={{
+          // Subtle motion blur during the spin — clears on landing for crisp pips
+          filter: isAnimating
+            ? ['blur(0px)', 'blur(0.8px)', 'blur(0.6px)', 'blur(0px)']
+            : 'blur(0px)',
+        }}
+        transition={
+          isAnimating
+            ? { duration: dur, times: [0, 0.3, 0.7, 1], ease: 'easeOut' }
+            : { duration: 0.2, ease: 'easeOut' }
+        }
       >
         <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
           <motion.div

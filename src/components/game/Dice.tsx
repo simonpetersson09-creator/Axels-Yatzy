@@ -23,6 +23,7 @@ interface DiceProps {
   onToggleLock: () => void;
   canLock: boolean;
   size?: number;
+  hasRolled?: boolean;
 }
 
 
@@ -138,13 +139,16 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
 });
 
 
-export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 }: DiceProps) {
+export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56, hasRolled = true }: DiceProps) {
+  const initialFace = useMemo(() => 1 + Math.floor(Math.random() * 6), []);
+  const displayValue = hasRolled ? value : initialFace;
+
   const [isAnimating, setIsAnimating] = useState(false);
-  const [spinRotation, setSpinRotation] = useState(valueToRotation[value]);
+  const [spinRotation, setSpinRotation] = useState(valueToRotation[displayValue]);
   const [showSparkle, setShowSparkle] = useState(false);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
-  const rotationRef = useRef(valueToRotation[value]);
+  const rotationRef = useRef(valueToRotation[displayValue]);
   const half = size / 2;
   const radius = Math.round(size * 0.28);
   const faces = useMemo(() => [
@@ -179,7 +183,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
       setRollVar(fresh);
       const thisDur = ANIM_DURATION + fresh.dt;
       setIsAnimating(true);
-      const base = valueToRotation[value];
+      const base = valueToRotation[displayValue];
       const cur = rotationRef.current;
       const mod = (n: number) => ((n % 360) + 360) % 360;
       const newTarget = {
@@ -199,7 +203,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
       rollingRef.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rolling, value, locked]);
+  }, [rolling, displayValue, locked]);
 
   useEffect(() => {
     if (locked && !prevLockedRef.current) {
@@ -215,7 +219,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   // dice land after the local animation started — user sees stale faces
   // (e.g. all 1s after the first roll, or wrong pips when scoring).
   useEffect(() => {
-    const base = valueToRotation[value];
+    const base = valueToRotation[displayValue];
     const cur = rotationRef.current;
     const mod = (n: number) => ((n % 360) + 360) % 360;
     const deltaX = (base.rotateX - mod(cur.rotateX) + 360) % 360;
@@ -228,7 +232,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
     rotationRef.current = retarget;
     setSpinRotation(retarget);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [displayValue]);
 
 
   const handleToggle = () => {

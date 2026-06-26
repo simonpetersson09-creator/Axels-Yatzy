@@ -41,6 +41,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock,
                 onToggleLock={() => onToggleLock(index)}
                 canLock={!isRolling && hasRolled && rollsLeft > 0}
                 size={diceSize}
+                hasRolled={hasRolled}
               />
             </motion.div>
           );

@@ -142,6 +142,8 @@ export default function MultiplayerGamePage() {
   // IMPORTANT: `roll` is intentionally read from a ref so this effect does not
   // re-run (and cancel the pending timer) every time gameState updates.
   useEffect(() => {
+    // Auto-roll disabled — multiplayer is human vs human; both players tap Roll manually.
+    return;
     if (!gameState || status !== 'playing') return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
     const log = (msg: string, extra?: Record<string, unknown>) => {

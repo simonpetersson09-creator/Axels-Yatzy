@@ -390,7 +390,7 @@ export default function GamePage() {
             </div>
 
             {/* Dice */}
-            <DiceArea
+            <Dice3DScene
               dice={gameState.dice}
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}

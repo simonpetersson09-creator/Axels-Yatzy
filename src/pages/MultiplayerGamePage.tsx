@@ -626,7 +626,7 @@ export default function MultiplayerGamePage() {
             </div>
 
             {/* Dice */}
-            <DiceArea
+            <Dice3DScene
               dice={gameState.dice}
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}

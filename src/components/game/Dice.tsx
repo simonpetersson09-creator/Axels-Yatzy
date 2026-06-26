@@ -387,6 +387,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,
               y: isAnimating ? [0, rollVar.bounceY, 2, -1, 0] : 0,
+              // #6 Landing bounce: tiny squash on impact then settle
+              scale: isAnimating ? [1, 1, 0.96, 1.03, 1] : 1,
+              // #7 Motion blur during fastest part of the spin, off at rest/landing
+              filter: isAnimating
+                ? ['blur(0px)', 'blur(0.7px)', 'blur(0.3px)', 'blur(0px)', 'blur(0px)']
+                : 'blur(0px)',
             }}
             transition={
               isAnimating
@@ -394,6 +400,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
                     rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
+                    scale: { duration: dur, times: [0, 0.55, 0.78, 0.9, 1], ease: 'easeOut' },
+                    filter: { duration: dur, times: [0, 0.3, 0.65, 0.85, 1], ease: 'easeOut' },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }

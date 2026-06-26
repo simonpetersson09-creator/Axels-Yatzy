@@ -160,7 +160,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
     // Premium: 2-3 spins per axis, gentle deceleration, plus a small Z tumble for an organic tumble.
     spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
     spinsY: (2 + Math.floor(Math.random() * 2)) * 360,
-    tumbleZ: -25 + Math.floor(Math.random() * 51), // -25..+25 degrees
+    tumbleZ: -11 + Math.floor(Math.random() * 23), // -11..+11 degrees (mjukare swing, mindre sidledshopp)
     dt: (Math.random() - 0.5) * 0.1,
     bounceY: -4 - Math.random() * 4,
   });
@@ -216,6 +216,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   // dice land after the local animation started — user sees stale faces
   // (e.g. all 1s after the first roll, or wrong pips when scoring).
   useEffect(() => {
+    // Skip mid-roll retarget — låt den pågående animationen avsluta först,
+    // annars ser det ut som ett litet sidledshopp när målet ändras mitt i kastet.
+    if (rollingRef.current) return;
     const base = valueToRotation[value];
     const cur = rotationRef.current;
     const mod = (n: number) => ((n % 360) + 360) % 360;

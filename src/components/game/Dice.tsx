@@ -57,19 +57,19 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         WebkitBackfaceVisibility: 'hidden',
         background: [
           // bright top-left specular highlight
-          'radial-gradient(circle at 20% 15%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 50%)',
+          'radial-gradient(circle at 22% 18%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 45%)',
           // bottom-right ambient occlusion / shaded face
-          'radial-gradient(circle at 92% 95%, rgba(120,108,92,0.30) 0%, rgba(120,108,92,0) 60%)',
+          'radial-gradient(circle at 90% 92%, rgba(100,88,72,0.34) 0%, rgba(100,88,72,0) 62%)',
           // ivory body with directional gradient (lit from upper-left)
-          'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
+          'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
         ].join(', '),
         boxShadow: [
-          // bright bevel highlight (top-left)
-          'inset 2.5px 2.5px 3px rgba(255,255,255,0.95)',
-          // deeper bevel shadow (bottom-right) — sells the rounded edge
-          'inset -2.5px -3px 4px rgba(80,70,55,0.28)',
-          // crisp white rim to keep corners bright (matches reference)
-          'inset 0 0 0 1px rgba(255,255,255,0.9)',
+          // bright rounded-edge highlight (top-left)
+          'inset 3.5px 3.5px 5px rgba(255,255,255,0.98)',
+          // deeper rounded-edge shadow (bottom-right) — stronger 3D volume
+          'inset -3.5px -4px 6px rgba(70,60,48,0.34)',
+          // crisp white rim keeps corners bright
+          'inset 0 0 0 1.5px rgba(255,255,255,0.95)',
         ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',

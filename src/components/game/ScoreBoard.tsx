@@ -184,13 +184,13 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
           'text-[13px] tabular-nums leading-none',
           isScored && 'font-normal text-yatzy-text',
           canSelect && possibleScore !== undefined && possibleScore > 0 && 'font-normal text-yatzy-highlight',
-          canSelect && possibleScore === 0 && 'font-normal text-yatzy-text/25',
+          canSelect && possibleScore === 0 && 'font-normal text-[hsl(0_78%_58%)]/70',
           !isScored && !canSelect && 'text-yatzy-text/10',
         )}
         animate={justScored ? { scale: [1, 1.4, 1] } : { scale: 1 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
-        {isScored ? scoreValue : canSelect ? possibleScore : ''}
+        {isScored ? scoreValue : canSelect ? (possibleScore === 0 ? '—' : possibleScore) : ''}
       </motion.span>
     </div>
   );

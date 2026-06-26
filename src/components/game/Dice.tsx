@@ -323,6 +323,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
               height: size,
               transformStyle: 'preserve-3d',
               willChange: isAnimating ? 'transform' : 'auto',
+              // Ivory fill behind the cube so seams during the spin don't show the dark table
+              background: 'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
             }}
             animate={{
               rotateX: spinRotation.rotateX,

@@ -338,17 +338,16 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
             animate={{
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,
-              y: isAnimating ? [0, rollVar.bounceY, 2, -1, 0] : 0,
             }}
             transition={
               isAnimating
                 ? {
                     rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
-                    y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }
+
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>

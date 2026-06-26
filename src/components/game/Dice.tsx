@@ -84,7 +84,7 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           inset: 0,
           borderRadius: radius,
           background:
-            'linear-gradient(160deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 40%)',
+            'linear-gradient(155deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 38%)',
           pointerEvents: 'none',
         }}
       />

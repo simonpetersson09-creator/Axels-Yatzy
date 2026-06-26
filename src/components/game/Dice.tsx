@@ -57,9 +57,13 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         // Ivory body
         background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
         boxShadow: [
+          // #2 chamfered edges: double inset ring (bright outer + faint dark inner) simulates a bevel
+          'inset 0 0 0 1px rgba(255,255,255,0.95)',
+          'inset 0 0 0 2px rgba(210,198,178,0.55)',
           'inset 3.5px 3.5px 5px rgba(255,255,255,0.98)',
           'inset -3.5px -4px 6px rgba(70,60,48,0.34)',
-          'inset 0 0 0 1.5px rgba(255,255,255,0.95)',
+          // soft chamfer glow along top/left edge
+          'inset 1px 1px 0 rgba(255,255,255,0.85)',
         ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',

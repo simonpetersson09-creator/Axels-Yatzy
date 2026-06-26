@@ -347,7 +347,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
                     position: 'absolute',
                     inset: 0,
                     borderRadius: radius,
-                    background: 'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
+                    background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
                     transform: 'translateZ(-1px)',
                     pointerEvents: 'none',
                     backfaceVisibility: 'hidden',

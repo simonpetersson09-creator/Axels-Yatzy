@@ -156,7 +156,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
     { v: 4, t: `rotateX(90deg) translateZ(${half}px)` },
   ], [half]);
 
-
   const makeRollVar = () => ({
     // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.
     spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
@@ -325,7 +324,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
               transformStyle: 'preserve-3d',
               willChange: isAnimating ? 'transform' : 'auto',
             }}
-
             animate={{
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,
@@ -343,7 +341,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                {/* Ivory backing plate behind this face — fills transparent corners */}
+                {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
                 <div
                   style={{
                     position: 'absolute',
@@ -359,7 +357,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
                 <DiceFace faceValue={f.v} size={size} />
               </div>
             ))}
-
           </motion.div>
         </div>
       </motion.div>

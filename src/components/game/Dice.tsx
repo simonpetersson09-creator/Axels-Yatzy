@@ -341,12 +341,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
+                {/* Ivory backing plate — square (no radius) so the dark interior doesn't show through the face's rounded corners while spinning */}
                 <div
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    borderRadius: radius,
+                    borderRadius: 0,
                     background: 'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
                     transform: 'translateZ(-1px)',
                     pointerEvents: 'none',

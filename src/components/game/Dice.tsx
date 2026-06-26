@@ -341,24 +341,43 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }
           >
-            {faces.map(f => (
-              <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    borderRadius: radius,
-                    background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
-                    transform: 'translateZ(-1px)',
-                    pointerEvents: 'none',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                  }}
-                />
-                <DiceFace faceValue={f.v} size={size} />
-              </div>
-            ))}
+            {faces.map(f => {
+              const overlay =
+                f.tone < 0
+                  ? `rgba(20, 14, 6, ${Math.min(0.55, -f.tone)})`
+                  : `rgba(255, 250, 235, ${Math.min(0.5, f.tone)})`;
+              return (
+                <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
+                  {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: radius,
+                      background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
+                      transform: 'translateZ(-1px)',
+                      pointerEvents: 'none',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                    }}
+                  />
+                  <DiceFace faceValue={f.v} size={size} />
+                  {/* Per-face directional tone overlay — sells the lit-from-above cube look */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: radius,
+                      background: overlay,
+                      mixBlendMode: f.tone < 0 ? 'multiply' : 'screen',
+                      pointerEvents: 'none',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                    }}
+                  />
+                </div>
+              );
+            })}
           </motion.div>
         </div>
       </motion.div>

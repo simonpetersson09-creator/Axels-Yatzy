@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
-import { Dice3DScene } from '@/components/game/Dice3DScene';
+import { DiceArea } from '@/components/game/DiceArea';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
@@ -390,7 +390,7 @@ export default function GamePage() {
             </div>
 
             {/* Dice */}
-            <Dice3DScene
+            <DiceArea
               dice={gameState.dice}
               lockedDice={gameState.lockedDice}
               rollsLeft={gameState.rollsLeft}

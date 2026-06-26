@@ -35,7 +35,7 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
   6: { rotateX: 0, rotateY: 180 },
 };
 
-const ANIM_DURATION = 1.65;
+const ANIM_DURATION = 1.5;
 
 // Pure CSS ivory die face with deep black pips — premium 3D look, no pre-rendered art.
 const DiceFace = memo(function DiceFace({ faceValue, size }: {

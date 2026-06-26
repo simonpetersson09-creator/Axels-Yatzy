@@ -157,9 +157,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   ], [half]);
 
   const makeRollVar = () => ({
-    // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.
+    // Premium: 2-3 spins per axis, gentle deceleration, plus a small Z tumble for an organic tumble.
     spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
     spinsY: (2 + Math.floor(Math.random() * 2)) * 360,
+    tumbleZ: -25 + Math.floor(Math.random() * 51), // -25..+25 degrees
     dt: (Math.random() - 0.5) * 0.1,
     bounceY: -4 - Math.random() * 4,
   });

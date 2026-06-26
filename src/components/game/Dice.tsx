@@ -147,7 +147,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   const rotationRef = useRef(valueToRotation[value]);
   const half = size / 2;
   const radius = Math.round(size * 0.24);
-  const cornerFillRadius = Math.round(size * 0.08);
   const faces = useMemo(() => [
     { v: 1, t: `translateZ(${half}px)` },
     { v: 6, t: `rotateY(180deg) translateZ(${half}px)` },
@@ -324,8 +323,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
               height: size,
               transformStyle: 'preserve-3d',
               willChange: isAnimating ? 'transform' : 'auto',
-              // Ivory fill behind the cube so seams during the spin don't show the dark table
-              background: 'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
             }}
             animate={{
               rotateX: spinRotation.rotateX,
@@ -344,14 +341,14 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
           >
             {faces.map(f => (
               <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
-                {/* Ivory backing plate behind this face — kept less rounded than the visible face so the cube corners stay white while spinning */}
+                {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
                 <div
                   style={{
                     position: 'absolute',
-                    inset: -1,
-                    borderRadius: cornerFillRadius,
+                    inset: 0,
+                    borderRadius: radius,
                     background: 'linear-gradient(135deg, #fdfcf7 0%, #f6f1e6 45%, #ddd4c0 100%)',
-                    transform: 'translateZ(-1.5px)',
+                    transform: 'translateZ(-1px)',
                     pointerEvents: 'none',
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',

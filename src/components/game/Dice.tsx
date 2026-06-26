@@ -323,9 +323,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
               width: size,
               height: size,
               transformStyle: 'preserve-3d',
-              willChange: isAnimating ? 'transform, filter' : 'auto',
-              filter: isAnimating ? 'blur(0.5px)' : 'none',
+              willChange: isAnimating ? 'transform' : 'auto',
             }}
+
             animate={{
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,

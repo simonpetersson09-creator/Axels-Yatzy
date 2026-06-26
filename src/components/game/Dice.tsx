@@ -42,8 +42,8 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = Math.round(size * 0.2);
-  const pipSize = Math.max(6, Math.round(size * 0.17));
+  const radius = Math.round(size * 0.28);
+  const pipSize = Math.max(6, Math.round(size * 0.16));
   const pad = Math.round(size * 0.15);
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (

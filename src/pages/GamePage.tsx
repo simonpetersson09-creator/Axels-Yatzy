@@ -150,10 +150,12 @@ export default function GamePage() {
     };
   }, []);
 
-  // Auto-roll first throw when turn changes
+  // Auto-roll first throw — ONLY for AI players. Human players must tap Roll themselves.
   useEffect(() => {
     if (!gameState || gameState.gameOver || gameState.isRolling) return;
     if (gameState.rollsLeft !== 3) return;
+    const isAi = aiPlayers.includes(gameState.currentPlayerIndex);
+    if (!isAi) return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
     if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
     autoRollPendingRef.current = key;
@@ -167,7 +169,7 @@ export default function GamePage() {
       clearTimeout(t);
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
     };
-  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, roll]);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, aiPlayers, roll]);
 
   // AI auto-play
   useEffect(() => {

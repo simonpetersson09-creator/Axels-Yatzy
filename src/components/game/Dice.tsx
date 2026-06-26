@@ -105,10 +105,29 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           pointerEvents: 'none',
         }}
       />
+      {/* #5 Material grain — subtle SVG noise to kill the plastic look */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          pointerEvents: 'none',
+          opacity: 0.22,
+          mixBlendMode: 'multiply',
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.55  0 0 0 0 0.50  0 0 0 0 0.42  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+          backgroundSize: '80px 80px',
+        }}
+      />
       <div
         style={{
           position: 'absolute',
           inset: pad,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gridTemplateRows: 'repeat(3, 1fr)',
+        }}
+      >
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gridTemplateRows: 'repeat(3, 1fr)',

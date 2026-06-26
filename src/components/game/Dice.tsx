@@ -157,10 +157,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   ], [half]);
 
   const makeRollVar = () => ({
-    // Premium: 2-3 spins per axis, gentle deceleration, plus a small Z tumble for an organic tumble.
+    // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.
     spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
     spinsY: (2 + Math.floor(Math.random() * 2)) * 360,
-    tumbleZ: -11 + Math.floor(Math.random() * 23), // -11..+11 degrees (mjukare swing, mindre sidledshopp)
     dt: (Math.random() - 0.5) * 0.1,
     bounceY: -4 - Math.random() * 4,
   });
@@ -216,9 +215,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
   // dice land after the local animation started — user sees stale faces
   // (e.g. all 1s after the first roll, or wrong pips when scoring).
   useEffect(() => {
-    // Skip mid-roll retarget — låt den pågående animationen avsluta först,
-    // annars ser det ut som ett litet sidledshopp när målet ändras mitt i kastet.
-    if (rollingRef.current) return;
     const base = valueToRotation[value];
     const cur = rotationRef.current;
     const mod = (n: number) => ((n % 360) + 360) % 360;
@@ -331,20 +327,14 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56 
             animate={{
               rotateX: spinRotation.rotateX,
               rotateY: spinRotation.rotateY,
-              rotateZ: isAnimating ? [0, rollVar.tumbleZ, 0] : 0,
               y: isAnimating ? [0, rollVar.bounceY, 2, -1, 0] : 0,
-              scaleX: isAnimating ? [1, 1.04, 0.97, 1.01, 1] : 1,
-              scaleY: isAnimating ? [1, 0.96, 1.03, 0.98, 1] : 1,
             }}
             transition={
               isAnimating
                 ? {
                     rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
-                    rotateZ: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     y: { duration: dur, times: [0, 0.55, 0.78, 0.92, 1], ease: [0.22, 1, 0.36, 1] },
-                    scaleX: { duration: dur, times: [0, 0.5, 0.75, 0.9, 1], ease: [0.22, 1, 0.36, 1] },
-                    scaleY: { duration: dur, times: [0, 0.5, 0.75, 0.9, 1], ease: [0.22, 1, 0.36, 1] },
                   }
                 : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }

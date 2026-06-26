@@ -128,11 +128,6 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           gridTemplateRows: 'repeat(3, 1fr)',
         }}
       >
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gridTemplateRows: 'repeat(3, 1fr)',
-        }}
-      >
         {Array.from({ length: 9 }).map((_, i) => {
           const show = positions.includes(i);
           return (

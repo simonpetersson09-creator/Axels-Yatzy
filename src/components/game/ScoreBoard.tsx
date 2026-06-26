@@ -113,13 +113,38 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
           aria-hidden
           className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5]"
           style={{
-            border: '1.5px solid hsl(0 75% 55%)',
-            boxShadow: '0 0 6px hsl(0 75% 55% / 0.55), inset 0 0 4px hsl(0 75% 55% / 0.25)',
+            border: '2px solid hsl(0 78% 58%)',
+            boxShadow: '0 0 8px hsl(0 78% 58% / 0.6), inset 0 0 5px hsl(0 78% 58% / 0.35)',
           }}
           initial={{ opacity: 0.6 }}
           animate={{ opacity: [0.55, 1, 0.55] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 1.3, repeat: Infinity, ease: 'easeInOut' }}
         />
+      )}
+      {canSelect && !isAiChosen && possibleScore === 0 && (
+        <span
+          aria-hidden
+          className="absolute inset-0 flex items-center justify-center z-[6] pointer-events-none"
+        >
+          <span
+            className="block"
+            style={{
+              width: '22px',
+              height: '2px',
+              background: 'linear-gradient(90deg, transparent, hsl(0 78% 58%), transparent)',
+              transform: 'rotate(-45deg)',
+            }}
+          />
+          <span
+            className="absolute block"
+            style={{
+              width: '22px',
+              height: '2px',
+              background: 'linear-gradient(90deg, transparent, hsl(0 78% 58%), transparent)',
+              transform: 'rotate(45deg)',
+            }}
+          />
+        </span>
       )}
       <AnimatePresence>
         {justScored && sparkles.map((s, i) => (

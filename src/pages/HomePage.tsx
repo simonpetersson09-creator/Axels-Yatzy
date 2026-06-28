@@ -19,7 +19,7 @@ import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame } from 'luci
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { syncCountryRank, countryToFlag, countryName, type CountryRank } from '@/lib/country-rank';
+import { syncCountryRank, countryToFlag, countryName, type RankInfo } from '@/lib/country-rank';
 import { getLanguage } from '@/lib/profile';
 
 const item = {

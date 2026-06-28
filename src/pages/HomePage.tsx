@@ -447,9 +447,13 @@ export default function HomePage() {
                       {t('countryRankLabelFull', { country: countryName(rankInfo.country.country, getLanguage()) })}
                     </span>
                   </div>
-                  <div className="font-display font-black text-2xl text-primary relative z-10 tabular-nums leading-none">
-                    #{rankInfo.country.rank}
+                  <div className="relative z-10 flex items-baseline justify-center mt-0.5">
+                    <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
+                    <span className="text-3xl sm:text-4xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
+                      {rankInfo.country.rank}
+                    </span>
                   </div>
+                  <div className="h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-primary/50 to-transparent relative z-10" />
                 </div>
               )}
               {rankInfo.world && (
@@ -461,9 +465,13 @@ export default function HomePage() {
                       {t('worldRankLabelFull')}
                     </span>
                   </div>
-                  <div className="font-display font-black text-2xl text-primary relative z-10 tabular-nums leading-none">
-                    #{rankInfo.world.rank}
+                  <div className="relative z-10 flex items-baseline justify-center mt-0.5">
+                    <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
+                    <span className="text-3xl sm:text-4xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-info-light via-game-info to-game-info-dark drop-shadow-[0_0_12px_hsl(var(--game-info)/0.35)]">
+                      {rankInfo.world.rank}
+                    </span>
                   </div>
+                  <div className="h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-game-info/50 to-transparent relative z-10" />
                 </div>
               )}
             </div>

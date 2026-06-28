@@ -43,13 +43,13 @@ export default function HomePage() {
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
-  const [countryRank, setCountryRank] = useState<CountryRank | null>(null);
+  const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
 
-  // Sync country ranking whenever the games_played count changes.
+  // Sync country + world ranking whenever the games_played count changes.
   useEffect(() => {
     let cancelled = false;
     void syncCountryRank(stats.gamesPlayed).then(res => {
-      if (!cancelled) setCountryRank(res);
+      if (!cancelled) setRankInfo(res);
     });
     return () => { cancelled = true; };
   }, [stats.gamesPlayed]);

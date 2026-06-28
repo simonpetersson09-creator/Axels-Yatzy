@@ -444,11 +444,8 @@ export default function HomePage() {
                   <div className="flex items-center gap-2 relative z-10">
                     <span className="text-2xl leading-none" aria-hidden>{countryToFlag(rankInfo.country.country)}</span>
                     <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
-                      {countryName(rankInfo.country.country, getLanguage())}
+                      {t('countryRankLabelFull', { country: countryName(rankInfo.country.country, getLanguage()) })}
                     </span>
-                  </div>
-                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
-                    {t('countryRankLabel')}
                   </div>
                   <div className="font-display font-black text-2xl text-primary relative z-10 tabular-nums leading-none">
                     #{rankInfo.country.rank}
@@ -461,11 +458,8 @@ export default function HomePage() {
                   <div className="flex items-center gap-2 relative z-10">
                     <span className="text-2xl leading-none" aria-hidden>🌍</span>
                     <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
-                      {t('worldRankLabel')}
+                      {t('worldRankLabelFull')}
                     </span>
-                  </div>
-                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
-                    {t('countryRankLabel')}
                   </div>
                   <div className="font-display font-black text-2xl text-primary relative z-10 tabular-nums leading-none">
                     #{rankInfo.world.rank}

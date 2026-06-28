@@ -28,6 +28,8 @@ export const es: typeof sv = {
   statStreak: 'Racha',
   worldRankLabel: 'Mundo',
   countryRankLabel: 'Tu ranking',
+  countryRankLabelFull: 'Tu ranking en {country}',
+  worldRankLabelFull: 'Tu ranking en el mundo',
   countryRankIn: 'en',
   countryRankPlayers: 'jugadores',
   countrySection: 'País',

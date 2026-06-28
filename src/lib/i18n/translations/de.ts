@@ -28,6 +28,8 @@ export const de: typeof sv = {
   statStreak: 'Serie',
   worldRankLabel: 'Welt',
   countryRankLabel: 'Dein Rang',
+  countryRankLabelFull: 'Dein Rang in {country}',
+  worldRankLabelFull: 'Dein Rang in der Welt',
   countryRankIn: 'in',
   countryRankPlayers: 'Spieler',
   countrySection: 'Land',

@@ -28,6 +28,8 @@ export const da: typeof sv = {
   statStreak: 'Stime',
   worldRankLabel: 'Verden',
   countryRankLabel: 'Din placering',
+  countryRankLabelFull: 'Din placering i {country}',
+  worldRankLabelFull: 'Din placering i verden',
   countryRankIn: 'i',
   countryRankPlayers: 'spillere',
   countrySection: 'Land',

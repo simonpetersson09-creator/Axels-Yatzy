@@ -441,11 +441,14 @@ export default function HomePage() {
               {rankInfo.country && (
                 <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-                  <div className="flex items-center gap-1.5 relative z-10">
+                  <div className="flex items-center gap-2 relative z-10">
                     <span className="text-2xl leading-none" aria-hidden>{countryToFlag(rankInfo.country.country)}</span>
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                      {countryName(rankInfo.country.country, getLanguage())}
+                    </span>
                   </div>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
-                    {countryName(rankInfo.country.country, getLanguage())}
+                    {t('countryRankLabel')}
                   </div>
                   <div className="font-display font-black text-2xl text-primary relative z-10 tabular-nums leading-none">
                     #{rankInfo.country.rank}
@@ -455,11 +458,14 @@ export default function HomePage() {
               {rankInfo.world && (
                 <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-                  <div className="flex items-center gap-1.5 relative z-10">
+                  <div className="flex items-center gap-2 relative z-10">
                     <span className="text-2xl leading-none" aria-hidden>🌍</span>
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                      {t('worldRankLabel')}
+                    </span>
                   </div>
                   <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
-                    {t('worldRankLabel')}
+                    {t('countryRankLabel')}
                   </div>
                   <div className="font-display font-black text-2xl text-primary relative z-10 tabular-nums leading-none">
                     #{rankInfo.world.rank}

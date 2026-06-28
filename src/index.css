@@ -58,6 +58,8 @@
     --game-dice-locked: 36 78% 55%;
     --game-success: 160 55% 42%;
     --game-info: 200 65% 50%;
+    --game-info-light: 195 80% 70%;
+    --game-info-dark: 230 70% 45%;
 
     /* Yatzy scorecard */
     --yatzy-bg: 40 30% 96%;

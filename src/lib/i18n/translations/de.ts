@@ -26,6 +26,7 @@ export const de: typeof sv = {
   statWinrate: 'Siegquote',
   statYatzy: 'Yatzy',
   statStreak: 'Serie',
+  worldRankLabel: 'Welt',
   countryRankLabel: 'Dein Rang',
   countryRankIn: 'in',
   countryRankPlayers: 'Spieler',

@@ -28,6 +28,7 @@ export const sv = {
   statWinrate: 'Vinst-%',
   statYatzy: 'Yatzy',
   statStreak: 'Svit',
+  worldRankLabel: 'Världen',
   countryRankLabel: 'Din placering',
   countryRankIn: 'i',
   countryRankPlayers: 'spelare',

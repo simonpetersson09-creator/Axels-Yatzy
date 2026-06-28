@@ -26,6 +26,7 @@ export const fi: typeof sv = {
   statWinrate: 'Voitto-%',
   statYatzy: 'Yatzyt',
   statStreak: 'Putki',
+  worldRankLabel: 'Maailma',
   countryRankLabel: 'Sijoituksesi',
   countryRankIn: 'maassa',
   countryRankPlayers: 'pelaajaa',

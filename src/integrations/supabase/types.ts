@@ -430,6 +430,7 @@ export type Database = {
         Returns: Json
       }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
+      get_world_rank: { Args: { p_session_id: string }; Returns: Json }
       heartbeat: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: undefined

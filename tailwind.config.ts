@@ -72,6 +72,8 @@ export default {
           "dice-locked": "hsl(var(--game-dice-locked))",
           success: "hsl(var(--game-success))",
           info: "hsl(var(--game-info))",
+          "info-light": "hsl(var(--game-info-light))",
+          "info-dark": "hsl(var(--game-info-dark))",
         },
         yatzy: {
           bg: "hsl(var(--yatzy-bg))",

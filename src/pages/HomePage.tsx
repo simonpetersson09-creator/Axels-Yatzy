@@ -439,27 +439,29 @@ export default function HomePage() {
           {(rankInfo.country || rankInfo.world) && (
             <div className="grid grid-cols-2 gap-2">
               {rankInfo.country && (
-                <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xl leading-none" aria-hidden>{countryToFlag(rankInfo.country.country)}</span>
+                <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+                  <div className="flex items-center gap-1.5 relative z-10">
+                    <span className="text-2xl leading-none" aria-hidden>{countryToFlag(rankInfo.country.country)}</span>
                   </div>
-                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
                     {countryName(rankInfo.country.country, getLanguage())}
                   </div>
-                  <div className="font-display font-bold text-foreground text-base">
+                  <div className="font-display font-black text-2xl text-primary relative z-10 tabular-nums leading-none">
                     #{rankInfo.country.rank}
                   </div>
                 </div>
               )}
               {rankInfo.world && (
-                <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xl leading-none" aria-hidden>🌍</span>
+                <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+                  <div className="flex items-center gap-1.5 relative z-10">
+                    <span className="text-2xl leading-none" aria-hidden>🌍</span>
                   </div>
-                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
                     {t('worldRankLabel')}
                   </div>
-                  <div className="font-display font-bold text-foreground text-base">
+                  <div className="font-display font-black text-2xl text-primary relative z-10 tabular-nums leading-none">
                     #{rankInfo.world.rank}
                   </div>
                 </div>

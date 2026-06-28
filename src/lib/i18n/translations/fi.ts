@@ -28,6 +28,8 @@ export const fi: typeof sv = {
   statStreak: 'Putki',
   worldRankLabel: 'Maailma',
   countryRankLabel: 'Sijoituksesi',
+  countryRankLabelFull: 'Sijoituksesi maassa {country}',
+  worldRankLabelFull: 'Sijoituksesi maailmassa',
   countryRankIn: 'maassa',
   countryRankPlayers: 'pelaajaa',
   countrySection: 'Maa',

@@ -436,18 +436,34 @@ export default function HomePage() {
             ))}
           </div>
 
-          {countryRank && (
-            <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-secondary/60 border border-border/50">
-              <span className="text-2xl leading-none shrink-0" aria-hidden>{countryToFlag(countryRank.country)}</span>
-              <span className="text-xl leading-none shrink-0" aria-hidden>🏆</span>
-              <div className="flex flex-col items-center text-center">
-                <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                  {t('countryRankLabel')}
+          {(rankInfo.country || rankInfo.world) && (
+            <div className="grid grid-cols-2 gap-2">
+              {rankInfo.country && (
+                <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xl leading-none" aria-hidden>{countryToFlag(rankInfo.country.country)}</span>
+                  </div>
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                    {countryName(rankInfo.country.country, getLanguage())}
+                  </div>
+                  <div className="font-display font-bold text-foreground text-base">
+                    #{rankInfo.country.rank}
+                  </div>
                 </div>
-                <div className="font-display font-bold text-foreground text-sm sm:text-base">
-                  #{countryRank.rank} {t('countryRankIn')} {countryName(countryRank.country, getLanguage())}
+              )}
+              {rankInfo.world && (
+                <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xl leading-none" aria-hidden>🌍</span>
+                  </div>
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                    {t('worldRankLabel')}
+                  </div>
+                  <div className="font-display font-bold text-foreground text-base">
+                    #{rankInfo.world.rank}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </motion.div>

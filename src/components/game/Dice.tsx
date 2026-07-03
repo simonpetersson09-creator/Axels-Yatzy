@@ -218,12 +218,23 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // dice keeps spinning toward the OLD target if the authoritative server
   // dice land after the local animation started — user sees stale faces
   // (e.g. all 1s after the first roll, or wrong pips when scoring).
+  //
+  // Signed shortest-path correction: pick the direction (+delta or -(360-delta))
+  // that rotates the least. Max correction is now ±180° instead of 0..359°,
+  // which removes the visible horizontal "extra spin" at the end of a roll
+  // when the authoritative server value arrives after the local animation.
   useEffect(() => {
     const base = valueToRotation[displayValue];
     const cur = rotationRef.current;
     const mod = (n: number) => ((n % 360) + 360) % 360;
-    const deltaX = (base.rotateX - mod(cur.rotateX) + 360) % 360;
-    const deltaY = (base.rotateY - mod(cur.rotateY) + 360) % 360;
+    // Shortest signed delta in range (-180, 180].
+    const shortest = (from: number, to: number) => {
+      const d = ((to - mod(from)) % 360 + 540) % 360 - 180;
+      // Normalize -180 vs 180: prefer +180 for consistency (either is fine visually).
+      return d === -180 ? 180 : d;
+    };
+    const deltaX = shortest(cur.rotateX, base.rotateX);
+    const deltaY = shortest(cur.rotateY, base.rotateY);
     if (deltaX === 0 && deltaY === 0) return;
     const retarget = {
       rotateX: cur.rotateX + deltaX,
@@ -233,6 +244,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
     setSpinRotation(retarget);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayValue]);
+
 
 
   const handleToggle = () => {

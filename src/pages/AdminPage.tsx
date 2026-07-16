@@ -219,37 +219,8 @@ export default function AdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!authed) {
-    return (
-      <div className="min-h-screen bg-background p-8 text-foreground">
-        <div className="mx-auto max-w-sm space-y-4">
-          <h1 className="text-xl font-bold">Admin access</h1>
-          <p className="text-sm text-muted-foreground">
-            Enter the admin key to view analytics.
-          </p>
-          <input
-            type="password"
-            value={adminKey}
-            onChange={(e) => setAdminKey(e.target.value)}
-            placeholder="Admin key"
-            className="w-full rounded-md border border-border bg-secondary/30 px-3 py-2 text-sm"
-            onKeyDown={(e) => { if (e.key === "Enter" && adminKey) void loadStats(adminKey); }}
-          />
-          <button
-            onClick={() => adminKey && loadStats(adminKey)}
-            disabled={!adminKey || loading}
-            className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-          >
-            {loading ? "Verifying…" : "Unlock"}
-          </button>
-          {error && <div className="text-xs text-destructive">{error}</div>}
-        </div>
-      </div>
-    );
-  }
-
   const kpis = useMemo(() => {
-    if (!stats) return [];
+    if (!stats) return [] as { label: string; value: string; spark?: number[] }[];
     const t = (stats.totals ?? {}) as Partial<Stats["totals"]>;
     const a = (stats.activity ?? {}) as Partial<Stats["activity"]>;
     const series = stats.series ?? [];
@@ -296,6 +267,37 @@ export default function AdminPage() {
       { label: "Rooms joined", value: n(t.roomsJoined) },
     ] as { label: string; value: string; spark?: number[] }[];
   }, [stats]);
+
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-background p-8 text-foreground">
+        <div className="mx-auto max-w-sm space-y-4">
+          <h1 className="text-xl font-bold">Admin access</h1>
+          <p className="text-sm text-muted-foreground">
+            Enter the admin key to view analytics.
+          </p>
+          <input
+            type="password"
+            value={adminKey}
+            onChange={(e) => setAdminKey(e.target.value)}
+            placeholder="Admin key"
+            className="w-full rounded-md border border-border bg-secondary/30 px-3 py-2 text-sm"
+            onKeyDown={(e) => { if (e.key === "Enter" && adminKey) void loadStats(adminKey); }}
+          />
+          <button
+            onClick={() => adminKey && loadStats(adminKey)}
+            disabled={!adminKey || loading}
+            className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+          >
+            {loading ? "Verifying…" : "Unlock"}
+          </button>
+          {error && <div className="text-xs text-destructive">{error}</div>}
+        </div>
+      </div>
+    );
+  }
+
+
 
   if (loading) return <div className="min-h-screen bg-background p-8 text-foreground">Loading analytics…</div>;
   if (error) return <div className="min-h-screen bg-background p-8 text-destructive">Error: {error}</div>;

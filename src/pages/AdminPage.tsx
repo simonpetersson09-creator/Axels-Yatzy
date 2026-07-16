@@ -219,6 +219,55 @@ export default function AdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const kpis = useMemo(() => {
+    if (!stats) return [] as { label: string; value: string; spark?: number[] }[];
+    const t = (stats.totals ?? {}) as Partial<Stats["totals"]>;
+    const a = (stats.activity ?? {}) as Partial<Stats["activity"]>;
+    const series = stats.series ?? [];
+    const n = (v: unknown) => fmtNum(typeof v === "number" ? v : 0);
+    const p = (v: unknown) => fmtPct(typeof v === "number" ? v : 0);
+    return [
+      { label: "DAU", value: n(a.dau), spark: series.slice(-14).map((s) => s.users) },
+      { label: "WAU", value: n(a.wau) },
+      { label: "MAU", value: n(a.mau) },
+      { label: "Unique devices (30d)", value: n(t.uniqueDevices ?? t.uniqueUsers) },
+      { label: "Unique sessions (30d)", value: n(t.uniqueSessions) },
+      {
+        label: "Total sessions",
+        value: n(stats.sessions?.total ?? 0),
+        spark: stats.sessions?.perDay.map((d) => d.sessions),
+      },
+      {
+        label: "Avg session duration",
+        value: (() => {
+          const s = stats.sessions?.avgDurationSeconds ?? 0;
+          if (s < 60) return `${Math.round(s)}s`;
+          const m = Math.floor(s / 60);
+          const sec = Math.round(s % 60);
+          return `${m}m ${sec}s`;
+        })(),
+      },
+      {
+        label: "Sessions / day",
+        value: (stats.sessions?.sessionsPerDayAvg ?? 0).toFixed(1),
+      },
+      { label: "Events (30d)", value: n(t.events), spark: series.map((s) => s.events) },
+      { label: "Games started", value: n(t.started), spark: series.map((s) => s.started) },
+      { label: "Games finished", value: n(t.finished), spark: series.map((s) => s.finished) },
+      { label: "Completion %", value: p(a.completionRate) },
+      { label: "Multiplayer rate", value: p(a.multiplayerRate) },
+      { label: "Forfeit rate", value: p(a.forfeitRate) },
+      { label: "Avg games / user", value: (typeof a.avgGamesPerUser === "number" ? a.avgGamesPerUser : 0).toFixed(2) },
+      { label: "Retention 7d", value: p(a.retention7d) },
+      { label: "Quick match", value: n(t.quickMatch) },
+      { label: "Multiplayer", value: n(t.multiplayer) },
+      { label: "Yatzys", value: n(t.yatzyCount) },
+      { label: "Forfeits", value: n(t.forfeits) },
+      { label: "Rooms created", value: n(t.roomsCreated) },
+      { label: "Rooms joined", value: n(t.roomsJoined) },
+    ] as { label: string; value: string; spark?: number[] }[];
+  }, [stats]);
+
   if (!authed) {
     return (
       <div className="min-h-screen bg-background p-8 text-foreground">

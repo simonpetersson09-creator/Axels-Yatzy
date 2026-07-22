@@ -449,7 +449,7 @@ export default function HomePage() {
                   </div>
                   <div className="relative z-10 flex items-baseline justify-center mt-0.5">
                     <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
-                    <span className="text-3xl sm:text-4xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
+                    <span className="text-2xl sm:text-3xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
                       {rankInfo.country.rank}
                     </span>
                   </div>

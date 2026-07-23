@@ -247,6 +247,13 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       rotateY: cur.rotateY + deltaY,
     };
     rotationRef.current = retarget;
+    // If we're NOT mid-roll, the roll already landed and the server value
+    // arrived late — snap instantly instead of animating for 0.45s, which
+    // is what caused the visible "extra spin" after dice appeared to stop.
+    if (!rollingRef.current) {
+      snapNextRef.current = true;
+      setSnapTick((t) => t + 1);
+    }
     setSpinRotation(retarget);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayValue]);

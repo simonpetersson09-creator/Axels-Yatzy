@@ -24,26 +24,28 @@ export default function InviteOverlay() {
     setQueue((cur) => (cur.some((r) => r.id === row.id) ? cur : [...cur, row]));
   }, []);
 
-  // Look for ALL outstanding pending invites on mount (e.g. app was closed).
+  // Poll for outstanding pending invites (SELECT on game_invites is locked down;
+  // access goes through the SECURITY DEFINER RPC list_invites_for_session).
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      const { data } = await supabase
-        .from('game_invites')
-        .select('*')
-        .eq('to_session_id', sessionId)
-        .eq('status', 'pending')
-        .gt('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: true });
+    const load = async () => {
+      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
       if (cancelled || !data) return;
-      for (const row of data) {
+      const now = Date.now();
+      for (const row of data as InviteRow[]) {
+        if (row.to_session_id !== sessionId) continue;
+        if (row.status !== 'pending') continue;
+        if (row.expires_at && new Date(row.expires_at).getTime() <= now) continue;
         if (!handledRef.current.has(row.id)) {
-          setQueue((cur) => (cur.some((r) => r.id === row.id) ? cur : [...cur, row as InviteRow]));
+          setQueue((cur) => (cur.some((r) => r.id === row.id) ? cur : [...cur, row]));
         }
       }
-    })();
-    return () => { cancelled = true; };
+    };
+    load();
+    const iv = setInterval(load, 4000);
+    return () => { cancelled = true; clearInterval(iv); };
   }, [sessionId]);
+
 
   // Realtime: incoming invites addressed to me — INSERT (new) + UPDATE (cancelled/expired)
   useEffect(() => {

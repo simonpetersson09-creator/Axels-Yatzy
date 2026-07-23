@@ -137,17 +137,14 @@ export function FriendsList() {
     let cancelled = false;
 
     const loadActive = async () => {
-      const { data: invites } = await supabase
-        .from('game_invites')
-        .select('id, to_session_id, status, game_id, expires_at')
-        .eq('from_session_id', myId)
-        .in('status', ['pending', 'accepted']);
+      const { data: invites } = await supabase.rpc('list_invites_for_session', { p_session_id: myId });
       if (cancelled || !invites) return;
 
       const now = Date.now();
       const next: Record<string, { inviteId: string; gameId?: string }> = {};
       const acceptedGameIds: string[] = [];
-      for (const inv of invites) {
+      for (const inv of invites as Array<{ id: string; from_session_id: string; to_session_id: string; status: string; game_id: string | null; expires_at: string | null }>) {
+        if (inv.from_session_id !== myId) continue;
         if (inv.status === 'pending') {
           if (inv.expires_at && new Date(inv.expires_at).getTime() < now) continue;
           next[inv.to_session_id] = { inviteId: inv.id };
@@ -171,34 +168,15 @@ export function FriendsList() {
     };
 
     loadActive();
-
-    const invChan = supabase
-      .channel(`friends-list-invites-out-${myId}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'game_invites', filter: `from_session_id=eq.${myId}` },
-        (payload) => {
-          const row = payload.new as { id: string; to_session_id: string; status: string; game_id: string | null };
-          setActiveInvites((cur) => {
-            const next = { ...cur };
-            if (row.status === 'accepted') {
-              next[row.to_session_id] = { inviteId: row.id, gameId: row.game_id ?? undefined };
-            } else if (row.status === 'pending') {
-              next[row.to_session_id] = { inviteId: row.id };
-            } else {
-              delete next[row.to_session_id];
-            }
-            return next;
-          });
-        },
-      )
-      .subscribe();
+    // Poll instead of realtime — direct SELECT on game_invites is locked down.
+    const iv = setInterval(loadActive, 4000);
 
     return () => {
       cancelled = true;
-      supabase.removeChannel(invChan);
+      clearInterval(iv);
     };
   }, [myId]);
+
 
   const activeGameIds = useMemo(
     () => Object.values(activeInvites).map((v) => v.gameId).filter(Boolean).join(','),

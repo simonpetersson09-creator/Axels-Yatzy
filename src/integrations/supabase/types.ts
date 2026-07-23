@@ -448,6 +448,27 @@ export type Database = {
         }
         Returns: Json
       }
+      list_invites_for_session: {
+        Args: { p_session_id: string }
+        Returns: {
+          created_at: string
+          expires_at: string
+          from_name: string
+          from_session_id: string
+          game_id: string | null
+          id: string
+          responded_at: string | null
+          status: Database["public"]["Enums"]["invite_status"]
+          to_name: string
+          to_session_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "game_invites"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       maybe_create_ongoing_friend_match: {
         Args: { p_game_id: string }
         Returns: undefined

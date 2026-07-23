@@ -251,7 +251,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
     // is what caused the visible "extra spin" after dice appeared to stop.
     if (!rollingRef.current) {
       snapNextRef.current = true;
-      setSnapTick((t) => t + 1);
     }
     setSpinRotation(retarget);
     // eslint-disable-next-line react-hooks/exhaustive-deps

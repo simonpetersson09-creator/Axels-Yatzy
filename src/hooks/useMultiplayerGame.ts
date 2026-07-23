@@ -561,6 +561,36 @@ export function useMultiplayerGame() {
     const gs = latest.gameState;
     const activeLockedDice = getPendingLockForTurn(latest.gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
 
+    // Optimistic dice: generate final values locally so the Dice animation
+    // spins toward the real result from t=0 (same as Snabb match). Prevents
+    // the visible "extra rotation" that happened when the server response
+    // arrived mid-spin and forced a retarget. Server still validates turn /
+    // rolls_left / locks; it accepts our dice as the authoritative values.
+    const willResetLocks = gs.rollsLeft === 3;
+    const optimisticLocked = willResetLocks ? [false, false, false, false, false] : activeLockedDice;
+    const optimisticDice = gs.dice.map((prev, i) =>
+      !willResetLocks && optimisticLocked[i] ? prev : (1 + Math.floor(Math.random() * 6)),
+    );
+    const optimisticRollsLeft = gs.rollsLeft - 1;
+
+    if (mountedRef.current) {
+      setState(prev => prev.gameState ? {
+        ...prev,
+        gameState: {
+          ...prev.gameState,
+          dice: optimisticDice,
+          lockedDice: optimisticLocked,
+        },
+      } : prev);
+    }
+    // Pre-buffer so the animation-end flush lands on the same values.
+    pendingRollUpdateRef.current = {
+      dice: optimisticDice,
+      lockedDice: optimisticLocked,
+      rollsLeft: optimisticRollsLeft,
+      isRolling: false,
+    };
+
     // Broadcast roll-start so the opponent can begin their spin animation
     // without waiting for the postgres_changes event. Sent AFTER lock-confirm
     // so we never trigger a phantom spin on rollback.
@@ -574,30 +604,18 @@ export function useMultiplayerGame() {
       // Non-fatal — opponent will still spin via postgres_changes fallback.
     }
 
-    // Fire RPC in parallel — we don't await it for the animation timing
+    // Fire RPC in parallel — we don't await it for the animation timing.
+    // Server writes the client_dice we provided (validated 1..6) so the
+    // authoritative values match what's already on screen; no retarget.
     const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {
-      body: { game_id: latest.gameId, session_id: sessionId },
+      body: { game_id: latest.gameId, session_id: sessionId, client_dice: optimisticDice },
     })).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
       if (!error && data?.dice && typeof data?.rolls_left === 'number') {
-        const newLocked = gs.rollsLeft === 3 ? [false, false, false, false, false] : activeLockedDice;
-        // Apply authoritative dice values to state IMMEDIATELY (mid-spin) so
-        // the Dice component re-targets the rotation smoothly — matches the
-        // single-player feel where final values are known at spin start.
-        // rollsLeft/isRolling stay buffered so the spin completes visually.
-        if (mountedRef.current) {
-          setState(prev => prev.gameState ? {
-            ...prev,
-            gameState: {
-              ...prev.gameState,
-              dice: data.dice,
-              lockedDice: newLocked,
-            },
-          } : prev);
-        }
+        // Update buffer to server's authoritative values (should match ours).
         pendingRollUpdateRef.current = {
           dice: data.dice,
-          lockedDice: newLocked,
+          lockedDice: optimisticLocked,
           rollsLeft: data.rolls_left,
           isRolling: false,
         };

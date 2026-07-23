@@ -47,71 +47,60 @@ export default function InviteOverlay() {
   }, [sessionId]);
 
 
-  // Realtime: incoming invites addressed to me — INSERT (new) + UPDATE (cancelled/expired)
+  // Poll for status transitions on outbound invites I sent (accepted/declined)
+  // and for cancellation/expiry of queued incoming invites. Realtime is no
+  // longer used here since direct SELECT on game_invites is locked down.
   useEffect(() => {
-    const ch = supabase
-      .channel(`invites-in-${sessionId}`)
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'game_invites', filter: `to_session_id=eq.${sessionId}` },
-        (payload) => {
-          const row = payload.new as InviteRow;
-          if (row.status !== 'pending') return;
-          // M6: ignore invites that are already past their TTL — server-side
-          // expiry can lag and the row would briefly surface here otherwise.
-          if (row.expires_at && new Date(row.expires_at).getTime() <= Date.now()) return;
-          enqueue(row);
-        },
-      )
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'game_invites', filter: `to_session_id=eq.${sessionId}` },
-        (payload) => {
-          const row = payload.new as InviteRow;
-          if (row.status === 'pending') return;
-          setQueue((cur) => {
-            const idx = cur.findIndex((r) => r.id === row.id);
-            if (idx === -1) return cur;
-            handledRef.current.add(row.id);
-            if (row.status === 'cancelled' && idx === 0) {
-              toast.message(t('invCancelledBy', { name: row.from_name }));
-            }
-            const next = [...cur];
-            next.splice(idx, 1);
-            return next;
-          });
-        },
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
-  }, [sessionId, enqueue]);
+    let cancelled = false;
+    const seenOutbound = new Set<string>();
+    const poll = async () => {
+      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
+      if (cancelled || !data) return;
+      const rows = data as InviteRow[];
 
-  // Realtime: outbound invites I sent — auto-navigate when accepted
-  useEffect(() => {
-    const ch = supabase
-      .channel(`invites-out-${sessionId}`)
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'game_invites', filter: `from_session_id=eq.${sessionId}` },
-        (payload) => {
-          const row = payload.new as InviteRow;
-          const ageMs = Date.now() - new Date(row.created_at).getTime();
-          if (ageMs > 11 * 60_000) return;
-          if (row.status === 'accepted' && row.game_id) {
-            if (window.location.pathname.startsWith('/multiplayer-game')) {
-              toast.success(t('invAcceptedOpenFromHome', { name: row.to_name }));
-              return;
-            }
+      // Outbound: I'm the sender
+      for (const row of rows) {
+        if (row.from_session_id !== sessionId) continue;
+        const key = `${row.id}:${row.status}`;
+        if (seenOutbound.has(key)) continue;
+        seenOutbound.add(key);
+        const ageMs = Date.now() - new Date(row.created_at).getTime();
+        if (ageMs > 11 * 60_000) continue;
+        if (row.status === 'accepted' && row.game_id) {
+          if (window.location.pathname.startsWith('/multiplayer-game')) {
+            toast.success(t('invAcceptedOpenFromHome', { name: row.to_name }));
+          } else {
             toast.success(t('invAccepted', { name: row.to_name }));
             navigate(`/multiplayer-game?gameId=${row.game_id}`);
-          } else if (row.status === 'declined') {
-            toast.message(t('invDeclinedByOther', { name: row.to_name }));
           }
-        },
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+        } else if (row.status === 'declined') {
+          toast.message(t('invDeclinedByOther', { name: row.to_name }));
+        }
+      }
+
+      // Inbound queued: remove if no longer pending
+      setQueue((cur) => {
+        if (cur.length === 0) return cur;
+        const stillPending = new Set(
+          rows.filter((r) => r.to_session_id === sessionId && r.status === 'pending').map((r) => r.id),
+        );
+        const next = cur.filter((r) => {
+          if (stillPending.has(r.id)) return true;
+          handledRef.current.add(r.id);
+          const upd = rows.find((x) => x.id === r.id);
+          if (upd && upd.status === 'cancelled' && cur[0]?.id === r.id) {
+            toast.message(t('invCancelledBy', { name: upd.from_name }));
+          }
+          return false;
+        });
+        return next.length === cur.length ? cur : next;
+      });
+    };
+    poll();
+    const iv = setInterval(poll, 4000);
+    return () => { cancelled = true; clearInterval(iv); };
   }, [sessionId, navigate]);
+
 
 
   const handle = useCallback(

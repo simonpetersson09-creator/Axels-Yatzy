@@ -154,7 +154,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // local roll animation already landed — otherwise the die visibly rotates
   // for ~0.45s post-landing, looking like an "extra spin".
   const snapNextRef = useRef(false);
-  const [snapTick, setSnapTick] = useState(0);
   const half = size / 2;
   const radius = Math.round(size * 0.28);
   const faces = useMemo(() => [

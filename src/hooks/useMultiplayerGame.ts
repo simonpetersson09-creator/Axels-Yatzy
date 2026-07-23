@@ -90,7 +90,10 @@ export function useMultiplayerGame() {
   // Client-driven dice spin for the *opponent* — server.is_rolling stays false,
   // so we synthesize a rolling pulse when realtime delivers fresh dice for the
   // other player. Synced with Dice ANIM_DURATION (~1100 ms).
-  const ROLL_ANIM_MS = 1150;
+  // Must match Dice ANIM_DURATION (1.5s) — if we release the rolling guard
+  // before the dice visually land, late server payloads can retarget mid-spin
+  // and produce a visible extra rotation. 100ms buffer for jitter/dt (±50ms).
+  const ROLL_ANIM_MS = 1600;
   const [localRolling, setLocalRolling] = useState(false);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);
@@ -534,11 +537,12 @@ export function useMultiplayerGame() {
     if (initialGs.rollsLeft <= 0) return false;
     if (initial.myPlayerIndex !== initialGs.currentPlayerIndex) return false;
 
-    // Start the local animation IMMEDIATELY for instant feedback. We still
-    // await pending lock RPCs before firing the roll RPC so the server sees
-    // the correct locked state, but the spin is already on screen.
+    // Reserve the rolling guard synchronously so a second tap can't double-fire,
+    // but do NOT flip localRolling yet — we want the Dice component to see the
+    // final optimistic value on the SAME render it sees rolling=true, otherwise
+    // it starts spinning toward the old value and then retargets mid-spin
+    // (visible as an extra rotation at the end).
     rollingGuardRef.current = true;
-    setLocalRolling(true);
     pendingRollUpdateRef.current = null;
 
     // Send heartbeat on action
@@ -546,16 +550,14 @@ export function useMultiplayerGame() {
 
     const locksConfirmed = await waitForPendingLocks();
     if (!locksConfirmed) {
-      // Roll back the animation — server state is unknown.
+      // Roll back — server state is unknown.
       rollingGuardRef.current = false;
-      setLocalRolling(false);
       refreshGameStateRef.current?.(initial.gameId);
       return false;
     }
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState) {
       rollingGuardRef.current = false;
-      setLocalRolling(false);
       return false;
     }
     const gs = latest.gameState;
@@ -573,7 +575,11 @@ export function useMultiplayerGame() {
     );
     const optimisticRollsLeft = gs.rollsLeft - 1;
 
+    // CRITICAL: flip rolling AND commit optimistic dice in a single batched
+    // update so the Dice component's rolling useEffect reads the final target
+    // value on its very first run — no mid-spin retarget, no extra rotation.
     if (mountedRef.current) {
+      setLocalRolling(true);
       setState(prev => prev.gameState ? {
         ...prev,
         gameState: {

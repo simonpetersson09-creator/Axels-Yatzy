@@ -149,6 +149,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
   const rotationRef = useRef(valueToRotation[displayValue]);
+  // When true, the next rotation update must snap (duration 0) instead of
+  // animating. Used when the authoritative server value arrives AFTER the
+  // local roll animation already landed — otherwise the die visibly rotates
+  // for ~0.45s post-landing, looking like an "extra spin".
+  const snapNextRef = useRef(false);
   const half = size / 2;
   const radius = Math.round(size * 0.28);
   const faces = useMemo(() => [
@@ -241,6 +246,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       rotateY: cur.rotateY + deltaY,
     };
     rotationRef.current = retarget;
+    // If we're NOT mid-roll, the roll already landed and the server value
+    // arrived late — snap instantly instead of animating for 0.45s, which
+    // is what caused the visible "extra spin" after dice appeared to stop.
+    if (!rollingRef.current) {
+      snapNextRef.current = true;
+    }
     setSpinRotation(retarget);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayValue]);
@@ -361,7 +372,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                     rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                   }
-                : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+                : snapNextRef.current
+                  ? (snapNextRef.current = false, { duration: 0 })
+                  : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }
 
           >

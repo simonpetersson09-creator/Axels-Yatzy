@@ -374,7 +374,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                     rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                   }
-                : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+                : snapNextRef.current
+                  ? (snapNextRef.current = false, { duration: 0 })
+                  : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }
 
           >

@@ -456,10 +456,16 @@ export type Database = {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json
       }
-      perform_roll_dice: {
-        Args: { p_game_id: string; p_session_id: string }
-        Returns: Json
-      }
+      perform_roll_dice:
+        | { Args: { p_game_id: string; p_session_id: string }; Returns: Json }
+        | {
+            Args: {
+              p_client_dice?: number[]
+              p_game_id: string
+              p_session_id: string
+            }
+            Returns: Json
+          }
       perform_start_game: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json

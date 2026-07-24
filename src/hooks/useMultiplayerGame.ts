@@ -95,11 +95,10 @@ export function useMultiplayerGame() {
 
   // Client-driven dice spin for the *opponent* — server.is_rolling stays false,
   // so we synthesize a rolling pulse when realtime delivers fresh dice for the
-  // other player. Synced with Dice ANIM_DURATION (~1100 ms).
-  // Must match Dice ANIM_DURATION (1.5s) — if we release the rolling guard
-  // before the dice visually land, late server payloads can retarget mid-spin
-  // and produce a visible extra rotation. 100ms buffer for jitter/dt (±50ms).
-  const ROLL_ANIM_MS = 1600;
+  // other player. Must match Dice ANIM_DURATION (1.5s) exactly: if this guard
+  // ends later, the buffered server state can flush just after the dice have
+  // visually landed and look like a post-landing face change.
+  const ROLL_ANIM_MS = 1500;
   const [localRolling, setLocalRolling] = useState(false);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);
@@ -544,8 +543,8 @@ export function useMultiplayerGame() {
   }, [sessionId]);
 
   // Roll dice — calls server-side Edge Function. Animation timing is client-driven
-  // and synced with Dice ANIM_DURATION (~1050 ms) so the rolling=false→true→false
-  // pulse is clean and dice values never change mid-spin.
+  // and synced with Dice ANIM_DURATION (1500 ms) so the rolling=false→true→false
+  // pulse is clean and dice values never change after landing.
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return false;

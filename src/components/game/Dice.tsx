@@ -208,6 +208,20 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       return () => clearTimeout(t);
     } else if (!rolling) {
       rollingRef.current = false;
+      const base = valueToRotation[displayValue];
+      const cur = rotationRef.current;
+      const mod = (n: number) => ((n % 360) + 360) % 360;
+      const deltaX = mod(base.rotateX - cur.rotateX);
+      const deltaY = mod(base.rotateY - cur.rotateY);
+      if (deltaX !== 0 || deltaY !== 0) {
+        const snapTarget = {
+          rotateX: cur.rotateX + deltaX,
+          rotateY: cur.rotateY + deltaY,
+        };
+        rotationRef.current = snapTarget;
+        snapNextRef.current = true;
+        setSpinRotation(snapTarget);
+      }
     }
     // Intentionally do not depend on displayValue: the roll starts once per
     // rolling pulse, using the value from that render. If a late server sync
@@ -235,6 +249,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // which removes the visible horizontal "extra spin" at the end of a roll
   // when the authoritative server value arrives after the local animation.
   useEffect(() => {
+    if (rollingRef.current) return;
     const base = valueToRotation[displayValue];
     const cur = rotationRef.current;
     const mod = (n: number) => ((n % 360) + 360) % 360;

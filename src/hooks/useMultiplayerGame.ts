@@ -11,6 +11,12 @@ import { t } from '@/lib/i18n';
 
 
 type RollDicePart = { dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number };
+type RollStartedPayload = {
+  player?: number;
+  dice?: number[];
+  lockedDice?: boolean[];
+  rollsLeft?: number;
+};
 
 interface MultiplayerState {
   gameId: string | null;
@@ -89,11 +95,10 @@ export function useMultiplayerGame() {
 
   // Client-driven dice spin for the *opponent* — server.is_rolling stays false,
   // so we synthesize a rolling pulse when realtime delivers fresh dice for the
-  // other player. Synced with Dice ANIM_DURATION (~1100 ms).
-  // Must match Dice ANIM_DURATION (1.5s) — if we release the rolling guard
-  // before the dice visually land, late server payloads can retarget mid-spin
-  // and produce a visible extra rotation. 100ms buffer for jitter/dt (±50ms).
-  const ROLL_ANIM_MS = 1600;
+  // other player. Must match Dice ANIM_DURATION (1.5s) exactly: if this guard
+  // ends later, the buffered server state can flush just after the dice have
+  // visually landed and look like a post-landing face change.
+  const ROLL_ANIM_MS = 1500;
   const [localRolling, setLocalRolling] = useState(false);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);
@@ -126,11 +131,10 @@ export function useMultiplayerGame() {
     } : prev);
   }, [getPendingLockForTurn]);
 
-  // Start the remote spin animation. If `dicePart` is provided we pre-buffer
-  // the authoritative dice/rolls_left so they snap in at the end of the spin.
-  // If omitted (broadcast-triggered), we only show the visual spin and rely on
-  // a subsequent postgres_changes payload to populate the buffer. This avoids
-  // committing synthetic placeholder values if the actual update never arrives.
+  // Start the remote spin animation. If `dicePart` is provided, commit the
+  // final dice/rolls_left before the rolling pulse, so Dice.tsx spins toward
+  // the real target from frame 0 instead of landing on old values and snapping.
+  // If omitted, we only show the visual spin and rely on postgres_changes.
   const startRemoteRolling = useCallback((dicePart?: RollDicePart) => {
     const prevGS = stateRef.current.gameState;
     if (dicePart) {
@@ -143,7 +147,9 @@ export function useMultiplayerGame() {
         ...prev,
         gameState: {
           ...prev.gameState,
+          dice: visibleDicePart.dice,
           lockedDice: visibleDicePart.lockedDice,
+          rollsLeft: visibleDicePart.rollsLeft,
           isRolling: visibleDicePart.isRolling,
         },
       } : prev);
@@ -356,15 +362,28 @@ export function useMultiplayerGame() {
     const channel = supabase
       .channel(`yatzy-${gameId}`)
       .on('broadcast', { event: 'roll_started' }, (msg) => {
-        const payload = (msg as any).payload as { player?: number } | undefined;
+        const payload = (msg as any).payload as RollStartedPayload | undefined;
         const prevGS = stateRef.current.gameState;
         const myIdx = stateRef.current.myPlayerIndex;
         if (!prevGS || myIdx === null) return;
         // Only react to opponent broadcasts; ignore our own echo.
         if (typeof payload?.player === 'number' && payload.player === myIdx) return;
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
-        // Visual-only spin; the authoritative dice arrive via postgres_changes
-        // shortly after and are buffered until the spin ends.
+        if (
+          payload?.dice?.length === 5 &&
+          payload.lockedDice?.length === 5 &&
+          typeof payload.rollsLeft === 'number'
+        ) {
+          startRemoteRolling({
+            dice: payload.dice,
+            lockedDice: payload.lockedDice,
+            rollsLeft: payload.rollsLeft,
+            isRolling: false,
+          });
+          return;
+        }
+        // Legacy/fallback path: visual-only spin; the authoritative dice arrive
+        // via postgres_changes and are applied once known.
         startRemoteRolling();
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
@@ -524,8 +543,8 @@ export function useMultiplayerGame() {
   }, [sessionId]);
 
   // Roll dice — calls server-side Edge Function. Animation timing is client-driven
-  // and synced with Dice ANIM_DURATION (~1050 ms) so the rolling=false→true→false
-  // pulse is clean and dice values never change mid-spin.
+  // and synced with Dice ANIM_DURATION (1500 ms) so the rolling=false→true→false
+  // pulse is clean and dice values never change after landing.
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
   const roll = useCallback(async () => {
     if (rollingGuardRef.current) return false;
@@ -611,7 +630,12 @@ export function useMultiplayerGame() {
       channelRef.current?.send({
         type: 'broadcast',
         event: 'roll_started',
-        payload: { player: latest.myPlayerIndex },
+        payload: {
+          player: latest.myPlayerIndex,
+          dice: optimisticDice,
+          lockedDice: optimisticLocked,
+          rollsLeft: optimisticRollsLeft,
+        },
       });
     } catch (err) {
       // Non-fatal — opponent will still spin via postgres_changes fallback.

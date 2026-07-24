@@ -1,5 +1,6 @@
 import { Dice } from './Dice';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface DiceAreaProps {
   dice: number[];
@@ -8,9 +9,10 @@ interface DiceAreaProps {
   isRolling: boolean;
   onToggleLock: (index: number) => void;
   compact?: boolean;
+  className?: string;
 }
 
-export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock, compact = false }: DiceAreaProps) {
+export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock, compact = false, className }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 50 : 56;
 
@@ -20,7 +22,7 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock,
   const offsets = [-6, 5, -3, 7, -4];
 
   return (
-    <div className="mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible">
+    <div className={cn('mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible', className)}>
       <div className="flex flex-col items-center" style={{ gap: compact ? 20 : 26 }}>
         {dice.map((value, index) => {
           const tilt = tilts[index % tilts.length];

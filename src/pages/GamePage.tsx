@@ -2,6 +2,7 @@ import { useEffect, useCallback, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
+import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
@@ -389,6 +390,16 @@ export default function GamePage() {
               })}
             </div>
 
+            {/* Turn status */}
+            <TurnIndicator
+              currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
+              isMyTurn={!isCurrentAi}
+              rollsLeft={gameState.rollsLeft}
+              isRolling={gameState.isRolling}
+              isAi={isCurrentAi}
+              playerIndex={gameState.currentPlayerIndex}
+            />
+
             {/* Dice */}
             <DiceArea
               dice={gameState.dice}
@@ -397,6 +408,7 @@ export default function GamePage() {
               isRolling={gameState.isRolling}
               onToggleLock={isCurrentAi ? () => {} : (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); }}
               compact
+              className="mt-3"
             />
 
             {/* Bottom: Roll + Home + Forfeit */}

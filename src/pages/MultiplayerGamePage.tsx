@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
+import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
@@ -625,6 +626,15 @@ export default function MultiplayerGamePage() {
               })}
             </div>
 
+            {/* Turn status */}
+            <TurnIndicator
+              currentPlayerName={currentPlayer.name}
+              isMyTurn={isMyTurn}
+              rollsLeft={gameState.rollsLeft}
+              isRolling={localRolling || remoteRolling || gameState.isRolling}
+              playerIndex={gameState.currentPlayerIndex}
+            />
+
             {/* Dice */}
             <DiceArea
               dice={gameState.dice}
@@ -636,6 +646,7 @@ export default function MultiplayerGamePage() {
               isRolling={localRolling || remoteRolling || (!isMyTurn && gameState.isRolling)}
               onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
               compact
+              className="mt-3"
             />
 
             {/* Quick Chat */}

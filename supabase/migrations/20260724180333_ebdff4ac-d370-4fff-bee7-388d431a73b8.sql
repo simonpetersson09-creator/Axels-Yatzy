@@ -1,0 +1,1 @@
+ALTER TABLE public.game_invites ALTER COLUMN expires_at SET DEFAULT (now() + interval '6 hours');

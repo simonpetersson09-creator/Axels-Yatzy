@@ -117,7 +117,7 @@ export default function InviteOverlay() {
         if (seenOutbound.has(key)) continue;
         seenOutbound.add(key);
         const ageMs = Date.now() - new Date(row.created_at).getTime();
-        if (ageMs > 11 * 60_000) continue;
+        if (ageMs > 7 * 3600_000) continue;
         if (row.status === 'accepted' && row.game_id) {
           if (window.location.pathname.startsWith('/multiplayer-game')) {
             toast.success(t('invAcceptedOpenFromHome', { name: row.to_name }));

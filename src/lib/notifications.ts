@@ -130,33 +130,50 @@ export async function initNotifications(): Promise<void> {
 
       const kind = data.kind ?? 'turn';
       const gameId = data.game_id;
-      const title = notification.title?.trim() || (kind === 'reminder' ? 'Påminnelse' : 'Det är din tur');
+      const inviteId = data.invite_id;
+      const defaultTitle =
+        kind === 'reminder' ? 'Påminnelse'
+        : kind === 'invite' ? 'Ny inbjudan 🎲'
+        : 'Det är din tur';
+      const title = notification.title?.trim() || defaultTitle;
       const body = notification.body?.trim() || '';
 
-      trackEvent('push_notification_received_foreground', { kind, game_id: gameId });
+      trackEvent('push_notification_received_foreground', { kind, game_id: gameId, invite_id: inviteId });
 
       const showToast = kind === 'reminder' ? toast.message : toast;
-      showToast(title, {
-        description: body || undefined,
-        action: gameId
-          ? {
-              label: 'Öppna',
-              onClick: () => {
-                trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: gameId, source: 'foreground_toast' });
-                window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: `/multiplayer-game?gameId=${gameId}` } }));
-              },
-            }
-          : undefined,
-      });
+      let action: { label: string; onClick: () => void } | undefined;
+      if (kind === 'invite' && inviteId) {
+        action = {
+          label: 'Visa',
+          onClick: () => {
+            trackEvent('invite_notification_opened', { invite_id: inviteId, source: 'foreground_toast' });
+            window.dispatchEvent(new CustomEvent('app:invite-tap', { detail: { inviteId } }));
+          },
+        };
+      } else if (gameId) {
+        action = {
+          label: 'Öppna',
+          onClick: () => {
+            trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: gameId, source: 'foreground_toast' });
+            window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: `/multiplayer-game?gameId=${gameId}` } }));
+          },
+        };
+      }
+      showToast(title, { description: body || undefined, action });
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', async (action) => {
       const data = action.notification?.data ?? {};
       const kind = (data.kind as string | undefined) ?? 'turn';
       const notifId = data.notification_id as string | undefined;
+      const inviteId = data.invite_id as string | undefined;
       // Mark handled so a racing foreground-receive doesn't also toast.
       markHandled(notifId);
-      trackEvent(kind === 'reminder' ? 'reminder_notification_opened' : 'turn_notification_opened', { game_id: data.game_id, source: 'tap' });
+      const openedEvent =
+        kind === 'reminder' ? 'reminder_notification_opened'
+        : kind === 'invite' ? 'invite_notification_opened'
+        : 'turn_notification_opened';
+      trackEvent(openedEvent, { game_id: data.game_id, invite_id: inviteId, source: 'tap' });
       if (notifId) {
         try {
           const deviceId = await initDeviceId();
@@ -167,10 +184,14 @@ export async function initNotifications(): Promise<void> {
           /* ignore */
         }
       }
-      if (data.game_id && typeof window !== 'undefined') {
-        // Defer to next tick so the app is mounted and the router listener attached
+      if (typeof window !== 'undefined') {
+        // Defer to next tick so the app is mounted and listeners are attached.
         setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: `/multiplayer-game?gameId=${data.game_id}` } }));
+          if (kind === 'invite' && inviteId) {
+            window.dispatchEvent(new CustomEvent('app:invite-tap', { detail: { inviteId } }));
+          } else if (data.game_id) {
+            window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: `/multiplayer-game?gameId=${data.game_id}` } }));
+          }
         }, 200);
       }
     });

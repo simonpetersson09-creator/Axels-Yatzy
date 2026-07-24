@@ -107,15 +107,16 @@ export default function InviteOverlay() {
     async (action: 'accept' | 'decline') => {
       if (!incoming || busy) return;
       setBusy(true);
-      handledRef.current.add(incoming.id);
-      const res = await respondInvite({ inviteId: incoming.id, action });
-      setBusy(false);
       const inv = incoming;
-      setQueue((cur) => cur.filter((r) => r.id !== inv.id));
+      const res = await respondInvite({ inviteId: inv.id, action });
+      setBusy(false);
       if (!res.ok) {
+        // Keep invite in queue so the user can retry after a network hiccup.
         toast.error(res.error ?? t('errGeneric'));
         return;
       }
+      handledRef.current.add(inv.id);
+      setQueue((cur) => cur.filter((r) => r.id !== inv.id));
       if (action === 'accept' && res.gameId) {
         navigate(`/multiplayer-game?gameId=${res.gameId}`);
       } else if (action === 'decline') {

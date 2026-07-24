@@ -46,6 +46,33 @@ export default function InviteOverlay() {
     return () => { cancelled = true; clearInterval(iv); };
   }, [sessionId]);
 
+  // Push tap → surface the matching invite immediately (jump it to the front of
+  // the queue and fetch it if we haven't polled it yet).
+  useEffect(() => {
+    const handler = async (e: Event) => {
+      const inviteId = (e as CustomEvent<{ inviteId?: string }>).detail?.inviteId;
+      if (!inviteId) return;
+      handledRef.current.delete(inviteId);
+      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
+      const rows = (data ?? []) as InviteRow[];
+      const row = rows.find((r) => r.id === inviteId);
+      if (!row || row.to_session_id !== sessionId || row.status !== 'pending') {
+        toast.message(t('inviteExpiredOrGone') || 'Inbjudan är inte längre aktiv');
+        return;
+      }
+      if (row.expires_at && new Date(row.expires_at).getTime() <= Date.now()) {
+        toast.message(t('inviteExpiredOrGone') || 'Inbjudan har gått ut');
+        return;
+      }
+      setQueue((cur) => {
+        const rest = cur.filter((r) => r.id !== row.id);
+        return [row, ...rest];
+      });
+    };
+    window.addEventListener('app:invite-tap', handler);
+    return () => window.removeEventListener('app:invite-tap', handler);
+  }, [sessionId]);
+
 
   // Poll for status transitions on outbound invites I sent (accepted/declined)
   // and for cancellation/expiry of queued incoming invites. Realtime is no

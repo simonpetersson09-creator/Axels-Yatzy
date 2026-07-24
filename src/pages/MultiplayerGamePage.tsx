@@ -626,6 +626,15 @@ export default function MultiplayerGamePage() {
               })}
             </div>
 
+            {/* Turn status */}
+            <TurnIndicator
+              currentPlayerName={currentPlayer.name}
+              isMyTurn={isMyTurn}
+              rollsLeft={gameState.rollsLeft}
+              isRolling={localRolling || remoteRolling || gameState.isRolling}
+              playerIndex={gameState.currentPlayerIndex}
+            />
+
             {/* Dice */}
             <DiceArea
               dice={gameState.dice}
@@ -637,6 +646,7 @@ export default function MultiplayerGamePage() {
               isRolling={localRolling || remoteRolling || (!isMyTurn && gameState.isRolling)}
               onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
               compact
+              className="mt-3"
             />
 
             {/* Quick Chat */}

@@ -497,8 +497,8 @@ export default function MultiplayerGamePage() {
   const handleRoll = () => {
     playRollSound();
     roll();
-    // Heavy "thud" when the dice settle (matches the ~1100ms roll animation)
-    setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1050);
+    // Heavy "thud" when the dice settle (synced with 1500ms dice animation)
+    setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1500);
   };
 
   const handleSelectCategory = (categoryId: string) => {

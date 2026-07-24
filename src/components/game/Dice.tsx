@@ -169,7 +169,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
     // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.
     spinsX: (2 + Math.floor(Math.random() * 2)) * 360,
     spinsY: (2 + Math.floor(Math.random() * 2)) * 360,
-    dt: (Math.random() - 0.5) * 0.1,
+    // Keep every die on the exact same landing clock. Even a tiny per-die
+    // duration drift makes 2-3 dice appear to "move after" the rest stopped.
+    dt: 0,
     bounceY: -4 - Math.random() * 4,
   });
   const rollVarRef = useRef(makeRollVar());
@@ -207,8 +209,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
     } else if (!rolling) {
       rollingRef.current = false;
     }
+    // Intentionally do not depend on displayValue: the roll starts once per
+    // rolling pulse, using the value from that render. If a late server sync
+    // changes value while the parent still has rolling=true, depending on
+    // displayValue can start a second full spin after the dice already landed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rolling, displayValue, locked]);
+  }, [rolling, locked]);
 
   useEffect(() => {
     if (locked && !prevLockedRef.current) {

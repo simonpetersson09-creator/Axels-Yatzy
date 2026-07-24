@@ -43,7 +43,32 @@ export default function InviteOverlay() {
     };
     load();
     const iv = setInterval(load, 4000);
-    return () => { cancelled = true; clearInterval(iv); };
+    // Refresh immediately when the app returns to the foreground / tab is refocused
+    // so a pending invite shows up the moment the user opens the app.
+    const onFocus = () => { void load(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    let removeCap: (() => void) | undefined;
+    (async () => {
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (!Capacitor.isNativePlatform()) return;
+        const { App } = await import('@capacitor/app');
+        const sub = await App.addListener('appStateChange', ({ isActive }) => {
+          if (isActive) void load();
+        });
+        removeCap = () => { void sub.remove(); };
+      } catch {
+        /* ignore — web fallback via focus/visibilitychange already covers this */
+      }
+    })();
+    return () => {
+      cancelled = true;
+      clearInterval(iv);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+      removeCap?.();
+    };
   }, [sessionId]);
 
   // Push tap → surface the matching invite immediately (jump it to the front of

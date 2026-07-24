@@ -586,6 +586,13 @@ export function useMultiplayerGame() {
           ...prev.gameState,
           dice: optimisticDice,
           lockedDice: optimisticLocked,
+          // CRITICAL: also commit optimistic rollsLeft so `hasRolled`
+          // (rollsLeft < 3) flips to true on the same render the dice
+          // animation begins. Otherwise Dice.tsx keeps displaying the
+          // randomized initialFace as the spin target on the first roll,
+          // and swaps to the real value at flush-time — visible as dice
+          // "flipping" in the last frame of the animation.
+          rollsLeft: optimisticRollsLeft,
         },
       } : prev);
     }

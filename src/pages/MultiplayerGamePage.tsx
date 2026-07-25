@@ -335,21 +335,30 @@ export default function MultiplayerGamePage() {
   // YatzyCelebration is now triggered on dice land via useCombinationCelebration
   // for both the local player and opponents (everyone sees the same dice state).
 
-  // Safety net: if every category is filled (local gameOver) but the server
-  // status never flips to 'finished' (missed realtime event, failed RPC), the
-  // player would be stuck on a dead board. After a short grace period we treat
-  // the match as finished and navigate to /results anyway.
+  // Safety net: if every category is filled but the server status never flips
+  // to 'finished' (missed realtime event, failed RPC), the player would be
+  // stuck on a dead board — also after an app restart, where gameOver is
+  // derived from the server status. So we detect completion from the scoreboard
+  // itself and treat the match as finished after a short grace period.
+  const boardComplete = !!gameState && gameState.players.length > 0 &&
+    gameState.players.every(p =>
+      CATEGORIES.every(cat => {
+        const v = (p.scores as Record<string, number | null | undefined>)[cat.id];
+        return v !== undefined && v !== null;
+      })
+    );
   const [finishFallback, setFinishFallback] = useState(false);
   useEffect(() => {
     if (status === 'finished') return;
-    if (!gameState?.gameOver) return;
+    if (!boardComplete) return;
     const timer = setTimeout(() => setFinishFallback(true), 4000);
     return () => clearTimeout(timer);
-  }, [status, gameState?.gameOver]);
+  }, [status, boardComplete]);
 
   const navigatedToResultsRef = useRef(false);
   useEffect(() => {
-    const matchDone = status === 'finished' || (finishFallback && !!gameState?.gameOver);
+    const matchDone = status === 'finished' || (finishFallback && boardComplete);
+
     if (matchDone && gameState && !navigatedToResultsRef.current) {
       navigatedToResultsRef.current = true;
 

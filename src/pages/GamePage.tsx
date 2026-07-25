@@ -390,26 +390,26 @@ export default function GamePage() {
               })}
             </div>
 
-            {/* Turn status */}
-            <TurnIndicator
-              currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
-              isMyTurn={!isCurrentAi}
-              rollsLeft={gameState.rollsLeft}
-              isRolling={gameState.isRolling}
-              isAi={isCurrentAi}
-              playerIndex={gameState.currentPlayerIndex}
-            />
-
-            {/* Dice */}
-            <DiceArea
-              dice={gameState.dice}
-              lockedDice={gameState.lockedDice}
-              rollsLeft={gameState.rollsLeft}
-              isRolling={gameState.isRolling}
-              onToggleLock={isCurrentAi ? () => {} : (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); }}
-              compact
-              className="mt-3"
-            />
+            {/* Dice + floating turn bubble */}
+            <div className="relative mt-2">
+              <TurnIndicator
+                currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
+                isMyTurn={!isCurrentAi}
+                rollsLeft={gameState.rollsLeft}
+                isRolling={gameState.isRolling}
+                isAi={isCurrentAi}
+                playerIndex={gameState.currentPlayerIndex}
+              />
+              <DiceArea
+                dice={gameState.dice}
+                lockedDice={gameState.lockedDice}
+                rollsLeft={gameState.rollsLeft}
+                isRolling={gameState.isRolling}
+                onToggleLock={isCurrentAi ? () => {} : (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); }}
+                compact
+                className="mt-0"
+              />
+            </div>
 
             {/* Bottom: Roll + Home + Forfeit */}
             <div

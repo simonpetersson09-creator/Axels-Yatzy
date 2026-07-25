@@ -626,28 +626,28 @@ export default function MultiplayerGamePage() {
               })}
             </div>
 
-            {/* Turn status */}
-            <TurnIndicator
-              currentPlayerName={currentPlayer.name}
-              isMyTurn={isMyTurn}
-              rollsLeft={gameState.rollsLeft}
-              isRolling={localRolling || remoteRolling || gameState.isRolling}
-              playerIndex={gameState.currentPlayerIndex}
-            />
-
-            {/* Dice */}
-            <DiceArea
-              dice={gameState.dice}
-              lockedDice={gameState.lockedDice}
-              rollsLeft={gameState.rollsLeft}
-              // Client-driven animation: while localRolling is true, ignore the
-              // server is_rolling flag entirely so we get a single clean pulse.
-              // For opponent turns, fall back to the server flag.
-              isRolling={localRolling || remoteRolling || (!isMyTurn && gameState.isRolling)}
-              onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
-              compact
-              className="mt-3"
-            />
+            {/* Dice + floating turn bubble */}
+            <div className="relative mt-2">
+              <TurnIndicator
+                currentPlayerName={currentPlayer.name}
+                isMyTurn={isMyTurn}
+                rollsLeft={gameState.rollsLeft}
+                isRolling={localRolling || remoteRolling || gameState.isRolling}
+                playerIndex={gameState.currentPlayerIndex}
+              />
+              <DiceArea
+                dice={gameState.dice}
+                lockedDice={gameState.lockedDice}
+                rollsLeft={gameState.rollsLeft}
+                // Client-driven animation: while localRolling is true, ignore the
+                // server is_rolling flag entirely so we get a single clean pulse.
+                // For opponent turns, fall back to the server flag.
+                isRolling={localRolling || remoteRolling || (!isMyTurn && gameState.isRolling)}
+                onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
+                compact
+                className="mt-0"
+              />
+            </div>
 
             {/* Quick Chat */}
             {gameId && (

@@ -364,7 +364,7 @@ export default function MultiplayerGamePage() {
       const isForfeit = !!gameState.forfeitedBy || !!gameState.forfeitedBySessionId;
       const mySessionId = getSessionId();
 
-      if (myPlayerIndex !== null && myPlayerIndex >= 0) {
+      if (!alreadyRecorded && myPlayerIndex !== null && myPlayerIndex >= 0) {
         const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
         let won: boolean;

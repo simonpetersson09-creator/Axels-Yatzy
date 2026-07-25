@@ -335,10 +335,24 @@ export default function MultiplayerGamePage() {
   // YatzyCelebration is now triggered on dice land via useCombinationCelebration
   // for both the local player and opponents (everyone sees the same dice state).
 
+  // Safety net: if every category is filled (local gameOver) but the server
+  // status never flips to 'finished' (missed realtime event, failed RPC), the
+  // player would be stuck on a dead board. After a short grace period we treat
+  // the match as finished and navigate to /results anyway.
+  const [finishFallback, setFinishFallback] = useState(false);
+  useEffect(() => {
+    if (status === 'finished') return;
+    if (!gameState?.gameOver) return;
+    const timer = setTimeout(() => setFinishFallback(true), 4000);
+    return () => clearTimeout(timer);
+  }, [status, gameState?.gameOver]);
+
   const navigatedToResultsRef = useRef(false);
   useEffect(() => {
-    if (status === 'finished' && gameState && !navigatedToResultsRef.current) {
+    const matchDone = status === 'finished' || (finishFallback && !!gameState?.gameOver);
+    if (matchDone && gameState && !navigatedToResultsRef.current) {
       navigatedToResultsRef.current = true;
+
       // M7: persist across remounts so navigating back to a finished match
       // (or hot reloads in dev) doesn't double-record local stats / friend
       // match rows. Server-side UPSERT (UNIQUE game_id) already dedupes
@@ -467,7 +481,7 @@ export default function MultiplayerGamePage() {
 
 
     }
-  }, [status, gameState, myPlayerIndex, navigate]);
+  }, [status, gameState, myPlayerIndex, navigate, finishFallback]);
 
   if (error) {
     return (

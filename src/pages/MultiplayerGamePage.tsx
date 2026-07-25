@@ -657,7 +657,16 @@ export default function MultiplayerGamePage() {
               style={{ isolation: 'isolate', marginTop: '8px' }}
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
-              <div className={`rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
+              <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
+                {gameState.rollsLeft === 3 && (
+                  <TurnIndicator
+                    currentPlayerName={currentPlayer.name}
+                    isMyTurn={isMyTurn}
+                    rollsLeft={gameState.rollsLeft}
+                    isRolling={localRolling || remoteRolling || gameState.isRolling}
+                    playerIndex={gameState.currentPlayerIndex}
+                  />
+                )}
                 <button
                   type="button"
                   onPointerDown={(e) => {

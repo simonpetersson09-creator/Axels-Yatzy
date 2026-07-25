@@ -390,16 +390,8 @@ export default function GamePage() {
               })}
             </div>
 
-            {/* Dice + floating turn bubble */}
+            {/* Dice */}
             <div className="relative mt-2">
-              <TurnIndicator
-                currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
-                isMyTurn={!isCurrentAi}
-                rollsLeft={gameState.rollsLeft}
-                isRolling={gameState.isRolling}
-                isAi={isCurrentAi}
-                playerIndex={gameState.currentPlayerIndex}
-              />
               <DiceArea
                 dice={gameState.dice}
                 lockedDice={gameState.lockedDice}

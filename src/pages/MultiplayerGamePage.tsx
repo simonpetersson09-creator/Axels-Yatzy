@@ -84,6 +84,34 @@ export default function MultiplayerGamePage() {
     }
   }, [gameId, gameState, rejoinGame]);
 
+  // If the native app reopens directly into an old finished match URL, the
+  // local active-game entry can keep sending the user back into a dead board.
+  // Prune that stale route immediately instead of trying to resume it forever.
+  useEffect(() => {
+    if (!gameId || gameState) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('games')
+          .select('status')
+          .eq('id', gameId)
+          .maybeSingle();
+
+        if (cancelled || error) return;
+        if (!data || data.status === 'finished') {
+          removeActiveGame(gameId);
+          navigate('/', { replace: true });
+        }
+      } catch {
+        // Keep the normal rejoin/error flow for transient network failures.
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [gameId, gameState, navigate]);
+
   // Track active game
   useEffect(() => {
     if (gameId && status === 'playing') {

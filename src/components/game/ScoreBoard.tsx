@@ -428,11 +428,17 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
                   animate={isCurrent ? { scale: [1, 1.05, 1] } : {}}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <motion.div 
-                    className={cn('w-2.5 h-2.5 rounded-full', color.dot)}
-                    animate={isCurrent ? { scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] } : {}}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  />
+                  {isCurrent ? (
+                    <span className="relative flex h-2.5 w-2.5" style={{ color: `hsl(${hsl})` }}>
+                      <span
+                        className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                        style={{ backgroundColor: 'currentColor' }}
+                      />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-current" />
+                    </span>
+                  ) : (
+                    <div className={cn('w-2.5 h-2.5 rounded-full opacity-60', color.dot)} />
+                  )}
                   <span className={cn(
                     'text-[10px] font-bold leading-none',
                     isCurrent ? color.text : 'text-yatzy-text/50'

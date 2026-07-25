@@ -409,13 +409,13 @@ export default function GamePage() {
               style={{ isolation: 'isolate', marginTop: '32px' }}
             >
               <div className="relative">
-                {gameState.rollsLeft === 3 && (
+                {gameState.rollsLeft === 3 && !isCurrentAi && !gameState.isRolling && (
                   <TurnIndicator
                     currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
-                    isMyTurn={!isCurrentAi}
+                    isMyTurn={true}
                     rollsLeft={gameState.rollsLeft}
                     isRolling={gameState.isRolling}
-                    isAi={isCurrentAi}
+                    isAi={false}
                     playerIndex={gameState.currentPlayerIndex}
                     placement="left"
                   />

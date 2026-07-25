@@ -513,11 +513,19 @@ export default function MultiplayerGamePage() {
   if (!gameState) {
     return (
       <div className="app-screen flex items-center justify-center safe-top safe-bottom">
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-4">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-muted-foreground text-sm">{t('loadingGame')}</p>
+          {/* Always offer an exit so a stalled load can never trap the player. */}
+          <button
+            onClick={() => navigate('/')}
+            className="px-5 py-2.5 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-sm"
+          >
+            {t('backToMenu')}
+          </button>
         </div>
       </div>
+
     );
   }
 

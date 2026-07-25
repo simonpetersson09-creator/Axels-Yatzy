@@ -190,24 +190,6 @@ export default function ResultsPage() {
             </motion.button>
           )}
           <motion.button
-            onClick={() => isMultiplayer ? navigate('/multiplayer') : navigate('/game', { state: { playerNames, aiPlayers } })}
-            className={`w-full py-4 rounded-2xl font-display font-bold text-lg game-shadow ${
-              isMultiplayer && rematchOpponent
-                ? 'bg-secondary text-secondary-foreground'
-                : 'bg-primary text-primary-foreground'
-            }`}
-            whileTap={{ scale: 0.97 }}
-          >
-            {isMultiplayer ? t('newMatch') : t('rematch')}
-          </motion.button>
-          <motion.button
-            onClick={() => navigate('/setup')}
-            className="w-full py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-semibold"
-            whileTap={{ scale: 0.97 }}
-          >
-            {t('playAgain')}
-          </motion.button>
-          <motion.button
             onClick={() => navigate('/')}
             className="w-full py-3 rounded-2xl text-muted-foreground font-medium text-sm"
             whileTap={{ scale: 0.97 }}

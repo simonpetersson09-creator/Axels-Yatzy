@@ -335,21 +335,25 @@ export default function MultiplayerGamePage() {
   // YatzyCelebration is now triggered on dice land via useCombinationCelebration
   // for both the local player and opponents (everyone sees the same dice state).
 
+  const navigatedToResultsRef = useRef(false);
   useEffect(() => {
-    if (status === 'finished' && gameState && !statsRecordedRef.current) {
+    if (status === 'finished' && gameState && !navigatedToResultsRef.current) {
+      navigatedToResultsRef.current = true;
       // M7: persist across remounts so navigating back to a finished match
       // (or hot reloads in dev) doesn't double-record local stats / friend
       // match rows. Server-side UPSERT (UNIQUE game_id) already dedupes
       // friend_match_results, but local recordGameResult does not.
+      // IMPORTANT: this guard must only skip *stats recording* — navigation to
+      // /results has to happen every time, otherwise re-entering a finished
+      // match leaves the player stuck on the board.
       const persistKey = gameId ? `stats-recorded:${gameId}` : null;
+      let alreadyRecorded = statsRecordedRef.current;
       try {
-        if (persistKey && sessionStorage.getItem(persistKey) === '1') {
-          statsRecordedRef.current = true;
-          return;
-        }
+        if (persistKey && sessionStorage.getItem(persistKey) === '1') alreadyRecorded = true;
       } catch { /* sessionStorage unavailable — fall through */ }
       statsRecordedRef.current = true;
       try { if (persistKey) sessionStorage.setItem(persistKey, '1'); } catch { /* noop */ }
+
 
       const results = gameState.players.map(p => ({
         name: p.name,
@@ -360,7 +364,7 @@ export default function MultiplayerGamePage() {
       const isForfeit = !!gameState.forfeitedBy || !!gameState.forfeitedBySessionId;
       const mySessionId = getSessionId();
 
-      if (myPlayerIndex !== null && myPlayerIndex >= 0) {
+      if (!alreadyRecorded && myPlayerIndex !== null && myPlayerIndex >= 0) {
         const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
         let won: boolean;
@@ -427,15 +431,21 @@ export default function MultiplayerGamePage() {
       if (gameId) removeActiveGame(gameId);
 
       // Pass opponent info for rematch button (only true 1v1 multiplayer).
-      // Resolve async then navigate.
+      // The lookup is best-effort and time-boxed: if the network stalls we still
+      // navigate to /results instead of leaving the player on a dead board.
       (async () => {
         let rematchOpponent: { sessionId: string; name: string } | undefined;
         if (myPlayerIndex !== null && gameState.players.length === 2 && gameId) {
           try {
-            const { data: rows } = await supabase
+            const lookup = supabase
               .from('game_players')
               .select('player_index, session_id, player_name')
               .eq('game_id', gameId);
+            const res = await Promise.race([
+              lookup,
+              new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500)),
+            ]);
+            const rows = (res as { data?: any[] } | null)?.data;
             const oppRow = (rows ?? []).find((r: any) => r.player_index !== myPlayerIndex);
             if (oppRow?.session_id && oppRow?.player_name) {
               rematchOpponent = { sessionId: oppRow.session_id, name: oppRow.player_name };
@@ -450,8 +460,10 @@ export default function MultiplayerGamePage() {
             gameId,
             ...(isForfeit ? { forfeit: true, forfeitPlayerName: gameState.forfeitedBy } : {}),
           },
+          replace: true,
         });
       })();
+
 
 
     }

@@ -119,7 +119,13 @@ export default function InviteOverlay() {
         const ageMs = Date.now() - new Date(row.created_at).getTime();
         if (ageMs > 7 * 3600_000) continue;
         if (row.status === 'accepted' && row.game_id) {
-          if (window.location.pathname.startsWith('/multiplayer-game')) {
+          // Only skip navigation when we're already inside *this* match —
+          // being on another game screen must not swallow the new match.
+          const params = new URLSearchParams(window.location.search);
+          const alreadyInThisGame =
+            window.location.pathname.startsWith('/multiplayer-game') &&
+            params.get('gameId') === row.game_id;
+          if (alreadyInThisGame) {
             toast.success(t('invAcceptedOpenFromHome', { name: row.to_name }));
           } else {
             toast.success(t('invAccepted', { name: row.to_name }));
@@ -149,9 +155,35 @@ export default function InviteOverlay() {
       });
     };
     poll();
-    const iv = setInterval(poll, 4000);
-    return () => { cancelled = true; clearInterval(iv); };
+    const iv = setInterval(poll, 3000);
+    // Also poll the moment the app/tab returns to the foreground so an accept
+    // that happened while we were backgrounded opens the match immediately.
+    const onForeground = () => { void poll(); };
+    window.addEventListener('focus', onForeground);
+    document.addEventListener('visibilitychange', onForeground);
+    let removeCap: (() => void) | undefined;
+    (async () => {
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (!Capacitor.isNativePlatform()) return;
+        const { App } = await import('@capacitor/app');
+        const sub = await App.addListener('appStateChange', ({ isActive }) => {
+          if (isActive) void poll();
+        });
+        removeCap = () => { void sub.remove(); };
+      } catch {
+        /* ignore — focus/visibilitychange covers web */
+      }
+    })();
+    return () => {
+      cancelled = true;
+      clearInterval(iv);
+      window.removeEventListener('focus', onForeground);
+      document.removeEventListener('visibilitychange', onForeground);
+      removeCap?.();
+    };
   }, [sessionId, navigate]);
+
 
 
 

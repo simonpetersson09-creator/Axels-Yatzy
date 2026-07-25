@@ -115,6 +115,15 @@ export const sv = {
   playerWonBang: '{name} vann!',
   gameOver: 'Spelet slut!',
 
+  // Head-to-head
+  h2hTitle: 'Inbördes möten mot {name}',
+  h2hMatches: 'Matcher',
+  h2hWins: 'Vinster',
+  h2hLosses: 'Förluster',
+  h2hDraws: 'Oavgjort',
+  h2hYourBest: 'Ditt bästa',
+  h2hAverage: 'Snitt',
+
   // Multiplayer
   multiplayer: 'Multiplayer',
   yourName: 'Ditt namn',

@@ -107,6 +107,15 @@ export const en: typeof sv = {
   playerWonBang: '{name} won!',
   gameOver: 'Game over!',
 
+  // Head-to-head
+  h2hTitle: 'Head-to-head vs {name}',
+  h2hMatches: 'Matches',
+  h2hWins: 'Wins',
+  h2hLosses: 'Losses',
+  h2hDraws: 'Draws',
+  h2hYourBest: 'Your best',
+  h2hAverage: 'Average',
+
   multiplayer: 'Multiplayer',
   yourName: 'Your name',
   enterYourName: 'Enter your name',

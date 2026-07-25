@@ -107,6 +107,15 @@ export const fi: typeof sv = {
   playerWonBang: '{name} voitti!',
   gameOver: 'Peli päättyi!',
 
+  // Head-to-head
+  h2hTitle: 'Keskinäiset vs {name}',
+  h2hMatches: 'Pelit',
+  h2hWins: 'Voitot',
+  h2hLosses: 'Häviöt',
+  h2hDraws: 'Tasapelit',
+  h2hYourBest: 'Paras tulos',
+  h2hAverage: 'Keskiarvo',
+
   multiplayer: 'Moninpeli',
   yourName: 'Nimesi',
   enterYourName: 'Syötä nimesi',

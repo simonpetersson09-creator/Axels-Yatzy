@@ -107,6 +107,15 @@ export const da: typeof sv = {
   playerWonBang: '{name} vandt!',
   gameOver: 'Spillet er slut!',
 
+  // Head-to-head
+  h2hTitle: 'Indbyrdes mod {name}',
+  h2hMatches: 'Kampe',
+  h2hWins: 'Sejre',
+  h2hLosses: 'Nederlag',
+  h2hDraws: 'Uafgjort',
+  h2hYourBest: 'Din bedste',
+  h2hAverage: 'Gennemsnit',
+
   multiplayer: 'Multiplayer',
   yourName: 'Dit navn',
   enterYourName: 'Indtast dit navn',

@@ -160,6 +160,13 @@ export default function ResultsPage() {
           ))}
         </div>
 
+        {isMultiplayer && rematchOpponent && (
+          <HeadToHeadStats
+            opponentId={rematchOpponent.sessionId}
+            opponentName={rematchOpponent.name}
+          />
+        )}
+
         <div className="space-y-3">
           {isMultiplayer && rematchOpponent && (
             <motion.button

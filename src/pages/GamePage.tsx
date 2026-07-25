@@ -390,16 +390,8 @@ export default function GamePage() {
               })}
             </div>
 
-            {/* Dice + floating turn bubble */}
+            {/* Dice */}
             <div className="relative mt-2">
-              <TurnIndicator
-                currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
-                isMyTurn={!isCurrentAi}
-                rollsLeft={gameState.rollsLeft}
-                isRolling={gameState.isRolling}
-                isAi={isCurrentAi}
-                playerIndex={gameState.currentPlayerIndex}
-              />
               <DiceArea
                 dice={gameState.dice}
                 lockedDice={gameState.lockedDice}
@@ -416,6 +408,17 @@ export default function GamePage() {
               className="ios-action-zone flex flex-col items-center gap-2"
               style={{ isolation: 'isolate', marginTop: '32px' }}
             >
+              <div className="relative">
+                {gameState.rollsLeft === 3 && (
+                  <TurnIndicator
+                    currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
+                    isMyTurn={!isCurrentAi}
+                    rollsLeft={gameState.rollsLeft}
+                    isRolling={gameState.isRolling}
+                    isAi={isCurrentAi}
+                    playerIndex={gameState.currentPlayerIndex}
+                  />
+                )}
               <button
                 type="button"
                 onPointerDown={(e) => {
@@ -451,6 +454,7 @@ export default function GamePage() {
                           : 'Sista\nkastet'}
                 </span>
               </button>
+              </div>
 
               <div className="flex items-center justify-center gap-2 w-full mt-0" style={{ position: 'relative', zIndex: 2 }}>
                 <button

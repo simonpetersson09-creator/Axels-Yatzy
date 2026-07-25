@@ -481,7 +481,7 @@ export default function MultiplayerGamePage() {
 
 
     }
-  }, [status, gameState, myPlayerIndex, navigate]);
+  }, [status, gameState, myPlayerIndex, navigate, finishFallback]);
 
   if (error) {
     return (

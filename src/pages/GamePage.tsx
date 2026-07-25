@@ -454,6 +454,7 @@ export default function GamePage() {
                           : 'Sista\nkastet'}
                 </span>
               </button>
+              </div>
 
               <div className="flex items-center justify-center gap-2 w-full mt-0" style={{ position: 'relative', zIndex: 2 }}>
                 <button

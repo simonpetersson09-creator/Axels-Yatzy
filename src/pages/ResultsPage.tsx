@@ -7,6 +7,7 @@ import { sendInvite } from '@/lib/invites';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { toast } from 'sonner';
+import { HeadToHeadStats } from '@/components/game/HeadToHeadStats';
 
 interface PlayerResult {
   name: string;
@@ -159,6 +160,13 @@ export default function ResultsPage() {
             </motion.div>
           ))}
         </div>
+
+        {isMultiplayer && rematchOpponent && (
+          <HeadToHeadStats
+            opponentId={rematchOpponent.sessionId}
+            opponentName={rematchOpponent.name}
+          />
+        )}
 
         <div className="space-y-3">
           {isMultiplayer && rematchOpponent && (

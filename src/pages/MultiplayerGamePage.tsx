@@ -9,6 +9,8 @@ import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
+import { CATEGORIES } from '@/types/yatzy';
+
 import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
@@ -335,21 +337,30 @@ export default function MultiplayerGamePage() {
   // YatzyCelebration is now triggered on dice land via useCombinationCelebration
   // for both the local player and opponents (everyone sees the same dice state).
 
-  // Safety net: if every category is filled (local gameOver) but the server
-  // status never flips to 'finished' (missed realtime event, failed RPC), the
-  // player would be stuck on a dead board. After a short grace period we treat
-  // the match as finished and navigate to /results anyway.
+  // Safety net: if every category is filled but the server status never flips
+  // to 'finished' (missed realtime event, failed RPC), the player would be
+  // stuck on a dead board — also after an app restart, where gameOver is
+  // derived from the server status. So we detect completion from the scoreboard
+  // itself and treat the match as finished after a short grace period.
+  const boardComplete = !!gameState && gameState.players.length > 0 &&
+    gameState.players.every(p =>
+      CATEGORIES.every(cat => {
+        const v = (p.scores as Record<string, number | null | undefined>)[cat.id];
+        return v !== undefined && v !== null;
+      })
+    );
   const [finishFallback, setFinishFallback] = useState(false);
   useEffect(() => {
     if (status === 'finished') return;
-    if (!gameState?.gameOver) return;
+    if (!boardComplete) return;
     const timer = setTimeout(() => setFinishFallback(true), 4000);
     return () => clearTimeout(timer);
-  }, [status, gameState?.gameOver]);
+  }, [status, boardComplete]);
 
   const navigatedToResultsRef = useRef(false);
   useEffect(() => {
-    const matchDone = status === 'finished' || (finishFallback && !!gameState?.gameOver);
+    const matchDone = status === 'finished' || (finishFallback && boardComplete);
+
     if (matchDone && gameState && !navigatedToResultsRef.current) {
       navigatedToResultsRef.current = true;
 
@@ -502,11 +513,19 @@ export default function MultiplayerGamePage() {
   if (!gameState) {
     return (
       <div className="app-screen flex items-center justify-center safe-top safe-bottom">
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-4">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-muted-foreground text-sm">{t('loadingGame')}</p>
+          {/* Always offer an exit so a stalled load can never trap the player. */}
+          <button
+            onClick={() => navigate('/')}
+            className="px-5 py-2.5 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-sm"
+          >
+            {t('backToMenu')}
+          </button>
         </div>
       </div>
+
     );
   }
 

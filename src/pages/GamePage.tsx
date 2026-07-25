@@ -417,6 +417,7 @@ export default function GamePage() {
                     isRolling={gameState.isRolling}
                     isAi={isCurrentAi}
                     playerIndex={gameState.currentPlayerIndex}
+                    placement="left"
                   />
                 )}
               <button

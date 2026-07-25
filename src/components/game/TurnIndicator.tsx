@@ -9,6 +9,7 @@ interface TurnIndicatorProps {
   isRolling?: boolean;
   isAi?: boolean;
   playerIndex?: number;
+  placement?: 'top' | 'left';
 }
 
 const PLAYER_COLORS = [
@@ -25,6 +26,7 @@ export function TurnIndicator({
   isRolling = false,
   isAi = false,
   playerIndex = 0,
+  placement = 'top',
 }: TurnIndicatorProps) {
   const { t } = useTranslation();
   const hsl = PLAYER_COLORS[playerIndex] ?? PLAYER_COLORS[0];
@@ -34,15 +36,21 @@ export function TurnIndicator({
     ? t('yourTurnLabel')
     : t('waitingForPlayer', { name: currentPlayerName });
 
+  const isLeft = placement === 'left';
+
+  const wrapperStyle: React.CSSProperties = isLeft
+    ? { right: 'calc(100% + 10px)', top: '50%', transform: 'translateY(-50%)' }
+    : { bottom: 'calc(100% + 8px)' };
+
   return (
     <motion.div
       className={cn(
-        'absolute left-1/2 -translate-x-1/2 z-10 flex flex-col items-center',
-        'pointer-events-none'
+        'absolute z-10 flex items-center pointer-events-none',
+        isLeft ? 'flex-row' : 'flex-col left-1/2 -translate-x-1/2'
       )}
-      style={{ bottom: 'calc(100% + 8px)' }}
-      initial={{ opacity: 0, y: 8, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      style={wrapperStyle}
+      initial={{ opacity: 0, y: isLeft ? 0 : 8, x: isLeft ? 8 : 0, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 380, damping: 26 }}
     >
       {/* Bubble */}
@@ -79,8 +87,8 @@ export function TurnIndicator({
           )}
         </div>
 
-        {/* Tiny roll dots inside the bubble when it's my turn */}
-        {isMyTurn && !isAi && (
+        {/* Tiny roll dots inside the bubble when it's my turn (top placement only) */}
+        {isMyTurn && !isAi && !isLeft && (
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-1">
             {Array.from({ length: 3 }).map((_, i) => {
               const used = i < rollsUsed;
@@ -102,17 +110,30 @@ export function TurnIndicator({
         )}
       </div>
 
-      {/* Speech-bubble tail pointing down toward the dice */}
-      <div
-        className="w-0 h-0"
-        style={{
-          borderLeft: '6px solid transparent',
-          borderRight: '6px solid transparent',
-          borderTop: isMyTurn ? '6px solid hsl(var(--game-gold-dark) / 0.95)' : '6px solid hsl(var(--card) / 0.9)',
-          marginTop: '-1px',
-          filter: 'drop-shadow(0 2px 2px hsl(0 0% 0% / 0.25))',
-        }}
-      />
+      {/* Speech-bubble tail */}
+      {isLeft ? (
+        <div
+          className="w-0 h-0"
+          style={{
+            borderTop: '6px solid transparent',
+            borderBottom: '6px solid transparent',
+            borderLeft: isMyTurn ? '6px solid hsl(var(--game-gold-dark) / 0.95)' : '6px solid hsl(var(--card) / 0.9)',
+            marginLeft: '-1px',
+            filter: 'drop-shadow(2px 0 2px hsl(0 0% 0% / 0.25))',
+          }}
+        />
+      ) : (
+        <div
+          className="w-0 h-0"
+          style={{
+            borderLeft: '6px solid transparent',
+            borderRight: '6px solid transparent',
+            borderTop: isMyTurn ? '6px solid hsl(var(--game-gold-dark) / 0.95)' : '6px solid hsl(var(--card) / 0.9)',
+            marginTop: '-1px',
+            filter: 'drop-shadow(0 2px 2px hsl(0 0% 0% / 0.25))',
+          }}
+        />
+      )}
     </motion.div>
   );
 }

@@ -335,21 +335,25 @@ export default function MultiplayerGamePage() {
   // YatzyCelebration is now triggered on dice land via useCombinationCelebration
   // for both the local player and opponents (everyone sees the same dice state).
 
+  const navigatedToResultsRef = useRef(false);
   useEffect(() => {
-    if (status === 'finished' && gameState && !statsRecordedRef.current) {
+    if (status === 'finished' && gameState && !navigatedToResultsRef.current) {
+      navigatedToResultsRef.current = true;
       // M7: persist across remounts so navigating back to a finished match
       // (or hot reloads in dev) doesn't double-record local stats / friend
       // match rows. Server-side UPSERT (UNIQUE game_id) already dedupes
       // friend_match_results, but local recordGameResult does not.
+      // IMPORTANT: this guard must only skip *stats recording* — navigation to
+      // /results has to happen every time, otherwise re-entering a finished
+      // match leaves the player stuck on the board.
       const persistKey = gameId ? `stats-recorded:${gameId}` : null;
+      let alreadyRecorded = statsRecordedRef.current;
       try {
-        if (persistKey && sessionStorage.getItem(persistKey) === '1') {
-          statsRecordedRef.current = true;
-          return;
-        }
+        if (persistKey && sessionStorage.getItem(persistKey) === '1') alreadyRecorded = true;
       } catch { /* sessionStorage unavailable — fall through */ }
       statsRecordedRef.current = true;
       try { if (persistKey) sessionStorage.setItem(persistKey, '1'); } catch { /* noop */ }
+
 
       const results = gameState.players.map(p => ({
         name: p.name,

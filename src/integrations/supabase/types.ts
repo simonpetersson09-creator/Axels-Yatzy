@@ -420,6 +420,7 @@ export type Database = {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
       }
+      cleanup_abandoned_matches: { Args: never; Returns: number }
       cleanup_unjoined_lobbies: { Args: never; Returns: number }
       create_game_with_code: {
         Args: { p_player_name: string; p_session_id: string }

@@ -7,6 +7,7 @@ import { sendInvite } from '@/lib/invites';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { toast } from 'sonner';
+import { HeadToHeadStats } from '@/components/game/HeadToHeadStats';
 
 interface PlayerResult {
   name: string;

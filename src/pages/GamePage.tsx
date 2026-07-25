@@ -406,7 +406,7 @@ export default function GamePage() {
             {/* Bottom: Roll + Home + Forfeit */}
             <div
               className="ios-action-zone flex flex-col items-center gap-2"
-              style={{ isolation: 'isolate', marginTop: '32px' }}
+              style={{ isolation: 'isolate', marginTop: '60px' }}
             >
               <div className="relative">
                 {gameState.rollsLeft === 3 && !isCurrentAi && !gameState.isRolling && (

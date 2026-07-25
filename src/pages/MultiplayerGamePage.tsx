@@ -665,6 +665,7 @@ export default function MultiplayerGamePage() {
                     rollsLeft={gameState.rollsLeft}
                     isRolling={localRolling || remoteRolling || gameState.isRolling}
                     playerIndex={gameState.currentPlayerIndex}
+                    placement="left"
                   />
                 )}
                 <button

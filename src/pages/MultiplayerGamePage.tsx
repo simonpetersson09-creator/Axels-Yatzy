@@ -431,15 +431,21 @@ export default function MultiplayerGamePage() {
       if (gameId) removeActiveGame(gameId);
 
       // Pass opponent info for rematch button (only true 1v1 multiplayer).
-      // Resolve async then navigate.
+      // The lookup is best-effort and time-boxed: if the network stalls we still
+      // navigate to /results instead of leaving the player on a dead board.
       (async () => {
         let rematchOpponent: { sessionId: string; name: string } | undefined;
         if (myPlayerIndex !== null && gameState.players.length === 2 && gameId) {
           try {
-            const { data: rows } = await supabase
+            const lookup = supabase
               .from('game_players')
               .select('player_index, session_id, player_name')
               .eq('game_id', gameId);
+            const res = await Promise.race([
+              lookup,
+              new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500)),
+            ]);
+            const rows = (res as { data?: any[] } | null)?.data;
             const oppRow = (rows ?? []).find((r: any) => r.player_index !== myPlayerIndex);
             if (oppRow?.session_id && oppRow?.player_name) {
               rematchOpponent = { sessionId: oppRow.session_id, name: oppRow.player_name };
@@ -454,8 +460,10 @@ export default function MultiplayerGamePage() {
             gameId,
             ...(isForfeit ? { forfeit: true, forfeitPlayerName: gameState.forfeitedBy } : {}),
           },
+          replace: true,
         });
       })();
+
 
 
     }

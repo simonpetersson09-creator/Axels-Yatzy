@@ -408,6 +408,17 @@ export default function GamePage() {
               className="ios-action-zone flex flex-col items-center gap-2"
               style={{ isolation: 'isolate', marginTop: '32px' }}
             >
+              <div className="relative">
+                {gameState.rollsLeft === 3 && (
+                  <TurnIndicator
+                    currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
+                    isMyTurn={!isCurrentAi}
+                    rollsLeft={gameState.rollsLeft}
+                    isRolling={gameState.isRolling}
+                    isAi={isCurrentAi}
+                    playerIndex={gameState.currentPlayerIndex}
+                  />
+                )}
               <button
                 type="button"
                 onPointerDown={(e) => {

@@ -143,6 +143,10 @@ export async function initNotifications(): Promise<void> {
       const showToast = kind === 'reminder' ? toast.message : toast;
       let action: { label: string; onClick: () => void } | undefined;
       if (kind === 'invite' && inviteId) {
+        // Surface the accept/decline dialog immediately — the user should not
+        // have to tap a toast (or the system banner) to answer an invite while
+        // the app is already open.
+        window.dispatchEvent(new CustomEvent('app:invite-tap', { detail: { inviteId } }));
         action = {
           label: 'Visa',
           onClick: () => {
@@ -150,6 +154,9 @@ export async function initNotifications(): Promise<void> {
             window.dispatchEvent(new CustomEvent('app:invite-tap', { detail: { inviteId } }));
           },
         };
+      } else if (kind === 'invite_accepted' && gameId) {
+        // Opponent accepted while we were in the app → open the match directly.
+        window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: `/multiplayer-game?gameId=${gameId}` } }));
       } else if (gameId) {
         action = {
           label: 'Öppna',
@@ -160,6 +167,7 @@ export async function initNotifications(): Promise<void> {
         };
       }
       showToast(title, { description: body || undefined, action });
+
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', async (action) => {

@@ -429,15 +429,15 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
                   {isCurrent ? (
-                    <span className="relative flex h-2.5 w-2.5" style={{ color: `hsl(${hsl})` }}>
+                    <span className="relative flex h-2 w-2" style={{ color: `hsl(${hsl})` }}>
                       <span
                         className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                         style={{ backgroundColor: 'currentColor' }}
                       />
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-current" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-current" />
                     </span>
                   ) : (
-                    <div className={cn('w-2.5 h-2.5 rounded-full opacity-60', color.dot)} />
+                    <div className={cn('w-2 h-2 rounded-full opacity-60', color.dot)} />
                   )}
                   <span className={cn(
                     'text-[10px] font-bold leading-none',

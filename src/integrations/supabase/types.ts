@@ -430,6 +430,8 @@ export type Database = {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
       }
+      expire_match: { Args: { p_game_id: string }; Returns: Json }
+      expire_stale_matches: { Args: never; Returns: number }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
       get_world_rank: { Args: { p_session_id: string }; Returns: Json }
       heartbeat: {

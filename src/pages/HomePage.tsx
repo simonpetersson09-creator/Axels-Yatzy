@@ -69,7 +69,12 @@ export default function HomePage() {
     let cancelled = false;
     const sync = async () => {
       const sessionId = getSessionId();
+      // Enforce the 48h limit server-side before listing: idle matches are
+      // finished and excluded from statistics.
+      await supabase.rpc('expire_stale_matches');
+      if (cancelled) return;
       const { data, error } = await supabase
+
         .from('game_players')
         .select('game_id, player_name, session_id, games!inner(id, status)')
         .eq('session_id', sessionId)
@@ -130,10 +135,16 @@ export default function HomePage() {
       for (const g of fresh) {
         if (isGameExpired(g)) {
           if (g.type === 'local') clearLocalActiveGame();
-          else if (g.gameId) removeActiveGame(g.gameId);
+          else if (g.gameId) {
+            const gid = g.gameId;
+            removeActiveGame(gid);
+            // Close it server-side too so it never lands in the statistics
+            void supabase.rpc('expire_match', { p_game_id: gid });
+          }
           changed = true;
           toast.error(t('matchExpired'));
         }
+
       }
       if (changed) setActiveGames(getActiveGames());
       else setActiveGames([...fresh]); // refresh references so time labels recompute
@@ -190,11 +201,16 @@ export default function HomePage() {
   const resumeGame = (game: ActiveGame) => {
     if (isGameExpired(game)) {
       if (game.type === 'local') clearLocalActiveGame();
-      else if (game.gameId) removeActiveGame(game.gameId);
+      else if (game.gameId) {
+        const gid = game.gameId;
+        removeActiveGame(gid);
+        void supabase.rpc('expire_match', { p_game_id: gid });
+      }
       setActiveGames(getActiveGames());
       toast.error(t('matchExpired'));
       return;
     }
+
     if (game.type === 'local') {
       navigate('/game');
     } else if (game.type === 'multiplayer' && game.gameId) {

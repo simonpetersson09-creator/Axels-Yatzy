@@ -21,7 +21,7 @@ export const sv = {
   selectPlayerCount: 'Välj antal spelare',
   opponent: 'motståndare',
   opponents: 'motståndare',
-  playWithFriends: 'Spela med vänner',
+  playWithFriends: 'Spela med vän',
   statGames: 'Spelade',
   statWins: 'Vinster',
   statHigh: 'Rekord',

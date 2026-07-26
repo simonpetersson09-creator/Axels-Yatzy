@@ -19,7 +19,7 @@ export const da: typeof sv = {
   selectPlayerCount: 'Vælg antal spillere',
   opponent: 'modstander',
   opponents: 'modstandere',
-  playWithFriends: 'Spil med venner',
+  playWithFriends: 'Spil med ven',
   statGames: 'Spillede',
   statWins: 'Sejre',
   statHigh: 'Rekord',

@@ -19,7 +19,7 @@ export const fi: typeof sv = {
   selectPlayerCount: 'Valitse pelaajien määrä',
   opponent: 'vastustaja',
   opponents: 'vastustajaa',
-  playWithFriends: 'Pelaa kavereiden kanssa',
+  playWithFriends: 'Pelaa kaverin kanssa',
   statGames: 'Pelatut',
   statWins: 'Voitot',
   statHigh: 'Ennätys',

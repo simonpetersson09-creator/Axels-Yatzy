@@ -171,6 +171,7 @@ export const no: typeof sv = {
   friendStatsTitle: 'Vennestatistikk',
   friendStatsEmpty: 'Spill med en venn for å bygge opp statistikk',
   friendStatsBack: 'Tilbake',
+  friendsListTitle: 'Venneliste',
   myFriends: 'Vennene mine',
   friendsMatches: 'kamper',
   friendsWins: 'Seire',

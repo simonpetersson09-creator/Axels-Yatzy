@@ -171,6 +171,7 @@ export const fi: typeof sv = {
   friendStatsTitle: 'Kaveritilastot',
   friendStatsEmpty: 'Pelaa kaverin kanssa kerätäksesi tilastoja',
   friendStatsBack: 'Takaisin',
+  friendsListTitle: 'Kaverilista',
   myFriends: 'Kaverini',
   friendsMatches: 'ottelua',
   friendsWins: 'Voitot',

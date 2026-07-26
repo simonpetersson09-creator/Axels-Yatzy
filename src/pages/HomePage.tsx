@@ -400,18 +400,19 @@ export default function HomePage() {
           >
             <motion.button
               onClick={() => navigate('/settings')}
-              className="w-full py-3 sm:py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-1.5"
+              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center gap-1.5"
               whileTap={{ scale: 0.97 }}
             >
               ⚙️ <span className="truncate">{t('goSettings')}</span>
             </motion.button>
             <motion.button
               onClick={() => navigate('/friends')}
-              className="w-full py-3 sm:py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-1.5"
+              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info/25 to-game-info/10 text-game-info border border-game-info/30 font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(var(--game-info)/0.18)] active:shadow-[0_2px_8px_hsl(var(--game-info)/0.12)] transition-shadow flex items-center justify-center gap-1.5"
               whileTap={{ scale: 0.97 }}
             >
               👥 <span className="truncate">{t('friendsListTitle')}</span>
             </motion.button>
+
           </motion.div>
 
 

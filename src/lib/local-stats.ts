@@ -11,7 +11,8 @@
  */
 
 const STATS_KEY = 'yatzy-player-stats';
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
+const MAX_RECORDED_KEYS = 300;
 
 export interface LocalStats {
   gamesPlayed: number;
@@ -24,6 +25,8 @@ export interface LocalStats {
 
 interface StoredStats extends LocalStats {
   version: number;
+  /** Match keys already counted — the single source of truth against double counting. */
+  recordedKeys: string[];
 }
 
 const DEFAULT_STATS: LocalStats = {
@@ -41,6 +44,7 @@ const DEFAULT_STATS: LocalStats = {
  */
 function migrate(parsed: any): StoredStats {
   // v0 (no version field) → v1: same shape, just stamp it.
+  // v1 → v2: add `recordedKeys` so every match can only ever be counted once.
   const version: number = typeof parsed?.version === 'number' ? parsed.version : 0;
 
   const base: LocalStats = {
@@ -52,34 +56,68 @@ function migrate(parsed: any): StoredStats {
     bestStreak: parsed?.bestStreak ?? 0,
   };
 
-  // Future migrations go here:
-  // if (version < 2) { ...transform base... }
+  const recordedKeys: string[] = Array.isArray(parsed?.recordedKeys)
+    ? parsed.recordedKeys.filter((k: unknown) => typeof k === 'string')
+    : [];
 
   void version;
-  return { ...base, version: CURRENT_VERSION };
+  return { ...base, version: CURRENT_VERSION, recordedKeys };
 }
 
-export function getLocalStats(): LocalStats {
+function readStored(): StoredStats {
   try {
     const raw = localStorage.getItem(STATS_KEY);
-    if (!raw) return { ...DEFAULT_STATS };
-    const migrated = migrate(JSON.parse(raw));
-    // Persist back if we upgraded an older record, so we only migrate once.
-    const { version, ...rest } = migrated;
-    return rest;
+    if (!raw) return { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [] };
+    return migrate(JSON.parse(raw));
   } catch {
-    return { ...DEFAULT_STATS };
+    return { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [] };
   }
 }
 
+export function getLocalStats(): LocalStats {
+  const { version, recordedKeys, ...rest } = readStored();
+  void version; void recordedKeys;
+  return rest;
+}
+
 export function saveLocalStats(stats: LocalStats): void {
-  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION };
+  const prev = readStored();
+  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys: prev.recordedKeys };
   localStorage.setItem(STATS_KEY, JSON.stringify(toStore));
 }
 
-export function recordGameResult(playerScore: number, won: boolean, yatzysThisGame = 0): void {
-  const stats = getLocalStats();
-  stats.gamesPlayed += 1;
+/** Wipe stats *and* the dedupe ledger (used by "reset statistics"). */
+export function resetLocalStats(): void {
+  const toStore: StoredStats = { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [] };
+  localStorage.setItem(STATS_KEY, JSON.stringify(toStore));
+}
+
+/**
+ * Record a finished match exactly once.
+ *
+ * `matchKey` must be stable for a given match (multiplayer: the game id;
+ * single player: an id generated when that game started). If the key was
+ * already counted the call is a no-op, so reopening a finished match — even
+ * after an app restart or crash — can never inflate the statistics.
+ */
+export function recordGameResult(
+  playerScore: number,
+  won: boolean,
+  yatzysThisGame = 0,
+  matchKey?: string,
+): boolean {
+  const stored = readStored();
+  if (matchKey && stored.recordedKeys.includes(matchKey)) return false;
+
+  const stats: LocalStats = {
+    gamesPlayed: stored.gamesPlayed + 1,
+    wins: stored.wins,
+    highScore: stored.highScore,
+    yatzyCount: stored.yatzyCount,
+    currentStreak: stored.currentStreak,
+    bestStreak: stored.bestStreak,
+  };
+
   if (won) {
     stats.wins += 1;
     stats.currentStreak += 1;
@@ -89,8 +127,16 @@ export function recordGameResult(playerScore: number, won: boolean, yatzysThisGa
   }
   if (playerScore > stats.highScore) stats.highScore = playerScore;
   if (yatzysThisGame > 0) stats.yatzyCount += yatzysThisGame;
-  saveLocalStats(stats);
+
+  const recordedKeys = matchKey
+    ? [...stored.recordedKeys, matchKey].slice(-MAX_RECORDED_KEYS)
+    : stored.recordedKeys;
+
+  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys };
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(toStore)); } catch { /* noop */ }
+
   // Update the player's personal country ranking after every finished match.
   // Lazy import to keep this module free of network deps until needed.
   void import('./country-rank').then(m => m.syncCountryRank(stats.gamesPlayed)).catch(() => {});
+  return true;
 }

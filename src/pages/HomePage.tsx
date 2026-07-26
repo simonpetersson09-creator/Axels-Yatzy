@@ -69,7 +69,12 @@ export default function HomePage() {
     let cancelled = false;
     const sync = async () => {
       const sessionId = getSessionId();
+      // Enforce the 48h limit server-side before listing: idle matches are
+      // finished and excluded from statistics.
+      await supabase.rpc('expire_stale_matches');
+      if (cancelled) return;
       const { data, error } = await supabase
+
         .from('game_players')
         .select('game_id, player_name, session_id, games!inner(id, status)')
         .eq('session_id', sessionId)

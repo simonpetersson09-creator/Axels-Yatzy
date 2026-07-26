@@ -135,10 +135,16 @@ export default function HomePage() {
       for (const g of fresh) {
         if (isGameExpired(g)) {
           if (g.type === 'local') clearLocalActiveGame();
-          else if (g.gameId) removeActiveGame(g.gameId);
+          else if (g.gameId) {
+            const gid = g.gameId;
+            removeActiveGame(gid);
+            // Close it server-side too so it never lands in the statistics
+            void supabase.rpc('expire_match', { p_game_id: gid });
+          }
           changed = true;
           toast.error(t('matchExpired'));
         }
+
       }
       if (changed) setActiveGames(getActiveGames());
       else setActiveGames([...fresh]); // refresh references so time labels recompute

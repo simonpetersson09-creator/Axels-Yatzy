@@ -440,7 +440,7 @@ export default function MultiplayerGamePage() {
           won = !isDraw && myScore === topScore && myScore > 0;
         }
         const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
-        recordGameResult(myScore, won, yatzys);
+        recordGameResult(myScore, won, yatzys, gameId ? `mp:${gameId}` : undefined);
         trackEvent('game_finished', { won, draw: isDraw, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
 
         // Save head-to-head friend stats — only host writes (avoids duplicates),

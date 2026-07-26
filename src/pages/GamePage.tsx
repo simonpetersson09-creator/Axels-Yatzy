@@ -79,6 +79,10 @@ export default function GamePage() {
   const [aiThinking, setAiThinking] = useState(false);
   const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
 
+  // Stable per-match key so a finished local game can never be counted twice
+  // (remount, hot reload or re-entry after an app restart).
+  const localMatchKeyRef = useRef<string>(`local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`);
+
   const hasStartedRef = useRef(false);
   useEffect(() => {
     if (hasStartedRef.current) return;
@@ -107,7 +111,7 @@ export default function GamePage() {
       // Only count as win if human is sole max-scorer (ties = no win)
       const won = humanScore === maxScore && winnersCount === 1 && !aiPlayers.includes(0);
       const yatzys = (gameState.players[0].scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
-      recordGameResult(humanScore, won, yatzys);
+      recordGameResult(humanScore, won, yatzys, localMatchKeyRef.current);
       trackEvent('game_finished', { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

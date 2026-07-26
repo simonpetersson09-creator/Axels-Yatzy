@@ -180,6 +180,7 @@ export const sv = {
   friendStatsTitle: 'Vänner och statistik',
   friendStatsEmpty: 'Spela med en vän för att bygga upp statistik',
   friendStatsBack: 'Tillbaka',
+  friendsListTitle: 'Vänlista',
   myFriends: 'Mina vänner',
   friendsMatches: 'matcher',
   friendsWins: 'Vinster',

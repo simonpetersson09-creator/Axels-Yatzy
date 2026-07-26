@@ -171,6 +171,7 @@ export const da: typeof sv = {
   friendStatsTitle: 'Venstatistik',
   friendStatsEmpty: 'Spil med en ven for at opbygge statistik',
   friendStatsBack: 'Tilbage',
+  friendsListTitle: 'Venneliste',
   myFriends: 'Mine venner',
   friendsMatches: 'kampe',
   friendsWins: 'Sejre',

@@ -399,13 +399,17 @@ export default function MultiplayerGamePage() {
       // IMPORTANT: this guard must only skip *stats recording* — navigation to
       // /results has to happen every time, otherwise re-entering a finished
       // match leaves the player stuck on the board.
+      // Must survive app restarts (sessionStorage is wiped on relaunch, which
+      // caused finished matches to be counted again after a crash/restart).
       const persistKey = gameId ? `stats-recorded:${gameId}` : null;
       let alreadyRecorded = statsRecordedRef.current;
       try {
-        if (persistKey && sessionStorage.getItem(persistKey) === '1') alreadyRecorded = true;
-      } catch { /* sessionStorage unavailable — fall through */ }
+        if (persistKey && (localStorage.getItem(persistKey) === '1' || sessionStorage.getItem(persistKey) === '1')) {
+          alreadyRecorded = true;
+        }
+      } catch { /* storage unavailable — fall through */ }
       statsRecordedRef.current = true;
-      try { if (persistKey) sessionStorage.setItem(persistKey, '1'); } catch { /* noop */ }
+      try { if (persistKey) localStorage.setItem(persistKey, '1'); } catch { /* noop */ }
 
 
       const results = gameState.players.map(p => ({

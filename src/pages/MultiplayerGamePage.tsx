@@ -18,7 +18,7 @@ import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/ha
 import { QuickChat } from '@/components/game/QuickChat';
 import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';
-import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
+import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
@@ -64,7 +64,7 @@ export default function MultiplayerGamePage() {
   const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
-  useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
+  useEffect(() => subscribeProfileChanges(() => setAvatarUrl(getProfileAvatar())), []);
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
   const { activeCelebration, yatzyTrigger } = useCombinationCelebration(gameState);

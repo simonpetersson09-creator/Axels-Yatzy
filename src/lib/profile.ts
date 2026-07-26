@@ -95,7 +95,7 @@ export async function fileToAvatarDataUrl(file: File, maxSize = 256): Promise<st
   return canvas.toDataURL('image/jpeg', 0.85);
 }
 
-export function useProfileSubscription(cb: () => void): () => void {
+export function subscribeProfileChanges(cb: () => void): () => void {
   const handler = () => cb();
   window.addEventListener('profile-changed', handler);
   window.addEventListener('storage', handler);

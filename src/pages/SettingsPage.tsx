@@ -11,7 +11,7 @@ import {
   LANGUAGES, COUNTRIES, type Language,
 } from '@/lib/profile';
 import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank';
-import { saveLocalStats } from '@/lib/local-stats';
+import { resetLocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
@@ -86,7 +86,7 @@ export default function SettingsPage() {
 
   const resetStats = () => {
     if (!confirm(t('resetStatsConfirm'))) return;
-    saveLocalStats({ gamesPlayed: 0, wins: 0, highScore: 0, yatzyCount: 0, currentStreak: 0, bestStreak: 0 });
+    resetLocalStats();
     toast.success(t('resetDone'));
   };
 

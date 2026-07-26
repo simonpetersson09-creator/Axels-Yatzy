@@ -19,7 +19,7 @@ export const es: typeof sv = {
   selectPlayerCount: 'Elige el número de jugadores',
   opponent: 'oponente',
   opponents: 'oponentes',
-  playWithFriends: 'Jugar con amigos',
+  playWithFriends: 'Jugar con un amigo',
   statGames: 'Jugadas',
   statWins: 'Victorias',
   statHigh: 'Mejor',

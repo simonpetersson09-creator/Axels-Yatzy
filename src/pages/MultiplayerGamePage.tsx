@@ -419,29 +419,27 @@ export default function MultiplayerGamePage() {
       }));
 
       const isForfeit = !!gameState.forfeitedBy || !!gameState.forfeitedBySessionId;
-      const mySessionId = getSessionId();
 
       if (!alreadyRecorded && myPlayerIndex !== null && myPlayerIndex >= 0) {
         const me = gameState.players[myPlayerIndex];
         const myScore = results[myPlayerIndex]?.score ?? 0;
-        let won: boolean;
-        let isDraw = false;
+        const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
+
         if (isForfeit) {
-          // Prefer the stable session id; fall back to name for legacy rows.
-          won = gameState.forfeitedBySessionId
-            ? mySessionId !== gameState.forfeitedBySessionId
-            : me?.name !== gameState.forfeitedBy;
+          // A forfeited match is never counted in the statistics — neither as a
+          // loss for the player who left nor as a win for the other one.
+          trackEvent('game_finished', { won: false, draw: false, score: myScore, forfeit: true }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
         } else {
           const topScore = Math.max(...results.map(r => r.score));
           const winnersAtTop = results.filter(r => r.score === topScore && topScore > 0).length;
           // A tie at the top is a draw — must NOT be counted as a win for
           // either player (server records winner_id = NULL in the same case).
-          isDraw = winnersAtTop > 1;
-          won = !isDraw && myScore === topScore && myScore > 0;
+          const isDraw = winnersAtTop > 1;
+          const won = !isDraw && myScore === topScore && myScore > 0;
+          recordGameResult(myScore, won, yatzys, gameId ? `mp:${gameId}` : undefined);
+          trackEvent('game_finished', { won, draw: isDraw, score: myScore, forfeit: false }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
         }
-        const yatzys = (me?.scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
-        recordGameResult(myScore, won, yatzys, gameId ? `mp:${gameId}` : undefined);
-        trackEvent('game_finished', { won, draw: isDraw, score: myScore, forfeit: isForfeit }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+
 
         // Save head-to-head friend stats — only host writes (avoids duplicates),
         // only for true 1v1 multiplayer matches.

@@ -37,16 +37,15 @@ Deno.serve(async (req) => {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
-    // 1) Mark abandoned 'playing' games as finished FIRST so the
-    //    trg_games_finished_record_match trigger fires and friend_match_results
-    //    gets a final row. We do NOT set forfeited_by here — that field steers
-    //    record_friend_match's winner logic and a system string ("Inaktiv")
-    //    would always make player_index=0 win. Leaving it NULL lets the score
-    //    comparison decide (typically a 0-0 draw for fully abandoned games).
+    // 1) Close abandoned 'playing' games. They are stamped with
+    //    forfeited_by = 'Tidsgräns', which makes record_friend_match skip them
+    //    entirely (and delete any lingering row), so an abandoned match can
+    //    never sneak into the statistics as a ghost 0-0 result.
     //    Single UPDATE … RETURNING avoids a TOCTOU race between SELECT and UPDATE.
+
     const { data: finalized, error: finishErr } = await supabase
       .from("games")
-      .update({ status: "finished" })
+      .update({ status: "finished", forfeited_by: "Tidsgräns" })
       .eq("status", "playing")
       .lt("updated_at", fourteenDaysAgo)
       .select("id");

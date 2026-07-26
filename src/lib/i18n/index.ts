@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getLanguage, useProfileSubscription, type Language } from '@/lib/profile';
+import { getLanguage, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { sv, type TranslationKey } from './translations/sv';
 import { en } from './translations/en';
 import { no } from './translations/no';
@@ -37,7 +37,7 @@ export function useTranslation() {
   const [lang, setLang] = useState<Language>(() => getLanguage());
 
   useEffect(() => {
-    return useProfileSubscription(() => {
+    return subscribeProfileChanges(() => {
       const next = getLanguage();
       setLang(prev => (prev === next ? prev : next));
     });

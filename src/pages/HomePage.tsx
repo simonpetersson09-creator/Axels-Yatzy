@@ -201,11 +201,16 @@ export default function HomePage() {
   const resumeGame = (game: ActiveGame) => {
     if (isGameExpired(game)) {
       if (game.type === 'local') clearLocalActiveGame();
-      else if (game.gameId) removeActiveGame(game.gameId);
+      else if (game.gameId) {
+        const gid = game.gameId;
+        removeActiveGame(gid);
+        void supabase.rpc('expire_match', { p_game_id: gid });
+      }
       setActiveGames(getActiveGames());
       toast.error(t('matchExpired'));
       return;
     }
+
     if (game.type === 'local') {
       navigate('/game');
     } else if (game.type === 'multiplayer' && game.gameId) {

@@ -176,12 +176,8 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           </motion.button>
         </div>
 
-        <div className="space-y-3 pt-2">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            {t('myFriends')}
-          </h2>
-          <FriendsList />
-        </div>
+
+
 
         <QRScanner
           open={scannerOpen}

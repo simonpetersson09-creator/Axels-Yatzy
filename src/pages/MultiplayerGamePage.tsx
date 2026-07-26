@@ -419,7 +419,6 @@ export default function MultiplayerGamePage() {
       }));
 
       const isForfeit = !!gameState.forfeitedBy || !!gameState.forfeitedBySessionId;
-      const mySessionId = getSessionId();
 
       if (!alreadyRecorded && myPlayerIndex !== null && myPlayerIndex >= 0) {
         const me = gameState.players[myPlayerIndex];

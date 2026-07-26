@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
     //    Single UPDATE … RETURNING avoids a TOCTOU race between SELECT and UPDATE.
     const { data: finalized, error: finishErr } = await supabase
       .from("games")
-      .update({ status: "finished" })
+      .update({ status: "finished", forfeited_by: "Tidsgräns" })
       .eq("status", "playing")
       .lt("updated_at", fourteenDaysAgo)
       .select("id");

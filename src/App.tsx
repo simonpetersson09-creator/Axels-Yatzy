@@ -46,6 +46,8 @@ const App = () => (
             <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
           </Route>
           <Route path="/friend-stats" element={<FriendStatsPage />} />
+          <Route path="/friends" element={<FriendsListPage />} />
+
           <Route path="/legal" element={<LegalPage />} />
           {ADMIN_ENABLED && AdminPage && (
             <Route

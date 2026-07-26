@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ScanLine } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { QRScanner } from './QRScanner';
-import { FriendsList } from './FriendsList';
 import { Capacitor } from '@capacitor/core';
 import { Camera } from '@capacitor/camera';
 import { toast } from 'sonner';

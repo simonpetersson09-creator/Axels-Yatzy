@@ -393,6 +393,28 @@ export default function HomePage() {
             🌐 <span className="truncate">{t('playWithFriends')}</span>
           </motion.button>
 
+          <motion.div
+            className="grid grid-cols-2 gap-2.5"
+            variants={item}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+          >
+            <motion.button
+              onClick={() => navigate('/settings')}
+              className="w-full py-3 sm:py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-1.5"
+              whileTap={{ scale: 0.97 }}
+            >
+              ⚙️ <span className="truncate">{t('goSettings')}</span>
+            </motion.button>
+            <motion.button
+              onClick={() => navigate('/friends')}
+              className="w-full py-3 sm:py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(195_38%_20%/0.3)] active:shadow-[0_2px_8px_hsl(195_38%_20%/0.2)] transition-shadow flex items-center justify-center gap-1.5"
+              whileTap={{ scale: 0.97 }}
+            >
+              👥 <span className="truncate">{t('friendsListTitle')}</span>
+            </motion.button>
+          </motion.div>
+
+
         </div>
 
         <motion.div

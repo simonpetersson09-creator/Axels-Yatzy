@@ -12,7 +12,7 @@ import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
-import { getProfileAvatar, useProfileSubscription } from '@/lib/profile';
+import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
@@ -61,7 +61,7 @@ export default function GamePage() {
   // Human is always player index 0 in this app
   const HUMAN_INDEX = 0;
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
-  useEffect(() => useProfileSubscription(() => setAvatarUrl(getProfileAvatar())), []);
+  useEffect(() => subscribeProfileChanges(() => setAvatarUrl(getProfileAvatar())), []);
 
   const autoRollRef = useRef<string | null>(null);
   const autoRollPendingRef = useRef<string | null>(null);

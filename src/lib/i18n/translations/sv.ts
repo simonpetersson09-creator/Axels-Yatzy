@@ -17,7 +17,7 @@ export const sv = {
   // Home
   resumeMatch: 'Fortsätt pågående match',
   ongoingMatchRemaining: 'Pågående match – {time} kvar',
-  quickMatch: 'Snabb match',
+  quickMatch: 'Snabbspel',
   selectPlayerCount: 'Välj antal spelare',
   opponent: 'motståndare',
   opponents: 'motståndare',

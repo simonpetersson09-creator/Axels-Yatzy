@@ -6,11 +6,14 @@ import { trackEvent } from "./lib/analytics";
 import { initSessionTracking } from "./lib/analytics-session";
 import { initNotifications } from "./lib/notifications";
 import { initProfileCountry } from "./lib/country-rank";
+import { claimSession } from "./lib/session";
 
 installNativeViewportSync();
 initSessionTracking();
 trackEvent('app_opened');
+void claimSession();
 void initNotifications();
 void initProfileCountry();
+
 
 createRoot(document.getElementById("root")!).render(<App />);

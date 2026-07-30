@@ -411,6 +411,24 @@ export type Database = {
         }
         Relationships: []
       }
+      session_owners: {
+        Row: {
+          created_at: string
+          device_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -419,6 +437,14 @@ export type Database = {
       accept_invite: {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
+      }
+      check_rate_limit: {
+        Args: { p_key: string; p_min_interval_seconds: number }
+        Returns: boolean
+      }
+      claim_session: {
+        Args: { p_device_id: string; p_session_id: string }
+        Returns: boolean
       }
       cleanup_abandoned_matches: { Args: never; Returns: number }
       cleanup_unjoined_lobbies: { Args: never; Returns: number }
@@ -523,6 +549,7 @@ export type Database = {
       upsert_player_country_stats: {
         Args: {
           p_country: string
+          p_device_id?: string
           p_games_played: number
           p_session_id: string
         }

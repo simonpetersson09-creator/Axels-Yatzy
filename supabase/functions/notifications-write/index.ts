@@ -33,24 +33,21 @@ Deno.serve(async (req) => {
       if (!device_id || !token || !platform) return json({ error: "missing fields" }, 400);
 
       // Anti-hijack: session_id is publicly readable from game_players, so we
-      // cannot trust the client to supply any session_id. Reject if the
-      // supplied session_id is already claimed by a different device_id
-      // (first-write-wins per session_id).
+      // never trust a client-supplied session_id at face value. The session
+      // must be claimed by THIS device in the server-side ownership registry
+      // (claimed at app start by the legitimate device that generated it).
       let safe_session_id: string | null = session_id ?? null;
       if (safe_session_id) {
-        const { data: existing } = await supabase
-          .from("push_tokens")
-          .select("device_id")
-          .eq("session_id", safe_session_id)
-          .neq("device_id", device_id)
-          .limit(1)
-          .maybeSingle();
-        if (existing) {
-          // Silently drop the session binding rather than fail — the device
-          // still gets its token registered, just without a session link.
+        const { data: owns, error: claimErr } = await supabase.rpc("claim_session", {
+          p_session_id: safe_session_id,
+          p_device_id: device_id,
+        });
+        if (claimErr || owns !== true) {
+          // Not our session — register the token without any session binding.
           safe_session_id = null;
         }
       }
+
 
       const { error } = await supabase.from("push_tokens").upsert(
         {

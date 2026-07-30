@@ -1,5 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId } from './session';
+import { getSessionId, claimSession } from './session';
+import { initDeviceId } from './device';
+
 import {
   getProfileCountry,
   setProfileCountry,
@@ -117,11 +119,15 @@ export async function syncCountryRank(gamesPlayed?: number): Promise<RankInfo> {
   if (!country) return empty;
   try {
     const sessionId = getSessionId();
+    await claimSession();
+    const deviceId = await initDeviceId();
     const { error: upErr } = await supabase.rpc('upsert_player_country_stats', {
       p_session_id: sessionId,
       p_country: country,
       p_games_played: games,
+      p_device_id: deviceId,
     });
+
     if (upErr) {
       console.warn('[country-rank] upsert failed', upErr);
       return empty;

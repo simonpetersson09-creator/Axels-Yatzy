@@ -1,7 +1,8 @@
 // Friend invite helpers (client-side).
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId } from '@/lib/session';
+import { getSessionId, claimSession } from '@/lib/session';
 import { getPlayerName } from '@/lib/session';
+import { initDeviceId } from '@/lib/device';
 
 export interface InviteRow {
   id: string;
@@ -21,12 +22,15 @@ export async function sendInvite(opts: {
   toName: string;
 }): Promise<{ ok: boolean; inviteId?: string; error?: string; pushDelivered?: boolean }> {
   const fromName = getPlayerName() || 'Spelare';
+  await claimSession();
+  const deviceId = await initDeviceId();
   const { data, error } = await supabase.functions.invoke('send-invite', {
     body: {
       from_session_id: getSessionId(),
       from_name: fromName,
       to_session_id: opts.toSessionId,
       to_name: opts.toName,
+      device_id: deviceId,
     },
   });
   if (error) return { ok: false, error: error.message };
@@ -34,6 +38,7 @@ export async function sendInvite(opts: {
   if (!res?.success) return { ok: false, error: res?.error ?? 'Kunde inte skicka inbjudan' };
   return { ok: true, inviteId: res.invite_id, pushDelivered: res.push_delivered };
 }
+
 
 export async function respondInvite(opts: {
   inviteId: string;

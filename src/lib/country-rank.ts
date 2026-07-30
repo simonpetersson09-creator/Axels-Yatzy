@@ -1,5 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId } from './session';
+import { getSessionId, claimSession } from './session';
+import { initDeviceId } from './device';
+
 import {
   getProfileCountry,
   setProfileCountry,

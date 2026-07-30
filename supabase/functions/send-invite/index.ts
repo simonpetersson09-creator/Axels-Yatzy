@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
     new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   try {
-    const { from_session_id, from_name, to_session_id, to_name } = await req.json();
+    const { from_session_id, from_name, to_session_id, to_name, device_id } = await req.json();
     if (!from_session_id || !from_name || !to_session_id || !to_name) {
       return json({ error: "from_session_id, from_name, to_session_id, to_name required" }, 400);
     }
@@ -27,6 +27,40 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    // Caller must prove the sender session is theirs (device-bound ownership),
+    // otherwise fall back to requiring the session to be a real player.
+    let senderVerified = false;
+    if (device_id) {
+      const { data: owns } = await supabase.rpc("claim_session", {
+        p_session_id: from_session_id,
+        p_device_id: device_id,
+      });
+      senderVerified = owns === true;
+    }
+    if (!senderVerified) {
+      const { data: playerRow } = await supabase
+        .from("game_players")
+        .select("id")
+        .eq("session_id", from_session_id)
+        .limit(1)
+        .maybeSingle();
+      senderVerified = !!playerRow;
+    }
+    if (!senderVerified) {
+      return json({ error: "Ogiltig avsändare" }, 403);
+    }
+
+    // Rate limit: at most one invite per sender / per recipient every 20s.
+    for (const key of [`invite_from:${from_session_id}`, `invite_to:${to_session_id}`]) {
+      const { data: allowed } = await supabase.rpc("check_rate_limit", {
+        p_key: key,
+        p_min_interval_seconds: 20,
+      });
+      if (allowed !== true) {
+        return json({ error: "För många inbjudningar. Försök igen om en stund." }, 429);
+      }
+    }
+
     // Block if sender already has 3 active games (distinct game_ids)
     const { data: activeRows } = await supabase
       .from("game_players")
@@ -37,6 +71,7 @@ Deno.serve(async (req) => {
     if (activeCount >= 3) {
       return json({ error: "Du har redan 3 aktiva spel. Avsluta något först." }, 400);
     }
+
 
 
     // Expire stale invites; reuse existing pending invite if one already exists

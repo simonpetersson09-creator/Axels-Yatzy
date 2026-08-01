@@ -661,7 +661,10 @@ export function useMultiplayerGame() {
       body: { game_id: latest.gameId, session_id: sessionId, client_dice: optimisticDice },
     })).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
-      if (!error && data?.dice && typeof data?.rolls_left === 'number') {
+      // Only buffer while the roll is still in flight. If the grace period
+      // already released the UI, writing here would flush later and make the
+      // dice change faces after they visually landed.
+      if (!error && rollingGuardRef.current && data?.dice && typeof data?.rolls_left === 'number') {
         // Update buffer to server's authoritative values (should match ours).
         pendingRollUpdateRef.current = {
           dice: data.dice,

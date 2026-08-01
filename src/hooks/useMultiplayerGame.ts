@@ -188,6 +188,8 @@ export function useMultiplayerGame() {
     const results = await Promise.race([Promise.allSettled(snapshot), guard]);
     if (results === 'timeout') return true;
     return results.every(result => result.status === 'fulfilled' && result.value);
+  }, []);
+
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {

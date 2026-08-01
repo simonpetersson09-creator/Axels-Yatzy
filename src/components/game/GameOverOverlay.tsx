@@ -24,7 +24,13 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
   const sorted = [...players].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
   const isHumanPlayer = players.length > 0 && !aiPlayers.includes(0);
-  const humanWon = isHumanPlayer && winner?.name === players[0]?.name;
+  // Compare by score/index — not by name — and require a *sole* top scorer so
+  // this matches exactly how the win is recorded in the statistics (a tie is
+  // a draw, never a win).
+  const topScore = winner?.score ?? 0;
+  const topCount = players.filter(p => p.score === topScore).length;
+  const humanWon = isHumanPlayer && players[0]?.score === topScore && topCount === 1;
+
 
   // Trigger confetti + win sound + haptic exactly once per show-cycle when the
   // local human player wins. Cleans up if the overlay closes early.

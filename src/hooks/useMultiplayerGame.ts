@@ -37,7 +37,8 @@ const LOCK_OPTIMISTIC_MS = 1500;
 const ROLL_RESPONSE_GRACE_MS = 900;
 // Max time roll() waits for in-flight toggle-lock RPCs. On timeout we proceed:
 // the server re-validates locks anyway, and a refresh reconciles afterwards.
-const LOCK_CONFIRM_MAX_WAIT_MS = 2500;
+// Kept short so tapping Kasta right after locking a die never feels frozen.
+const LOCK_CONFIRM_MAX_WAIT_MS = 1200;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {
@@ -859,47 +860,44 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
 
-    let rpcOk = true;
-    try {
-      const { error } = await withTimeout(supabase.functions.invoke('submit-score', {
-        body: { game_id: gameId, session_id: sessionId, category_id: categoryId },
-      }));
-      if (error) {
-        rpcOk = false;
+    // Release the optimistic hold on the animation clock, NOT on the network.
+    // Previously we awaited submit-score (up to NETWORK_TIMEOUT_MS) before the
+    // cell-fill timer even started, so a slow function froze the turn for
+    // seconds. Now the UI always frees after SUBMIT_ANIM_MS; the RPC result
+    // only triggers an error + rollback if it actually failed.
+    const releaseOptimistic = () => {
+      if (submitTimerRef.current) { clearTimeout(submitTimerRef.current); submitTimerRef.current = null; }
+      pendingSubmitRef.current = null;
+      submittingRef.current = false;
+      if (mountedRef.current) {
+        setPendingCategory(null);
+        setPendingPlayerIndex(null);
+      }
+    };
+
+    if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+    submitTimerRef.current = setTimeout(() => {
+      submitTimerRef.current = null;
+      releaseOptimistic();
+      refreshGameStateRef.current?.(gameId);
+    }, SUBMIT_ANIM_MS);
+
+    withTimeout(supabase.functions.invoke('submit-score', {
+      body: { game_id: gameId, session_id: sessionId, category_id: categoryId },
+    }))
+      .then(({ error }) => {
+        if (!error) return;
         console.error('Submit score error:', error);
-      }
-    } catch (err) {
-      rpcOk = false;
-      console.error('Submit score failed:', err);
-      const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
-      if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
-    } finally {
-      if (!rpcOk) {
-        // On failure release locks immediately so user can retry / navigate
-        // without being blocked by the 700ms cell-fill timer.
-        if (submitTimerRef.current) { clearTimeout(submitTimerRef.current); submitTimerRef.current = null; }
-        pendingSubmitRef.current = null;
-        submittingRef.current = false;
-        if (mountedRef.current) {
-          setPendingCategory(null);
-          setPendingPlayerIndex(null);
-        }
+        releaseOptimistic();
         refreshGameStateRef.current?.(gameId);
-      } else {
-        // M2: Hold optimistic state through cell-fill animation via a tracked
-        // timer so unmount and rapid resubmits cancel cleanly.
-        if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
-        submitTimerRef.current = setTimeout(() => {
-          submitTimerRef.current = null;
-          pendingSubmitRef.current = null;
-          submittingRef.current = false;
-          if (!mountedRef.current) return;
-          setPendingCategory(null);
-          setPendingPlayerIndex(null);
-          refreshGameStateRef.current?.(gameId);
-        }, SUBMIT_ANIM_MS);
-      }
-    }
+      })
+      .catch((err) => {
+        console.error('Submit score failed:', err);
+        const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
+        if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
+        releaseOptimistic();
+        refreshGameStateRef.current?.(gameId);
+      });
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Forfeit — calls server-side Edge Function

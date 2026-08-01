@@ -37,7 +37,8 @@ const LOCK_OPTIMISTIC_MS = 1500;
 const ROLL_RESPONSE_GRACE_MS = 900;
 // Max time roll() waits for in-flight toggle-lock RPCs. On timeout we proceed:
 // the server re-validates locks anyway, and a refresh reconciles afterwards.
-const LOCK_CONFIRM_MAX_WAIT_MS = 2500;
+// Kept short so tapping Kasta right after locking a die never feels frozen.
+const LOCK_CONFIRM_MAX_WAIT_MS = 1200;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {

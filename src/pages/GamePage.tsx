@@ -280,8 +280,12 @@ export default function GamePage() {
   }, [gameState, selectCategory, aiPlayers]);
 
   const handlePlayAgain = useCallback(() => {
+    // Every new match needs a fresh dedupe key, otherwise the second and all
+    // following games in a row are silently skipped by the stats ledger.
+    localMatchKeyRef.current = newMatchKey();
     startGame(playerNames);
   }, [startGame, playerNames]);
+
 
   const handleBackToMenu = useCallback(() => {
     navigate('/');

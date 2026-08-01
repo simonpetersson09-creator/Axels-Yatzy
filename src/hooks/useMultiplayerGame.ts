@@ -29,8 +29,15 @@ interface MultiplayerState {
 }
 
 const HEARTBEAT_INTERVAL_MS = 15_000;
-const NETWORK_TIMEOUT_MS = 15_000;
+const NETWORK_TIMEOUT_MS = 8_000;
 const LOCK_OPTIMISTIC_MS = 1500;
+// Max time the UI is allowed to keep spinning AFTER the dice animation while
+// waiting for the roll RPC. Without this cap a slow/hanging edge function
+// froze the whole turn for up to NETWORK_TIMEOUT_MS.
+const ROLL_RESPONSE_GRACE_MS = 900;
+// Max time roll() waits for in-flight toggle-lock RPCs. On timeout we proceed:
+// the server re-validates locks anyway, and a refresh reconciles afterwards.
+const LOCK_CONFIRM_MAX_WAIT_MS = 2500;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {
@@ -174,9 +181,15 @@ export function useMultiplayerGame() {
     // livelock the loop, permanently blocking roll().
     const snapshot = [...pendingLockPromisesRef.current];
     if (snapshot.length === 0) return true;
-    const results = await Promise.allSettled(snapshot);
+    // Never block the turn indefinitely: if the lock RPCs are slow, proceed.
+    const guard = new Promise<'timeout'>((resolve) =>
+      setTimeout(() => resolve('timeout'), LOCK_CONFIRM_MAX_WAIT_MS),
+    );
+    const results = await Promise.race([Promise.allSettled(snapshot), guard]);
+    if (results === 'timeout') return true;
     return results.every(result => result.status === 'fulfilled' && result.value);
   }, []);
+
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {
@@ -648,7 +661,10 @@ export function useMultiplayerGame() {
       body: { game_id: latest.gameId, session_id: sessionId, client_dice: optimisticDice },
     })).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
-      if (!error && data?.dice && typeof data?.rolls_left === 'number') {
+      // Only buffer while the roll is still in flight. If the grace period
+      // already released the UI, writing here would flush later and make the
+      // dice change faces after they visually landed.
+      if (!error && rollingGuardRef.current && data?.dice && typeof data?.rolls_left === 'number') {
         // Update buffer to server's authoritative values (should match ours).
         pendingRollUpdateRef.current = {
           dice: data.dice,
@@ -667,19 +683,29 @@ export function useMultiplayerGame() {
       return { ok: false } as const;
     });
 
-    // Wait for BOTH the animation duration AND the server response before
-    // clearing localRolling. If the server is slower than the animation, we
-    // keep spinning until values arrive — prevents a visible secondary
-    // "settle" rotation when the response lands after isRolling went false.
+    // Wait for the animation, then give the server a SHORT grace period to
+    // land its authoritative values. If it's slower than that we release the
+    // UI anyway (optimistic dice are already correct) — otherwise a slow or
+    // hanging edge function froze the whole turn for many seconds.
     if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
     const animPromise = new Promise<void>((resolve) => {
       rollingTimerRef.current = setTimeout(() => resolve(), ROLL_ANIM_MS);
     });
+    const graced = animPromise.then(() =>
+      Promise.race([
+        rpcPromise,
+        new Promise<{ ok: boolean }>((resolve) =>
+          setTimeout(() => resolve({ ok: true }), ROLL_RESPONSE_GRACE_MS),
+        ),
+      ]),
+    );
     return new Promise<boolean>((resolve) => {
-      Promise.all([animPromise, rpcPromise]).then(([, result]) => {
+      graced.then((result) => {
+        // Always release the guard, even if unmounted, so a remounted view
+        // never inherits a permanently "rolling" lock.
+        rollingGuardRef.current = false;
         if (!mountedRef.current) { resolve(false); return; }
         flushPendingRoll();
-        rollingGuardRef.current = false;
         setLocalRolling(false);
         resolve(result.ok);
       });

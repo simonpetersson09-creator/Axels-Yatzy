@@ -181,9 +181,13 @@ export function useMultiplayerGame() {
     // livelock the loop, permanently blocking roll().
     const snapshot = [...pendingLockPromisesRef.current];
     if (snapshot.length === 0) return true;
-    const results = await Promise.allSettled(snapshot);
+    // Never block the turn indefinitely: if the lock RPCs are slow, proceed.
+    const guard = new Promise<'timeout'>((resolve) =>
+      setTimeout(() => resolve('timeout'), LOCK_CONFIRM_MAX_WAIT_MS),
+    );
+    const results = await Promise.race([Promise.allSettled(snapshot), guard]);
+    if (results === 'timeout') return true;
     return results.every(result => result.status === 'fulfilled' && result.value);
-  }, []);
 
   // Cleanup any existing channel
   const cleanupChannel = useCallback(() => {

@@ -29,8 +29,15 @@ interface MultiplayerState {
 }
 
 const HEARTBEAT_INTERVAL_MS = 15_000;
-const NETWORK_TIMEOUT_MS = 15_000;
+const NETWORK_TIMEOUT_MS = 8_000;
 const LOCK_OPTIMISTIC_MS = 1500;
+// Max time the UI is allowed to keep spinning AFTER the dice animation while
+// waiting for the roll RPC. Without this cap a slow/hanging edge function
+// froze the whole turn for up to NETWORK_TIMEOUT_MS.
+const ROLL_RESPONSE_GRACE_MS = 900;
+// Max time roll() waits for in-flight toggle-lock RPCs. On timeout we proceed:
+// the server re-validates locks anyway, and a refresh reconciles afterwards.
+const LOCK_CONFIRM_MAX_WAIT_MS = 2500;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {

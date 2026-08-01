@@ -21,7 +21,10 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { Home } from 'lucide-react';
 
+const newMatchKey = () => `local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+
 export default function GamePage() {
+
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();

@@ -21,7 +21,10 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { Home } from 'lucide-react';
 
+const newMatchKey = () => `local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+
 export default function GamePage() {
+
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -81,7 +84,8 @@ export default function GamePage() {
 
   // Stable per-match key so a finished local game can never be counted twice
   // (remount, hot reload or re-entry after an app restart).
-  const localMatchKeyRef = useRef<string>(`local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`);
+  const localMatchKeyRef = useRef<string>(newMatchKey());
+
 
   const hasStartedRef = useRef(false);
   useEffect(() => {
@@ -280,8 +284,12 @@ export default function GamePage() {
   }, [gameState, selectCategory, aiPlayers]);
 
   const handlePlayAgain = useCallback(() => {
+    // Every new match needs a fresh dedupe key, otherwise the second and all
+    // following games in a row are silently skipped by the stats ledger.
+    localMatchKeyRef.current = newMatchKey();
     startGame(playerNames);
   }, [startGame, playerNames]);
+
 
   const handleBackToMenu = useCallback(() => {
     navigate('/');

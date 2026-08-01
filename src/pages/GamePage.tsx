@@ -81,7 +81,8 @@ export default function GamePage() {
 
   // Stable per-match key so a finished local game can never be counted twice
   // (remount, hot reload or re-entry after an app restart).
-  const localMatchKeyRef = useRef<string>(`local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`);
+  const localMatchKeyRef = useRef<string>(newMatchKey());
+
 
   const hasStartedRef = useRef(false);
   useEffect(() => {

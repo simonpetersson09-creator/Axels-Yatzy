@@ -65,7 +65,7 @@ export default function ResultsPage() {
   // (the alphabetically/insertion-first player) as the winner.
   const isDraw = !forfeit && sorted.length > 1 && sorted.filter(p => p.score === winner.score).length > 1;
 
-  const forfeitWinner = forfeit && results.length > 1
+  const forfeitWinner = forfeit && !timedOut && results.length > 1
     ? [...results].filter(r => r.name !== forfeitPlayerName).sort((a, b) => b.score - a.score)[0] ?? null
     : null;
 

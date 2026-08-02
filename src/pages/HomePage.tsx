@@ -162,12 +162,13 @@ export default function HomePage() {
       const sessionId = getSessionId();
       const ids = mp.map(g => g.gameId!) as string[];
       const [{ data: games }, { data: players }] = await Promise.all([
-        supabase.from('games').select('id, status, current_player_index').in('id', ids),
+        supabase.from('games').select('id, status, current_player_index, created_at, updated_at').in('id', ids),
         supabase.from('game_players').select('game_id, session_id, player_index, player_name, last_active_at').in('game_id', ids),
       ]);
       if (cancelled) return;
       const next: Record<string, GameStatus> = {};
       let removed = false;
+      let refreshed = false;
       const now = Date.now();
       for (const id of ids) {
         const g = games?.find(x => x.id === id);
@@ -185,6 +186,29 @@ export default function HomePage() {
         const me = players?.find(p => p.game_id === id && p.session_id === sessionId);
         const opponent = players?.find(p => p.game_id === id && p.session_id !== sessionId);
         const opponentActiveMs = opponent?.last_active_at ? new Date(opponent.last_active_at).getTime() : 0;
+
+        // The 48h countdown must mirror the server's expiry rule:
+        // max(created_at, updated_at, every player's last_active_at).
+        const ts = (v?: string | null) => (v ? new Date(v).getTime() : 0);
+        const serverActivity = Math.max(
+          ts(g.created_at),
+          ts(g.updated_at),
+          ...(players ?? [])
+            .filter(p => p.game_id === id)
+            .map(p => ts(p.last_active_at)),
+        );
+        const local = mp.find(x => x.gameId === id);
+        if (serverActivity > 0 && local && Math.abs(serverActivity - local.lastRollTime) > 60_000) {
+          setActiveGame({
+            type: 'multiplayer',
+            gameId: id,
+            timestamp: local.timestamp,
+            opponentName: opponent?.player_name ?? local.opponentName,
+            lastRollTime: Math.min(serverActivity, now),
+          });
+          refreshed = true;
+        }
+
         next[id] = {
           myTurn: me ? me.player_index === g.current_player_index : false,
           opponentName: opponent?.player_name,
@@ -192,8 +216,9 @@ export default function HomePage() {
           finished: false,
         };
       }
-      if (removed) setActiveGames(getActiveGames());
+      if (removed || refreshed) setActiveGames(getActiveGames());
       setStatuses(next);
+
     })();
     return () => { cancelled = true; };
   }, [activeGames]);

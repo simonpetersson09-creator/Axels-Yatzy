@@ -29,6 +29,11 @@ export default function SettingsPage() {
   const [editingName, setEditingName] = useState(false);
   const [notifPrefs, setNotifPrefsState] = useState(() => getNotificationPrefs());
   const [, force] = useState(0);
+  const [adjustOpen, setAdjustOpen] = useState(false);
+  const [statsSnapshot, setStatsSnapshot] = useState<LocalStats>(() => getLocalStats());
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const updateNotifPref = (key: 'turnNotifications' | 'reminderNotifications', value: boolean) => {
     const next = { ...notifPrefs, [key]: value };

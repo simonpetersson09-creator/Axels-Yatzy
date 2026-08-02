@@ -98,17 +98,21 @@ Deno.serve(async (req) => {
         return { skipped: { game_id: game.id, reason: `active within ${INACTIVE_MIN_MINUTES}min` } };
       }
 
+      // Cooldown must consider *any* push we already sent to this player for this
+      // game — otherwise a "det är din tur"-notis is immediately followed by a
+      // reminder a few minutes later (duplicate notifications).
       const { data: recent } = await supabase
         .from("notification_log")
         .select("id")
         .eq("game_id", game.id)
         .eq("recipient_session_id", current.session_id)
-        .eq("kind", "reminder")
+        .in("kind", ["reminder", "turn"])
         .gte("sent_at", cooldown)
         .limit(1);
       if (recent && recent.length > 0) {
         return { skipped: { game_id: game.id, reason: `cooldown (<${REMINDER_COOLDOWN_HOURS}h)` } };
       }
+
 
       const [{ data: opp }, { data: token }] = await Promise.all([
         supabase

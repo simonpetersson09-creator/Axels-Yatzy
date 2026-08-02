@@ -520,7 +520,11 @@ export default function MultiplayerGamePage() {
             isMultiplayer: true,
             rematchOpponent,
             gameId,
-            ...(isForfeit ? { forfeit: true, forfeitPlayerName: gameState.forfeitedBy } : {}),
+            ...(isForfeit
+              ? isSystemEnd
+                ? { forfeit: true, timedOut: true }
+                : { forfeit: true, forfeitPlayerName: gameState.forfeitedBy }
+              : {}),
           },
           replace: true,
         });

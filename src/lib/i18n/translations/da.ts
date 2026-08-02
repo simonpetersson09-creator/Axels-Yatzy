@@ -38,6 +38,7 @@ export const da: typeof sv = {
   countryClear: 'Fjern land',
   goSettings: 'Indstillinger',
   matchExpired: 'Kampen blev afsluttet, fordi 48 timer er gået uden aktivitet.',
+  matchTimedOut: 'Kampen udløb på tid',
 
   newGame: 'Nyt spil',
   playerCount: 'Antal spillere',

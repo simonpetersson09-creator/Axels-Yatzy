@@ -40,6 +40,7 @@ export const sv = {
   countryClear: 'Ta bort land',
   goSettings: 'Inställningar',
   matchExpired: 'Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.',
+  matchTimedOut: 'Matchen gick ut på tid',
 
   // Setup
   newGame: 'Nytt spel',

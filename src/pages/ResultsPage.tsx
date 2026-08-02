@@ -25,6 +25,7 @@ export default function ResultsPage() {
   const { t } = useTranslation();
   const results: PlayerResult[] = location.state?.results || [];
   const forfeit: boolean = location.state?.forfeit || false;
+  const timedOut: boolean = location.state?.timedOut || false;
   const forfeitPlayerName: string = location.state?.forfeitPlayerName || '';
   const aiPlayers: number[] = location.state?.aiPlayers || [];
   const isMultiplayer: boolean = location.state?.isMultiplayer || false;

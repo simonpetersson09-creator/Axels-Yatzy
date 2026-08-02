@@ -365,16 +365,43 @@ export default function SettingsPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, onTitleTap }: { title: string; children: React.ReactNode; onTitleTap?: () => void }) {
   return (
     <div className="space-y-2.5">
-      <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em] px-2">
+      <p
+        onClick={onTitleTap}
+        className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em] px-2 select-none"
+      >
         {title}
       </p>
       <div className="space-y-2.5">{children}</div>
     </div>
   );
 }
+
+function AdjustRow({ label, value, onChange }: { label: string; value: number; onChange: (delta: number) => void }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-sm text-foreground">{label}</span>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => onChange(-1)}
+          className="w-8 h-8 rounded-full bg-secondary border border-border/60 text-foreground text-lg leading-none active:opacity-70"
+        >
+          −
+        </button>
+        <span className="min-w-[2ch] text-center font-display font-bold tabular-nums text-foreground">{value}</span>
+        <button
+          onClick={() => onChange(1)}
+          className="w-8 h-8 rounded-full bg-secondary border border-border/60 text-foreground text-lg leading-none active:opacity-70"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 function Card({ children }: { children: React.ReactNode }) {
   return (

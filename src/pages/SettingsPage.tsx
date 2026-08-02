@@ -11,7 +11,7 @@ import {
   LANGUAGES, COUNTRIES, type Language,
 } from '@/lib/profile';
 import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank';
-import { resetLocalStats } from '@/lib/local-stats';
+import { resetLocalStats, getLocalStats, saveLocalStats, type LocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';

@@ -323,8 +323,28 @@ export default function SettingsPage() {
           </Card>
         </Section>
 
-        <Section title={t('statistics')}>
+        <Section title={t('statistics')} onTitleTap={handleStatsTitleTap}>
           <Card>
+            {adjustOpen && (
+              <>
+                <div className="px-4 py-3.5 space-y-3">
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    Justera statistik
+                  </p>
+                  <AdjustRow
+                    label="Vinster"
+                    value={statsSnapshot.wins}
+                    onChange={(d) => adjustStat('wins', d)}
+                  />
+                  <AdjustRow
+                    label="Spelade"
+                    value={statsSnapshot.gamesPlayed}
+                    onChange={(d) => adjustStat('gamesPlayed', d)}
+                  />
+                </div>
+                <div className="border-t border-border/40" />
+              </>
+            )}
             <motion.button
               onClick={resetStats}
               className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-destructive/10 transition-colors"
@@ -335,6 +355,7 @@ export default function SettingsPage() {
             </motion.button>
           </Card>
         </Section>
+
 
         <div className="text-center pt-2 pb-6">
           <p className="text-[11px] text-muted-foreground/60">{t('version')} 1.0</p>

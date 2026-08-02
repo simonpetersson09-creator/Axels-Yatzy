@@ -11,7 +11,7 @@ import {
   LANGUAGES, COUNTRIES, type Language,
 } from '@/lib/profile';
 import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank';
-import { resetLocalStats } from '@/lib/local-stats';
+import { resetLocalStats, getLocalStats, saveLocalStats, type LocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
@@ -29,6 +29,11 @@ export default function SettingsPage() {
   const [editingName, setEditingName] = useState(false);
   const [notifPrefs, setNotifPrefsState] = useState(() => getNotificationPrefs());
   const [, force] = useState(0);
+  const [adjustOpen, setAdjustOpen] = useState(false);
+  const [statsSnapshot, setStatsSnapshot] = useState<LocalStats>(() => getLocalStats());
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const updateNotifPref = (key: 'turnNotifications' | 'reminderNotifications', value: boolean) => {
     const next = { ...notifPrefs, [key]: value };
@@ -87,8 +92,32 @@ export default function SettingsPage() {
   const resetStats = () => {
     if (!confirm(t('resetStatsConfirm'))) return;
     resetLocalStats();
+    setStatsSnapshot(getLocalStats());
     toast.success(t('resetDone'));
   };
+
+  // Hidden manual correction: tap the "Statistics" heading 5 times.
+  const handleStatsTitleTap = () => {
+    if (adjustOpen) return;
+    tapCountRef.current += 1;
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    tapTimerRef.current = setTimeout(() => { tapCountRef.current = 0; }, 1500);
+    if (tapCountRef.current >= 5) {
+      tapCountRef.current = 0;
+      setStatsSnapshot(getLocalStats());
+      setAdjustOpen(true);
+      toast.success('Manuell justering aktiverad');
+    }
+  };
+
+  const adjustStat = (key: 'wins' | 'gamesPlayed', delta: number) => {
+    const current = getLocalStats();
+    const next = { ...current, [key]: Math.max(0, current[key] + delta) };
+    if (next.wins > next.gamesPlayed) next.gamesPlayed = next.wins;
+    saveLocalStats(next);
+    setStatsSnapshot(next);
+  };
+
 
   const displayName = name.trim() || t('guest');
 
@@ -323,8 +352,28 @@ export default function SettingsPage() {
           </Card>
         </Section>
 
-        <Section title={t('statistics')}>
+        <Section title={t('statistics')} onTitleTap={handleStatsTitleTap}>
           <Card>
+            {adjustOpen && (
+              <>
+                <div className="px-4 py-3.5 space-y-3">
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    Justera statistik
+                  </p>
+                  <AdjustRow
+                    label="Vinster"
+                    value={statsSnapshot.wins}
+                    onChange={(d) => adjustStat('wins', d)}
+                  />
+                  <AdjustRow
+                    label="Spelade"
+                    value={statsSnapshot.gamesPlayed}
+                    onChange={(d) => adjustStat('gamesPlayed', d)}
+                  />
+                </div>
+                <div className="border-t border-border/40" />
+              </>
+            )}
             <motion.button
               onClick={resetStats}
               className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-destructive/10 transition-colors"
@@ -336,6 +385,7 @@ export default function SettingsPage() {
           </Card>
         </Section>
 
+
         <div className="text-center pt-2 pb-6">
           <p className="text-[11px] text-muted-foreground/60">{t('version')} 1.0</p>
         </div>
@@ -344,16 +394,43 @@ export default function SettingsPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, onTitleTap }: { title: string; children: React.ReactNode; onTitleTap?: () => void }) {
   return (
     <div className="space-y-2.5">
-      <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em] px-2">
+      <p
+        onClick={onTitleTap}
+        className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em] px-2 select-none"
+      >
         {title}
       </p>
       <div className="space-y-2.5">{children}</div>
     </div>
   );
 }
+
+function AdjustRow({ label, value, onChange }: { label: string; value: number; onChange: (delta: number) => void }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-sm text-foreground">{label}</span>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => onChange(-1)}
+          className="w-8 h-8 rounded-full bg-secondary border border-border/60 text-foreground text-lg leading-none active:opacity-70"
+        >
+          −
+        </button>
+        <span className="min-w-[2ch] text-center font-display font-bold tabular-nums text-foreground">{value}</span>
+        <button
+          onClick={() => onChange(1)}
+          className="w-8 h-8 rounded-full bg-secondary border border-border/60 text-foreground text-lg leading-none active:opacity-70"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 function Card({ children }: { children: React.ReactNode }) {
   return (

@@ -87,8 +87,32 @@ export default function SettingsPage() {
   const resetStats = () => {
     if (!confirm(t('resetStatsConfirm'))) return;
     resetLocalStats();
+    setStatsSnapshot(getLocalStats());
     toast.success(t('resetDone'));
   };
+
+  // Hidden manual correction: tap the "Statistics" heading 5 times.
+  const handleStatsTitleTap = () => {
+    if (adjustOpen) return;
+    tapCountRef.current += 1;
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    tapTimerRef.current = setTimeout(() => { tapCountRef.current = 0; }, 1500);
+    if (tapCountRef.current >= 5) {
+      tapCountRef.current = 0;
+      setStatsSnapshot(getLocalStats());
+      setAdjustOpen(true);
+      toast.success('Manuell justering aktiverad');
+    }
+  };
+
+  const adjustStat = (key: 'wins' | 'gamesPlayed', delta: number) => {
+    const current = getLocalStats();
+    const next = { ...current, [key]: Math.max(0, current[key] + delta) };
+    if (next.wins > next.gamesPlayed) next.gamesPlayed = next.wins;
+    saveLocalStats(next);
+    setStatsSnapshot(next);
+  };
+
 
   const displayName = name.trim() || t('guest');
 

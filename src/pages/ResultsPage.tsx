@@ -25,6 +25,7 @@ export default function ResultsPage() {
   const { t } = useTranslation();
   const results: PlayerResult[] = location.state?.results || [];
   const forfeit: boolean = location.state?.forfeit || false;
+  const timedOut: boolean = location.state?.timedOut || false;
   const forfeitPlayerName: string = location.state?.forfeitPlayerName || '';
   const aiPlayers: number[] = location.state?.aiPlayers || [];
   const isMultiplayer: boolean = location.state?.isMultiplayer || false;
@@ -64,7 +65,7 @@ export default function ResultsPage() {
   // (the alphabetically/insertion-first player) as the winner.
   const isDraw = !forfeit && sorted.length > 1 && sorted.filter(p => p.score === winner.score).length > 1;
 
-  const forfeitWinner = forfeit && results.length > 1
+  const forfeitWinner = forfeit && !timedOut && results.length > 1
     ? [...results].filter(r => r.name !== forfeitPlayerName).sort((a, b) => b.score - a.score)[0] ?? null
     : null;
 
@@ -111,7 +112,7 @@ export default function ResultsPage() {
                 {t('matchEnded')}
               </h1>
               <p className="text-muted-foreground text-sm">
-                {forfeitPlayerName} {t('forfeited')}
+                {timedOut ? t('matchTimedOut') : `${forfeitPlayerName} ${t('forfeited')}`}
               </p>
               {forfeitWinner && (
                 <p className="text-lg font-display font-bold text-gold-gradient">

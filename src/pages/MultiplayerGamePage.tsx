@@ -421,6 +421,10 @@ export default function MultiplayerGamePage() {
         scores: p.scores,
       }));
 
+      // System markers are not a player giving up — they mean the match was
+      // closed automatically (timeout / cancelled lobby).
+      const SYSTEM_END_MARKERS = ['Tidsgräns', 'Avbrutet', 'Ej accepterad'];
+      const isSystemEnd = !!gameState.forfeitedBy && SYSTEM_END_MARKERS.includes(gameState.forfeitedBy);
       const isForfeit = !!gameState.forfeitedBy || !!gameState.forfeitedBySessionId;
 
       if (!alreadyRecorded && myPlayerIndex !== null && myPlayerIndex >= 0) {
@@ -516,7 +520,11 @@ export default function MultiplayerGamePage() {
             isMultiplayer: true,
             rematchOpponent,
             gameId,
-            ...(isForfeit ? { forfeit: true, forfeitPlayerName: gameState.forfeitedBy } : {}),
+            ...(isForfeit
+              ? isSystemEnd
+                ? { forfeit: true, timedOut: true }
+                : { forfeit: true, forfeitPlayerName: gameState.forfeitedBy }
+              : {}),
           },
           replace: true,
         });

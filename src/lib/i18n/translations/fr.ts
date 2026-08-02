@@ -38,6 +38,7 @@ export const fr: typeof sv = {
   countryClear: 'Effacer le pays',
   goSettings: 'Paramètres',
   matchExpired: 'La partie a été terminée car 48 heures se sont écoulées sans activité.',
+  matchTimedOut: 'La partie a expiré',
 
   newGame: 'Nouvelle partie',
   playerCount: 'Nombre de joueurs',

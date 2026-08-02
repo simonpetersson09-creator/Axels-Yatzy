@@ -187,16 +187,11 @@ export default function HomePage() {
         const opponent = players?.find(p => p.game_id === id && p.session_id !== sessionId);
         const opponentActiveMs = opponent?.last_active_at ? new Date(opponent.last_active_at).getTime() : 0;
 
-        // The 48h countdown must mirror the server's expiry rule:
-        // max(created_at, updated_at, every player's last_active_at).
+        // The 48h countdown mirrors the server's expiry rule: only real moves
+        // on the game itself count — merely having the app open (heartbeat on
+        // game_players.last_active_at) must never reset the clock.
         const ts = (v?: string | null) => (v ? new Date(v).getTime() : 0);
-        const serverActivity = Math.max(
-          ts(g.created_at),
-          ts(g.updated_at),
-          ...(players ?? [])
-            .filter(p => p.game_id === id)
-            .map(p => ts(p.last_active_at)),
-        );
+        const serverActivity = Math.max(ts(g.created_at), ts(g.updated_at));
         const local = mp.find(x => x.gameId === id);
         if (serverActivity > 0 && local && Math.abs(serverActivity - local.lastRollTime) > 60_000) {
           setActiveGame({

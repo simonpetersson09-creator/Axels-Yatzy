@@ -38,6 +38,7 @@ export const en: typeof sv = {
   countryClear: 'Clear country',
   goSettings: 'Settings',
   matchExpired: 'The match was ended because 48 hours passed without activity.',
+  matchTimedOut: 'The match timed out',
 
   newGame: 'New game',
   playerCount: 'Number of players',

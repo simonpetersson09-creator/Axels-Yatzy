@@ -112,7 +112,7 @@ export default function ResultsPage() {
                 {t('matchEnded')}
               </h1>
               <p className="text-muted-foreground text-sm">
-                {forfeitPlayerName} {t('forfeited')}
+                {timedOut ? t('matchTimedOut') : `${forfeitPlayerName} ${t('forfeited')}`}
               </p>
               {forfeitWinner && (
                 <p className="text-lg font-display font-bold text-gold-gradient">

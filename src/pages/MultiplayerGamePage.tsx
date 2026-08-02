@@ -122,11 +122,14 @@ export default function MultiplayerGamePage() {
         timestamp: Date.now(),
         opponentName: opponent?.name,
       });
+      // Being in the match counts as activity — restart the 48h countdown.
+      updateLastRollTime(gameId);
     }
     if (status === 'finished' && gameId) {
       removeActiveGame(gameId);
     }
   }, [gameId, status, gameState, myPlayerIndex]);
+
 
   // Scroll-lock handled by CSS only; avoid global touchmove blockers that can leak into lobby scroll.
   useEffect(() => {

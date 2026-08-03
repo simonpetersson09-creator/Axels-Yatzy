@@ -122,8 +122,10 @@ export default function MultiplayerGamePage() {
         timestamp: Date.now(),
         opponentName: opponent?.name,
       });
-      // Being in the match counts as activity — restart the 48h countdown.
-      updateLastRollTime(gameId);
+      // NOTE: merely opening the match must NOT restart the 48h countdown —
+      // the server expires on games.updated_at (real moves only). HomePage
+      // syncs lastRollTime from the server timestamps instead.
+
     }
     if (status === 'finished' && gameId) {
       removeActiveGame(gameId);

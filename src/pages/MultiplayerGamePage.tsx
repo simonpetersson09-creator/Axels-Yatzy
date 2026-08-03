@@ -11,7 +11,7 @@ import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { CATEGORIES } from '@/types/yatzy';
 
-import { setActiveGame, removeActiveGame, updateLastRollTime } from '@/lib/active-game';
+import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
@@ -122,8 +122,10 @@ export default function MultiplayerGamePage() {
         timestamp: Date.now(),
         opponentName: opponent?.name,
       });
-      // Being in the match counts as activity — restart the 48h countdown.
-      updateLastRollTime(gameId);
+      // NOTE: merely opening the match must NOT restart the 48h countdown —
+      // the server expires on games.updated_at (real moves only). HomePage
+      // syncs lastRollTime from the server timestamps instead.
+
     }
     if (status === 'finished' && gameId) {
       removeActiveGame(gameId);

@@ -11,7 +11,7 @@ import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { CATEGORIES } from '@/types/yatzy';
 
-import { setActiveGame, removeActiveGame, updateLastRollTime } from '@/lib/active-game';
+import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playRollSound } from '@/lib/dice-sounds';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';

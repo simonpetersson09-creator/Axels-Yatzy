@@ -345,18 +345,21 @@ export type Database = {
       player_country_stats: {
         Row: {
           country: string
+          created_at: string
           games_played: number
           session_id: string
           updated_at: string
         }
         Insert: {
           country: string
+          created_at?: string
           games_played?: number
           session_id: string
           updated_at?: string
         }
         Update: {
           country?: string
+          created_at?: string
           games_played?: number
           session_id?: string
           updated_at?: string

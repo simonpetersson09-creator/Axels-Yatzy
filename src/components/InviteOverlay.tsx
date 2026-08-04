@@ -114,11 +114,20 @@ export default function InviteOverlay() {
       for (const row of rows) {
         if (row.from_session_id !== sessionId) continue;
         const key = `${row.id}:${row.status}`;
-        if (seenOutbound.has(key)) continue;
+        if (seenOutbound.has(key) || wasOutboundHandled(key)) continue;
         seenOutbound.add(key);
+        markOutboundHandled(key);
         const ageMs = Date.now() - new Date(row.created_at).getTime();
         if (ageMs > 7 * 3600_000) continue;
         if (row.status === 'accepted' && row.game_id) {
+          // Never yank the user into a match that is already over — a finished
+          // or forfeited game would otherwise bounce them out of the lobby.
+          const { data: g } = await supabase
+            .from('games')
+            .select('status')
+            .eq('id', row.game_id)
+            .maybeSingle();
+          if (!g || g.status === 'finished') continue;
           // Only skip navigation when we're already inside *this* match —
           // being on another game screen must not swallow the new match.
           const params = new URLSearchParams(window.location.search);
@@ -135,6 +144,7 @@ export default function InviteOverlay() {
           toast.message(t('invDeclinedByOther', { name: row.to_name }));
         }
       }
+
 
       // Inbound queued: remove if no longer pending
       setQueue((cur) => {

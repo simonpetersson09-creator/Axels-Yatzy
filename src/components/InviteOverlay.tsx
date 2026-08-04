@@ -11,7 +11,38 @@ import { respondInvite, type InviteRow } from '@/lib/invites';
 import { toast } from 'sonner';
 import { t } from '@/lib/i18n';
 
+// Outbound invite transitions (accepted/declined) must only ever be acted on
+// once per device — otherwise a remount or a fresh app start replays the
+// "X accepterade" toast and re-navigates into an old match, which makes it
+// impossible to get back to the lobby.
+const SEEN_KEY = 'yatzy_seen_outbound_invites';
+
+function readSeen(): string[] {
+  try {
+    const raw = localStorage.getItem(SEEN_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr.filter((x) => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function wasOutboundHandled(key: string): boolean {
+  return readSeen().includes(key);
+}
+
+function markOutboundHandled(key: string) {
+  try {
+    const list = readSeen();
+    if (list.includes(key)) return;
+    localStorage.setItem(SEEN_KEY, JSON.stringify([...list, key].slice(-100)));
+  } catch {
+    /* ignore */
+  }
+}
+
 export default function InviteOverlay() {
+
   const navigate = useNavigate();
   const [queue, setQueue] = useState<InviteRow[]>([]);
   const [busy, setBusy] = useState(false);
@@ -114,11 +145,20 @@ export default function InviteOverlay() {
       for (const row of rows) {
         if (row.from_session_id !== sessionId) continue;
         const key = `${row.id}:${row.status}`;
-        if (seenOutbound.has(key)) continue;
+        if (seenOutbound.has(key) || wasOutboundHandled(key)) continue;
         seenOutbound.add(key);
+        markOutboundHandled(key);
         const ageMs = Date.now() - new Date(row.created_at).getTime();
         if (ageMs > 7 * 3600_000) continue;
         if (row.status === 'accepted' && row.game_id) {
+          // Never yank the user into a match that is already over — a finished
+          // or forfeited game would otherwise bounce them out of the lobby.
+          const { data: g } = await supabase
+            .from('games')
+            .select('status')
+            .eq('id', row.game_id)
+            .maybeSingle();
+          if (!g || g.status === 'finished') continue;
           // Only skip navigation when we're already inside *this* match —
           // being on another game screen must not swallow the new match.
           const params = new URLSearchParams(window.location.search);
@@ -135,6 +175,7 @@ export default function InviteOverlay() {
           toast.message(t('invDeclinedByOther', { name: row.to_name }));
         }
       }
+
 
       // Inbound queued: remove if no longer pending
       setQueue((cur) => {

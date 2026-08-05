@@ -373,7 +373,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
               width: size,
               height: size,
               transformStyle: 'preserve-3d',
-              willChange: isAnimating ? 'transform' : 'auto',
+              WebkitTransformStyle: 'preserve-3d',
+              // Constant hint — toggling it mid-roll caused a layer swap flash.
+              willChange: 'transform',
             }}
             animate={{
               rotateX: spinRotation.rotateX,

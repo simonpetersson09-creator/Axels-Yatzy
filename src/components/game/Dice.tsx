@@ -351,6 +351,10 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   // which removes the visible horizontal "extra spin" at the end of a roll
   // when the authoritative server value arrives after the local animation.
   useEffect(() => {
+    // Track hand-over state even while a roll is in flight, so the rewind
+    // still triggers on the next turn change.
+    const wasRolled = prevHasRolledRef.current;
+    prevHasRolledRef.current = hasRolled;
     if (rollingRef.current) return;
     const base = valueToRotation[displayValue];
     const cur = rotationRef.current;
@@ -358,8 +362,6 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
 
     // Turn hand-over (hasRolled true -> false): roll the die backwards one
     // full revolution into its neutral face instead of snapping the pips.
-    const wasRolled = prevHasRolledRef.current;
-    prevHasRolledRef.current = hasRolled;
     if (wasRolled && !hasRolled) {
       const rewind = {
         rotateX: cur.rotateX - 360 - mod(cur.rotateX - base.rotateX),

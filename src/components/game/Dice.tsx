@@ -608,6 +608,26 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                 if (!rollingRef.current) return;
                 rollingRef.current = false;
                 setIsAnimating(false);
+                // Safety net: if the authoritative value arrived while the
+                // spin was in flight (the value effect bails out during a
+                // roll), snap to the correct face now so a die can never
+                // stay stuck on a stale number.
+                {
+                  const base = valueToRotation[displayValueRef.current];
+                  const cur = rotationRef.current;
+                  const mod = (n: number) => ((n % 360) + 360) % 360;
+                  const short = (from: number, to: number) => {
+                    const d = ((to - mod(from)) % 360 + 540) % 360 - 180;
+                    return d === -180 ? 180 : d;
+                  };
+                  const dX = short(cur.rotateX, base.rotateX);
+                  const dY = short(cur.rotateY, base.rotateY);
+                  if (dX !== 0 || dY !== 0) {
+                    const fixed = { rotateX: cur.rotateX + dX, rotateY: cur.rotateY + dY };
+                    rotationRef.current = fixed;
+                    setSpinRotation({ ...fixed, snap: true });
+                  }
+                }
                 playLandSound();
                 // Trigger the landing bounce on the die body.
                 setLandKey((k) => k + 1);

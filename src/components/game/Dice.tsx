@@ -496,29 +496,32 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 playLandSound();
               }}
             >
-              {/* Solid inner core planes — fill the corner gaps between the six
-                  rounded faces. Matte ivory (no bright rim) so they never read
-                  as a light streak across the die. */}
-              {/* Three orthogonal core planes, plus offset copies pushed toward each
-                  face, so the rounded corners never let the background show through
-                  while the cube spins. */}
-              {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].flatMap(t =>
-                [0, S * 0.34, -S * 0.34].map(z => (
-                  <div
-                    key={`core-${t}-${z}`}
-                    className="absolute"
-                    style={{
-                      top: -1, left: -1, width: S + 2, height: S + 2,
-                      transform: `${t} translateZ(${z}px)`,
-                      transformStyle: 'flat',
-                      WebkitTransformStyle: 'flat',
-                      borderRadius: Math.round(S * 0.19),
-                      background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                )),
-              )}
+              {/* Solid inner cube — fills the interior so the background never
+                  shows through the gaps between the six rounded faces during
+                  rotation. Six flat faces form a closed, slightly smaller cube
+                  that sits just behind the outer faces and is tinted to match
+                  the ivory body. */}
+              {[
+                { t: `translateZ(${halfS - 2}px)` },
+                { t: `rotateY(180deg) translateZ(${halfS - 2}px)` },
+                { t: `rotateY(-90deg) translateZ(${halfS - 2}px)` },
+                { t: `rotateY(90deg) translateZ(${halfS - 2}px)` },
+                { t: `rotateX(-90deg) translateZ(${halfS - 2}px)` },
+                { t: `rotateX(90deg) translateZ(${halfS - 2}px)` },
+              ].map((f, i) => (
+                <div
+                  key={`core-${i}`}
+                  className="absolute"
+                  style={{
+                    top: 2, left: 2, width: S - 4, height: S - 4,
+                    transform: f.t,
+                    transformStyle: 'flat',
+                    WebkitTransformStyle: 'flat',
+                    background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              ))}
               {faces.map(f => (
                 <div
                   key={f.v}

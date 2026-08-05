@@ -132,5 +132,6 @@ export function TurnIndicator({
         />
       )}
     </motion.div>
+    </div>
   );
 }

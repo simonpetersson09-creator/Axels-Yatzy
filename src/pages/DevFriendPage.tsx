@@ -170,21 +170,34 @@ export default function DevFriendPage() {
       push(res?.success ? `Inbjudan skickad (${res.invite_id})` : `Inbjudan nekad: ${res?.error}`);
     });
 
-  const acceptMyInvite = () =>
-    run('Acceptera', async () => {
-      const { data: invites } = await supabase.rpc('list_invites_for_session', {
-        p_session_id: ghostSession,
-      });
-      const pending = (invites as { id: string; status: string; to_session_id: string }[] | null)
-        ?.find((i) => i.status === 'pending' && i.to_session_id === ghostSession);
-      if (!pending) return push('Ingen väntande inbjudan till boten');
-      const { data, error } = await supabase.functions.invoke('respond-invite', {
-        body: { invite_id: pending.id, session_id: ghostSession, action: 'accept' },
-      });
-      if (error) return push(`Accept misslyckades: ${error.message}`);
-      const res = data as { success?: boolean; error?: string; game_id?: string };
-      push(res?.success ? `Bot accepterade → match ${res.game_id}` : `Accept nekad: ${res?.error}`);
+  const acceptMyInvite = useCallback(async (silent = false) => {
+    const { data: invites, error: listErr } = await supabase.rpc('list_invites_for_session', {
+      p_session_id: ghostSession,
     });
+    if (listErr) { if (!silent) push(`Kunde inte läsa inbjudningar: ${listErr.message}`); return; }
+    const now = Date.now();
+    const pending = (invites as { id: string; status: string; to_session_id: string; expires_at: string }[] | null)
+      ?.find((i) => i.status === 'pending' && i.to_session_id === ghostSession
+        && new Date(i.expires_at).getTime() > now);
+    if (!pending) {
+      if (!silent) push('Ingen väntande inbjudan till boten — bjud in "Testkompis" från Vänlista först.');
+      return;
+    }
+    const { data, error } = await supabase.functions.invoke('respond-invite', {
+      body: { invite_id: pending.id, session_id: ghostSession, action: 'accept' },
+    });
+    if (error) return push(`Accept misslyckades: ${error.message}`);
+    const res = data as { success?: boolean; error?: string; game_id?: string };
+    push(res?.success ? `Bot accepterade → match ${res.game_id}` : `Accept nekad: ${res?.error}`);
+  }, [ghostSession, push]);
+
+  // Boten accepterar automatiskt inbjudningar som kommer in.
+  useEffect(() => {
+    if (!autoPlay) return;
+    const t = setInterval(() => { void acceptMyInvite(true); }, 3000);
+    return () => clearInterval(t);
+  }, [autoPlay, acceptMyInvite]);
+
 
   const joinByCode = () =>
     run('Gå med', async () => {
@@ -244,7 +257,7 @@ export default function DevFriendPage() {
 
       <div className="grid grid-cols-2 gap-2">
         <Button disabled={busy} onClick={inviteMe}>Bot bjuder in mig</Button>
-        <Button disabled={busy} onClick={acceptMyInvite}>Bot accepterar min inbjudan</Button>
+        <Button disabled={busy} onClick={() => run('Acceptera', () => acceptMyInvite(false))}>Bot accepterar min inbjudan</Button>
         <Button disabled={busy} variant="secondary" onClick={joinByCode}>Bot går med via kod</Button>
         <Button disabled={busy || !game} variant="secondary" onClick={startGame}>Bot startar matchen</Button>
         <Button disabled={!isGhostTurn} variant="secondary" onClick={() => void playGhostTurn()}>

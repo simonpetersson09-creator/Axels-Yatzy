@@ -112,8 +112,10 @@ export default function DevFriendPage() {
           }
           locks = want;
         }
+        // Skicka alltid p_client_dice — annars blir funktionsanropet tvetydigt (overload).
+        const clientDice = Array.from({ length: 5 }, () => 1 + Math.floor(Math.random() * 6));
         const { data, error } = await supabase.rpc('perform_roll_dice', {
-          p_game_id: game.id, p_session_id: ghostSession,
+          p_game_id: game.id, p_session_id: ghostSession, p_client_dice: clientDice,
         });
         if (error) { push(`Bot roll-fel: ${error.message}`); return; }
         const res = data as { success?: boolean; error?: string; dice?: number[]; rolls_left?: number };

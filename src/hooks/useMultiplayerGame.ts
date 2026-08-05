@@ -581,13 +581,14 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: initial.gameId, p_session_id: sessionId }).then();
 
-    const locksConfirmed = await waitForPendingLocks();
-    if (!locksConfirmed) {
-      // Roll back — server state is unknown.
-      rollingGuardRef.current = false;
-      refreshGameStateRef.current?.(initial.gameId);
-      return false;
-    }
+    // Do NOT await pending lock RPCs here — that added a visible delay between
+    // the tap and the dice starting to spin (one server round-trip whenever the
+    // player had just locked/unlocked a die). The locks we need for the
+    // optimistic roll are already known locally via getPendingLockForTurn, so
+    // we start the animation immediately and only gate the server call on the
+    // lock confirmation (see locksPromise below).
+    const locksPromise = waitForPendingLocks();
+
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState) {
       rollingGuardRef.current = false;

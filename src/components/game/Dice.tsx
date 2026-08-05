@@ -592,7 +592,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                     WebkitBackfaceVisibility: 'hidden',
                   }}
                 >
-                  <DiceFace faceValue={f.v} size={S} />
+                  <DiceFace faceValue={f.v} size={S} sweep={rolling && !locked} />
                 </div>
               ))}
             </motion.div>

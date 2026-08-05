@@ -584,7 +584,13 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                     key={`core-${t}-${z}`}
                     className="absolute"
                     style={{
-                      top: -1, left: -1, width: S + 2, height: S + 2,
+                      // Keep the core just inside the six visible faces. When
+                      // these planes reached the full cube depth, Safari drew
+                      // their intersections through the front face as thin
+                      // white horizontal/vertical streaks (most visible across
+                      // the middle pips). A 2 px visual inset prevents that
+                      // coplanar bleed while the rounded faces still cover it.
+                      top: 4, left: 4, width: S - 8, height: S - 8,
                       transform: `${t} translateZ(${z}px)`,
                       transformStyle: 'flat',
                       WebkitTransformStyle: 'flat',

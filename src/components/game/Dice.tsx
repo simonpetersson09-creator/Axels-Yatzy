@@ -504,13 +504,13 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
               {[
                 // Shell 1: nearly full-size, same corner curvature as the outer faces.
                 { inset: Math.max(2, Math.round(S * 0.02)), rad: Math.round(S * 0.24) },
-                // Shell 2: slightly deeper, tighter rounding — covers most of the
-                // corner gap while staying visually rounded.
-                { inset: Math.round(S * 0.06), rad: Math.round(S * 0.13) },
-                // Shell 3: deepest, nearly square but recessed far enough that its
-                // corners are hidden behind the rounded silhouette.
-                { inset: Math.round(S * 0.12), rad: Math.round(S * 0.05) },
+                // Shell 2: slightly deeper, rounded corners.
+                { inset: Math.round(S * 0.06), rad: Math.round(S * 0.2) },
+                // Shell 3: deepest, still rounded — recessed enough to plug the
+                // remaining corner gaps without ever showing a hard edge.
+                { inset: Math.round(S * 0.12), rad: Math.round(S * 0.16) },
               ].flatMap(({ inset, rad }) =>
+
 
                 [
                   `translateZ(${S / 2 - inset}px)`,

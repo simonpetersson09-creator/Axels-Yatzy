@@ -436,14 +436,14 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             WebKit then rasterizes the cube at its full 2x layout size. */}
         <div
           style={{
-            width: size,
-            height: size,
+            width: S,
+            height: S,
             pointerEvents: 'none',
             position: 'relative',
             // Clip the complete 3D assembly to the die's rounded silhouette.
             // Inner filler shells can otherwise peek through just outside a
             // rounded face at the four corners while the cube rotates.
-            borderRadius: radius,
+            borderRadius: radius * SS,
             overflow: 'hidden',
             transform: `scale(${1 / SS})`,
             transformOrigin: '0 0',

@@ -362,28 +362,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
         }}
       />
 
-      {/* Selection ring — thin, precise gold outline that sits just outside the die */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: -4,
-          width: size + 8,
-          height: size + 8,
-          marginLeft: -(size + 8) / 2,
-          borderRadius: radius + 4,
-          border: '1.5px solid hsl(42 92% 62%)',
-          boxShadow: locked
-            ? '0 0 0 1px rgba(0,0,0,0.25), 0 0 10px rgba(245,185,66,0.45), inset 0 0 6px rgba(245,185,66,0.28)'
-            : 'none',
-          opacity: locked ? 1 : 0,
-          transform: locked ? 'scale(1)' : 'scale(0.92)',
-          transition: 'opacity 0.22s ease-out, transform 0.28s cubic-bezier(0.34, 1.3, 0.64, 1)',
-          pointerEvents: 'none',
-          zIndex: 3,
-        }}
-      />
+      {/* Selection ring is rendered inside the die wrapper so it scales with it */}
+
 
       {/* Outer wrapper — shadow and glow */}
       <div

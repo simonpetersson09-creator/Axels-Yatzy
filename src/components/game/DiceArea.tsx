@@ -1,4 +1,4 @@
-import { Dice } from './Dice';
+import { Dice, DiceGradientDefs } from './Dice';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -22,7 +22,9 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock,
 
   return (
     <div className={cn('mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible', className)}>
+      <DiceGradientDefs />
       <div className="flex flex-col items-center" style={{ gap: compact ? 20 : 26 }}>
+
         {dice.map((value, index) => {
           const offsetX = offsets[index % offsets.length];
           return (

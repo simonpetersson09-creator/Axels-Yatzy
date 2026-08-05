@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, memo, forwardRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { playRollSound, playLandSound } from '@/lib/dice-sounds';
 
@@ -52,12 +52,62 @@ const PIP_COORDS: Record<number, [number, number]> = {
 // rasterizes the rotating 3D subtree the source geometry (rounded body, bevel,
 // pips) stays smooth instead of showing the stair-stepped edges CSS boxes gave.
 // Everything is authored in a 0..100 viewBox and scaled to the face size.
-const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
+/**
+ * Shared gradient definitions. Previously every single face SVG carried its own
+ * <defs> block (5 dice × 15 layers × 10 gradients ≈ 750 gradient nodes), which
+ * WKWebView re-parses and re-rasterizes constantly. They are now declared once
+ * for the whole document; the `url(#…)` references are unchanged.
+ */
+export function DiceGradientDefs() {
+  return (
+    <svg
+      aria-hidden
+      width="0"
+      height="0"
+      style={{ position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }}
+    >
+      <defs>
+        {/* Cool porcelain body: very soft, diffuse shading with no harsh warm tones */}
+        <linearGradient id="dfBody" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="hsl(var(--dice-ivory))" />
+          <stop offset="40%" stopColor="hsl(var(--dice-ivory-mid))" />
+          <stop offset="100%" stopColor="hsl(var(--dice-ivory-shade))" />
+        </linearGradient>
+
+        {/* Soft ambient occlusion for porcelain — cool and barely visible */}
+        <radialGradient id="dfAo" cx="0.88" cy="0.90" r="0.85">
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.10" />
+          <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Soft bevel shadow for matte porcelain */}
+        <linearGradient id="dfBevelDark" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
+          <stop offset="60%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.22" />
+        </linearGradient>
+
+        {/* Pip: soft matte dark hole */}
+        <radialGradient id="dfPip" cx="0.60" cy="0.68" r="0.85">
+          <stop offset="0%" stopColor="hsl(var(--dice-pip))" />
+          <stop offset="50%" stopColor="hsl(var(--dice-pip))" />
+          <stop offset="100%" stopColor="hsl(var(--dice-pip-rim))" />
+        </radialGradient>
+
+        {/* Pip inner shadow: shallow, matte indentation */}
+        <radialGradient id="dfPipInner" cx="0.38" cy="0.38" r="0.65">
+          <stop offset="0%" stopColor="black" stopOpacity="0.32" />
+          <stop offset="60%" stopColor="black" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="black" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+}
+
+const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
-  /** When true a soft light band travels across the face, so the surface reads
-      as a lit object rather than a static image while the die spins. */
-  sweep?: boolean;
 }) {
   const radius = size * 0.22;
   const r = 22; // corner radius in viewBox units
@@ -80,97 +130,11 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
         WebkitUserSelect: 'none',
       }}
     >
-      <defs>
-        {/* Cool porcelain body: very soft, diffuse shading with no harsh warm tones */}
-        <linearGradient id="dfBody" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-ivory))" />
-          <stop offset="40%" stopColor="hsl(var(--dice-ivory-mid))" />
-          <stop offset="100%" stopColor="hsl(var(--dice-ivory-shade))" />
-        </linearGradient>
-
-        {/* Matte porcelain: specular highlight is now fully transparent to remove streaks */}
-        <radialGradient id="dfSpec" cx="0.30" cy="0.24" r="0.48">
-          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-        </radialGradient>
-
-        {/* Soft ambient occlusion for porcelain — cool and barely visible */}
-        <radialGradient id="dfAo" cx="0.88" cy="0.90" r="0.85">
-          <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.10" />
-          <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
-        </radialGradient>
-
-        {/* Surface sheen: now fully transparent to eliminate the white streaks */}
-        <linearGradient id="dfSheen" x1="0.20" y1="0" x2="0.80" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-          <stop offset="35%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-        </linearGradient>
-
-        {/* Soft porcelain bevel — light edge is now fully transparent to remove streaks */}
-        <linearGradient id="dfBevelLight" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
-          <stop offset="50%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
-        </linearGradient>
-
-        {/* Soft bevel shadow for matte porcelain */}
-        <linearGradient id="dfBevelDark" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
-          <stop offset="60%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.22" />
-        </linearGradient>
-
-        {/* Pip: soft matte dark hole, less dramatic than ivory */}
-        <radialGradient id="dfPip" cx="0.60" cy="0.68" r="0.85">
-          <stop offset="0%" stopColor="hsl(var(--dice-pip))" />
-          <stop offset="50%" stopColor="hsl(var(--dice-pip))" />
-          <stop offset="100%" stopColor="hsl(var(--dice-pip-rim))" />
-        </radialGradient>
-
-        {/* Pip inner shadow: shallow, matte indentation */}
-        <radialGradient id="dfPipInner" cx="0.38" cy="0.38" r="0.65">
-          <stop offset="0%" stopColor="black" stopOpacity="0.32" />
-          <stop offset="60%" stopColor="black" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="black" stopOpacity="0" />
-        </radialGradient>
-
-        {/* Pip rim light: now fully transparent to eliminate the white streaks */}
-        <linearGradient id="dfPipRim" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="black" stopOpacity="0" />
-          <stop offset="60%" stopColor="black" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-        </linearGradient>
-
-        {/* Moving reflection band: now fully transparent so it never draws a white streak */}
-        <linearGradient id="dfSweep" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-          <stop offset="50%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-        </linearGradient>
-        <clipPath id="dfClip">
-          <rect x="0" y="0" width="100" height="100" rx={r} ry={r} />
-        </clipPath>
-      </defs>
-
       {/* Base ivory body */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfBody)" />
 
       {/* Ambient occlusion darkening the bottom-right corner */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfAo)" />
-
-      {/* Top-left specular highlight */}
-      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSpec)" />
-
-      {/* Soft surface sheen across the top */}
-      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSheen)" />
-
-      {/* Top/left bevel highlight */}
-      <rect
-        x="1.4" y="1.4" width="97.2" height="97.2"
-        rx={r - 1.4} ry={r - 1.4}
-        fill="none" stroke="url(#dfBevelLight)" strokeWidth="2.8"
-      />
 
       {/* Bottom/right bevel shadow */}
       <rect
@@ -184,45 +148,17 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
         const [cx, cy] = PIP_COORDS[i];
         return (
           <g key={i}>
-            {/* Subtle raised rim around the pip hole — now fully transparent */}
-            <circle
-              cx={cx} cy={cy} r={pipR + 0.45}
-              fill="none" stroke="hsl(var(--dice-sheen))" strokeOpacity="0" strokeWidth="0.8"
-            />
             {/* Inner shadow that makes the pip look carved in */}
             <circle cx={cx} cy={cy} r={pipR + 0.1} fill="url(#dfPipInner)" />
             {/* Pip face */}
             <circle cx={cx} cy={cy} r={pipR} fill="url(#dfPip)" />
-            {/* Rim light at the bottom-right edge of the hole */}
-            <circle
-              cx={cx} cy={cy} r={pipR - 0.5}
-              fill="none" stroke="url(#dfPipRim)" strokeWidth="1.0"
-            />
           </g>
         );
       })}
-
-      {/* Travelling light band — reads as a real reflection moving over the
-          surface while the die tumbles. */}
-      {sweep && (
-        <g clipPath="url(#dfClip)">
-          <rect
-            x="-70" y="-30" width="46" height="160"
-            fill="url(#dfSweep)"
-            transform="rotate(18 50 50)"
-          >
-            <animate
-              attributeName="x"
-              from="-70" to="120"
-              dur="1.1s"
-              repeatCount="indefinite"
-            />
-          </rect>
-        </g>
-      )}
     </svg>
   );
 });
+
 
 
 
@@ -242,6 +178,18 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   const [showSparkle, setShowSparkle] = useState(false);
   // Bumped when a roll finishes — replays the landing bounce.
   const [landKey, setLandKey] = useState(0);
+  // Landing bounce is driven by imperative controls instead of a `key` remount:
+  // remounting re-created the whole 3D cube (15 layers) on every landing, which
+  // caused a visible stall on iOS.
+  const bounceControls = useAnimationControls();
+  useEffect(() => {
+    if (landKey === 0) return;
+    void bounceControls.start(
+      { y: [-7, 2, -1, 0], scaleY: [1, 0.9, 1.03, 1], scaleX: [1, 1.08, 0.98, 1] },
+      { duration: 0.36, times: [0, 0.35, 0.65, 1], ease: 'easeOut' },
+    );
+  }, [landKey, bounceControls]);
+
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
   // Turn hand-over: dice roll back to their neutral state instead of just
@@ -505,16 +453,11 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
       {/* Landing bounce — the whole die body drops, squashes against the felt
           and settles back when a roll finishes. */}
       <motion.div
-        key={landKey}
         style={{ position: 'relative', zIndex: 1, transformOrigin: '50% 100%' }}
         initial={false}
-        animate={
-          landKey > 0
-            ? { y: [-7, 2, -1, 0], scaleY: [1, 0.9, 1.03, 1], scaleX: [1, 1.08, 0.98, 1] }
-            : { y: 0, scaleY: 1, scaleX: 1 }
-        }
-        transition={{ duration: 0.36, times: [0, 0.35, 0.65, 1], ease: 'easeOut' }}
+        animate={bounceControls}
       >
+
       {/* Outer wrapper — tactile die body, ground shadow and glow */}
       <div
         style={{
@@ -679,7 +622,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                     WebkitBackfaceVisibility: 'hidden',
                   }}
                 >
-                  <DiceFace faceValue={f.v} size={S} sweep={rolling && !locked} />
+                  <DiceFace faceValue={f.v} size={S} />
                 </div>
               ))}
             </motion.div>
@@ -726,25 +669,25 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
           borderRadius: '50%',
           pointerEvents: 'none',
           background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 38%, rgba(0,0,0,0.06) 68%, transparent 88%)',
+          filter: 'blur(1px)',
         }}
         initial={false}
         animate={
           rolling
-            ? { scaleX: 1.22, scaleY: 0.7, opacity: 0.3, filter: 'blur(3px)' }
+            ? { scaleX: 1.22, scaleY: 0.7, opacity: 0.3 }
             : landKey > 0
               ? {
                   scaleX: locked ? [1.24, 0.94, 1.08] : [1.24, 0.86, 1],
                   scaleY: [0.68, 1.18, 1],
                   opacity: [0.34, 0.9, 0.72],
-                  filter: ['blur(3px)', 'blur(0.5px)', 'blur(1px)'],
                 }
               : {
                   scaleX: locked ? 1.08 : 1,
                   scaleY: 1,
                   opacity: 0.72,
-                  filter: 'blur(1px)',
                 }
         }
+
         transition={
           rolling
             ? { duration: 0.25, ease: 'easeOut' }

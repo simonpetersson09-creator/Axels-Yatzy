@@ -594,27 +594,23 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
 
 
-      {/* Ground shadow — pre-softened radial gradient, without CSS blur.
-          WebKit may re-rasterize a filtered sibling on every 3D frame, which
-          makes the die above it flash even though the shadow itself is static. */}
-
+      {/* Ground shadow — soft felt indentation under the die. */}
       <motion.div
         style={{
-          width: size * 0.86,
-          height: 9,
-          marginTop: 3,
+          width: size * 0.92,
+          height: 10,
+          marginTop: 4,
           borderRadius: '50%',
           pointerEvents: 'none',
-          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.42), rgba(0,0,0,0.15) 42%, rgba(0,0,0,0.04) 66%, transparent 82%)',
+          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 38%, rgba(0,0,0,0.05) 68%, transparent 88%)',
         }}
         animate={{
           scaleX: locked ? 1.08 : 1,
-          opacity: 0.65,
+          opacity: 0.72,
         }}
-
         transition={{ duration: 0.3, ease: 'easeOut' }}
-
       />
+
     </button>
   );
 }

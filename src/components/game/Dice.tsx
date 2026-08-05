@@ -52,9 +52,12 @@ const PIP_COORDS: Record<number, [number, number]> = {
 // rasterizes the rotating 3D subtree the source geometry (rounded body, bevel,
 // pips) stays smooth instead of showing the stair-stepped edges CSS boxes gave.
 // Everything is authored in a 0..100 viewBox and scaled to the face size.
-const DiceFace = memo(function DiceFace({ faceValue, size }: {
+const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
   faceValue: number;
   size: number;
+  /** When true a soft light band travels across the face, so the surface reads
+      as a lit object rather than a static image while the die spins. */
+  sweep?: boolean;
 }) {
   const radius = size * 0.22;
   const r = 22; // corner radius in viewBox units

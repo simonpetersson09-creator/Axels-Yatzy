@@ -350,6 +350,23 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
     const base = valueToRotation[displayValue];
     const cur = rotationRef.current;
     const mod = (n: number) => ((n % 360) + 360) % 360;
+
+    // Turn hand-over (hasRolled true -> false): roll the die backwards one
+    // full revolution into its neutral face instead of snapping the pips.
+    const wasRolled = prevHasRolledRef.current;
+    prevHasRolledRef.current = hasRolled;
+    if (wasRolled && !hasRolled) {
+      const rewind = {
+        rotateX: cur.rotateX - 360 - mod(cur.rotateX - base.rotateX),
+        rotateY: cur.rotateY - 360 - mod(cur.rotateY - base.rotateY),
+      };
+      rotationRef.current = rewind;
+      resettingRef.current = true;
+      setIsResetting(true);
+      setSpinRotation({ ...rewind, snap: false });
+      return;
+    }
+
     // Shortest signed delta in range (-180, 180].
     const shortest = (from: number, to: number) => {
       const d = ((to - mod(from)) % 360 + 540) % 360 - 180;
@@ -369,7 +386,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
     // "extra spin"/flimmer after the dice appeared to stop.
     setSpinRotation({ ...retarget, snap: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayValue]);
+  }, [displayValue, hasRolled]);
 
 
 

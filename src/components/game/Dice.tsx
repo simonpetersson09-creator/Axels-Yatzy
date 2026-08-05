@@ -178,6 +178,11 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
       {/* Ambient occlusion darkening the bottom-right corner */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfAo)" />
 
+      {/* Environment reflection layers */}
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfEnvFloor)" />
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfEnvGold)" />
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfEnvSky)" />
+
       {/* Top-left specular highlight */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSpec)" />
 

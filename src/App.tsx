@@ -25,6 +25,7 @@ import NotificationNavigator from "./components/NotificationNavigator";
 const ADMIN_ENABLED = import.meta.env.DEV || !Capacitor.isNativePlatform();
 const AdminPage = ADMIN_ENABLED ? lazy(() => import("./pages/AdminPage")) : null;
 const DevFriendPage = ADMIN_ENABLED ? lazy(() => import("./pages/DevFriendPage")) : null;
+const DevFriendBotRunner = ADMIN_ENABLED ? lazy(() => import("./components/DevFriendBotRunner")) : null;
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,11 @@ const App = () => (
       <BrowserRouter>
         <InviteOverlay />
         <NotificationNavigator />
+        {ADMIN_ENABLED && DevFriendBotRunner && (
+          <Suspense fallback={null}>
+            <DevFriendBotRunner />
+          </Suspense>
+        )}
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/setup" element={<GameSetupPage />} />

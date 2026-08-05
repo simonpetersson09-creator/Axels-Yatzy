@@ -400,8 +400,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 className="absolute inset-0"
                 style={{
                   transform: f.t,
-                  transformStyle: 'preserve-3d',
-                  WebkitTransformStyle: 'preserve-3d',
+                  // Faces are flat quads. Keeping `preserve-3d` here made
+                  // WebKit re-evaluate a nested 3D context per face every
+                  // frame, which is what still produced the flimmer.
+                  transformStyle: 'flat',
+                  WebkitTransformStyle: 'flat',
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
                 }}
@@ -409,6 +412,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 <DiceFace faceValue={f.v} size={size} />
               </div>
             ))}
+
           </motion.div>
         </div>
       </div>

@@ -184,10 +184,10 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
         const [cx, cy] = PIP_COORDS[i];
         return (
           <g key={i}>
-            {/* Subtle raised rim around the pip hole */}
+            {/* Subtle raised rim around the pip hole — now fully transparent */}
             <circle
               cx={cx} cy={cy} r={pipR + 0.45}
-              fill="none" stroke="hsl(var(--dice-sheen))" strokeOpacity="0.10" strokeWidth="0.8"
+              fill="none" stroke="hsl(var(--dice-sheen))" strokeOpacity="0" strokeWidth="0.8"
             />
             {/* Inner shadow that makes the pip look carved in */}
             <circle cx={cx} cy={cy} r={pipR + 0.1} fill="url(#dfPipInner)" />

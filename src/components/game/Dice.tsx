@@ -228,7 +228,9 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
 
 
 
-export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56, hasRolled = true }: DiceProps) {
+export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice({
+  value, locked, rolling, onToggleLock, canLock, size = 56, hasRolled = true,
+}, ref) {
   const initialFace = useMemo(() => 1 + Math.floor(Math.random() * 6), []);
   const displayValue = hasRolled ? value : initialFace;
 

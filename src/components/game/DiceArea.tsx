@@ -16,22 +16,20 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock,
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 42 : 47;
 
-  // Deterministic organic tilt + horizontal offset per die index.
-  // Keeps the hit area centered (transform doesn't change layout).
-  const tilts = [-4, 3, -2.5, 4.5, -3.5];
+  // No organic tilt — dice stay upright for a cleaner, more controlled look.
+  const tilts = [0, 0, 0, 0, 0];
   const offsets = [-6, 5, -3, 7, -4];
 
   return (
     <div className={cn('mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible', className)}>
       <div className="flex flex-col items-center" style={{ gap: compact ? 20 : 26 }}>
         {dice.map((value, index) => {
-          const tilt = tilts[index % tilts.length];
           const offsetX = offsets[index % offsets.length];
           return (
             <motion.div
               key={index}
-              initial={{ opacity: 0, x: 20, rotate: tilt }}
-              animate={{ opacity: 1, x: offsetX, rotate: tilt }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: offsetX }}
               transition={{ delay: index * 0.07, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="flex items-center justify-center"
               style={{ transformOrigin: 'center' }}

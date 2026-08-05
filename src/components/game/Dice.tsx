@@ -466,12 +466,17 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 // Constant hint — toggling it mid-roll caused a layer swap flash.
                 willChange: 'transform',
                 backfaceVisibility: 'visible',
+                // Push the cube back by half its depth so the FRONT face sits at
+                // z = 0. Without this, perspective magnifies the visible face by
+                // ~8%, which made the die spill outside the gold selection ring.
+                z: -halfS,
               }}
 
               animate={{
                 rotateX: spinRotation.rotateX,
                 rotateY: spinRotation.rotateY,
               }}
+
               transition={
                 isAnimating
                   ? {

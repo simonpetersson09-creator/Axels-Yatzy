@@ -393,7 +393,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           // will-change / animating `filter` per roll forced Safari to
           // re-rasterize the 3D subtree every frame → visible flimmer.
           // Locked dice grow slightly so the kept set reads instantly.
-          transform: locked ? 'translateZ(0) scale(1.12)' : 'translateZ(0) scale(1)',
+          transform: locked ? 'translateZ(0) scale(1.08)' : 'translateZ(0) scale(1)',
           transformOrigin: '50% 60%',
           boxShadow: locked
             ? '0 0 0 3px hsl(42 95% 66%), 0 0 0 5px hsl(34 80% 46%), 0 0 18px rgba(245,185,66,0.55), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.45)'

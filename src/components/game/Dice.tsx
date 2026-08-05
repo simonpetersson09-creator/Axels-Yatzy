@@ -244,6 +244,11 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   const [landKey, setLandKey] = useState(0);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
+  // Turn hand-over: dice roll back to their neutral state instead of just
+  // swapping pips.
+  const [isResetting, setIsResetting] = useState(false);
+  const resettingRef = useRef(false);
+  const prevHasRolledRef = useRef(hasRolled);
   const rotationRef = useRef(valueToRotation[displayValue]);
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 

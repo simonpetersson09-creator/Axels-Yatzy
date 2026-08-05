@@ -152,11 +152,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
   const rotationRef = useRef(valueToRotation[displayValue]);
-  // When true, the next rotation update must snap (duration 0) instead of
-  // animating. Used when the authoritative server value arrives AFTER the
-  // local roll animation already landed — otherwise the die visibly rotates
-  // for ~0.45s post-landing, looking like an "extra spin".
-  const snapNextRef = useRef(false);
+  // Snap ("duration 0") is carried on the rotation state itself — see above.
+
   const half = size / 2;
   const radius = Math.round(size * 0.28);
   const faces = useMemo(() => [

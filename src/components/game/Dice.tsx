@@ -244,6 +244,11 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   const [landKey, setLandKey] = useState(0);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
+  // Turn hand-over: dice roll back to their neutral state instead of just
+  // swapping pips.
+  const [isResetting, setIsResetting] = useState(false);
+  const resettingRef = useRef(false);
+  const prevHasRolledRef = useRef(hasRolled);
   const rotationRef = useRef(valueToRotation[displayValue]);
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 
@@ -282,6 +287,11 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   useEffect(() => {
     if (rolling && !locked && !rollingRef.current) {
       rollingRef.current = true;
+      // A new roll always wins over an in-flight turn-hand-over rewind.
+      if (resettingRef.current) {
+        resettingRef.current = false;
+        setIsResetting(false);
+      }
       // Freeze a new set of random seeds for this roll only — prevents
       // re-randomization mid-animation that caused a visible second "settle" spin.
       const fresh = makeRollVar();
@@ -341,10 +351,29 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   // which removes the visible horizontal "extra spin" at the end of a roll
   // when the authoritative server value arrives after the local animation.
   useEffect(() => {
+    // Track hand-over state even while a roll is in flight, so the rewind
+    // still triggers on the next turn change.
+    const wasRolled = prevHasRolledRef.current;
+    prevHasRolledRef.current = hasRolled;
     if (rollingRef.current) return;
     const base = valueToRotation[displayValue];
     const cur = rotationRef.current;
     const mod = (n: number) => ((n % 360) + 360) % 360;
+
+    // Turn hand-over (hasRolled true -> false): roll the die backwards one
+    // full revolution into its neutral face instead of snapping the pips.
+    if (wasRolled && !hasRolled) {
+      const rewind = {
+        rotateX: cur.rotateX - 360 - mod(cur.rotateX - base.rotateX),
+        rotateY: cur.rotateY - 360 - mod(cur.rotateY - base.rotateY),
+      };
+      rotationRef.current = rewind;
+      resettingRef.current = true;
+      setIsResetting(true);
+      setSpinRotation({ ...rewind, snap: false });
+      return;
+    }
+
     // Shortest signed delta in range (-180, 180].
     const shortest = (from: number, to: number) => {
       const d = ((to - mod(from)) % 360 + 540) % 360 - 180;
@@ -364,7 +393,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
     // "extra spin"/flimmer after the dice appeared to stop.
     setSpinRotation({ ...retarget, snap: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayValue]);
+  }, [displayValue, hasRolled]);
 
 
 
@@ -557,11 +586,19 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                       rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                       rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     }
-                  : spinRotation.snap
-                    ? { duration: 0 }
-                    : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+                  : isResetting
+                    ? { duration: 0.85, ease: [0.33, 1, 0.68, 1] }
+                    : spinRotation.snap
+                      ? { duration: 0 }
+                      : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
               }
               onAnimationComplete={() => {
+                if (resettingRef.current) {
+                  // Turn hand-over rewind finished — no landing bounce/sound.
+                  resettingRef.current = false;
+                  setIsResetting(false);
+                  return;
+                }
                 // End the roll from the renderer's actual final frame rather
                 // than a parallel 1500 ms JS timer.
                 if (!rollingRef.current) return;

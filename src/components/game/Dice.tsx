@@ -56,8 +56,8 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = size * 0.22;
-  const r = 22; // corner radius in viewBox units
+  const radius = size * 0.28;
+  const r = 28; // corner radius in viewBox units
   const pipR = 7.75; // pip radius in viewBox units (matches previous 15.5% diameter)
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (

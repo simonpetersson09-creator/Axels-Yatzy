@@ -419,15 +419,30 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           opacity: 1,
         }}
       >
-        {/* Supersampled 3D stage: laid out at 2x, scaled to 1x for crisp edges */}
-        <div style={{ width: size, height: size, pointerEvents: 'none', position: 'relative' }}>
+        {/* Supersampled 3D stage: laid out at 2x, scaled to 1x for crisp edges.
+            The downscale lives on this outer, non-3D wrapper so the perspective
+            container itself is never inside an animating/scaled 3D chain —
+            WebKit then rasterizes the cube at its full 2x layout size. */}
+        <div
+          style={{
+            width: size,
+            height: size,
+            pointerEvents: 'none',
+            position: 'relative',
+            transform: `scale(${1 / SS})`,
+            transformOrigin: '0 0',
+            isolation: 'isolate',
+          }}
+        >
           <div
             style={{
               width: S,
               height: S,
-              perspective: Math.round(S * 4.3),
-              transform: `scale(${1 / SS})`,
-              transformOrigin: '0 0',
+              // Flatter perspective: less extreme foreshortening on the far
+              // edge, so WebKit's single rasterization stretches much less
+              // during the spin (that stretch is what read as blur).
+              perspective: Math.round(S * 6.5),
+              perspectiveOrigin: '50% 50%',
             }}
           >
             <motion.div
@@ -439,7 +454,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 WebkitTransformStyle: 'preserve-3d',
                 // Constant hint — toggling it mid-roll caused a layer swap flash.
                 willChange: 'transform',
+                backfaceVisibility: 'visible',
               }}
+
               animate={{
                 rotateX: spinRotation.rotateX,
                 rotateY: spinRotation.rotateY,

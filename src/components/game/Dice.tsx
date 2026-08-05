@@ -585,7 +585,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                       transformStyle: 'flat',
                       WebkitTransformStyle: 'flat',
                       borderRadius: Math.round(S * 0.19),
-                      background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
+                      background: 'linear-gradient(135deg, hsl(220 14% 98%) 0%, hsl(220 8% 90%) 100%)',
                       pointerEvents: 'none',
                     }}
                   />

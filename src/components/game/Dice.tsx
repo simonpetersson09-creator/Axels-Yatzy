@@ -331,7 +331,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             className="absolute pointer-events-none"
             style={{
               width: size + 10, height: size + 10, borderRadius: radius + 5,
-              border: '2px solid hsl(36 82% 52%)',
+              border: '2px solid hsl(var(--game-gold))',
               left: '50%', top: half,
               marginLeft: -(size + 10) / 2, marginTop: -(size + 10) / 2, zIndex: 49,
             }}
@@ -354,7 +354,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           height: size + 22,
           marginLeft: -(size + 22) / 2,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(245,185,66,0.28) 0%, rgba(245,185,66,0.10) 48%, rgba(245,185,66,0) 72%)',
+          background: 'radial-gradient(circle, hsl(var(--game-gold) / 0.28) 0%, hsl(var(--game-gold) / 0.10) 48%, hsl(var(--game-gold) / 0) 72%)',
           opacity: locked ? 1 : 0,
           transition: 'opacity 0.28s ease-out',
           pointerEvents: 'none',
@@ -362,28 +362,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
         }}
       />
 
-      {/* Selection ring — thin, precise gold outline that sits just outside the die */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: -4,
-          width: size + 8,
-          height: size + 8,
-          marginLeft: -(size + 8) / 2,
-          borderRadius: radius + 4,
-          border: '1.5px solid hsl(42 92% 62%)',
-          boxShadow: locked
-            ? '0 0 0 1px rgba(0,0,0,0.25), 0 0 10px rgba(245,185,66,0.45), inset 0 0 6px rgba(245,185,66,0.28)'
-            : 'none',
-          opacity: locked ? 1 : 0,
-          transform: locked ? 'scale(1)' : 'scale(0.92)',
-          transition: 'opacity 0.22s ease-out, transform 0.28s cubic-bezier(0.34, 1.3, 0.64, 1)',
-          pointerEvents: 'none',
-          zIndex: 3,
-        }}
-      />
+      {/* Selection ring is rendered inside the die wrapper so it scales with it */}
+
 
       {/* Outer wrapper — shadow and glow */}
       <div
@@ -400,7 +380,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           transform: locked ? 'translateZ(0) scale(1.08)' : 'translateZ(0) scale(1)',
           transformOrigin: '50% 60%',
           boxShadow: locked
-            ? '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 0 14px rgba(245,185,66,0.28)'
+            ? '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 0 14px hsl(var(--game-gold) / 0.28)'
             : '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24)',
           // Keep the complete 3D subtree fully opaque at all times.
           transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1)',
@@ -492,7 +472,29 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             </motion.div>
           </div>
         </div>
+
+        {/* Selection ring — hugs the die exactly and scales with it */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: -2,
+            left: -2,
+            right: -2,
+            bottom: -2,
+            borderRadius: radius + 2,
+            border: '1.5px solid hsl(var(--game-gold))',
+            boxShadow: locked
+              ? '0 0 0 1px hsl(var(--game-gold-dark) / 0.45), 0 0 10px hsl(var(--game-gold) / 0.5)'
+              : 'none',
+            opacity: locked ? 1 : 0,
+            transition: 'opacity 0.22s ease-out',
+            pointerEvents: 'none',
+            zIndex: 5,
+          }}
+        />
       </div>
+
 
 
       {/* Ground shadow — pre-softened radial gradient, without CSS blur.

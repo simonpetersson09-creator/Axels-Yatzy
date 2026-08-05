@@ -137,9 +137,9 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
 
         {/* Pip rim light: faint porcelain reflection at the hole edge */}
         <linearGradient id="dfPipRim" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="black" stopOpacity="0.55" />
-          <stop offset="60%" stopColor="black" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.22" />
+          <stop offset="0%" stopColor="black" stopOpacity="0.35" />
+          <stop offset="60%" stopColor="black" stopOpacity="0.05" />
+          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.10" />
         </linearGradient>
 
         {/* Moving reflection band: much softer on matte porcelain */}

@@ -604,7 +604,11 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                     transformStyle: 'flat',
                     WebkitTransformStyle: 'flat',
                     borderRadius: Math.round(S * 0.19),
-                    background: 'linear-gradient(135deg, hsl(220 14% 98%) 0%, hsl(220 8% 90%) 100%)',
+                    // Flat fill instead of a gradient: these planes are only
+                    // ever glimpsed through the rounded corners, and a solid
+                    // colour is a far cheaper paint during rotation.
+                    background: 'hsl(220 10% 94%)',
+
                     pointerEvents: 'none',
                   }}
                 />

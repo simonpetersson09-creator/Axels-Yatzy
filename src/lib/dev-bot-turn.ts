@@ -108,7 +108,7 @@ export async function playBotTurn(
     // Use authoritative server state for the decision (the snapshot can be stale
     // if a roll failed or the realtime update arrived late).
     const [{ data: freshGame }, { data: freshPlayer }] = await Promise.all([
-      supabase.from('games').select('dice, current_player_index, status').eq('id', game.id).maybeSingle(),
+      supabase.from('games').select('dice, current_player_index, status, rolls_left').eq('id', game.id).maybeSingle(),
       supabase
         .from('game_players')
         .select('scores')

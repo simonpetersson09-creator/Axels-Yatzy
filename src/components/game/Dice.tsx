@@ -52,7 +52,7 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = Math.round(size * 0.19);
+  const radius = Math.round(size * 0.22);
   const pipSize = Math.round(size * 0.155);
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
@@ -434,21 +434,26 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
               {/* Solid inner core planes — fill the corner gaps between the six
                   rounded faces. Matte ivory (no bright rim) so they never read
                   as a light streak across the die. */}
-              {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].map(t => (
-                <div
-                  key={`core-${t}`}
-                  className="absolute"
-                  style={{
-                    top: -1, left: -1, width: S + 2, height: S + 2,
-                    transform: t,
-                    transformStyle: 'flat',
-                    WebkitTransformStyle: 'flat',
-                    borderRadius: Math.round(S * 0.14),
-                    background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
-                    pointerEvents: 'none',
-                  }}
-                />
-              ))}
+              {/* Three orthogonal core planes, plus offset copies pushed toward each
+                  face, so the rounded corners never let the background show through
+                  while the cube spins. */}
+              {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].flatMap(t =>
+                [0, S * 0.34, -S * 0.34].map(z => (
+                  <div
+                    key={`core-${t}-${z}`}
+                    className="absolute"
+                    style={{
+                      top: -1, left: -1, width: S + 2, height: S + 2,
+                      transform: `${t} translateZ(${z}px)`,
+                      transformStyle: 'flat',
+                      WebkitTransformStyle: 'flat',
+                      borderRadius: Math.round(S * 0.19),
+                      background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                )),
+              )}
               {faces.map(f => (
                 <div
                   key={f.v}

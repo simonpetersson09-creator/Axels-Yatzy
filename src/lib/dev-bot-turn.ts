@@ -51,6 +51,9 @@ export async function playBotTurn(
     let rollsLeft = game.rolls_left;
     let locks = game.locked_dice;
 
+    // Never `return` on a failed step — the bot must always finish its turn by
+    // picking a category, otherwise the match freezes on its turn.
+    rollLoop:
     while (rollsLeft > 0) {
       if (rollsLeft < 3) {
         const wanted = aiDecideLocks(dice, player.scores, rollsLeft);
@@ -59,7 +62,7 @@ export async function playBotTurn(
             const { error } = await supabase.functions.invoke('toggle-lock', {
               body: { game_id: game.id, session_id: sessionId, dice_index: i },
             });
-            if (error) { log(`Bot lås-fel: ${error.message}`); return; }
+            if (error) { log(`Bot lås-fel: ${error.message}`); break rollLoop; }
             await wait(BOT_LOCK_DELAY_MS);
           }
         }
@@ -92,7 +95,7 @@ export async function playBotTurn(
       });
       // Let the opponent's spin animation run to completion, exactly like the app.
       const [{ data, error }] = await Promise.all([rollPromise, wait(BOT_ROLL_ANIM_MS)]);
-      if (error) { log(`Bot roll-fel: ${error.message}`); return; }
+      if (error) { log(`Bot roll-fel: ${error.message}`); break rollLoop; }
 
       dice = (data?.dice as number[] | undefined) ?? optimisticDice;
       rollsLeft = typeof data?.rolls_left === 'number' ? data.rolls_left : optimisticRollsLeft;
@@ -101,13 +104,39 @@ export async function playBotTurn(
     }
 
     await wait(BOT_THINK_MS);
-    const category = aiPickCategory(dice, player.scores);
-    const { error } = await supabase.functions.invoke('submit-score', {
-      body: { game_id: game.id, session_id: sessionId, category_id: category },
-    });
-    if (error) log(`Bot poäng-fel: ${error.message}`);
-    else log(`Bot valde ${category}`);
+
+    // Use authoritative server state for the decision (the snapshot can be stale
+    // if a roll failed or the realtime update arrived late).
+    const [{ data: freshGame }, { data: freshPlayer }] = await Promise.all([
+      supabase.from('games').select('dice, current_player_index, status').eq('id', game.id).maybeSingle(),
+      supabase
+        .from('game_players')
+        .select('scores')
+        .eq('game_id', game.id)
+        .eq('session_id', sessionId)
+        .maybeSingle(),
+    ]);
+    if (freshGame && (freshGame.status !== 'playing' || freshGame.current_player_index !== player.player_index)) {
+      log('Bot: turen är inte längre botens — hoppar över poängval');
+      return;
+    }
+    const finalDice = (freshGame?.dice as number[] | undefined) ?? dice;
+    const finalScores = (freshPlayer?.scores as Record<string, number | null> | undefined) ?? player.scores;
+
+    const category = aiPickCategory(finalDice, finalScores);
+
+    // Retry: a single transient network/rate-limit hiccup must not freeze the match.
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      const { error } = await supabase.functions.invoke('submit-score', {
+        body: { game_id: game.id, session_id: sessionId, category_id: category },
+      });
+      if (!error) { log(`Bot valde ${category}`); return; }
+      log(`Bot poäng-fel (försök ${attempt}): ${error.message}`);
+      console.warn('[dev-bot] submit-score failed', error);
+      if (attempt < 3) await wait(600 * attempt);
+    }
   } finally {
     void supabase.removeChannel(channel);
   }
 }
+

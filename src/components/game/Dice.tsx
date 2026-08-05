@@ -362,26 +362,25 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
         )}
       </AnimatePresence>
 
-      {/* Locked ring — sits OUTSIDE the 3D die, so it can't be covered by the
-          face quads (which overlap the wrapper by 1px on each side). */}
+      {/* Soft gold halo behind the die when locked (no hard border box) */}
       <div
         aria-hidden
         style={{
           position: 'absolute',
           left: '50%',
-          top: -5,
-          width: size + 10,
-          height: size + 10,
-          marginLeft: -(size + 10) / 2,
-          borderRadius: radius + 5,
-          border: '2.5px solid hsl(36 82% 52%)',
-          boxShadow: '0 0 16px rgba(245,185,66,0.55), inset 0 0 10px rgba(245,185,66,0.25)',
+          top: -6,
+          width: size + 22,
+          height: size + 22,
+          marginLeft: -(size + 22) / 2,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(245,185,66,0.30) 0%, rgba(245,185,66,0.12) 45%, rgba(245,185,66,0) 70%)',
           opacity: locked ? 1 : 0,
-          transition: 'opacity 0.22s ease-out',
+          transition: 'opacity 0.3s ease-out',
           pointerEvents: 'none',
-          zIndex: 40,
+          zIndex: 0,
         }}
       />
+
 
       {/* Outer wrapper — shadow and glow + crisp 1px edge highlight */}
       <div
@@ -395,7 +394,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           // re-rasterize the 3D subtree every frame → visible flimmer.
           transform: 'translateZ(0)',
           boxShadow: locked
-            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 22px rgba(245,185,66,0.34), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.45)'
+            ? '0 0 0 2px hsl(40 88% 62%), 0 0 0 3.5px hsl(34 76% 44%), 0 0 14px rgba(245,185,66,0.30), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.45)'
             : '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 1px 0 rgba(255,255,255,0.28), inset 0 0 0 1px rgba(255,255,255,0.45)',
 
           // Keep the complete 3D subtree fully opaque at all times. Previously

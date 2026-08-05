@@ -52,9 +52,12 @@ const PIP_COORDS: Record<number, [number, number]> = {
 // rasterizes the rotating 3D subtree the source geometry (rounded body, bevel,
 // pips) stays smooth instead of showing the stair-stepped edges CSS boxes gave.
 // Everything is authored in a 0..100 viewBox and scaled to the face size.
-const DiceFace = memo(function DiceFace({ faceValue, size }: {
+const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
   faceValue: number;
   size: number;
+  /** When true a soft light band travels across the face, so the surface reads
+      as a lit object rather than a static image while the die spins. */
+  sweep?: boolean;
 }) {
   const radius = size * 0.22;
   const r = 22; // corner radius in viewBox units
@@ -139,6 +142,16 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           <stop offset="55%" stopColor="black" stopOpacity="0.12" />
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.35" />
         </linearGradient>
+
+        {/* Moving reflection band used while the die spins */}
+        <linearGradient id="dfSweep" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
+          <stop offset="50%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.42" />
+          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
+        </linearGradient>
+        <clipPath id="dfClip">
+          <rect x="0" y="0" width="100" height="100" rx={r} ry={r} />
+        </clipPath>
       </defs>
 
       {/* Base ivory body */}
@@ -189,6 +202,25 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           </g>
         );
       })}
+
+      {/* Travelling light band — reads as a real reflection moving over the
+          surface while the die tumbles. */}
+      {sweep && (
+        <g clipPath="url(#dfClip)">
+          <rect
+            x="-70" y="-30" width="46" height="160"
+            fill="url(#dfSweep)"
+            transform="rotate(18 50 50)"
+          >
+            <animate
+              attributeName="x"
+              from="-70" to="120"
+              dur="1.1s"
+              repeatCount="indefinite"
+            />
+          </rect>
+        </g>
+      )}
     </svg>
   );
 });
@@ -560,7 +592,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                     WebkitBackfaceVisibility: 'hidden',
                   }}
                 >
-                  <DiceFace faceValue={f.v} size={S} />
+                  <DiceFace faceValue={f.v} size={S} sweep={rolling && !locked} />
                 </div>
               ))}
             </motion.div>

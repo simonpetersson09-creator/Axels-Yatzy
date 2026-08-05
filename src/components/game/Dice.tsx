@@ -56,8 +56,8 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = size * 0.34;
-  const r = 42; // distinctly rounded silhouette without changing the die size
+  const radius = size * 0.22;
+  const r = 22; // corner radius in viewBox units
   const pipR = 7.75; // pip radius in viewBox units (matches previous 15.5% diameter)
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
@@ -188,7 +188,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 
   const half = size / 2;
-  const radius = Math.round(size * 0.34);
+  const radius = Math.round(size * 0.22);
   // Supersampling: build the cube at 2x and scale it down. WebKit rasterizes
   // a 3D subtree once at its layout size, so rendering at 2x removes the
   // pixelated/aliased edges and pips on retina screens. (3x was tested and
@@ -436,16 +436,13 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             WebKit then rasterizes the cube at its full 2x layout size. */}
         <div
           style={{
-            width: S,
-            height: S,
+            width: size,
+            height: size,
             pointerEvents: 'none',
             position: 'relative',
-            // No clipping here: clipping the rotating 3D assembly made the die
-            // look like it spins inside a hole.
-            overflow: 'visible',
             transform: `scale(${1 / SS})`,
             transformOrigin: '0 0',
-
+            isolation: 'isolate',
           }}
         >
           <div
@@ -499,45 +496,29 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 playLandSound();
               }}
             >
-              {/* Solid inner cube — fills the interior so the background never
-                  shows through the gaps between the six rounded faces during
-                  rotation. Six flat faces form a closed, slightly smaller cube
-                  that sits just behind the outer faces and is tinted to match
-                  the ivory body. */}
-              {[
-                // Keep every filler shell farther inside the visible faces. The
-                // previous near-full shell filled the outer corner cut-outs and
-                // made the assembled die read as a square cube.
-                { inset: Math.round(S * 0.045), rad: Math.round(S * 0.36) },
-                { inset: Math.round(S * 0.09), rad: Math.round(S * 0.31) },
-                { inset: Math.round(S * 0.15), rad: Math.round(S * 0.26) },
-              ].flatMap(({ inset, rad }) =>
-
-
-                [
-                  `translateZ(${S / 2 - inset}px)`,
-                  `rotateY(180deg) translateZ(${S / 2 - inset}px)`,
-                  `rotateY(-90deg) translateZ(${S / 2 - inset}px)`,
-                  `rotateY(90deg) translateZ(${S / 2 - inset}px)`,
-                  `rotateX(-90deg) translateZ(${S / 2 - inset}px)`,
-                  `rotateX(90deg) translateZ(${S / 2 - inset}px)`,
-                ].map((t, i) => (
+              {/* Solid inner core planes — fill the corner gaps between the six
+                  rounded faces. Matte ivory (no bright rim) so they never read
+                  as a light streak across the die. */}
+              {/* Three orthogonal core planes, plus offset copies pushed toward each
+                  face, so the rounded corners never let the background show through
+                  while the cube spins. */}
+              {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].flatMap(t =>
+                [0, S * 0.34, -S * 0.34].map(z => (
                   <div
-                    key={`core-${inset}-${i}`}
+                    key={`core-${t}-${z}`}
                     className="absolute"
                     style={{
-                      top: inset, left: inset, width: S - inset * 2, height: S - inset * 2,
-                      transform: t,
+                      top: -1, left: -1, width: S + 2, height: S + 2,
+                      transform: `${t} translateZ(${z}px)`,
                       transformStyle: 'flat',
                       WebkitTransformStyle: 'flat',
-                      borderRadius: rad,
-                      background: 'linear-gradient(135deg, #f2ecdf 0%, #e4dac5 100%)',
+                      borderRadius: Math.round(S * 0.19),
+                      background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
                       pointerEvents: 'none',
                     }}
                   />
-                ))
+                )),
               )}
-
               {faces.map(f => (
                 <div
                   key={f.v}

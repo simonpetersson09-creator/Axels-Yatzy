@@ -178,6 +178,18 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   const [showSparkle, setShowSparkle] = useState(false);
   // Bumped when a roll finishes — replays the landing bounce.
   const [landKey, setLandKey] = useState(0);
+  // Landing bounce is driven by imperative controls instead of a `key` remount:
+  // remounting re-created the whole 3D cube (15 layers) on every landing, which
+  // caused a visible stall on iOS.
+  const bounceControls = useAnimationControls();
+  useEffect(() => {
+    if (landKey === 0) return;
+    void bounceControls.start(
+      { y: [-7, 2, -1, 0], scaleY: [1, 0.9, 1.03, 1], scaleX: [1, 1.08, 0.98, 1] },
+      { duration: 0.36, times: [0, 0.35, 0.65, 1], ease: 'easeOut' },
+    );
+  }, [landKey, bounceControls]);
+
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
   // Turn hand-over: dice roll back to their neutral state instead of just

@@ -365,8 +365,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           boxShadow: locked
             ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)'
             : '0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)',
-          transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
-          opacity: canLock && !locked ? 0.5 : 1,
+          // Keep the complete 3D subtree fully opaque at all times. Previously
+          // every unlocked die faded from 1 → 0.5 at the exact frame rolling
+          // ended (because canLock changed). On WebKit that opacity transition
+          // also rebuilt the composited 3D layer, producing a strong flash.
+          transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
+          opacity: 1,
         }}
       >
         <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>

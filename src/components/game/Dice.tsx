@@ -142,6 +142,16 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
           <stop offset="55%" stopColor="black" stopOpacity="0.12" />
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.35" />
         </linearGradient>
+
+        {/* Moving reflection band used while the die spins */}
+        <linearGradient id="dfSweep" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
+          <stop offset="50%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.42" />
+          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
+        </linearGradient>
+        <clipPath id="dfClip">
+          <rect x="0" y="0" width="100" height="100" rx={r} ry={r} />
+        </clipPath>
       </defs>
 
       {/* Base ivory body */}

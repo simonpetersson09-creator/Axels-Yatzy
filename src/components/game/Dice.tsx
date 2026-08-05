@@ -433,7 +433,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       {/* Selection ring is rendered inside the die wrapper so it scales with it */}
 
 
-      {/* Outer wrapper — shadow and glow */}
+      {/* Outer wrapper — tactile die body, ground shadow and glow */}
       <div
         style={{
           width: size,
@@ -441,20 +441,19 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           borderRadius: radius,
           position: 'relative',
           zIndex: 1,
-          // Keep a stable compositor layer for the whole die. Toggling
-          // will-change / animating `filter` per roll forced Safari to
-          // re-rasterize the 3D subtree every frame → visible flimmer.
           // Locked dice grow slightly so the kept set reads instantly.
           transform: locked ? 'translateZ(0) scale(1.08)' : 'translateZ(0) scale(1)',
           transformOrigin: '50% 60%',
+          // Stacked shadows simulate the thickness of the die sitting on the
+          // felt, then a soft drop shadow anchors it to the surface.
           boxShadow: locked
-            ? '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 0 14px hsl(var(--game-gold) / 0.28)'
-            : '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24)',
-          // Keep the complete 3D subtree fully opaque at all times.
+            ? '1px 1px 0 rgba(0,0,0,0.06), 2px 2px 0 rgba(0,0,0,0.05), 3px 3px 0 rgba(0,0,0,0.04), 4px 4px 0 rgba(0,0,0,0.03), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 0 14px hsl(var(--game-gold) / 0.28)'
+            : '1px 1px 0 rgba(0,0,0,0.06), 2px 2px 0 rgba(0,0,0,0.05), 3px 3px 0 rgba(0,0,0,0.04), 4px 4px 0 rgba(0,0,0,0.03), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24)',
           transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1)',
           opacity: 1,
         }}
       >
+
         {/* Supersampled 3D stage: laid out at 2x, scaled to 1x for crisp edges.
             The downscale lives on this outer, non-3D wrapper so the perspective
             container itself is never inside an animating/scaled 3D chain —

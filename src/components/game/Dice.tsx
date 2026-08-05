@@ -178,10 +178,14 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
     bounceY: -4 - Math.random() * 4,
   });
   const rollVarRef = useRef(makeRollVar());
-  const [rollVar, setRollVar] = useState(rollVarRef.current);
 
+  const dur = ANIM_DURATION + rollVarRef.current.dt;
 
-  const dur = ANIM_DURATION + rollVar.dt;
+  // Landing timer kept in a ref so a parent flipping `rolling` back to false
+  // early (fast server response / grace period) can't cancel it and leave
+  // isAnimating stuck on true — that made every later rotation glide 1.5s.
+  const landTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (landTimerRef.current) clearTimeout(landTimerRef.current); }, []);
 
   useEffect(() => {
     if (rolling && !locked && !rollingRef.current) {
@@ -190,7 +194,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       // re-randomization mid-animation that caused a visible second "settle" spin.
       const fresh = makeRollVar();
       rollVarRef.current = fresh;
-      setRollVar(fresh);
       const thisDur = ANIM_DURATION + fresh.dt;
       setIsAnimating(true);
       const base = valueToRotation[displayValue];
@@ -201,16 +204,17 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
         rotateY: cur.rotateY + fresh.spinsY + mod(base.rotateY - cur.rotateY),
       };
       rotationRef.current = newTarget;
-      setSpinRotation(newTarget);
+      setSpinRotation({ ...newTarget, snap: false });
       playRollSound(thisDur);
-      const t = setTimeout(() => {
+      if (landTimerRef.current) clearTimeout(landTimerRef.current);
+      landTimerRef.current = setTimeout(() => {
+        landTimerRef.current = null;
         setIsAnimating(false);
         rollingRef.current = false;
         playLandSound();
       }, thisDur * 1000);
-      return () => clearTimeout(t);
-    } else if (!rolling) {
-      rollingRef.current = false;
+      return;
+    } else if (!rolling && !rollingRef.current) {
       const base = valueToRotation[displayValue];
       const cur = rotationRef.current;
       const mod = (n: number) => ((n % 360) + 360) % 360;
@@ -222,8 +226,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           rotateY: cur.rotateY + deltaY,
         };
         rotationRef.current = snapTarget;
-        snapNextRef.current = true;
-        setSpinRotation(snapTarget);
+        setSpinRotation({ ...snapTarget, snap: true });
       }
     }
     // Intentionally do not depend on displayValue: the roll starts once per
@@ -232,6 +235,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
     // displayValue can start a second full spin after the dice already landed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rolling, locked]);
+
 
   useEffect(() => {
     if (locked && !prevLockedRef.current) {

@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
+import { rollSingleDie } from '@/lib/yatzy-scoring';
 
 /**
  * Dev-only: plays one bot turn using the EXACT same path as the real app

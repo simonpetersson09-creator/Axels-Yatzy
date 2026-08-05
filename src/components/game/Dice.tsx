@@ -96,10 +96,11 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           <stop offset="100%" stopColor="#fff6e1" stopOpacity="0" />
         </radialGradient>
         {/* bottom-right ambient occlusion */}
-        <radialGradient id="dfAo" cx="0.92" cy="0.94" r="0.68">
-          <stop offset="0%" stopColor="#60523e" stopOpacity="0.34" />
+        <radialGradient id="dfAo" cx="0.92" cy="0.94" r="0.9">
+          <stop offset="0%" stopColor="#60523e" stopOpacity="0.14" />
           <stop offset="100%" stopColor="#60523e" stopOpacity="0" />
         </radialGradient>
+
         {/* glossy sheen across the upper part of the face */}
         <linearGradient id="dfSheen" x1="0.25" y1="0" x2="0.75" y2="1">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />

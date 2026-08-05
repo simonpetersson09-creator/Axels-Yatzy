@@ -14,7 +14,7 @@ interface DiceAreaProps {
 
 export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock, compact = false, className }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
-  const diceSize = compact ? 42 : 47;
+  const diceSize = compact ? 46 : 52;
 
   // No organic tilt — dice stay upright for a cleaner, more controlled look.
   const tilts = [0, 0, 0, 0, 0];

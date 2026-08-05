@@ -109,48 +109,13 @@ export default function DevFriendPage() {
     if (g.current_player_index !== gp.player_index) { push('Bot: inte botens tur.'); return; }
     botBusyRef.current = true;
     try {
-      let dice = g.dice;
-      let rollsLeft = g.rolls_left;
-      let locks = g.locked_dice;
-
-      while (rollsLeft > 0) {
-        if (rollsLeft < 3) {
-          const want = aiDecideLocks(dice, gp.scores, rollsLeft);
-          for (let i = 0; i < 5; i++) {
-            if (want[i] !== locks[i]) {
-              await supabase.rpc('perform_toggle_lock', {
-                p_game_id: g.id, p_session_id: ghostSession, p_dice_index: i,
-              });
-            }
-          }
-          locks = want;
-        }
-        // Skicka alltid p_client_dice — annars blir funktionsanropet tvetydigt (overload).
-        const clientDice = Array.from({ length: 5 }, () => 1 + Math.floor(Math.random() * 6));
-        const { data, error } = await supabase.rpc('perform_roll_dice', {
-          p_game_id: g.id, p_session_id: ghostSession, p_client_dice: clientDice,
-        });
-        if (error) { push(`Bot roll-fel: ${error.message}`); return; }
-        const res = data as { success?: boolean; error?: string; dice?: number[]; rolls_left?: number };
-        if (!res?.success) { push(`Bot roll nekad: ${res?.error}`); return; }
-        dice = res.dice ?? dice;
-        rollsLeft = res.rolls_left ?? rollsLeft - 1;
-        push(`Bot kastade: ${dice.join(' ')} (${rollsLeft} kast kvar)`);
-        await new Promise((r) => setTimeout(r, 500));
-      }
-
-      const cat = aiPickCategory(dice, gp.scores);
-      const { data, error } = await supabase.rpc('perform_submit_score', {
-        p_game_id: g.id, p_session_id: ghostSession, p_category_id: cat,
-      });
-      if (error) push(`Bot poäng-fel: ${error.message}`);
-      else if (!(data as { success?: boolean })?.success) push(`Bot poäng nekad: ${(data as { error?: string })?.error}`);
-      else push(`Bot valde ${cat}`);
+      await playBotTurn(g, gp, ghostSession, push);
     } catch (e) {
       push(`Bot kraschade: ${(e as Error).message}`);
     } finally {
       botBusyRef.current = false;
     }
+
   }, [ghostSession, push]);
 
   // Stabil loop: startas en gång och startas inte om av polling-uppdateringar.

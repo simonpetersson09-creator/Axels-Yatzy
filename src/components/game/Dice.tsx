@@ -626,7 +626,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             zIndex: 5,
           }}
         />
-      </div>
+        </div>
+      </motion.div>
 
 
 

@@ -39,14 +39,21 @@ const valueToRotation: Record<number, { rotateX: number; rotateY: number }> = {
 const ANIM_DURATION = 1.5;
 
 // Pure CSS ivory die face with deep black pips — premium 3D look, no pre-rendered art.
+// Pips are absolutely positioned on a percentage grid so every pip is pixel-identical
+// (a CSS grid with `1fr` tracks rounds each cell differently and made pips look
+// like they had slightly different sizes/offsets).
+const PIP_COORDS: Record<number, [number, number]> = {
+  0: [24, 24], 1: [50, 24], 2: [76, 24],
+  3: [24, 50], 4: [50, 50], 5: [76, 50],
+  6: [24, 76], 7: [50, 76], 8: [76, 76],
+};
+
 const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = Math.round(size * 0.2);
-
-  const pipSize = Math.max(6, Math.round(size * 0.16));
-  const pad = Math.round(size * 0.15);
+  const radius = Math.round(size * 0.19);
+  const pipSize = Math.round(size * 0.155);
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
     <div
@@ -59,23 +66,21 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         WebkitBackfaceVisibility: 'hidden',
         background: [
           // bright top-left specular highlight
-          'radial-gradient(circle at 20% 16%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 42%)',
+          'radial-gradient(circle at 22% 18%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 46%)',
           // warm bounce light along the bottom-left edge
-          'radial-gradient(circle at 12% 92%, rgba(255,246,225,0.75) 0%, rgba(255,246,225,0) 40%)',
+          'radial-gradient(circle at 12% 92%, rgba(255,246,225,0.6) 0%, rgba(255,246,225,0) 42%)',
           // bottom-right ambient occlusion / shaded face
-          'radial-gradient(circle at 92% 94%, rgba(96,82,62,0.42) 0%, rgba(96,82,62,0) 66%)',
+          'radial-gradient(circle at 92% 94%, rgba(96,82,62,0.34) 0%, rgba(96,82,62,0) 68%)',
           // ivory body with directional gradient (lit from upper-left)
-          'linear-gradient(135deg, #fffefc 0%, #fbf7ee 38%, #efe7d7 72%, #e2d8c4 100%)',
+          'linear-gradient(135deg, #fffefb 0%, #fbf7ef 40%, #f0e9db 74%, #e5dcc9 100%)',
         ].join(', '),
         boxShadow: [
-          // bright rounded-edge highlight (top-left)
-          'inset 4px 4px 6px rgba(255,255,255,1)',
-          // deeper rounded-edge shadow (bottom-right) — stronger 3D volume
-          'inset -4px -4.5px 7px rgba(64,54,42,0.4)',
-          // thin warm contact line at the very bottom edge
-          'inset 0 -1px 0 rgba(120,104,80,0.35)',
-          // crisp white rim keeps corners bright
-          'inset 0 0 0 1.5px rgba(255,255,255,0.95)',
+          // soft rounded-edge highlight (top-left)
+          'inset 3px 3px 6px rgba(255,255,255,0.9)',
+          // rounded-edge shadow (bottom-right) — 3D volume
+          'inset -3px -3.5px 7px rgba(64,54,42,0.3)',
+          // thin bevel rim
+          'inset 0 0 0 1px rgba(255,255,255,0.7)',
         ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',
@@ -84,7 +89,6 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         // forces WebKit to re-rasterize the face on every frame (flimmer).
       }}
     >
-
       {/* Glossy top sheen — subtle */}
       <div
         style={{
@@ -92,76 +96,46 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           inset: 0,
           borderRadius: radius,
           background:
-            'linear-gradient(152deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0) 46%)',
-          pointerEvents: 'none',
-        }}
-      />
-      {/* Beveled edge ring — adds carved-corner depth without any CSS filter */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: radius,
-          boxShadow: [
-            'inset 0 0 0 1px rgba(255,255,255,0.85)',
-            'inset 0 0 9px rgba(120,104,80,0.16)',
-          ].join(', '),
+            'linear-gradient(152deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 30%, rgba(255,255,255,0) 48%)',
           pointerEvents: 'none',
         }}
       />
 
-      <div
-        style={{
-          position: 'absolute',
-          inset: pad,
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gridTemplateRows: 'repeat(3, 1fr)',
-        }}
-      >
-        {Array.from({ length: 9 }).map((_, i) => {
-          const show = positions.includes(i);
-          return (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {show && (
-                <div
-                  style={{
-                    width: pipSize,
-                    height: pipSize,
-                    borderRadius: '50%',
-                    // Deep drilled pip with a faint specular kick at bottom-right
-                    background:
-                      'radial-gradient(circle at 68% 74%, #2a2620 0%, #0b0a08 42%, #000 100%)',
-                    boxShadow: [
-                      // strong recess shadow (top-left dark rim sells the depth)
-                      'inset 2px 2.5px 3.5px rgba(0,0,0,0.95)',
-                      // bottom-right highlight rim — light bouncing off recess edge
-                      'inset -1px -1.5px 2px rgba(255,255,255,0.3)',
-                      // soft cast shadow on die surface around the pip
-                      '0 1.5px 2.5px rgba(0,0,0,0.42)',
-                      // bright rim above the hole = carved, not painted
-                      '0 -0.5px 0 rgba(255,255,255,0.75)',
-                      // tiny outer ring for contact definition
-                      '0 0 0 0.5px rgba(0,0,0,0.22)',
-                    ].join(', '),
-
-                  }}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
+      {positions.map(i => {
+        const [cx, cy] = PIP_COORDS[i];
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: `${cx}%`,
+              top: `${cy}%`,
+              width: pipSize,
+              height: pipSize,
+              marginLeft: -pipSize / 2,
+              marginTop: -pipSize / 2,
+              borderRadius: '50%',
+              // Deep drilled pip with a faint specular kick at bottom-right
+              background:
+                'radial-gradient(circle at 66% 72%, #2b2721 0%, #0c0b09 44%, #000 100%)',
+              boxShadow: [
+                // recess shadow (top-left dark rim sells the depth)
+                `inset ${size * 0.02}px ${size * 0.024}px ${size * 0.035}px rgba(0,0,0,0.9)`,
+                // bottom-right highlight rim — light bouncing off recess edge
+                `inset -${size * 0.01}px -${size * 0.014}px ${size * 0.02}px rgba(255,255,255,0.26)`,
+                // soft cast shadow on die surface around the pip
+                `0 ${size * 0.014}px ${size * 0.024}px rgba(0,0,0,0.35)`,
+                // bright rim above the hole = carved, not painted
+                `0 -${size * 0.006}px 0 rgba(255,255,255,0.6)`,
+              ].join(', '),
+            }}
+          />
+        );
+      })}
     </div>
   );
 });
+
 
 
 export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56, hasRolled = true }: DiceProps) {

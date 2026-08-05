@@ -441,16 +441,11 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
       {/* Landing bounce — the whole die body drops, squashes against the felt
           and settles back when a roll finishes. */}
       <motion.div
-        key={landKey}
         style={{ position: 'relative', zIndex: 1, transformOrigin: '50% 100%' }}
         initial={false}
-        animate={
-          landKey > 0
-            ? { y: [-7, 2, -1, 0], scaleY: [1, 0.9, 1.03, 1], scaleX: [1, 1.08, 0.98, 1] }
-            : { y: 0, scaleY: 1, scaleX: 1 }
-        }
-        transition={{ duration: 0.36, times: [0, 0.35, 0.65, 1], ease: 'easeOut' }}
+        animate={bounceControls}
       >
+
       {/* Outer wrapper — tactile die body, ground shadow and glow */}
       <div
         style={{

@@ -210,7 +210,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   // a 3D subtree once at its layout size, so rendering at 2x removes the
   // pixelated/aliased edges and pips on retina screens. (3x was tested and
   // looked worse — the extra layer size made WebKit downgrade rasterization.)
-  const SS = 2;
+  const SS = 1.5;
   const S = size * SS;
   const halfS = S / 2;
   const faces = useMemo(() => [

@@ -154,15 +154,22 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 
   const half = size / 2;
-  const radius = Math.round(size * 0.28);
+  const radius = Math.round(size * 0.22);
+  // Supersampling: build the cube at 2x and scale it down. WebKit rasterizes
+  // a 3D subtree once at its layout size, so rendering at 2x removes the
+  // pixelated/aliased edges and pips on retina screens.
+  const SS = 2;
+  const S = size * SS;
+  const halfS = S / 2;
   const faces = useMemo(() => [
-    { v: 1, t: `translateZ(${half}px)` },
-    { v: 6, t: `rotateY(180deg) translateZ(${half}px)` },
-    { v: 2, t: `rotateY(-90deg) translateZ(${half}px)` },
-    { v: 5, t: `rotateY(90deg) translateZ(${half}px)` },
-    { v: 3, t: `rotateX(-90deg) translateZ(${half}px)` },
-    { v: 4, t: `rotateX(90deg) translateZ(${half}px)` },
-  ], [half]);
+    { v: 1, t: `translateZ(${halfS}px)` },
+    { v: 6, t: `rotateY(180deg) translateZ(${halfS}px)` },
+    { v: 2, t: `rotateY(-90deg) translateZ(${halfS}px)` },
+    { v: 5, t: `rotateY(90deg) translateZ(${halfS}px)` },
+    { v: 3, t: `rotateX(-90deg) translateZ(${halfS}px)` },
+    { v: 4, t: `rotateX(90deg) translateZ(${halfS}px)` },
+  ], [halfS]);
+
 
   const makeRollVar = () => ({
     // Premium: 2-3 spins per axis, gentle deceleration. No wild spin.

@@ -30,12 +30,13 @@ export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock,
           return (
             <motion.div
               key={index}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: offsetX }}
+              initial={{ opacity: 0, x: 20, rotate: tilt }}
+              animate={{ opacity: 1, x: offsetX, rotate: tilt }}
               transition={{ delay: index * 0.07, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="flex items-center justify-center"
-              style={{ transform: `rotate(${tilt}deg)`, transformOrigin: 'center' }}
+              style={{ transformOrigin: 'center' }}
             >
+
               <Dice
                 value={value}
                 locked={lockedDice[index]}

@@ -331,13 +331,21 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       type="button"
       onClick={handleToggle}
       disabled={!canLock}
-      aria-label="Toggle dice lock"
+      aria-pressed={locked}
+      aria-label={locked ? 'Lås upp tärning' : 'Lås tärning'}
       className={cn(
         'relative flex flex-col items-center overflow-visible touch-manipulation p-0 m-0 bg-transparent border-0 outline-none',
         canLock ? 'cursor-pointer' : 'cursor-default',
       )}
       style={{ width: size, height: size + 10, WebkitTapHighlightColor: 'transparent' }}
     >
+      {/* Generous invisible hit area — the die grows to 108% when locked and
+          sits inside a tilted wrapper, so taps near the edge used to miss. */}
+      <span
+        aria-hidden
+        style={{ position: 'absolute', left: -10, right: -10, top: -10, bottom: -6, zIndex: 60 }}
+      />
+
       {/* Lock sparkles */}
       <AnimatePresence>
         {showSparkle && sparkles.map((s, i) => (
@@ -458,12 +466,17 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 // Constant hint — toggling it mid-roll caused a layer swap flash.
                 willChange: 'transform',
                 backfaceVisibility: 'visible',
+                // Push the cube back by half its depth so the FRONT face sits at
+                // z = 0. Without this, perspective magnifies the visible face by
+                // ~8%, which made the die spill outside the gold selection ring.
+                z: -halfS,
               }}
 
               animate={{
                 rotateX: spinRotation.rotateX,
                 rotateY: spinRotation.rotateY,
               }}
+
               transition={
                 isAnimating
                   ? {
@@ -530,18 +543,20 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           </div>
         </div>
 
-        {/* Selection ring — a small, even breathing space keeps every rounded
-            die edge inside the frame, including WebKit's anti-aliased pixels. */}
+        {/* Selection ring — now that the front face sits exactly at z = 0 the
+            die measures exactly `size`, so a tight, even 3px gap frames it
+            perfectly on all four sides. */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
-            top: -4,
-            left: -4,
-            right: -4,
-            bottom: -4,
-            borderRadius: radius + 4,
-            border: '2px solid hsl(var(--game-gold))',
+            top: -3,
+            left: -3,
+            right: -3,
+            bottom: -3,
+            borderRadius: radius + 3,
+            border: '1.5px solid hsl(var(--game-gold))',
+
             boxShadow: locked
               ? 'inset 0 0 0 1px hsl(var(--game-gold-dark) / 0.28), 0 0 9px hsl(var(--game-gold) / 0.42)'
               : 'none',

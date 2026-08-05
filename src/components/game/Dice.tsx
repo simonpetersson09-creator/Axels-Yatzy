@@ -389,6 +389,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   return (
     <button
       type="button"
+      ref={ref}
       onClick={handleToggle}
       disabled={!canLock}
       aria-pressed={locked}

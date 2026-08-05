@@ -56,8 +56,8 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = size * 0.22;
-  const r = 22; // corner radius in viewBox units
+  const radius = size * 0.28;
+  const r = 28; // corner radius in viewBox units
   const pipR = 7.75; // pip radius in viewBox units (matches previous 15.5% diameter)
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
@@ -188,7 +188,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 
   const half = size / 2;
-  const radius = Math.round(size * 0.22);
+  const radius = Math.round(size * 0.28);
   // Supersampling: build the cube at 2x and scale it down. WebKit rasterizes
   // a 3D subtree once at its layout size, so rendering at 2x removes the
   // pixelated/aliased edges and pips on retina screens. (3x was tested and
@@ -502,21 +502,22 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                   that sits just behind the outer faces and is tinted to match
                   the ivory body. */}
               {[
-                { t: `translateZ(${halfS - 2}px)` },
-                { t: `rotateY(180deg) translateZ(${halfS - 2}px)` },
-                { t: `rotateY(-90deg) translateZ(${halfS - 2}px)` },
-                { t: `rotateY(90deg) translateZ(${halfS - 2}px)` },
-                { t: `rotateX(-90deg) translateZ(${halfS - 2}px)` },
-                { t: `rotateX(90deg) translateZ(${halfS - 2}px)` },
+                { t: `translateZ(${halfS - 10}px)` },
+                { t: `rotateY(180deg) translateZ(${halfS - 10}px)` },
+                { t: `rotateY(-90deg) translateZ(${halfS - 10}px)` },
+                { t: `rotateY(90deg) translateZ(${halfS - 10}px)` },
+                { t: `rotateX(-90deg) translateZ(${halfS - 10}px)` },
+                { t: `rotateX(90deg) translateZ(${halfS - 10}px)` },
               ].map((f, i) => (
                 <div
                   key={`core-${i}`}
                   className="absolute"
                   style={{
-                    top: 2, left: 2, width: S - 4, height: S - 4,
+                    top: 10, left: 10, width: S - 20, height: S - 20,
                     transform: f.t,
                     transformStyle: 'flat',
                     WebkitTransformStyle: 'flat',
+                    borderRadius: Math.round(S * 0.20),
                     background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
                     pointerEvents: 'none',
                   }}

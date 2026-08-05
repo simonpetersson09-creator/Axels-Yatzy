@@ -192,6 +192,25 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
           </g>
         );
       })}
+
+      {/* Travelling light band — reads as a real reflection moving over the
+          surface while the die tumbles. */}
+      {sweep && (
+        <g clipPath="url(#dfClip)">
+          <rect
+            x="-70" y="-30" width="46" height="160"
+            fill="url(#dfSweep)"
+            transform="rotate(18 50 50)"
+          >
+            <animate
+              attributeName="x"
+              from="-70" to="120"
+              dur="1.1s"
+              repeatCount="indefinite"
+            />
+          </rect>
+        </g>
+      )}
     </svg>
   );
 });

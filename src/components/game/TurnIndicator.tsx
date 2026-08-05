@@ -39,7 +39,7 @@ export function TurnIndicator({
   const isLeft = placement === 'left';
 
   const wrapperStyle: React.CSSProperties = isLeft
-    ? { right: 'calc(100% + 10px)', top: '50%', transform: 'translateY(calc(-50% - 2px))' }
+    ? { right: 'calc(100% + 10px)', top: '50%', transform: 'translateY(calc(-50% - 16px))' }
     : { bottom: 'calc(100% + 8px)' };
 
   return (

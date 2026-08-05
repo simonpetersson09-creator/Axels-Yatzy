@@ -180,12 +180,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
   const dur = ANIM_DURATION + rollVarRef.current.dt;
 
-  // Landing timer kept in a ref so a parent flipping `rolling` back to false
-  // early (fast server response / grace period) can't cancel it and leave
-  // isAnimating stuck on true — that made every later rotation glide 1.5s.
-  const landTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => () => { if (landTimerRef.current) clearTimeout(landTimerRef.current); }, []);
-
   useEffect(() => {
     if (rolling && !locked && !rollingRef.current) {
       rollingRef.current = true;
@@ -205,13 +199,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       rotationRef.current = newTarget;
       setSpinRotation({ ...newTarget, snap: false });
       playRollSound(thisDur);
-      if (landTimerRef.current) clearTimeout(landTimerRef.current);
-      landTimerRef.current = setTimeout(() => {
-        landTimerRef.current = null;
-        setIsAnimating(false);
-        rollingRef.current = false;
-        playLandSound();
-      }, thisDur * 1000);
       return;
     } else if (!rolling && !rollingRef.current) {
       const base = valueToRotation[displayValue];
@@ -398,6 +385,16 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                   ? { duration: 0 }
                   : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
             }
+            onAnimationComplete={() => {
+              // End the roll from the renderer's actual final frame rather
+              // than a parallel 1500 ms JS timer. Safari can commit that timer
+              // one frame before Framer Motion finishes, which swaps transition
+              // modes mid-frame and shows as a small flash at landing.
+              if (!rollingRef.current) return;
+              rollingRef.current = false;
+              setIsAnimating(false);
+              playLandSound();
+            }}
 
           >
             {faces.map(f => (

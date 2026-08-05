@@ -472,7 +472,29 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             </motion.div>
           </div>
         </div>
+
+        {/* Selection ring — hugs the die exactly and scales with it */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: -2,
+            left: -2,
+            right: -2,
+            bottom: -2,
+            borderRadius: radius + 2,
+            border: '1.5px solid hsl(var(--game-gold))',
+            boxShadow: locked
+              ? '0 0 0 1px hsl(var(--game-gold-dark) / 0.45), 0 0 10px hsl(var(--game-gold) / 0.5)'
+              : 'none',
+            opacity: locked ? 1 : 0,
+            transition: 'opacity 0.22s ease-out',
+            pointerEvents: 'none',
+            zIndex: 5,
+          }}
+        />
       </div>
+
 
 
       {/* Ground shadow — pre-softened radial gradient, without CSS blur.

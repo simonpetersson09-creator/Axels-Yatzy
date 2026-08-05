@@ -531,6 +531,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
           >
             <motion.div
               className="relative"
+              initial={false}
               style={{
                 width: S,
                 height: S,

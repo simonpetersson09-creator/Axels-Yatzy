@@ -552,11 +552,15 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
 
               onAnimationComplete={() => {
                 if (resettingRef.current) {
+                  // The pre-alignment snap (duration 0) also fires this — the
+                  // actual rewind hasn't started yet, so keep the flag.
+                  if (spinRotation.snap) return;
                   // Turn hand-over rewind finished — no landing bounce/sound.
                   resettingRef.current = false;
                   setIsResetting(false);
                   return;
                 }
+
                 // End the roll from the renderer's actual final frame rather
                 // than a parallel 1500 ms JS timer.
                 if (!rollingRef.current) return;

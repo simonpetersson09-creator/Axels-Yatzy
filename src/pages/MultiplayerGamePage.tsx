@@ -587,7 +587,7 @@ export default function MultiplayerGamePage() {
 
             {/* Quick Chat */}
             {gameId && (
-              <div className="flex justify-center mt-2">
+              <div className="flex justify-center mt-7">
                 <QuickChat
                   gameId={gameId}
                   myPlayerIndex={myPlayerIndex}

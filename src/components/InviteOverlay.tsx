@@ -174,8 +174,11 @@ export default function InviteOverlay() {
             toast.success(t('invAccepted', { name: row.to_name }));
             navigate(`/multiplayer-game?gameId=${row.game_id}`);
           }
-        } else if (row.status === 'declined') {
-          toast.message(t('invDeclinedByOther', { name: row.to_name }));
+        } else {
+          markOutboundHandled(key);
+          if (row.status === 'declined') {
+            toast.message(t('invDeclinedByOther', { name: row.to_name }));
+          }
         }
       }
 

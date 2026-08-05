@@ -657,11 +657,19 @@ export function useMultiplayerGame() {
     }
 
     // Fire RPC in parallel — we don't await it for the animation timing.
-    // Server writes the client_dice we provided (validated 1..6) so the
-    // authoritative values match what's already on screen; no retarget.
-    const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {
-      body: { game_id: latest.gameId, session_id: sessionId, client_dice: optimisticDice },
-    })).then(({ data, error }) => {
+    // It waits for the pending lock RPCs first so the server sees the same
+    // locks we animated with. Server writes the client_dice we provided
+    // (validated 1..6) so the authoritative values match what's on screen.
+    const rpcPromise = locksPromise.then(async (locksConfirmed) => {
+      if (!locksConfirmed) {
+        // Server lock state is unknown — resync instead of rolling.
+        refreshGameStateRef.current?.(latest.gameId!);
+        return { data: null, error: new Error('lock-unconfirmed') } as { data: any; error: any };
+      }
+      return withTimeout(supabase.functions.invoke('roll-dice', {
+        body: { game_id: latest.gameId, session_id: sessionId, client_dice: optimisticDice },
+      }));
+    }).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
       // Only buffer while the roll is still in flight. If the grace period
       // already released the UI, writing here would flush later and make the

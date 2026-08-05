@@ -81,72 +81,71 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
       }}
     >
       <defs>
-        {/* Warm ivory body, lit from the upper-left with a soft falloff */}
+        {/* Cool porcelain body: very soft, diffuse shading with no harsh warm tones */}
         <linearGradient id="dfBody" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="hsl(var(--dice-ivory))" />
-          <stop offset="35%" stopColor="hsl(var(--dice-ivory-mid))" />
-          <stop offset="70%" stopColor="hsl(var(--dice-ivory-shade))" />
-          <stop offset="100%" stopColor="hsl(var(--dice-ivory-shade) / 0.92)" />
+          <stop offset="40%" stopColor="hsl(var(--dice-ivory-mid))" />
+          <stop offset="100%" stopColor="hsl(var(--dice-ivory-shade))" />
         </linearGradient>
 
-        {/* Top-left specular highlight */}
-        <radialGradient id="dfSpec" cx="0.28" cy="0.22" r="0.42">
-          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.85" />
+        {/* Matte porcelain: almost no specular hotspot, just a faint cool glow */}
+        <radialGradient id="dfSpec" cx="0.30" cy="0.24" r="0.48">
+          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.35" />
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </radialGradient>
 
-        {/* Soft ambient occlusion in the bottom-right corner */}
+        {/* Soft ambient occlusion for porcelain — cool and barely visible */}
         <radialGradient id="dfAo" cx="0.88" cy="0.90" r="0.85">
-          <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.18" />
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.10" />
           <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
         </radialGradient>
 
-        {/* Surface sheen: a soft reflection across the top of the face */}
+        {/* Surface sheen: very subtle on matte porcelain */}
         <linearGradient id="dfSheen" x1="0.20" y1="0" x2="0.80" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.55" />
-          <stop offset="25%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.12" />
-          <stop offset="48%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
+          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.25" />
+          <stop offset="35%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </linearGradient>
 
-        {/* Top/left edge highlight (bevel) */}
+        {/* Soft porcelain bevel — light edge is gentle, not a bright streak */}
         <linearGradient id="dfBevelLight" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.95" />
-          <stop offset="50%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.25" />
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.70" />
+          <stop offset="50%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.15" />
           <stop offset="100%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
         </linearGradient>
 
-        {/* Bottom/right edge shadow (bevel) */}
+        {/* Soft bevel shadow for matte porcelain */}
         <linearGradient id="dfBevelDark" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
-          <stop offset="55%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.32" />
+          <stop offset="60%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.22" />
         </linearGradient>
 
-        {/* Drilled pip: a deep, dark well */}
-        <radialGradient id="dfPip" cx="0.65" cy="0.72" r="0.80">
+        {/* Pip: soft matte dark hole, less dramatic than ivory */}
+        <radialGradient id="dfPip" cx="0.60" cy="0.68" r="0.85">
           <stop offset="0%" stopColor="hsl(var(--dice-pip))" />
-          <stop offset="42%" stopColor="hsl(var(--dice-pip))" />
+          <stop offset="50%" stopColor="hsl(var(--dice-pip))" />
           <stop offset="100%" stopColor="hsl(var(--dice-pip-rim))" />
         </radialGradient>
 
-        {/* Pip inner shadow: creates the recessed-carved look */}
-        <radialGradient id="dfPipInner" cx="0.35" cy="0.35" r="0.65">
-          <stop offset="0%" stopColor="black" stopOpacity="0.55" />
-          <stop offset="60%" stopColor="black" stopOpacity="0.25" />
+        {/* Pip inner shadow: shallow, matte indentation */}
+        <radialGradient id="dfPipInner" cx="0.38" cy="0.38" r="0.65">
+          <stop offset="0%" stopColor="black" stopOpacity="0.32" />
+          <stop offset="60%" stopColor="black" stopOpacity="0.12" />
           <stop offset="100%" stopColor="black" stopOpacity="0" />
         </radialGradient>
 
-        {/* Pip rim light at the bottom-right of the hole */}
+        {/* Pip rim light: faint porcelain reflection at the hole edge */}
         <linearGradient id="dfPipRim" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="black" stopOpacity="0.70" />
-          <stop offset="55%" stopColor="black" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.35" />
+          <stop offset="0%" stopColor="black" stopOpacity="0.55" />
+          <stop offset="60%" stopColor="black" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.22" />
         </linearGradient>
 
-        {/* Moving reflection band used while the die spins */}
+        {/* Moving reflection band: much softer on matte porcelain */}
         <linearGradient id="dfSweep" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-          <stop offset="50%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.42" />
+          <stop offset="50%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.20" />
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </linearGradient>
         <clipPath id="dfClip">
@@ -586,7 +585,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                       transformStyle: 'flat',
                       WebkitTransformStyle: 'flat',
                       borderRadius: Math.round(S * 0.19),
-                      background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
+                      background: 'linear-gradient(135deg, hsl(220 14% 98%) 0%, hsl(220 8% 90%) 100%)',
                       pointerEvents: 'none',
                     }}
                   />

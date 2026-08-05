@@ -502,21 +502,22 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                   that sits just behind the outer faces and is tinted to match
                   the ivory body. */}
               {[
-                { t: `translateZ(${halfS - 2}px)` },
-                { t: `rotateY(180deg) translateZ(${halfS - 2}px)` },
-                { t: `rotateY(-90deg) translateZ(${halfS - 2}px)` },
-                { t: `rotateY(90deg) translateZ(${halfS - 2}px)` },
-                { t: `rotateX(-90deg) translateZ(${halfS - 2}px)` },
-                { t: `rotateX(90deg) translateZ(${halfS - 2}px)` },
+                { t: `translateZ(${halfS - 10}px)` },
+                { t: `rotateY(180deg) translateZ(${halfS - 10}px)` },
+                { t: `rotateY(-90deg) translateZ(${halfS - 10}px)` },
+                { t: `rotateY(90deg) translateZ(${halfS - 10}px)` },
+                { t: `rotateX(-90deg) translateZ(${halfS - 10}px)` },
+                { t: `rotateX(90deg) translateZ(${halfS - 10}px)` },
               ].map((f, i) => (
                 <div
                   key={`core-${i}`}
                   className="absolute"
                   style={{
-                    top: 2, left: 2, width: S - 4, height: S - 4,
+                    top: 10, left: 10, width: S - 20, height: S - 20,
                     transform: f.t,
                     transformStyle: 'flat',
                     WebkitTransformStyle: 'flat',
+                    borderRadius: Math.round(S * 0.20),
                     background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
                     pointerEvents: 'none',
                   }}

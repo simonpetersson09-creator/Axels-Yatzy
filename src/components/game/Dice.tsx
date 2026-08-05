@@ -250,6 +250,10 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   const resettingRef = useRef(false);
   const prevHasRolledRef = useRef(hasRolled);
   const rotationRef = useRef(valueToRotation[displayValue]);
+  // Always-current value, so effects/callbacks that intentionally skip
+  // `displayValue` in their deps never act on a stale face.
+  const displayValueRef = useRef(displayValue);
+  displayValueRef.current = displayValue;
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 
   const half = size / 2;

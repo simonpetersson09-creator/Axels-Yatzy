@@ -343,33 +343,56 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
         )}
       </AnimatePresence>
 
-      {/* Soft gold halo behind the die when locked (no hard border box) */}
+      {/* Soft gold halo behind the die when locked */}
       <div
         aria-hidden
         style={{
           position: 'absolute',
           left: '50%',
-          top: -6,
-          width: size + 12,
-          height: size + 12,
-          marginLeft: -(size + 12) / 2,
+          top: -8,
+          width: size + 22,
+          height: size + 22,
+          marginLeft: -(size + 22) / 2,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(245,185,66,0.30) 0%, rgba(245,185,66,0.12) 45%, rgba(245,185,66,0) 70%)',
+          background: 'radial-gradient(circle, rgba(245,185,66,0.28) 0%, rgba(245,185,66,0.10) 48%, rgba(245,185,66,0) 72%)',
           opacity: locked ? 1 : 0,
-          transition: 'opacity 0.3s ease-out',
+          transition: 'opacity 0.28s ease-out',
           pointerEvents: 'none',
           zIndex: 0,
         }}
       />
 
-
-      {/* Outer wrapper — shadow and glow + crisp 1px edge highlight */}
+      {/* Selection ring — thin, precise gold outline that sits just outside the die */}
       <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: -4,
+          width: size + 8,
+          height: size + 8,
+          marginLeft: -(size + 8) / 2,
+          borderRadius: radius + 4,
+          border: '1.5px solid hsl(42 92% 62%)',
+          boxShadow: locked
+            ? '0 0 0 1px rgba(0,0,0,0.25), 0 0 10px rgba(245,185,66,0.45), inset 0 0 6px rgba(245,185,66,0.28)'
+            : 'none',
+          opacity: locked ? 1 : 0,
+          transform: locked ? 'scale(1)' : 'scale(0.92)',
+          transition: 'opacity 0.22s ease-out, transform 0.28s cubic-bezier(0.34, 1.3, 0.64, 1)',
+          pointerEvents: 'none',
+          zIndex: 3,
+        }}
+      />
 
+      {/* Outer wrapper — shadow and glow */}
+      <div
         style={{
           width: size,
           height: size,
           borderRadius: radius,
+          position: 'relative',
+          zIndex: 1,
           // Keep a stable compositor layer for the whole die. Toggling
           // will-change / animating `filter` per roll forced Safari to
           // re-rasterize the 3D subtree every frame → visible flimmer.
@@ -377,91 +400,99 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           transform: locked ? 'translateZ(0) scale(1.08)' : 'translateZ(0) scale(1)',
           transformOrigin: '50% 60%',
           boxShadow: locked
-            ? '0 0 0 3px hsl(42 95% 66%), 0 0 0 5px hsl(34 80% 46%), 0 0 18px rgba(245,185,66,0.55), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.45)'
-            : '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 1px 0 rgba(255,255,255,0.28), inset 0 0 0 1px rgba(255,255,255,0.45)',
-
-          // Keep the complete 3D subtree fully opaque at all times. Previously
-          // every unlocked die faded from 1 → 0.5 at the exact frame rolling
-          // ended (because canLock changed). On WebKit that opacity transition
-          // also rebuilt the composited 3D layer, producing a strong flash.
+            ? '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 0 14px rgba(245,185,66,0.28)'
+            : '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24)',
+          // Keep the complete 3D subtree fully opaque at all times.
           transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1)',
           opacity: 1,
         }}
       >
-        <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
-          <motion.div
-            className="relative"
+        {/* Supersampled 3D stage: laid out at 2x, scaled to 1x for crisp edges */}
+        <div style={{ width: size, height: size, pointerEvents: 'none', position: 'relative' }}>
+          <div
             style={{
-              width: size,
-              height: size,
-              transformStyle: 'preserve-3d',
-              WebkitTransformStyle: 'preserve-3d',
-              // Constant hint — toggling it mid-roll caused a layer swap flash.
-              willChange: 'transform',
+              width: S,
+              height: S,
+              perspective: Math.round(S * 4.3),
+              transform: `scale(${1 / SS})`,
+              transformOrigin: '0 0',
             }}
-            animate={{
-              rotateX: spinRotation.rotateX,
-              rotateY: spinRotation.rotateY,
-            }}
-            transition={
-              isAnimating
-                ? {
-                    rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
-                    rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
-                  }
-                : spinRotation.snap
-                  ? { duration: 0 }
-                  : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
-            }
-            onAnimationComplete={() => {
-              // End the roll from the renderer's actual final frame rather
-              // than a parallel 1500 ms JS timer. Safari can commit that timer
-              // one frame before Framer Motion finishes, which swaps transition
-              // modes mid-frame and shows as a small flash at landing.
-              if (!rollingRef.current) return;
-              rollingRef.current = false;
-              setIsAnimating(false);
-              playLandSound();
-            }}
-
           >
-            {/* Solid inner core planes — fill the corner/edge gaps that appear
-                between the six rounded faces when the die is seen at ~90°. */}
-            {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].map(t => (
-              <div
-                key={`core-${t}`}
-                className="absolute inset-0"
-                style={{
-                  transform: t,
-                  transformStyle: 'flat',
-                  WebkitTransformStyle: 'flat',
-                  borderRadius: Math.round(size * 0.12),
-                  background: 'linear-gradient(135deg, #f6f1e6 0%, #e6dcc8 100%)',
-                  pointerEvents: 'none',
-                }}
-              />
-            ))}
-            {faces.map(f => (
-              <div
-                key={f.v}
-                className="absolute"
-                style={{
-                  // 1px outward overlap on each side closes the hairline seams
-                  // where two rounded faces meet at a right angle.
-                  top: -1, left: -1, width: size + 2, height: size + 2,
-                  transform: f.t,
-                  // Faces are flat quads. Keeping `preserve-3d` here made
-                  // WebKit re-evaluate a nested 3D context per face every
-                  // frame, which is what still produced the flimmer.
-                  transformStyle: 'flat',
-                  WebkitTransformStyle: 'flat',
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
-                }}
-              >
-                <DiceFace faceValue={f.v} size={size + 2} />
-              </div>
-            ))}
+            <motion.div
+              className="relative"
+              style={{
+                width: S,
+                height: S,
+                transformStyle: 'preserve-3d',
+                WebkitTransformStyle: 'preserve-3d',
+                // Constant hint — toggling it mid-roll caused a layer swap flash.
+                willChange: 'transform',
+              }}
+              animate={{
+                rotateX: spinRotation.rotateX,
+                rotateY: spinRotation.rotateY,
+              }}
+              transition={
+                isAnimating
+                  ? {
+                      rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
+                      rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
+                    }
+                  : spinRotation.snap
+                    ? { duration: 0 }
+                    : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+              }
+              onAnimationComplete={() => {
+                // End the roll from the renderer's actual final frame rather
+                // than a parallel 1500 ms JS timer.
+                if (!rollingRef.current) return;
+                rollingRef.current = false;
+                setIsAnimating(false);
+                playLandSound();
+              }}
+            >
+              {/* Solid inner core planes — fill the corner gaps between the six
+                  rounded faces. Matte ivory (no bright rim) so they never read
+                  as a light streak across the die. */}
+              {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].map(t => (
+                <div
+                  key={`core-${t}`}
+                  className="absolute"
+                  style={{
+                    top: -1, left: -1, width: S + 2, height: S + 2,
+                    transform: t,
+                    transformStyle: 'flat',
+                    WebkitTransformStyle: 'flat',
+                    borderRadius: Math.round(S * 0.14),
+                    background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              ))}
+              {faces.map(f => (
+                <div
+                  key={f.v}
+                  className="absolute"
+                  style={{
+                    // Exact-size faces: the previous 1px outward overlap made the
+                    // bright face rim show as thin streaks across the die edges.
+                    top: 0, left: 0, width: S, height: S,
+                    transform: f.t,
+                    // Faces are flat quads. Keeping `preserve-3d` here made
+                    // WebKit re-evaluate a nested 3D context per face every frame.
+                    transformStyle: 'flat',
+                    WebkitTransformStyle: 'flat',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                  }}
+                >
+                  <DiceFace faceValue={f.v} size={S} />
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+
 
 
           </motion.div>

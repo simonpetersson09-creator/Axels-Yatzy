@@ -14,7 +14,7 @@ interface DiceAreaProps {
 
 export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock, compact = false, className }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
-  const diceSize = compact ? 46 : 52;
+  const diceSize = compact ? 42 : 47;
 
   // Deterministic organic tilt + horizontal offset per die index.
   // Keeps the hit area centered (transform doesn't change layout).

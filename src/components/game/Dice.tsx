@@ -703,15 +703,23 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
           pointerEvents: 'none',
           background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 38%, rgba(0,0,0,0.06) 68%, transparent 88%)',
         }}
+        initial={false}
         animate={
           rolling
             ? { scaleX: 1.22, scaleY: 0.7, opacity: 0.3, filter: 'blur(3px)' }
-            : {
-                scaleX: locked ? [1.24, 0.94, 1.08] : [1.24, 0.86, 1],
-                scaleY: [0.68, 1.18, 1],
-                opacity: [0.34, 0.9, 0.72],
-                filter: ['blur(3px)', 'blur(0.5px)', 'blur(1px)'],
-              }
+            : landKey > 0
+              ? {
+                  scaleX: locked ? [1.24, 0.94, 1.08] : [1.24, 0.86, 1],
+                  scaleY: [0.68, 1.18, 1],
+                  opacity: [0.34, 0.9, 0.72],
+                  filter: ['blur(3px)', 'blur(0.5px)', 'blur(1px)'],
+                }
+              : {
+                  scaleX: locked ? 1.08 : 1,
+                  scaleY: 1,
+                  opacity: 0.72,
+                  filter: 'blur(1px)',
+                }
         }
         transition={
           rolling

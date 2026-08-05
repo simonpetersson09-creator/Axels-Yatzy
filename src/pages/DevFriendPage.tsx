@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, getPlayerName } from '@/lib/session';
 import { initDeviceId } from '@/lib/device';
-import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
+import { playBotTurn } from '@/lib/dev-bot-turn';
 import { Button } from '@/components/ui/button';
 
 const GHOST_KEY = 'dev_ghost_session_id';

@@ -144,7 +144,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   const displayValue = hasRolled ? value : initialFace;
 
   const [isAnimating, setIsAnimating] = useState(false);
-  const [spinRotation, setSpinRotation] = useState(valueToRotation[displayValue]);
+  // `snap` lives in state (not a ref mutated during render) so the transition
+  // is a pure function of state — a stray re-render can no longer consume the
+  // snap flag and leave a 0.45s glide after landing (visible as flimmer).
+  const [spinRotation, setSpinRotation] = useState({ ...valueToRotation[displayValue], snap: false });
   const [showSparkle, setShowSparkle] = useState(false);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);

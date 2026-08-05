@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 const SUBMIT_ANIM_MS = 700;
-import { calculateScore } from '@/lib/yatzy-scoring';
+import { calculateScore, rollSingleDie } from '@/lib/yatzy-scoring';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
 import { getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
@@ -604,8 +604,9 @@ export function useMultiplayerGame() {
     // rolls_left / locks; it accepts our dice as the authoritative values.
     const willResetLocks = gs.rollsLeft === 3;
     const optimisticLocked = willResetLocks ? [false, false, false, false, false] : activeLockedDice;
+    // Same unbiased crypto RNG as Snabb match (rejection sampling, no modulo bias).
     const optimisticDice = gs.dice.map((prev, i) =>
-      !willResetLocks && optimisticLocked[i] ? prev : (1 + Math.floor(Math.random() * 6)),
+      !willResetLocks && optimisticLocked[i] ? prev : rollSingleDie(),
     );
     const optimisticRollsLeft = gs.rollsLeft - 1;
 

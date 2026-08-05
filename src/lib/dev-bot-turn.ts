@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
+import { rollSingleDie } from '@/lib/yatzy-scoring';
 
 /**
  * Dev-only: plays one bot turn using the EXACT same path as the real app
@@ -73,7 +74,7 @@ export async function playBotTurn(
       const willResetLocks = rollsLeft === 3;
       const optimisticLocked = willResetLocks ? [false, false, false, false, false] : locks;
       const optimisticDice = dice.map((prev, i) =>
-        !willResetLocks && optimisticLocked[i] ? prev : 1 + Math.floor(Math.random() * 6),
+        !willResetLocks && optimisticLocked[i] ? prev : rollSingleDie(),
       );
       const optimisticRollsLeft = rollsLeft - 1;
 

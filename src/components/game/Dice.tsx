@@ -149,6 +149,24 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
           <stop offset="50%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.42" />
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </linearGradient>
+
+        {/* Environment reflection: the die picks up the room it sits in —
+            cool petrol table light from below, warm gold accent bounce from
+            the lower-right, and a faint cool sky tint along the top edge. */}
+        <linearGradient id="dfEnvFloor" x1="0" y1="1" x2="0.15" y2="0">
+          <stop offset="0%" stopColor="hsl(var(--background))" stopOpacity="0.26" />
+          <stop offset="32%" stopColor="hsl(var(--background))" stopOpacity="0.08" />
+          <stop offset="60%" stopColor="hsl(var(--background))" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="dfEnvGold" cx="0.82" cy="0.86" r="0.55">
+          <stop offset="0%" stopColor="hsl(var(--game-gold))" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="hsl(var(--game-gold))" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="dfEnvSky" x1="0" y1="0" x2="0.1" y2="1">
+          <stop offset="0%" stopColor="hsl(var(--game-info-light))" stopOpacity="0.14" />
+          <stop offset="28%" stopColor="hsl(var(--game-info-light))" stopOpacity="0" />
+        </linearGradient>
+
         <clipPath id="dfClip">
           <rect x="0" y="0" width="100" height="100" rx={r} ry={r} />
         </clipPath>
@@ -159,6 +177,11 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
 
       {/* Ambient occlusion darkening the bottom-right corner */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfAo)" />
+
+      {/* Environment reflection layers */}
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfEnvFloor)" />
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfEnvGold)" />
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfEnvSky)" />
 
       {/* Top-left specular highlight */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSpec)" />

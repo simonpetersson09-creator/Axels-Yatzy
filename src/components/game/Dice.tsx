@@ -58,7 +58,7 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
 }) {
   const radius = size * 0.22;
   const r = 22; // corner radius in viewBox units
-  const pipR = 7.75; // pip radius in viewBox units (matches previous 15.5% diameter)
+  const pipR = 7.5; // pip radius in viewBox units
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
     <svg
@@ -78,96 +78,121 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
       }}
     >
       <defs>
-        {/* ivory body, lit from the upper-left */}
+        {/* Warm ivory body, lit from the upper-left with a soft falloff */}
         <linearGradient id="dfBody" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#fffefb" />
-          <stop offset="40%" stopColor="#fbf7ef" />
-          <stop offset="74%" stopColor="#f0e9db" />
-          <stop offset="100%" stopColor="#e5dcc9" />
-        </linearGradient>
-        {/* top-left specular highlight */}
-        <radialGradient id="dfSpec" cx="0.22" cy="0.18" r="0.46">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-        </radialGradient>
-        {/* warm bounce light bottom-left */}
-        <radialGradient id="dfBounce" cx="0.12" cy="0.92" r="0.42">
-          <stop offset="0%" stopColor="#fff6e1" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#fff6e1" stopOpacity="0" />
-        </radialGradient>
-        {/* bottom-right ambient occlusion */}
-        <radialGradient id="dfAo" cx="0.92" cy="0.94" r="0.9">
-          <stop offset="0%" stopColor="#60523e" stopOpacity="0.14" />
-          <stop offset="100%" stopColor="#60523e" stopOpacity="0" />
-        </radialGradient>
-
-        {/* glossy sheen across the upper part of the face */}
-        <linearGradient id="dfSheen" x1="0.25" y1="0" x2="0.75" y2="1">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />
-          <stop offset="30%" stopColor="#ffffff" stopOpacity="0.1" />
-          <stop offset="48%" stopColor="#ffffff" stopOpacity="0" />
-        </linearGradient>
-        {/* rounded-edge bevel: light top-left, fading to nothing (no dark line
-            along the bottom-right edge). */}
-        <linearGradient id="dfBevel" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-          <stop offset="45%" stopColor="#ffffff" stopOpacity="0.2" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="0%" stopColor="hsl(var(--dice-ivory))" />
+          <stop offset="35%" stopColor="hsl(var(--dice-ivory-mid))" />
+          <stop offset="70%" stopColor="hsl(var(--dice-ivory-shade))" />
+          <stop offset="100%" stopColor="hsl(var(--dice-ivory-shade) / 0.92)" />
         </linearGradient>
 
-        {/* drilled pip: dark well with a faint kick at bottom-right */}
-        <radialGradient id="dfPip" cx="0.66" cy="0.72" r="0.78">
-          <stop offset="0%" stopColor="#2b2721" />
-          <stop offset="44%" stopColor="#0c0b09" />
-          <stop offset="100%" stopColor="#000000" />
+        {/* Top-left specular highlight */}
+        <radialGradient id="dfSpec" cx="0.28" cy="0.22" r="0.42">
+          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </radialGradient>
-        {/* recess rim: dark at the top-left of the hole, light at bottom-right */}
+
+        {/* Soft ambient occlusion in the bottom-right corner */}
+        <radialGradient id="dfAo" cx="0.88" cy="0.90" r="0.85">
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Surface sheen: a soft reflection across the top of the face */}
+        <linearGradient id="dfSheen" x1="0.20" y1="0" x2="0.80" y2="1">
+          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.55" />
+          <stop offset="25%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.12" />
+          <stop offset="48%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
+        </linearGradient>
+
+        {/* Top/left edge highlight (bevel) */}
+        <linearGradient id="dfBevelLight" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.95" />
+          <stop offset="50%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
+        </linearGradient>
+
+        {/* Bottom/right edge shadow (bevel) */}
+        <linearGradient id="dfBevelDark" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
+          <stop offset="55%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0.32" />
+        </linearGradient>
+
+        {/* Drilled pip: a deep, dark well */}
+        <radialGradient id="dfPip" cx="0.65" cy="0.72" r="0.80">
+          <stop offset="0%" stopColor="hsl(var(--dice-pip))" />
+          <stop offset="42%" stopColor="hsl(var(--dice-pip))" />
+          <stop offset="100%" stopColor="hsl(var(--dice-pip-rim))" />
+        </radialGradient>
+
+        {/* Pip inner shadow: creates the recessed-carved look */}
+        <radialGradient id="dfPipInner" cx="0.35" cy="0.35" r="0.65">
+          <stop offset="0%" stopColor="black" stopOpacity="0.55" />
+          <stop offset="60%" stopColor="black" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="black" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Pip rim light at the bottom-right of the hole */}
         <linearGradient id="dfPipRim" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#000000" stopOpacity="0.85" />
-          <stop offset="55%" stopColor="#000000" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#ffffff" stopOpacity="0.3" />
+          <stop offset="0%" stopColor="black" stopOpacity="0.70" />
+          <stop offset="55%" stopColor="black" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.35" />
         </linearGradient>
       </defs>
 
+      {/* Base ivory body */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfBody)" />
-      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSpec)" />
-      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfBounce)" />
+
+      {/* Ambient occlusion darkening the bottom-right corner */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfAo)" />
+
+      {/* Top-left specular highlight */}
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSpec)" />
+
+      {/* Soft surface sheen across the top */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSheen)" />
-      {/* inner bevel rim — 3D volume on the rounded edges */}
+
+      {/* Top/left bevel highlight */}
       <rect
-        x="1.6" y="1.6" width="96.8" height="96.8"
-        rx={r - 1.6} ry={r - 1.6}
-        fill="none" stroke="url(#dfBevel)" strokeWidth="3.2"
-      />
-      <rect
-        x="0.5" y="0.5" width="99" height="99"
-        rx={r - 0.5} ry={r - 0.5}
-        fill="none" stroke="#ffffff" strokeOpacity="0.7" strokeWidth="1"
+        x="1.4" y="1.4" width="97.2" height="97.2"
+        rx={r - 1.4} ry={r - 1.4}
+        fill="none" stroke="url(#dfBevelLight)" strokeWidth="2.8"
       />
 
+      {/* Bottom/right bevel shadow */}
+      <rect
+        x="1.4" y="1.4" width="97.2" height="97.2"
+        rx={r - 1.4} ry={r - 1.4}
+        fill="none" stroke="url(#dfBevelDark)" strokeWidth="2.8"
+      />
+
+      {/* Pips */}
       {positions.map(i => {
         const [cx, cy] = PIP_COORDS[i];
         return (
           <g key={i}>
-            {/* Soft carved rim: a faint ring around the hole instead of an
-                offset white disc (that read as a light streak next to pips). */}
+            {/* Subtle raised rim around the pip hole */}
             <circle
-              cx={cx} cy={cy} r={pipR + 0.35}
-              fill="none" stroke="#ffffff" strokeOpacity="0.28" strokeWidth="0.7"
+              cx={cx} cy={cy} r={pipR + 0.45}
+              fill="none" stroke="hsl(var(--dice-sheen))" strokeOpacity="0.22" strokeWidth="0.8"
             />
+            {/* Inner shadow that makes the pip look carved in */}
+            <circle cx={cx} cy={cy} r={pipR + 0.1} fill="url(#dfPipInner)" />
+            {/* Pip face */}
             <circle cx={cx} cy={cy} r={pipR} fill="url(#dfPip)" />
+            {/* Rim light at the bottom-right edge of the hole */}
             <circle
-              cx={cx} cy={cy} r={pipR - 0.45}
-              fill="none" stroke="url(#dfPipRim)" strokeWidth="0.9"
+              cx={cx} cy={cy} r={pipR - 0.5}
+              fill="none" stroke="url(#dfPipRim)" strokeWidth="1.0"
             />
           </g>
-
         );
       })}
     </svg>
   );
 });
+
 
 
 

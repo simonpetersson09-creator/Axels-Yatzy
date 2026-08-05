@@ -108,4 +108,4 @@ export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(f
       )}
     </>
   );
-}
+});

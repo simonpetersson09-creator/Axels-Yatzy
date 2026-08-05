@@ -57,7 +57,7 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
   size: number;
 }) {
   const radius = size * 0.28;
-  const r = 28; // corner radius in viewBox units
+  const r = 32; // distinctly rounded silhouette without changing the die size
   const pipR = 7.75; // pip radius in viewBox units (matches previous 15.5% diameter)
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
@@ -502,13 +502,12 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                   that sits just behind the outer faces and is tinted to match
                   the ivory body. */}
               {[
-                // Shell 1: nearly full-size, same corner curvature as the outer faces.
-                { inset: Math.max(2, Math.round(S * 0.02)), rad: Math.round(S * 0.24) },
-                // Shell 2: slightly deeper, rounded corners.
-                { inset: Math.round(S * 0.06), rad: Math.round(S * 0.2) },
-                // Shell 3: deepest, still rounded — recessed enough to plug the
-                // remaining corner gaps without ever showing a hard edge.
-                { inset: Math.round(S * 0.12), rad: Math.round(S * 0.16) },
+                // Keep every filler shell farther inside the visible faces. The
+                // previous near-full shell filled the outer corner cut-outs and
+                // made the assembled die read as a square cube.
+                { inset: Math.round(S * 0.045), rad: Math.round(S * 0.3) },
+                { inset: Math.round(S * 0.09), rad: Math.round(S * 0.26) },
+                { inset: Math.round(S * 0.15), rad: Math.round(S * 0.22) },
               ].flatMap(({ inset, rad }) =>
 
 

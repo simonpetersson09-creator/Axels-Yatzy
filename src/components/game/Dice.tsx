@@ -502,13 +502,16 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                   that sits just behind the outer faces and is tinted to match
                   the ivory body. */}
               {[
-                // Shell 1: nearly full-size, same corner curvature as the outer
-                // faces — backs the edge seams.
+                // Shell 1: nearly full-size, same corner curvature as the outer faces.
                 { inset: Math.max(2, Math.round(S * 0.02)), rad: Math.round(S * 0.24) },
-                // Shell 2: deeper, SQUARE corners — plugs the corner holes that
-                // the rounded faces leave open when the die rotates.
-                { inset: Math.round(S * 0.1), rad: 0 },
+                // Shell 2: slightly deeper, tighter rounding — covers most of the
+                // corner gap while staying visually rounded.
+                { inset: Math.round(S * 0.06), rad: Math.round(S * 0.13) },
+                // Shell 3: deepest, nearly square but recessed far enough that its
+                // corners are hidden behind the rounded silhouette.
+                { inset: Math.round(S * 0.12), rad: Math.round(S * 0.05) },
               ].flatMap(({ inset, rad }) =>
+
                 [
                   `translateZ(${S / 2 - inset}px)`,
                   `rotateY(180deg) translateZ(${S / 2 - inset}px)`,

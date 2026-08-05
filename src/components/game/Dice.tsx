@@ -287,6 +287,11 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   useEffect(() => {
     if (rolling && !locked && !rollingRef.current) {
       rollingRef.current = true;
+      // A new roll always wins over an in-flight turn-hand-over rewind.
+      if (resettingRef.current) {
+        resettingRef.current = false;
+        setIsResetting(false);
+      }
       // Freeze a new set of random seeds for this roll only — prevents
       // re-randomization mid-animation that caused a visible second "settle" spin.
       const fresh = makeRollVar();

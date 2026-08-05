@@ -107,10 +107,10 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </linearGradient>
 
-        {/* Soft porcelain bevel — light edge is gentle, not a bright streak */}
+        {/* Soft porcelain bevel — light edge is now fully transparent to remove streaks */}
         <linearGradient id="dfBevelLight" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.30" />
-          <stop offset="50%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.08" />
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
+          <stop offset="50%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
           <stop offset="100%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
         </linearGradient>
 

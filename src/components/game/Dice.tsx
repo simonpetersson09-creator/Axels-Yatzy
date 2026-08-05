@@ -56,8 +56,8 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = size * 0.28;
-  const r = 32; // distinctly rounded silhouette without changing the die size
+  const radius = size * 0.34;
+  const r = 42; // distinctly rounded silhouette without changing the die size
   const pipR = 7.75; // pip radius in viewBox units (matches previous 15.5% diameter)
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
@@ -188,7 +188,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 
   const half = size / 2;
-  const radius = Math.round(size * 0.28);
+  const radius = Math.round(size * 0.34);
   // Supersampling: build the cube at 2x and scale it down. WebKit rasterizes
   // a 3D subtree once at its layout size, so rendering at 2x removes the
   // pixelated/aliased edges and pips on retina screens. (3x was tested and
@@ -508,9 +508,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 // Keep every filler shell farther inside the visible faces. The
                 // previous near-full shell filled the outer corner cut-outs and
                 // made the assembled die read as a square cube.
-                { inset: Math.round(S * 0.045), rad: Math.round(S * 0.3) },
-                { inset: Math.round(S * 0.09), rad: Math.round(S * 0.26) },
-                { inset: Math.round(S * 0.15), rad: Math.round(S * 0.22) },
+                { inset: Math.round(S * 0.045), rad: Math.round(S * 0.36) },
+                { inset: Math.round(S * 0.09), rad: Math.round(S * 0.31) },
+                { inset: Math.round(S * 0.15), rad: Math.round(S * 0.26) },
               ].flatMap(({ inset, rad }) =>
 
 

@@ -75,9 +75,11 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         pointerEvents: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
-        overflow: 'hidden',
+        // No `overflow: hidden` — a rounded clip inside a rotating 3D context
+        // forces WebKit to re-rasterize the face on every frame (flimmer).
       }}
     >
+
       {/* Glossy top sheen — subtle */}
       <div
         style={{
@@ -400,8 +402,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 className="absolute inset-0"
                 style={{
                   transform: f.t,
-                  transformStyle: 'preserve-3d',
-                  WebkitTransformStyle: 'preserve-3d',
+                  // Faces are flat quads. Keeping `preserve-3d` here made
+                  // WebKit re-evaluate a nested 3D context per face every
+                  // frame, which is what still produced the flimmer.
+                  transformStyle: 'flat',
+                  WebkitTransformStyle: 'flat',
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
                 }}
@@ -409,6 +414,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 <DiceFace faceValue={f.v} size={size} />
               </div>
             ))}
+
           </motion.div>
         </div>
       </div>

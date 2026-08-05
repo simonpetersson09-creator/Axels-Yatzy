@@ -372,8 +372,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           // re-rasterize the 3D subtree every frame → visible flimmer.
           transform: 'translateZ(0)',
           boxShadow: locked
-            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)'
-            : '0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)',
+            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 22px rgba(245,185,66,0.34), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.45)'
+            : '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 1px 0 rgba(255,255,255,0.28), inset 0 0 0 1px rgba(255,255,255,0.45)',
+
           // Keep the complete 3D subtree fully opaque at all times. Previously
           // every unlocked die faded from 1 → 0.5 at the exact frame rolling
           // ended (because canLock changed). On WebKit that opacity transition

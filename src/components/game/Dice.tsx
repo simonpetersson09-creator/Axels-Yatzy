@@ -431,12 +431,14 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 playLandSound();
               }}
             >
-              {/* Dense inner shell behind the rounded presentation faces. The planes
-                  sit close to every outer face and use only a tiny radius: this keeps
-                  the soft outer silhouette while preventing Safari from exposing the
-                  page background through a corner during slow, oblique rotations. */}
+              {/* Solid inner core planes — fill the corner gaps between the six
+                  rounded faces. Matte ivory (no bright rim) so they never read
+                  as a light streak across the die. */}
+              {/* Three orthogonal core planes, plus offset copies pushed toward each
+                  face, so the rounded corners never let the background show through
+                  while the cube spins. */}
               {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].flatMap(t =>
-                [0, S * 0.42, -S * 0.42].map(z => (
+                [0, S * 0.34, -S * 0.34].map(z => (
                   <div
                     key={`core-${t}-${z}`}
                     className="absolute"
@@ -445,10 +447,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                       transform: `${t} translateZ(${z}px)`,
                       transformStyle: 'flat',
                       WebkitTransformStyle: 'flat',
-                      borderRadius: Math.round(S * 0.06),
+                      borderRadius: Math.round(S * 0.19),
                       background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
-                      backfaceVisibility: 'visible',
-                      WebkitBackfaceVisibility: 'visible',
                       pointerEvents: 'none',
                     }}
                   />

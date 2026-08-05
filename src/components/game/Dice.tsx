@@ -187,7 +187,7 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
             {/* Subtle raised rim around the pip hole */}
             <circle
               cx={cx} cy={cy} r={pipR + 0.45}
-              fill="none" stroke="hsl(var(--dice-sheen))" strokeOpacity="0.22" strokeWidth="0.8"
+              fill="none" stroke="hsl(var(--dice-sheen))" strokeOpacity="0.10" strokeWidth="0.8"
             />
             {/* Inner shadow that makes the pip look carved in */}
             <circle cx={cx} cy={cy} r={pipR + 0.1} fill="url(#dfPipInner)" />

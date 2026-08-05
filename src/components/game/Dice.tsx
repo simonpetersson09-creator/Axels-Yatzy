@@ -406,21 +406,6 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                   WebkitBackfaceVisibility: 'hidden',
                 }}
               >
-                {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    borderRadius: radius,
-                    background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
-                    // 2px behind the face: 1px was close enough to z-fight with
-                    // the opposite face on iOS → flimrande ytor mitt i snurren.
-                    transform: 'translateZ(-2px)',
-                    pointerEvents: 'none',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                  }}
-                />
                 <DiceFace faceValue={f.v} size={size} />
               </div>
             ))}
@@ -428,7 +413,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
         </div>
       </div>
 
-      {/* Ground shadow — bigger, softer, with blur for a premium "resting on felt" look */}
+      {/* Ground shadow — pre-softened radial gradient, without CSS blur.
+          WebKit may re-rasterize a filtered sibling on every 3D frame, which
+          makes the die above it flash even though the shadow itself is static. */}
 
       <motion.div
         style={{
@@ -437,10 +424,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           marginTop: 4,
           borderRadius: '50%',
           pointerEvents: 'none',
-          filter: 'blur(2.5px)',
           background: locked
-            ? 'radial-gradient(ellipse, rgba(245,185,66,0.35), rgba(245,185,66,0.08) 55%, transparent 75%)'
-            : 'radial-gradient(ellipse, rgba(0,0,0,0.32), rgba(0,0,0,0.10) 55%, transparent 75%)',
+            ? 'radial-gradient(ellipse, rgba(245,185,66,0.28), rgba(245,185,66,0.07) 48%, transparent 78%)'
+            : 'radial-gradient(ellipse, rgba(0,0,0,0.28), rgba(0,0,0,0.08) 48%, transparent 78%)',
         }}
         animate={{
           scaleX: locked ? 1.08 : 1,

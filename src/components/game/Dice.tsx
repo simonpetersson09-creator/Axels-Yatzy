@@ -239,6 +239,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // snap flag and leave a 0.45s glide after landing (visible as flimmer).
   const [spinRotation, setSpinRotation] = useState({ ...valueToRotation[displayValue], snap: false });
   const [showSparkle, setShowSparkle] = useState(false);
+  // Bumped when a roll finishes — replays the landing bounce.
+  const [landKey, setLandKey] = useState(0);
   const prevLockedRef = useRef(locked);
   const rollingRef = useRef(false);
   const rotationRef = useRef(valueToRotation[displayValue]);

@@ -543,18 +543,20 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           </div>
         </div>
 
-        {/* Selection ring — a small, even breathing space keeps every rounded
-            die edge inside the frame, including WebKit's anti-aliased pixels. */}
+        {/* Selection ring — now that the front face sits exactly at z = 0 the
+            die measures exactly `size`, so a tight, even 3px gap frames it
+            perfectly on all four sides. */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
-            top: -4,
-            left: -4,
-            right: -4,
-            bottom: -4,
-            borderRadius: radius + 4,
-            border: '2px solid hsl(var(--game-gold))',
+            top: -3,
+            left: -3,
+            right: -3,
+            bottom: -3,
+            borderRadius: radius + 3,
+            border: '1.5px solid hsl(var(--game-gold))',
+
             boxShadow: locked
               ? 'inset 0 0 0 1px hsl(var(--game-gold-dark) / 0.28), 0 0 9px hsl(var(--game-gold) / 0.42)'
               : 'none',

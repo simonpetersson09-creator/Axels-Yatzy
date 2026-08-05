@@ -106,12 +106,14 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           <stop offset="30%" stopColor="#ffffff" stopOpacity="0.1" />
           <stop offset="48%" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
-        {/* rounded-edge bevel: light top-left, shade bottom-right */}
+        {/* rounded-edge bevel: light top-left, fading to nothing (no dark line
+            along the bottom-right edge). */}
         <linearGradient id="dfBevel" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-          <stop offset="45%" stopColor="#ffffff" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#403629" stopOpacity="0.34" />
+          <stop offset="45%" stopColor="#ffffff" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
+
         {/* drilled pip: dark well with a faint kick at bottom-right */}
         <radialGradient id="dfPip" cx="0.66" cy="0.72" r="0.78">
           <stop offset="0%" stopColor="#2b2721" />

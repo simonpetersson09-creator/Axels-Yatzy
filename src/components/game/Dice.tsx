@@ -48,93 +48,119 @@ const PIP_COORDS: Record<number, [number, number]> = {
   6: [24, 76], 7: [50, 76], 8: [76, 76],
 };
 
+// Vector (SVG) die face. SVG is resolution-independent, so even when WebKit
+// rasterizes the rotating 3D subtree the source geometry (rounded body, bevel,
+// pips) stays smooth instead of showing the stair-stepped edges CSS boxes gave.
+// Everything is authored in a 0..100 viewBox and scaled to the face size.
 const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = Math.round(size * 0.22);
-  const pipSize = Math.round(size * 0.155);
+  const radius = size * 0.22;
+  const r = 22; // corner radius in viewBox units
+  const pipR = 7.75; // pip radius in viewBox units (matches previous 15.5% diameter)
   const positions = PIP_POSITIONS[faceValue] ?? [];
   return (
-    <div
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      shapeRendering="geometricPrecision"
       style={{
         position: 'absolute',
-        width: size,
-        height: size,
+        display: 'block',
         borderRadius: radius,
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
-        background: [
-          // bright top-left specular highlight
-          'radial-gradient(circle at 22% 18%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 46%)',
-          // warm bounce light along the bottom-left edge
-          'radial-gradient(circle at 12% 92%, rgba(255,246,225,0.6) 0%, rgba(255,246,225,0) 42%)',
-          // bottom-right ambient occlusion / shaded face
-          'radial-gradient(circle at 92% 94%, rgba(96,82,62,0.34) 0%, rgba(96,82,62,0) 68%)',
-          // ivory body with directional gradient (lit from upper-left)
-          'linear-gradient(135deg, #fffefb 0%, #fbf7ef 40%, #f0e9db 74%, #e5dcc9 100%)',
-        ].join(', '),
-        boxShadow: [
-          // soft rounded-edge highlight (top-left)
-          'inset 3px 3px 6px rgba(255,255,255,0.9)',
-          // rounded-edge shadow (bottom-right) — 3D volume
-          'inset -3px -3.5px 7px rgba(64,54,42,0.3)',
-          // thin bevel rim
-          'inset 0 0 0 1px rgba(255,255,255,0.7)',
-        ].join(', '),
         pointerEvents: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
-        // No `overflow: hidden` — a rounded clip inside a rotating 3D context
-        // forces WebKit to re-rasterize the face on every frame (flimmer).
       }}
     >
-      {/* Glossy top sheen — subtle */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: radius,
-          background:
-            'linear-gradient(152deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 30%, rgba(255,255,255,0) 48%)',
-          pointerEvents: 'none',
-        }}
+      <defs>
+        {/* ivory body, lit from the upper-left */}
+        <linearGradient id="dfBody" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#fffefb" />
+          <stop offset="40%" stopColor="#fbf7ef" />
+          <stop offset="74%" stopColor="#f0e9db" />
+          <stop offset="100%" stopColor="#e5dcc9" />
+        </linearGradient>
+        {/* top-left specular highlight */}
+        <radialGradient id="dfSpec" cx="0.22" cy="0.18" r="0.46">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+        {/* warm bounce light bottom-left */}
+        <radialGradient id="dfBounce" cx="0.12" cy="0.92" r="0.42">
+          <stop offset="0%" stopColor="#fff6e1" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="#fff6e1" stopOpacity="0" />
+        </radialGradient>
+        {/* bottom-right ambient occlusion */}
+        <radialGradient id="dfAo" cx="0.92" cy="0.94" r="0.68">
+          <stop offset="0%" stopColor="#60523e" stopOpacity="0.34" />
+          <stop offset="100%" stopColor="#60523e" stopOpacity="0" />
+        </radialGradient>
+        {/* glossy sheen across the upper part of the face */}
+        <linearGradient id="dfSheen" x1="0.25" y1="0" x2="0.75" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />
+          <stop offset="30%" stopColor="#ffffff" stopOpacity="0.1" />
+          <stop offset="48%" stopColor="#ffffff" stopOpacity="0" />
+        </linearGradient>
+        {/* rounded-edge bevel: light top-left, shade bottom-right */}
+        <linearGradient id="dfBevel" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
+          <stop offset="45%" stopColor="#ffffff" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#403629" stopOpacity="0.34" />
+        </linearGradient>
+        {/* drilled pip: dark well with a faint kick at bottom-right */}
+        <radialGradient id="dfPip" cx="0.66" cy="0.72" r="0.78">
+          <stop offset="0%" stopColor="#2b2721" />
+          <stop offset="44%" stopColor="#0c0b09" />
+          <stop offset="100%" stopColor="#000000" />
+        </radialGradient>
+        {/* recess rim: dark at the top-left of the hole, light at bottom-right */}
+        <linearGradient id="dfPipRim" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#000000" stopOpacity="0.85" />
+          <stop offset="55%" stopColor="#000000" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0.3" />
+        </linearGradient>
+      </defs>
+
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfBody)" />
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSpec)" />
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfBounce)" />
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfAo)" />
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfSheen)" />
+      {/* inner bevel rim — 3D volume on the rounded edges */}
+      <rect
+        x="1.6" y="1.6" width="96.8" height="96.8"
+        rx={r - 1.6} ry={r - 1.6}
+        fill="none" stroke="url(#dfBevel)" strokeWidth="3.2"
+      />
+      <rect
+        x="0.5" y="0.5" width="99" height="99"
+        rx={r - 0.5} ry={r - 0.5}
+        fill="none" stroke="#ffffff" strokeOpacity="0.7" strokeWidth="1"
       />
 
       {positions.map(i => {
         const [cx, cy] = PIP_COORDS[i];
         return (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: `${cx}%`,
-              top: `${cy}%`,
-              width: pipSize,
-              height: pipSize,
-              marginLeft: -pipSize / 2,
-              marginTop: -pipSize / 2,
-              borderRadius: '50%',
-              // Deep drilled pip with a faint specular kick at bottom-right
-              background:
-                'radial-gradient(circle at 66% 72%, #2b2721 0%, #0c0b09 44%, #000 100%)',
-              boxShadow: [
-                // recess shadow (top-left dark rim sells the depth)
-                `inset ${size * 0.02}px ${size * 0.024}px ${size * 0.035}px rgba(0,0,0,0.9)`,
-                // bottom-right highlight rim — light bouncing off recess edge
-                `inset -${size * 0.01}px -${size * 0.014}px ${size * 0.02}px rgba(255,255,255,0.26)`,
-                // soft cast shadow on die surface around the pip
-                `0 ${size * 0.014}px ${size * 0.024}px rgba(0,0,0,0.35)`,
-                // bright rim above the hole = carved, not painted
-                `0 -${size * 0.006}px 0 rgba(255,255,255,0.6)`,
-              ].join(', '),
-            }}
-          />
+          <g key={i}>
+            {/* bright rim above the hole = carved, not painted */}
+            <circle cx={cx} cy={cy - 0.6} r={pipR + 0.5} fill="#ffffff" fillOpacity="0.55" />
+            <circle cx={cx} cy={cy} r={pipR} fill="url(#dfPip)" />
+            <circle
+              cx={cx} cy={cy} r={pipR - 0.5}
+              fill="none" stroke="url(#dfPipRim)" strokeWidth="1.2"
+            />
+          </g>
         );
       })}
-    </div>
+    </svg>
   );
 });
+
 
 
 

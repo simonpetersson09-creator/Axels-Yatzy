@@ -626,7 +626,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
 
 
-      {/* Ground shadow — soft felt indentation under the die. */}
+      {/* Ground shadow — soft felt indentation under the die.
+          While rolling the die reads as airborne: the shadow spreads out and
+          fades. On landing it snaps in tight and dark, then eases back to
+          rest — that momentary compression is the felt contact. */}
       <motion.div
         style={{
           width: size * 0.92,
@@ -634,14 +637,25 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           marginTop: 4,
           borderRadius: '50%',
           pointerEvents: 'none',
-          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 38%, rgba(0,0,0,0.05) 68%, transparent 88%)',
+          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 38%, rgba(0,0,0,0.06) 68%, transparent 88%)',
         }}
-        animate={{
-          scaleX: locked ? 1.08 : 1,
-          opacity: 0.72,
-        }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
+        animate={
+          rolling
+            ? { scaleX: 1.22, scaleY: 0.7, opacity: 0.3, filter: 'blur(3px)' }
+            : {
+                scaleX: locked ? [1.24, 0.94, 1.08] : [1.24, 0.86, 1],
+                scaleY: [0.68, 1.18, 1],
+                opacity: [0.34, 0.9, 0.72],
+                filter: ['blur(3px)', 'blur(0.5px)', 'blur(1px)'],
+              }
+        }
+        transition={
+          rolling
+            ? { duration: 0.25, ease: 'easeOut' }
+            : { duration: 0.42, times: [0, 0.32, 1], ease: 'easeOut' }
+        }
       />
+
 
     </button>
   );

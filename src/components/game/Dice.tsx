@@ -674,7 +674,9 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
           borderRadius: '50%',
           pointerEvents: 'none',
           background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 38%, rgba(0,0,0,0.06) 68%, transparent 88%)',
-          filter: 'blur(1px)',
+          // No CSS filter: the radial gradient is already soft, and blur()
+          // forces an extra offscreen pass per die on every frame in WKWebView.
+
         }}
         initial={false}
         animate={

@@ -257,7 +257,7 @@ export default function DevFriendPage() {
 
       <div className="grid grid-cols-2 gap-2">
         <Button disabled={busy} onClick={inviteMe}>Bot bjuder in mig</Button>
-        <Button disabled={busy} onClick={acceptMyInvite}>Bot accepterar min inbjudan</Button>
+        <Button disabled={busy} onClick={() => run('Acceptera', () => acceptMyInvite(false))}>Bot accepterar min inbjudan</Button>
         <Button disabled={busy} variant="secondary" onClick={joinByCode}>Bot går med via kod</Button>
         <Button disabled={busy || !game} variant="secondary" onClick={startGame}>Bot startar matchen</Button>
         <Button disabled={!isGhostTurn} variant="secondary" onClick={() => void playGhostTurn()}>

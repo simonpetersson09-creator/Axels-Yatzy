@@ -582,29 +582,24 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
               {/* Three orthogonal core planes, plus offset copies pushed toward each
                   face, so the rounded corners never let the background show through
                   while the cube spins. */}
-              {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].flatMap(t =>
-                [0, S * 0.34, -S * 0.34].map(z => (
-                  <div
-                    key={`core-${t}-${z}`}
-                    className="absolute"
-                    style={{
-                      // Keep the core just inside the six visible faces. When
-                      // these planes reached the full cube depth, Safari drew
-                      // their intersections through the front face as thin
-                      // white horizontal/vertical streaks (most visible across
-                      // the middle pips). A 2 px visual inset prevents that
-                      // coplanar bleed while the rounded faces still cover it.
-                      top: 4, left: 4, width: S - 8, height: S - 8,
-                      transform: `${t} translateZ(${z}px)`,
-                      transformStyle: 'flat',
-                      WebkitTransformStyle: 'flat',
-                      borderRadius: Math.round(S * 0.19),
-                      background: 'linear-gradient(135deg, hsl(220 14% 98%) 0%, hsl(220 8% 90%) 100%)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                )),
-              )}
+              {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].map(t => (
+                <div
+                  key={`core-${t}`}
+                  className="absolute"
+                  style={{
+                    // Keep the core just inside the six visible faces so Safari
+                    // never draws plane intersections through the front face.
+                    top: 4, left: 4, width: S - 8, height: S - 8,
+                    transform: t,
+                    transformStyle: 'flat',
+                    WebkitTransformStyle: 'flat',
+                    borderRadius: Math.round(S * 0.19),
+                    background: 'linear-gradient(135deg, hsl(220 14% 98%) 0%, hsl(220 8% 90%) 100%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              ))}
+
               {faces.map(f => (
                 <div
                   key={f.v}

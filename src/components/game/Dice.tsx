@@ -100,10 +100,10 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
           <stop offset="100%" stopColor="hsl(var(--dice-edge-dark))" stopOpacity="0" />
         </radialGradient>
 
-        {/* Surface sheen: very subtle on matte porcelain */}
+        {/* Surface sheen: now fully transparent to eliminate the white streaks */}
         <linearGradient id="dfSheen" x1="0.20" y1="0" x2="0.80" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.25" />
-          <stop offset="35%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.06" />
+          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
+          <stop offset="35%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </linearGradient>
 

@@ -1,4 +1,4 @@
-import { useState, MutableRefObject } from 'react';
+import { useState, MutableRefObject, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flag } from 'lucide-react';
@@ -10,7 +10,10 @@ interface ForfeitDialogProps {
   pressedButtonRef?: MutableRefObject<'kasta' | 'home' | 'forfeit' | null>;
 }
 
-export function ForfeitButton({ onConfirm, playerName, pressedButtonRef }: ForfeitDialogProps) {
+export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(function ForfeitButton(
+  { onConfirm, playerName, pressedButtonRef },
+  ref,
+) {
   const { t } = useTranslation();
   const [showDialog, setShowDialog] = useState(false);
 

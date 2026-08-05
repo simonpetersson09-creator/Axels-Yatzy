@@ -492,12 +492,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             </motion.div>
           </div>
         </div>
-
-
-
-          </motion.div>
-        </div>
       </div>
+
 
       {/* Ground shadow — pre-softened radial gradient, without CSS blur.
           WebKit may re-rasterize a filtered sibling on every 3D frame, which

@@ -73,7 +73,7 @@ export async function playBotTurn(
       const willResetLocks = rollsLeft === 3;
       const optimisticLocked = willResetLocks ? [false, false, false, false, false] : locks;
       const optimisticDice = dice.map((prev, i) =>
-        !willResetLocks && optimisticLocked[i] ? prev : 1 + Math.floor(Math.random() * 6),
+        !willResetLocks && optimisticLocked[i] ? prev : rollSingleDie(),
       );
       const optimisticRollsLeft = rollsLeft - 1;
 

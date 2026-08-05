@@ -362,8 +362,30 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
         )}
       </AnimatePresence>
 
+      {/* Locked ring — sits OUTSIDE the 3D die, so it can't be covered by the
+          face quads (which overlap the wrapper by 1px on each side). */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: -5,
+          width: size + 10,
+          height: size + 10,
+          marginLeft: -(size + 10) / 2,
+          borderRadius: radius + 5,
+          border: '2.5px solid hsl(36 82% 52%)',
+          boxShadow: '0 0 16px rgba(245,185,66,0.55), inset 0 0 10px rgba(245,185,66,0.25)',
+          opacity: locked ? 1 : 0,
+          transition: 'opacity 0.22s ease-out',
+          pointerEvents: 'none',
+          zIndex: 40,
+        }}
+      />
+
       {/* Outer wrapper — shadow and glow + crisp 1px edge highlight */}
       <div
+
         style={{
           width: size,
           height: size,

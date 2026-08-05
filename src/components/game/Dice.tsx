@@ -147,14 +147,19 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         const [cx, cy] = PIP_COORDS[i];
         return (
           <g key={i}>
-            {/* bright rim above the hole = carved, not painted */}
-            <circle cx={cx} cy={cy - 0.6} r={pipR + 0.5} fill="#ffffff" fillOpacity="0.55" />
+            {/* Soft carved rim: a faint ring around the hole instead of an
+                offset white disc (that read as a light streak next to pips). */}
+            <circle
+              cx={cx} cy={cy} r={pipR + 0.35}
+              fill="none" stroke="#ffffff" strokeOpacity="0.28" strokeWidth="0.7"
+            />
             <circle cx={cx} cy={cy} r={pipR} fill="url(#dfPip)" />
             <circle
-              cx={cx} cy={cy} r={pipR - 0.5}
-              fill="none" stroke="url(#dfPipRim)" strokeWidth="1.2"
+              cx={cx} cy={cy} r={pipR - 0.45}
+              fill="none" stroke="url(#dfPipRim)" strokeWidth="0.9"
             />
           </g>
+
         );
       })}
     </svg>

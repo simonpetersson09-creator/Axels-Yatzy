@@ -91,22 +91,35 @@ export default function DevFriendPage() {
     !!game && game.status === 'playing' && !!ghostPlayer &&
     game.current_player_index === ghostPlayer.player_index;
 
+  // Refs så att bot-loopen alltid ser färskaste state utan att startas om av polling.
+  const gameRef = useRef<GameRow | null>(null);
+  const ghostPlayerRef = useRef<PlayerRow | undefined>(undefined);
+  const autoPlayRef = useRef(autoPlay);
+  gameRef.current = game;
+  ghostPlayerRef.current = ghostPlayer;
+  autoPlayRef.current = autoPlay;
+
   // ─── Ghost bot: plays its own turn ───────────────────────
   const playGhostTurn = useCallback(async () => {
-    if (!game || !ghostPlayer || botBusyRef.current) return;
+    const g = gameRef.current;
+    const gp = ghostPlayerRef.current;
+    if (!g || !gp) { push('Bot: ingen aktiv match.'); return; }
+    if (botBusyRef.current) return;
+    if (g.status !== 'playing') { push(`Bot: matchen är "${g.status}".`); return; }
+    if (g.current_player_index !== gp.player_index) { push('Bot: inte botens tur.'); return; }
     botBusyRef.current = true;
     try {
-      let dice = game.dice;
-      let rollsLeft = game.rolls_left;
-      let locks = game.locked_dice;
+      let dice = g.dice;
+      let rollsLeft = g.rolls_left;
+      let locks = g.locked_dice;
 
       while (rollsLeft > 0) {
         if (rollsLeft < 3) {
-          const want = aiDecideLocks(dice, ghostPlayer.scores, rollsLeft);
+          const want = aiDecideLocks(dice, gp.scores, rollsLeft);
           for (let i = 0; i < 5; i++) {
             if (want[i] !== locks[i]) {
               await supabase.rpc('perform_toggle_lock', {
-                p_game_id: game.id, p_session_id: ghostSession, p_dice_index: i,
+                p_game_id: g.id, p_session_id: ghostSession, p_dice_index: i,
               });
             }
           }
@@ -115,7 +128,7 @@ export default function DevFriendPage() {
         // Skicka alltid p_client_dice — annars blir funktionsanropet tvetydigt (overload).
         const clientDice = Array.from({ length: 5 }, () => 1 + Math.floor(Math.random() * 6));
         const { data, error } = await supabase.rpc('perform_roll_dice', {
-          p_game_id: game.id, p_session_id: ghostSession, p_client_dice: clientDice,
+          p_game_id: g.id, p_session_id: ghostSession, p_client_dice: clientDice,
         });
         if (error) { push(`Bot roll-fel: ${error.message}`); return; }
         const res = data as { success?: boolean; error?: string; dice?: number[]; rolls_left?: number };
@@ -123,27 +136,37 @@ export default function DevFriendPage() {
         dice = res.dice ?? dice;
         rollsLeft = res.rolls_left ?? rollsLeft - 1;
         push(`Bot kastade: ${dice.join(' ')} (${rollsLeft} kast kvar)`);
-        await new Promise((r) => setTimeout(r, 700));
+        await new Promise((r) => setTimeout(r, 500));
       }
 
-      const cat = aiPickCategory(dice, ghostPlayer.scores);
+      const cat = aiPickCategory(dice, gp.scores);
       const { data, error } = await supabase.rpc('perform_submit_score', {
-        p_game_id: game.id, p_session_id: ghostSession, p_category_id: cat,
+        p_game_id: g.id, p_session_id: ghostSession, p_category_id: cat,
       });
       if (error) push(`Bot poäng-fel: ${error.message}`);
       else if (!(data as { success?: boolean })?.success) push(`Bot poäng nekad: ${(data as { error?: string })?.error}`);
       else push(`Bot valde ${cat}`);
+    } catch (e) {
+      push(`Bot kraschade: ${(e as Error).message}`);
     } finally {
       botBusyRef.current = false;
     }
-  }, [game, ghostPlayer, ghostSession, push]);
+  }, [ghostSession, push]);
 
+  // Stabil loop: startas en gång och startas inte om av polling-uppdateringar.
   useEffect(() => {
-    if (autoPlay && isGhostTurn) {
-      const t = setTimeout(() => { void playGhostTurn(); }, 800);
-      return () => clearTimeout(t);
-    }
-  }, [autoPlay, isGhostTurn, playGhostTurn]);
+    const t = setInterval(() => {
+      if (!autoPlayRef.current || botBusyRef.current) return;
+      const g = gameRef.current;
+      const gp = ghostPlayerRef.current;
+      if (!g || !gp) return;
+      if (g.status !== 'playing') return;
+      if (g.current_player_index !== gp.player_index) return;
+      void playGhostTurn();
+    }, 1000);
+    return () => clearInterval(t);
+  }, [playGhostTurn]);
+
 
   // ─── Actions ─────────────────────────────────────────────
   const run = async (label: string, fn: () => Promise<void>) => {

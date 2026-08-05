@@ -61,15 +61,15 @@
     --game-info-light: 195 80% 70%;
     --game-info-dark: 230 70% 45%;
 
-    /* Dice tactile surface colors */
-    --dice-ivory: 40 24% 96%;
-    --dice-ivory-mid: 38 22% 93%;
-    --dice-ivory-shade: 35 18% 84%;
-    --dice-pip: 30 10% 8%;
-    --dice-pip-rim: 35 15% 30%;
-    --dice-edge-light: 40 30% 100%;
-    --dice-edge-dark: 30 10% 55%;
-    --dice-sheen: 40 30% 100%;
+    /* Dice tactile surface colors — matte porcelain edition */
+    --dice-ivory: 220 14% 98%;           /* cool white porcelain */
+    --dice-ivory-mid: 220 10% 95%;      /* soft mid-tone */
+    --dice-ivory-shade: 220 8% 88%;     /* cool grey shadow */
+    --dice-pip: 220 14% 14%;             /* deep charcoal */
+    --dice-pip-rim: 220 10% 32%;         /* muted rim */
+    --dice-edge-light: 220 20% 100%;      /* crisp white highlight */
+    --dice-edge-dark: 220 10% 52%;        /* cool grey shadow */
+    --dice-sheen: 220 30% 100%;          /* soft porcelain sheen */
 
 
     /* Yatzy scorecard */

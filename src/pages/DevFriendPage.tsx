@@ -175,11 +175,49 @@ export default function DevFriendPage() {
     finally { setBusy(false); }
   };
 
+  // supabase.functions.invoke returnerar bara "non-2xx status code" som message.
+  // Plocka ut serverns riktiga felmeddelande ur svarskroppen.
+  const readFnError = async (error: unknown): Promise<string> => {
+    const ctx = (error as { context?: Response })?.context;
+    if (ctx && typeof ctx.json === 'function') {
+      try {
+        const body = await ctx.clone().json();
+        if (body?.error) return `${body.error} (HTTP ${ctx.status})`;
+      } catch { /* ignore */ }
+    }
+    return (error as Error)?.message ?? 'okänt fel';
+  };
+
+  // Boten samlar på sig matcher; backend blockerar inbjudan vid 3 aktiva.
+  // Städa botens egna matcher innan vi skickar en ny inbjudan.
+  const cleanupGhostGames = useCallback(async (): Promise<number> => {
+    const { data: rows } = await supabase
+      .from('game_players')
+      .select('game_id, games!inner(status)')
+      .eq('session_id', ghostSession)
+      .in('games.status', ['waiting', 'playing']);
+    const ids = [...new Set((rows ?? []).map((r) => r.game_id as string))];
+    let closed = 0;
+    for (const id of ids) {
+      const { data } = await supabase.rpc('perform_forfeit', {
+        p_game_id: id, p_session_id: ghostSession,
+      });
+      if ((data as { success?: boolean } | null)?.success) closed++;
+    }
+    if (ids.length) push(`Städade botens matcher: ${closed}/${ids.length} avslutade.`);
+    return ids.length - closed;
+  }, [ghostSession, push]);
+
   const inviteMe = () =>
     run('Inbjudan', async () => {
       const deviceId = await initDeviceId();
       await supabase.rpc('claim_session', { p_session_id: ghostSession, p_device_id: deviceId });
-      const { data, error } = await supabase.functions.invoke('send-invite', {
+      const remaining = await cleanupGhostGames();
+      if (remaining >= 3) {
+        push(`Boten har ${remaining} matcher som inte kunde avslutas — tryck "Ny bot-session".`);
+        return;
+      }
+      const send = () => supabase.functions.invoke('send-invite', {
         body: {
           from_session_id: ghostSession,
           from_name: GHOST_NAME,
@@ -188,10 +226,18 @@ export default function DevFriendPage() {
           device_id: deviceId,
         },
       });
-      if (error) return push(`Inbjudan misslyckades: ${error.message}`);
+      let { data, error } = await send();
+      // 20s rate limit per avsändare/mottagare — vänta ut den en gång i dev.
+      if (error && (await readFnError(error)).includes('429')) {
+        push('Rate limit (20s) — väntar och försöker igen…');
+        await new Promise((r) => setTimeout(r, 21000));
+        ({ data, error } = await send());
+      }
+      if (error) return push(`Inbjudan misslyckades: ${await readFnError(error)}`);
       const res = data as { success?: boolean; error?: string; invite_id?: string };
       push(res?.success ? `Inbjudan skickad (${res.invite_id})` : `Inbjudan nekad: ${res?.error}`);
     });
+
 
   const acceptMyInvite = useCallback(async (silent = false) => {
     const { data: invites, error: listErr } = await supabase.rpc('list_invites_for_session', {

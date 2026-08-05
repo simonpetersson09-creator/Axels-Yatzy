@@ -449,19 +449,20 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
       <motion.div
         style={{
-          width: size * 0.78,
-          height: 7,
-          marginTop: 4,
+          width: size * 0.86,
+          height: 9,
+          marginTop: 3,
           borderRadius: '50%',
           pointerEvents: 'none',
           background: locked
-            ? 'radial-gradient(ellipse, rgba(245,185,66,0.28), rgba(245,185,66,0.07) 48%, transparent 78%)'
-            : 'radial-gradient(ellipse, rgba(0,0,0,0.28), rgba(0,0,0,0.08) 48%, transparent 78%)',
+            ? 'radial-gradient(ellipse at center, rgba(245,185,66,0.42), rgba(245,185,66,0.14) 42%, rgba(245,185,66,0.04) 66%, transparent 82%)'
+            : 'radial-gradient(ellipse at center, rgba(0,0,0,0.42), rgba(0,0,0,0.15) 42%, rgba(0,0,0,0.04) 66%, transparent 82%)',
         }}
         animate={{
           scaleX: locked ? 1.08 : 1,
-          opacity: 0.55,
+          opacity: 0.65,
         }}
+
         transition={{ duration: 0.3, ease: 'easeOut' }}
 
       />

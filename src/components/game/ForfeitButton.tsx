@@ -21,6 +21,7 @@ export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(f
     <>
       <button
         type="button"
+        ref={ref}
         onPointerDown={(e) => {
           e.stopPropagation();
           if (pressedButtonRef) pressedButtonRef.current = 'forfeit';

@@ -550,6 +550,8 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                 rollingRef.current = false;
                 setIsAnimating(false);
                 playLandSound();
+                // Trigger the landing bounce on the die body.
+                setLandKey((k) => k + 1);
               }}
             >
               {/* Solid inner core planes — fill the corner gaps between the six

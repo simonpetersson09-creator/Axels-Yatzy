@@ -475,9 +475,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           marginTop: 3,
           borderRadius: '50%',
           pointerEvents: 'none',
-          background: locked
-            ? 'radial-gradient(ellipse at center, rgba(245,185,66,0.42), rgba(245,185,66,0.14) 42%, rgba(245,185,66,0.04) 66%, transparent 82%)'
-            : 'radial-gradient(ellipse at center, rgba(0,0,0,0.42), rgba(0,0,0,0.15) 42%, rgba(0,0,0,0.04) 66%, transparent 82%)',
+          background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.42), rgba(0,0,0,0.15) 42%, rgba(0,0,0,0.04) 66%, transparent 82%)',
         }}
         animate={{
           scaleX: locked ? 1.08 : 1,

@@ -88,9 +88,9 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
           <stop offset="100%" stopColor="hsl(var(--dice-ivory-shade))" />
         </linearGradient>
 
-        {/* Matte porcelain: almost no specular hotspot, just a faint cool glow */}
+        {/* Matte porcelain: specular highlight is now fully transparent to remove streaks */}
         <radialGradient id="dfSpec" cx="0.30" cy="0.24" r="0.48">
-          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.35" />
+          <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </radialGradient>
 

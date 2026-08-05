@@ -615,7 +615,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                     WebkitBackfaceVisibility: 'hidden',
                   }}
                 >
-                  <DiceFace faceValue={f.v} size={S} sweep={rolling && !locked} />
+                  <DiceFace faceValue={f.v} size={S} />
                 </div>
               ))}
             </motion.div>

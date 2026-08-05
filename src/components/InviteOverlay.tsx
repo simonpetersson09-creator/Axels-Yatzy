@@ -147,17 +147,20 @@ export default function InviteOverlay() {
         const key = `${row.id}:${row.status}`;
         if (seenOutbound.has(key) || wasOutboundHandled(key)) continue;
         seenOutbound.add(key);
-        markOutboundHandled(key);
         const ageMs = Date.now() - new Date(row.created_at).getTime();
-        if (ageMs > 7 * 3600_000) continue;
+        if (ageMs > 7 * 3600_000) { markOutboundHandled(key); continue; }
         if (row.status === 'accepted' && row.game_id) {
           // Never yank the user into a match that is already over — a finished
           // or forfeited game would otherwise bounce them out of the lobby.
-          const { data: g } = await supabase
+          const { data: g, error: gErr } = await supabase
             .from('games')
             .select('status')
             .eq('id', row.game_id)
             .maybeSingle();
+          // Transient lookup failure: do NOT burn the key — otherwise a single
+          // network blip means this accept can never open the match again.
+          if (gErr) { seenOutbound.delete(key); continue; }
+          markOutboundHandled(key);
           if (!g || g.status === 'finished') continue;
           // Only skip navigation when we're already inside *this* match —
           // being on another game screen must not swallow the new match.

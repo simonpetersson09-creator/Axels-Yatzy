@@ -314,17 +314,27 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
 
     // Turn hand-over (hasRolled true -> false): roll the die backwards one
     // full revolution into its neutral face instead of snapping the pips.
+    // The leftover misalignment (0-359 deg) is snapped away first, so every
+    // die animates EXACTLY -360 deg per axis. Identical distance + identical
+    // duration = all five dice move at the same speed (previously the sweep
+    // was 360-719 deg over a fixed 0.85 s, which looked slow and out of sync).
     if (wasRolled && !hasRolled) {
-      const rewind = {
-        rotateX: cur.rotateX - 360 - mod(cur.rotateX - base.rotateX),
-        rotateY: cur.rotateY - 360 - mod(cur.rotateY - base.rotateY),
+      const aligned = {
+        rotateX: cur.rotateX - mod(cur.rotateX - base.rotateX),
+        rotateY: cur.rotateY - mod(cur.rotateY - base.rotateY),
       };
-      rotationRef.current = rewind;
+      rotationRef.current = aligned;
+      setSpinRotation({ ...aligned, snap: true });
       resettingRef.current = true;
       setIsResetting(true);
-      setSpinRotation({ ...rewind, snap: false });
-      return;
+      const raf = requestAnimationFrame(() => {
+        const rewind = { rotateX: aligned.rotateX - 360, rotateY: aligned.rotateY - 360 };
+        rotationRef.current = rewind;
+        setSpinRotation({ ...rewind, snap: false });
+      });
+      return () => cancelAnimationFrame(raf);
     }
+
 
     // Shortest signed delta in range (-180, 180].
     const shortest = (from: number, to: number) => {

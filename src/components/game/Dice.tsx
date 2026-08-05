@@ -58,17 +58,21 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         WebkitBackfaceVisibility: 'hidden',
         background: [
           // bright top-left specular highlight
-          'radial-gradient(circle at 22% 18%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 45%)',
+          'radial-gradient(circle at 20% 16%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 42%)',
+          // warm bounce light along the bottom-left edge
+          'radial-gradient(circle at 12% 92%, rgba(255,246,225,0.75) 0%, rgba(255,246,225,0) 40%)',
           // bottom-right ambient occlusion / shaded face
-          'radial-gradient(circle at 90% 92%, rgba(100,88,72,0.34) 0%, rgba(100,88,72,0) 62%)',
+          'radial-gradient(circle at 92% 94%, rgba(96,82,62,0.42) 0%, rgba(96,82,62,0) 66%)',
           // ivory body with directional gradient (lit from upper-left)
-          'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
+          'linear-gradient(135deg, #fffefc 0%, #fbf7ee 38%, #efe7d7 72%, #e2d8c4 100%)',
         ].join(', '),
         boxShadow: [
           // bright rounded-edge highlight (top-left)
-          'inset 3.5px 3.5px 5px rgba(255,255,255,0.98)',
+          'inset 4px 4px 6px rgba(255,255,255,1)',
           // deeper rounded-edge shadow (bottom-right) — stronger 3D volume
-          'inset -3.5px -4px 6px rgba(70,60,48,0.34)',
+          'inset -4px -4.5px 7px rgba(64,54,42,0.4)',
+          // thin warm contact line at the very bottom edge
+          'inset 0 -1px 0 rgba(120,104,80,0.35)',
           // crisp white rim keeps corners bright
           'inset 0 0 0 1.5px rgba(255,255,255,0.95)',
         ].join(', '),
@@ -87,10 +91,24 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
           inset: 0,
           borderRadius: radius,
           background:
-            'linear-gradient(155deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 38%)',
+            'linear-gradient(152deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0) 46%)',
           pointerEvents: 'none',
         }}
       />
+      {/* Beveled edge ring — adds carved-corner depth without any CSS filter */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: radius,
+          boxShadow: [
+            'inset 0 0 0 1px rgba(255,255,255,0.85)',
+            'inset 0 0 9px rgba(120,104,80,0.16)',
+          ].join(', '),
+          pointerEvents: 'none',
+        }}
+      />
+
       <div
         style={{
           position: 'absolute',
@@ -117,18 +135,22 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
                     width: pipSize,
                     height: pipSize,
                     borderRadius: '50%',
-                    // Solid black pip (no transparency in color)
-                    background: '#000',
+                    // Deep drilled pip with a faint specular kick at bottom-right
+                    background:
+                      'radial-gradient(circle at 68% 74%, #2a2620 0%, #0b0a08 42%, #000 100%)',
                     boxShadow: [
                       // strong recess shadow (top-left dark rim sells the depth)
-                      'inset 2px 2.5px 3px rgba(0,0,0,0.9)',
+                      'inset 2px 2.5px 3.5px rgba(0,0,0,0.95)',
                       // bottom-right highlight rim — light bouncing off recess edge
-                      'inset -1px -1.5px 1.5px rgba(255,255,255,0.22)',
+                      'inset -1px -1.5px 2px rgba(255,255,255,0.3)',
                       // soft cast shadow on die surface around the pip
-                      '0 1.5px 2px rgba(0,0,0,0.45)',
+                      '0 1.5px 2.5px rgba(0,0,0,0.42)',
+                      // bright rim above the hole = carved, not painted
+                      '0 -0.5px 0 rgba(255,255,255,0.75)',
                       // tiny outer ring for contact definition
-                      '0 0 0 0.5px rgba(0,0,0,0.25)',
+                      '0 0 0 0.5px rgba(0,0,0,0.22)',
                     ].join(', '),
+
                   }}
                 />
               )}
@@ -350,8 +372,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           // re-rasterize the 3D subtree every frame → visible flimmer.
           transform: 'translateZ(0)',
           boxShadow: locked
-            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)'
-            : '0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)',
+            ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 22px rgba(245,185,66,0.34), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.45)'
+            : '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 1px 0 rgba(255,255,255,0.28), inset 0 0 0 1px rgba(255,255,255,0.45)',
+
           // Keep the complete 3D subtree fully opaque at all times. Previously
           // every unlocked die faded from 1 → 0.5 at the exact frame rolling
           // ended (because canLock changed). On WebKit that opacity transition
@@ -426,19 +449,20 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
       <motion.div
         style={{
-          width: size * 0.78,
-          height: 7,
-          marginTop: 4,
+          width: size * 0.86,
+          height: 9,
+          marginTop: 3,
           borderRadius: '50%',
           pointerEvents: 'none',
           background: locked
-            ? 'radial-gradient(ellipse, rgba(245,185,66,0.28), rgba(245,185,66,0.07) 48%, transparent 78%)'
-            : 'radial-gradient(ellipse, rgba(0,0,0,0.28), rgba(0,0,0,0.08) 48%, transparent 78%)',
+            ? 'radial-gradient(ellipse at center, rgba(245,185,66,0.42), rgba(245,185,66,0.14) 42%, rgba(245,185,66,0.04) 66%, transparent 82%)'
+            : 'radial-gradient(ellipse at center, rgba(0,0,0,0.42), rgba(0,0,0,0.15) 42%, rgba(0,0,0,0.04) 66%, transparent 82%)',
         }}
         animate={{
           scaleX: locked ? 1.08 : 1,
-          opacity: 0.55,
+          opacity: 0.65,
         }}
+
         transition={{ duration: 0.3, ease: 'easeOut' }}
 
       />

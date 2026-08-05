@@ -678,4 +678,4 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
 
     </button>
   );
-}
+}));

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, memo } from 'react';
+import { useState, useEffect, useMemo, useRef, memo, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { playRollSound, playLandSound } from '@/lib/dice-sounds';
@@ -228,7 +228,9 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
 
 
 
-export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56, hasRolled = true }: DiceProps) {
+export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice({
+  value, locked, rolling, onToggleLock, canLock, size = 56, hasRolled = true,
+}, ref) {
   const initialFace = useMemo(() => 1 + Math.floor(Math.random() * 6), []);
   const displayValue = hasRolled ? value : initialFace;
 
@@ -387,6 +389,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   return (
     <button
       type="button"
+      ref={ref}
       onClick={handleToggle}
       disabled={!canLock}
       aria-pressed={locked}
@@ -676,4 +679,4 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
     </button>
   );
-}
+}));

@@ -394,7 +394,17 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
           >
             {faces.map(f => (
-              <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
+              <div
+                key={f.v}
+                className="absolute inset-0"
+                style={{
+                  transform: f.t,
+                  transformStyle: 'preserve-3d',
+                  WebkitTransformStyle: 'preserve-3d',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                }}
+              >
                 {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
                 <div
                   style={{
@@ -402,7 +412,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                     inset: 0,
                     borderRadius: radius,
                     background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
-                    transform: 'translateZ(-1px)',
+                    // 2px behind the face: 1px was close enough to z-fight with
+                    // the opposite face on iOS → flimrande ytor mitt i snurren.
+                    transform: 'translateZ(-2px)',
                     pointerEvents: 'none',
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
@@ -413,7 +425,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             ))}
           </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Ground shadow — bigger, softer, with blur for a premium "resting on felt" look */}
 

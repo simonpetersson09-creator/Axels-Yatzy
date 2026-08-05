@@ -600,7 +600,7 @@ export default function MultiplayerGamePage() {
             {/* Bottom: Roll + Home + Forfeit */}
             <div
               className="ios-action-zone flex flex-col items-center gap-2"
-              style={{ isolation: 'isolate', marginTop: '13px' }}
+              style={{ isolation: 'isolate', marginTop: '8px' }}
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
               <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>

@@ -43,7 +43,8 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
 }) {
-  const radius = Math.round(size * 0.28);
+  const radius = Math.round(size * 0.2);
+
   const pipSize = Math.max(6, Math.round(size * 0.16));
   const pad = Math.round(size * 0.15);
   const positions = PIP_POSITIONS[faceValue] ?? [];
@@ -420,11 +421,30 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             }}
 
           >
+            {/* Solid inner core planes — fill the corner/edge gaps that appear
+                between the six rounded faces when the die is seen at ~90°. */}
+            {['translateZ(0px)', 'rotateY(90deg)', 'rotateX(90deg)'].map(t => (
+              <div
+                key={`core-${t}`}
+                className="absolute inset-0"
+                style={{
+                  transform: t,
+                  transformStyle: 'flat',
+                  WebkitTransformStyle: 'flat',
+                  borderRadius: Math.round(size * 0.12),
+                  background: 'linear-gradient(135deg, #f6f1e6 0%, #e6dcc8 100%)',
+                  pointerEvents: 'none',
+                }}
+              />
+            ))}
             {faces.map(f => (
               <div
                 key={f.v}
-                className="absolute inset-0"
+                className="absolute"
                 style={{
+                  // 1px outward overlap on each side closes the hairline seams
+                  // where two rounded faces meet at a right angle.
+                  top: -1, left: -1, width: size + 2, height: size + 2,
                   transform: f.t,
                   // Faces are flat quads. Keeping `preserve-3d` here made
                   // WebKit re-evaluate a nested 3D context per face every
@@ -435,9 +455,10 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                   WebkitBackfaceVisibility: 'hidden',
                 }}
               >
-                <DiceFace faceValue={f.v} size={size} />
+                <DiceFace faceValue={f.v} size={size + 2} />
               </div>
             ))}
+
 
           </motion.div>
         </div>

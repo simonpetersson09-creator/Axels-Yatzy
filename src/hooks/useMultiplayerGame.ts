@@ -954,12 +954,13 @@ export function useMultiplayerGame() {
     }
   }, [sessionId, subscribeToGame, refreshGameState, cleanupChannel, cleanupTimers]);
 
-  // Stop presence/polling when game is finished
+  // Stop presence/polling and close the realtime channel when game is finished
   useEffect(() => {
     if (state.status === 'finished') {
       cleanupTimers();
+      cleanupChannel();
     }
-  }, [state.status, cleanupTimers]);
+  }, [state.status, cleanupTimers, cleanupChannel]);
 
   // Foreground reconnect (iOS Capacitor / Safari): re-subscribe + refresh + heartbeat
   // when the app comes back from background. Avoids dead realtime channels after suspend.

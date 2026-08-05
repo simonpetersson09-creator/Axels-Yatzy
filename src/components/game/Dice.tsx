@@ -350,29 +350,21 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       </AnimatePresence>
 
       {/* Outer wrapper — shadow and glow + crisp 1px edge highlight */}
-      <motion.div
+      <div
         style={{
           width: size,
           height: size,
           borderRadius: radius,
-          willChange: 'auto',
+          // Keep a stable compositor layer for the whole die. Toggling
+          // will-change / animating `filter` per roll forced Safari to
+          // re-rasterize the 3D subtree every frame → visible flimmer.
+          transform: 'translateZ(0)',
           boxShadow: locked
             ? '0 0 0 2.5px hsl(36 72% 50%), 0 0 18px rgba(245,185,66,0.3), 0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)'
             : '0 10px 18px -4px rgba(0,0,0,0.32), 0 3px 6px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.4)',
           transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
           opacity: canLock && !locked ? 0.5 : 1,
         }}
-        animate={{
-          // Subtle motion blur during the spin — clears on landing for crisp pips
-          filter: isAnimating
-            ? ['blur(0px)', 'blur(0.8px)', 'blur(0.6px)', 'blur(0px)']
-            : 'blur(0px)',
-        }}
-        transition={
-          isAnimating
-            ? { duration: dur, times: [0, 0.3, 0.7, 1], ease: 'easeOut' }
-            : { duration: 0.2, ease: 'easeOut' }
-        }
       >
         <div style={{ perspective: Math.round(size * 4.3), width: size, height: size, pointerEvents: 'none' }}>
           <motion.div
@@ -381,7 +373,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
               width: size,
               height: size,
               transformStyle: 'preserve-3d',
-              willChange: isAnimating ? 'transform' : 'auto',
+              WebkitTransformStyle: 'preserve-3d',
+              // Constant hint — toggling it mid-roll caused a layer swap flash.
+              willChange: 'transform',
             }}
             animate={{
               rotateX: spinRotation.rotateX,
@@ -400,7 +394,17 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
           >
             {faces.map(f => (
-              <div key={f.v} className="absolute inset-0" style={{ transform: f.t, transformStyle: 'preserve-3d' }}>
+              <div
+                key={f.v}
+                className="absolute inset-0"
+                style={{
+                  transform: f.t,
+                  transformStyle: 'preserve-3d',
+                  WebkitTransformStyle: 'preserve-3d',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                }}
+              >
                 {/* Ivory backing plate behind this face — fills the transparent corners outside the rounded face so the dark background doesn't show through */}
                 <div
                   style={{
@@ -408,7 +412,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                     inset: 0,
                     borderRadius: radius,
                     background: 'linear-gradient(135deg, #fffefb 0%, #f8f4ea 40%, #e8e0d0 100%)',
-                    transform: 'translateZ(-1px)',
+                    // 2px behind the face: 1px was close enough to z-fight with
+                    // the opposite face on iOS → flimrande ytor mitt i snurren.
+                    transform: 'translateZ(-2px)',
                     pointerEvents: 'none',
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
@@ -419,7 +425,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
             ))}
           </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Ground shadow — bigger, softer, with blur for a premium "resting on felt" look */}
 

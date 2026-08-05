@@ -502,27 +502,37 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
                   that sits just behind the outer faces and is tinted to match
                   the ivory body. */}
               {[
-                { t: `translateZ(${halfS - 10}px)` },
-                { t: `rotateY(180deg) translateZ(${halfS - 10}px)` },
-                { t: `rotateY(-90deg) translateZ(${halfS - 10}px)` },
-                { t: `rotateY(90deg) translateZ(${halfS - 10}px)` },
-                { t: `rotateX(-90deg) translateZ(${halfS - 10}px)` },
-                { t: `rotateX(90deg) translateZ(${halfS - 10}px)` },
-              ].map((f, i) => (
-                <div
-                  key={`core-${i}`}
-                  className="absolute"
-                  style={{
-                    top: 10, left: 10, width: S - 20, height: S - 20,
-                    transform: f.t,
-                    transformStyle: 'flat',
-                    WebkitTransformStyle: 'flat',
-                    borderRadius: Math.round(S * 0.20),
-                    background: 'linear-gradient(135deg, #f4eee2 0%, #e6dcc8 100%)',
-                    pointerEvents: 'none',
-                  }}
-                />
-              ))}
+                // Shell 1: nearly full-size, same corner curvature as the outer
+                // faces — backs the edge seams.
+                { inset: Math.max(2, Math.round(S * 0.02)), rad: Math.round(S * 0.24) },
+                // Shell 2: deeper, SQUARE corners — plugs the corner holes that
+                // the rounded faces leave open when the die rotates.
+                { inset: Math.round(S * 0.1), rad: 0 },
+              ].flatMap(({ inset, rad }) =>
+                [
+                  `translateZ(${S / 2 - inset}px)`,
+                  `rotateY(180deg) translateZ(${S / 2 - inset}px)`,
+                  `rotateY(-90deg) translateZ(${S / 2 - inset}px)`,
+                  `rotateY(90deg) translateZ(${S / 2 - inset}px)`,
+                  `rotateX(-90deg) translateZ(${S / 2 - inset}px)`,
+                  `rotateX(90deg) translateZ(${S / 2 - inset}px)`,
+                ].map((t, i) => (
+                  <div
+                    key={`core-${inset}-${i}`}
+                    className="absolute"
+                    style={{
+                      top: inset, left: inset, width: S - inset * 2, height: S - inset * 2,
+                      transform: t,
+                      transformStyle: 'flat',
+                      WebkitTransformStyle: 'flat',
+                      borderRadius: rad,
+                      background: 'linear-gradient(135deg, #f2ecdf 0%, #e4dac5 100%)',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                ))
+              )}
+
               {faces.map(f => (
                 <div
                   key={f.v}

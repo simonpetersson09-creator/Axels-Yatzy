@@ -24,6 +24,7 @@ import NotificationNavigator from "./components/NotificationNavigator";
 // but NEVER bundled into native iOS App Store builds.
 const ADMIN_ENABLED = import.meta.env.DEV || !Capacitor.isNativePlatform();
 const AdminPage = ADMIN_ENABLED ? lazy(() => import("./pages/AdminPage")) : null;
+const DevFriendPage = ADMIN_ENABLED ? lazy(() => import("./pages/DevFriendPage")) : null;
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,16 @@ const App = () => (
               element={
                 <Suspense fallback={<div className="p-8">Loading…</div>}>
                   <AdminPage />
+                </Suspense>
+              }
+            />
+          )}
+          {ADMIN_ENABLED && DevFriendPage && (
+            <Route
+              path="/dev-friend"
+              element={
+                <Suspense fallback={<div className="p-8">Loading…</div>}>
+                  <DevFriendPage />
                 </Suspense>
               }
             />

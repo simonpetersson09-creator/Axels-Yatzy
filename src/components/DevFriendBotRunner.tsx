@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 
@@ -21,8 +22,12 @@ interface PlayerRow {
 /** Keeps the development Testkompis running even after navigating into the match. */
 export default function DevFriendBotRunner() {
   const busyRef = useRef(false);
+  const { pathname } = useLocation();
 
   useEffect(() => {
+    // DevFriendPage owns the bot while its controls are visible; this runner
+    // takes over only after the tester navigates into the real match view.
+    if (pathname === '/dev-friend') return;
     let stopped = false;
 
     const tick = async () => {
@@ -112,7 +117,7 @@ export default function DevFriendBotRunner() {
       stopped = true;
       window.clearInterval(timer);
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

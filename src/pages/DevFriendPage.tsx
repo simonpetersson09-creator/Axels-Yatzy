@@ -336,6 +336,9 @@ export default function DevFriendPage() {
           Autospel: {autoPlay ? 'på' : 'av'}
         </Button>
         <Button disabled={busy || !game} variant="destructive" onClick={forfeit}>Bot ger upp</Button>
+        <Button disabled={busy} variant="outline" onClick={() => run('Städa', async () => { await cleanupGhostGames(); })}>
+          Avsluta botens matcher
+        </Button>
         <Button variant="outline" onClick={resetGhost}>Ny bot-session</Button>
       </div>
 

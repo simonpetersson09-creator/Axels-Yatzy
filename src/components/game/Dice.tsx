@@ -250,6 +250,10 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
   const resettingRef = useRef(false);
   const prevHasRolledRef = useRef(hasRolled);
   const rotationRef = useRef(valueToRotation[displayValue]);
+  // Always-current value, so effects/callbacks that intentionally skip
+  // `displayValue` in their deps never act on a stale face.
+  const displayValueRef = useRef(displayValue);
+  displayValueRef.current = displayValue;
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 
   const half = size / 2;
@@ -604,6 +608,26 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                 if (!rollingRef.current) return;
                 rollingRef.current = false;
                 setIsAnimating(false);
+                // Safety net: if the authoritative value arrived while the
+                // spin was in flight (the value effect bails out during a
+                // roll), snap to the correct face now so a die can never
+                // stay stuck on a stale number.
+                {
+                  const base = valueToRotation[displayValueRef.current];
+                  const cur = rotationRef.current;
+                  const mod = (n: number) => ((n % 360) + 360) % 360;
+                  const short = (from: number, to: number) => {
+                    const d = ((to - mod(from)) % 360 + 540) % 360 - 180;
+                    return d === -180 ? 180 : d;
+                  };
+                  const dX = short(cur.rotateX, base.rotateX);
+                  const dY = short(cur.rotateY, base.rotateY);
+                  if (dX !== 0 || dY !== 0) {
+                    const fixed = { rotateX: cur.rotateX + dX, rotateY: cur.rotateY + dY };
+                    rotationRef.current = fixed;
+                    setSpinRotation({ ...fixed, snap: true });
+                  }
+                }
                 playLandSound();
                 // Trigger the landing bounce on the die body.
                 setLandKey((k) => k + 1);
@@ -703,15 +727,23 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
           pointerEvents: 'none',
           background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 38%, rgba(0,0,0,0.06) 68%, transparent 88%)',
         }}
+        initial={false}
         animate={
           rolling
             ? { scaleX: 1.22, scaleY: 0.7, opacity: 0.3, filter: 'blur(3px)' }
-            : {
-                scaleX: locked ? [1.24, 0.94, 1.08] : [1.24, 0.86, 1],
-                scaleY: [0.68, 1.18, 1],
-                opacity: [0.34, 0.9, 0.72],
-                filter: ['blur(3px)', 'blur(0.5px)', 'blur(1px)'],
-              }
+            : landKey > 0
+              ? {
+                  scaleX: locked ? [1.24, 0.94, 1.08] : [1.24, 0.86, 1],
+                  scaleY: [0.68, 1.18, 1],
+                  opacity: [0.34, 0.9, 0.72],
+                  filter: ['blur(3px)', 'blur(0.5px)', 'blur(1px)'],
+                }
+              : {
+                  scaleX: locked ? 1.08 : 1,
+                  scaleY: 1,
+                  opacity: 0.72,
+                  filter: 'blur(1px)',
+                }
         }
         transition={
           rolling

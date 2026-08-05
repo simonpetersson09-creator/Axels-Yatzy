@@ -142,10 +142,10 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </linearGradient>
 
-        {/* Moving reflection band: much softer on matte porcelain */}
+        {/* Moving reflection band: now fully transparent so it never draws a white streak */}
         <linearGradient id="dfSweep" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
-          <stop offset="50%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.20" />
+          <stop offset="50%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
           <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0" />
         </linearGradient>
         <clipPath id="dfClip">

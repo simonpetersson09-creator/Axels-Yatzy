@@ -39,16 +39,13 @@ export function TurnIndicator({
   const isLeft = placement === 'left';
 
   const wrapperStyle: React.CSSProperties = isLeft
-    ? { right: 'calc(100% + 10px)', top: '50%', transform: 'translateY(calc(-50% - 16px))' }
-    : { bottom: 'calc(100% + 8px)' };
+    ? { right: 'calc(100% + 10px)', top: '50%', transform: 'translateY(-50%)' }
+    : { bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)' };
 
   return (
+    <div className="absolute z-10 pointer-events-none" style={wrapperStyle}>
     <motion.div
-      className={cn(
-        'absolute z-10 flex items-center pointer-events-none',
-        isLeft ? 'flex-row' : 'flex-col left-1/2 -translate-x-1/2'
-      )}
-      style={wrapperStyle}
+      className={cn('flex items-center', isLeft ? 'flex-row' : 'flex-col')}
       initial={{ opacity: 0, y: isLeft ? 0 : 8, x: isLeft ? 8 : 0, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 380, damping: 26 }}

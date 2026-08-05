@@ -109,8 +109,8 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
 
         {/* Soft porcelain bevel — light edge is gentle, not a bright streak */}
         <linearGradient id="dfBevelLight" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.70" />
-          <stop offset="50%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.15" />
+          <stop offset="0%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.30" />
+          <stop offset="50%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0.08" />
           <stop offset="100%" stopColor="hsl(var(--dice-edge-light))" stopOpacity="0" />
         </linearGradient>
 
@@ -137,9 +137,9 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
 
         {/* Pip rim light: faint porcelain reflection at the hole edge */}
         <linearGradient id="dfPipRim" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="black" stopOpacity="0.55" />
-          <stop offset="60%" stopColor="black" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.22" />
+          <stop offset="0%" stopColor="black" stopOpacity="0.35" />
+          <stop offset="60%" stopColor="black" stopOpacity="0.05" />
+          <stop offset="100%" stopColor="hsl(var(--dice-sheen))" stopOpacity="0.10" />
         </linearGradient>
 
         {/* Moving reflection band: much softer on matte porcelain */}
@@ -187,7 +187,7 @@ const DiceFace = memo(function DiceFace({ faceValue, size, sweep = false }: {
             {/* Subtle raised rim around the pip hole */}
             <circle
               cx={cx} cy={cy} r={pipR + 0.45}
-              fill="none" stroke="hsl(var(--dice-sheen))" strokeOpacity="0.22" strokeWidth="0.8"
+              fill="none" stroke="hsl(var(--dice-sheen))" strokeOpacity="0.10" strokeWidth="0.8"
             />
             {/* Inner shadow that makes the pip look carved in */}
             <circle cx={cx} cy={cy} r={pipR + 0.1} fill="url(#dfPipInner)" />

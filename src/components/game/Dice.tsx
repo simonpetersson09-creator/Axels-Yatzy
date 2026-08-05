@@ -135,18 +135,22 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
                     width: pipSize,
                     height: pipSize,
                     borderRadius: '50%',
-                    // Solid black pip (no transparency in color)
-                    background: '#000',
+                    // Deep drilled pip with a faint specular kick at bottom-right
+                    background:
+                      'radial-gradient(circle at 68% 74%, #2a2620 0%, #0b0a08 42%, #000 100%)',
                     boxShadow: [
                       // strong recess shadow (top-left dark rim sells the depth)
-                      'inset 2px 2.5px 3px rgba(0,0,0,0.9)',
+                      'inset 2px 2.5px 3.5px rgba(0,0,0,0.95)',
                       // bottom-right highlight rim — light bouncing off recess edge
-                      'inset -1px -1.5px 1.5px rgba(255,255,255,0.22)',
+                      'inset -1px -1.5px 2px rgba(255,255,255,0.3)',
                       // soft cast shadow on die surface around the pip
-                      '0 1.5px 2px rgba(0,0,0,0.45)',
+                      '0 1.5px 2.5px rgba(0,0,0,0.42)',
+                      // bright rim above the hole = carved, not painted
+                      '0 -0.5px 0 rgba(255,255,255,0.75)',
                       // tiny outer ring for contact definition
-                      '0 0 0 0.5px rgba(0,0,0,0.25)',
+                      '0 0 0 0.5px rgba(0,0,0,0.22)',
                     ].join(', '),
+
                   }}
                 />
               )}

@@ -75,9 +75,11 @@ const DiceFace = memo(function DiceFace({ faceValue, size }: {
         pointerEvents: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
-        overflow: 'hidden',
+        // No `overflow: hidden` — a rounded clip inside a rotating 3D context
+        // forces WebKit to re-rasterize the face on every frame (flimmer).
       }}
     >
+
       {/* Glossy top sheen — subtle */}
       <div
         style={{

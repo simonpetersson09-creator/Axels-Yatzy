@@ -543,12 +543,13 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                       rotateX: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                       rotateY: { duration: dur, ease: [0.16, 1, 0.3, 1] },
                     }
-                  : isResetting
-                    ? { duration: 0.85, ease: [0.33, 1, 0.68, 1] }
-                    : spinRotation.snap
-                      ? { duration: 0 }
+                  : spinRotation.snap
+                    ? { duration: 0 }
+                    : isResetting
+                      ? { duration: 0.52, ease: [0.22, 1, 0.36, 1] }
                       : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
               }
+
               onAnimationComplete={() => {
                 if (resettingRef.current) {
                   // Turn hand-over rewind finished — no landing bounce/sound.

@@ -501,7 +501,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.42), rgba(0,0,0,0.15) 42%, rgba(0,0,0,0.04) 66%, transparent 82%)',
         }}
         animate={{
-          scaleX: locked ? 1.12 : 1,
+          scaleX: locked ? 1.08 : 1,
           opacity: 0.65,
         }}
 

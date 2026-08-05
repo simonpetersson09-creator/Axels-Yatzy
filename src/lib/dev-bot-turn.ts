@@ -120,7 +120,22 @@ export async function playBotTurn(
       log('Bot: turen är inte längre botens — hoppar över poängval');
       return;
     }
-    const finalDice = (freshGame?.dice as number[] | undefined) ?? dice;
+
+    // The server refuses a score submission when no roll has happened this turn
+    // ("Du måste kasta tärningarna först"). If every roll above failed, do one
+    // last plain roll so the bot can always finish its turn.
+    let serverDice = (freshGame?.dice as number[] | undefined) ?? dice;
+    if (freshGame?.rolls_left === 3) {
+      log('Bot: inget kast registrerat — kastar en gång till innan poängval');
+      const { data: rollData, error: rollErr } = await supabase.functions.invoke('roll-dice', {
+        body: { game_id: game.id, session_id: sessionId },
+      });
+      if (rollErr) { log(`Bot roll-fel (fallback): ${rollErr.message}`); return; }
+      serverDice = (rollData?.dice as number[] | undefined) ?? serverDice;
+      await wait(BOT_ROLL_ANIM_MS);
+    }
+
+    const finalDice = serverDice;
     const finalScores = (freshPlayer?.scores as Record<string, number | null> | undefined) ?? player.scores;
 
     const category = aiPickCategory(finalDice, finalScores);

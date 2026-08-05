@@ -105,12 +105,9 @@ export function DiceGradientDefs() {
   );
 }
 
-const DiceFace = memo(function DiceFace({ faceValue, size, simple = false }: {
+const DiceFace = memo(function DiceFace({ faceValue, size }: {
   faceValue: number;
   size: number;
-  /** While the cube spins the fine shading layers are invisible anyway, so we
-   *  drop them — that halves the number of painted layers per frame on iOS. */
-  simple?: boolean;
 }) {
   const radius = size * 0.22;
   const r = 22; // corner radius in viewBox units
@@ -136,26 +133,20 @@ const DiceFace = memo(function DiceFace({ faceValue, size, simple = false }: {
       {/* Base ivory body */}
       <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfBody)" />
 
-      {!simple && (
-        <>
-          {/* Ambient occlusion darkening the bottom-right corner */}
-          <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfAo)" />
+      {/* Ambient occlusion darkening the bottom-right corner */}
+      <rect x="0" y="0" width="100" height="100" rx={r} ry={r} fill="url(#dfAo)" />
 
-          {/* Bottom/right bevel shadow */}
-          <rect
-            x="1.4" y="1.4" width="97.2" height="97.2"
-            rx={r - 1.4} ry={r - 1.4}
-            fill="none" stroke="url(#dfBevelDark)" strokeWidth="2.8"
-          />
-        </>
-      )}
+      {/* Bottom/right bevel shadow */}
+      <rect
+        x="1.4" y="1.4" width="97.2" height="97.2"
+        rx={r - 1.4} ry={r - 1.4}
+        fill="none" stroke="url(#dfBevelDark)" strokeWidth="2.8"
+      />
 
       {/* Pips */}
       {positions.map(i => {
         const [cx, cy] = PIP_COORDS[i];
-        return simple ? (
-          <circle key={i} cx={cx} cy={cy} r={pipR} fill="url(#dfPip)" />
-        ) : (
+        return (
           <g key={i}>
             {/* Inner shadow that makes the pip look carved in */}
             <circle cx={cx} cy={cy} r={pipR + 0.1} fill="url(#dfPipInner)" />
@@ -167,7 +158,6 @@ const DiceFace = memo(function DiceFace({ faceValue, size, simple = false }: {
     </svg>
   );
 });
-
 
 
 
@@ -604,11 +594,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                     transformStyle: 'flat',
                     WebkitTransformStyle: 'flat',
                     borderRadius: Math.round(S * 0.19),
-                    // Flat fill instead of a gradient: these planes are only
-                    // ever glimpsed through the rounded corners, and a solid
-                    // colour is a far cheaper paint during rotation.
-                    background: 'hsl(220 10% 94%)',
-
+                    background: 'linear-gradient(135deg, hsl(220 14% 98%) 0%, hsl(220 8% 90%) 100%)',
                     pointerEvents: 'none',
                   }}
                 />
@@ -631,7 +617,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
                     WebkitBackfaceVisibility: 'hidden',
                   }}
                 >
-                  <DiceFace faceValue={f.v} size={S} simple={isAnimating || isResetting} />
+                  <DiceFace faceValue={f.v} size={S} />
                 </div>
               ))}
             </motion.div>
@@ -678,9 +664,7 @@ export const Dice = memo(forwardRef<HTMLButtonElement, DiceProps>(function Dice(
           borderRadius: '50%',
           pointerEvents: 'none',
           background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 38%, rgba(0,0,0,0.06) 68%, transparent 88%)',
-          // No CSS filter: the radial gradient is already soft, and blur()
-          // forces an extra offscreen pass per die on every frame in WKWebView.
-
+          filter: 'blur(1px)',
         }}
         initial={false}
         animate={

@@ -581,13 +581,14 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: initial.gameId, p_session_id: sessionId }).then();
 
-    const locksConfirmed = await waitForPendingLocks();
-    if (!locksConfirmed) {
-      // Roll back — server state is unknown.
-      rollingGuardRef.current = false;
-      refreshGameStateRef.current?.(initial.gameId);
-      return false;
-    }
+    // Do NOT await pending lock RPCs here — that added a visible delay between
+    // the tap and the dice starting to spin (one server round-trip whenever the
+    // player had just locked/unlocked a die). The locks we need for the
+    // optimistic roll are already known locally via getPendingLockForTurn, so
+    // we start the animation immediately and only gate the server call on the
+    // lock confirmation (see locksPromise below).
+    const locksPromise = waitForPendingLocks();
+
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState) {
       rollingGuardRef.current = false;
@@ -656,11 +657,19 @@ export function useMultiplayerGame() {
     }
 
     // Fire RPC in parallel — we don't await it for the animation timing.
-    // Server writes the client_dice we provided (validated 1..6) so the
-    // authoritative values match what's already on screen; no retarget.
-    const rpcPromise = withTimeout(supabase.functions.invoke('roll-dice', {
-      body: { game_id: latest.gameId, session_id: sessionId, client_dice: optimisticDice },
-    })).then(({ data, error }) => {
+    // It waits for the pending lock RPCs first so the server sees the same
+    // locks we animated with. Server writes the client_dice we provided
+    // (validated 1..6) so the authoritative values match what's on screen.
+    const rpcPromise = locksPromise.then(async (locksConfirmed) => {
+      if (!locksConfirmed) {
+        // Server lock state is unknown — resync instead of rolling.
+        refreshGameStateRef.current?.(latest.gameId!);
+        return { data: null, error: new Error('lock-unconfirmed') } as { data: any; error: any };
+      }
+      return withTimeout(supabase.functions.invoke('roll-dice', {
+        body: { game_id: latest.gameId, session_id: sessionId, client_dice: optimisticDice },
+      }));
+    }).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
       // Only buffer while the roll is still in flight. If the grace period
       // already released the UI, writing here would flush later and make the

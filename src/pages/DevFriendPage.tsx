@@ -255,7 +255,7 @@ export default function DevFriendPage() {
     const { data, error } = await supabase.functions.invoke('respond-invite', {
       body: { invite_id: pending.id, session_id: ghostSession, action: 'accept' },
     });
-    if (error) return push(`Accept misslyckades: ${error.message}`);
+    if (error) return push(`Accept misslyckades: ${await readFnError(error)}`);
     const res = data as { success?: boolean; error?: string; game_id?: string };
     push(res?.success ? `Bot accepterade → match ${res.game_id}` : `Accept nekad: ${res?.error}`);
   }, [ghostSession, push]);

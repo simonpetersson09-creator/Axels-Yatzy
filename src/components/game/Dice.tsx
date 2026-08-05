@@ -392,7 +392,9 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           // Keep a stable compositor layer for the whole die. Toggling
           // will-change / animating `filter` per roll forced Safari to
           // re-rasterize the 3D subtree every frame → visible flimmer.
-          transform: 'translateZ(0)',
+          // Locked dice scale down slightly so the kept set reads instantly.
+          transform: locked ? 'translateZ(0) scale(0.84)' : 'translateZ(0) scale(1)',
+          transformOrigin: '50% 60%',
           boxShadow: locked
             ? '0 0 0 3px hsl(42 95% 66%), 0 0 0 5px hsl(34 80% 46%), 0 0 18px rgba(245,185,66,0.55), 0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.45)'
             : '0 14px 24px -6px rgba(0,0,0,0.42), 0 5px 9px rgba(0,0,0,0.24), 0 1px 0 rgba(255,255,255,0.28), inset 0 0 0 1px rgba(255,255,255,0.45)',
@@ -401,7 +403,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
           // every unlocked die faded from 1 → 0.5 at the exact frame rolling
           // ended (because canLock changed). On WebKit that opacity transition
           // also rebuilt the composited 3D layer, producing a strong flash.
-          transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1)',
+          transition: 'box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1)',
           opacity: 1,
         }}
       >

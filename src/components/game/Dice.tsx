@@ -331,13 +331,21 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
       type="button"
       onClick={handleToggle}
       disabled={!canLock}
-      aria-label="Toggle dice lock"
+      aria-pressed={locked}
+      aria-label={locked ? 'Lås upp tärning' : 'Lås tärning'}
       className={cn(
         'relative flex flex-col items-center overflow-visible touch-manipulation p-0 m-0 bg-transparent border-0 outline-none',
         canLock ? 'cursor-pointer' : 'cursor-default',
       )}
       style={{ width: size, height: size + 10, WebkitTapHighlightColor: 'transparent' }}
     >
+      {/* Generous invisible hit area — the die grows to 108% when locked and
+          sits inside a tilted wrapper, so taps near the edge used to miss. */}
+      <span
+        aria-hidden
+        style={{ position: 'absolute', left: -10, right: -10, top: -10, bottom: -6, zIndex: 60 }}
+      />
+
       {/* Lock sparkles */}
       <AnimatePresence>
         {showSparkle && sparkles.map((s, i) => (

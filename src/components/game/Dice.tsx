@@ -155,12 +155,11 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
 
   const half = size / 2;
   const radius = Math.round(size * 0.22);
-  // Supersampling: build the cube at 3x and scale it down. WebKit rasterizes
-  // a 3D subtree once at its layout size and then reuses that bitmap while the
-  // cube rotates — at 2x the magnified faces looked soft/pixelated mid-spin.
-  // 3x keeps the faces crisp through the whole rotation, including when a
-  // locked die is additionally scaled to 108%.
-  const SS = 3;
+  // Supersampling: build the cube at 2x and scale it down. WebKit rasterizes
+  // a 3D subtree once at its layout size, so rendering at 2x removes the
+  // pixelated/aliased edges and pips on retina screens. (3x was tested and
+  // looked worse — the extra layer size made WebKit downgrade rasterization.)
+  const SS = 2;
   const S = size * SS;
   const halfS = S / 2;
   const faces = useMemo(() => [

@@ -188,7 +188,7 @@ export function Dice({ value, locked, rolling, onToggleLock, canLock, size = 56,
   // Snap ("duration 0") is carried on the rotation state itself — see above.
 
   const half = size / 2;
-  const radius = Math.round(size * 0.22);
+  const radius = Math.round(size * 0.28);
   // Supersampling: build the cube at 2x and scale it down. WebKit rasterizes
   // a 3D subtree once at its layout size, so rendering at 2x removes the
   // pixelated/aliased edges and pips on retina screens. (3x was tested and

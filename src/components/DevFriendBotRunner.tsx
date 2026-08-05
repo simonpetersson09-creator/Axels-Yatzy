@@ -60,55 +60,13 @@ export default function DevFriendBotRunner() {
 
       busyRef.current = true;
       try {
-        let dice = game.dice;
-        let rollsLeft = game.rolls_left;
-        let locks = game.locked_dice;
-
-        while (!stopped && rollsLeft > 0) {
-          if (rollsLeft < 3) {
-            const wantedLocks = aiDecideLocks(dice, player.scores, rollsLeft);
-            for (let index = 0; index < 5; index += 1) {
-              if (wantedLocks[index] !== locks[index]) {
-                const { error } = await supabase.rpc('perform_toggle_lock', {
-                  p_game_id: game.id,
-                  p_session_id: ghostSession,
-                  p_dice_index: index,
-                });
-                if (error) throw error;
-              }
-            }
-            locks = wantedLocks;
-          }
-
-          const clientDice = Array.from({ length: 5 }, () => 1 + Math.floor(Math.random() * 6));
-          const { data, error } = await supabase.rpc('perform_roll_dice', {
-            p_game_id: game.id,
-            p_session_id: ghostSession,
-            p_client_dice: clientDice,
-          });
-          if (error) throw error;
-          const result = data as { success?: boolean; error?: string; dice?: number[]; rolls_left?: number };
-          if (!result.success) throw new Error(result.error ?? 'Botens kast nekades');
-          dice = result.dice ?? dice;
-          rollsLeft = result.rolls_left ?? rollsLeft - 1;
-          await new Promise((resolve) => setTimeout(resolve, 1500));
-        }
-
-        if (stopped) return;
-        const category = aiPickCategory(dice, player.scores);
-        const { data, error } = await supabase.rpc('perform_submit_score', {
-          p_game_id: game.id,
-          p_session_id: ghostSession,
-          p_category_id: category,
-        });
-        if (error) throw error;
-        const result = data as { success?: boolean; error?: string };
-        if (!result.success) throw new Error(result.error ?? 'Botens poängval nekades');
+        await playBotTurn(game, player, ghostSession);
       } catch (error) {
         console.error('Dev Testkompis kunde inte spela sin tur:', error);
       } finally {
         busyRef.current = false;
       }
+
     };
 
     void tick();

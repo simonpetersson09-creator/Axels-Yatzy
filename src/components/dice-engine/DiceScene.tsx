@@ -36,6 +36,7 @@ function DiceSceneImpl({
   duration = 1.1,
   resetKey = 0,
   pipColor,
+  holdColor,
   onToggleHold,
   className,
 }: DiceSceneProps) {

@@ -114,7 +114,7 @@ export default function InviteOverlay() {
         if (!Capacitor.isNativePlatform()) return;
         const { App } = await import('@capacitor/app');
         const sub = await App.addListener('appStateChange', ({ isActive }) => {
-          if (isActive) void load();
+          if (isActive) void load(true);
         });
         removeCap = () => { void sub.remove(); };
       } catch {
@@ -244,7 +244,7 @@ export default function InviteOverlay() {
         if (!Capacitor.isNativePlatform()) return;
         const { App } = await import('@capacitor/app');
         const sub = await App.addListener('appStateChange', ({ isActive }) => {
-          if (isActive) void poll();
+          if (isActive) void poll(true);
         });
         removeCap = () => { void sub.remove(); };
       } catch {

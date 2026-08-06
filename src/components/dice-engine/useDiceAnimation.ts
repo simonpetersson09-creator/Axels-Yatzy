@@ -52,7 +52,14 @@ interface Options {
   screenRight?: [number, number, number] | undefined;
   /** World vector pointing up on screen — the bounce direction. */
   screenUp?: [number, number, number] | undefined;
+  /**
+   * Bump this number to play the "clear the table" reset: the dice sweep out
+   * to the right (the direction they enter from), then glide back in on a
+   * neutral orientation. Used when a turn ends.
+   */
+  resetKey?: number;
 }
+
 
 const DEFAULT_RIGHT: [number, number, number] = [1, 0, 0];
 const DEFAULT_UP: [number, number, number] = [0, 1, 0];

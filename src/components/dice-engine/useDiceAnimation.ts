@@ -108,6 +108,17 @@ export function useDiceAnimation({
       settledValue: -1 as number,
       /** Value the currently running animation resolves to. */
       rollValue: -1 as number,
+      /* --- turn-reset sweep ------------------------------------------- */
+      /** true while the "clear the table" sweep is running. */
+      sweeping: false,
+      sweepT: 0,
+      sweepDelay: 0,
+      sweepDuration: 0.78,
+      sweepDistance: 0,
+      /** Orientation the sweep starts from (current resting pose). */
+      sweepFrom: new Quaternion(),
+      sweepSpin: new Quaternion(),
+      sweepAxis: randomAxis(new Vector3()),
     }),
     [duration],
   );

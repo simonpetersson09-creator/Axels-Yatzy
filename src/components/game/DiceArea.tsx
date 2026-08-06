@@ -78,6 +78,21 @@ export function DiceArea({
     }
   }, [rollsLeft]);
 
+  // Deferred pip colour: hold the previous player's tint until the dice have
+  // swept off-screen, then swap so the new colour arrives with the new dice.
+  const [shownPlayerIndex, setShownPlayerIndex] = useState(playerIndex);
+  useEffect(() => {
+    if (playerIndex === shownPlayerIndex) return;
+    if (shownPlayerIndex === undefined) {
+      setShownPlayerIndex(playerIndex);
+      return;
+    }
+    const t = window.setTimeout(() => setShownPlayerIndex(playerIndex), PIP_SWAP_DELAY_MS);
+    return () => window.clearTimeout(t);
+  }, [playerIndex, shownPlayerIndex]);
+
+
+
   const handleDieClick = useCallback(
     (index: number) => {
       if (!canLock) return;

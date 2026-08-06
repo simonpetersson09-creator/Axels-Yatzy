@@ -57,8 +57,8 @@ export function DiceArea({
             onRollComplete={() => {
               /* The game state owns roll timing; nothing to do here. */
             }}
-            spacing={0.16}
-            fill={0.97}
+            spacing={0.35}
+            fill={1}
             duration={1.3}
             className="absolute inset-0"
           />

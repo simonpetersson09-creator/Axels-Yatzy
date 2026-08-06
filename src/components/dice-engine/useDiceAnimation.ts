@@ -173,6 +173,7 @@ export function useDiceAnimation({
     state.sweepDistance = size * (10 + jitterFor(index) * 2);
     state.settling = false;
     state.animating = false;
+    state.pendingRoll = false;
     state.sweeping = true;
     state.settledValue = value;
 
@@ -211,6 +212,7 @@ export function useDiceAnimation({
       }
 
       state.animating = false;
+      state.pendingRoll = false;
       return;
     }
 

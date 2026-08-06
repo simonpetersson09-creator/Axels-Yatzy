@@ -189,6 +189,8 @@ cameraDirection: 1,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  // On native the OS scanner UI is shown fullscreen on top of the webview, so
+  // we only render a thin backdrop (plus any error state).
   return (
     <AnimatePresence>
       {open && (
@@ -214,10 +216,10 @@ cameraDirection: 1,
 
           {/* Camera view */}
           <div className="flex-1 relative flex items-center justify-center overflow-hidden">
-            <div id="qr-reader" className="w-full h-full" />
+            {!isNative && <div id="qr-reader" className="w-full h-full" />}
 
             {/* Corner brackets overlay */}
-            {!error && scanning && (
+            {!isNative && !error && scanning && (
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 <div className="relative w-56 h-56">
                   <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-primary" />
@@ -227,6 +229,7 @@ cameraDirection: 1,
                 </div>
               </div>
             )}
+
 
             {error && (
               <div className="absolute inset-0 flex items-center justify-center p-6">

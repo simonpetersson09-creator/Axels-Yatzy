@@ -225,10 +225,31 @@ export function useDiceAnimation({
     state.delay = reducedMotion ? 0 : index * 0.04;
     // Every die enters from off-screen right, with a little per-die variance.
     state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
+
+    // A roll starting while the end-of-turn sweep is still running (typical at
+    // hand-off: the turn resets, the dice sweep out, and the next player rolls
+    // right away) must not teleport the die. Continue from wherever it is on
+    // the sweep so the motion reads as one continuous out-and-in instead of
+    // the dice blinking away and coming back twice.
+    if (state.sweeping && !reducedMotion) {
+      const travelNow = travelRef.current;
+      if (travelNow) {
+        const current = state.right
+          .set(screenRight[0], screenRight[1], screenRight[2])
+          .normalize()
+          .dot(travelNow.position);
+        if (current > size * 1.5) {
+          state.entry = current;
+          state.delay = 0;
+        }
+      }
+    }
+
     state.settling = false;
     // A new roll always wins over a running reset sweep.
     state.sweeping = false;
     state.animating = true;
+
     state.rollValue = value;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

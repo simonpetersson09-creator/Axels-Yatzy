@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 // WebGL is browser-only — load the engine lazily on the client.

@@ -129,7 +129,7 @@ export function DiceArea({
               held={toFive(lockedDice, false)}
               rolling={isRolling}
               resetKey={resetKey}
-              pipColor={typeof playerIndex === 'number' ? PIP_COLORS[playerIndex % PIP_COLORS.length] : undefined}
+              pipColor={typeof shownPlayerIndex === "number" ? PIP_COLORS[shownPlayerIndex % PIP_COLORS.length] : undefined}
               onRollComplete={() => {
                 /* The game state owns roll timing; nothing to do here. */
               }}

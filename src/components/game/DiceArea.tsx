@@ -16,8 +16,7 @@ interface DiceAreaProps {
   playerIndex?: number;
 }
 
-/** Pip tints per player slot — rich, saturated jewel tones that stay legible
- *  against the ivory die face. */
+/** Placeholder kept for layout; no per-player tint is applied to pips. */
 const PIP_COLORS = [
   'hsl(38, 92%, 40%)',
   'hsl(214, 82%, 46%)',
@@ -25,8 +24,7 @@ const PIP_COLORS = [
   'hsl(352, 76%, 44%)',
 ];
 
-/** The pip colour swaps while the dice are off-screen mid-sweep, so the change
- *  is never visible on the outgoing dice — only on the incoming ones. */
+/** Delay kept for compatibility; no colour swap occurs now. */
 const PIP_SWAP_DELAY_MS = 450;
 
 

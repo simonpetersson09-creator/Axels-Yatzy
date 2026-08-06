@@ -48,6 +48,19 @@ export function DiceArea({
   const overscanX = Math.round((overscanWidth - columnWidth) / 2);
   const overscanY = Math.round((overscanHeight - columnHeight) / 2);
 
+  // End-of-turn reset: when the roll counter goes back to 3 after a played
+  // turn, the dice sweep off to the right and glide back in on a clean pose.
+  const [resetKey, setResetKey] = useState(0);
+  const hadRolledRef = useRef(false);
+  useEffect(() => {
+    if (rollsLeft < 3) {
+      hadRolledRef.current = true;
+    } else if (hadRolledRef.current) {
+      hadRolledRef.current = false;
+      setResetKey((k) => k + 1);
+    }
+  }, [rollsLeft]);
+
   const handleDieClick = useCallback(
     (index: number) => {
       if (!canLock) return;

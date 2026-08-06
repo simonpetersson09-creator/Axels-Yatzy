@@ -41,6 +41,32 @@ function markOutboundHandled(key: string) {
   }
 }
 
+// Both pollers below need the exact same row set. They used to fire two
+// separate RPCs every 3 s and 4 s, i.e. ~0.6 network round-trips per second for
+// the entire lifetime of the app — on iOS that constant JSON parsing + state
+// churn showed up as general stutter. They now share one in-flight request and
+// a short result cache, and they never poll while the app is backgrounded.
+let invitesCache: { at: number; rows: InviteRow[] } = { at: 0, rows: [] };
+let invitesInFlight: Promise<InviteRow[]> | null = null;
+const INVITES_CACHE_MS = 2500;
+
+async function fetchInvites(sessionId: string, force = false): Promise<InviteRow[]> {
+  if (!force && Date.now() - invitesCache.at < INVITES_CACHE_MS) return invitesCache.rows;
+  if (invitesInFlight) return invitesInFlight;
+  invitesInFlight = (async () => {
+    try {
+      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
+      invitesCache = { at: Date.now(), rows: (data ?? []) as InviteRow[] };
+    } catch {
+      /* keep previous rows on a transient failure */
+    } finally {
+      invitesInFlight = null;
+    }
+    return invitesCache.rows;
+  })();
+  return invitesInFlight;
+}
+
 export default function InviteOverlay() {
 
   const navigate = useNavigate();
@@ -49,6 +75,7 @@ export default function InviteOverlay() {
   const handledRef = useRef<Set<string>>(new Set());
   const sessionId = getSessionId();
   const incoming = queue[0] ?? null;
+
 
   const enqueue = useCallback((row: InviteRow) => {
     if (handledRef.current.has(row.id)) return;
@@ -59,11 +86,12 @@ export default function InviteOverlay() {
   // access goes through the SECURITY DEFINER RPC list_invites_for_session).
   useEffect(() => {
     let cancelled = false;
-    const load = async () => {
-      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
+    const load = async (force = false) => {
+      if (!force && document.hidden) return;
+      const data = await fetchInvites(sessionId, force);
       if (cancelled || !data) return;
       const now = Date.now();
-      for (const row of data as InviteRow[]) {
+      for (const row of data) {
         if (row.to_session_id !== sessionId) continue;
         if (row.status !== 'pending') continue;
         if (row.expires_at && new Date(row.expires_at).getTime() <= now) continue;
@@ -72,11 +100,11 @@ export default function InviteOverlay() {
         }
       }
     };
-    load();
-    const iv = setInterval(load, 4000);
+    void load(true);
+    const iv = setInterval(() => void load(), 5000);
     // Refresh immediately when the app returns to the foreground / tab is refocused
     // so a pending invite shows up the moment the user opens the app.
-    const onFocus = () => { void load(); };
+    const onFocus = () => { if (!document.hidden) void load(true); };
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onFocus);
     let removeCap: (() => void) | undefined;
@@ -86,7 +114,7 @@ export default function InviteOverlay() {
         if (!Capacitor.isNativePlatform()) return;
         const { App } = await import('@capacitor/app');
         const sub = await App.addListener('appStateChange', ({ isActive }) => {
-          if (isActive) void load();
+          if (isActive) void load(true);
         });
         removeCap = () => { void sub.remove(); };
       } catch {
@@ -136,10 +164,11 @@ export default function InviteOverlay() {
   useEffect(() => {
     let cancelled = false;
     const seenOutbound = new Set<string>();
-    const poll = async () => {
-      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
-      if (cancelled || !data) return;
-      const rows = data as InviteRow[];
+    const poll = async (force = false) => {
+      if (!force && document.hidden) return;
+      const rows = await fetchInvites(sessionId, force);
+      if (cancelled || !rows) return;
+
 
       // Outbound: I'm the sender
       for (const row of rows) {
@@ -201,11 +230,11 @@ export default function InviteOverlay() {
         return next.length === cur.length ? cur : next;
       });
     };
-    poll();
-    const iv = setInterval(poll, 3000);
+    void poll(true);
+    const iv = setInterval(() => void poll(), 5000);
     // Also poll the moment the app/tab returns to the foreground so an accept
     // that happened while we were backgrounded opens the match immediately.
-    const onForeground = () => { void poll(); };
+    const onForeground = () => { if (!document.hidden) void poll(true); };
     window.addEventListener('focus', onForeground);
     document.addEventListener('visibilitychange', onForeground);
     let removeCap: (() => void) | undefined;
@@ -215,7 +244,7 @@ export default function InviteOverlay() {
         if (!Capacitor.isNativePlatform()) return;
         const { App } = await import('@capacitor/app');
         const sub = await App.addListener('appStateChange', ({ isActive }) => {
-          if (isActive) void poll();
+          if (isActive) void poll(true);
         });
         removeCap = () => { void sub.remove(); };
       } catch {

@@ -141,6 +141,42 @@ export function useDiceAnimation({
     state.settledValue = value;
   };
 
+  /**
+   * Turn reset: sweep the dice off to the right (mirroring how they enter),
+   * then glide them back in on a clean, neutral orientation.
+   *
+   * NOTE: this effect is declared *before* the roll effect on purpose. When a
+   * turn ends, the new (reset) dice values and the bumped `resetKey` arrive in
+   * the same commit; running the sweep first means `state.sweeping` is already
+   * true when the value effect runs, so it can never hard-snap the die to the
+   * new number while it is still on screen.
+   */
+  useEffect(() => {
+    if (!resetKey) return;
+    const group = groupRef.current;
+    if (!group) return;
+
+    if (reducedMotion) {
+      settle();
+      return;
+    }
+
+    state.sweepFrom.copy(group.quaternion);
+    // Land straight, without the random yaw variation used after a roll.
+    getFaceQuaternion(value, 0, state.target);
+    randomAxis(state.sweepAxis);
+    state.sweepT = 0;
+    state.sweepDelay = index * 0.05;
+    state.sweepDuration = 0.8;
+    state.sweepDistance = size * (10 + jitterFor(index) * 2);
+    state.settling = false;
+    state.animating = false;
+    state.sweeping = true;
+    state.settledValue = value;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey]);
+
   // Start / restart a roll whenever `rolling` flips on (held dice are skipped).
   useEffect(() => {
     const group = groupRef.current;

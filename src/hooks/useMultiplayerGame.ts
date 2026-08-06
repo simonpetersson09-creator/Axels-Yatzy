@@ -476,7 +476,45 @@ export function useMultiplayerGame() {
             isRolling: !!next.is_rolling,
           });
         }
+
+        // Turn hand-off (the opponent scored): apply the turn change straight
+        // from the realtime payload instead of waiting for the debounced
+        // refresh round-trip. Otherwise the dice sweep-out only started
+        // ~100–400 ms after the opponent actually finished their turn.
+        const turnHandedOver =
+          prevGS &&
+          myIdx !== null &&
+          !opponentRolled &&
+          !rollingGuardRef.current &&
+          !pendingSubmitRef.current &&
+          next.current_player_index !== undefined &&
+          next.rolls_left === 3 &&
+          (next.current_player_index !== prevGS.currentPlayerIndex ||
+            (next.round !== undefined && next.round !== prevGS.round));
+        if (turnHandedOver) {
+          if (remoteRollingTimerRef.current) {
+            clearTimeout(remoteRollingTimerRef.current);
+            remoteRollingTimerRef.current = null;
+          }
+          pendingRollUpdateRef.current = null;
+          remoteRollingGuardRef.current = false;
+          setRemoteRolling(false);
+          setState(prev => prev.gameState ? {
+            ...prev,
+            gameState: {
+              ...prev.gameState,
+              dice: next.dice ?? [1, 1, 1, 1, 1],
+              lockedDice: next.locked_dice ?? [false, false, false, false, false],
+              rollsLeft: 3,
+              isRolling: false,
+              currentPlayerIndex: next.current_player_index!,
+              round: next.round ?? prev.gameState.round,
+            },
+          } : prev);
+        }
+
         debouncedRefresh(gameId);
+
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'game_players', filter: `game_id=eq.${gameId}` }, () => {
         debouncedRefresh(gameId);

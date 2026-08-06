@@ -439,7 +439,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
                   )}>
                     {color.label}
                   </span>
-                </motion.div>
+                </div>
               ) : (
                 <div className="w-6 h-6 rounded-full bg-yatzy-line/10" />
               )}

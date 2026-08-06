@@ -286,7 +286,15 @@ export function useMultiplayerGame() {
     // They will be flushed at the end of ROLL_ANIM_MS so the spin animation
     // never sees its target value change mid-flight.
     if (!opponentTurnEnded && (rollingGuardRef.current || remoteRollingGuardRef.current)) {
-      pendingRollUpdateRef.current = dicePart;
+      // Do NOT overwrite the buffer with a snapshot that predates the roll we
+      // are currently animating. A refresh that fires while our own roll RPC is
+      // still in flight returns the PREVIOUS dice (higher rolls_left); flushing
+      // those made the dice change faces right after they landed, and then jump
+      // back once the real payload arrived.
+      const buffered = pendingRollUpdateRef.current;
+      const isStale = !!buffered && dicePart.rollsLeft > buffered.rollsLeft;
+      if (!isStale) pendingRollUpdateRef.current = dicePart;
+
       setState(prev => ({
         ...prev,
         gameId: game.id,
@@ -348,15 +356,34 @@ export function useMultiplayerGame() {
         };
       }
 
+      // Late/stale snapshot for my own turn: the server row hadn't yet been
+      // written when this read ran (rolls_left is higher than what we already
+      // show locally). Applying it would briefly display the previous roll's
+      // faces before the next payload corrects them.
+      const staleMyTurn =
+        prevGS &&
+        isMyTurnNow &&
+        restPart.currentPlayerIndex === prevGS.currentPlayerIndex &&
+        restPart.round === prevGS.round &&
+        dicePart.rollsLeft > prevGS.rollsLeft;
+
       return {
         ...prev,
         gameId: game.id,
         gameCode: game.game_code,
         status: gameStatus,
-        gameState: gameStateNext,
+        gameState: staleMyTurn
+          ? {
+              ...gameStateNext,
+              dice: prevGS.dice,
+              lockedDice: prevGS.lockedDice,
+              rollsLeft: prevGS.rollsLeft,
+            }
+          : gameStateNext,
         loading: false,
         error: null,
       };
+
     });
   }, [startRemoteRolling, getPendingLockForTurn]);
 

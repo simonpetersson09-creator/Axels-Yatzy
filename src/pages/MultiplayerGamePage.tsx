@@ -190,8 +190,31 @@ export default function MultiplayerGamePage() {
       if (!live.isMyTurn || live.gameState.rollsLeft !== 3) return;
       if (`${live.gameState.currentPlayerIndex}-${live.gameState.round}` !== key) return;
       autoRollRef.current = key;
-      rollFnRef.current();
+      Promise.resolve(rollFnRef.current())
+        .then((ok) => {
+          // roll() returns false when it was blocked (rolling guard still held
+          // from the previous turn, stale snapshot, etc.). Retry a few times so
+          // "Kast 1" never silently fails to fire.
+          if (ok !== false) return;
+          const tries = (autoRollRetryCountRef.current.get(key) ?? 0) + 1;
+          autoRollRetryCountRef.current.set(key, tries);
+          if (tries > 6) return;
+          if (autoRollRef.current === key) autoRollRef.current = null;
+          if (autoRollRetryTimerRef.current) clearTimeout(autoRollRetryTimerRef.current);
+          autoRollRetryTimerRef.current = setTimeout(() => {
+            autoRollRetryTimerRef.current = null;
+            const l = liveStateRef.current;
+            if (!l.gameState || l.status !== 'playing') return;
+            if (!l.isMyTurn || l.gameState.rollsLeft !== 3) return;
+            if (`${l.gameState.currentPlayerIndex}-${l.gameState.round}` !== key) return;
+            autoRollRef.current = key;
+            Promise.resolve(rollFnRef.current()).then((ok2) => {
+              if (ok2 === false && autoRollRef.current === key) autoRollRef.current = null;
+            });
+          }, 350);
+        });
     }, 300);
+
     return () => {
       if (autoRollTimerRef.current) {
         clearTimeout(autoRollTimerRef.current);

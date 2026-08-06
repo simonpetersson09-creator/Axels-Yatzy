@@ -53,14 +53,17 @@ const INVITES_CACHE_MS = 2500;
 async function fetchInvites(sessionId: string, force = false): Promise<InviteRow[]> {
   if (!force && Date.now() - invitesCache.at < INVITES_CACHE_MS) return invitesCache.rows;
   if (invitesInFlight) return invitesInFlight;
-  invitesInFlight = supabase
-    .rpc('list_invites_for_session', { p_session_id: sessionId })
-    .then(({ data }) => {
+  invitesInFlight = (async () => {
+    try {
+      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
       invitesCache = { at: Date.now(), rows: (data ?? []) as InviteRow[] };
-      return invitesCache.rows;
-    })
-    .catch(() => invitesCache.rows)
-    .finally(() => { invitesInFlight = null; });
+    } catch {
+      /* keep previous rows on a transient failure */
+    } finally {
+      invitesInFlight = null;
+    }
+    return invitesCache.rows;
+  })();
   return invitesInFlight;
 }
 

@@ -11,13 +11,33 @@
  *     onToggleHold={(index) => {}}
  *   />
  */
-import { memo, useMemo } from "react";
-import { Canvas } from "@react-three/fiber";
+import { memo, useEffect, useMemo } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 import { DiceTray } from "./DiceTray";
 import type { DiceSceneProps } from "./types";
 
 const EMPTY_HELD: boolean[] = [];
+
+/**
+ * Compiles every material in the scene as soon as the canvas exists, so the
+ * first animated frame (the fly-in of the very first roll) never pays for
+ * shader compilation and texture upload.
+ */
+function Warmup() {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  useEffect(() => {
+    try {
+      gl.compile(scene, camera);
+      gl.render(scene, camera);
+    } catch {
+      /* Warmup is best-effort only. */
+    }
+  }, [gl, scene, camera]);
+  return null;
+}
 
 /**
  * Stable camera descriptor. It MUST be a module constant: an inline object is
@@ -83,6 +103,7 @@ function DiceSceneImpl({
           holdColor={holdColor}
           onToggleHold={onToggleHold}
         />
+        <Warmup />
       </Canvas>
     </div>
   );

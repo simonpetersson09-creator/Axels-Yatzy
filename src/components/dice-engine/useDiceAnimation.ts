@@ -247,9 +247,10 @@ export function useDiceAnimation({
         offset = state.sweepDistance * k;
         lift = size * 0.22 * Math.sin(Math.PI * k);
         angle = k * Math.PI * 1.2;
-        group.quaternion
-          .copy(state.sweepFrom)
-          .slerp(state.target, Math.min(k * 1.4, 1));
+        // Keep the exact face the die landed on all the way out — the number
+        // must not change while the die is still visible.
+        group.quaternion.copy(state.sweepFrom);
+
       } else {
         const u = (t - OUT) / (1 - OUT);
         offset = state.sweepDistance * (1 - easeOutQuart(u));

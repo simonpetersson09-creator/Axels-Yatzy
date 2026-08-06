@@ -64,9 +64,6 @@ export function DiceArea({
     }
   }, [rollsLeft]);
 
-
-
-
   const handleDieClick = useCallback(
     (index: number) => {
       if (!canLock) return;

@@ -37,6 +37,8 @@ export interface DiceSceneProps extends DiceConfig {
   rolling?: boolean;
   /** Bump this number to play the end-of-turn reset sweep. */
   resetKey?: number;
+  /** Optional pip tint (any CSS colour), e.g. the active player's colour. */
+  pipColor?: string | undefined;
   /** Fired when a die is tapped/clicked. */
   onToggleHold?: (index: number) => void;
   /** Optional className for the wrapping element (full size by default). */

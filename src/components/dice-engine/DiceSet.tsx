@@ -25,6 +25,8 @@ export type DiceSetProps = {
   onRollComplete?: () => void;
   /** Bump to play the end-of-turn reset sweep (dice sweep out and back in). */
   resetKey?: number;
+  /** Optional pip tint (any CSS colour), e.g. the active player's colour. */
+  pipColor?: string | undefined;
 } & DiceConfig & {
     /** Optional className for the wrapper (fills its container by default). */
     className?: string;
@@ -44,6 +46,7 @@ function DiceSetImpl({
   fill = 1,
   duration = 1.1,
   resetKey = 0,
+  pipColor,
   className,
 }: DiceSetProps) {
   const safeValues = values.map(clampValue);
@@ -69,6 +72,7 @@ function DiceSetImpl({
       fill={fill}
       duration={duration}
       resetKey={resetKey}
+      pipColor={pipColor}
       {...(onDieClick ? { onToggleHold: onDieClick } : {})}
       {...(className ? { className } : {})}
     />

@@ -21,6 +21,8 @@ export interface DiceTrayProps {
   onToggleHold?: ((index: number) => void) | undefined;
   /** Bump to play the end-of-turn reset sweep on every die. */
   resetKey?: number;
+  /** Optional pip tint (any CSS colour). */
+  pipColor?: string | undefined;
 }
 
 function DiceTrayImpl({
@@ -33,6 +35,7 @@ function DiceTrayImpl({
   duration,
   onToggleHold,
   resetKey = 0,
+  pipColor,
 }: DiceTrayProps) {
   const cameraRef = useRef<PerspectiveCameraImpl>(null);
   const viewportWidth = useThree((s) => s.size.width);
@@ -155,6 +158,7 @@ function DiceTrayImpl({
           screenRight={screenRight}
           screenUp={screenUp}
           resetKey={resetKey}
+          pipColor={pipColor}
           onTap={onToggleHold}
         />
       ))}

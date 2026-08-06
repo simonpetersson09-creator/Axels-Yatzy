@@ -69,6 +69,21 @@ const pipMaterial = new MeshStandardMaterial({
 
 const pipGeometry = new SphereGeometry(1, 32, 22);
 
+/**
+ * Pips can be tinted to the active player's colour. Materials are cached per
+ * colour so switching players never allocates a new material each frame.
+ */
+const pipMaterialCache = new Map<string, MeshStandardMaterial>();
+function getPipMaterial(color?: string): MeshStandardMaterial {
+  if (!color) return pipMaterial;
+  const cached = pipMaterialCache.get(color);
+  if (cached) return cached;
+  const mat = pipMaterial.clone();
+  mat.color.set(color);
+  pipMaterialCache.set(color, mat);
+  return mat;
+}
+
 /** Soft blurred blob used as a per-die grounding shadow. */
 function createShadowTexture(): CanvasTexture | null {
   if (typeof document === "undefined") return null;
@@ -184,7 +199,8 @@ const FACES: { value: DiceValue; rotation: [number, number, number] }[] = [
 
 /* ------------------------------------------------------------------ pips */
 
-function FacePips({ value, size }: { value: DiceValue; size: number }) {
+function FacePips({ value, size, pipColor }: { value: DiceValue; size: number; pipColor?: string | undefined }) {
+  const material = getPipMaterial(pipColor);
   const pipRadius = size * 0.085;
   const offset = size * 0.24;
   // Keep a thin visible dome above the face while avoiding protruding spheres.
@@ -206,7 +222,7 @@ function FacePips({ value, size }: { value: DiceValue; size: number }) {
           )}
           <mesh
             geometry={pipGeometry}
-            material={pipMaterial}
+            material={material}
             position={[0, 0, depth]}
             scale={[pipRadius, pipRadius, pipRadius * 0.12]}
             renderOrder={2}
@@ -238,6 +254,8 @@ export interface Dice3DProps {
   onTap?: ((index: number) => void) | undefined;
   /** Bump to play the end-of-turn sweep-out/sweep-in reset. */
   resetKey?: number;
+  /** Optional pip tint (any CSS colour). Defaults to near-black ink. */
+  pipColor?: string | undefined;
 }
 
 function Dice3DImpl({
@@ -252,6 +270,7 @@ function Dice3DImpl({
   screenUp,
   onTap,
   resetKey,
+  pipColor,
 }: Dice3DProps) {
   const { groupRef, travelRef } = useDiceAnimation({
     value,
@@ -336,7 +355,7 @@ function Dice3DImpl({
                 />
                 {FACES.map((face) => (
                   <group key={face.value} rotation={face.rotation}>
-                    <FacePips value={face.value} size={size} />
+                    <FacePips value={face.value} size={size} pipColor={pipColor} />
                   </group>
                 ))}
               </group>

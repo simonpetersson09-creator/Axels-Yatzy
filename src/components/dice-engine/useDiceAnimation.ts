@@ -127,6 +127,8 @@ export function useDiceAnimation({
       sweepFrom: new Quaternion(),
       sweepSpin: new Quaternion(),
       sweepAxis: randomAxis(new Vector3()),
+      /** A roll requested while the sweep is still on its way out. */
+      pendingRoll: false,
     }),
     [duration],
   );

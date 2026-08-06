@@ -356,15 +356,34 @@ export function useMultiplayerGame() {
         };
       }
 
+      // Late/stale snapshot for my own turn: the server row hadn't yet been
+      // written when this read ran (rolls_left is higher than what we already
+      // show locally). Applying it would briefly display the previous roll's
+      // faces before the next payload corrects them.
+      const staleMyTurn =
+        prevGS &&
+        isMyTurnNow &&
+        restPart.currentPlayerIndex === prevGS.currentPlayerIndex &&
+        restPart.round === prevGS.round &&
+        dicePart.rollsLeft > prevGS.rollsLeft;
+
       return {
         ...prev,
         gameId: game.id,
         gameCode: game.game_code,
         status: gameStatus,
-        gameState: gameStateNext,
+        gameState: staleMyTurn
+          ? {
+              ...gameStateNext,
+              dice: prevGS.dice,
+              lockedDice: prevGS.lockedDice,
+              rollsLeft: prevGS.rollsLeft,
+            }
+          : gameStateNext,
         loading: false,
         error: null,
       };
+
     });
   }, [startRemoteRolling, getPendingLockForTurn]);
 

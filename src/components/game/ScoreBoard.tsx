@@ -413,16 +413,15 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
               } : undefined}
             >
               {player ? (
-                <motion.div 
+                <div
                   className={cn(
                     'flex flex-col items-center gap-0.5 px-1 py-1 rounded-full transition-all duration-500 ease-out',
-                    isCurrent 
-                      ? `${color.activeBg} ${color.glow}` 
+                    isCurrent
+                      ? `${color.activeBg} ${color.glow} ui-scale-pulse`
                       : ``
                   )}
-                  animate={isCurrent ? { scale: [1, 1.05, 1] } : {}}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
+
                   {isCurrent ? (
                     <span className="relative flex h-2 w-2" style={{ color: `hsl(${hsl})` }}>
                       <span

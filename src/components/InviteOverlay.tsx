@@ -164,10 +164,11 @@ export default function InviteOverlay() {
   useEffect(() => {
     let cancelled = false;
     const seenOutbound = new Set<string>();
-    const poll = async () => {
-      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
-      if (cancelled || !data) return;
-      const rows = data as InviteRow[];
+    const poll = async (force = false) => {
+      if (!force && document.hidden) return;
+      const rows = await fetchInvites(sessionId, force);
+      if (cancelled || !rows) return;
+
 
       // Outbound: I'm the sender
       for (const row of rows) {

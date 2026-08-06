@@ -16,7 +16,8 @@ import FriendsListPage from "./pages/FriendsListPage";
 import LegalPage from "./pages/LegalPage";
 import NotFound from "./pages/NotFound";
 import { MultiplayerProvider } from "./hooks/MultiplayerProvider";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { preloadDiceEngine } from "./components/dice-engine/preload";
 import InviteOverlay from "./components/InviteOverlay";
 import NotificationNavigator from "./components/NotificationNavigator";
 
@@ -29,12 +30,21 @@ const DevFriendBotRunner = ADMIN_ENABLED ? lazy(() => import("./components/DevFr
 
 const queryClient = new QueryClient();
 
+/** Prefetches the 3D dice chunk during idle time so the first roll is smooth. */
+const DiceEnginePreloader = () => {
+  useEffect(() => {
+    preloadDiceEngine();
+  }, []);
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <DiceEnginePreloader />
         <InviteOverlay />
         <NotificationNavigator />
         {ADMIN_ENABLED && DevFriendBotRunner && (

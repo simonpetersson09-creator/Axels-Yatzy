@@ -11,6 +11,9 @@ import { rollSingleDie } from '@/lib/yatzy-scoring';
 export const BOT_ROLL_ANIM_MS = 1500;   // matches ROLL_ANIM_MS in useMultiplayerGame
 const BOT_LOCK_DELAY_MS = 260;          // human-ish pause per lock tap
 const BOT_THINK_MS = 180;               // short pause before picking a category
+// The opponent's spin starts a bit later than ours (broadcast latency), so we
+// let their animation land before the score submit changes the turn.
+const BOT_SETTLE_MS = 420;
 
 interface BotGame {
   id: string;
@@ -104,7 +107,7 @@ export async function playBotTurn(
       log(`Bot kastade: ${dice.join(' ')} (${rollsLeft} kast kvar)`);
     }
 
-    await wait(BOT_THINK_MS);
+    await wait(BOT_THINK_MS + BOT_SETTLE_MS);
 
     // Use authoritative server state for the decision (the snapshot can be stale
     // if a roll failed or the realtime update arrived late).

@@ -86,11 +86,12 @@ export default function InviteOverlay() {
   // access goes through the SECURITY DEFINER RPC list_invites_for_session).
   useEffect(() => {
     let cancelled = false;
-    const load = async () => {
-      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
+    const load = async (force = false) => {
+      if (!force && document.hidden) return;
+      const data = await fetchInvites(sessionId, force);
       if (cancelled || !data) return;
       const now = Date.now();
-      for (const row of data as InviteRow[]) {
+      for (const row of data) {
         if (row.to_session_id !== sessionId) continue;
         if (row.status !== 'pending') continue;
         if (row.expires_at && new Date(row.expires_at).getTime() <= now) continue;
@@ -99,8 +100,8 @@ export default function InviteOverlay() {
         }
       }
     };
-    load();
-    const iv = setInterval(load, 4000);
+    void load(true);
+    const iv = setInterval(() => void load(), 5000);
     // Refresh immediately when the app returns to the foreground / tab is refocused
     // so a pending invite shows up the moment the user opens the app.
     const onFocus = () => { void load(); };

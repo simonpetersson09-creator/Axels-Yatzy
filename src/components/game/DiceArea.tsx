@@ -12,21 +12,9 @@ interface DiceAreaProps {
   onToggleLock: (index: number) => void;
   compact?: boolean;
   className?: string;
-  /** Index of the player whose turn it is — tints the pips in their colour. */
+  /** Kept for compatibility; pips are now always black. */
   playerIndex?: number;
 }
-
-/** Placeholder kept for layout; no per-player tint is applied to pips. */
-const PIP_COLORS = [
-  'hsl(38, 92%, 40%)',
-  'hsl(214, 82%, 46%)',
-  'hsl(158, 72%, 27%)',
-  'hsl(352, 76%, 44%)',
-];
-
-/** Delay kept for compatibility; no colour swap occurs now. */
-const PIP_SWAP_DELAY_MS = 450;
-
 
 type Five<T> = [T, T, T, T, T];
 

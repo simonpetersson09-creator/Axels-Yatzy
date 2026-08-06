@@ -6,6 +6,7 @@
       "name": "vite_react_shadcn_ts",
       "dependencies": {
         "@capacitor/app": "^8.1.1",
+        "@capacitor/barcode-scanner": "^3.1.0",
         "@capacitor/camera": "^8.2.0",
         "@capacitor/core": "^8.3.1",
         "@capacitor/haptics": "^8.0.2",
@@ -75,6 +76,8 @@
     "@babel/runtime": ["@babel/runtime@7.28.2", "", {}, "sha512-KHp2IflsnGywDjBWDkR9iEqiWSpc8GIi0lgTT3mOElT0PP1tG26P4tmFI2YvAdzgq9RGyoHZQEIEdZy6Ec5xCA=="],
 
     "@capacitor/app": ["@capacitor/app@8.1.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/app/-/app-8.1.1.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-xM2ZTX5jK60tFtmjsmJv+Cdj1Qsb6NcavkqmdEnCPQBeya9oKhamZJxYOnQNj1ZvcJM7sWfG6BEtSLx42pisbA=="],
+
+    "@capacitor/barcode-scanner": ["@capacitor/barcode-scanner@3.1.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/barcode-scanner/-/barcode-scanner-3.1.0.tgz", { "dependencies": { "html5-qrcode": "2.3.8" }, "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-uE4njvsQGVfhjChg5ZU8ayYX9i2LM9Dg9/TWXG/L1s+pRVR5JG6PxsC3dCuKa9F6OVCYrKcEmdSi3E6KT+fMbg=="],
 
     "@capacitor/camera": ["@capacitor/camera@8.2.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/camera/-/camera-8.2.0.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-hYfrT6xpL936qoEkIpJzSnb0fQCaTkOux1cXzGBfH8QLOGqr6gSLiWZlZz/fqMPmMKJMNRBqlTQkj5fuMhVZog=="],
 

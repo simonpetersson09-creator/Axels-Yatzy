@@ -282,7 +282,6 @@ export function useDiceAnimation({
       // When a roll is queued we only need the out-leg, and fast: rush it so
       // the die is off-screen quickly and the real roll can start.
       state.sweepT += Math.min(delta, 1 / 20) * (state.pendingRoll ? 3 : 1);
-      if (state.pendingRoll) state.sweepDelay = 0;
       const t = Math.min(
         Math.max((state.sweepT - state.sweepDelay) / state.sweepDuration, 0),
         1,

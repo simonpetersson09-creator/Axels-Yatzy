@@ -198,36 +198,6 @@ export function useDiceAnimation({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rolling, held, value, duration, reducedMotion, index, size]);
 
-  /**
-   * Turn reset: sweep the dice off to the right (mirroring how they enter),
-   * then glide them back in on a clean, neutral orientation.
-   */
-  useEffect(() => {
-    if (!resetKey) return;
-    const group = groupRef.current;
-    if (!group) return;
-
-    if (reducedMotion) {
-      settle();
-      return;
-    }
-
-    state.sweepFrom.copy(group.quaternion);
-    // Land straight, without the random yaw variation used after a roll.
-    getFaceQuaternion(value, 0, state.target);
-    randomAxis(state.sweepAxis);
-    state.sweepT = 0;
-    state.sweepDelay = index * 0.05;
-    state.sweepDuration = 0.8;
-    state.sweepDistance = size * (10 + jitterFor(index) * 2);
-    state.settling = false;
-    state.animating = false;
-    state.sweeping = true;
-    state.settledValue = value;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetKey]);
-
 
 
   useFrame((_, delta) => {

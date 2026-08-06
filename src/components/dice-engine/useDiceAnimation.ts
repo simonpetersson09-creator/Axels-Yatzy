@@ -112,7 +112,7 @@ export function useDiceAnimation({
       /** Value the currently running animation resolves to. */
       rollValue: -1 as number,
       /* --- turn-reset sweep ------------------------------------------- */
-      /** true while the "clear the table" sweep is running. */
+      /** True while leaving the table or waiting off-screen for the next roll. */
       sweeping: false,
       sweepT: 0,
       sweepDelay: 0,
@@ -139,8 +139,8 @@ export function useDiceAnimation({
   };
 
   /**
-   * Turn reset: sweep the dice off to the right (mirroring how they enter),
-   * then glide them back in on a clean, neutral orientation.
+   * Turn reset: sweep the dice off to the right and keep them there. The next
+   * player's first real roll is the only motion that brings them back in.
    *
    * NOTE: this effect is declared *before* the roll effect on purpose. When a
    * turn ends, the new (reset) dice values and the bumped `resetKey` arrive in
@@ -153,11 +153,6 @@ export function useDiceAnimation({
     const group = groupRef.current;
     if (!group) return;
 
-    if (reducedMotion) {
-      settle();
-      return;
-    }
-
     state.sweepFrom.copy(group.quaternion);
     // Land straight, without the random yaw variation used after a roll.
     getFaceQuaternion(value, 0, state.target);
@@ -166,7 +161,7 @@ export function useDiceAnimation({
     // All five dice must leave on the same clock. A per-die delay here made
     // some dice still visible while others had already started the next roll.
     state.sweepDelay = 0;
-    state.sweepDuration = 0.8;
+    state.sweepDuration = reducedMotion ? 0.01 : 0.8;
     state.sweepDistance = size * 11;
     state.settling = false;
     state.animating = false;
@@ -198,9 +193,8 @@ export function useDiceAnimation({
       // would pick a new random yaw and make the number appear to change when
       // the roll finishes.
       if (state.sweeping) {
-        // A value change arriving during the sweep must not touch the visible
-        // pose — the die keeps its number all the way out and only adopts the
-        // new one once it is off-screen (handled by the sweep's return leg).
+        // A value change while leaving or waiting off-screen must not touch
+        // the visible pose. It only updates the next roll's landing target.
         getFaceQuaternion(value, 0, state.target);
         state.settledValue = value;
       } else if (state.settledValue !== value) {
@@ -237,11 +231,8 @@ export function useDiceAnimation({
     // Every die enters from off-screen right, with a little per-die variance.
     state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
 
-    // A roll starting while the end-of-turn sweep is still running (typical at
-    // hand-off) must not teleport the die, but it must also not shorten its
-    // entry — every die has to fly in with exactly the same motion. So we let
-    // the sweep finish its out-leg first (sped up), and only then start the
-    // completely normal roll from off-screen.
+    // A roll starting during the hand-off waits until the die is fully outside,
+    // then uses the exact same entry animation as every other roll.
     state.settling = false;
     if (state.sweeping && !reducedMotion) {
       // Queue the roll without changing the shared sweep clock. Re-seeding or
@@ -277,7 +268,8 @@ export function useDiceAnimation({
         1,
       );
 
-      // 0 → 0.44: accelerate off-screen right. 0.44 → 1: glide back in.
+      // 0 → 0.44: accelerate off-screen right. At 0.44 the die waits outside
+      // until the next player's first real roll starts; there is no fake return.
       const OUT = 0.44;
       let offset: number;
       let lift: number;
@@ -292,11 +284,10 @@ export function useDiceAnimation({
         group.quaternion.copy(state.sweepFrom);
 
       } else {
-        const u = (t - OUT) / (1 - OUT);
-        offset = state.sweepDistance * (1 - easeOutQuart(u));
-        lift = bounceHeight(u, size * 0.45);
-        angle = (1 - easeOutCubic(u)) * Math.PI * 1.2;
-        group.quaternion.copy(state.target);
+        offset = state.sweepDistance;
+        lift = 0;
+        angle = Math.PI * 1.2;
+        group.quaternion.copy(state.sweepFrom);
       }
       state.sweepSpin.setFromAxisAngle(state.sweepAxis, angle);
       group.quaternion.multiply(state.sweepSpin);
@@ -324,11 +315,9 @@ export function useDiceAnimation({
         return;
       }
 
-      if (t >= 1) {
-        group.quaternion.copy(state.target);
-        travelSweep?.position.set(0, 0, 0);
-        state.sweeping = false;
-      }
+      // With no queued roll, deliberately remain off-screen. Clearing the
+      // sweep here used to bring the reset dice back before AI Kast 1, after
+      // which the real roll threw them in a second time.
       return;
     }
 

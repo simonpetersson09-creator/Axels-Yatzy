@@ -38,6 +38,16 @@ export function DiceArea({
   const columnHeight = diceSize * 5 + gap * 4;
   const columnWidth = Math.round(diceSize * 1.85);
 
+  // The WebGL canvas is the only real clipping context, so it is drawn larger
+  // than the resting column. `fill` is divided by the same factor, which keeps
+  // the camera framing — and therefore the resting dice positions and size —
+  // pixel-identical while giving the roll animation room to overshoot.
+  const OVERSCAN = 1.5;
+  const overscanWidth = Math.round(columnWidth * OVERSCAN);
+  const overscanHeight = Math.round(columnHeight * OVERSCAN);
+  const overscanX = Math.round((overscanWidth - columnWidth) / 2);
+  const overscanY = Math.round((overscanHeight - columnHeight) / 2);
+
   const handleDieClick = useCallback(
     (index: number) => {
       if (!canLock) return;
@@ -47,24 +57,65 @@ export function DiceArea({
   );
 
   return (
-    <div className={cn('mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible', className)}>
-      <div className="relative" style={{ height: columnHeight, width: columnWidth }}>
-        <Suspense fallback={null}>
-          <DiceSet
-            values={toFive(dice, 1)}
-            held={toFive(lockedDice, false)}
-            rolling={isRolling}
-            onDieClick={handleDieClick}
-            onRollComplete={() => {
-              /* The game state owns roll timing; nothing to do here. */
-            }}
-            spacing={spacing}
-            fill={1}
-            duration={1.3}
-            className="absolute inset-0"
-          />
-        </Suspense>
+    <div
+      className={cn(
+        'relative mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible',
+        className,
+      )}
+    >
+      <div
+        className="relative overflow-visible"
+        style={{ height: columnHeight, width: columnWidth, zIndex: 30 }}
+      >
+        {/* Oversized, non-interactive overlay layer for the 3D canvas. */}
+        <div
+          className="pointer-events-none absolute overflow-visible"
+          style={{
+            top: -overscanY,
+            left: -overscanX,
+            width: overscanWidth,
+            height: overscanHeight,
+            zIndex: 30,
+          }}
+        >
+          <Suspense fallback={null}>
+            <DiceSet
+              values={toFive(dice, 1)}
+              held={toFive(lockedDice, false)}
+              rolling={isRolling}
+              onRollComplete={() => {
+                /* The game state owns roll timing; nothing to do here. */
+              }}
+              spacing={spacing}
+              fill={1 / OVERSCAN}
+              duration={1.3}
+              className="h-full w-full"
+            />
+          </Suspense>
+        </div>
+
+        {/* Tap targets sit on the resting dice only, so the rest of the UI
+            (scorecard, buttons) keeps receiving taps normally. */}
+        <div className="absolute inset-0" style={{ zIndex: 31 }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Die ${i + 1}`}
+              onClick={() => handleDieClick(i)}
+              disabled={!canLock}
+              className="absolute bg-transparent disabled:pointer-events-none"
+              style={{
+                top: i * (diceSize + gap),
+                left: Math.round((columnWidth - diceSize) / 2),
+                width: diceSize,
+                height: diceSize,
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
+
 }

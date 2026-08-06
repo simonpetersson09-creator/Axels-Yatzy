@@ -495,46 +495,43 @@ export default function HomePage() {
             ))}
           </div>
 
-          {(rankInfo.country || rankInfo.world) && (
-            <div className="grid grid-cols-2 gap-2">
-              {rankInfo.country && (
-                <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-                  <div className="flex items-center gap-2 relative z-10">
-                    <span className="text-2xl leading-none" aria-hidden>{countryToFlag(rankInfo.country.country)}</span>
-                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
-                      {t('countryRankLabelFull', { country: countryName(rankInfo.country.country, getLanguage()) })}
-                    </span>
-                  </div>
-                  <div className="relative z-10 flex items-baseline justify-center mt-0.5">
-                    <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
-                    <span className="text-2xl sm:text-3xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
-                      {rankInfo.country.rank}
-                    </span>
-                  </div>
-                  <div className="h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-primary/50 to-transparent relative z-10" />
-                </div>
-              )}
-              {rankInfo.world && (
-                <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-                  <div className="flex items-center gap-2 relative z-10">
-                    <span className="text-2xl leading-none" aria-hidden>🌍</span>
-                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
-                      {t('worldRankLabelFull')}
-                    </span>
-                  </div>
-                  <div className="relative z-10 flex items-baseline justify-center mt-0.5">
-                    <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
-                    <span className="text-2xl sm:text-3xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-info-light via-game-info to-game-info-dark drop-shadow-[0_0_12px_hsl(var(--game-info)/0.35)]">
-                      {rankInfo.world.rank}
-                    </span>
-                  </div>
-                  <div className="h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-game-info/50 to-transparent relative z-10" />
-                </div>
-              )}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+              <div className="flex items-center gap-2 relative z-10">
+                <span className="text-2xl leading-none" aria-hidden>{rankInfo.country ? countryToFlag(rankInfo.country.country) : '🏳️'}</span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                  {rankInfo.country
+                    ? t('countryRankLabelFull', { country: countryName(rankInfo.country.country, getLanguage()) })
+                    : t('countryRankLabel')}
+                </span>
+              </div>
+              <div className="relative z-10 flex items-baseline justify-center mt-0.5">
+                <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
+                <span className="text-2xl sm:text-3xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
+                  {rankInfo.country ? rankInfo.country.rank : '–'}
+                </span>
+              </div>
+              <div className="h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-primary/50 to-transparent relative z-10" />
             </div>
-          )}
+            <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+              <div className="flex items-center gap-2 relative z-10">
+                <span className="text-2xl leading-none" aria-hidden>🌍</span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+                  {t('worldRankLabelFull')}
+                </span>
+              </div>
+              <div className="relative z-10 flex items-baseline justify-center mt-0.5">
+                <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
+                <span className="text-2xl sm:text-3xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-info-light via-game-info to-game-info-dark drop-shadow-[0_0_12px_hsl(var(--game-info)/0.35)]">
+                  {rankInfo.world ? rankInfo.world.rank : '–'}
+                </span>
+              </div>
+              <div className="h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-game-info/50 to-transparent relative z-10" />
+            </div>
+          </div>
+
         </motion.div>
       </motion.div>
     </div>

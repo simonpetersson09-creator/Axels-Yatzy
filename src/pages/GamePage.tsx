@@ -158,12 +158,12 @@ export default function GamePage() {
     };
   }, []);
 
-  // Auto-roll first throw — ONLY for AI players. Human players must tap Roll themselves.
+  // Auto-roll first throw for every player (human and AI) — "Kast 1" happens
+  // automatically, so the button starts at "Kast 2".
   useEffect(() => {
     if (!gameState || gameState.gameOver || gameState.isRolling) return;
     if (gameState.rollsLeft !== 3) return;
     const isAi = aiPlayers.includes(gameState.currentPlayerIndex);
-    if (!isAi) return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
     if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
     autoRollPendingRef.current = key;
@@ -171,7 +171,7 @@ export default function GamePage() {
       autoRollRef.current = key;
       autoRollPendingRef.current = null;
       roll();
-    }, 600);
+    }, isAi ? 600 : 450);
     return () => {
       clearTimeout(t);
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
@@ -418,7 +418,7 @@ export default function GamePage() {
               style={{ isolation: 'isolate', marginTop: '60px' }}
             >
               <div className="relative">
-                {gameState.rollsLeft === 3 && !isCurrentAi && !gameState.isRolling && (
+                {gameState.rollsLeft > 0 && gameState.rollsLeft < 3 && !isCurrentAi && !gameState.isRolling && (
                   <TurnIndicator
                     currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
                     isMyTurn={true}

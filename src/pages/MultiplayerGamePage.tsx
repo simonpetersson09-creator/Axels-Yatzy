@@ -172,7 +172,33 @@ export default function MultiplayerGamePage() {
     };
   }, []);
 
-  // Auto-roll is intentionally not used in multiplayer — both players tap Roll manually.
+  // Auto-roll "Kast 1" on my turn — the player's first tap is therefore "Kast 2".
+  useEffect(() => {
+    if (!gameState || status !== 'playing') return;
+    if (!isMyTurn) return;
+    if (gameState.rollsLeft !== 3) return;
+    if (localRolling || remoteRolling || gameState.isRolling) return;
+    const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
+    if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
+    autoRollPendingRef.current = key;
+    autoRollTimerRef.current = setTimeout(() => {
+      autoRollTimerRef.current = null;
+      autoRollPendingRef.current = null;
+      const live = liveStateRef.current;
+      if (!live.gameState || live.status !== 'playing') return;
+      if (!live.isMyTurn || live.gameState.rollsLeft !== 3) return;
+      if (`${live.gameState.currentPlayerIndex}-${live.gameState.round}` !== key) return;
+      autoRollRef.current = key;
+      rollFnRef.current();
+    }, 500);
+    return () => {
+      if (autoRollTimerRef.current) {
+        clearTimeout(autoRollTimerRef.current);
+        autoRollTimerRef.current = null;
+      }
+      if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
+    };
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, isMyTurn, localRolling, remoteRolling, status]);
 
   // Hard-reset auto-roll bookkeeping when the turn-key changes so a stale
   // success from a previous turn never blocks the next turn's auto-roll.
@@ -603,7 +629,7 @@ export default function MultiplayerGamePage() {
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
               <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
-                {gameState.rollsLeft === 3 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
+                {gameState.rollsLeft > 0 && gameState.rollsLeft < 3 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
                   <TurnIndicator
                     currentPlayerName={currentPlayer.name}
                     isMyTurn={true}

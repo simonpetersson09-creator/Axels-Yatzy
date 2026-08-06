@@ -96,31 +96,26 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
       }}
     >
       {canSelect && !isAiChosen && possibleScore !== undefined && possibleScore > 0 && playerColor && (
-        <motion.span
+        <span
           aria-hidden
-          className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5]"
+          className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5] ui-glow-pulse"
           style={{
             border: `1.5px solid hsl(${playerColor})`,
             boxShadow: `0 0 6px hsl(${playerColor} / 0.55), inset 0 0 4px hsl(${playerColor} / 0.25)`,
           }}
-          initial={{ opacity: 0.6 }}
-          animate={{ opacity: [0.55, 1, 0.55] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
         />
       )}
       {canSelect && !isAiChosen && possibleScore === 0 && (
-        <motion.span
+        <span
           aria-hidden
-          className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5]"
+          className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5] ui-glow-pulse-fast"
           style={{
             border: '2px solid hsl(0 78% 58%)',
             boxShadow: '0 0 8px hsl(0 78% 58% / 0.6), inset 0 0 5px hsl(0 78% 58% / 0.35)',
           }}
-          initial={{ opacity: 0.6 }}
-          animate={{ opacity: [0.55, 1, 0.55] }}
-          transition={{ duration: 1.3, repeat: Infinity, ease: 'easeInOut' }}
         />
       )}
+
       {canSelect && !isAiChosen && possibleScore === 0 && (
         <span
           aria-hidden

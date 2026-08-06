@@ -1,8 +1,6 @@
-import { lazy, Suspense, useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
-
-// WebGL is browser-only — load the engine lazily on the client.
-const DiceSet = lazy(() => import('@/components/dice-engine/DiceSet'));
+import { DiceSet } from '@/components/dice-engine';
 
 interface DiceAreaProps {
   dice: number[];
@@ -102,22 +100,20 @@ export function DiceArea({
             zIndex: 30,
           }}
         >
-          <Suspense fallback={null}>
-            <DiceSet
-              values={toFive(dice, 1)}
-              held={toFive(lockedDice, false)}
-              rolling={isRolling}
-              resetKey={resetKey}
-              onRollComplete={() => {
-                /* The game state owns roll timing; nothing to do here. */
-              }}
-              spacing={spacing}
-              holdColor={HOLD_COLORS[playerIndex % HOLD_COLORS.length]}
-              fill={1 / OVERSCAN}
-              duration={1.3}
-              className="h-full w-full"
-            />
-          </Suspense>
+          <DiceSet
+            values={toFive(dice, 1)}
+            held={toFive(lockedDice, false)}
+            rolling={isRolling}
+            resetKey={resetKey}
+            onRollComplete={() => {
+              /* The game state owns roll timing; nothing to do here. */
+            }}
+            spacing={spacing}
+            holdColor={HOLD_COLORS[playerIndex % HOLD_COLORS.length]}
+            fill={1 / OVERSCAN}
+            duration={1.3}
+            className="h-full w-full"
+          />
         </div>
 
         {/* Tap targets sit on the resting dice only, so the rest of the UI

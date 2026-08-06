@@ -65,11 +65,6 @@ const DEFAULT_RIGHT: [number, number, number] = [1, 0, 0];
 const DEFAULT_UP: [number, number, number] = [0, 1, 0];
 
 const easeInCubic = (t: number) => t * t * t;
-/** Deterministic 0–1 variation per die index (no per-frame randomness). */
-const jitterFor = (index: number) => {
-  const x = Math.sin((index + 1) * 12.9898) * 43758.5453;
-  return x - Math.floor(x);
-};
 
 
 export function useDiceAnimation({
@@ -168,9 +163,11 @@ export function useDiceAnimation({
     getFaceQuaternion(value, 0, state.target);
     randomAxis(state.sweepAxis);
     state.sweepT = 0;
-    state.sweepDelay = index * 0.05;
+    // All five dice must leave on the same clock. A per-die delay here made
+    // some dice still visible while others had already started the next roll.
+    state.sweepDelay = 0;
     state.sweepDuration = 0.8;
-    state.sweepDistance = size * (10 + jitterFor(index) * 2);
+    state.sweepDistance = size * 11;
     state.settling = false;
     state.animating = false;
     state.pendingRoll = false;
@@ -247,26 +244,9 @@ export function useDiceAnimation({
     // completely normal roll from off-screen.
     state.settling = false;
     if (state.sweeping && !reducedMotion) {
-      // Re-seed the sweep clock so the out-leg continues from the die's
-      // *current* offset with no jump, no matter where in the sweep it was:
-      //  - still waiting on its stagger  -> starts now, from the centre
-      //  - travelling out                -> keeps going out
-      //  - already gliding back in       -> turns around and heads out again
-      const travelNow = travelRef.current;
-      let offsetNow = 0;
-      if (travelNow) {
-        offsetNow = state.right
-          .set(screenRight[0], screenRight[1], screenRight[2])
-          .normalize()
-          .dot(travelNow.position);
-      }
-      const OUT = 0.44;
-      const k = Math.min(Math.max(offsetNow / (state.sweepDistance || 1), 0), 1);
-      // invert easeInCubic to find the matching point on the out-leg
-      state.sweepT = OUT * Math.cbrt(k) * state.sweepDuration;
-      state.sweepDelay = 0;
-      // Keep whatever face is currently visible while it heads out.
-      state.sweepFrom.copy(group.quaternion);
+      // Queue the roll without changing the shared sweep clock. Re-seeding or
+      // accelerating each die independently caused the brief split/vanish at
+      // an AI hand-off. All five now reach the off-screen hand-over together.
       state.pendingRoll = true;
       state.animating = false;
     } else {
@@ -291,9 +271,7 @@ export function useDiceAnimation({
       state.right.set(screenRight[0], screenRight[1], screenRight[2]).normalize();
       state.up.set(screenUp[0], screenUp[1], screenUp[2]).normalize();
 
-      // When a roll is queued we only need the out-leg, and fast: rush it so
-      // the die is off-screen quickly and the real roll can start.
-      state.sweepT += Math.min(delta, 1 / 20) * (state.pendingRoll ? 3 : 1);
+      state.sweepT += Math.min(delta, 1 / 20);
       const t = Math.min(
         Math.max((state.sweepT - state.sweepDelay) / state.sweepDuration, 0),
         1,
@@ -335,7 +313,10 @@ export function useDiceAnimation({
       // Queued roll: hand over the moment the die is off-screen, entering from
       // exactly where it is, so the fly-in matches a normal roll one-to-one.
       if (state.pendingRoll && t >= OUT) {
-        state.entry = state.sweepDistance;
+        // Start with the same entry distance and stagger used by every other
+        // roll. The hand-over itself happens while all dice are off-screen.
+        state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
+        state.delay = reducedMotion ? 0 : index * 0.04;
         state.sweeping = false;
         state.pendingRoll = false;
         state.animating = true;

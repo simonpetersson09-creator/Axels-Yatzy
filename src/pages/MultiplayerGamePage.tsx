@@ -460,6 +460,13 @@ export default function MultiplayerGamePage() {
   const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn;
 
+  const PLAYER_COLORS_HSL = [
+    '36 82% 52%', // P1 amber
+    '210 70% 52%', // P2 blue
+    '155 60% 42%', // P3 green
+    '350 65% 52%', // P4 red
+  ];
+
   const PLAYER_COLORS = [
     { ring: 'ring-yatzy-player1', bg: 'bg-yatzy-player1', glow: 'shadow-[0_0_8px_hsl(36_82%_52%/0.5)]' },
     { ring: 'ring-yatzy-player2', bg: 'bg-yatzy-player2', glow: 'shadow-[0_0_8px_hsl(210_70%_52%/0.5)]' },
@@ -675,15 +682,27 @@ export default function MultiplayerGamePage() {
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
                 >
                   <span className="pointer-events-none text-center leading-tight px-1">
-                  {!isMyTurn
-                    ? '⏳'
-                    : gameState.rollsLeft === 0
-                      ? t('rollNoMore')
-                      : gameState.rollsLeft === 3
-                        ? t('roll1')
-                        : gameState.rollsLeft === 2
-                          ? t('roll2')
-                          : t('rollLast')}
+                  {!isMyTurn ? (
+                    <span className="flex flex-col items-center gap-0.5 leading-none">
+                      <span className="text-[10px] font-medium opacity-80">P{gameState.currentPlayerIndex + 1}</span>
+                      <span className="relative flex h-2 w-2">
+                        <span
+                          className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                          style={{ backgroundColor: `hsl(${PLAYER_COLORS_HSL[gameState.currentPlayerIndex]})` }}
+                        />
+                        <span
+                          className="relative inline-flex rounded-full h-2 w-2"
+                          style={{ backgroundColor: `hsl(${PLAYER_COLORS_HSL[gameState.currentPlayerIndex]})` }}
+                        />
+                      </span>
+                    </span>
+                  ) : gameState.rollsLeft === 0
+                    ? t('rollNoMore')
+                    : gameState.rollsLeft === 3
+                      ? t('roll1')
+                      : gameState.rollsLeft === 2
+                        ? t('roll2')
+                        : t('rollLast')}
                   </span>
                 </button>
               </div>

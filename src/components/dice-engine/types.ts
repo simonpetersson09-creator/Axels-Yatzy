@@ -35,6 +35,8 @@ export interface DiceSceneProps extends DiceConfig {
   held?: boolean[];
   /** When flipped to `true`, every non-held die replays its roll animation. */
   rolling?: boolean;
+  /** Bump this number to play the end-of-turn reset sweep. */
+  resetKey?: number;
   /** Fired when a die is tapped/clicked. */
   onToggleHold?: (index: number) => void;
   /** Optional className for the wrapping element (full size by default). */

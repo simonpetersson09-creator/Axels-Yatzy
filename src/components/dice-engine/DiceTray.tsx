@@ -19,6 +19,8 @@ export interface DiceTrayProps {
   fill: number;
   duration: number;
   onToggleHold?: ((index: number) => void) | undefined;
+  /** Bump to play the end-of-turn reset sweep on every die. */
+  resetKey?: number;
 }
 
 function DiceTrayImpl({
@@ -30,6 +32,7 @@ function DiceTrayImpl({
   fill,
   duration,
   onToggleHold,
+  resetKey = 0,
 }: DiceTrayProps) {
   const cameraRef = useRef<PerspectiveCameraImpl>(null);
   const viewportWidth = useThree((s) => s.size.width);
@@ -151,6 +154,7 @@ function DiceTrayImpl({
           position={positions[i] ?? [0, 0, 0]}
           screenRight={screenRight}
           screenUp={screenUp}
+          resetKey={resetKey}
           onTap={onToggleHold}
         />
       ))}

@@ -41,6 +41,7 @@ function DiceSetImpl({
   spacing = 0.35,
   fill = 1,
   duration = 1.1,
+  resetKey = 0,
   className,
 }: DiceSetProps) {
   const safeValues = values.map(clampValue);
@@ -65,6 +66,7 @@ function DiceSetImpl({
       spacing={spacing}
       fill={fill}
       duration={duration}
+      resetKey={resetKey}
       {...(onDieClick ? { onToggleHold: onDieClick } : {})}
       {...(className ? { className } : {})}
     />

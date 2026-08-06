@@ -411,6 +411,7 @@ export default function GamePage() {
                 isRolling={gameState.isRolling}
                 onToggleLock={isCurrentAi ? () => {} : (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); }}
                 compact
+                playerIndex={gameState.currentPlayerIndex}
                 className="mt-0"
               />
             </div>

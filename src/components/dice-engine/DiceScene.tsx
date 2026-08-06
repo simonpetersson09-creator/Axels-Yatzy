@@ -35,6 +35,7 @@ function DiceSceneImpl({
   fill = 1,
   duration = 1.1,
   resetKey = 0,
+  pipColor,
   onToggleHold,
   className,
 }: DiceSceneProps) {
@@ -77,6 +78,7 @@ function DiceSceneImpl({
           fill={fill}
           duration={duration}
           resetKey={resetKey}
+          pipColor={pipColor}
           onToggleHold={onToggleHold}
         />
       </Canvas>

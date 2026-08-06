@@ -12,7 +12,18 @@ interface DiceAreaProps {
   onToggleLock: (index: number) => void;
   compact?: boolean;
   className?: string;
+  /** Index of the player whose turn it is — tints the pips in their colour. */
+  playerIndex?: number;
 }
+
+/** Pip tints per player slot, a few shades deeper than the UI colour so they
+ *  stay legible against the ivory die face. */
+const PIP_COLORS = [
+  'hsl(36, 85%, 42%)',
+  'hsl(210, 72%, 44%)',
+  'hsl(155, 62%, 30%)',
+  'hsl(350, 68%, 45%)',
+];
 
 type Five<T> = [T, T, T, T, T];
 
@@ -28,6 +39,7 @@ export function DiceArea({
   onToggleLock,
   compact = false,
   className,
+  playerIndex,
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 48 : 54;
@@ -97,6 +109,7 @@ export function DiceArea({
               held={toFive(lockedDice, false)}
               rolling={isRolling}
               resetKey={resetKey}
+              pipColor={typeof playerIndex === 'number' ? PIP_COLORS[playerIndex % PIP_COLORS.length] : undefined}
               onRollComplete={() => {
                 /* The game state owns roll timing; nothing to do here. */
               }}

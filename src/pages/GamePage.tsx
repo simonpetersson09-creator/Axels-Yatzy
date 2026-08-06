@@ -401,6 +401,15 @@ export default function GamePage() {
 
             {/* Dice */}
             <div className="relative mt-2">
+              <PickDiceHint
+                show={
+                  gameState.rollsLeft === 2 &&
+                  !isCurrentAi &&
+                  !gameState.isRolling &&
+                  !gameState.lockedDice.some(Boolean)
+                }
+                className="mx-auto mb-1"
+              />
               <DiceArea
                 dice={gameState.dice}
                 lockedDice={gameState.lockedDice}
@@ -410,15 +419,6 @@ export default function GamePage() {
                 compact
                 playerIndex={gameState.currentPlayerIndex}
                 className="mt-0"
-              />
-              <PickDiceHint
-                show={
-                  gameState.rollsLeft === 2 &&
-                  !isCurrentAi &&
-                  !gameState.isRolling &&
-                  !gameState.lockedDice.some(Boolean)
-                }
-                className="absolute left-1/2 -translate-x-1/2 -bottom-7 z-20"
               />
             </div>
 

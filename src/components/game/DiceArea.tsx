@@ -1,6 +1,8 @@
-import { Dice, DiceGradientDefs } from './Dice';
-import { motion } from 'framer-motion';
+import { lazy, Suspense, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+
+// WebGL is browser-only — load the engine lazily on the client.
+const DiceSet = lazy(() => import('@/components/dice-engine/DiceSet'));
 
 interface DiceAreaProps {
   dice: number[];
@@ -12,43 +14,55 @@ interface DiceAreaProps {
   className?: string;
 }
 
-export function DiceArea({ dice, lockedDice, rollsLeft, isRolling, onToggleLock, compact = false, className }: DiceAreaProps) {
+type Five<T> = [T, T, T, T, T];
+
+const toFive = <T,>(arr: T[], fallback: T): Five<T> =>
+  [0, 1, 2, 3, 4].map((i) => (arr[i] === undefined ? fallback : arr[i])) as Five<T>;
+
+/** Matches the previous CSS dice metrics so the layout is unchanged. */
+export function DiceArea({
+  dice,
+  lockedDice,
+  rollsLeft,
+  isRolling,
+  onToggleLock,
+  compact = false,
+  className,
+}: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 46 : 52;
+  const gap = compact ? 20 : 26;
+  const canLock = !isRolling && hasRolled && rollsLeft > 0;
 
-  // No organic tilt — dice stay upright for a cleaner, more controlled look.
-  const tilts = [0, 0, 0, 0, 0];
-  const offsets = [-6, 5, -3, 7, -4];
+  const columnHeight = diceSize * 5 + gap * 4;
+  const columnWidth = Math.round(diceSize * 2.3);
+
+  const handleDieClick = useCallback(
+    (index: number) => {
+      if (!canLock) return;
+      onToggleLock(index);
+    },
+    [canLock, onToggleLock],
+  );
 
   return (
     <div className={cn('mt-[42px] flex flex-col items-center justify-end pb-0 overflow-visible', className)}>
-      <DiceGradientDefs />
-      <div className="flex flex-col items-center" style={{ gap: compact ? 20 : 26 }}>
-
-        {dice.map((value, index) => {
-          const offsetX = offsets[index % offsets.length];
-          return (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: offsetX }}
-              transition={{ delay: index * 0.07, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center justify-center"
-              style={{ transformOrigin: 'center' }}
-            >
-
-              <Dice
-                value={value}
-                locked={lockedDice[index]}
-                rolling={isRolling && !lockedDice[index]}
-                onToggleLock={() => onToggleLock(index)}
-                canLock={!isRolling && hasRolled && rollsLeft > 0}
-                size={diceSize}
-                hasRolled={hasRolled}
-              />
-            </motion.div>
-          );
-        })}
+      <div className="relative" style={{ height: columnHeight, width: columnWidth }}>
+        <Suspense fallback={null}>
+          <DiceSet
+            values={toFive(dice, 1)}
+            held={toFive(lockedDice, false)}
+            rolling={isRolling}
+            onDieClick={handleDieClick}
+            onRollComplete={() => {
+              /* The game state owns roll timing; nothing to do here. */
+            }}
+            spacing={0.652}
+            fill={0.97}
+            duration={1.3}
+            className="absolute inset-0"
+          />
+        </Suspense>
       </div>
     </div>
   );

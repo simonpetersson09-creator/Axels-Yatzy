@@ -581,6 +581,7 @@ export default function MultiplayerGamePage() {
                 isRolling={localRolling || remoteRolling || (!isMyTurn && gameState.isRolling)}
                 onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
                 compact
+                playerIndex={gameState.currentPlayerIndex}
                 className="mt-0"
               />
             </div>

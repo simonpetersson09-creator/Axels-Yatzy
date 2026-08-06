@@ -12,11 +12,19 @@ interface DiceAreaProps {
   onToggleLock: (index: number) => void;
   compact?: boolean;
   className?: string;
-  /** Kept for compatibility; pips are now always black. */
+  /** Drives the hold-ring colour; pips stay black. */
   playerIndex?: number;
 }
 
 type Five<T> = [T, T, T, T, T];
+
+// Same hues as the scoreboard player columns.
+const HOLD_COLORS = [
+  'hsl(36 82% 52%)',
+  'hsl(210 70% 52%)',
+  'hsl(155 60% 42%)',
+  'hsl(350 65% 52%)',
+];
 
 const toFive = <T,>(arr: T[], fallback: T): Five<T> =>
   [0, 1, 2, 3, 4].map((i) => (arr[i] === undefined ? fallback : arr[i])) as Five<T>;
@@ -30,7 +38,7 @@ export function DiceArea({
   onToggleLock,
   compact = false,
   className,
-  playerIndex: _playerIndex,
+  playerIndex = 0,
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 48 : 54;
@@ -108,6 +116,7 @@ export function DiceArea({
                 /* The game state owns roll timing; nothing to do here. */
               }}
               spacing={spacing}
+              holdColor={HOLD_COLORS[playerIndex % HOLD_COLORS.length]}
               fill={1 / OVERSCAN}
               duration={1.3}
               className="h-full w-full"

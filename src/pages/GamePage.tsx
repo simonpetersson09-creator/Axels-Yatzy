@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
+import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
@@ -409,6 +410,15 @@ export default function GamePage() {
                 compact
                 playerIndex={gameState.currentPlayerIndex}
                 className="mt-0"
+              />
+              <PickDiceHint
+                show={
+                  gameState.rollsLeft === 2 &&
+                  !isCurrentAi &&
+                  !gameState.isRolling &&
+                  !gameState.lockedDice.some(Boolean)
+                }
+                className="absolute left-1/2 -translate-x-1/2 -bottom-7 z-20"
               />
             </div>
 

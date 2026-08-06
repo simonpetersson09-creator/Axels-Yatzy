@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
+import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
@@ -607,6 +608,15 @@ export default function MultiplayerGamePage() {
                 compact
                 playerIndex={gameState.currentPlayerIndex}
                 className="mt-0"
+              />
+              <PickDiceHint
+                show={
+                  gameState.rollsLeft === 2 &&
+                  isMyTurn &&
+                  !(localRolling || remoteRolling || gameState.isRolling) &&
+                  !gameState.lockedDice.some(Boolean)
+                }
+                className="absolute left-1/2 -translate-x-1/2 -bottom-7 z-20"
               />
             </div>
 

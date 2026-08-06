@@ -260,10 +260,32 @@ export function useMultiplayerGame() {
       forfeitedBySessionId: (game as { forfeited_by_session_id?: string | null }).forfeited_by_session_id ?? null,
     };
 
+    // The opponent finished their turn (scored) while we were still showing
+    // their spin. Buffering here would flush the reset dice AFTER the turn had
+    // already changed, which looks like a glitch/extra roll. Cancel the remote
+    // spin and apply the fresh state immediately instead.
+    const prevGSNow = stateRef.current.gameState;
+    const opponentTurnEnded =
+      remoteRollingGuardRef.current &&
+      !rollingGuardRef.current &&
+      !!prevGSNow &&
+      (restPart.currentPlayerIndex !== prevGSNow.currentPlayerIndex ||
+        restPart.round !== prevGSNow.round ||
+        gameStatus === 'finished');
+    if (opponentTurnEnded) {
+      if (remoteRollingTimerRef.current) {
+        clearTimeout(remoteRollingTimerRef.current);
+        remoteRollingTimerRef.current = null;
+      }
+      pendingRollUpdateRef.current = null;
+      remoteRollingGuardRef.current = false;
+      setRemoteRolling(false);
+    }
+
     // If a local roll animation is in flight, buffer the new dice/roll fields.
     // They will be flushed at the end of ROLL_ANIM_MS so the spin animation
     // never sees its target value change mid-flight.
-    if (rollingGuardRef.current || remoteRollingGuardRef.current) {
+    if (!opponentTurnEnded && (rollingGuardRef.current || remoteRollingGuardRef.current)) {
       pendingRollUpdateRef.current = dicePart;
       setState(prev => ({
         ...prev,
@@ -278,6 +300,7 @@ export function useMultiplayerGame() {
       }));
       return;
     }
+
 
     // While a score submit is in flight we keep the optimistic state intact.
     // The RPC resolution path will trigger a fresh refresh once it completes.

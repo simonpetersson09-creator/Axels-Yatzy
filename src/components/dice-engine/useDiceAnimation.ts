@@ -141,59 +141,15 @@ export function useDiceAnimation({
     state.settledValue = value;
   };
 
-  // Start / restart a roll whenever `rolling` flips on (held dice are skipped).
-  useEffect(() => {
-    const group = groupRef.current;
-    if (!group) return;
-
-    if (!rolling || held) {
-      if (state.animating) {
-        // Interrupted mid-roll (rolling window ended early, or the die was
-        // held while tumbling): glide to the exact target orientation over a
-        // few frames instead of hard-snapping, which reads as the number
-        // suddenly changing after the die looked like it had landed.
-        state.settleFrom.copy(group.quaternion);
-        state.settleT = 0;
-        state.settling = true;
-        state.settledValue = state.rollValue;
-        state.animating = false;
-      }
-      // Never re-snap a die that already shows the requested value: doing so
-      // would pick a new random yaw and make the number appear to change when
-      // the roll finishes.
-      if (state.settledValue !== value && !state.sweeping) {
-        state.settling = false;
-        settle();
-      }
-      state.animating = false;
-      return;
-    }
-
-    getFaceQuaternion(value, randomInt(0, 3), state.target);
-    randomAxis(state.axisA);
-    randomAxis(state.axisB);
-    // Livelier tumble: more revolutions while still landing exactly on target.
-    state.turnsA = randomInt(3, 5);
-    state.turnsB = randomInt(2, 3);
-    state.elapsed = 0;
-    // Keep the total (delay + duration) well inside a ~1.6 s roll window, with
-    // margin for dropped frames, so `rolling` rarely cuts the animation short.
-    state.duration = reducedMotion ? 0.18 : duration * (0.8 + Math.random() * 0.1);
-    state.delay = reducedMotion ? 0 : index * 0.04;
-    // Every die enters from off-screen right, with a little per-die variance.
-    state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
-    state.settling = false;
-    // A new roll always wins over a running reset sweep.
-    state.sweeping = false;
-    state.animating = true;
-    state.rollValue = value;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rolling, held, value, duration, reducedMotion, index, size]);
-
   /**
    * Turn reset: sweep the dice off to the right (mirroring how they enter),
    * then glide them back in on a clean, neutral orientation.
+   *
+   * NOTE: this effect is declared *before* the roll effect on purpose. When a
+   * turn ends, the new (reset) dice values and the bumped `resetKey` arrive in
+   * the same commit; running the sweep first means `state.sweeping` is already
+   * true when the value effect runs, so it can never hard-snap the die to the
+   * new number while it is still on screen.
    */
   useEffect(() => {
     if (!resetKey) return;
@@ -220,6 +176,63 @@ export function useDiceAnimation({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);
+
+  // Start / restart a roll whenever `rolling` flips on (held dice are skipped).
+  useEffect(() => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    if (!rolling || held) {
+      if (state.animating) {
+        // Interrupted mid-roll (rolling window ended early, or the die was
+        // held while tumbling): glide to the exact target orientation over a
+        // few frames instead of hard-snapping, which reads as the number
+        // suddenly changing after the die looked like it had landed.
+        state.settleFrom.copy(group.quaternion);
+        state.settleT = 0;
+        state.settling = true;
+        state.settledValue = state.rollValue;
+        state.animating = false;
+      }
+      // Never re-snap a die that already shows the requested value: doing so
+      // would pick a new random yaw and make the number appear to change when
+      // the roll finishes.
+      if (state.sweeping) {
+        // A value change arriving during the sweep must not touch the visible
+        // pose — the die keeps its number all the way out and only adopts the
+        // new one once it is off-screen (handled by the sweep's return leg).
+        getFaceQuaternion(value, 0, state.target);
+        state.settledValue = value;
+      } else if (state.settledValue !== value) {
+        state.settling = false;
+        settle();
+      }
+
+      state.animating = false;
+      return;
+    }
+
+    getFaceQuaternion(value, randomInt(0, 3), state.target);
+    randomAxis(state.axisA);
+    randomAxis(state.axisB);
+    // Livelier tumble: more revolutions while still landing exactly on target.
+    state.turnsA = randomInt(3, 5);
+    state.turnsB = randomInt(2, 3);
+    state.elapsed = 0;
+    // Keep the total (delay + duration) well inside a ~1.6 s roll window, with
+    // margin for dropped frames, so `rolling` rarely cuts the animation short.
+    state.duration = reducedMotion ? 0.18 : duration * (0.8 + Math.random() * 0.1);
+    state.delay = reducedMotion ? 0 : index * 0.04;
+    // Every die enters from off-screen right, with a little per-die variance.
+    state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
+    state.settling = false;
+    // A new roll always wins over a running reset sweep.
+    state.sweeping = false;
+    state.animating = true;
+    state.rollValue = value;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rolling, held, value, duration, reducedMotion, index, size]);
 
 
 

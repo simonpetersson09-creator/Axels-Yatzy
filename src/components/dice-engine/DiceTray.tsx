@@ -64,7 +64,9 @@ function DiceTrayImpl({
   const positions = useMemo(
     () =>
       values.map((_, i) => {
-        const offset = (i - (values.length - 1) / 2) * step;
+        // Index 0 renders at the TOP of the screen so the 3D column matches the
+        // DOM tap-target order (which is laid out top-to-bottom).
+        const offset = ((values.length - 1) / 2 - i) * step;
         return [screenUp[0] * offset, screenUp[1] * offset, screenUp[2] * offset] as [
           number,
           number,

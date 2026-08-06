@@ -4,7 +4,7 @@
  * Purely presentational: a thin precision ring that scales in, breathes slowly
  * and fades out again when the die is released. No game logic lives here.
  */
-import { useEffect, useMemo, useRef } from "react";
+import { forwardRef, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { DoubleSide, Group, Mesh, MeshBasicMaterial } from "three";
 

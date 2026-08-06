@@ -19,12 +19,8 @@ interface DiceAreaProps {
 type Five<T> = [T, T, T, T, T];
 
 // Same hues as the scoreboard player columns.
-const HOLD_COLORS = [
-  'hsl(36 82% 52%)',
-  'hsl(210 70% 52%)',
-  'hsl(155 60% 42%)',
-  'hsl(350 65% 52%)',
-];
+// three.js Color.set() does not parse space-separated hsl(), so use hex.
+const HOLD_COLORS = ['#e99920', '#2f85da', '#2bab76', '#d43550'];
 
 const toFive = <T,>(arr: T[], fallback: T): Five<T> =>
   [0, 1, 2, 3, 4].map((i) => (arr[i] === undefined ? fallback : arr[i])) as Five<T>;

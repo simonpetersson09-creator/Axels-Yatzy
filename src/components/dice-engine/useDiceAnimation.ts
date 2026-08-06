@@ -238,10 +238,12 @@ export function useDiceAnimation({
           .set(screenRight[0], screenRight[1], screenRight[2])
           .normalize()
           .dot(travelNow.position);
-        if (current > size * 1.5) {
-          state.entry = current;
-          state.delay = 0;
-        }
+        // Always continue from where the die actually is — including dice
+        // that have not started (or barely started) their staggered sweep.
+        // Snapping those out to the full entry distance is what made a couple
+        // of dice blink away and fly back in while the others glided.
+        state.entry = Math.max(0, current);
+        state.delay = 0;
       }
     }
 

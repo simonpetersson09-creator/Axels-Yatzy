@@ -237,6 +237,26 @@ export function useDiceAnimation({
     // completely normal roll from off-screen.
     state.settling = false;
     if (state.sweeping && !reducedMotion) {
+      // Re-seed the sweep clock so the out-leg continues from the die's
+      // *current* offset with no jump, no matter where in the sweep it was:
+      //  - still waiting on its stagger  -> starts now, from the centre
+      //  - travelling out                -> keeps going out
+      //  - already gliding back in       -> turns around and heads out again
+      const travelNow = travelRef.current;
+      let offsetNow = 0;
+      if (travelNow) {
+        offsetNow = state.right
+          .set(screenRight[0], screenRight[1], screenRight[2])
+          .normalize()
+          .dot(travelNow.position);
+      }
+      const OUT = 0.44;
+      const k = Math.min(Math.max(offsetNow / (state.sweepDistance || 1), 0), 1);
+      // invert easeInCubic to find the matching point on the out-leg
+      state.sweepT = OUT * Math.cbrt(k) * state.sweepDuration;
+      state.sweepDelay = 0;
+      // Keep whatever face is currently visible while it heads out.
+      state.sweepFrom.copy(group.quaternion);
       state.pendingRoll = true;
       state.animating = false;
     } else {
@@ -264,7 +284,6 @@ export function useDiceAnimation({
       // When a roll is queued we only need the out-leg, and fast: rush it so
       // the die is off-screen quickly and the real roll can start.
       state.sweepT += Math.min(delta, 1 / 20) * (state.pendingRoll ? 3 : 1);
-      if (state.pendingRoll) state.sweepDelay = 0;
       const t = Math.min(
         Math.max((state.sweepT - state.sweepDelay) / state.sweepDuration, 0),
         1,

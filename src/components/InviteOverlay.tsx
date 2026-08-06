@@ -230,11 +230,11 @@ export default function InviteOverlay() {
         return next.length === cur.length ? cur : next;
       });
     };
-    poll();
-    const iv = setInterval(poll, 3000);
+    void poll(true);
+    const iv = setInterval(() => void poll(), 5000);
     // Also poll the moment the app/tab returns to the foreground so an accept
     // that happened while we were backgrounded opens the match immediately.
-    const onForeground = () => { void poll(); };
+    const onForeground = () => { if (!document.hidden) void poll(true); };
     window.addEventListener('focus', onForeground);
     document.addEventListener('visibilitychange', onForeground);
     let removeCap: (() => void) | undefined;

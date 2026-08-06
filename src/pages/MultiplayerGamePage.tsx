@@ -460,6 +460,13 @@ export default function MultiplayerGamePage() {
   const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn;
 
+  const PLAYER_COLORS_HSL = [
+    '36 82% 52%', // P1 amber
+    '210 70% 52%', // P2 blue
+    '155 60% 42%', // P3 green
+    '350 65% 52%', // P4 red
+  ];
+
   const PLAYER_COLORS = [
     { ring: 'ring-yatzy-player1', bg: 'bg-yatzy-player1', glow: 'shadow-[0_0_8px_hsl(36_82%_52%/0.5)]' },
     { ring: 'ring-yatzy-player2', bg: 'bg-yatzy-player2', glow: 'shadow-[0_0_8px_hsl(210_70%_52%/0.5)]' },

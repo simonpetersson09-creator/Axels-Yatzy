@@ -161,10 +161,17 @@ export function useDiceAnimation({
       // Never re-snap a die that already shows the requested value: doing so
       // would pick a new random yaw and make the number appear to change when
       // the roll finishes.
-      if (state.settledValue !== value && !state.sweeping) {
+      if (state.sweeping) {
+        // A value change arriving during the sweep must not touch the visible
+        // pose — the die keeps its number all the way out and only adopts the
+        // new one once it is off-screen (handled by the sweep's return leg).
+        getFaceQuaternion(value, 0, state.target);
+        state.settledValue = value;
+      } else if (state.settledValue !== value) {
         state.settling = false;
         settle();
       }
+
       state.animating = false;
       return;
     }

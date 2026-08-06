@@ -255,6 +255,8 @@ export function useDiceAnimation({
       // invert easeInCubic to find the matching point on the out-leg
       state.sweepT = OUT * Math.cbrt(k) * state.sweepDuration;
       state.sweepDelay = 0;
+      // Keep whatever face is currently visible while it heads out.
+      state.sweepFrom.copy(group.quaternion);
       state.pendingRoll = true;
       state.animating = false;
     } else {

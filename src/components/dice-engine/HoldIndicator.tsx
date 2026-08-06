@@ -8,8 +8,9 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { DoubleSide, Group, Mesh, MeshBasicMaterial } from "three";
 
+// Matches the roll button gold: hsl(36 78% 55%) === #e69e33
 const ringMaterial = new MeshBasicMaterial({
-  color: "#ffcb87",
+  color: "#e69e33",
   transparent: true,
   depthWrite: false,
   opacity: 0,

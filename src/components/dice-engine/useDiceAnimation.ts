@@ -229,30 +229,20 @@ export function useDiceAnimation({
     state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
 
     // A roll starting while the end-of-turn sweep is still running (typical at
-    // hand-off: the turn resets, the dice sweep out, and the next player rolls
-    // right away) must not teleport the die. Continue from wherever it is on
-    // the sweep so the motion reads as one continuous out-and-in instead of
-    // the dice blinking away and coming back twice.
-    if (state.sweeping && !reducedMotion) {
-      const travelNow = travelRef.current;
-      if (travelNow) {
-        const current = state.right
-          .set(screenRight[0], screenRight[1], screenRight[2])
-          .normalize()
-          .dot(travelNow.position);
-        // Always continue from where the die actually is — including dice
-        // that have not started (or barely started) their staggered sweep.
-        // Snapping those out to the full entry distance is what made a couple
-        // of dice blink away and fly back in while the others glided.
-        state.entry = Math.max(0, current);
-        state.delay = 0;
-      }
-    }
-
+    // hand-off) must not teleport the die, but it must also not shorten its
+    // entry — every die has to fly in with exactly the same motion. So we let
+    // the sweep finish its out-leg first (sped up), and only then start the
+    // completely normal roll from off-screen.
     state.settling = false;
-    // A new roll always wins over a running reset sweep.
-    state.sweeping = false;
-    state.animating = true;
+    if (state.sweeping && !reducedMotion) {
+      state.pendingRoll = true;
+      state.animating = false;
+    } else {
+      state.sweeping = false;
+      state.pendingRoll = false;
+      state.animating = true;
+    }
+    state.elapsed = 0;
 
     state.rollValue = value;
 

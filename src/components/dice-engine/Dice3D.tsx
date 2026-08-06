@@ -235,6 +235,14 @@ function FacePipsImpl({ value, size, pipColor }: FacePipsProps) {
   );
 }
 
+/** forwardRef so R3F never warns about attaching a ref to a function component. */
+const FacePips = forwardRef<unknown, FacePipsProps>((props, _ref) => (
+  <FacePipsImpl {...props} />
+));
+FacePips.displayName = "FacePips";
+
+
+
 /* ------------------------------------------------------------------- die */
 
 /** Deterministic 0..1 pseudo-random per die index (stable across renders). */

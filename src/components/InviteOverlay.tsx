@@ -104,7 +104,7 @@ export default function InviteOverlay() {
     const iv = setInterval(() => void load(), 5000);
     // Refresh immediately when the app returns to the foreground / tab is refocused
     // so a pending invite shows up the moment the user opens the app.
-    const onFocus = () => { void load(); };
+    const onFocus = () => { if (!document.hidden) void load(true); };
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onFocus);
     let removeCap: (() => void) | undefined;

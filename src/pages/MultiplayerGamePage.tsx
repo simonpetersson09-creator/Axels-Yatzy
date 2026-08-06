@@ -191,7 +191,7 @@ export default function MultiplayerGamePage() {
       if (`${live.gameState.currentPlayerIndex}-${live.gameState.round}` !== key) return;
       autoRollRef.current = key;
       rollFnRef.current();
-    }, 500);
+    }, 300);
     return () => {
       if (autoRollTimerRef.current) {
         clearTimeout(autoRollTimerRef.current);
@@ -477,7 +477,7 @@ export default function MultiplayerGamePage() {
   const handleRoll = () => {
     roll();
     // Heavy "thud" when the dice settle (synced with 1500ms dice animation)
-    setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1500);
+    setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1350);
   };
 
   const handleSelectCategory = (categoryId: string) => {

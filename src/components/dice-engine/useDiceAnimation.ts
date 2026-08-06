@@ -153,7 +153,7 @@ export function useDiceAnimation({
       // Never re-snap a die that already shows the requested value: doing so
       // would pick a new random yaw and make the number appear to change when
       // the roll finishes.
-      if (state.settledValue !== value) {
+      if (state.settledValue !== value && !state.sweeping) {
         state.settling = false;
         settle();
       }
@@ -175,11 +175,44 @@ export function useDiceAnimation({
     // Every die enters from off-screen right, with a little per-die variance.
     state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
     state.settling = false;
+    // A new roll always wins over a running reset sweep.
+    state.sweeping = false;
     state.animating = true;
     state.rollValue = value;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rolling, held, value, duration, reducedMotion, index, size]);
+
+  /**
+   * Turn reset: sweep the dice off to the right (mirroring how they enter),
+   * then glide them back in on a clean, neutral orientation.
+   */
+  useEffect(() => {
+    if (!resetKey) return;
+    const group = groupRef.current;
+    if (!group) return;
+
+    if (reducedMotion) {
+      settle();
+      return;
+    }
+
+    state.sweepFrom.copy(group.quaternion);
+    // Land straight, without the random yaw variation used after a roll.
+    getFaceQuaternion(value, 0, state.target);
+    randomAxis(state.sweepAxis);
+    state.sweepT = 0;
+    state.sweepDelay = index * 0.05;
+    state.sweepDuration = 0.8;
+    state.sweepDistance = size * (10 + jitterFor(index) * 2);
+    state.settling = false;
+    state.animating = false;
+    state.sweeping = true;
+    state.settledValue = value;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey]);
+
 
 
   useFrame((_, delta) => {

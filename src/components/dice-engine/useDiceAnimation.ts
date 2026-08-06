@@ -65,11 +65,6 @@ const DEFAULT_RIGHT: [number, number, number] = [1, 0, 0];
 const DEFAULT_UP: [number, number, number] = [0, 1, 0];
 
 const easeInCubic = (t: number) => t * t * t;
-/** Deterministic 0–1 variation per die index (no per-frame randomness). */
-const jitterFor = (index: number) => {
-  const x = Math.sin((index + 1) * 12.9898) * 43758.5453;
-  return x - Math.floor(x);
-};
 
 
 export function useDiceAnimation({

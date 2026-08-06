@@ -31,7 +31,8 @@ export function DiceArea({
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 62 : 68;
-  const gap = compact ? 8 : 10;
+  const gap = compact ? 20 : 24;
+  const spacing = compact ? 0.35 : 0.42;
   const canLock = !isRolling && hasRolled && rollsLeft > 0;
 
   const columnHeight = diceSize * 5 + gap * 4;
@@ -57,8 +58,8 @@ export function DiceArea({
             onRollComplete={() => {
               /* The game state owns roll timing; nothing to do here. */
             }}
-            spacing={0.16}
-            fill={0.97}
+            spacing={spacing}
+            fill={1}
             duration={1.3}
             className="absolute inset-0"
           />

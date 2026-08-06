@@ -73,6 +73,7 @@ export function useDiceAnimation({
   size,
   screenRight = DEFAULT_RIGHT,
   screenUp = DEFAULT_UP,
+  resetKey = 0,
 }: Options) {
 
   const groupRef = useRef<Group>(null);

@@ -42,7 +42,7 @@ export function DiceArea({
   onToggleLock,
   compact = false,
   className,
-  playerIndex,
+  playerIndex: _playerIndex,
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 48 : 54;
@@ -76,8 +76,6 @@ export function DiceArea({
     }
   }, [rollsLeft]);
 
-  // Pips now remain black for all players; previous player-tint logic removed.
-  const shownPlayerIndex = playerIndex;
 
 
 

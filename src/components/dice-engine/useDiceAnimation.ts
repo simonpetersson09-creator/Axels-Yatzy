@@ -259,7 +259,10 @@ export function useDiceAnimation({
       state.right.set(screenRight[0], screenRight[1], screenRight[2]).normalize();
       state.up.set(screenUp[0], screenUp[1], screenUp[2]).normalize();
 
-      state.sweepT += Math.min(delta, 1 / 20);
+      // When a roll is queued we only need the out-leg, and fast: rush it so
+      // the die is off-screen quickly and the real roll can start.
+      state.sweepT += Math.min(delta, 1 / 20) * (state.pendingRoll ? 3 : 1);
+      if (state.pendingRoll) state.sweepDelay = 0;
       const t = Math.min(
         Math.max((state.sweepT - state.sweepDelay) / state.sweepDuration, 0),
         1,
@@ -296,6 +299,17 @@ export function useDiceAnimation({
           .multiplyScalar(offset)
           .addScaledVector(state.up, lift);
         travelSweep.position.copy(state.move);
+      }
+
+      // Queued roll: hand over the moment the die is off-screen, entering from
+      // exactly where it is, so the fly-in matches a normal roll one-to-one.
+      if (state.pendingRoll && t >= OUT) {
+        state.entry = state.sweepDistance;
+        state.sweeping = false;
+        state.pendingRoll = false;
+        state.animating = true;
+        state.elapsed = 0;
+        return;
       }
 
       if (t >= 1) {

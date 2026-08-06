@@ -52,10 +52,25 @@ interface Options {
   screenRight?: [number, number, number] | undefined;
   /** World vector pointing up on screen — the bounce direction. */
   screenUp?: [number, number, number] | undefined;
+  /**
+   * Bump this number to play the "clear the table" reset: the dice sweep out
+   * to the right (the direction they enter from), then glide back in on a
+   * neutral orientation. Used when a turn ends.
+   */
+  resetKey?: number;
 }
+
 
 const DEFAULT_RIGHT: [number, number, number] = [1, 0, 0];
 const DEFAULT_UP: [number, number, number] = [0, 1, 0];
+
+const easeInCubic = (t: number) => t * t * t;
+/** Deterministic 0–1 variation per die index (no per-frame randomness). */
+const jitterFor = (index: number) => {
+  const x = Math.sin((index + 1) * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+};
+
 
 export function useDiceAnimation({
   value,
@@ -66,6 +81,7 @@ export function useDiceAnimation({
   size,
   screenRight = DEFAULT_RIGHT,
   screenUp = DEFAULT_UP,
+  resetKey = 0,
 }: Options) {
 
   const groupRef = useRef<Group>(null);
@@ -100,6 +116,17 @@ export function useDiceAnimation({
       settledValue: -1 as number,
       /** Value the currently running animation resolves to. */
       rollValue: -1 as number,
+      /* --- turn-reset sweep ------------------------------------------- */
+      /** true while the "clear the table" sweep is running. */
+      sweeping: false,
+      sweepT: 0,
+      sweepDelay: 0,
+      sweepDuration: 0.78,
+      sweepDistance: 0,
+      /** Orientation the sweep starts from (current resting pose). */
+      sweepFrom: new Quaternion(),
+      sweepSpin: new Quaternion(),
+      sweepAxis: randomAxis(new Vector3()),
     }),
     [duration],
   );
@@ -134,7 +161,7 @@ export function useDiceAnimation({
       // Never re-snap a die that already shows the requested value: doing so
       // would pick a new random yaw and make the number appear to change when
       // the roll finishes.
-      if (state.settledValue !== value) {
+      if (state.settledValue !== value && !state.sweeping) {
         state.settling = false;
         settle();
       }
@@ -156,16 +183,100 @@ export function useDiceAnimation({
     // Every die enters from off-screen right, with a little per-die variance.
     state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
     state.settling = false;
+    // A new roll always wins over a running reset sweep.
+    state.sweeping = false;
     state.animating = true;
     state.rollValue = value;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rolling, held, value, duration, reducedMotion, index, size]);
 
+  /**
+   * Turn reset: sweep the dice off to the right (mirroring how they enter),
+   * then glide them back in on a clean, neutral orientation.
+   */
+  useEffect(() => {
+    if (!resetKey) return;
+    const group = groupRef.current;
+    if (!group) return;
+
+    if (reducedMotion) {
+      settle();
+      return;
+    }
+
+    state.sweepFrom.copy(group.quaternion);
+    // Land straight, without the random yaw variation used after a roll.
+    getFaceQuaternion(value, 0, state.target);
+    randomAxis(state.sweepAxis);
+    state.sweepT = 0;
+    state.sweepDelay = index * 0.05;
+    state.sweepDuration = 0.8;
+    state.sweepDistance = size * (10 + jitterFor(index) * 2);
+    state.settling = false;
+    state.animating = false;
+    state.sweeping = true;
+    state.settledValue = value;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey]);
+
+
 
   useFrame((_, delta) => {
     const group = groupRef.current;
     if (!group) return;
+
+    if (state.sweeping) {
+      state.right.set(screenRight[0], screenRight[1], screenRight[2]).normalize();
+      state.up.set(screenUp[0], screenUp[1], screenUp[2]).normalize();
+
+      state.sweepT += Math.min(delta, 1 / 20);
+      const t = Math.min(
+        Math.max((state.sweepT - state.sweepDelay) / state.sweepDuration, 0),
+        1,
+      );
+
+      // 0 → 0.44: accelerate off-screen right. 0.44 → 1: glide back in.
+      const OUT = 0.44;
+      let offset: number;
+      let lift: number;
+      let angle: number;
+      if (t < OUT) {
+        const k = easeInCubic(t / OUT);
+        offset = state.sweepDistance * k;
+        lift = size * 0.22 * Math.sin(Math.PI * k);
+        angle = k * Math.PI * 1.2;
+        group.quaternion
+          .copy(state.sweepFrom)
+          .slerp(state.target, Math.min(k * 1.4, 1));
+      } else {
+        const u = (t - OUT) / (1 - OUT);
+        offset = state.sweepDistance * (1 - easeOutQuart(u));
+        lift = bounceHeight(u, size * 0.45);
+        angle = (1 - easeOutCubic(u)) * Math.PI * 1.2;
+        group.quaternion.copy(state.target);
+      }
+      state.sweepSpin.setFromAxisAngle(state.sweepAxis, angle);
+      group.quaternion.multiply(state.sweepSpin);
+
+      const travelSweep = travelRef.current;
+      if (travelSweep) {
+        state.move
+          .copy(state.right)
+          .multiplyScalar(offset)
+          .addScaledVector(state.up, lift);
+        travelSweep.position.copy(state.move);
+      }
+
+      if (t >= 1) {
+        group.quaternion.copy(state.target);
+        travelSweep?.position.set(0, 0, 0);
+        state.sweeping = false;
+      }
+      return;
+    }
+
 
     if (state.settling) {
       state.settleT = Math.min(state.settleT + delta / 0.22, 1);

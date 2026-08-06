@@ -236,6 +236,8 @@ export interface Dice3DProps {
   screenRight?: [number, number, number] | undefined;
   screenUp?: [number, number, number] | undefined;
   onTap?: ((index: number) => void) | undefined;
+  /** Bump to play the end-of-turn sweep-out/sweep-in reset. */
+  resetKey?: number;
 }
 
 function Dice3DImpl({
@@ -249,6 +251,7 @@ function Dice3DImpl({
   screenRight,
   screenUp,
   onTap,
+  resetKey,
 }: Dice3DProps) {
   const { groupRef, travelRef } = useDiceAnimation({
     value,
@@ -259,6 +262,7 @@ function Dice3DImpl({
     size,
     screenRight,
     screenUp,
+    resetKey: resetKey ?? 0,
   });
 
   // Tactile press feedback: tapping a die dips it to ~0.96 and springs back,

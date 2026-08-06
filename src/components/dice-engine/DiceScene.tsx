@@ -34,6 +34,7 @@ function DiceSceneImpl({
   spacing = 0.35,
   fill = 1,
   duration = 1.1,
+  resetKey = 0,
   onToggleHold,
   className,
 }: DiceSceneProps) {
@@ -75,6 +76,7 @@ function DiceSceneImpl({
           spacing={spacing}
           fill={fill}
           duration={duration}
+          resetKey={resetKey}
           onToggleHold={onToggleHold}
         />
       </Canvas>

@@ -256,6 +256,8 @@ export interface Dice3DProps {
   resetKey?: number;
   /** Optional pip tint (any CSS colour). Defaults to near-black ink. */
   pipColor?: string | undefined;
+  /** Optional hold-ring tint (any CSS colour). */
+  holdColor?: string | undefined;
 }
 
 function Dice3DImpl({
@@ -271,6 +273,7 @@ function Dice3DImpl({
   onTap,
   resetKey,
   pipColor,
+  holdColor,
 }: Dice3DProps) {
   const { groupRef, travelRef } = useDiceAnimation({
     value,
@@ -340,7 +343,7 @@ function Dice3DImpl({
         <group rotation={[0, -Math.PI / 4 + yawJitter, 0]}>
 
           {/* Locked-for-next-roll affordance: halo + precision ring. */}
-          <HoldIndicator held={held} size={size} phase={index * 1.3} />
+          <HoldIndicator held={held} size={size} phase={index * 1.3} color={holdColor} />
           {/* Held dice sit a touch lower, like they've been set down. */}
           <group position={[0, held ? -size * 0.06 : 0, 0]} rotation={[tiltJitter, 0, rollJitter]}>
             <group ref={pressRef}>

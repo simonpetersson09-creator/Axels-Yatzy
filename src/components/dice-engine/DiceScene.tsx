@@ -80,6 +80,7 @@ function DiceSceneImpl({
           duration={duration}
           resetKey={resetKey}
           pipColor={pipColor}
+          holdColor={holdColor}
           onToggleHold={onToggleHold}
         />
       </Canvas>

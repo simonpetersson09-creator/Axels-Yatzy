@@ -1,4 +1,3 @@
-import RingTest from '@/pages/__RingTest';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -44,7 +43,6 @@ const App = () => (
           </Suspense>
         )}
         <Routes>
-          <Route path="/__ringtest" element={<RingTest />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/setup" element={<GameSetupPage />} />
           <Route path="/game" element={<GamePage />} />

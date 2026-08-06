@@ -4,27 +4,39 @@
  * Purely presentational: a thin precision ring that scales in, breathes slowly
  * and fades out again when the die is released. No game logic lives here.
  */
-import { useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { DoubleSide, Group, Mesh, MeshBasicMaterial } from "three";
 
-// Matches the roll button gold: hsl(36 78% 55%) === #e69e33
-const ringMaterial = new MeshBasicMaterial({
-  color: "#e69e33",
-  transparent: true,
-  depthWrite: false,
-  opacity: 0,
-  side: DoubleSide,
-});
+// Default matches the roll button gold: hsl(36 78% 55%) === #e69e33
+const DEFAULT_COLOR = "#e69e33";
 
 export interface HoldIndicatorProps {
   held: boolean;
   size: number;
   /** Deterministic phase offset so dice don't breathe in lock-step. */
   phase?: number;
+  /** Ring tint (any CSS colour). Defaults to the roll-button gold. */
+  color?: string | undefined;
 }
 
-export function HoldIndicator({ held, size, phase = 0 }: HoldIndicatorProps) {
+export function HoldIndicator({ held, size, phase = 0, color }: HoldIndicatorProps) {
+  // One material per die so each ring can carry the active player's colour.
+  const ringMaterial = useMemo(
+    () =>
+      new MeshBasicMaterial({
+        transparent: true,
+        depthWrite: false,
+        opacity: 0,
+        side: DoubleSide,
+      }),
+    [],
+  );
+  useEffect(() => () => ringMaterial.dispose(), [ringMaterial]);
+  useEffect(() => {
+    ringMaterial.color.set(color ?? DEFAULT_COLOR);
+  }, [ringMaterial, color]);
+
   const groupRef = useRef<Group>(null);
   const ringRef = useRef<Mesh>(null);
   // 0 = released, 1 = fully locked. Eased every frame for a smooth transition.

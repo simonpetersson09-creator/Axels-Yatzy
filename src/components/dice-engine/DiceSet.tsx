@@ -27,6 +27,8 @@ export type DiceSetProps = {
   resetKey?: number;
   /** Optional pip tint (any CSS colour), e.g. the active player's colour. */
   pipColor?: string | undefined;
+  /** Optional hold-ring tint (any CSS colour), e.g. the active player's colour. */
+  holdColor?: string | undefined;
 } & DiceConfig & {
     /** Optional className for the wrapper (fills its container by default). */
     className?: string;
@@ -47,6 +49,7 @@ function DiceSetImpl({
   duration = 1.1,
   resetKey = 0,
   pipColor,
+  holdColor,
   className,
 }: DiceSetProps) {
   const safeValues = values.map(clampValue);
@@ -73,6 +76,7 @@ function DiceSetImpl({
       duration={duration}
       resetKey={resetKey}
       pipColor={pipColor}
+      holdColor={holdColor}
       {...(onDieClick ? { onToggleHold: onDieClick } : {})}
       {...(className ? { className } : {})}
     />

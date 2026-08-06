@@ -172,7 +172,7 @@ export default function GamePage() {
       autoRollRef.current = key;
       autoRollPendingRef.current = null;
       roll();
-    }, isAi ? 600 : 450);
+    }, isAi ? 400 : 250);
     return () => {
       clearTimeout(t);
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
@@ -195,7 +195,7 @@ export default function GamePage() {
     aiTurnRef.current = aiKey;
 
     setAiThinking(true);
-    const delay = 1400 + Math.random() * 600;
+    const delay = 1000 + Math.random() * 400;
 
     let innerTimer: ReturnType<typeof setTimeout> | null = null;
     const t = setTimeout(() => {
@@ -209,14 +209,14 @@ export default function GamePage() {
         innerTimer = setTimeout(() => {
           selectCategoryFnRef.current(cat);
           setAiChosenCategory(null);
-        }, 2600);
+        }, 1600);
       } else {
         const currentPlayer = gs.players[gs.currentPlayerIndex];
         const locks = aiDecideLocks(gs.dice, currentPlayer.scores, gs.rollsLeft);
         setLocks(locks);
         innerTimer = setTimeout(() => {
           rollFnRef.current();
-        }, 1000);
+        }, 700);
       }
     }, delay);
 
@@ -253,7 +253,7 @@ export default function GamePage() {
   const handleRoll = useCallback(() => {
     roll();
     // Heavy "thud" when the dice settle (synced with 1500ms dice animation)
-    setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1500);
+    setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1350);
   }, [roll]);
 
   const handleSelectCategory = useCallback((categoryId: string, debug?: ScoreboardClickDebug) => {

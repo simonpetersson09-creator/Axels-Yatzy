@@ -13,7 +13,7 @@ interface TurnTransitionProps {
   visibleMs?: number;
 }
 
-const VISIBLE_MS = 800;
+const VISIBLE_MS = 600;
 
 export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VISIBLE_MS }: TurnTransitionProps) {
   const { t } = useTranslation();

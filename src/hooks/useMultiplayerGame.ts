@@ -34,7 +34,7 @@ const LOCK_OPTIMISTIC_MS = 1500;
 // Max time the UI is allowed to keep spinning AFTER the dice animation while
 // waiting for the roll RPC. Without this cap a slow/hanging edge function
 // froze the whole turn for up to NETWORK_TIMEOUT_MS.
-const ROLL_RESPONSE_GRACE_MS = 900;
+const ROLL_RESPONSE_GRACE_MS = 150;
 // Max time roll() waits for in-flight toggle-lock RPCs. On timeout we proceed:
 // the server re-validates locks anyway, and a refresh reconciles afterwards.
 // Kept short so tapping Kasta right after locking a die never feels frozen.
@@ -106,7 +106,7 @@ export function useMultiplayerGame() {
   // other player. Must match Dice ANIM_DURATION (1.5s) exactly: if this guard
   // ends later, the buffered server state can flush just after the dice have
   // visually landed and look like a post-landing face change.
-  const ROLL_ANIM_MS = 1500;
+  const ROLL_ANIM_MS = 1350;
   const [localRolling, setLocalRolling] = useState(false);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);

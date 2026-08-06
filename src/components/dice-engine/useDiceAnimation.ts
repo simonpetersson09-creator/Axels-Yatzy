@@ -219,6 +219,57 @@ export function useDiceAnimation({
     const group = groupRef.current;
     if (!group) return;
 
+    if (state.sweeping) {
+      state.right.set(screenRight[0], screenRight[1], screenRight[2]).normalize();
+      state.up.set(screenUp[0], screenUp[1], screenUp[2]).normalize();
+
+      state.sweepT += Math.min(delta, 1 / 20);
+      const t = Math.min(
+        Math.max((state.sweepT - state.sweepDelay) / state.sweepDuration, 0),
+        1,
+      );
+
+      // 0 → 0.44: accelerate off-screen right. 0.44 → 1: glide back in.
+      const OUT = 0.44;
+      let offset: number;
+      let lift: number;
+      let angle: number;
+      if (t < OUT) {
+        const k = easeInCubic(t / OUT);
+        offset = state.sweepDistance * k;
+        lift = size * 0.22 * Math.sin(Math.PI * k);
+        angle = k * Math.PI * 1.2;
+        group.quaternion
+          .copy(state.sweepFrom)
+          .slerp(state.target, Math.min(k * 1.4, 1));
+      } else {
+        const u = (t - OUT) / (1 - OUT);
+        offset = state.sweepDistance * (1 - easeOutQuart(u));
+        lift = bounceHeight(u, size * 0.45);
+        angle = (1 - easeOutCubic(u)) * Math.PI * 1.2;
+        group.quaternion.copy(state.target);
+      }
+      state.sweepSpin.setFromAxisAngle(state.sweepAxis, angle);
+      group.quaternion.multiply(state.sweepSpin);
+
+      const travelSweep = travelRef.current;
+      if (travelSweep) {
+        state.move
+          .copy(state.right)
+          .multiplyScalar(offset)
+          .addScaledVector(state.up, lift);
+        travelSweep.position.copy(state.move);
+      }
+
+      if (t >= 1) {
+        group.quaternion.copy(state.target);
+        travelSweep?.position.set(0, 0, 0);
+        state.sweeping = false;
+      }
+      return;
+    }
+
+
     if (state.settling) {
       state.settleT = Math.min(state.settleT + delta / 0.22, 1);
       group.quaternion

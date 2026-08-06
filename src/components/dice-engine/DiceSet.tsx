@@ -23,6 +23,8 @@ export type DiceSetProps = {
   rolling: boolean;
   onDieClick?: (index: number) => void;
   onRollComplete?: () => void;
+  /** Bump to play the end-of-turn reset sweep (dice sweep out and back in). */
+  resetKey?: number;
 } & DiceConfig & {
     /** Optional className for the wrapper (fills its container by default). */
     className?: string;

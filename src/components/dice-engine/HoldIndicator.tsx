@@ -4,7 +4,7 @@
  * Purely presentational: a thin precision ring that scales in, breathes slowly
  * and fades out again when the die is released. No game logic lives here.
  */
-import { useEffect, useMemo, useRef } from "react";
+import { forwardRef, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { DoubleSide, Group, Mesh, MeshBasicMaterial } from "three";
 
@@ -20,7 +20,7 @@ export interface HoldIndicatorProps {
   color?: string | undefined;
 }
 
-export function HoldIndicator({ held, size, phase = 0, color }: HoldIndicatorProps) {
+function HoldIndicatorImpl({ held, size, phase = 0, color }: HoldIndicatorProps) {
   // One material per die so each ring can carry the active player's colour.
   const ringMaterial = useMemo(
     () =>
@@ -74,3 +74,10 @@ export function HoldIndicator({ held, size, phase = 0, color }: HoldIndicatorPro
     </group>
   );
 }
+
+
+/** forwardRef so R3F never warns about attaching a ref to a function component. */
+export const HoldIndicator = forwardRef<unknown, HoldIndicatorProps>((props, _ref) => (
+  <HoldIndicatorImpl {...props} />
+));
+HoldIndicator.displayName = "HoldIndicator";

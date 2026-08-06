@@ -13,7 +13,6 @@ import { CATEGORIES } from '@/types/yatzy';
 
 import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
-import { playRollSound } from '@/lib/dice-sounds';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { QuickChat } from '@/components/game/QuickChat';
 import { TurnTransition } from '@/components/game/TurnTransition';
@@ -442,7 +441,6 @@ export default function MultiplayerGamePage() {
   ];
 
   const handleRoll = () => {
-    playRollSound();
     roll();
     // Heavy "thud" when the dice settle (synced with 1500ms dice animation)
     setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1500);

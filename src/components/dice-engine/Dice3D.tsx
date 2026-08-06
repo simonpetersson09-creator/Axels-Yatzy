@@ -5,7 +5,7 @@
  * sphere pips. Geometries and materials are created once at module level and
  * shared by every die instance, keeping GPU state changes and memory low.
  */
-import { memo, useMemo, useRef } from "react";
+import { forwardRef, memo, useMemo, useRef } from "react";
 import { RoundedBox } from "@react-three/drei";
 import {
   CanvasTexture,
@@ -199,7 +199,9 @@ const FACES: { value: DiceValue; rotation: [number, number, number] }[] = [
 
 /* ------------------------------------------------------------------ pips */
 
-function FacePips({ value, size, pipColor }: { value: DiceValue; size: number; pipColor?: string | undefined }) {
+type FacePipsProps = { value: DiceValue; size: number; pipColor?: string | undefined };
+
+function FacePipsImpl({ value, size, pipColor }: FacePipsProps) {
   const material = getPipMaterial(pipColor);
   const pipRadius = size * 0.085;
   const offset = size * 0.24;
@@ -232,6 +234,14 @@ function FacePips({ value, size, pipColor }: { value: DiceValue; size: number; p
     </>
   );
 }
+
+/** forwardRef so R3F never warns about attaching a ref to a function component. */
+const FacePips = forwardRef<unknown, FacePipsProps>((props, _ref) => (
+  <FacePipsImpl {...props} />
+));
+FacePips.displayName = "FacePips";
+
+
 
 /* ------------------------------------------------------------------- die */
 

@@ -9,7 +9,6 @@ import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
-import { playRollSound } from '@/lib/dice-sounds';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
@@ -171,7 +170,6 @@ export default function GamePage() {
     const t = setTimeout(() => {
       autoRollRef.current = key;
       autoRollPendingRef.current = null;
-      playRollSound();
       roll();
     }, 600);
     return () => {
@@ -216,7 +214,6 @@ export default function GamePage() {
         const locks = aiDecideLocks(gs.dice, currentPlayer.scores, gs.rollsLeft);
         setLocks(locks);
         innerTimer = setTimeout(() => {
-          playRollSound();
           rollFnRef.current();
         }, 1000);
       }
@@ -253,7 +250,6 @@ export default function GamePage() {
   }, [gameState, navigate]);
 
   const handleRoll = useCallback(() => {
-    playRollSound();
     roll();
     // Heavy "thud" when the dice settle (synced with 1500ms dice animation)
     setTimeout(() => { playDiceLandHaptic().catch(() => {}); }, 1500);

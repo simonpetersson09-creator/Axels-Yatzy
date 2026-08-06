@@ -30,12 +30,12 @@ export function DiceArea({
   className,
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
-  const diceSize = compact ? 46 : 52;
-  const gap = compact ? 20 : 26;
+  const diceSize = compact ? 62 : 68;
+  const gap = compact ? 8 : 10;
   const canLock = !isRolling && hasRolled && rollsLeft > 0;
 
   const columnHeight = diceSize * 5 + gap * 4;
-  const columnWidth = Math.round(diceSize * 2.3);
+  const columnWidth = Math.round(diceSize * 1.85);
 
   const handleDieClick = useCallback(
     (index: number) => {
@@ -57,7 +57,7 @@ export function DiceArea({
             onRollComplete={() => {
               /* The game state owns roll timing; nothing to do here. */
             }}
-            spacing={0.652}
+            spacing={0.16}
             fill={0.97}
             duration={1.3}
             className="absolute inset-0"

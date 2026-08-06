@@ -12,23 +12,9 @@ interface DiceAreaProps {
   onToggleLock: (index: number) => void;
   compact?: boolean;
   className?: string;
-  /** Index of the player whose turn it is — tints the pips in their colour. */
+  /** Kept for compatibility; pips are now always black. */
   playerIndex?: number;
 }
-
-/** Pip tints per player slot — rich, saturated jewel tones that stay legible
- *  against the ivory die face. */
-const PIP_COLORS = [
-  'hsl(38, 92%, 40%)',
-  'hsl(214, 82%, 46%)',
-  'hsl(158, 72%, 27%)',
-  'hsl(352, 76%, 44%)',
-];
-
-/** The pip colour swaps while the dice are off-screen mid-sweep, so the change
- *  is never visible on the outgoing dice — only on the incoming ones. */
-const PIP_SWAP_DELAY_MS = 450;
-
 
 type Five<T> = [T, T, T, T, T];
 
@@ -44,7 +30,7 @@ export function DiceArea({
   onToggleLock,
   compact = false,
   className,
-  playerIndex,
+  playerIndex: _playerIndex,
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 48 : 54;
@@ -77,21 +63,6 @@ export function DiceArea({
       setResetKey((k) => k + 1);
     }
   }, [rollsLeft]);
-
-  // Deferred pip colour: hold the previous player's tint until the dice have
-  // swept off-screen, then swap so the new colour arrives with the new dice.
-  const [shownPlayerIndex, setShownPlayerIndex] = useState(playerIndex);
-  useEffect(() => {
-    if (playerIndex === shownPlayerIndex) return;
-    if (shownPlayerIndex === undefined) {
-      setShownPlayerIndex(playerIndex);
-      return;
-    }
-    const t = window.setTimeout(() => setShownPlayerIndex(playerIndex), PIP_SWAP_DELAY_MS);
-    return () => window.clearTimeout(t);
-  }, [playerIndex, shownPlayerIndex]);
-
-
 
   const handleDieClick = useCallback(
     (index: number) => {
@@ -129,7 +100,6 @@ export function DiceArea({
               held={toFive(lockedDice, false)}
               rolling={isRolling}
               resetKey={resetKey}
-              pipColor={typeof shownPlayerIndex === "number" ? PIP_COLORS[shownPlayerIndex % PIP_COLORS.length] : undefined}
               onRollComplete={() => {
                 /* The game state owns roll timing; nothing to do here. */
               }}

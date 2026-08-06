@@ -127,6 +127,8 @@ export function useDiceAnimation({
       sweepFrom: new Quaternion(),
       sweepSpin: new Quaternion(),
       sweepAxis: randomAxis(new Vector3()),
+      /** A roll requested while the sweep is still on its way out. */
+      pendingRoll: false,
     }),
     [duration],
   );
@@ -171,6 +173,7 @@ export function useDiceAnimation({
     state.sweepDistance = size * (10 + jitterFor(index) * 2);
     state.settling = false;
     state.animating = false;
+    state.pendingRoll = false;
     state.sweeping = true;
     state.settledValue = value;
 
@@ -209,6 +212,7 @@ export function useDiceAnimation({
       }
 
       state.animating = false;
+      state.pendingRoll = false;
       return;
     }
 
@@ -227,30 +231,20 @@ export function useDiceAnimation({
     state.entry = reducedMotion ? 0 : size * (11 + Math.random() * 2.5);
 
     // A roll starting while the end-of-turn sweep is still running (typical at
-    // hand-off: the turn resets, the dice sweep out, and the next player rolls
-    // right away) must not teleport the die. Continue from wherever it is on
-    // the sweep so the motion reads as one continuous out-and-in instead of
-    // the dice blinking away and coming back twice.
-    if (state.sweeping && !reducedMotion) {
-      const travelNow = travelRef.current;
-      if (travelNow) {
-        const current = state.right
-          .set(screenRight[0], screenRight[1], screenRight[2])
-          .normalize()
-          .dot(travelNow.position);
-        // Always continue from where the die actually is — including dice
-        // that have not started (or barely started) their staggered sweep.
-        // Snapping those out to the full entry distance is what made a couple
-        // of dice blink away and fly back in while the others glided.
-        state.entry = Math.max(0, current);
-        state.delay = 0;
-      }
-    }
-
+    // hand-off) must not teleport the die, but it must also not shorten its
+    // entry — every die has to fly in with exactly the same motion. So we let
+    // the sweep finish its out-leg first (sped up), and only then start the
+    // completely normal roll from off-screen.
     state.settling = false;
-    // A new roll always wins over a running reset sweep.
-    state.sweeping = false;
-    state.animating = true;
+    if (state.sweeping && !reducedMotion) {
+      state.pendingRoll = true;
+      state.animating = false;
+    } else {
+      state.sweeping = false;
+      state.pendingRoll = false;
+      state.animating = true;
+    }
+    state.elapsed = 0;
 
     state.rollValue = value;
 
@@ -267,7 +261,10 @@ export function useDiceAnimation({
       state.right.set(screenRight[0], screenRight[1], screenRight[2]).normalize();
       state.up.set(screenUp[0], screenUp[1], screenUp[2]).normalize();
 
-      state.sweepT += Math.min(delta, 1 / 20);
+      // When a roll is queued we only need the out-leg, and fast: rush it so
+      // the die is off-screen quickly and the real roll can start.
+      state.sweepT += Math.min(delta, 1 / 20) * (state.pendingRoll ? 3 : 1);
+      if (state.pendingRoll) state.sweepDelay = 0;
       const t = Math.min(
         Math.max((state.sweepT - state.sweepDelay) / state.sweepDuration, 0),
         1,
@@ -304,6 +301,17 @@ export function useDiceAnimation({
           .multiplyScalar(offset)
           .addScaledVector(state.up, lift);
         travelSweep.position.copy(state.move);
+      }
+
+      // Queued roll: hand over the moment the die is off-screen, entering from
+      // exactly where it is, so the fly-in matches a normal roll one-to-one.
+      if (state.pendingRoll && t >= OUT) {
+        state.entry = state.sweepDistance;
+        state.sweeping = false;
+        state.pendingRoll = false;
+        state.animating = true;
+        state.elapsed = 0;
+        return;
       }
 
       if (t >= 1) {

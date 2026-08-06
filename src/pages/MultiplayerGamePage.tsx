@@ -608,6 +608,15 @@ export default function MultiplayerGamePage() {
                 playerIndex={gameState.currentPlayerIndex}
                 className="mt-0"
               />
+              <PickDiceHint
+                show={
+                  gameState.rollsLeft === 2 &&
+                  isMyTurn &&
+                  !(localRolling || remoteRolling || gameState.isRolling) &&
+                  !gameState.lockedDice.some(Boolean)
+                }
+                className="absolute left-1/2 -translate-x-1/2 -bottom-7 z-20"
+              />
             </div>
 
             {/* Quick Chat */}

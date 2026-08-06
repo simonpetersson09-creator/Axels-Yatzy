@@ -59,7 +59,7 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
     CapacitorBarcodeScanner.scanBarcode({
       hint: CapacitorBarcodeScannerTypeHint.QR_CODE,
       scanInstructions: t('scanQR'),
-866      cameraDirection: 1,
+cameraDirection: 1,
     })
       .then((result) => {
         if (cancelled) return;

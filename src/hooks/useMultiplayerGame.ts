@@ -933,24 +933,45 @@ export function useMultiplayerGame() {
       });
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
-  // Forfeit — calls server-side Edge Function
+  // Forfeit — optimistic local finish so the UI leaves immediately; the server
+  // call is fire-and-forget in the background and only used to sync the opponent.
   const forfeitGame = useCallback(async () => {
     if (!state.gameId) return;
 
+    const gameId = state.gameId;
+    const myPlayerIndex = state.myPlayerIndex;
+    const myName = myPlayerIndex !== null && state.gameState
+      ? state.gameState.players[myPlayerIndex]?.name ?? null
+      : null;
+
+    // Immediately mark the match as finished locally. This triggers the
+    // MultiplayerGamePage effect that navigates to /results without waiting
+    // for the edge-function round-trip + realtime propagation.
+    setState(prev => ({
+      ...prev,
+      status: 'finished',
+      gameState: prev.gameState
+        ? {
+            ...prev.gameState,
+            forfeitedBy: myName,
+            forfeitedBySessionId: sessionId,
+          }
+        : null,
+    }));
+
     try {
       const { error } = await withTimeout(supabase.functions.invoke('forfeit-game', {
-        body: { game_id: state.gameId, session_id: sessionId },
+        body: { game_id: gameId, session_id: sessionId },
       }));
-      if (error) {
-        console.error('Forfeit error:', error);
-        throw new Error('Forfeit failed');
-      }
-      trackEvent('game_forfeited', undefined, { gameId: state.gameId, gameMode: 'multiplayer' });
+      if (error) throw error;
+      trackEvent('game_forfeited', undefined, { gameId, gameMode: 'multiplayer' });
     } catch (err) {
       console.error('Forfeit failed:', err);
-      throw err instanceof Error ? err : new Error('Forfeit failed');
+      // Server call failed but the user has already left the board; do not
+      // revert state — that would trap them on a finished-looking screen. The
+      // next polling/realtime update will reconcile if the call retried.
     }
-  }, [state.gameId, sessionId]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Rejoin existing game — validates membership server-side first
   const rejoinGame = useCallback(async (gameId: string) => {

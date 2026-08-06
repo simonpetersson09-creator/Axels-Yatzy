@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ScanLine } from 'lucide-react';
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
+import { Capacitor } from '@capacitor/core';
+import {
+  CapacitorBarcodeScanner,
+  CapacitorBarcodeScannerTypeHint,
+} from '@capacitor/barcode-scanner';
 import { useTranslation } from '@/lib/i18n';
 
 interface QRScannerProps {
@@ -10,11 +15,28 @@ interface QRScannerProps {
   onScan: (code: string) => void;
 }
 
+/** Extract a 6-char game code from a scanned URL or raw string. */
+function parseGameCode(decodedText: string): string | null {
+  try {
+    const url = new URL(decodedText);
+    const c = url.searchParams.get('code');
+    if (c && /^[A-Z0-9]{6}$/i.test(c)) return c.toUpperCase();
+  } catch {
+    /* not a URL — fall through */
+  }
+  const raw = decodedText.trim().toUpperCase();
+  if (/^[A-Z0-9]{6}$/.test(raw)) return raw;
+  return null;
+}
+
 export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
   const { t } = useTranslation();
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const handledRef = useRef(false);
   const startedRef = useRef(false);
+  // On iOS/Android the WKWebView getUserMedia path is unreliable inside the
+  // app; use the native scanner UI instead.
+  const isNative = Capacitor.isNativePlatform();
 
   // Keep latest callbacks in refs so the effect doesn't re-run on every render
   const onScanRef = useRef(onScan);
@@ -27,8 +49,46 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
   const [error, setError] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
 
+  // ── Native scanner (Capacitor) ──────────────────────────────────────────
   useEffect(() => {
-    if (!open) return;
+    if (!open || !isNative) return;
+    let cancelled = false;
+    setError(null);
+    setScanning(true);
+
+    CapacitorBarcodeScanner.scanBarcode({
+      hint: CapacitorBarcodeScannerTypeHint.QR_CODE,
+      scanInstructions: t('scanQR'),
+cameraDirection: 1,
+    })
+      .then((result) => {
+        if (cancelled) return;
+        const code = parseGameCode(String(result?.ScanResult ?? ''));
+        if (code) onScanRef.current(code);
+        onCloseRef.current();
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        // User cancelled the native scanner → just close silently.
+        const msg = (err as { message?: string })?.message ?? '';
+        if (/cancel/i.test(msg)) {
+          onCloseRef.current();
+          return;
+        }
+        console.error('[QRScanner] native scan failed', err);
+        setScanning(false);
+        setError(/permission|denied/i.test(msg) ? t('errCameraBlocked') : t('errGeneric'));
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, isNative]);
+
+  // ── Web scanner (html5-qrcode) ──────────────────────────────────────────
+  useEffect(() => {
+    if (!open || isNative) return;
 
     let cancelled = false;
     handledRef.current = false;
@@ -38,6 +98,7 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
 
     const scanner = new Html5Qrcode('qr-reader', { verbose: false });
     scannerRef.current = scanner;
+
 
     const handleDecoded = (decodedText: string) => {
       if (handledRef.current) return;
@@ -128,6 +189,8 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  // On native the OS scanner UI is shown fullscreen on top of the webview, so
+  // we only render a thin backdrop (plus any error state).
   return (
     <AnimatePresence>
       {open && (
@@ -153,10 +216,10 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
 
           {/* Camera view */}
           <div className="flex-1 relative flex items-center justify-center overflow-hidden">
-            <div id="qr-reader" className="w-full h-full" />
+            {!isNative && <div id="qr-reader" className="w-full h-full" />}
 
             {/* Corner brackets overlay */}
-            {!error && scanning && (
+            {!isNative && !error && scanning && (
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 <div className="relative w-56 h-56">
                   <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-primary" />
@@ -166,6 +229,7 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
                 </div>
               </div>
             )}
+
 
             {error && (
               <div className="absolute inset-0 flex items-center justify-center p-6">

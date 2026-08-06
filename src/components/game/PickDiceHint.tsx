@@ -16,8 +16,8 @@ export function PickDiceHint({ show, className }: PickDiceHintProps) {
     <div
       aria-hidden={!show}
       className={cn(
-        'pointer-events-none select-none whitespace-nowrap rounded-full px-3 py-1',
-        'text-[11px] font-medium tracking-wide',
+        'pointer-events-none select-none rounded-full px-2 py-0.5 text-center',
+        'text-[10px] font-medium tracking-wide leading-tight',
         'transition-opacity duration-300',
         show ? 'opacity-70' : 'opacity-0',
         className,
@@ -28,7 +28,9 @@ export function PickDiceHint({ show, className }: PickDiceHintProps) {
         background: 'hsl(var(--game-gold) / 0.08)',
       }}
     >
-      Välj tärningar att behålla
+      Välj tärningar
+      <br />
+      att behålla
     </div>
   );
 }

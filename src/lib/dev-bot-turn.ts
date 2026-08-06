@@ -10,7 +10,7 @@ import { rollSingleDie } from '@/lib/yatzy-scoring';
 
 export const BOT_ROLL_ANIM_MS = 1500;   // matches ROLL_ANIM_MS in useMultiplayerGame
 const BOT_LOCK_DELAY_MS = 260;          // human-ish pause per lock tap
-const BOT_THINK_MS = 700;               // pause before picking a category
+const BOT_THINK_MS = 180;               // short pause before picking a category
 
 interface BotGame {
   id: string;

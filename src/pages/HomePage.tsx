@@ -302,14 +302,12 @@ export default function HomePage() {
                     onClick={() => resumeGame(game)}
                     className={`w-full px-4 py-3 rounded-2xl shadow-lg active:shadow-md transition-shadow flex items-center gap-3 text-left ${
                       myTurn
-                        ? 'bg-game-success/95 text-white ring-2 ring-game-gold/60'
+                        ? 'bg-game-success/95 text-white ring-2 ring-game-gold/60 ui-shadow-pulse'
                         : opponentTurn
                           ? 'bg-secondary/80 text-foreground'
                           : 'bg-game-success/95 text-white'
                     }`}
                     whileTap={{ scale: 0.97 }}
-                    animate={myTurn ? { boxShadow: ['0 4px 16px hsl(36 78% 55% / 0.20)', '0 4px 24px hsl(36 78% 55% / 0.50)', '0 4px 16px hsl(36 78% 55% / 0.20)'] } : undefined}
-                    transition={myTurn ? { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } : undefined}
                   >
                     <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
                       myTurn ? 'bg-white/15' : opponentTurn ? 'bg-muted/60' : 'bg-white/15'
@@ -320,24 +318,21 @@ export default function HomePage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-display font-bold text-sm sm:text-base truncate inline-flex items-center gap-1.5">
                           {!isLocal && status?.opponentOnline && (
-                            <motion.span
-                              className="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]"
+                            <span
+                              className="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)] ui-glow-pulse-slow"
                               aria-label={t('onlineNow')}
-                              animate={{ opacity: [1, 0.55, 1] }}
-                              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
                             />
                           )}
                           {isLocal ? t('resumeMatch') : (opponent ?? t('resumeMatch'))}
                         </span>
                         {myTurn && (
-                          <motion.span
-                            className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-game-gold text-background"
-                            animate={{ scale: [1, 1.08, 1] }}
-                            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                          <span
+                            className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-game-gold text-background ui-scale-pulse-sm"
                           >
                             {t('yourTurnLabel')}
-                          </motion.span>
+                          </span>
                         )}
+
                         {opponentTurn && opponent && (
                           <span className="text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-muted/60 text-muted-foreground">
                             {t('waitingForOpponent', { name: opponent })}

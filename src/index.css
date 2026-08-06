@@ -370,3 +370,29 @@
       0 1px 4px -1px hsl(0 0% 0% / 0.2);
   }
 }
+
+/* GPU-friendly CSS pulses (replace framer-motion infinite loops) */
+@keyframes ui-glow-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+@keyframes ui-scale-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes ui-scale-pulse-sm {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+@keyframes ui-shadow-pulse {
+  0%, 100% { box-shadow: 0 4px 16px hsl(36 78% 55% / 0.20); }
+  50% { box-shadow: 0 4px 24px hsl(36 78% 55% / 0.50); }
+}
+@layer utilities {
+  .ui-glow-pulse { animation: ui-glow-pulse 1.6s ease-in-out infinite; }
+  .ui-glow-pulse-fast { animation: ui-glow-pulse 1.3s ease-in-out infinite; }
+  .ui-glow-pulse-slow { animation: ui-glow-pulse 1.8s ease-in-out infinite; }
+  .ui-scale-pulse { animation: ui-scale-pulse 2s ease-in-out infinite; }
+  .ui-scale-pulse-sm { animation: ui-scale-pulse-sm 1.4s ease-in-out infinite; }
+  .ui-shadow-pulse { animation: ui-shadow-pulse 1.8s ease-in-out infinite; }
+}

@@ -8,8 +8,9 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { DoubleSide, Group, Mesh, MeshBasicMaterial } from "three";
 
+// Matches the roll button gold: hsl(36 78% 55%) === #e69e33
 const ringMaterial = new MeshBasicMaterial({
-  color: "#ffcb87",
+  color: "#e69e33",
   transparent: true,
   depthWrite: false,
   opacity: 0,
@@ -31,9 +32,10 @@ export function HoldIndicator({ held, size, phase = 0 }: HoldIndicatorProps) {
 
   useFrame((state, delta) => {
     const target = held ? 1 : 0;
-    // Critically-damped-ish approach: quick in, gentle out.
-    const speed = held ? 9 : 6;
+    // Quick in, and an equally snappy release so unlocking feels instant.
+    const speed = held ? 9 : 26;
     t.current += (target - t.current) * Math.min(1, delta * speed);
+    if (!held && t.current < 0.02) t.current = 0;
     const k = t.current;
 
     const group = groupRef.current;

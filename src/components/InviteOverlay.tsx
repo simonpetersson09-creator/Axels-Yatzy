@@ -41,6 +41,29 @@ function markOutboundHandled(key: string) {
   }
 }
 
+// Both pollers below need the exact same row set. They used to fire two
+// separate RPCs every 3 s and 4 s, i.e. ~0.6 network round-trips per second for
+// the entire lifetime of the app — on iOS that constant JSON parsing + state
+// churn showed up as general stutter. They now share one in-flight request and
+// a short result cache, and they never poll while the app is backgrounded.
+let invitesCache: { at: number; rows: InviteRow[] } = { at: 0, rows: [] };
+let invitesInFlight: Promise<InviteRow[]> | null = null;
+const INVITES_CACHE_MS = 2500;
+
+async function fetchInvites(sessionId: string, force = false): Promise<InviteRow[]> {
+  if (!force && Date.now() - invitesCache.at < INVITES_CACHE_MS) return invitesCache.rows;
+  if (invitesInFlight) return invitesInFlight;
+  invitesInFlight = supabase
+    .rpc('list_invites_for_session', { p_session_id: sessionId })
+    .then(({ data }) => {
+      invitesCache = { at: Date.now(), rows: (data ?? []) as InviteRow[] };
+      return invitesCache.rows;
+    })
+    .catch(() => invitesCache.rows)
+    .finally(() => { invitesInFlight = null; });
+  return invitesInFlight;
+}
+
 export default function InviteOverlay() {
 
   const navigate = useNavigate();
@@ -49,6 +72,7 @@ export default function InviteOverlay() {
   const handledRef = useRef<Set<string>>(new Set());
   const sessionId = getSessionId();
   const incoming = queue[0] ?? null;
+
 
   const enqueue = useCallback((row: InviteRow) => {
     if (handledRef.current.has(row.id)) return;

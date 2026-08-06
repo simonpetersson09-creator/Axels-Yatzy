@@ -216,6 +216,16 @@ export function useDiceAnimation({
       return;
     }
 
+    // The dice values for a remote player arrive from the server *after* the
+    // roll has already started locally. That must only re-aim the landing
+    // face — restarting the flight would teleport the die back off-screen and
+    // throw it in a second time (the "dice disappear for half a second" bug).
+    if (state.animating || state.pendingRoll) {
+      getFaceQuaternion(value, randomInt(0, 3), state.target);
+      state.rollValue = value;
+      return;
+    }
+
     getFaceQuaternion(value, randomInt(0, 3), state.target);
     randomAxis(state.axisA);
     randomAxis(state.axisB);

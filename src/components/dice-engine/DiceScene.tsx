@@ -11,7 +11,7 @@
  *     onToggleHold={(index) => {}}
  *   />
  */
-import { memo, useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 import { DiceTray } from "./DiceTray";
@@ -66,9 +66,16 @@ function DiceSceneImpl({
     [values.length, held],
   );
 
+  // Give R3F an explicit, guaranteed-mounted event source. Without it the
+  // event manager can try to attach to a null element while the canvas is
+  // still being composited, which throws during mount.
+  const hostRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className={className ?? "h-full w-full"}>
+    <div ref={hostRef} className={className ?? "h-full w-full"}>
       <Canvas
+        eventSource={hostRef as React.RefObject<HTMLElement>}
+        eventPrefix="client"
         // The dice occupy a narrow strip, so edge quality matters more than
         // fill rate here: allow the device's full DPR (up to 3) for crisp,
         // supersampled silhouettes and pips on modern phones.

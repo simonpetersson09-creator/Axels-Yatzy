@@ -31,7 +31,7 @@ export function DiceArea({
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 62 : 68;
-  const gap = compact ? 8 : 10;
+  const gap = compact ? 20 : 24;
   const canLock = !isRolling && hasRolled && rollsLeft > 0;
 
   const columnHeight = diceSize * 5 + gap * 4;

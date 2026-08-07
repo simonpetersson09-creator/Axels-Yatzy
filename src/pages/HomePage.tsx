@@ -319,9 +319,9 @@ export default function HomePage() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                      myTurn || !isLocal && !opponentTurn ? 'bg-white/15' : opponentTurn ? 'bg-muted/50' : 'bg-white/15'
+                      myTurn ? 'bg-white/15' : 'bg-muted/50'
                     }`}>
-                      <Play className={`w-4 h-4 ${opponentTurn ? 'text-muted-foreground' : ''}`} />
+                      <Play className={`w-4 h-4 ${myTurn ? '' : 'text-muted-foreground'}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">

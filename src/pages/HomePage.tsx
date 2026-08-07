@@ -291,16 +291,22 @@ export default function HomePage() {
             <motion.div className="space-y-1.5" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               {[...activeGames].sort((a, b) => {
                 // "Din tur"-spel överst
-                const aTurn = !!(a.gameId && statuses[a.gameId]?.myTurn);
-                const bTurn = !!(b.gameId && statuses[b.gameId]?.myTurn);
-                if (aTurn === bTurn) return 0;
-                return aTurn ? -1 : 1;
+                const aMyTurn = a.type === 'local'
+                  ? (a.currentPlayerIndex ?? 0) === 0
+                  : !!(a.gameId && statuses[a.gameId]?.myTurn);
+                const bMyTurn = b.type === 'local'
+                  ? (b.currentPlayerIndex ?? 0) === 0
+                  : !!(b.gameId && statuses[b.gameId]?.myTurn);
+                if (aMyTurn === bMyTurn) return 0;
+                return aMyTurn ? -1 : 1;
               }).map((game) => {
                 const isLocal = game.type === 'local';
                 const status = !isLocal && game.gameId ? statuses[game.gameId] : undefined;
                 const opponent = status?.opponentName ?? game.opponentName;
-                const myTurn = status?.myTurn === true;
-                const opponentTurn = !isLocal && status && status.myTurn === false;
+                const localMyTurn = isLocal ? (game.currentPlayerIndex ?? 0) === 0 : undefined;
+                const myTurn = isLocal ? localMyTurn === true : status?.myTurn === true;
+                const opponentTurn = isLocal ? localMyTurn === false : status && status.myTurn === false;
+                const waitingForStatus = !isLocal && !status;
                 const timeLeft = formatTimeRemaining(getTimeRemaining(game));
                 const key = game.gameId ?? 'local';
                 return (
@@ -308,23 +314,23 @@ export default function HomePage() {
                     key={key}
                     onClick={() => resumeGame(game)}
                     className={`w-full px-3 py-2.5 rounded-xl transition-all flex items-center gap-2.5 text-left border-l-4 ${
-                      myTurn || isLocal
+                      myTurn
                         ? 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
-                        : opponentTurn
+                        : opponentTurn || waitingForStatus
                           ? 'bg-secondary/70 text-foreground border border-border/60 border-l-game-info/80 hover:bg-secondary/85'
                           : 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
                     }`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                      myTurn || !isLocal && !opponentTurn ? 'bg-white/15' : opponentTurn ? 'bg-muted/50' : 'bg-white/15'
+                      myTurn ? 'bg-white/15' : 'bg-muted/50'
                     }`}>
-                      <Play className={`w-4 h-4 ${opponentTurn ? 'text-muted-foreground' : ''}`} />
+                      <Play className={`w-4 h-4 ${myTurn ? '' : 'text-muted-foreground'}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className={`font-display font-bold text-sm truncate inline-flex items-center gap-1.5 ${
-                          opponentTurn ? 'text-foreground' : 'text-white'
+                          myTurn ? 'text-white' : 'text-foreground'
                         }`}>
                           {!isLocal && status?.opponentOnline && (
                             <span
@@ -336,7 +342,7 @@ export default function HomePage() {
                         </span>
                       </div>
                       <div className={`flex items-center gap-1 mt-px text-[10px] tabular-nums ${
-                        opponentTurn ? 'text-muted-foreground/80' : 'text-white/70'
+                        myTurn ? 'text-white/70' : 'text-muted-foreground/80'
                       }`}>
                         <Clock className="w-3 h-3" />
                         <span className="truncate">{t('ongoingMatchRemaining', { time: timeLeft })}</span>
@@ -348,7 +354,7 @@ export default function HomePage() {
                           {t('yourTurnLabel')}
                         </span>
                       )}
-                      {opponentTurn && opponent && (
+                      {(opponentTurn || waitingForStatus) && opponent && (
                         <span className="text-[9px] font-medium uppercase tracking-wider px-2 py-1 rounded-full bg-muted/70 text-muted-foreground">
                           {t('waitingShort')}
                         </span>

@@ -20,6 +20,7 @@ export interface ActiveGame {
   timestamp: number;
   lastRollTime: number;
   opponentName?: string;
+  currentPlayerIndex?: number;
 }
 
 function readList(): ActiveGame[] {

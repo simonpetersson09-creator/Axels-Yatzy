@@ -307,23 +307,25 @@ export default function HomePage() {
                   <motion.button
                     key={key}
                     onClick={() => resumeGame(game)}
-                    className={`w-full px-3 py-2.5 rounded-xl transition-all flex items-center gap-2.5 text-left ${
-                      myTurn
-                        ? 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] ring-1 ring-game-gold/50'
+                    className={`w-full px-3 py-2.5 rounded-xl transition-all flex items-center gap-2.5 text-left border-l-4 ${
+                      myTurn || isLocal
+                        ? 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
                         : opponentTurn
-                          ? 'bg-secondary/60 text-foreground border border-border/60 hover:bg-secondary/80'
-                          : 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)]'
+                          ? 'bg-secondary/70 text-foreground border border-border/60 border-l-game-info/80 hover:bg-secondary/85'
+                          : 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
                     }`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                      myTurn ? 'bg-white/15' : opponentTurn ? 'bg-muted/50' : 'bg-white/15'
+                      myTurn || !isLocal && !opponentTurn ? 'bg-white/15' : opponentTurn ? 'bg-muted/50' : 'bg-white/15'
                     }`}>
                       <Play className={`w-4 h-4 ${opponentTurn ? 'text-muted-foreground' : ''}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-display font-bold text-sm truncate inline-flex items-center gap-1.5">
+                        <span className={`font-display font-bold text-sm truncate inline-flex items-center gap-1.5 ${
+                          opponentTurn ? 'text-foreground' : 'text-white'
+                        }`}>
                           {!isLocal && status?.opponentOnline && (
                             <span
                               className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.9)]"

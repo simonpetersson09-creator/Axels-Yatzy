@@ -180,7 +180,7 @@ export default function GamePage() {
       clearTimeout(t);
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
     };
-  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, aiPlayers, roll]);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, aiPlayers, roll, aiNudge]);
 
   // AI auto-play
   useEffect(() => {

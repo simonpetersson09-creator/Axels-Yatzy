@@ -361,84 +361,74 @@ export function FriendsList() {
           return (
             <div
               key={o.opponentId}
-              className={`w-full p-4 rounded-2xl border ${
+              className={`w-full p-3 rounded-xl border ${
                 o.ongoingMatch
                   ? 'bg-primary/10 border-primary/40'
                   : 'bg-secondary/60 border-border/50'
               }`}
             >
-              <button
-                onClick={() => navigate('/friend-stats', { state: { selectedId: o.opponentId } })}
-                className="w-full text-left active:opacity-80 transition"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="font-display font-bold text-foreground truncate">
+              <div className="flex items-center gap-2.5">
+                <button
+                  onClick={() => navigate('/friend-stats', { state: { selectedId: o.opponentId } })}
+                  className="flex-1 min-w-0 text-left active:opacity-80 transition"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-display font-bold text-sm text-foreground truncate">
                       {o.opponentName}
+                    </span>
+                    <div className="flex items-center gap-1 text-[10px] font-bold tabular-nums">
+                      <span className="px-1.5 py-0.5 rounded bg-game-success/15 text-game-success">{o.wins}</span>
+                      <span className="px-1.5 py-0.5 rounded bg-destructive/15 text-destructive">{o.losses}</span>
+                      {o.draws > 0 && (
+                        <span className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{o.draws}</span>
+                      )}
                     </div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5">
-                      {o.matches} {t('friendsMatches')} · {t('friendsHighScore')}: {o.myHigh}
-                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[11px] font-bold tabular-nums">
-                    <span className="px-2 py-0.5 rounded-md bg-game-success/15 text-game-success">{o.wins}</span>
-                    <span className="px-2 py-0.5 rounded-md bg-destructive/15 text-destructive">{o.losses}</span>
-                    {o.draws > 0 && (
-                      <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground">{o.draws}</span>
-                    )}
+                  <div className="text-[10px] text-muted-foreground mt-0.5">
+                    {o.matches} {t('friendsMatches')} · {t('friendsHighScore')}: {o.myHigh}
                   </div>
-                </div>
-                {o.ongoingMatch ? (
-                  <div className="mt-2.5 pt-2.5 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                    <span className="flex items-center gap-1.5 text-primary font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      {t('ongoingMatch')}
-                    </span>
-                    <span className="text-muted-foreground normal-case tracking-normal">
-                      {formatDate(o.ongoingMatch.created_at)}
-                    </span>
-                  </div>
-                ) : hasFinished ? (
-                  <div className="mt-2.5 pt-2.5 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                    <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
-                    <span className={`font-bold ${
-                      lastDraw ? 'text-muted-foreground'
-                        : lastWon ? 'text-game-success' : 'text-destructive'
-                    }`}>
-                      {myScore} – {oppScore} · {last ? formatDate(last.created_at) : ''}
-                    </span>
-                  </div>
-                ) : null}
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (alreadyInvited) {
-                    reopenInvite(o.opponentId, o.opponentName);
-                  } else {
-                    handleInvite(o.opponentId, o.opponentName);
-                  }
-                }}
-                disabled={isSending || !!pendingInvite}
-                className="mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition font-display font-bold text-sm disabled:opacity-60"
-              >
-                {isSending ? (
-                  <>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (alreadyInvited) {
+                      reopenInvite(o.opponentId, o.opponentName);
+                    } else {
+                      handleInvite(o.opponentId, o.opponentName);
+                    }
+                  }}
+                  disabled={isSending || !!pendingInvite}
+                  className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition flex items-center justify-center disabled:opacity-60"
+                  aria-label={alreadyInvited ? t('inviteSent') : t('inviteToGame')}
+                >
+                  {isSending ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    {t('sendingInvite')}
-                  </>
-                ) : alreadyInvited ? (
-                  <>
+                  ) : (
                     <Send className="w-3.5 h-3.5" />
-                    {t('inviteSent')}
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-3.5 h-3.5" />
-                    {t('inviteToGame')}
-                  </>
-                )}
-              </button>
+                  )}
+                </button>
+              </div>
+              {o.ongoingMatch ? (
+                <div className="mt-2 pt-2 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">
+                  <span className="flex items-center gap-1.5 text-primary font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                    {t('ongoingMatch')}
+                  </span>
+                  <span className="text-muted-foreground normal-case tracking-normal">
+                    {formatDate(o.ongoingMatch.created_at)}
+                  </span>
+                </div>
+              ) : hasFinished ? (
+                <div className="mt-2 pt-2 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
+                  <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
+                  <span className={`font-bold ${
+                    lastDraw ? 'text-muted-foreground'
+                      : lastWon ? 'text-game-success' : 'text-destructive'
+                  }`}>
+                    {myScore}–{oppScore} · {last ? formatDate(last.created_at) : ''}
+                  </span>
+                </div>
+              ) : null}
             </div>
           );
         })}

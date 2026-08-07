@@ -291,10 +291,14 @@ export default function HomePage() {
             <motion.div className="space-y-1.5" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               {[...activeGames].sort((a, b) => {
                 // "Din tur"-spel överst
-                const aTurn = !!(a.gameId && statuses[a.gameId]?.myTurn);
-                const bTurn = !!(b.gameId && statuses[b.gameId]?.myTurn);
-                if (aTurn === bTurn) return 0;
-                return aTurn ? -1 : 1;
+                const aMyTurn = a.type === 'local'
+                  ? (a.currentPlayerIndex ?? 0) === 0
+                  : !!(a.gameId && statuses[a.gameId]?.myTurn);
+                const bMyTurn = b.type === 'local'
+                  ? (b.currentPlayerIndex ?? 0) === 0
+                  : !!(b.gameId && statuses[b.gameId]?.myTurn);
+                if (aMyTurn === bMyTurn) return 0;
+                return aMyTurn ? -1 : 1;
               }).map((game) => {
                 const isLocal = game.type === 'local';
                 const status = !isLocal && game.gameId ? statuses[game.gameId] : undefined;

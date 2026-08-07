@@ -11,7 +11,7 @@
  *     onToggleHold={(index) => {}}
  *   />
  */
-import { memo, useEffect, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 import { DiceTray } from "./DiceTray";

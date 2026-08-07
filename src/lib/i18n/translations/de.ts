@@ -216,6 +216,7 @@ export const de: typeof sv = {
   waitCooldown: 'Warte {sec}s bis zur nächsten Nachricht',
   yourTurnLabel: 'Du bist dran',
   waitingForOpponent: 'Warte auf {name}',
+  waitingShort: 'Wartet',
   onlineNow: 'Jetzt online',
 
   notifications: 'Benachrichtigungen',

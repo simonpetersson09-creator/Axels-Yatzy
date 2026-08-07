@@ -225,6 +225,8 @@ export const de: typeof sv = {
   notifReminderDesc: 'Wir erinnern dich, wenn das Spiel stockt',
 
   maxActiveGames: 'Du hast bereits {max} aktive Freundesspiele. Beende eines, bevor du ein neues startest.',
+
+  maxActiveLocalGames: "Du hast bereits {max} laufende Spiele gegen den Computer. Beende eines, bevor du ein neues startest.",
   errTimeout: 'Die Verbindung hat zu lange gedauert. Bitte erneut versuchen.',
   errRollDice: 'Würfeln nicht möglich',
   errSubmitScore: 'Punktzahl konnte nicht gespeichert werden',

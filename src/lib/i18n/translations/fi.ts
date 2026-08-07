@@ -231,6 +231,7 @@ export const fi: typeof sv = {
 
   // Multiplayer errors
   maxActiveGames: 'Sinulla on jo {max} aktiivista kaveripeliä. Päätä yksi ennen uuden aloittamista.',
+  maxActiveLocalGames: "Sinulla on jo {max} käynnissä olevaa peliä tietokonetta vastaan. Lopeta yksi ennen uuden aloittamista.",
   errTimeout: 'Yhteys kesti liian kauan. Yritä uudelleen.',
   errRollDice: 'Noppia ei voitu heittää',
   errSubmitScore: 'Pisteitä ei voitu tallentaa',

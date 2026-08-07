@@ -231,6 +231,7 @@ export const da: typeof sv = {
 
   // Multiplayer errors
   maxActiveGames: 'Du har allerede {max} aktive venne-spil. Afslut ét, før du starter et nyt.',
+  maxActiveLocalGames: "Du har allerede {max} igangværende kampe mod computeren. Afslut én, før du starter en ny.",
   errTimeout: 'Forbindelsen tog for lang tid. Prøv igen.',
   errRollDice: 'Kunne ikke kaste terningerne',
   errSubmitScore: 'Kunne ikke gemme score',

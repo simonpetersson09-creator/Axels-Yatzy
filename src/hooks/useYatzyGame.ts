@@ -13,8 +13,11 @@ function createPlayer(name: string, index: number): Player {
 
 export function useYatzyGame() {
   const [gameState, setGameState] = useState<GameState | null>(() => {
-    // Try to restore saved game on mount
-    return loadGameState<GameState>();
+    // Try to restore saved game on mount. `isRolling` must never survive a
+    // reload/suspension: the timer that would have cleared it is gone, so a
+    // persisted `true` freezes the game (the AI effect bails while rolling).
+    const saved = loadGameState<GameState>();
+    return saved ? { ...saved, isRolling: false } : null;
   });
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -23,6 +26,23 @@ export function useYatzyGame() {
       if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
     };
   }, []);
+
+  // Safety net: if the app was suspended mid-roll (iOS throttles/kills timers),
+  // `isRolling` can stay true with no pending timeout. Clear it on resume.
+  useEffect(() => {
+    const unstick = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (rollTimeoutRef.current) return;
+      setGameState(prev => (prev?.isRolling ? { ...prev, isRolling: false } : prev));
+    };
+    document.addEventListener('visibilitychange', unstick);
+    window.addEventListener('focus', unstick);
+    return () => {
+      document.removeEventListener('visibilitychange', unstick);
+      window.removeEventListener('focus', unstick);
+    };
+  }, []);
+
 
   // Persist game state on every change
   useEffect(() => {

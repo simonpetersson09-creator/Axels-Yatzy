@@ -234,6 +234,7 @@ export function FriendsList() {
         lastMatch: r,
         ongoingMatch: null,
         mergedSourceIds: [],
+        sortAt: r.created_at,
       };
 
       if (isOngoing) {
@@ -257,17 +258,36 @@ export function FriendsList() {
       }
       map.set(oppId, cur);
     }
+
+    // Friends we have shared a game with but that have no (surviving) match
+    // row — e.g. the match was cancelled or is still in the lobby. Saved
+    // locally by both players, so a friend sticks regardless of who invited.
+    for (const kf of knownFriends) {
+      const id = resolveFriendId(kf.id, aliasMap);
+      if (id === myId || hidden.has(id) || map.has(id)) continue;
+      map.set(id, {
+        opponentId: id,
+        opponentName: kf.name,
+        matches: 0, wins: 0, losses: 0, draws: 0,
+        myHigh: 0,
+        lastMatch: null,
+        ongoingMatch: null,
+        mergedSourceIds: [],
+        sortAt: kf.addedAt,
+      });
+    }
+
     for (const [id, set] of sourceTracker) {
       const entry = map.get(id);
       if (entry) entry.mergedSourceIds = Array.from(set);
     }
     return Array.from(map.values()).sort((a, b) => {
       if (!!a.ongoingMatch !== !!b.ongoingMatch) return a.ongoingMatch ? -1 : 1;
-      const aT = (a.ongoingMatch ?? a.lastMatch).created_at;
-      const bT = (b.ongoingMatch ?? b.lastMatch).created_at;
+      const aT = a.ongoingMatch?.created_at ?? a.lastMatch?.created_at ?? a.sortAt;
+      const bT = b.ongoingMatch?.created_at ?? b.lastMatch?.created_at ?? b.sortAt;
       return new Date(bT).getTime() - new Date(aT).getTime();
     });
-  }, [rows, myId, hiddenFriends, aliasMap]);
+  }, [rows, myId, hiddenFriends, aliasMap, knownFriends]);
 
   if (rows === null) {
     return (

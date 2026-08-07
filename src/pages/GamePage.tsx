@@ -81,6 +81,9 @@ export default function GamePage() {
   selectCategoryFnRef.current = selectCategory;
   const [aiThinking, setAiThinking] = useState(false);
   const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
+  // Bumped by the watchdog to re-arm the auto-roll / AI effects after a freeze.
+  const [aiNudge, setAiNudge] = useState(0);
+
 
   // Stable per-match key so a finished local game can never be counted twice
   // (remount, hot reload or re-entry after an app restart).
@@ -177,7 +180,7 @@ export default function GamePage() {
       clearTimeout(t);
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
     };
-  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, aiPlayers, roll]);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, aiPlayers, roll, aiNudge]);
 
   // AI auto-play
   useEffect(() => {
@@ -224,7 +227,48 @@ export default function GamePage() {
       clearTimeout(t);
       if (innerTimer) clearTimeout(innerTimer);
     };
-  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, setLocks]);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, setLocks, aiNudge]);
+
+  // Watchdog: if the app is suspended (backgrounded) mid AI turn, the pending
+  // timers are cleared by the effect cleanup while the guard refs still hold
+  // the current key — so the AI would never act again. Detect a frozen AI turn
+  // and re-arm both the auto-roll and the AI effect.
+  const stuckRef = useRef<{ sig: string; at: number }>({ sig: '', at: Date.now() });
+  useEffect(() => {
+    const check = () => {
+      const gs = gameStateRef.current;
+      if (!gs || gs.gameOver) return;
+      if (!aiPlayers.includes(gs.currentPlayerIndex)) return;
+      const sig = `${gs.currentPlayerIndex}-${gs.round}-${gs.rollsLeft}-${gs.isRolling}`;
+      if (sig !== stuckRef.current.sig) {
+        stuckRef.current = { sig, at: Date.now() };
+        return;
+      }
+      if (Date.now() - stuckRef.current.at < 5000) return;
+      stuckRef.current = { sig, at: Date.now() };
+      aiTurnRef.current = null;
+      autoRollRef.current = null;
+      autoRollPendingRef.current = null;
+      setAiThinking(false);
+      setAiChosenCategory(null);
+      setAiNudge((n) => n + 1);
+    };
+    const iv = setInterval(check, 1000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        stuckRef.current = { sig: '', at: Date.now() };
+        setAiNudge((n) => n + 1);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      clearInterval(iv);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, [aiPlayers]);
+
 
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
   const { activeCelebration, yatzyTrigger } = useCombinationCelebration(gameState);

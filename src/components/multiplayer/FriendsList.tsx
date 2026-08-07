@@ -12,6 +12,7 @@ import {
   resolveFriendId,
   subscribeFriendAliases,
 } from '@/lib/friend-aliases';
+import { getKnownFriends, addKnownFriends, subscribeKnownFriends } from '@/lib/known-friends';
 import { toast } from 'sonner';
 
 interface FriendMatchRow {

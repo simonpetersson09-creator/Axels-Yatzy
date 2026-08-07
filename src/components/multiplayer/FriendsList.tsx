@@ -405,7 +405,7 @@ export function FriendsList() {
                       lastDraw ? 'text-muted-foreground'
                         : lastWon ? 'text-game-success' : 'text-destructive'
                     }`}>
-                      {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
+                      {myScore} – {oppScore} · {last ? formatDate(last.created_at) : ''}
                     </span>
                   </div>
                 ) : null}

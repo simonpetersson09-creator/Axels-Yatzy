@@ -95,6 +95,7 @@ function DiceSceneImpl({
     <div className={className ?? "h-full w-full"}>
 
       <Canvas
+        key={canvasKey}
         // The dice occupy a narrow strip, so edge quality matters more than
         // fill rate here: allow the device's full DPR (up to 3) for crisp,
         // supersampled silhouettes and pips on modern phones.
@@ -113,9 +114,21 @@ function DiceSceneImpl({
           gl.toneMapping = ACESFilmicToneMapping;
           gl.toneMappingExposure = 1.05;
           gl.outputColorSpace = SRGBColorSpace;
+          glRef.current = gl as unknown as { getContext: () => WebGLRenderingContext | null };
+          const canvas = gl.domElement;
+          const onLost = (e: Event) => {
+            // Preventing the default lets the browser try to restore it, and
+            // guarantees a `webglcontextrestored` event.
+            e.preventDefault();
+            // Remount on the next tick so React is not updated mid-event.
+            setTimeout(remount, 0);
+          };
+          canvas.addEventListener("webglcontextlost", onLost as EventListener);
+          canvas.addEventListener("webglcontextrestored", remount);
         }}
         style={{ touchAction: "manipulation" }}
       >
+
         <DiceTray
           values={values}
           held={heldSafe}

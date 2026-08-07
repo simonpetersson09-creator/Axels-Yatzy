@@ -8,7 +8,7 @@ import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBo
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
-import { setActiveGame, clearLocalActiveGame } from '@/lib/active-game';
+import { setActiveGame, clearLocalActiveGame, newLocalGameId } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
@@ -28,16 +28,20 @@ export default function GamePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame();
+  // Each local match lives in its own slot so several games can run in parallel.
+  const [localGameId] = useState<string>(() => location.state?.localGameId ?? newLocalGameId());
+  const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame(localGameId);
 
   const incomingPlayerNames: string[] | undefined = location.state?.playerNames;
   const incomingAiPlayers: number[] | undefined = location.state?.aiPlayers;
+  const namesKey = `yatzy-player-names:${localGameId}`;
+  const aiKey = `yatzy-ai-players:${localGameId}`;
   
   // Persist playerNames and aiPlayers to localStorage so they survive app suspension/refresh
   const [playerNames, setPlayerNames] = useState<string[]>(() => {
     if (incomingPlayerNames) return incomingPlayerNames;
     try {
-      const saved = localStorage.getItem('yatzy-player-names');
+      const saved = localStorage.getItem(namesKey);
       return saved ? JSON.parse(saved) : ['Spelare 1'];
     } catch { return ['Spelare 1']; }
   });
@@ -45,7 +49,7 @@ export default function GamePage() {
   const [aiPlayers, setAiPlayers] = useState<number[]>(() => {
     if (incomingAiPlayers) return incomingAiPlayers;
     try {
-      const saved = localStorage.getItem('yatzy-ai-players');
+      const saved = localStorage.getItem(aiKey);
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
@@ -53,11 +57,11 @@ export default function GamePage() {
   useEffect(() => {
     if (incomingPlayerNames) {
       setPlayerNames(incomingPlayerNames);
-      localStorage.setItem('yatzy-player-names', JSON.stringify(incomingPlayerNames));
+      localStorage.setItem(namesKey, JSON.stringify(incomingPlayerNames));
     }
     if (incomingAiPlayers) {
       setAiPlayers(incomingAiPlayers);
-      localStorage.setItem('yatzy-ai-players', JSON.stringify(incomingAiPlayers));
+      localStorage.setItem(aiKey, JSON.stringify(incomingAiPlayers));
     }
   }, [incomingPlayerNames, incomingAiPlayers]);
 
@@ -103,13 +107,18 @@ export default function GamePage() {
 
   useEffect(() => {
     if (gameState && !gameState.gameOver) {
-      setActiveGame({ type: 'local', timestamp: Date.now() });
+      setActiveGame({
+        type: 'local',
+        gameId: localGameId,
+        timestamp: Date.now(),
+        opponentName: playerNames.slice(1).join(', ') || undefined,
+      });
     }
   }, [gameState]);
 
   useEffect(() => {
     if (gameState?.gameOver) {
-      clearLocalActiveGame();
+      clearLocalActiveGame(localGameId);
       // Record local stats for human player (index 0)
       const humanScore = getTotalScore(gameState.players[0].scores);
       const allScores = gameState.players.map(p => getTotalScore(p.scores));
@@ -278,7 +287,7 @@ export default function GamePage() {
 
   const handleForfeit = useCallback(() => {
     if (!gameState) return;
-    clearLocalActiveGame();
+    clearLocalActiveGame(localGameId);
     const results = gameState.players.map(p => ({
       name: p.name,
       score: getTotalScore(p.scores),

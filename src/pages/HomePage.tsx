@@ -310,9 +310,9 @@ export default function HomePage() {
                     key={key}
                     onClick={() => resumeGame(game)}
                     className={`w-full px-3 py-2.5 rounded-xl transition-all flex items-center gap-2.5 text-left border-l-4 ${
-                      myTurn || isLocal
+                      myTurn
                         ? 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
-                        : opponentTurn
+                        : opponentTurn || waitingForStatus
                           ? 'bg-secondary/70 text-foreground border border-border/60 border-l-game-info/80 hover:bg-secondary/85'
                           : 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
                     }`}

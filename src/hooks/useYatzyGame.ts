@@ -53,7 +53,12 @@ export function useYatzyGame(localId?: string) {
   useEffect(() => {
     if (gameState && !gameState.gameOver) {
       saveGameState(gameState, localId);
-      setActiveGame({ type: 'local', gameId: localId, timestamp: Date.now() });
+      setActiveGame({
+        type: 'local',
+        gameId: localId,
+        timestamp: Date.now(),
+        currentPlayerIndex: gameState.currentPlayerIndex,
+      });
     }
   }, [gameState, localId]);
 

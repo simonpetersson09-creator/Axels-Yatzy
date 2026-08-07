@@ -346,15 +346,16 @@ export function FriendsList() {
     <>
       <div className="space-y-2.5">
         {opponents.map((o) => {
-          const hasFinished = o.matches > 0;
-          const myScore = hasFinished
-            ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_1_score : o.lastMatch.player_2_score) ?? 0
+          const last = o.lastMatch;
+          const hasFinished = o.matches > 0 && !!last;
+          const myScore = hasFinished && last
+            ? (last.player_1_id === myId ? last.player_1_score : last.player_2_score) ?? 0
             : 0;
-          const oppScore = hasFinished
-            ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_2_score : o.lastMatch.player_1_score) ?? 0
+          const oppScore = hasFinished && last
+            ? (last.player_1_id === myId ? last.player_2_score : last.player_1_score) ?? 0
             : 0;
-          const lastWon = hasFinished && o.lastMatch.winner_id === myId;
-          const lastDraw = hasFinished && o.lastMatch.winner_id === null;
+          const lastWon = hasFinished && last?.winner_id === myId;
+          const lastDraw = hasFinished && last?.winner_id === null;
           const alreadyInvited = !!activeInvites[o.opponentId];
           const isSending = inviting === o.opponentId;
           return (

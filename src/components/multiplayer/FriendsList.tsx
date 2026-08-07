@@ -37,9 +37,10 @@ interface OpponentSummary {
   losses: number;
   draws: number;
   myHigh: number;
-  lastMatch: FriendMatchRow;
+  lastMatch: FriendMatchRow | null;
   ongoingMatch: FriendMatchRow | null;
   mergedSourceIds: string[];
+  sortAt: string;
 }
 
 function formatDate(iso: string, locale = 'sv-SE') {

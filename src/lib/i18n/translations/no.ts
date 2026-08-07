@@ -220,6 +220,7 @@ export const no: typeof sv = {
   waitCooldown: 'Vent {sec}s før neste melding',
   yourTurnLabel: 'Din tur',
   waitingForOpponent: 'Venter på {name}',
+  waitingShort: 'Venter',
   onlineNow: 'Pålogget nå',
 
   // Settings — notifications

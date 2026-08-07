@@ -220,6 +220,7 @@ export const fi: typeof sv = {
   waitCooldown: 'Odota {sec}s ennen seuraavaa viestiä',
   yourTurnLabel: 'Sinun vuorosi',
   waitingForOpponent: 'Odotetaan pelaajaa {name}',
+  waitingShort: 'Odotetaan',
   onlineNow: 'Paikalla nyt',
 
   // Settings — notifications

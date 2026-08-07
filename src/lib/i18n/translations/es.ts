@@ -220,6 +220,7 @@ export const es: typeof sv = {
   waitCooldown: 'Espera {sec}s antes del próximo mensaje',
   yourTurnLabel: 'Tu turno',
   waitingForOpponent: 'Esperando a {name}',
+  waitingShort: 'Esperando',
   onlineNow: 'En línea ahora',
 
   // Settings — notifications

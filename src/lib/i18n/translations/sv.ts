@@ -229,6 +229,7 @@ export const sv = {
   waitCooldown: 'Vänta {sec}s innan nästa meddelande',
   yourTurnLabel: 'Din tur',
   waitingForOpponent: 'Väntar på {name}',
+  waitingShort: 'Väntar',
   onlineNow: 'Online nu',
 
   // Settings — notifications

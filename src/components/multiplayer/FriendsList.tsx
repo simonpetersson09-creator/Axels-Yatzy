@@ -12,6 +12,7 @@ import {
   resolveFriendId,
   subscribeFriendAliases,
 } from '@/lib/friend-aliases';
+import { getKnownFriends, addKnownFriends, subscribeKnownFriends } from '@/lib/known-friends';
 import { toast } from 'sonner';
 
 interface FriendMatchRow {
@@ -37,9 +38,10 @@ interface OpponentSummary {
   losses: number;
   draws: number;
   myHigh: number;
-  lastMatch: FriendMatchRow;
+  lastMatch: FriendMatchRow | null;
   ongoingMatch: FriendMatchRow | null;
   mergedSourceIds: string[];
+  sortAt: string;
 }
 
 function formatDate(iso: string, locale = 'sv-SE') {
@@ -59,9 +61,40 @@ export function FriendsList() {
   const [activeInvites, setActiveInvites] = useState<Record<string, { inviteId: string; gameId?: string }>>({});
   const [hiddenFriends] = useState<string[]>(() => getHiddenFriends());
   const [aliasVersion, setAliasVersion] = useState(0);
+  const [knownVersion, setKnownVersion] = useState(0);
 
   useEffect(() => subscribeFriendAliases(() => setAliasVersion((v) => v + 1)), []);
+  useEffect(() => subscribeKnownFriends(() => setKnownVersion((v) => v + 1)), []);
   const aliasMap = useMemo(() => getFriendAliases(), [aliasVersion]);
+  const knownFriends = useMemo(() => getKnownFriends(), [knownVersion]);
+
+  // Save every player we've shared a game with — both sides do this, so a
+  // friend is stored no matter who sent the invite.
+  useEffect(() => {
+    let cancelled = false;
+    const sync = async () => {
+      const { data: mine } = await supabase
+        .from('game_players')
+        .select('game_id')
+        .eq('session_id', myId)
+        .order('joined_at', { ascending: false })
+        .limit(100);
+      const gameIds = Array.from(new Set((mine ?? []).map((r) => r.game_id)));
+      if (cancelled || gameIds.length === 0) return;
+      const { data: others } = await supabase
+        .from('game_players')
+        .select('session_id, player_name')
+        .in('game_id', gameIds);
+      if (cancelled || !others) return;
+      addKnownFriends(
+        others
+          .filter((p) => p.session_id && p.session_id !== myId)
+          .map((p) => ({ id: p.session_id as string, name: p.player_name })),
+      );
+    };
+    void sync();
+    return () => { cancelled = true; };
+  }, [myId]);
 
   const handleInvite = async (opponentId: string, opponentName: string) => {
     if (inviting) return;
@@ -233,6 +266,7 @@ export function FriendsList() {
         lastMatch: r,
         ongoingMatch: null,
         mergedSourceIds: [],
+        sortAt: r.created_at,
       };
 
       if (isOngoing) {
@@ -256,17 +290,36 @@ export function FriendsList() {
       }
       map.set(oppId, cur);
     }
+
+    // Friends we have shared a game with but that have no (surviving) match
+    // row — e.g. the match was cancelled or is still in the lobby. Saved
+    // locally by both players, so a friend sticks regardless of who invited.
+    for (const kf of knownFriends) {
+      const id = resolveFriendId(kf.id, aliasMap);
+      if (id === myId || hidden.has(id) || map.has(id)) continue;
+      map.set(id, {
+        opponentId: id,
+        opponentName: kf.name,
+        matches: 0, wins: 0, losses: 0, draws: 0,
+        myHigh: 0,
+        lastMatch: null,
+        ongoingMatch: null,
+        mergedSourceIds: [],
+        sortAt: kf.addedAt,
+      });
+    }
+
     for (const [id, set] of sourceTracker) {
       const entry = map.get(id);
       if (entry) entry.mergedSourceIds = Array.from(set);
     }
     return Array.from(map.values()).sort((a, b) => {
       if (!!a.ongoingMatch !== !!b.ongoingMatch) return a.ongoingMatch ? -1 : 1;
-      const aT = (a.ongoingMatch ?? a.lastMatch).created_at;
-      const bT = (b.ongoingMatch ?? b.lastMatch).created_at;
+      const aT = a.ongoingMatch?.created_at ?? a.lastMatch?.created_at ?? a.sortAt;
+      const bT = b.ongoingMatch?.created_at ?? b.lastMatch?.created_at ?? b.sortAt;
       return new Date(bT).getTime() - new Date(aT).getTime();
     });
-  }, [rows, myId, hiddenFriends, aliasMap]);
+  }, [rows, myId, hiddenFriends, aliasMap, knownFriends]);
 
   if (rows === null) {
     return (
@@ -293,15 +346,16 @@ export function FriendsList() {
     <>
       <div className="space-y-2.5">
         {opponents.map((o) => {
-          const hasFinished = o.matches > 0;
-          const myScore = hasFinished
-            ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_1_score : o.lastMatch.player_2_score) ?? 0
+          const last = o.lastMatch;
+          const hasFinished = o.matches > 0 && !!last;
+          const myScore = hasFinished && last
+            ? (last.player_1_id === myId ? last.player_1_score : last.player_2_score) ?? 0
             : 0;
-          const oppScore = hasFinished
-            ? (o.lastMatch.player_1_id === myId ? o.lastMatch.player_2_score : o.lastMatch.player_1_score) ?? 0
+          const oppScore = hasFinished && last
+            ? (last.player_1_id === myId ? last.player_2_score : last.player_1_score) ?? 0
             : 0;
-          const lastWon = hasFinished && o.lastMatch.winner_id === myId;
-          const lastDraw = hasFinished && o.lastMatch.winner_id === null;
+          const lastWon = hasFinished && last?.winner_id === myId;
+          const lastDraw = hasFinished && last?.winner_id === null;
           const alreadyInvited = !!activeInvites[o.opponentId];
           const isSending = inviting === o.opponentId;
           return (
@@ -351,7 +405,7 @@ export function FriendsList() {
                       lastDraw ? 'text-muted-foreground'
                         : lastWon ? 'text-game-success' : 'text-destructive'
                     }`}>
-                      {myScore} – {oppScore} · {formatDate(o.lastMatch.created_at)}
+                      {myScore} – {oppScore} · {last ? formatDate(last.created_at) : ''}
                     </span>
                   </div>
                 ) : null}

@@ -338,7 +338,7 @@ export default function HomePage() {
                         </span>
                       </div>
                       <div className={`flex items-center gap-1 mt-px text-[10px] tabular-nums ${
-                        opponentTurn ? 'text-muted-foreground/80' : 'text-white/70'
+                        myTurn ? 'text-white/70' : 'text-muted-foreground/80'
                       }`}>
                         <Clock className="w-3 h-3" />
                         <span className="truncate">{t('ongoingMatchRemaining', { time: timeLeft })}</span>

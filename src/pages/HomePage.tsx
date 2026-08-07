@@ -299,8 +299,10 @@ export default function HomePage() {
                 const isLocal = game.type === 'local';
                 const status = !isLocal && game.gameId ? statuses[game.gameId] : undefined;
                 const opponent = status?.opponentName ?? game.opponentName;
-                const myTurn = status?.myTurn === true;
-                const opponentTurn = !isLocal && status && status.myTurn === false;
+                const localMyTurn = isLocal ? (game.currentPlayerIndex ?? 0) === 0 : undefined;
+                const myTurn = isLocal ? localMyTurn === true : status?.myTurn === true;
+                const opponentTurn = isLocal ? localMyTurn === false : status && status.myTurn === false;
+                const waitingForStatus = !isLocal && !status;
                 const timeLeft = formatTimeRemaining(getTimeRemaining(game));
                 const key = game.gameId ?? 'local';
                 return (

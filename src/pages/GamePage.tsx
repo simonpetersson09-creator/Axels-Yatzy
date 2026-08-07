@@ -35,7 +35,7 @@ export default function GamePage() {
   const incomingPlayerNames: string[] | undefined = location.state?.playerNames;
   const incomingAiPlayers: number[] | undefined = location.state?.aiPlayers;
   const namesKey = `yatzy-player-names:${localGameId}`;
-  const aiKey = `yatzy-ai-players:${localGameId}`;
+  const aiPlayersKey = `yatzy-ai-players:${localGameId}`;
   
   // Persist playerNames and aiPlayers to localStorage so they survive app suspension/refresh
   const [playerNames, setPlayerNames] = useState<string[]>(() => {
@@ -49,7 +49,7 @@ export default function GamePage() {
   const [aiPlayers, setAiPlayers] = useState<number[]>(() => {
     if (incomingAiPlayers) return incomingAiPlayers;
     try {
-      const saved = localStorage.getItem(aiKey);
+      const saved = localStorage.getItem(aiPlayersKey);
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
@@ -61,7 +61,7 @@ export default function GamePage() {
     }
     if (incomingAiPlayers) {
       setAiPlayers(incomingAiPlayers);
-      localStorage.setItem(aiKey, JSON.stringify(incomingAiPlayers));
+      localStorage.setItem(aiPlayersKey, JSON.stringify(incomingAiPlayers));
     }
   }, [incomingPlayerNames, incomingAiPlayers]);
 

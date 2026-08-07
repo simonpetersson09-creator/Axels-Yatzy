@@ -60,9 +60,40 @@ export function FriendsList() {
   const [activeInvites, setActiveInvites] = useState<Record<string, { inviteId: string; gameId?: string }>>({});
   const [hiddenFriends] = useState<string[]>(() => getHiddenFriends());
   const [aliasVersion, setAliasVersion] = useState(0);
+  const [knownVersion, setKnownVersion] = useState(0);
 
   useEffect(() => subscribeFriendAliases(() => setAliasVersion((v) => v + 1)), []);
+  useEffect(() => subscribeKnownFriends(() => setKnownVersion((v) => v + 1)), []);
   const aliasMap = useMemo(() => getFriendAliases(), [aliasVersion]);
+  const knownFriends = useMemo(() => getKnownFriends(), [knownVersion]);
+
+  // Save every player we've shared a game with — both sides do this, so a
+  // friend is stored no matter who sent the invite.
+  useEffect(() => {
+    let cancelled = false;
+    const sync = async () => {
+      const { data: mine } = await supabase
+        .from('game_players')
+        .select('game_id')
+        .eq('session_id', myId)
+        .order('joined_at', { ascending: false })
+        .limit(100);
+      const gameIds = Array.from(new Set((mine ?? []).map((r) => r.game_id)));
+      if (cancelled || gameIds.length === 0) return;
+      const { data: others } = await supabase
+        .from('game_players')
+        .select('session_id, player_name')
+        .in('game_id', gameIds);
+      if (cancelled || !others) return;
+      addKnownFriends(
+        others
+          .filter((p) => p.session_id && p.session_id !== myId)
+          .map((p) => ({ id: p.session_id as string, name: p.player_name })),
+      );
+    };
+    void sync();
+    return () => { cancelled = true; };
+  }, [myId]);
 
   const handleInvite = async (opponentId: string, opponentName: string) => {
     if (inviting) return;

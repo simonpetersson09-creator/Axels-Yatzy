@@ -350,7 +350,7 @@ export default function HomePage() {
                           {t('yourTurnLabel')}
                         </span>
                       )}
-                      {opponentTurn && opponent && (
+                      {(opponentTurn || waitingForStatus) && opponent && (
                         <span className="text-[9px] font-medium uppercase tracking-wider px-2 py-1 rounded-full bg-muted/70 text-muted-foreground">
                           {t('waitingShort')}
                         </span>

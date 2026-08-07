@@ -326,7 +326,7 @@ export default function HomePage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className={`font-display font-bold text-sm truncate inline-flex items-center gap-1.5 ${
-                          opponentTurn ? 'text-foreground' : 'text-white'
+                          myTurn ? 'text-white' : 'text-foreground'
                         }`}>
                           {!isLocal && status?.opponentOnline && (
                             <span

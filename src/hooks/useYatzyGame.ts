@@ -37,11 +37,14 @@ export function useYatzyGame() {
     };
     document.addEventListener('visibilitychange', unstick);
     window.addEventListener('focus', unstick);
+    const iv = setInterval(unstick, 1000);
     return () => {
       document.removeEventListener('visibilitychange', unstick);
       window.removeEventListener('focus', unstick);
+      clearInterval(iv);
     };
   }, []);
+
 
 
   // Persist game state on every change

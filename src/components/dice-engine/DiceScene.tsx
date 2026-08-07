@@ -66,8 +66,34 @@ function DiceSceneImpl({
     [values.length, held],
   );
 
+  // iOS/WKWebView drops the WebGL context when the app is backgrounded for a
+  // moment. The canvas then stays blank (the dice "disappear") while the
+  // invisible hit areas still work. Remount the canvas whenever the context is
+  // lost or found lost after returning to the app.
+  const [canvasKey, setCanvasKey] = useState(0);
+  const glRef = useRef<{ getContext: () => WebGLRenderingContext | null } | null>(null);
+  const remount = useCallback(() => setCanvasKey((k) => k + 1), []);
+
+  useEffect(() => {
+    const check = () => {
+      if (document.visibilityState !== "visible") return;
+      const ctx = glRef.current?.getContext?.();
+      // `isContextLost` exists on both WebGL1 and WebGL2 contexts.
+      if (!ctx || ctx.isContextLost?.()) remount();
+    };
+    document.addEventListener("visibilitychange", check);
+    window.addEventListener("focus", check);
+    window.addEventListener("pageshow", check);
+    return () => {
+      document.removeEventListener("visibilitychange", check);
+      window.removeEventListener("focus", check);
+      window.removeEventListener("pageshow", check);
+    };
+  }, [remount]);
+
   return (
     <div className={className ?? "h-full w-full"}>
+
       <Canvas
         // The dice occupy a narrow strip, so edge quality matters more than
         // fill rate here: allow the device's full DPR (up to 3) for crisp,

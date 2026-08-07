@@ -243,7 +243,11 @@ export default function HomePage() {
 
 
   return (
-    <div className="app-fixed-screen flex flex-col items-center justify-center px-6 py-3 safe-top safe-bottom relative overflow-hidden">
+    <div
+      className="app-fixed-screen flex flex-col items-center px-6 py-3 safe-top safe-bottom relative overflow-x-hidden overflow-y-auto"
+      style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain' }}
+    >
+
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-primary/6 blur-[120px]" />
       </div>

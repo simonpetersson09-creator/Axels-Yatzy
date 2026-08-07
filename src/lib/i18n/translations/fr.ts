@@ -225,6 +225,8 @@ export const fr: typeof sv = {
   notifReminderDesc: 'Nous vous prévenons si la partie reste inactive',
 
   maxActiveGames: 'Vous avez déjà {max} parties entre amis actives. Terminez-en une avant d’en commencer une nouvelle.',
+
+  maxActiveLocalGames: "Vous avez déjà {max} parties en cours contre l'ordinateur. Terminez-en une avant d'en commencer une nouvelle.",
   errTimeout: 'La connexion a pris trop de temps. Réessayez.',
   errRollDice: 'Impossible de lancer les dés',
   errSubmitScore: 'Impossible d’enregistrer le score',

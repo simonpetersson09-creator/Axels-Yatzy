@@ -225,6 +225,8 @@ export const it: typeof sv = {
   notifReminderDesc: 'Ti avvisiamo se la partita resta ferma',
 
   maxActiveGames: 'Hai già {max} partite con amici attive. Concludine una prima di iniziarne una nuova.',
+
+  maxActiveLocalGames: "Hai già {max} partite in corso contro il computer. Concludine una prima di iniziarne una nuova.",
   errTimeout: 'La connessione ha impiegato troppo tempo. Riprova.',
   errRollDice: 'Impossibile lanciare i dadi',
   errSubmitScore: 'Impossibile salvare il punteggio',

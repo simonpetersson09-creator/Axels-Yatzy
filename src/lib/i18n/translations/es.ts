@@ -231,6 +231,7 @@ export const es: typeof sv = {
 
   // Multiplayer errors
   maxActiveGames: 'Ya tienes {max} partidas activas con amigos. Termina una antes de empezar otra.',
+  maxActiveLocalGames: "Ya tienes {max} partidas en curso contra el ordenador. Termina una antes de empezar otra.",
   errTimeout: 'La conexión tardó demasiado. Inténtalo de nuevo.',
   errRollDice: 'No se pudieron tirar los dados',
   errSubmitScore: 'No se pudo guardar la puntuación',

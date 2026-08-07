@@ -4,6 +4,15 @@ const LEGACY_KEY = 'yatzy_active_game';
 const GAME_EXPIRY_MS = 48 * 60 * 60 * 1000; // 48 hours
 
 export const MAX_ACTIVE_MULTIPLAYER_GAMES = 3;
+export const MAX_ACTIVE_LOCAL_GAMES = 3;
+
+export function newLocalGameId(): string {
+  return `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function savedKey(localId?: string) {
+  return localId ? `${SAVED_GAME_KEY}:${localId}` : SAVED_GAME_KEY;
+}
 
 export interface ActiveGame {
   type: 'local' | 'multiplayer';
@@ -52,6 +61,14 @@ export function getActiveGames(): ActiveGame[] {
   return readList().sort((a, b) => b.lastRollTime - a.lastRollTime);
 }
 
+export function getLocalActiveGames(): ActiveGame[] {
+  return getActiveGames().filter(g => g.type === 'local');
+}
+
+export function countActiveLocalGames(): number {
+  return getLocalActiveGames().length;
+}
+
 export function getMultiplayerActiveGames(): ActiveGame[] {
   return getActiveGames().filter(g => g.type === 'multiplayer' && g.gameId);
 }
@@ -70,10 +87,10 @@ export function setActiveGame(
 ) {
   const list = readList();
   const now = Date.now();
-  if (game.type === 'local') {
-    // Only one local game at a time — replace any existing local entry.
-    const filtered = list.filter(g => g.type !== 'local');
-    const existing = list.find(g => g.type === 'local');
+  if (game.type === 'local' && !game.gameId) {
+    // Legacy entry without a slot id — replace any other legacy local entry.
+    const filtered = list.filter(g => !(g.type === 'local' && !g.gameId));
+    const existing = list.find(g => g.type === 'local' && !g.gameId);
     filtered.unshift({
       ...game,
       lastRollTime: game.lastRollTime ?? existing?.lastRollTime ?? now,
@@ -81,9 +98,9 @@ export function setActiveGame(
     writeList(filtered);
     return;
   }
-  // Multiplayer — upsert by gameId
+  // Upsert by gameId (local slots and multiplayer games alike)
   if (!game.gameId) return;
-  const idx = list.findIndex(g => g.type === 'multiplayer' && g.gameId === game.gameId);
+  const idx = list.findIndex(g => g.type === game.type && g.gameId === game.gameId);
   const existing = idx >= 0 ? list[idx] : undefined;
   const entry: ActiveGame = {
     ...existing,
@@ -129,11 +146,17 @@ export function removeActiveGame(gameId: string) {
   writeList(list);
 }
 
-/** Remove the local active entry. */
-export function clearLocalActiveGame() {
-  const list = readList().filter(g => g.type !== 'local');
+/** Remove a local active entry (a specific slot, or all legacy ones). */
+export function clearLocalActiveGame(localId?: string) {
+  const list = readList().filter(g =>
+    localId ? !(g.type === 'local' && g.gameId === localId) : g.type !== 'local',
+  );
   writeList(list);
-  localStorage.removeItem(SAVED_GAME_KEY);
+  localStorage.removeItem(savedKey(localId));
+  if (localId) {
+    localStorage.removeItem(`yatzy-player-names:${localId}`);
+    localStorage.removeItem(`yatzy-ai-players:${localId}`);
+  }
 }
 
 /**
@@ -147,12 +170,12 @@ export function clearActiveGame() {
   localStorage.removeItem(SAVED_GAME_KEY);
 }
 
-export function saveGameState(state: unknown) {
-  localStorage.setItem(SAVED_GAME_KEY, JSON.stringify(state));
+export function saveGameState(state: unknown, localId?: string) {
+  localStorage.setItem(savedKey(localId), JSON.stringify(state));
 }
 
-export function loadGameState<T>(): T | null {
-  const raw = localStorage.getItem(SAVED_GAME_KEY);
+export function loadGameState<T>(localId?: string): T | null {
+  const raw = localStorage.getItem(savedKey(localId));
   if (!raw) return null;
   try {
     return JSON.parse(raw) as T;

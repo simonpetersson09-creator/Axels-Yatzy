@@ -8,6 +8,9 @@ import {
   formatTimeRemaining,
   removeActiveGame,
   clearLocalActiveGame,
+  countActiveLocalGames,
+  newLocalGameId,
+  MAX_ACTIVE_LOCAL_GAMES,
   setActiveGame,
   type ActiveGame,
 } from '@/lib/active-game';
@@ -134,7 +137,7 @@ export default function HomePage() {
       let changed = fresh.length !== activeGames.length;
       for (const g of fresh) {
         if (isGameExpired(g)) {
-          if (g.type === 'local') clearLocalActiveGame();
+          if (g.type === 'local') clearLocalActiveGame(g.gameId);
           else if (g.gameId) {
             const gid = g.gameId;
             removeActiveGame(gid);
@@ -220,7 +223,7 @@ export default function HomePage() {
 
   const resumeGame = (game: ActiveGame) => {
     if (isGameExpired(game)) {
-      if (game.type === 'local') clearLocalActiveGame();
+      if (game.type === 'local') clearLocalActiveGame(game.gameId);
       else if (game.gameId) {
         const gid = game.gameId;
         removeActiveGame(gid);
@@ -232,7 +235,7 @@ export default function HomePage() {
     }
 
     if (game.type === 'local') {
-      navigate('/game');
+      navigate('/game', { state: { localGameId: game.gameId } });
     } else if (game.type === 'multiplayer' && game.gameId) {
       navigate(`/multiplayer-game?gameId=${game.gameId}`);
     }
@@ -295,7 +298,7 @@ export default function HomePage() {
                 const myTurn = status?.myTurn === true;
                 const opponentTurn = !isLocal && status && status.myTurn === false;
                 const timeLeft = formatTimeRemaining(getTimeRemaining(game));
-                const key = isLocal ? 'local' : game.gameId!;
+                const key = game.gameId ?? 'local';
                 return (
                   <motion.button
                     key={key}
@@ -323,7 +326,7 @@ export default function HomePage() {
                               aria-label={t('onlineNow')}
                             />
                           )}
-                          {isLocal ? t('resumeMatch') : (opponent ?? t('resumeMatch'))}
+                          {isLocal ? (game.opponentName ?? t('resumeMatch')) : (opponent ?? t('resumeMatch'))}
                         </span>
                         {myTurn && (
                           <span
@@ -384,8 +387,12 @@ export default function HomePage() {
                         const aiNames = getRandomAiNames(opponents);
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
+                        if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
+                          toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
+                          return;
+                        }
                         trackEvent('quick_match_started', { opponents }, { gameMode: 'quick_match' });
-                        navigate('/game', { state: { playerNames, aiPlayers } });
+                        navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
                       }}
                       className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"
                       whileTap={{ scale: 0.95 }}

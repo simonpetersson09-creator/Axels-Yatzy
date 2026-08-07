@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { getPlayerName } from '@/lib/session';
+import { countActiveLocalGames, newLocalGameId, MAX_ACTIVE_LOCAL_GAMES } from '@/lib/active-game';
+import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 
 export default function GameSetupPage() {
@@ -26,7 +28,11 @@ export default function GameSetupPage() {
   const startGame = () => {
     const playerNames = names.slice(0, playerCount).map((n, i) => n.trim() || t('playerN', { n: i + 1 }));
     const aiPlayers = playerNames.map((_, i) => i).filter(i => i !== 0);
-    navigate('/game', { state: { playerNames, aiPlayers } });
+    if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
+      toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
+      return;
+    }
+    navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
   };
 
   return (

@@ -11,12 +11,14 @@ function createPlayer(name: string, index: number): Player {
   };
 }
 
-export function useYatzyGame() {
+export function useYatzyGame(localId?: string) {
+  const localIdRef = useRef(localId);
+  localIdRef.current = localId;
   const [gameState, setGameState] = useState<GameState | null>(() => {
     // Try to restore saved game on mount. `isRolling` must never survive a
     // reload/suspension: the timer that would have cleared it is gone, so a
     // persisted `true` freezes the game (the AI effect bails while rolling).
-    const saved = loadGameState<GameState>();
+    const saved = loadGameState<GameState>(localId);
     return saved ? { ...saved, isRolling: false } : null;
   });
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -50,10 +52,10 @@ export function useYatzyGame() {
   // Persist game state on every change
   useEffect(() => {
     if (gameState && !gameState.gameOver) {
-      saveGameState(gameState);
-      setActiveGame({ type: 'local', timestamp: Date.now() });
+      saveGameState(gameState, localId);
+      setActiveGame({ type: 'local', gameId: localId, timestamp: Date.now() });
     }
-  }, [gameState]);
+  }, [gameState, localId]);
 
   const startGame = useCallback((playerNames: string[]) => {
     const players = playerNames.map((name, i) => createPlayer(name, i));
@@ -151,7 +153,7 @@ export function useYatzyGame() {
       }
 
       if (gameOver) {
-        clearLocalActiveGame();
+        clearLocalActiveGame(localIdRef.current);
       }
 
       // Detect "wrap" around the player list. We must bump the round whenever
@@ -175,7 +177,7 @@ export function useYatzyGame() {
   }, []);
 
   const resetGame = useCallback(() => {
-    clearLocalActiveGame();
+    clearLocalActiveGame(localIdRef.current);
     setGameState(null);
   }, []);
 

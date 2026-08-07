@@ -240,6 +240,7 @@ export const sv = {
 
   // Multiplayer errors
   maxActiveGames: 'Du har redan {max} aktiva vänspel. Avsluta något innan du startar nytt.',
+  maxActiveLocalGames: "Du har redan {max} pågående matcher mot datorn. Avsluta någon innan du startar en ny.",
   errTimeout: 'Anslutningen tog för lång tid. Försök igen.',
   errRollDice: 'Kunde inte kasta tärningarna',
   errSubmitScore: 'Kunde inte spara poäng',

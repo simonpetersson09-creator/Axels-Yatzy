@@ -231,6 +231,7 @@ export const en: typeof sv = {
 
   // Multiplayer errors
   maxActiveGames: 'You already have {max} active friend games. Finish one before starting a new.',
+  maxActiveLocalGames: "You already have {max} ongoing games against the computer. Finish one before starting a new.",
   errTimeout: 'The connection took too long. Please try again.',
   errRollDice: 'Could not roll the dice',
   errSubmitScore: 'Could not save the score',

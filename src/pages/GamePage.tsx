@@ -81,6 +81,9 @@ export default function GamePage() {
   selectCategoryFnRef.current = selectCategory;
   const [aiThinking, setAiThinking] = useState(false);
   const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
+  // Bumped by the watchdog to re-arm the auto-roll / AI effects after a freeze.
+  const [aiNudge, setAiNudge] = useState(0);
+
 
   // Stable per-match key so a finished local game can never be counted twice
   // (remount, hot reload or re-entry after an app restart).

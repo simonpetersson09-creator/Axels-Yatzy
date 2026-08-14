@@ -451,13 +451,33 @@ export default function HomePage() {
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
-            <motion.button
-              onClick={() => navigate('/settings')}
-              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center gap-1.5"
-              whileTap={{ scale: 0.97 }}
-            >
-              ⚙️ <span className="truncate">{t('goSettings')}</span>
-            </motion.button>
+            <div className="relative">
+              <AnimatePresence>
+                {showSettingsHint && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    onClick={() => {
+                      dismissSettingsHint();
+                      navigate('/settings');
+                    }}
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-44 px-3 py-2 rounded-xl bg-popover text-popover-foreground text-xs font-medium text-center shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] border border-border/60 pointer-events-auto"
+                  >
+                    {t('settingsHint')}
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-popover rotate-45 border-r border-b border-border/60" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+              <motion.button
+                onClick={() => navigate('/settings')}
+                className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center gap-1.5"
+                whileTap={{ scale: 0.97 }}
+              >
+                ⚙️ <span className="truncate">{t('goSettings')}</span>
+              </motion.button>
+            </div>
             <motion.button
               onClick={() => navigate('/friends')}
               className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info/25 to-game-info/10 text-game-info border border-game-info/30 font-display font-bold text-sm sm:text-base shadow-[0_4px_16px_hsl(var(--game-info)/0.18)] active:shadow-[0_2px_8px_hsl(var(--game-info)/0.12)] transition-shadow flex items-center justify-center gap-1.5"

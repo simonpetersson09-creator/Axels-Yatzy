@@ -47,6 +47,7 @@ export default function HomePage() {
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
+  const [showSettingsHint, setShowSettingsHint] = useState(false);
 
   // Sync country + world ranking whenever the games_played count changes.
   useEffect(() => {
@@ -65,6 +66,25 @@ export default function HomePage() {
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, []);
+
+  // Show a one-time speech bubble pointing to Settings on the very first launch.
+  useEffect(() => {
+    try {
+      const seen = localStorage.getItem('yatzy_seen_settings_hint');
+      if (!seen) setShowSettingsHint(true);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const dismissSettingsHint = () => {
+    try {
+      localStorage.setItem('yatzy_seen_settings_hint', '1');
+    } catch {
+      /* ignore */
+    }
+    setShowSettingsHint(false);
+  };
 
   // Sync server-side active multiplayer games into the local list so games
   // created while the app was closed (e.g. friend accepted an invite) show up.

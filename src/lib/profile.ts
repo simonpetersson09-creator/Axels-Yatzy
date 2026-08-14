@@ -78,9 +78,14 @@ export function detectDeviceLanguage(): Language {
 export function getLanguage(): Language {
   const v = localStorage.getItem(LANG_KEY) as Language | null;
   if (v && LANGUAGES.some(l => l.code === v)) return v;
+  // Existing installs (pre-detection) keep the old Swedish default.
+  const isExistingInstall = Object.keys(localStorage).some(
+    k => k.startsWith('yatzy_') && k !== LANG_KEY && k !== LANG_SOURCE_KEY,
+  );
   // First launch: pick the device language (English fallback) and remember it
   // as an automatic choice, so a later manual pick always wins.
-  const auto = detectDeviceLanguage();
+  const auto = isExistingInstall ? 'sv' : detectDeviceLanguage();
+
   try {
     localStorage.setItem(LANG_KEY, auto);
     localStorage.setItem(LANG_SOURCE_KEY, 'auto');

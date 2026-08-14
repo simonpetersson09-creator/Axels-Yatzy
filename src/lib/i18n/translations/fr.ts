@@ -37,6 +37,7 @@ export const fr: typeof sv = {
   countryNotSet: 'Non défini',
   countryClear: 'Effacer le pays',
   goSettings: 'Paramètres',
+  settingsHint: 'Changez la langue et d\'autres paramètres ici',
   matchExpired: 'La partie a été terminée car 48 heures se sont écoulées sans activité.',
   matchTimedOut: 'La partie a expiré',
 

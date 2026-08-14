@@ -39,6 +39,7 @@ export const sv = {
   countryNotSet: 'Inte angivet',
   countryClear: 'Ta bort land',
   goSettings: 'Inställningar',
+  settingsHint: 'Här kan du byta språk och ändra andra inställningar',
   matchExpired: 'Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.',
   matchTimedOut: 'Matchen gick ut på tid',
 

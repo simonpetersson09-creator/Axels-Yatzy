@@ -231,4 +231,5 @@ export const it: typeof sv = {
   errTimeout: 'La connessione ha impiegato troppo tempo. Riprova.',
   errRollDice: 'Impossibile lanciare i dadi',
   errSubmitScore: 'Impossibile salvare il punteggio',
+  pickDiceHint: 'Scegli i dadi\nda tenere',
 };

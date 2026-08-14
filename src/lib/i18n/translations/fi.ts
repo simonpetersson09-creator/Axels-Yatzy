@@ -236,4 +236,5 @@ export const fi: typeof sv = {
   errTimeout: 'Yhteys kesti liian kauan. Yritä uudelleen.',
   errRollDice: 'Noppia ei voitu heittää',
   errSubmitScore: 'Pisteitä ei voitu tallentaa',
+  pickDiceHint: 'Valitse nopat\njotka pidät',
 };

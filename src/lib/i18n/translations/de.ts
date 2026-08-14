@@ -231,4 +231,5 @@ export const de: typeof sv = {
   errTimeout: 'Die Verbindung hat zu lange gedauert. Bitte erneut versuchen.',
   errRollDice: 'Würfeln nicht möglich',
   errSubmitScore: 'Punktzahl konnte nicht gespeichert werden',
+  pickDiceHint: 'Würfel wählen\nzum Behalten',
 };

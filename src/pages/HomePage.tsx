@@ -77,6 +77,15 @@ export default function HomePage() {
     }
   }, []);
 
+  // Auto-dismiss the hint after 5 seconds if the user doesn't tap it.
+  useEffect(() => {
+    if (!showSettingsHint) return;
+    const timer = setTimeout(() => {
+      dismissSettingsHint();
+    }, 5_000);
+    return () => clearTimeout(timer);
+  }, [showSettingsHint]);
+
   const dismissSettingsHint = () => {
     try {
       localStorage.setItem('yatzy_seen_settings_hint', '1');

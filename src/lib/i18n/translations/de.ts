@@ -37,6 +37,7 @@ export const de: typeof sv = {
   countryNotSet: 'Nicht festgelegt',
   countryClear: 'Land entfernen',
   goSettings: 'Einstellungen',
+  settingsHint: 'Sprache und weitere Einstellungen hier ändern',
   matchExpired: 'Das Spiel wurde beendet, weil 48 Stunden ohne Aktivität vergangen sind.',
   matchTimedOut: 'Das Spiel ist abgelaufen',
 

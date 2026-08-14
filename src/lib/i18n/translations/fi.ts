@@ -37,6 +37,7 @@ export const fi: typeof sv = {
   countryNotSet: 'Ei asetettu',
   countryClear: 'Poista maa',
   goSettings: 'Asetukset',
+  settingsHint: 'Vaihda kieli ja muita asetuksia tästä',
   matchExpired: 'Peli päättyi, koska 48 tuntia kului ilman toimintaa.',
   matchTimedOut: 'Peli vanheni ajan loputtua',
 

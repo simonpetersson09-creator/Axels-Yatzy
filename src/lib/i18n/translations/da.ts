@@ -37,6 +37,7 @@ export const da: typeof sv = {
   countryNotSet: 'Ikke angivet',
   countryClear: 'Fjern land',
   goSettings: 'Indstillinger',
+  settingsHint: 'Skift sprog og andre indstillinger her',
   matchExpired: 'Kampen blev afsluttet, fordi 48 timer er gået uden aktivitet.',
   matchTimedOut: 'Kampen udløb på tid',
 

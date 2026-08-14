@@ -236,4 +236,5 @@ export const da: typeof sv = {
   errTimeout: 'Forbindelsen tog for lang tid. Prøv igen.',
   errRollDice: 'Kunne ikke kaste terningerne',
   errSubmitScore: 'Kunne ikke gemme score',
+  pickDiceHint: 'Vælg terninger\nat beholde',
 };

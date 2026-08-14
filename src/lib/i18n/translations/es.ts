@@ -236,4 +236,5 @@ export const es: typeof sv = {
   errTimeout: 'La conexión tardó demasiado. Inténtalo de nuevo.',
   errRollDice: 'No se pudieron tirar los dados',
   errSubmitScore: 'No se pudo guardar la puntuación',
+  pickDiceHint: 'Elige dados\npara guardar',
 };

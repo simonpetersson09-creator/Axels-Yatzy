@@ -231,4 +231,5 @@ export const fr: typeof sv = {
   errTimeout: 'La connexion a pris trop de temps. Réessayez.',
   errRollDice: 'Impossible de lancer les dés',
   errSubmitScore: 'Impossible d’enregistrer le score',
+  pickDiceHint: 'Choisis les dés\nà garder',
 };

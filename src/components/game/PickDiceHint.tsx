@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/lib/i18n';
 
 interface PickDiceHintProps {
   /** Render the hint (fades out when false). */
@@ -12,11 +13,12 @@ interface PickDiceHintProps {
  * never shifts the layout, and fades out as soon as a die is held.
  */
 export function PickDiceHint({ show, className }: PickDiceHintProps) {
+  const { t } = useTranslation();
   return (
     <div
       aria-hidden={!show}
       className={cn(
-        'pointer-events-none select-none rounded-full px-2 py-0.5 text-center',
+        'pointer-events-none select-none rounded-full px-2 py-0.5 text-center whitespace-pre-line',
         'text-[10px] font-medium tracking-wide leading-tight',
         'transition-opacity duration-300',
         show ? 'opacity-70' : 'opacity-0',
@@ -28,9 +30,7 @@ export function PickDiceHint({ show, className }: PickDiceHintProps) {
         background: 'hsl(var(--game-gold) / 0.08)',
       }}
     >
-      Välj tärningar
-      <br />
-      att behålla
+      {t('pickDiceHint')}
     </div>
   );
 }

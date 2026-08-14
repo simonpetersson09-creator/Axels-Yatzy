@@ -236,4 +236,5 @@ export const en: typeof sv = {
   errTimeout: 'The connection took too long. Please try again.',
   errRollDice: 'Could not roll the dice',
   errSubmitScore: 'Could not save the score',
+  pickDiceHint: 'Pick dice\nto keep',
 };

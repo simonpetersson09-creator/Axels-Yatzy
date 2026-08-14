@@ -245,6 +245,7 @@ export const sv = {
   errTimeout: 'Anslutningen tog för lång tid. Försök igen.',
   errRollDice: 'Kunde inte kasta tärningarna',
   errSubmitScore: 'Kunde inte spara poäng',
+  pickDiceHint: 'Välj tärningar\natt behålla',
 };
 
 export type TranslationKey = keyof typeof sv;

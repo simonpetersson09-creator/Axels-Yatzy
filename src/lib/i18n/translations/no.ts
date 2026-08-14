@@ -236,4 +236,5 @@ export const no: typeof sv = {
   errTimeout: 'Tilkoblingen tok for lang tid. Prøv igjen.',
   errRollDice: 'Kunne ikke kaste terningene',
   errSubmitScore: 'Kunne ikke lagre poeng',
+  pickDiceHint: 'Velg terninger\nå beholde',
 };

@@ -540,10 +540,10 @@ export default function GamePage() {
                   ) : gameState.rollsLeft === 0
                     ? t('rollNoMore')
                     : gameState.rollsLeft === 3
-                      ? 'Kast 1'
+                      ? t('roll1')
                       : gameState.rollsLeft === 2
-                        ? 'Kast 2'
-                        : 'Sista\nkastet'}
+                        ? t('roll2')
+                        : t('rollLast')}
                 </span>
               </button>
               </div>

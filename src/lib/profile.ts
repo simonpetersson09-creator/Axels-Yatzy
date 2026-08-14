@@ -37,14 +37,71 @@ export function setProfileAvatar(dataUrl: string | null): void {
   window.dispatchEvent(new Event('profile-changed'));
 }
 
+const LANG_SOURCE_KEY = 'yatzy_language_source'; // 'manual' | 'auto'
+
+/** Map a BCP-47 tag (e.g. "sv-SE", "nb-NO") to a supported app language. */
+export function mapTagToLanguage(tag: string): Language | null {
+  const base = tag.toLowerCase().split(/[-_]/)[0];
+  switch (base) {
+    case 'sv': return 'sv';
+    case 'da': return 'da';
+    case 'no':
+    case 'nb':
+    case 'nn': return 'no';
+    case 'fi': return 'fi';
+    case 'de': return 'de';
+    case 'fr': return 'fr';
+    case 'es': return 'es';
+    case 'it': return 'it';
+    case 'en': return 'en';
+    default: return null;
+  }
+}
+
+/** Device/system preferred language, English fallback if unsupported. */
+export function detectDeviceLanguage(): Language {
+  try {
+    const tags = [
+      ...(Array.isArray(navigator.languages) ? navigator.languages : []),
+      navigator.language,
+    ].filter(Boolean) as string[];
+    for (const tag of tags) {
+      const hit = mapTagToLanguage(tag);
+      if (hit) return hit;
+    }
+  } catch {
+    /* ignore */
+  }
+  return 'en';
+}
+
 export function getLanguage(): Language {
   const v = localStorage.getItem(LANG_KEY) as Language | null;
-  return v && LANGUAGES.some(l => l.code === v) ? v : 'sv';
+  if (v && LANGUAGES.some(l => l.code === v)) return v;
+  // First launch: pick the device language (English fallback) and remember it
+  // as an automatic choice, so a later manual pick always wins.
+  const auto = detectDeviceLanguage();
+  try {
+    localStorage.setItem(LANG_KEY, auto);
+    localStorage.setItem(LANG_SOURCE_KEY, 'auto');
+  } catch {
+    /* ignore */
+  }
+  return auto;
 }
+
+/** True when the user actively picked the language in Settings. */
+export function isLanguageManuallySet(): boolean {
+  return localStorage.getItem(LANG_SOURCE_KEY) === 'manual' ||
+    (localStorage.getItem(LANG_SOURCE_KEY) === null && localStorage.getItem(LANG_KEY) !== null);
+}
+
 export function setLanguage(lang: Language): void {
   localStorage.setItem(LANG_KEY, lang);
+  localStorage.setItem(LANG_SOURCE_KEY, 'manual');
   window.dispatchEvent(new Event('profile-changed'));
 }
+
 
 // A curated list of countries shown in the settings picker.
 // ISO-3166-1 alpha-2 codes. Labels are resolved via Intl.DisplayNames in the UI.

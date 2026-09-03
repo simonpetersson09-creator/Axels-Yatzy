@@ -446,7 +446,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 mt-3 mb-10">
+          <div className="flex items-center gap-3 mt-3 mb-3">
             <motion.button
               onClick={() => navigate('/multiplayer')}
               className="flex-1 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow"

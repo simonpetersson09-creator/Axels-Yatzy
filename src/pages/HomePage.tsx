@@ -466,8 +466,8 @@ export default function HomePage() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 max-h-48 overflow-y-auto rounded-2xl bg-popover border border-border/60 shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] z-50 py-1.5"
-                    style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain' }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 max-h-48 overflow-y-auto rounded-2xl bg-popover border border-border/60 shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] z-50 py-1.5 [&::-webkit-scrollbar]:hidden"
+                    style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {LANGUAGES.map((l) => (
                       <button

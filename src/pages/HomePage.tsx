@@ -558,7 +558,7 @@ export default function HomePage() {
             ))}
           </div>
 
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 gap-2">
             {[
               {
                 label: t('statWinrate'),
@@ -576,13 +576,13 @@ export default function HomePage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center gap-1 py-2.5 sm:py-3.5 px-2 rounded-2xl bg-secondary/60 border border-border/50"
+                className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1.5 rounded-2xl bg-secondary/60 border border-border/50"
               >
-                <stat.icon className="w-3.5 h-3.5 text-primary/70" />
-                <span className="text-xl sm:text-2xl font-display font-black text-foreground tabular-nums leading-none">
+                <stat.icon className="w-3 h-3 text-primary/70" />
+                <span className="text-lg sm:text-xl font-display font-black text-foreground tabular-nums leading-none">
                   {stat.value}
                 </span>
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate max-w-full">
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider truncate max-w-full">
                   {stat.label}
                 </span>
               </div>

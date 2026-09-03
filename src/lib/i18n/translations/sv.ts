@@ -46,6 +46,7 @@ export const sv = {
 
   // Ad button (optional reward ad)
   adButtonLabel: 'Annons',
+  adButtonShort: 'Bonus',
   adButtonHint: 'Se en kort annons — helt valfritt!',
   adPlaceholderMessage: 'Här visas en kort annons (inte kopplad än).',
 

@@ -44,6 +44,7 @@ export const fi: typeof sv = {
 
   // Ad button (optional reward ad)
   adButtonLabel: 'Mainos',
+  adButtonShort: 'Bonus',
   adButtonHint: 'Katso lyhyt mainos — täysin vapaaehtoista!',
   adPlaceholderMessage: 'Tässä näytettäisiin lyhyt mainos (ei vielä kytketty).',
 

@@ -44,6 +44,7 @@ export const no: typeof sv = {
 
   // Ad button (optional reward ad)
   adButtonLabel: 'Reklame',
+  adButtonShort: 'Bonus',
   adButtonHint: 'Se en kort reklame — helt frivillig!',
   adPlaceholderMessage: 'Her vises en kort reklame (ikke koblet ennå).',
 

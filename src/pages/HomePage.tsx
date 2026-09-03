@@ -537,7 +537,7 @@ export default function HomePage() {
           variants={item}
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 gap-2">
             {[
               { label: t('statGames'), value: stats.gamesPlayed, icon: Gamepad2 },
               { label: t('statWins'), value: stats.wins, icon: Trophy },
@@ -545,20 +545,20 @@ export default function HomePage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center gap-1 py-2.5 sm:py-3.5 px-2 rounded-2xl bg-secondary/60 border border-border/50"
+                className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1.5 rounded-2xl bg-secondary/60 border border-border/50"
               >
-                <stat.icon className="w-3.5 h-3.5 text-primary/70" />
-                <span className="text-xl sm:text-2xl font-display font-black text-foreground tabular-nums leading-none">
+                <stat.icon className="w-3 h-3 text-primary/70" />
+                <span className="text-lg sm:text-xl font-display font-black text-foreground tabular-nums leading-none">
                   {stat.value}
                 </span>
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate max-w-full">
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider truncate max-w-full">
                   {stat.label}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 gap-2">
             {[
               {
                 label: t('statWinrate'),
@@ -576,13 +576,13 @@ export default function HomePage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="flex flex-col items-center gap-1 py-2.5 sm:py-3.5 px-2 rounded-2xl bg-secondary/60 border border-border/50"
+                className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1.5 rounded-2xl bg-secondary/60 border border-border/50"
               >
-                <stat.icon className="w-3.5 h-3.5 text-primary/70" />
-                <span className="text-xl sm:text-2xl font-display font-black text-foreground tabular-nums leading-none">
+                <stat.icon className="w-3 h-3 text-primary/70" />
+                <span className="text-lg sm:text-xl font-display font-black text-foreground tabular-nums leading-none">
                   {stat.value}
                 </span>
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate max-w-full">
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider truncate max-w-full">
                   {stat.label}
                 </span>
               </div>
@@ -590,39 +590,39 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+            <div className="flex flex-col items-center justify-center gap-0.5 py-2.5 px-2 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-              <div className="flex items-center gap-2 relative z-10">
-                <span className="text-2xl leading-none" aria-hidden>{rankInfo.country ? countryToFlag(rankInfo.country.country) : '🏳️'}</span>
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+              <div className="flex items-center gap-1.5 relative z-10">
+                <span className="text-xl leading-none" aria-hidden>{rankInfo.country ? countryToFlag(rankInfo.country.country) : '🏳️'}</span>
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
                   {rankInfo.country
                     ? t('countryRankLabelFull', { country: countryName(rankInfo.country.country, getLanguage()) })
                     : t('countryRankLabel')}
                 </span>
               </div>
               <div className="relative z-10 flex items-baseline justify-center mt-0.5">
-                <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
-                <span className="text-2xl sm:text-3xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
+                <span className="text-base sm:text-lg font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
+                <span className="text-xl sm:text-2xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
                   {rankInfo.country ? rankInfo.country.rank : '–'}
                 </span>
               </div>
-              <div className="h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-primary/50 to-transparent relative z-10" />
+              <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-transparent via-primary/50 to-transparent relative z-10" />
             </div>
-            <div className="flex flex-col items-center justify-center gap-1 py-3 px-3 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+            <div className="flex flex-col items-center justify-center gap-0.5 py-2.5 px-2 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-              <div className="flex items-center gap-2 relative z-10">
-                <span className="text-2xl leading-none" aria-hidden>🌍</span>
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
+              <div className="flex items-center gap-1.5 relative z-10">
+                <span className="text-xl leading-none" aria-hidden>🌍</span>
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider text-center">
                   {t('worldRankLabelFull')}
                 </span>
               </div>
               <div className="relative z-10 flex items-baseline justify-center mt-0.5">
-                <span className="text-lg sm:text-xl font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
-                <span className="text-2xl sm:text-3xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-info-light via-game-info to-game-info-dark drop-shadow-[0_0_12px_hsl(var(--game-info)/0.35)]">
+                <span className="text-base sm:text-lg font-display font-medium text-muted-foreground/50 mr-0.5 select-none leading-none">#</span>
+                <span className="text-xl sm:text-2xl font-display font-black tracking-tighter tabular-nums leading-none bg-clip-text text-transparent bg-gradient-to-br from-game-info-light via-game-info to-game-info-dark drop-shadow-[0_0_12px_hsl(var(--game-info)/0.35)]">
                   {rankInfo.world ? rankInfo.world.rank : '–'}
                 </span>
               </div>
-              <div className="h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-game-info/50 to-transparent relative z-10" />
+              <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-transparent via-game-info/50 to-transparent relative z-10" />
             </div>
           </div>
 

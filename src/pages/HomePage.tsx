@@ -500,10 +500,10 @@ export default function HomePage() {
                       dismissSettingsHint();
                       navigate('/settings');
                     }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-44 px-3 py-2 rounded-xl bg-popover text-popover-foreground text-xs font-medium text-center shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] border border-border/60 pointer-events-auto"
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-44 px-3 py-2 rounded-xl bg-popover text-popover-foreground text-xs font-medium text-center shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] border border-border/60 pointer-events-auto"
                   >
                     {t('settingsHint')}
-                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-popover rotate-45 border-l border-t border-border/60" />
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-popover rotate-45 border-r border-b border-border/60" />
                   </motion.button>
                 )}
               </AnimatePresence>

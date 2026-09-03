@@ -20,6 +20,7 @@ export const fr: typeof sv = {
   opponent: 'adversaire',
   opponents: 'adversaires',
   playWithFriends: 'Jouer avec un ami',
+  friends: 'Amis',
   statGames: 'Parties',
   statWins: 'Victoires',
   statHigh: 'Record',

@@ -20,6 +20,7 @@ export const da: typeof sv = {
   opponent: 'modstander',
   opponents: 'modstandere',
   playWithFriends: 'Spil med ven',
+  friends: 'Venner',
   statGames: 'Spillede',
   statWins: 'Sejre',
   statHigh: 'Rekord',

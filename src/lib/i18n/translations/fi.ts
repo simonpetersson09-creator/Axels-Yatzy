@@ -20,6 +20,7 @@ export const fi: typeof sv = {
   opponent: 'vastustaja',
   opponents: 'vastustajaa',
   playWithFriends: 'Pelaa kaverin kanssa',
+  friends: 'Ystävät',
   statGames: 'Pelatut',
   statWins: 'Voitot',
   statHigh: 'Ennätys',

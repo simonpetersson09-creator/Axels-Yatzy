@@ -91,6 +91,13 @@ export default function HomePage() {
     }
   }, []);
 
+  // Auto-dismiss the ad bubble after a few seconds.
+  useEffect(() => {
+    if (!showAdBubble) return;
+    const timer = setTimeout(() => setShowAdBubble(false), 6000);
+    return () => clearTimeout(timer);
+  }, [showAdBubble]);
+
   // Sync server-side active multiplayer games into the local list so games
   // created while the app was closed (e.g. friend accepted an invite) show up.
   useEffect(() => {

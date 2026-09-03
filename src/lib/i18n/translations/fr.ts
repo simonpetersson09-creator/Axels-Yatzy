@@ -41,6 +41,11 @@ export const fr: typeof sv = {
   matchExpired: 'La partie a été terminée car 48 heures se sont écoulées sans activité.',
   matchTimedOut: 'La partie a expiré',
 
+  // Ad button (optional reward ad)
+  adButtonLabel: 'Publicité',
+  adButtonHint: 'Voir une courte pub — totalement optionnel !',
+  adPlaceholderMessage: 'Une courte publicité apparaîtrait ici (non connectée pour l’instant).',
+
   newGame: 'Nouvelle partie',
   playerCount: 'Nombre de joueurs',
   playerNames: 'Noms des joueurs',

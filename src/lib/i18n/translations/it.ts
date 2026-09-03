@@ -41,6 +41,11 @@ export const it: typeof sv = {
   matchExpired: 'La partita è terminata perché sono passate 48 ore senza attività.',
   matchTimedOut: 'La partita è scaduta',
 
+  // Ad button (optional reward ad)
+  adButtonLabel: 'Pubblicità',
+  adButtonHint: 'Guarda uno spot breve — del tutto opzionale!',
+  adPlaceholderMessage: 'Qui apparirebbe uno spot breve (non ancora collegato).',
+
   newGame: 'Nuova partita',
   playerCount: 'Numero di giocatori',
   playerNames: 'Nomi dei giocatori',

@@ -43,6 +43,11 @@ export const sv = {
   matchExpired: 'Matchen har avslutats eftersom 48 timmar har gått utan aktivitet.',
   matchTimedOut: 'Matchen gick ut på tid',
 
+  // Ad button (optional reward ad)
+  adButtonLabel: 'Annons',
+  adButtonHint: 'Se en kort annons — helt valfritt!',
+  adPlaceholderMessage: 'Här visas en kort annons (inte kopplad än).',
+
   // Setup
   newGame: 'Nytt spel',
   playerCount: 'Antal spelare',

@@ -41,6 +41,11 @@ export const fi: typeof sv = {
   matchExpired: 'Peli päättyi, koska 48 tuntia kului ilman toimintaa.',
   matchTimedOut: 'Peli vanheni ajan loputtua',
 
+  // Ad button (optional reward ad)
+  adButtonLabel: 'Mainos',
+  adButtonHint: 'Katso lyhyt mainos — täysin vapaaehtoista!',
+  adPlaceholderMessage: 'Tässä näytettäisiin lyhyt mainos (ei vielä kytketty).',
+
   newGame: 'Uusi peli',
   playerCount: 'Pelaajien määrä',
   playerNames: 'Pelaajien nimet',

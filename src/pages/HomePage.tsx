@@ -533,11 +533,11 @@ export default function HomePage() {
                     exit={{ opacity: 0, y: -4, scale: 0.95 }}
                     transition={{ duration: 0.25, ease: 'easeOut' }}
                     onClick={() => setShowAdBubble(false)}
-                    className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 z-50 min-w-[220px] max-w-[260px] px-3.5 py-2.5 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-950 text-[11px] font-semibold text-center leading-snug shadow-[0_6px_20px_rgba(0,0,0,0.25)] border border-amber-300/60 cursor-pointer"
+                    className="absolute top-[calc(100%+10px)] right-0 z-50 min-w-[220px] max-w-[260px] px-3.5 py-2.5 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-950 text-[11px] font-semibold text-center leading-snug shadow-[0_6px_20px_rgba(0,0,0,0.25)] border border-amber-300/60 cursor-pointer"
                     aria-label={t('adBubbleText')}
                   >
                     {t('adBubbleText')}
-                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-0.5 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[7px] border-b-amber-200" />
+                    <span className="absolute bottom-full right-[17px] -mb-0.5 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[7px] border-b-amber-200" />
                   </motion.button>
                 )}
               </AnimatePresence>

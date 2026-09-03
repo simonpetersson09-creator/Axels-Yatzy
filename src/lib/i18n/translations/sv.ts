@@ -175,6 +175,7 @@ export const sv = {
   changeAvatar: 'Byt bild',
   removeAvatar: 'Ta bort',
   language: 'Språk',
+  selectLanguage: 'Välj språk',
   statistics: 'Statistik',
   resetStats: 'Återställ statistik',
   resetStatsConfirm: 'Är du säker? All statistik raderas.',

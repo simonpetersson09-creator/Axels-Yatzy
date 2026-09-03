@@ -164,6 +164,7 @@ export const fi: typeof sv = {
   changeAvatar: 'Vaihda kuva',
   removeAvatar: 'Poista',
   language: 'Kieli',
+  selectLanguage: 'Valitse kieli',
   statistics: 'Tilastot',
   resetStats: 'Nollaa tilastot',
   resetStatsConfirm: 'Oletko varma? Kaikki tilastot poistetaan.',

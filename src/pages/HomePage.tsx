@@ -22,7 +22,7 @@ import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Sett
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { syncCountryRank, syncWorldLeader, countryToFlag, countryName, type RankInfo, type WorldLeader } from '@/lib/country-rank';
+import { syncCountryRank, syncWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
 

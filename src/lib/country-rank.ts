@@ -102,6 +102,11 @@ export interface WorldRank {
   games_played: number;
 }
 
+export interface WorldLeader {
+  country: string;
+  games_played: number;
+}
+
 export interface RankInfo {
   country: CountryRank | null;
   world: WorldRank | null;
@@ -157,6 +162,26 @@ export async function syncCountryRank(gamesPlayed?: number): Promise<RankInfo> {
   } catch (e) {
     console.warn('[country-rank] sync error', e);
     return empty;
+  }
+}
+
+/**
+ * Fetch the country that currently leads the world ranking by total games
+ * played. Returns null when no data is available.
+ */
+export async function syncWorldLeader(): Promise<WorldLeader | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_world_leader');
+    if (error) {
+      console.warn('[country-rank] world leader fetch failed', error);
+      return null;
+    }
+    const d = data as { found: boolean; country: string; games_played: number } | null;
+    if (!d || !d.found) return null;
+    return { country: d.country, games_played: d.games_played };
+  } catch (e) {
+    console.warn('[country-rank] world leader sync error', e);
+    return null;
   }
 }
 

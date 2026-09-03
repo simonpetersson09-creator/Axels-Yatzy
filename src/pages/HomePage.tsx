@@ -22,7 +22,7 @@ import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Sett
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { syncCountryRank, countryToFlag, countryName, type RankInfo } from '@/lib/country-rank';
+import { syncCountryRank, syncWorldLeader, countryToFlag, countryName, type RankInfo, type WorldLeader } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, type Language } from '@/lib/profile';
 
 const item = {
@@ -47,6 +47,7 @@ export default function HomePage() {
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
+  const [worldLeader, setWorldLeader] = useState<WorldLeader | null>(null);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
   const [arrowOffset, setArrowOffset] = useState<number | null>(null);
@@ -59,6 +60,9 @@ export default function HomePage() {
     let cancelled = false;
     void syncCountryRank(stats.gamesPlayed).then(res => {
       if (!cancelled) setRankInfo(res);
+    });
+    void syncWorldLeader().then(res => {
+      if (!cancelled) setWorldLeader(res);
     });
     return () => { cancelled = true; };
   }, [stats.gamesPlayed]);
@@ -726,6 +730,23 @@ export default function HomePage() {
                 </span>
               </div>
               <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-transparent via-game-info/50 to-transparent relative z-10" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2">
+            <div className="flex flex-col items-center justify-center gap-1 py-3 px-2 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
+                {t('worldLeaderLabel')}
+              </span>
+              <span className="text-4xl sm:text-5xl leading-none relative z-10" aria-hidden>
+                {worldLeader ? countryToFlag(worldLeader.country) : '🏳️'}
+              </span>
+              {worldLeader && (
+                <span className="text-[10px] font-medium text-muted-foreground relative z-10 text-center leading-tight">
+                  {countryName(worldLeader.country, getLanguage())}
+                </span>
+              )}
             </div>
           </div>
 

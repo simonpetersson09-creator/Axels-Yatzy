@@ -101,6 +101,32 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, [showAdBubble]);
 
+  // Keep the bubble arrow magnet-locked to the optional-ad button center.
+  useEffect(() => {
+    if (!showAdBubble) return;
+    const measure = () => {
+      const adBtn = adButtonRef.current;
+      const bubble = bubbleRef.current;
+      if (!adBtn || !bubble) return;
+      const container = bubble.offsetParent as HTMLElement | null;
+      if (!container) return;
+      const adRect = adBtn.getBoundingClientRect();
+      const bubbleRect = bubble.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const adCenter = adRect.left + adRect.width / 2 - containerRect.left;
+      const bubbleLeft = bubbleRect.left - containerRect.left;
+      setArrowOffset(adCenter - bubbleLeft);
+    };
+    measure();
+    // Re-measure after the entrance animation has settled.
+    const raf = requestAnimationFrame(measure);
+    window.addEventListener('resize', measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', measure);
+    };
+  }, [showAdBubble]);
+
   // Sync server-side active multiplayer games into the local list so games
   // created while the app was closed (e.g. friend accepted an invite) show up.
   useEffect(() => {

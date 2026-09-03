@@ -409,15 +409,15 @@ export default function HomePage() {
 
             {/* Optional reward ad button — wire to real ad provider here */}
             <motion.div
-              className="flex items-center gap-2 w-44 sm:w-48 h-12 sm:h-15 overflow-visible"
+              className="flex items-center gap-2.5 w-44 sm:w-48 h-12 sm:h-15 overflow-visible"
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}
             >
-              <div className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 shrink-0">
+              <div className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 shrink-0">
                 <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 pointer-events-none" />
                 <motion.button
                   onClick={() => toast.info(t('adPlaceholderMessage'))}
-                  className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-background border-2 border-primary/80 shadow-[0_0_15px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_25px_hsl(var(--primary)/0.5)] transition-all overflow-hidden"
+                  className="group relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-background border-2 border-primary/80 shadow-[0_0_15px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_25px_hsl(var(--primary)/0.5)] transition-all overflow-hidden"
                   whileTap={{ scale: 0.92 }}
                   aria-label={t('adButtonLabel')}
                 >

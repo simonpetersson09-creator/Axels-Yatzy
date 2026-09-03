@@ -484,7 +484,7 @@ export default function HomePage() {
 
           {/* Icon-only secondary actions */}
           <motion.div
-            className="flex items-center justify-center gap-2.5"
+            className="relative flex items-center justify-center gap-2.5 mt-6"
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
@@ -492,7 +492,7 @@ export default function HomePage() {
               <AnimatePresence>
                 {showSettingsHint && (
                   <motion.button
-                    initial={{ opacity: 0, y: -6, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.35, ease: 'easeOut' }}

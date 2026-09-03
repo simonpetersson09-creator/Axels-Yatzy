@@ -471,7 +471,6 @@ export default function HomePage() {
             <AnimatePresence>
               {showAdBubble && (
                 <motion.div
-                  ref={bubbleRef}
                   initial={{ opacity: 0, y: 12, scale: 0.92 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
@@ -489,12 +488,6 @@ export default function HomePage() {
                       {t('adBubbleText')}
                     </p>
                   </div>
-                  {/* Magnet tail locked to the optional-ad button center */}
-                  <div
-                    className="absolute -bottom-[9px] w-[18px] h-[18px] rounded-[4px] bg-popover/95 border-r border-b border-primary/30 shadow-[4px_4px_10px_rgba(0,0,0,0.25)]"
-                    style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0', rotate: '45deg' }}
-                    aria-hidden="true"
-                  />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -569,7 +562,6 @@ export default function HomePage() {
               </motion.button>
 
               <motion.button
-                ref={adButtonRef}
                 onClick={() => toast.info(t('adPlaceholderMessage'))}
                 className="flex flex-col items-center gap-1.5 group"
                 whileTap={{ scale: 0.92 }}

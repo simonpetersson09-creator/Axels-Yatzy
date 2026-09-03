@@ -22,6 +22,7 @@ export const sv = {
   opponent: 'motståndare',
   opponents: 'motståndare',
   playWithFriends: 'Spela med vän',
+  friends: 'Vänner',
   statGames: 'Spelade',
   statWins: 'Vinster',
   statHigh: 'Rekord',

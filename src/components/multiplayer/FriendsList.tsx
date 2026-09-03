@@ -346,8 +346,6 @@ export function FriendsList() {
     <>
       <div className="space-y-2.5">
         {opponents.map((o) => {
-          const last = o.lastMatch;
-          const hasFinished = o.matches > 0 && !!last;
           const alreadyInvited = !!activeInvites[o.opponentId];
           const isSending = inviting === o.opponentId;
           return (
@@ -359,29 +357,33 @@ export function FriendsList() {
                   : 'bg-secondary/60 border-border/50'
               }`}
             >
-              <div className="flex items-start gap-2.5">
+              <div className="flex items-center gap-2">
+                <span className="font-display font-bold text-sm text-foreground truncate">
+                  {o.opponentName}
+                </span>
+              </div>
+
+              <div className="flex items-stretch gap-2 mt-2">
                 <button
                   onClick={() => navigate('/friend-stats', { state: { selectedId: o.opponentId } })}
                   className="flex-1 min-w-0 text-left active:opacity-80 transition"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-display font-bold text-sm text-foreground truncate">
-                      {o.opponentName}
-                    </span>
-                    <div className="flex items-baseline gap-1 font-display font-black text-2xl tabular-nums leading-none">
-                      <span className="text-game-success">{o.wins}</span>
-                      <span className="text-muted-foreground/50 text-xl">–</span>
-                      <span className="text-destructive">{o.losses}</span>
-                      {o.draws > 0 && (
-                        <span className="text-[10px] font-bold text-muted-foreground ml-0.5">+{o.draws}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col items-center justify-center rounded-xl bg-secondary/80 border border-border/50 py-2">
                       <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t('friendsTotalMatches')}</span>
                       <span className="text-lg font-display font-black text-foreground tabular-nums">{o.matches}</span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center rounded-xl bg-secondary/80 border border-border/50 py-2">
+                      <span className={`text-2xl font-display font-black tabular-nums ${
+                        o.wins > o.losses ? 'text-game-success'
+                          : o.losses > o.wins ? 'text-destructive'
+                          : 'text-muted-foreground'
+                      }`}>
+                        {o.wins}–{o.losses}
+                      </span>
+                      {o.draws > 0 && (
+                        <span className="text-[10px] font-bold text-muted-foreground">+{o.draws}</span>
+                      )}
                     </div>
                   </div>
                 </button>
@@ -395,13 +397,13 @@ export function FriendsList() {
                     }
                   }}
                   disabled={isSending || !!pendingInvite}
-                  className="flex-shrink-0 h-8 px-2.5 rounded-lg bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition flex items-center justify-center disabled:opacity-60"
+                  className="flex-shrink-0 w-[4.5rem] rounded-lg bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition flex flex-col items-center justify-center disabled:opacity-60"
                   aria-label={alreadyInvited ? t('inviteSent') : t('inviteFriend')}
                 >
                   {isSending ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <span className="text-[10px] font-bold whitespace-nowrap">
+                    <span className="text-xs font-bold leading-tight text-center">
                       {alreadyInvited ? t('inviteSent') : t('inviteFriend')}
                     </span>
                   )}
@@ -415,13 +417,6 @@ export function FriendsList() {
                   </span>
                   <span className="text-muted-foreground normal-case tracking-normal">
                     {formatDate(o.ongoingMatch.created_at)}
-                  </span>
-                </div>
-              ) : hasFinished ? (
-                <div className="mt-2 pt-2 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                  <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
-                  <span className="text-muted-foreground normal-case tracking-normal">
-                    {last ? formatDate(last.created_at) : ''}
                   </span>
                 </div>
               ) : null}

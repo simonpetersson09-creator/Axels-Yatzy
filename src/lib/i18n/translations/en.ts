@@ -48,6 +48,9 @@ export const en: typeof sv = {
   adButtonShort: 'Voluntary ad',
   adButtonHint: 'Watch a short ad — completely optional!',
   adPlaceholderMessage: 'A short ad would appear here (not wired yet).',
+  adLoading: 'Loading ad…',
+  adFailed: 'No ad available right now.',
+  adOnlyInApp: 'Ads are only shown in the app.',
   adBubbleText: 'Help us keep Mr.B. Yatzy free. If you\'d like, you\'re welcome to watch a short ad.',
 
   newGame: 'New game',

@@ -48,6 +48,9 @@ export const de: typeof sv = {
   adButtonShort: 'Freiwillige Werbung',
   adButtonHint: 'Werbung ansehen — völlig freiwillig!',
   adPlaceholderMessage: 'Hier würde eine kurze Werbung erscheinen (noch nicht verbunden).',
+  adLoading: 'Werbung wird geladen…',
+  adFailed: 'Momentan ist keine Werbung verfügbar.',
+  adOnlyInApp: 'Werbung wird nur in der App gezeigt.',
   adBubbleText: 'Hilf uns, Mr.B. Yatzy kostenlos zu halten. Wenn du möchtest, darfst du gerne eine kurze Werbung ansehen.',
 
   newGame: 'Neues Spiel',

@@ -497,11 +497,11 @@ export default function HomePage() {
             </motion.button>
             <motion.button
               onClick={() => navigate('/friends')}
-              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-game-info/25 to-game-info/10 text-game-info border border-game-info/30 shadow-[0_4px_16px_hsl(var(--game-info)/0.18)] active:shadow-[0_2px_8px_hsl(var(--game-info)/0.12)] transition-shadow flex items-center justify-center"
-              whileTap={{ scale: 0.92 }}
+              className="h-12 sm:h-14 px-4 sm:px-5 rounded-full bg-gradient-to-r from-game-info/25 to-game-info/10 text-game-info border border-game-info/30 shadow-[0_4px_16px_hsl(var(--game-info)/0.18)] active:shadow-[0_2px_8px_hsl(var(--game-info)/0.12)] transition-shadow flex items-center justify-center gap-2"
+              whileTap={{ scale: 0.95 }}
               aria-label={t('friendsListTitle')}
             >
-              👥
+              👥 <span className="font-display font-semibold text-sm sm:text-base">{t('friends')}</span>
             </motion.button>
 
             {/* Optional reward ad button */}

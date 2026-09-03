@@ -519,10 +519,10 @@ export default function HomePage() {
               whileTap={{ scale: 0.92 }}
               aria-label={t('adButtonLabel')}
             >
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-primary to-primary/70 border-2 border-primary/80 flex items-center justify-center shadow-[0_0_15px_hsl(var(--primary)/0.3)] group-hover:scale-105 transition-all duration-300">
-                <Play className="w-4 h-4 sm:w-5 sm:h-5 text-background fill-current" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
-              <span className="text-[9px] font-bold tracking-widest text-primary uppercase">{t('adButtonShort')}</span>
+              <span className="text-[9px] font-medium tracking-widest text-primary/60 uppercase">{t('adButtonShort')}</span>
             </motion.button>
           </motion.div>
 

@@ -44,7 +44,7 @@ export const fr: typeof sv = {
 
   // Ad button (optional reward ad)
   adButtonLabel: 'Publicité',
-  adButtonShort: 'Bonus',
+  adButtonShort: 'Pub volontaire',
   adButtonHint: 'Voir une courte pub — totalement optionnel !',
   adPlaceholderMessage: 'Une courte publicité apparaîtrait ici (non connectée pour l’instant).',
 

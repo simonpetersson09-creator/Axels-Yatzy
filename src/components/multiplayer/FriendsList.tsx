@@ -348,14 +348,6 @@ export function FriendsList() {
         {opponents.map((o) => {
           const last = o.lastMatch;
           const hasFinished = o.matches > 0 && !!last;
-          const myScore = hasFinished && last
-            ? (last.player_1_id === myId ? last.player_1_score : last.player_2_score) ?? 0
-            : 0;
-          const oppScore = hasFinished && last
-            ? (last.player_1_id === myId ? last.player_2_score : last.player_1_score) ?? 0
-            : 0;
-          const lastWon = hasFinished && last?.winner_id === myId;
-          const lastDraw = hasFinished && last?.winner_id === null;
           const alreadyInvited = !!activeInvites[o.opponentId];
           const isSending = inviting === o.opponentId;
           return (
@@ -376,32 +368,20 @@ export function FriendsList() {
                     <span className="font-display font-bold text-sm text-foreground truncate">
                       {o.opponentName}
                     </span>
-                    <div className="flex items-center gap-1 text-[10px] font-bold tabular-nums">
-                      <span className="px-1.5 py-0.5 rounded bg-game-success/15 text-game-success">{o.wins}</span>
-                      <span className="px-1.5 py-0.5 rounded bg-destructive/15 text-destructive">{o.losses}</span>
+                    <div className="flex items-baseline gap-1 font-display font-black text-2xl tabular-nums leading-none">
+                      <span className="text-game-success">{o.wins}</span>
+                      <span className="text-muted-foreground/50 text-xl">–</span>
+                      <span className="text-destructive">{o.losses}</span>
                       {o.draws > 0 && (
-                        <span className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{o.draws}</span>
+                        <span className="text-[10px] font-bold text-muted-foreground ml-0.5">+{o.draws}</span>
                       )}
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="mt-2">
                     <div className="flex flex-col items-center justify-center rounded-xl bg-secondary/80 border border-border/50 py-2">
                       <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t('friendsTotalMatches')}</span>
                       <span className="text-lg font-display font-black text-foreground tabular-nums">{o.matches}</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center rounded-xl bg-secondary/80 border border-border/50 py-2">
-                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t('friendsLastResult')}</span>
-                      {hasFinished ? (
-                        <span className={`text-2xl font-display font-black tabular-nums ${
-                          lastDraw ? 'text-muted-foreground'
-                            : lastWon ? 'text-game-success' : 'text-destructive'
-                        }`}>
-                          {myScore}–{oppScore}
-                        </span>
-                      ) : (
-                        <span className="text-2xl font-display font-black text-muted-foreground tabular-nums">–</span>
-                      )}
                     </div>
                   </div>
                 </button>

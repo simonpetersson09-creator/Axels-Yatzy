@@ -445,7 +445,7 @@ export default function HomePage() {
 
           {/* Premium round secondary actions */}
           <motion.div
-            className="grid grid-cols-4 place-items-center gap-2 sm:gap-3 w-full"
+            className="grid grid-cols-4 place-items-center gap-1 sm:gap-2 w-full"
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >

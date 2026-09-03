@@ -48,6 +48,9 @@ export const it: typeof sv = {
   adButtonShort: 'Pubblicità volontaria',
   adButtonHint: 'Guarda uno spot breve — del tutto opzionale!',
   adPlaceholderMessage: 'Qui apparirebbe uno spot breve (non ancora collegato).',
+  adLoading: 'Caricamento annuncio…',
+  adFailed: 'Nessun annuncio disponibile al momento.',
+  adOnlyInApp: 'Gli annunci vengono mostrati solo nell’app.',
   adBubbleText: 'Aiutaci a mantenere Mr.B. Yatzy gratuito. Se vuoi, puoi guardare uno spot breve.',
 
   newGame: 'Nuova partita',

@@ -50,6 +50,9 @@ export const sv = {
   adButtonShort: 'Frivillig reklam',
   adButtonHint: 'Se en kort annons — helt valfritt!',
   adPlaceholderMessage: 'Här visas en kort annons (inte kopplad än).',
+  adLoading: 'Laddar annons…',
+  adFailed: 'Ingen annons tillgänglig just nu.',
+  adOnlyInApp: 'Annonser visas endast i appen.',
   adBubbleText: 'Hjälp oss hålla Mr.B. Yatzy gratis. Om du vill får du gärna se en kort annons.',
 
   // Setup

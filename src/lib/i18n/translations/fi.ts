@@ -48,6 +48,9 @@ export const fi: typeof sv = {
   adButtonShort: 'Vapaaehtoinen mainos',
   adButtonHint: 'Katso lyhyt mainos — täysin vapaaehtoista!',
   adPlaceholderMessage: 'Tässä näytettäisiin lyhyt mainos (ei vielä kytketty).',
+  adLoading: 'Ladataan mainosta…',
+  adFailed: 'Mainosta ei ole juuri nyt saatavilla.',
+  adOnlyInApp: 'Mainokset näytetään vain sovelluksessa.',
   adBubbleText: 'Auta meitä pitämään Mr.B. Yatzy ilmaisena. Jos haluat, voit katsella lyhyen mainoksen.',
 
   newGame: 'Uusi peli',

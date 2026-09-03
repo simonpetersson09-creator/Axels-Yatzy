@@ -112,6 +112,8 @@ export interface RankInfo {
   world: WorldRank | null;
 }
 
+export type WorldLeaders = WorldLeader[];
+
 /**
  * Push the player's current games_played to the server and read back their
  * rank within their profile country AND their global world rank. Returns

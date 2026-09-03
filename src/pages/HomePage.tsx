@@ -537,7 +537,7 @@ export default function HomePage() {
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
               </motion.button>
 
-              <div className="relative flex flex-col items-center gap-1.5 group">
+              <div className="relative w-full flex flex-col items-center gap-1.5 group">
                 <AnimatePresence>
                   {showAdBubble && (
                     <motion.div
@@ -546,20 +546,19 @@ export default function HomePage() {
                       exit={{ opacity: 0, y: 8, scale: 0.95 }}
                       transition={{ duration: 0.3, ease: 'easeOut' }}
                       onClick={() => setShowAdBubble(false)}
-                      className="absolute bottom-[calc(100%+6px)] z-50 w-[200px] px-3.5 py-3 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
-                      style={{ left: '50%', translate: '-50% 0' }}
+                      className="absolute bottom-[calc(100%+6px)] right-0 z-50 w-[180px] px-3 py-2.5 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
                       aria-label={t('adBubbleText')}
                     >
                       <div className="flex items-center gap-2.5 text-left">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.25)]">
-                          <Heart className="w-4 h-4 text-primary fill-primary/40" />
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.25)]">
+                          <Heart className="w-3.5 h-3.5 text-primary fill-primary/40" />
                         </div>
-                        <p className="text-[11px] font-medium text-foreground leading-snug">
+                        <p className="text-[10px] font-medium text-foreground leading-snug">
                           {t('adBubbleText')}
                         </p>
                       </div>
                       {/* Bubble tail pointing to the ad button */}
-                      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-popover/95 border-r border-b border-primary/30 rotate-45" />
+                      <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-popover/95 border-r border-b border-primary/30 rotate-45" />
                     </motion.div>
                   )}
                 </AnimatePresence>

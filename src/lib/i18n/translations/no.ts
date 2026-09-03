@@ -54,6 +54,12 @@ export const no: typeof sv = {
   adBubbleText: 'Hjelp oss å holde Mr.B. Yatzy gratis. Hvis du vil, kan du gjerne se en kort reklame.',
   adComingSoon: '(Kommande)',
 
+  // Rate app
+  rateTitle: "Liker du Mr.B. Yatzy?",
+  rateBody: "Du har spilt 5 kamper! En vurdering hjelper oss enormt. 💛",
+  rateNow: "Gi vurdering",
+  rateLater: "Senere",
+
   newGame: 'Nytt spill',
   playerCount: 'Antall spillere',
   playerNames: 'Spillernavn',

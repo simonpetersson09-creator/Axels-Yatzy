@@ -54,6 +54,12 @@ export const fi: typeof sv = {
   adBubbleText: 'Auta meitä pitämään Mr.B. Yatzy ilmaisena. Jos haluat, voit katsella lyhyen mainoksen.',
   adComingSoon: '(Kommande)',
 
+  // Rate app
+  rateTitle: "Pidätkö Mr.B. Yatzysta?",
+  rateBody: "Olet pelannut 5 ottelua! Arvostelu auttaa meitä valtavasti. 💛",
+  rateNow: "Anna arvostelu",
+  rateLater: "Myöhemmin",
+
   newGame: 'Uusi peli',
   playerCount: 'Pelaajien määrä',
   playerNames: 'Pelaajien nimet',

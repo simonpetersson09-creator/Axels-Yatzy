@@ -54,6 +54,12 @@ export const en: typeof sv = {
   adBubbleText: 'Help us keep Mr.B. Yatzy free. If you\'d like, you\'re welcome to watch a short ad.',
   adComingSoon: '(Kommande)',
 
+  // Rate app
+  rateTitle: "Enjoying Mr.B. Yatzy?",
+  rateBody: "You've played 5 matches! A rating helps us a lot. 💛",
+  rateNow: "Rate the app",
+  rateLater: "Later",
+
   newGame: 'New game',
   playerCount: 'Number of players',
   playerNames: 'Player names',

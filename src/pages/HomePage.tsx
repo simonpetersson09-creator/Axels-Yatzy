@@ -50,7 +50,38 @@ export default function HomePage() {
   const [worldLeader, setWorldLeader] = useState<WorldLeader | null>(null);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
+  const [adLoading, setAdLoading] = useState(false);
+  const adInFlightRef = useRef(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
+
+  // Preload i bakgrunden – kan aldrig trigga visning.
+  useEffect(() => {
+    if (isAdMobAvailable()) void preloadInterstitial();
+  }, []);
+
+  /** Enda vägen till show(): användarens direkta tryck på "Frivillig reklam". */
+  const handleOptionalAdClick = async () => {
+    if (adInFlightRef.current) return;
+    adInFlightRef.current = true;
+    setShowAdBubble(false);
+    if (!isAdMobAvailable()) {
+      toast.info(t('adOnlyInApp'));
+      adInFlightRef.current = false;
+      return;
+    }
+    setAdLoading(true);
+    const loadingToast = toast.loading(t('adLoading'));
+    try {
+      const result = await showOptionalInterstitial();
+      toast.dismiss(loadingToast);
+      if (result !== 'shown') toast.error(t('adFailed'));
+      // Ingen reward eller spelmässig fördel ges. Användaren stannar i samma vy.
+    } finally {
+      toast.dismiss(loadingToast);
+      setAdLoading(false);
+      adInFlightRef.current = false;
+    }
+  };
 
   // Sync country + world ranking whenever the games_played count changes.
   useEffect(() => {

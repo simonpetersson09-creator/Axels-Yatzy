@@ -38,6 +38,8 @@ interface OpponentSummary {
   losses: number;
   draws: number;
   myHigh: number;
+  myPoints: number;
+  oppPoints: number;
   lastMatch: FriendMatchRow | null;
   ongoingMatch: FriendMatchRow | null;
   mergedSourceIds: string[];

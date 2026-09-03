@@ -564,8 +564,9 @@ export default function HomePage() {
                 </AnimatePresence>
 
                 <motion.button
-                  onClick={() => toast.info(t('adPlaceholderMessage'))}
-                  className="flex flex-col items-center gap-1.5 group"
+                  onClick={handleOptionalAdClick}
+                  disabled={adLoading}
+                  className="flex flex-col items-center gap-1.5 group disabled:opacity-60"
                   whileTap={{ scale: 0.92 }}
                   aria-label={t('adButtonLabel')}
                 >

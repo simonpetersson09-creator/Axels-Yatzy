@@ -541,6 +541,14 @@ export type Database = {
         Args: { p_game_id: string; p_timeout_seconds?: number }
         Returns: Json
       }
+      trusted_country_stats: {
+        Args: never
+        Returns: {
+          country: string
+          games_played: number
+          session_id: string
+        }[]
+      }
       update_analytics_session: {
         Args: {
           p_device_id: string

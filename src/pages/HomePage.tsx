@@ -596,6 +596,7 @@ export default function HomePage() {
               </motion.button>
 
               <motion.button
+                ref={adButtonRef}
                 onClick={() => toast.info(t('adPlaceholderMessage'))}
                 className="flex flex-col items-center gap-1.5 group"
                 whileTap={{ scale: 0.92 }}

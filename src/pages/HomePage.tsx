@@ -471,7 +471,8 @@ export default function HomePage() {
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
                   onClick={() => setShowAdBubble(false)}
-                  className="absolute bottom-[calc(100%+10px)] left-1/2 -translate-x-1/2 z-50 w-[260px] px-3.5 py-3 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
+                  className="absolute bottom-[calc(100%+10px)] z-50 w-[240px] px-3.5 py-3 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
+                  style={{ left: '50%', transform: 'translateX(-50%)' }}
                   aria-label={t('adBubbleText')}
                 >
                   <div className="flex items-center gap-2.5 text-left">
@@ -483,8 +484,8 @@ export default function HomePage() {
                     </p>
                   </div>
                   {/* Arrow pointing down toward the optional-ad button */}
-                  <span className="absolute top-full left-[87.5%] -translate-x-1/2 w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-t-[8px] border-t-primary/30" />
-                  <span className="absolute top-full left-[87.5%] -translate-x-1/2 -mt-[1px] w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[7px] border-t-popover/95" />
+                  <span className="absolute top-full left-[87.5%] w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-t-[8px] border-t-primary/30" style={{ transform: 'translateX(-50%)' }} />
+                  <span className="absolute top-full left-[87.5%] -mt-[1px] w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[7px] border-t-popover/95" style={{ transform: 'translateX(-50%)' }} />
                 </motion.div>
               )}
             </AnimatePresence>

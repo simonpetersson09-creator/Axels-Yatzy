@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.trusted_country_stats() FROM anon, authenticated, public;

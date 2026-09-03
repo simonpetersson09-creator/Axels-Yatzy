@@ -722,21 +722,34 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0 grid grid-cols-1 gap-2">
-            <div className="flex flex-col items-center justify-center gap-0.5 py-2 px-2 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
-                {t('worldLeaderLabel')}
-              </span>
-              <span className="text-2xl sm:text-3xl leading-none relative z-10" aria-hidden>
-                {worldLeader ? countryToFlag(worldLeader.country) : '🏳️'}
-              </span>
-              {worldLeader && (
-                <span className="text-[9px] font-medium text-muted-foreground relative z-10 text-center leading-tight">
-                  {countryName(worldLeader.country, getLanguage())}
-                </span>
-              )}
-            </div>
+          <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0 grid grid-cols-3 gap-2">
+            {[0, 1, 2].map(idx => {
+              const leader = worldLeaders[idx];
+              const position = idx + 1;
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+                  <span className="text-[10px] font-black text-game-gold uppercase tracking-wider text-center relative z-10">
+                    P{position}
+                  </span>
+                  <span className="text-xl sm:text-2xl leading-none relative z-10" aria-hidden>
+                    {leader ? countryToFlag(leader.country) : '🏳️'}
+                  </span>
+                  {leader ? (
+                    <span className="text-[9px] font-medium text-muted-foreground relative z-10 text-center leading-tight line-clamp-1">
+                      {countryName(leader.country, getLanguage())}
+                    </span>
+                  ) : (
+                    <span className="text-[9px] font-medium text-muted-foreground/50 relative z-10 text-center leading-tight">
+                      –
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
         </motion.div>

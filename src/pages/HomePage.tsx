@@ -48,6 +48,7 @@ export default function HomePage() {
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
   const [showLangPicker, setShowLangPicker] = useState(false);
+  const [showAdBubble, setShowAdBubble] = useState(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
 
   // Sync country + world ranking whenever the games_played count changes.

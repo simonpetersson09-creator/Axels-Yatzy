@@ -49,7 +49,10 @@ export default function HomePage() {
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
+  const [arrowOffset, setArrowOffset] = useState<number | null>(null);
   const langPickerRef = useRef<HTMLDivElement>(null);
+  const adButtonRef = useRef<HTMLButtonElement>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
 
   // Sync country + world ranking whenever the games_played count changes.
   useEffect(() => {
@@ -96,6 +99,32 @@ export default function HomePage() {
     if (!showAdBubble) return;
     const timer = setTimeout(() => setShowAdBubble(false), 6000);
     return () => clearTimeout(timer);
+  }, [showAdBubble]);
+
+  // Keep the bubble arrow magnet-locked to the optional-ad button center.
+  useEffect(() => {
+    if (!showAdBubble) return;
+    const measure = () => {
+      const adBtn = adButtonRef.current;
+      const bubble = bubbleRef.current;
+      if (!adBtn || !bubble) return;
+      const container = bubble.offsetParent as HTMLElement | null;
+      if (!container) return;
+      const adRect = adBtn.getBoundingClientRect();
+      const bubbleRect = bubble.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const adCenter = adRect.left + adRect.width / 2 - containerRect.left;
+      const bubbleLeft = bubbleRect.left - containerRect.left;
+      setArrowOffset(adCenter - bubbleLeft);
+    };
+    measure();
+    // Re-measure after the entrance animation has settled.
+    const raf = requestAnimationFrame(measure);
+    window.addEventListener('resize', measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', measure);
+    };
   }, [showAdBubble]);
 
   // Sync server-side active multiplayer games into the local list so games
@@ -466,6 +495,7 @@ export default function HomePage() {
             <AnimatePresence>
               {showAdBubble && (
                 <motion.div
+                  ref={bubbleRef}
                   initial={{ opacity: 0, y: 12, scale: 0.92 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
@@ -483,9 +513,15 @@ export default function HomePage() {
                       {t('adBubbleText')}
                     </p>
                   </div>
-                  {/* Longer, slightly diagonal arrow touching the optional-ad button */}
-                  <span className="absolute top-full left-[87.5%] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-t-[12px] border-t-primary/30 -translate-x-1/2 rotate-12 origin-top" />
-                  <span className="absolute top-full left-[87.5%] -mt-[1px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[11px] border-t-popover/95 -translate-x-1/2 rotate-12 origin-top" />
+                  {/* Magnet arrow locked to the optional-ad button center */}
+                  <span
+                    className="absolute top-full w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-t-[12px] border-t-primary/30 -translate-x-1/2 rotate-12 origin-top"
+                    style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0' }}
+                  />
+                  <span
+                    className="absolute top-full -mt-[1px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[11px] border-t-popover/95 -translate-x-1/2 rotate-12 origin-top"
+                    style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0' }}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -560,6 +596,7 @@ export default function HomePage() {
               </motion.button>
 
               <motion.button
+                ref={adButtonRef}
                 onClick={() => toast.info(t('adPlaceholderMessage'))}
                 className="flex flex-col items-center gap-1.5 group"
                 whileTap={{ scale: 0.92 }}

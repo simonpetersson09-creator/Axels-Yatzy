@@ -573,13 +573,7 @@ export default function HomePage() {
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
               </motion.button>
 
-              <motion.button
-                onClick={handleOptionalAdClick}
-                disabled={adLoading || AD_BUTTON_LOCKED}
-                className="relative flex flex-col items-center gap-1.5 group disabled:opacity-60"
-                whileTap={{ scale: AD_BUTTON_LOCKED ? 1 : 0.92 }}
-                aria-label={t('adButtonLabel')}
-              >
+              <div className="relative flex flex-col items-center">
                 <AnimatePresence>
                   {showAdBubble && (
                     <motion.div
@@ -603,19 +597,27 @@ export default function HomePage() {
                   )}
                 </AnimatePresence>
 
-                <div className={`relative transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>
-                  {showAdBubble && !AD_BUTTON_LOCKED && (
-                    <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
-                  )}
-                  <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
-                    <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
+                <motion.button
+                  onClick={handleOptionalAdClick}
+                  disabled={adLoading || AD_BUTTON_LOCKED}
+                  className="flex flex-col items-center gap-1.5 group disabled:opacity-60"
+                  whileTap={{ scale: AD_BUTTON_LOCKED ? 1 : 0.92 }}
+                  aria-label={t('adButtonLabel')}
+                >
+                  <div className={`relative transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>
+                    {showAdBubble && !AD_BUTTON_LOCKED && (
+                      <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
+                    )}
+                    <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
+                      <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
+                    </div>
                   </div>
-                </div>
-                <span className={`text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight whitespace-nowrap transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adButtonShort')}</span>
-                {AD_BUTTON_LOCKED && (
-                  <span className={`text-[7px] font-medium text-destructive text-center leading-none -mt-1 transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adComingSoon')}</span>
-                )}
-              </motion.button>
+                  <span className={`text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight whitespace-nowrap transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adButtonShort')}</span>
+                  {AD_BUTTON_LOCKED && (
+                    <span className={`text-[7px] font-medium text-destructive text-center leading-none -mt-1 transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adComingSoon')}</span>
+                  )}
+                </motion.button>
+              </div>
             </motion.div>
           </div>
 

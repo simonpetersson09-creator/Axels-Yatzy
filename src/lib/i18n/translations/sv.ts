@@ -199,6 +199,7 @@ export const sv = {
   friendsListTitle: 'Vänlista',
   myFriends: 'Mina vänner',
   friendsMatches: 'matcher',
+  friendsTotalMatches: 'Spelade matcher',
   friendsWins: 'Vinster',
   friendsLosses: 'Förluster',
   friendsDraws: 'Oavgjorda',

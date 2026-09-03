@@ -188,6 +188,7 @@ export const fr: typeof sv = {
   friendsListTitle: 'Liste d\'amis',
   myFriends: 'Mes amis',
   friendsMatches: 'parties',
+  friendsTotalMatches: 'Matchs joués',
   friendsWins: 'Victoires',
   friendsLosses: 'Défaites',
   friendsDraws: 'Nuls',

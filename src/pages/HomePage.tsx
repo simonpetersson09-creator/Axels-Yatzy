@@ -579,7 +579,7 @@ export default function HomePage() {
         </div>
 
         <motion.div
-          className="relative w-full space-y-2"
+          className="relative w-full space-y-2.5"
           variants={item}
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >

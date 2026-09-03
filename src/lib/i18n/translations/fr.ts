@@ -44,8 +44,9 @@ export const fr: typeof sv = {
 
   // Ad button (optional reward ad)
   adButtonLabel: 'Publicité',
+  adButtonShort: 'Bonus',
   adButtonHint: 'Voir une courte pub — totalement optionnel !',
-  adPlaceholderMessage: 'Une courte publicité apparaîtrait ici (non connectée pour l’instant).',
+  adPlaceholderMessage: 'Une courte publicité apparaîtrait ici (non connectée pour l’instant).'
 
   newGame: 'Nouvelle partie',
   playerCount: 'Nombre de joueurs',

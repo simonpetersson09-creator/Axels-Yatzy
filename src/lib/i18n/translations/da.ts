@@ -44,8 +44,9 @@ export const da: typeof sv = {
 
   // Ad button (optional reward ad)
   adButtonLabel: 'Reklame',
+  adButtonShort: 'Bonus',
   adButtonHint: 'Se en kort reklame — helt valgfrit!',
-  adPlaceholderMessage: 'Her vises en kort reklame (ikke tilsluttet endnu).',
+  adPlaceholderMessage: 'Her vises en kort reklame (ikke tilsluttet endnu).'
 
   newGame: 'Nyt spil',
   playerCount: 'Antal spillere',

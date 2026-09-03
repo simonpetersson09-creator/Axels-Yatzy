@@ -188,6 +188,7 @@ export const en: typeof sv = {
   friendStatsEmpty: 'Play with a friend to build up stats',
   friendStatsBack: 'Back',
   friendsListTitle: 'Friends list',
+  friendsListReminder: "Remember: it's only Yatzy. Divorce is unnecessary. 😄",
   myFriends: 'My friends',
   friendsMatches: 'matches',
   friendsTotalMatches: 'Matches played',

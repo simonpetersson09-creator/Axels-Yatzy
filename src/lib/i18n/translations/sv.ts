@@ -197,6 +197,7 @@ export const sv = {
   friendStatsEmpty: 'Spela med en vän för att bygga upp statistik',
   friendStatsBack: 'Tillbaka',
   friendsListTitle: 'Vänlista',
+  friendsListReminder: 'Kom ihåg: det är bara Yatzy. Skilsmässa är onödigt. 😄',
   myFriends: 'Mina vänner',
   friendsMatches: 'matcher',
   friendsTotalMatches: 'Spelade matcher',

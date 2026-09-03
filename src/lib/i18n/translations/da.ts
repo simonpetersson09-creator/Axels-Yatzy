@@ -188,6 +188,7 @@ export const da: typeof sv = {
   friendStatsEmpty: 'Spil med en ven for at opbygge statistik',
   friendStatsBack: 'Tilbage',
   friendsListTitle: 'Venneliste',
+  friendsListReminder: 'Husk: det er bare Yatzy. Skilsmisse er unødvendig. 😄',
   myFriends: 'Mine venner',
   friendsMatches: 'kampe',
   friendsTotalMatches: 'Spillede kampe',

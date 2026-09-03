@@ -188,6 +188,7 @@ export const fi: typeof sv = {
   friendStatsEmpty: 'Pelaa kaverin kanssa kerätäksesi tilastoja',
   friendStatsBack: 'Takaisin',
   friendsListTitle: 'Kaverilista',
+  friendsListReminder: 'Muista: tämä on vain Yatzy. Avioero on turhaa. 😄',
   myFriends: 'Kaverini',
   friendsMatches: 'ottelua',
   friendsTotalMatches: 'Pelatut pelit',

@@ -188,6 +188,7 @@ export const no: typeof sv = {
   friendStatsEmpty: 'Spill med en venn for å bygge opp statistikk',
   friendStatsBack: 'Tilbake',
   friendsListTitle: 'Venneliste',
+  friendsListReminder: 'Husk: det er bare Yatzy. Skilsmisse er unødvendig. 😄',
   myFriends: 'Vennene mine',
   friendsMatches: 'kamper',
   friendsTotalMatches: 'Spilte kamper',

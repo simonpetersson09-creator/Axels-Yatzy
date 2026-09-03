@@ -102,6 +102,11 @@ export interface WorldRank {
   games_played: number;
 }
 
+export interface WorldLeader {
+  country: string;
+  games_played: number;
+}
+
 export interface RankInfo {
   country: CountryRank | null;
   world: WorldRank | null;

@@ -81,6 +81,16 @@ export default function HomePage() {
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [showLangPicker]);
 
+  // Show the optional-ad reminder bubble every 3rd app open.
+  useEffect(() => {
+    const KEY = 'mrbyatzy_app_opens';
+    const count = (parseInt(localStorage.getItem(KEY) || '0', 10) || 0) + 1;
+    localStorage.setItem(KEY, String(count));
+    if (count % 3 === 0) {
+      setShowAdBubble(true);
+    }
+  }, []);
+
   // Sync server-side active multiplayer games into the local list so games
   // created while the app was closed (e.g. friend accepted an invite) show up.
   useEffect(() => {

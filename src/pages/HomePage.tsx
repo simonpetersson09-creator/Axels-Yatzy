@@ -281,7 +281,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="app-fixed-screen flex flex-col items-center px-6 pt-3 pb-24 safe-top safe-bottom relative overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden"
+      className="app-fixed-screen flex flex-col items-center px-6 py-3 safe-top safe-bottom relative overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden"
       style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
 
@@ -299,7 +299,7 @@ export default function HomePage() {
       />
 
       <motion.div
-        className="relative z-10 flex flex-col items-center gap-4 sm:gap-8 w-full max-w-sm my-auto"
+        className="relative z-10 flex flex-col items-center gap-4 sm:gap-8 w-full max-w-sm my-auto after:block after:w-full after:h-24 after:flex-none"
         variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } } }}
         initial="hidden"
         animate="show"

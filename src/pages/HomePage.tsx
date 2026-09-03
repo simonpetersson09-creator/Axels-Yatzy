@@ -25,6 +25,8 @@ import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
+import RateAppPrompt from '@/components/RateAppPrompt';
+import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -762,6 +764,13 @@ export default function HomePage() {
 
         </motion.div>
       </motion.div>
+
+      <AnimatePresence>
+        {showRatePrompt && (
+          <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
+        )}
+      </AnimatePresence>
     </div>
+
   );
 }

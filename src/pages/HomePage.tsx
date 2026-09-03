@@ -50,10 +50,7 @@ export default function HomePage() {
   const [worldLeader, setWorldLeader] = useState<WorldLeader | null>(null);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
-  const [arrowOffset, setArrowOffset] = useState<number | null>(null);
   const langPickerRef = useRef<HTMLDivElement>(null);
-  const adButtonRef = useRef<HTMLButtonElement>(null);
-  const bubbleRef = useRef<HTMLDivElement>(null);
 
   // Sync country + world ranking whenever the games_played count changes.
   useEffect(() => {
@@ -105,31 +102,6 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, [showAdBubble]);
 
-  // Keep the bubble arrow magnet-locked to the optional-ad button center.
-  useEffect(() => {
-    if (!showAdBubble) return;
-    const measure = () => {
-      const adBtn = adButtonRef.current;
-      const bubble = bubbleRef.current;
-      if (!adBtn || !bubble) return;
-      const container = bubble.offsetParent as HTMLElement | null;
-      if (!container) return;
-      const adRect = adBtn.getBoundingClientRect();
-      const bubbleRect = bubble.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-      const adCenter = adRect.left + adRect.width / 2 - containerRect.left;
-      const bubbleLeft = bubbleRect.left - containerRect.left;
-      setArrowOffset(adCenter - bubbleLeft);
-    };
-    measure();
-    // Re-measure after the entrance animation has settled.
-    const raf = requestAnimationFrame(measure);
-    window.addEventListener('resize', measure);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', measure);
-    };
-  }, [showAdBubble]);
 
   // Sync server-side active multiplayer games into the local list so games
   // created while the app was closed (e.g. friend accepted an invite) show up.
@@ -499,7 +471,6 @@ export default function HomePage() {
             <AnimatePresence>
               {showAdBubble && (
                 <motion.div
-                  ref={bubbleRef}
                   initial={{ opacity: 0, y: 12, scale: 0.92 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
@@ -517,12 +488,6 @@ export default function HomePage() {
                       {t('adBubbleText')}
                     </p>
                   </div>
-                  {/* Magnet tail locked to the optional-ad button center */}
-                  <div
-                    className="absolute -bottom-[9px] w-[18px] h-[18px] rounded-[4px] bg-popover/95 border-r border-b border-primary/30 shadow-[4px_4px_10px_rgba(0,0,0,0.25)]"
-                    style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0', rotate: '45deg' }}
-                    aria-hidden="true"
-                  />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -597,7 +562,6 @@ export default function HomePage() {
               </motion.button>
 
               <motion.button
-                ref={adButtonRef}
                 onClick={() => toast.info(t('adPlaceholderMessage'))}
                 className="flex flex-col items-center gap-1.5 group"
                 whileTap={{ scale: 0.92 }}

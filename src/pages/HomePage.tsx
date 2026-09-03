@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -23,7 +23,7 @@ import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, countryToFlag, countryName, type RankInfo } from '@/lib/country-rank';
-import { getLanguage } from '@/lib/profile';
+import { getLanguage, setLanguage, LANGUAGES, type Language } from '@/lib/profile';
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -41,13 +41,14 @@ const ONLINE_THRESHOLD_MS = 90_000; // 90s
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [activeGames, setActiveGames] = useState<ActiveGame[]>(() => getActiveGames());
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
-  const [showSettingsHint, setShowSettingsHint] = useState(false);
+  const [showLangPicker, setShowLangPicker] = useState(false);
+  const langPickerRef = useRef<HTMLDivElement>(null);
 
   // Sync country + world ranking whenever the games_played count changes.
   useEffect(() => {
@@ -67,33 +68,17 @@ export default function HomePage() {
     return () => window.removeEventListener('focus', onFocus);
   }, []);
 
-  // Show a one-time speech bubble pointing to Settings on the very first launch.
+  // Close language picker when tapping outside of it.
   useEffect(() => {
-    try {
-      const seen = localStorage.getItem('yatzy_seen_settings_hint');
-      if (!seen) setShowSettingsHint(true);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  // Auto-dismiss the hint after 5 seconds if the user doesn't tap it.
-  useEffect(() => {
-    if (!showSettingsHint) return;
-    const timer = setTimeout(() => {
-      dismissSettingsHint();
-    }, 5_000);
-    return () => clearTimeout(timer);
-  }, [showSettingsHint]);
-
-  const dismissSettingsHint = () => {
-    try {
-      localStorage.setItem('yatzy_seen_settings_hint', '1');
-    } catch {
-      /* ignore */
-    }
-    setShowSettingsHint(false);
-  };
+    if (!showLangPicker) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (langPickerRef.current && !langPickerRef.current.contains(e.target as Node)) {
+        setShowLangPicker(false);
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [showLangPicker]);
 
   // Sync server-side active multiplayer games into the local list so games
   // created while the app was closed (e.g. friend accepted an invite) show up.
@@ -458,35 +443,51 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
-          <AnimatePresence>
-            {showSettingsHint && (
-              <motion.div
-                className="flex justify-center"
-                initial={{ opacity: 0, y: -6, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-              >
-                <button
-                  onClick={() => {
-                    dismissSettingsHint();
-                    navigate('/settings');
-                  }}
-                  className="relative w-44 px-3 py-2 rounded-xl bg-popover text-popover-foreground text-xs font-medium text-center shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] border border-border/60 pointer-events-auto"
-                >
-                  {t('settingsHint')}
-                  <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-popover rotate-45 border-r border-b border-border/60" />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Icon-only secondary actions */}
           <motion.div
-            className="flex items-center justify-center gap-2.5"
+            className="flex items-center justify-center gap-2.5 relative"
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
+            <div className="relative" ref={langPickerRef}>
+              <motion.button
+                onClick={() => setShowLangPicker(v => !v)}
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center text-xl sm:text-2xl"
+                whileTap={{ scale: 0.92 }}
+                aria-label={t('selectLanguage')}
+              >
+                {LANGUAGES.find(l => l.code === lang)?.flag ?? '🌐'}
+              </motion.button>
+
+              <AnimatePresence>
+                {showLangPicker && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 max-h-48 overflow-y-auto rounded-2xl bg-popover border border-border/60 shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] z-50 py-1.5"
+                    style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain' }}
+                  >
+                    {LANGUAGES.map((l) => (
+                      <button
+                        key={l.code}
+                        onClick={() => {
+                          setLanguage(l.code as Language);
+                          setShowLangPicker(false);
+                        }}
+                        className={`w-full px-3 py-2 flex items-center gap-2.5 text-sm transition-colors ${lang === l.code ? 'bg-primary/15 text-primary font-semibold' : 'text-popover-foreground hover:bg-secondary/60'}`}
+                      >
+                        <span className="text-base">{l.flag}</span>
+                        <span className="flex-1 text-left">{l.label}</span>
+                        {lang === l.code && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <motion.button
               onClick={() => navigate('/settings')}
               className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center"

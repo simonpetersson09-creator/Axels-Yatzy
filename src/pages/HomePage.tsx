@@ -579,7 +579,7 @@ export default function HomePage() {
         </div>
 
         <motion.div
-          className="relative w-full space-y-2"
+          className="relative w-full space-y-2.5"
           variants={item}
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
@@ -672,19 +672,21 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-0.5 py-2 px-2 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-            <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
-              {t('worldLeaderLabel')}
-            </span>
-            <span className="text-2xl sm:text-3xl leading-none relative z-10" aria-hidden>
-              {worldLeader ? countryToFlag(worldLeader.country) : '🏳️'}
-            </span>
-            {worldLeader && (
-              <span className="text-[9px] font-medium text-muted-foreground relative z-10 text-center leading-tight">
-                {countryName(worldLeader.country, getLanguage())}
+          <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0 grid grid-cols-1 gap-2">
+            <div className="flex flex-col items-center justify-center gap-0.5 py-2 px-2 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
+                {t('worldLeaderLabel')}
               </span>
-            )}
+              <span className="text-2xl sm:text-3xl leading-none relative z-10" aria-hidden>
+                {worldLeader ? countryToFlag(worldLeader.country) : '🏳️'}
+              </span>
+              {worldLeader && (
+                <span className="text-[9px] font-medium text-muted-foreground relative z-10 text-center leading-tight">
+                  {countryName(worldLeader.country, getLanguage())}
+                </span>
+              )}
+            </div>
           </div>
 
         </motion.div>

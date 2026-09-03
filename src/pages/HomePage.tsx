@@ -515,24 +515,32 @@ export default function HomePage() {
                   </div>
                   {/* Magnet arrow locked to the optional-ad button center */}
                   <svg
-                    className="absolute top-full -translate-x-1/2 drop-shadow-[0_4px_6px_rgba(0,0,0,0.35)]"
+                    className="absolute top-full -translate-x-1/2"
                     style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0' }}
-                    width="28"
-                    height="26"
-                    viewBox="0 0 28 26"
+                    width="22"
+                    height="18"
+                    viewBox="0 0 22 18"
                     fill="none"
                     aria-hidden="true"
                   >
+                    {/* Soft shadow to lift the arrow off the background */}
+                    <path
+                      d="M3 2 L11 16 L19 2"
+                      stroke="rgba(0,0,0,0.35)"
+                      strokeWidth="3"
+                      strokeLinejoin="round"
+                      transform="translate(0, 2)"
+                    />
                     {/* Outer border matches the bubble's gold-tinted edge */}
                     <path
-                      d="M2 2 L14 24 L26 2"
+                      d="M3 2 L11 16 L19 2"
                       stroke="hsl(var(--primary) / 0.35)"
-                      strokeWidth="2.5"
+                      strokeWidth="2"
                       strokeLinejoin="round"
                     />
                     {/* Inner fill continues the bubble surface down to the tip */}
                     <path
-                      d="M4 3 L14 22.5 L24 3"
+                      d="M4.5 3 L11 14.5 L17.5 3"
                       fill="hsl(var(--popover) / 0.95)"
                     />
                   </svg>

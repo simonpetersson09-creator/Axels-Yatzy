@@ -39,7 +39,7 @@ export default function FriendsListPage() {
           </h1>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground px-4">
+        <p className="text-center text-[10px] text-muted-foreground px-4">
           {t('friendsListReminder')}
         </p>
 

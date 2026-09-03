@@ -299,7 +299,7 @@ export default function HomePage() {
       />
 
       <motion.div
-        className="relative z-10 flex flex-col items-center gap-4 sm:gap-8 w-full max-w-sm my-auto after:block after:w-full after:h-24 after:flex-none"
+        className="relative z-10 flex flex-col items-center gap-4 sm:gap-8 w-full max-w-sm my-auto after:absolute after:top-[calc(100%+7rem)] after:left-0 after:w-px after:h-px after:content-['']"
         variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } } }}
         initial="hidden"
         animate="show"

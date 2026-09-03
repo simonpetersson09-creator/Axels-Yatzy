@@ -213,6 +213,7 @@ export const fr: typeof sv = {
   rematchSentTo: 'Invitation revanche envoyée à {name}',
   sendingInvite: 'Envoi de l’invitation…',
   inviteToGame: 'Inviter à jouer',
+  inviteFriend: 'Inviter un ami',
   inviteSent: 'Invitation envoyée',
   minimize: 'Réduire',
   inviteWaitingTitle: 'En attente de {name}…',

@@ -216,6 +216,7 @@ export const da: typeof sv = {
   rematchSentTo: 'Omkamp-invitation sendt til {name}',
   sendingInvite: 'Sender invitation…',
   inviteToGame: 'Invitér til spil',
+  inviteFriend: 'Invitér ven',
   inviteSent: 'Invitation sendt',
   minimize: 'Minimer',
   inviteWaitingTitle: 'Venter på {name}…',

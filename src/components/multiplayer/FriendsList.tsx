@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Send, Loader2, Minimize } from 'lucide-react';
+import { Users, Loader2, Minimize } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
@@ -398,13 +398,15 @@ export function FriendsList() {
                     }
                   }}
                   disabled={isSending || !!pendingInvite}
-                  className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition flex items-center justify-center disabled:opacity-60"
-                  aria-label={alreadyInvited ? t('inviteSent') : t('inviteToGame')}
+                  className="flex-shrink-0 h-8 px-2.5 rounded-lg bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition flex items-center justify-center disabled:opacity-60"
+                  aria-label={alreadyInvited ? t('inviteSent') : t('inviteFriend')}
                 >
                   {isSending ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
-                    <Send className="w-3.5 h-3.5" />
+                    <span className="text-[10px] font-bold whitespace-nowrap">
+                      {alreadyInvited ? t('inviteSent') : t('inviteFriend')}
+                    </span>
                   )}
                 </button>
               </div>

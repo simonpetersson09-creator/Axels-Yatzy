@@ -480,15 +480,20 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
-          <motion.button
-            onClick={() => navigate('/multiplayer')}
-            className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow"
-            whileTap={{ scale: 0.97 }}
-            variants={item}
-            transition={{ duration: 0.45, ease: 'easeOut' }}
-          >
-            🌐 <span className="truncate">{t('playWithFriends')}</span>
-          </motion.button>
+          <div className="flex items-center gap-3">
+            <motion.button
+              onClick={() => navigate('/multiplayer')}
+              className="flex-1 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow"
+              whileTap={{ scale: 0.97 }}
+              variants={item}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+            >
+              🌐 <span className="truncate">{t('playWithFriends')}</span>
+            </motion.button>
+
+            {/* Invisible spacer matching the ad-ring width so this button aligns with Quick Match */}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0" aria-hidden="true" />
+          </div>
 
           <motion.div
             className="grid grid-cols-2 gap-2.5"

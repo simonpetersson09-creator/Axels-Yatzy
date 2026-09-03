@@ -546,7 +546,7 @@ export default function HomePage() {
                       exit={{ opacity: 0, y: 8, scale: 0.95 }}
                       transition={{ duration: 0.3, ease: 'easeOut' }}
                       onClick={() => setShowAdBubble(false)}
-                      className="absolute bottom-[calc(100%+6px)] right-0 z-50 w-[180px] px-3 py-2.5 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
+                      className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 z-50 w-[180px] px-3 py-2.5 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
                       aria-label={t('adBubbleText')}
                     >
                       <div className="flex items-center gap-2.5 text-left">

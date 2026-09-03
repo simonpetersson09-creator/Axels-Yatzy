@@ -25,6 +25,8 @@ import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
+import RateAppPrompt from '@/components/RateAppPrompt';
+import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
 
 const item = {
   hidden: { opacity: 0, y: 16 },
@@ -57,6 +59,32 @@ export default function HomePage() {
   const [adLoading, setAdLoading] = useState(false);
   const adInFlightRef = useRef(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
+  const [showRatePrompt, setShowRatePrompt] = useState(false);
+
+  // Ask for a rating once the player has finished 5 matches.
+  useEffect(() => {
+    if (showRatePrompt) return;
+    if (shouldShowRatePrompt(stats.gamesPlayed)) {
+      const timer = setTimeout(() => setShowRatePrompt(true), 700);
+      return () => clearTimeout(timer);
+    }
+  }, [stats.gamesPlayed, showRatePrompt]);
+
+  const handleRateNow = async () => {
+    setShowRatePrompt(false);
+    completeRatePrompt();
+    trackEvent('rate_prompt_accepted');
+    const ok = await requestAppReview();
+    if (!ok) toast.info(t('adOnlyInApp'));
+  };
+
+  const handleRateLater = () => {
+    setShowRatePrompt(false);
+    snoozeRatePrompt(stats.gamesPlayed);
+    trackEvent('rate_prompt_later');
+  };
+
+
 
   // Preload i bakgrunden – kan aldrig trigga visning.
   useEffect(() => {
@@ -762,6 +790,13 @@ export default function HomePage() {
 
         </motion.div>
       </motion.div>
+
+      <AnimatePresence>
+        {showRatePrompt && (
+          <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
+        )}
+      </AnimatePresence>
     </div>
+
   );
 }

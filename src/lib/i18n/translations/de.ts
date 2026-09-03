@@ -54,6 +54,12 @@ export const de: typeof sv = {
   adBubbleText: 'Hilf uns, Mr.B. Yatzy kostenlos zu halten. Wenn du möchtest, darfst du gerne eine kurze Werbung ansehen.',
   adComingSoon: '(Kommande)',
 
+  // Rate app
+  rateTitle: "Gefällt dir Mr.B. Yatzy?",
+  rateBody: "Du hast 5 Partien gespielt! Eine Bewertung hilft uns sehr. 💛",
+  rateNow: "Jetzt bewerten",
+  rateLater: "Später",
+
   newGame: 'Neues Spiel',
   playerCount: 'Anzahl Spieler',
   playerNames: 'Spielernamen',

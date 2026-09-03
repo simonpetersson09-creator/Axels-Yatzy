@@ -56,6 +56,12 @@ export const sv = {
   adBubbleText: 'Hjälp oss hålla Mr.B. Yatzy gratis. Om du vill får du gärna se en kort annons.',
   adComingSoon: '(Kommande)',
 
+  // Rate app
+  rateTitle: "Gillar du Mr.B. Yatzy?",
+  rateBody: "Du har spelat 5 matcher! Ett betyg hjälper oss enormt. 💛",
+  rateNow: "Ge betyg",
+  rateLater: "Senare",
+
   // Setup
   newGame: 'Nytt spel',
   playerCount: 'Antal spelare',

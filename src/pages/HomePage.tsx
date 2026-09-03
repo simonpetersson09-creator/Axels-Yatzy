@@ -443,21 +443,22 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
-          {/* Icon-only secondary actions */}
+          {/* Premium round secondary actions */}
           <motion.div
-            className="flex items-center justify-center gap-2.5 relative"
+            className="flex items-start justify-center gap-5 sm:gap-6"
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
-            <div className="relative" ref={langPickerRef}>
+            <div className="relative flex flex-col items-center gap-2 group" ref={langPickerRef}>
               <motion.button
                 onClick={() => setShowLangPicker(v => !v)}
-                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center text-xl sm:text-2xl"
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('selectLanguage')}
               >
-                {LANGUAGES.find(l => l.code === lang)?.flag ?? '🌐'}
+                <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-primary/90" />
               </motion.button>
+              <span className="text-[10px] font-medium tracking-widest text-primary/60 uppercase">{t('language')}</span>
 
               <AnimatePresence>
                 {showLangPicker && (
@@ -490,44 +491,39 @@ export default function HomePage() {
 
             <motion.button
               onClick={() => navigate('/settings')}
-              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center"
+              className="flex flex-col items-center gap-2 group"
               whileTap={{ scale: 0.92 }}
               aria-label={t('goSettings')}
             >
-              ⚙️
-            </motion.button>
-            <motion.button
-              onClick={() => navigate('/friends')}
-              className="h-12 sm:h-14 px-4 sm:px-5 rounded-full bg-gradient-to-r from-game-info/25 to-game-info/10 text-game-info border border-game-info/30 shadow-[0_4px_16px_hsl(var(--game-info)/0.18)] active:shadow-[0_2px_8px_hsl(var(--game-info)/0.12)] transition-shadow flex items-center justify-center gap-2"
-              whileTap={{ scale: 0.95 }}
-              aria-label={t('friendsListTitle')}
-            >
-              👥 <span className="font-display font-semibold text-sm sm:text-base">{t('friends')}</span>
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+                <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-primary/90" />
+              </div>
+              <span className="text-[10px] font-medium tracking-widest text-primary/60 uppercase">{t('settings')}</span>
             </motion.button>
 
-            {/* Optional reward ad button */}
-            <motion.div
-              className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 shrink-0"
-              variants={item}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
+            <motion.button
+              onClick={() => navigate('/friends')}
+              className="flex flex-col items-center gap-2 group"
+              whileTap={{ scale: 0.92 }}
+              aria-label={t('friendsListTitle')}
             >
-              <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full scale-150 pointer-events-none" />
-              <motion.button
-                onClick={() => toast.info(t('adPlaceholderMessage'))}
-                className="group relative flex items-center justify-center w-full h-full rounded-full bg-background border-2 border-primary/80 shadow-[0_0_12px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_22px_hsl(var(--primary)/0.5)] transition-all overflow-hidden"
-                whileTap={{ scale: 0.92 }}
-                aria-label={t('adButtonLabel')}
-              >
-                <div className="absolute inset-1 rounded-full border border-primary/20" />
-                <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-primary fill-current drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-30deg] group-hover:left-[100%] transition-all duration-700" />
-              </motion.button>
-            </motion.div>
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary/90" />
+              </div>
+              <span className="text-[10px] font-medium tracking-widest text-primary/60 uppercase">{t('friends')}</span>
+            </motion.button>
+
+            <motion.button
+              onClick={() => toast.info(t('adPlaceholderMessage'))}
+              className="flex flex-col items-center gap-2 group"
+              whileTap={{ scale: 0.92 }}
+              aria-label={t('adButtonLabel')}
+            >
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-primary to-primary/70 border-2 border-primary/80 flex items-center justify-center shadow-[0_0_15px_hsl(var(--primary)/0.3)] group-hover:scale-105 transition-all duration-300">
+                <Play className="w-5 h-5 sm:w-6 sm:h-6 text-background fill-current" />
+              </div>
+              <span className="text-[10px] font-bold tracking-widest text-primary uppercase">{t('adButtonShort')}</span>
+            </motion.button>
           </motion.div>
 
 

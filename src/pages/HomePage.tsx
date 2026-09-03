@@ -452,7 +452,7 @@ export default function HomePage() {
             <div className="relative flex flex-col items-center gap-1.5 group" ref={langPickerRef}>
               <motion.button
                 onClick={() => setShowLangPicker(v => !v)}
-                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
+                className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('selectLanguage')}
               >
@@ -495,7 +495,7 @@ export default function HomePage() {
               whileTap={{ scale: 0.92 }}
               aria-label={t('goSettings')}
             >
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+              <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
               <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('settings')}</span>
@@ -507,7 +507,7 @@ export default function HomePage() {
               whileTap={{ scale: 0.92 }}
               aria-label={t('friendsListTitle')}
             >
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+              <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
                 <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
               <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
@@ -519,7 +519,7 @@ export default function HomePage() {
               whileTap={{ scale: 0.92 }}
               aria-label={t('adButtonLabel')}
             >
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+              <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
                 <Play className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
               <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight inline-flex flex-col items-center justify-start h-5">{t('adButtonShort')}</span>

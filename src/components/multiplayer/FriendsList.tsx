@@ -38,6 +38,8 @@ interface OpponentSummary {
   losses: number;
   draws: number;
   myHigh: number;
+  myPoints: number;
+  oppPoints: number;
   lastMatch: FriendMatchRow | null;
   ongoingMatch: FriendMatchRow | null;
   mergedSourceIds: string[];
@@ -254,6 +256,7 @@ export function FriendsList() {
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
       const isOngoing = r.status === 'ongoing';
       const myScore = (iAmP1 ? r.player_1_score : r.player_2_score) ?? 0;
+      const oppScore = (iAmP1 ? r.player_2_score : r.player_1_score) ?? 0;
       const won = !isOngoing && r.winner_id === myId;
       const lost = !isOngoing && r.winner_id !== null && r.winner_id !== myId;
       const draw = !isOngoing && r.winner_id === null;
@@ -263,6 +266,8 @@ export function FriendsList() {
         opponentName: oppName,
         matches: 0, wins: 0, losses: 0, draws: 0,
         myHigh: 0,
+        myPoints: 0,
+        oppPoints: 0,
         lastMatch: r,
         ongoingMatch: null,
         mergedSourceIds: [],
@@ -277,11 +282,14 @@ export function FriendsList() {
         if (lost) cur.losses += 1;
         if (draw) cur.draws += 1;
         if (myScore > cur.myHigh) cur.myHigh = myScore;
+        cur.myPoints += myScore;
+        cur.oppPoints += oppScore;
         if (cur.matches === 1) {
           cur.lastMatch = r;
           cur.opponentName = oppName;
         }
       }
+
 
       if (rawOppId !== oppId) {
         let set = sourceTracker.get(oppId);
@@ -302,6 +310,8 @@ export function FriendsList() {
         opponentName: kf.name,
         matches: 0, wins: 0, losses: 0, draws: 0,
         myHigh: 0,
+        myPoints: 0,
+        oppPoints: 0,
         lastMatch: null,
         ongoingMatch: null,
         mergedSourceIds: [],
@@ -409,10 +419,13 @@ export function FriendsList() {
                   )}
                 </button>
               </div>
-              {o.matches > 0 && (
+              {o.matches > 0 && (o.myPoints > 0 || o.oppPoints > 0) && (
                 <div className="mt-1.5 text-center">
                   {(() => {
-                    const diff = Math.round(((o.wins - o.losses) / o.matches) * 100);
+                    // Retroaktiv jämförelse: summa av alla poäng i alla spelade matcher
+                    const diff = o.oppPoints > 0
+                      ? Math.round(((o.myPoints - o.oppPoints) / o.oppPoints) * 100)
+                      : 100;
                     return (
                       <span className={`text-[10px] font-bold ${
                         diff > 0 ? 'text-game-success'
@@ -429,6 +442,7 @@ export function FriendsList() {
                   })()}
                 </div>
               )}
+
 
               {o.ongoingMatch ? (
                 <div className="mt-2 pt-2 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">

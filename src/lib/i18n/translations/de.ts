@@ -46,7 +46,7 @@ export const de: typeof sv = {
   adButtonLabel: 'Werbung',
   adButtonShort: 'Bonus',
   adButtonHint: 'Werbung ansehen — völlig freiwillig!',
-  adPlaceholderMessage: 'Hier würde eine kurze Werbung erscheinen (noch nicht verbunden).'
+  adPlaceholderMessage: 'Hier würde eine kurze Werbung erscheinen (noch nicht verbunden).',
 
   newGame: 'Neues Spiel',
   playerCount: 'Anzahl Spieler',

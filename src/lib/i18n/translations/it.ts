@@ -46,7 +46,7 @@ export const it: typeof sv = {
   adButtonLabel: 'Pubblicità',
   adButtonShort: 'Bonus',
   adButtonHint: 'Guarda uno spot breve — del tutto opzionale!',
-  adPlaceholderMessage: 'Qui apparirebbe uno spot breve (non ancora collegato).'
+  adPlaceholderMessage: 'Qui apparirebbe uno spot breve (non ancora collegato).',
 
   newGame: 'Nuova partita',
   playerCount: 'Numero di giocatori',

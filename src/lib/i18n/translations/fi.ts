@@ -46,7 +46,7 @@ export const fi: typeof sv = {
   adButtonLabel: 'Mainos',
   adButtonShort: 'Bonus',
   adButtonHint: 'Katso lyhyt mainos — täysin vapaaehtoista!',
-  adPlaceholderMessage: 'Tässä näytettäisiin lyhyt mainos (ei vielä kytketty).'
+  adPlaceholderMessage: 'Tässä näytettäisiin lyhyt mainos (ei vielä kytketty).',
 
   newGame: 'Uusi peli',
   playerCount: 'Pelaajien määrä',

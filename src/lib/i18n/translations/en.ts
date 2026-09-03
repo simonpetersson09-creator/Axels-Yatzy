@@ -46,7 +46,7 @@ export const en: typeof sv = {
   adButtonLabel: 'Ad',
   adButtonShort: 'Bonus',
   adButtonHint: 'Watch a short ad — completely optional!',
-  adPlaceholderMessage: 'A short ad would appear here (not wired yet).'
+  adPlaceholderMessage: 'A short ad would appear here (not wired yet).',
 
   newGame: 'New game',
   playerCount: 'Number of players',

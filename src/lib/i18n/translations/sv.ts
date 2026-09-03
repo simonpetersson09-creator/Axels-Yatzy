@@ -48,7 +48,7 @@ export const sv = {
   adButtonLabel: 'Annons',
   adButtonShort: 'Bonus',
   adButtonHint: 'Se en kort annons — helt valfritt!',
-  adPlaceholderMessage: 'Här visas en kort annons (inte kopplad än).'
+  adPlaceholderMessage: 'Här visas en kort annons (inte kopplad än).',
 
   // Setup
   newGame: 'Nytt spel',

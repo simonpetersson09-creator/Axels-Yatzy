@@ -47,7 +47,7 @@ export const es: typeof sv = {
   adButtonShort: 'Anuncio voluntario',
   adButtonHint: 'Ver un anuncio corto — totalmente opcional.',
   adPlaceholderMessage: 'Aquí aparecería un anuncio corto (aún no conectado).',
-  adBubbleText: 'Ayúdanos a mantener Mr.B. Yatzy gratis. Si quieres, puedes ver un anuncio corto. 💛',
+  adBubbleText: 'Ayúdanos a mantener Mr.B. Yatzy gratis. Si quieres, puedes ver un anuncio corto.',
 
   newGame: 'Nueva partida',
   playerCount: 'Número de jugadores',

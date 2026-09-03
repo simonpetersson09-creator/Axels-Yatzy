@@ -47,7 +47,7 @@ export const en: typeof sv = {
   adButtonShort: 'Voluntary ad',
   adButtonHint: 'Watch a short ad — completely optional!',
   adPlaceholderMessage: 'A short ad would appear here (not wired yet).',
-  adBubbleText: 'Help us keep Mr.B. Yatzy free. If you\'d like, you\'re welcome to watch a short ad. 💛',
+  adBubbleText: 'Help us keep Mr.B. Yatzy free. If you\'d like, you\'re welcome to watch a short ad.',
 
   newGame: 'New game',
   playerCount: 'Number of players',

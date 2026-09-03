@@ -48,6 +48,7 @@ export default function HomePage() {
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
   const [showLangPicker, setShowLangPicker] = useState(false);
+  const [showAdBubble, setShowAdBubble] = useState(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
 
   // Sync country + world ranking whenever the games_played count changes.
@@ -79,6 +80,16 @@ export default function HomePage() {
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [showLangPicker]);
+
+  // Show the optional-ad reminder bubble every 3rd app open.
+  useEffect(() => {
+    const KEY = 'mrbyatzy_app_opens';
+    const count = (parseInt(localStorage.getItem(KEY) || '0', 10) || 0) + 1;
+    localStorage.setItem(KEY, String(count));
+    if (count % 3 === 0) {
+      setShowAdBubble(true);
+    }
+  }, []);
 
   // Sync server-side active multiplayer games into the local list so games
   // created while the app was closed (e.g. friend accepted an invite) show up.
@@ -513,17 +524,35 @@ export default function HomePage() {
               <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
             </motion.button>
 
-            <motion.button
-              onClick={() => toast.info(t('adPlaceholderMessage'))}
-              className="flex flex-col items-center gap-1.5 group"
-              whileTap={{ scale: 0.92 }}
-              aria-label={t('adButtonLabel')}
-            >
-              <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                <Play className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
-              </div>
-              <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight inline-flex flex-col items-center justify-start h-5">{t('adButtonShort')}</span>
-            </motion.button>
+            <div className="relative flex flex-col items-center">
+              <AnimatePresence>
+                {showAdBubble && (
+                  <motion.button
+                    initial={{ opacity: 0, y: -6, scale: 0.92 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    onClick={() => setShowAdBubble(false)}
+                    className="absolute top-[calc(100%+10px)] right-0 z-50 min-w-[220px] max-w-[260px] px-3.5 py-2.5 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-950 text-[11px] font-semibold text-center leading-snug shadow-[0_6px_20px_rgba(0,0,0,0.25)] border border-amber-300/60 cursor-pointer"
+                    aria-label={t('adBubbleText')}
+                  >
+                    {t('adBubbleText')}
+                    <span className="absolute bottom-full right-[17px] -mb-0.5 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[7px] border-b-amber-200" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+              <motion.button
+                onClick={() => toast.info(t('adPlaceholderMessage'))}
+                className="flex flex-col items-center gap-1.5 group"
+                whileTap={{ scale: 0.92 }}
+                aria-label={t('adButtonLabel')}
+              >
+                <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+                  <Play className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                </div>
+                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight inline-flex flex-col items-center justify-start h-5">{t('adButtonShort')}</span>
+              </motion.button>
+            </div>
           </motion.div>
 
 

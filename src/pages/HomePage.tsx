@@ -121,9 +121,13 @@ export default function HomePage() {
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [showLangPicker]);
 
-  // Show the optional-ad reminder bubble every 3rd app open.
+  // Show the optional-ad reminder bubble every 3rd actual app open
+  // (counted once per app session, not on every HomePage remount).
   useEffect(() => {
     const KEY = 'mrbyatzy_app_opens';
+    const SESSION_FLAG = 'mrbyatzy_open_counted';
+    if (sessionStorage.getItem(SESSION_FLAG)) return;
+    sessionStorage.setItem(SESSION_FLAG, '1');
     const count = (parseInt(localStorage.getItem(KEY) || '0', 10) || 0) + 1;
     localStorage.setItem(KEY, String(count));
     if (count % 3 === 0) {

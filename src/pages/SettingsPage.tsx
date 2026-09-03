@@ -233,36 +233,8 @@ export default function SettingsPage() {
           </Card>
         </Section>
 
-        {/* Language */}
-        <Section title={t('language')}>
-          <Card>
-            {LANGUAGES.map((l, idx) => (
-              <motion.button
-                key={l.code}
-                onClick={() => changeLang(l.code)}
-                className={`w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors ${
-                  idx > 0 ? 'border-t border-border/40' : ''
-                }`}
-                whileTap={{ scale: 0.985 }}
-              >
-                <span className="text-xl leading-none">{l.flag}</span>
-                <span className="flex-1 text-sm font-medium">{l.label}</span>
-                <AnimatePresence>
-                  {lang === l.code && (
-                    <motion.span
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      className="w-6 h-6 rounded-full bg-primary flex items-center justify-center"
-                    >
-                      <Check className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={3} />
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            ))}
-          </Card>
-        </Section>
+
+
 
         {/* Country */}
         <Section title={t('countrySection')}>

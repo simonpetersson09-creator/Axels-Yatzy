@@ -514,14 +514,28 @@ export default function HomePage() {
                     </p>
                   </div>
                   {/* Magnet arrow locked to the optional-ad button center */}
-                  <span
-                    className="absolute top-full w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-t-[12px] border-t-primary/30 -translate-x-1/2 rotate-12 origin-top"
+                  <svg
+                    className="absolute top-full -translate-x-1/2 drop-shadow-[0_4px_6px_rgba(0,0,0,0.35)]"
                     style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0' }}
-                  />
-                  <span
-                    className="absolute top-full -mt-[1px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[11px] border-t-popover/95 -translate-x-1/2 rotate-12 origin-top"
-                    style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0' }}
-                  />
+                    width="28"
+                    height="26"
+                    viewBox="0 0 28 26"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    {/* Outer border matches the bubble's gold-tinted edge */}
+                    <path
+                      d="M2 2 L14 24 L26 2"
+                      stroke="hsl(var(--primary) / 0.35)"
+                      strokeWidth="2.5"
+                      strokeLinejoin="round"
+                    />
+                    {/* Inner fill continues the bubble surface down to the tip */}
+                    <path
+                      d="M4 3 L14 22.5 L24 3"
+                      fill="hsl(var(--popover) / 0.95)"
+                    />
+                  </svg>
                 </motion.div>
               )}
             </AnimatePresence>

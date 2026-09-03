@@ -216,6 +216,7 @@ export const es: typeof sv = {
   rematchSentTo: 'Invitación de revancha enviada a {name}',
   sendingInvite: 'Enviando invitación…',
   inviteToGame: 'Invitar a la partida',
+  inviteFriend: 'Invitar amigo',
   inviteSent: 'Invitación enviada',
   minimize: 'Minimizar',
   inviteWaitingTitle: 'Esperando a {name}…',

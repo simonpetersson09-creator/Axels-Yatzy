@@ -225,6 +225,7 @@ export const sv = {
   rematchSentTo: 'Revanschinbjudan skickad till {name}',
   sendingInvite: 'Skickar inbjudan…',
   inviteToGame: 'Bjud in till spel',
+  inviteFriend: 'Bjud in vän',
   inviteSent: 'Inbjudan skickad',
   minimize: 'Minimera',
   inviteWaitingTitle: 'Väntar på {name}…',

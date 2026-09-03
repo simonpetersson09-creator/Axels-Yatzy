@@ -216,6 +216,7 @@ export const fi: typeof sv = {
   rematchSentTo: 'Uusintakutsu lähetetty pelaajalle {name}',
   sendingInvite: 'Lähetetään kutsua…',
   inviteToGame: 'Kutsu peliin',
+  inviteFriend: 'Kutsu kaveri',
   inviteSent: 'Kutsu lähetetty',
   minimize: 'Pienennä',
   inviteWaitingTitle: 'Odotetaan pelaajaa {name}…',

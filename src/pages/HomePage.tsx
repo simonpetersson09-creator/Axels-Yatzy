@@ -576,7 +576,7 @@ export default function HomePage() {
               <motion.button
                 onClick={handleOptionalAdClick}
                 disabled={adLoading || AD_BUTTON_LOCKED}
-                className={`relative flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'} disabled:opacity-60`}
+                className="relative flex flex-col items-center gap-1.5 group disabled:opacity-60"
                 whileTap={{ scale: AD_BUTTON_LOCKED ? 1 : 0.92 }}
                 aria-label={t('adButtonLabel')}
               >
@@ -603,7 +603,7 @@ export default function HomePage() {
                   )}
                 </AnimatePresence>
 
-                <div className="relative">
+                <div className={`relative transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>
                   {showAdBubble && !AD_BUTTON_LOCKED && (
                     <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
                   )}
@@ -611,9 +611,9 @@ export default function HomePage() {
                     <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
                   </div>
                 </div>
-                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight whitespace-nowrap">{t('adButtonShort')}</span>
+                <span className={`text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight whitespace-nowrap transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adButtonShort')}</span>
                 {AD_BUTTON_LOCKED && (
-                  <span className="text-[7px] font-medium text-destructive text-center leading-none -mt-1">{t('adComingSoon')}</span>
+                  <span className={`text-[7px] font-medium text-destructive text-center leading-none -mt-1 transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adComingSoon')}</span>
                 )}
               </motion.button>
             </motion.div>

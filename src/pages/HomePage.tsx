@@ -449,16 +449,16 @@ export default function HomePage() {
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
-            <div className="relative flex flex-col items-center gap-2 group" ref={langPickerRef}>
+            <div className="relative flex flex-col items-center gap-1.5 group" ref={langPickerRef}>
               <motion.button
                 onClick={() => setShowLangPicker(v => !v)}
-                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('selectLanguage')}
               >
-                <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-primary/90" />
+                <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </motion.button>
-              <span className="text-[10px] font-medium tracking-widest text-primary/60 uppercase">{t('language')}</span>
+              <span className="text-[9px] font-medium tracking-widest text-primary/60 uppercase">{t('language')}</span>
 
               <AnimatePresence>
                 {showLangPicker && (
@@ -491,38 +491,38 @@ export default function HomePage() {
 
             <motion.button
               onClick={() => navigate('/settings')}
-              className="flex flex-col items-center gap-2 group"
+              className="flex flex-col items-center gap-1.5 group"
               whileTap={{ scale: 0.92 }}
               aria-label={t('goSettings')}
             >
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-primary/90" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
-              <span className="text-[10px] font-medium tracking-widest text-primary/60 uppercase">{t('settings')}</span>
+              <span className="text-[9px] font-medium tracking-widest text-primary/60 uppercase">{t('settings')}</span>
             </motion.button>
 
             <motion.button
               onClick={() => navigate('/friends')}
-              className="flex flex-col items-center gap-2 group"
+              className="flex flex-col items-center gap-1.5 group"
               whileTap={{ scale: 0.92 }}
               aria-label={t('friendsListTitle')}
             >
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary/90" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
-              <span className="text-[10px] font-medium tracking-widest text-primary/60 uppercase">{t('friends')}</span>
+              <span className="text-[9px] font-medium tracking-widest text-primary/60 uppercase">{t('friends')}</span>
             </motion.button>
 
             <motion.button
               onClick={() => toast.info(t('adPlaceholderMessage'))}
-              className="flex flex-col items-center gap-2 group"
+              className="flex flex-col items-center gap-1.5 group"
               whileTap={{ scale: 0.92 }}
               aria-label={t('adButtonLabel')}
             >
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-primary to-primary/70 border-2 border-primary/80 flex items-center justify-center shadow-[0_0_15px_hsl(var(--primary)/0.3)] group-hover:scale-105 transition-all duration-300">
-                <Play className="w-5 h-5 sm:w-6 sm:h-6 text-background fill-current" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-primary to-primary/70 border-2 border-primary/80 flex items-center justify-center shadow-[0_0_15px_hsl(var(--primary)/0.3)] group-hover:scale-105 transition-all duration-300">
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 text-background fill-current" />
               </div>
-              <span className="text-[10px] font-bold tracking-widest text-primary uppercase">{t('adButtonShort')}</span>
+              <span className="text-[9px] font-bold tracking-widest text-primary uppercase">{t('adButtonShort')}</span>
             </motion.button>
           </motion.div>
 

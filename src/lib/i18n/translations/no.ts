@@ -31,6 +31,7 @@ export const no: typeof sv = {
   countryRankLabel: 'Din rangering',
   countryRankLabelFull: 'Din rangering i {country}',
   worldRankLabelFull: 'Din rangering i verden',
+  worldLeaderLabel: 'Verdensleder',
   countryRankIn: 'i',
   countryRankPlayers: 'spillere',
   countrySection: 'Land',

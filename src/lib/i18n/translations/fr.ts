@@ -31,6 +31,7 @@ export const fr: typeof sv = {
   countryRankLabel: 'Votre classement',
   countryRankLabelFull: 'Votre classement en {country}',
   worldRankLabelFull: 'Votre classement dans le monde',
+  worldLeaderLabel: 'Leader mondial',
   countryRankIn: 'en',
   countryRankPlayers: 'joueurs',
   countrySection: 'Pays',

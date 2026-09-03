@@ -31,6 +31,7 @@ export const it: typeof sv = {
   countryRankLabel: 'Il tuo rank',
   countryRankLabelFull: 'Il tuo rank in {country}',
   worldRankLabelFull: 'Il tuo rank nel mondo',
+  worldLeaderLabel: 'Leader mondiale',
   countryRankIn: 'in',
   countryRankPlayers: 'giocatori',
   countrySection: 'Paese',

@@ -33,6 +33,7 @@ export const sv = {
   countryRankLabel: 'Din placering',
   countryRankLabelFull: 'Din placering i {country}',
   worldRankLabelFull: 'Din placering i världen',
+  worldLeaderLabel: 'Världsledare',
   countryRankIn: 'i',
   countryRankPlayers: 'spelare',
   countrySection: 'Land',

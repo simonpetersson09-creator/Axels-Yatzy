@@ -31,6 +31,7 @@ export const fi: typeof sv = {
   countryRankLabel: 'Sijoituksesi',
   countryRankLabelFull: 'Sijoituksesi maassa {country}',
   worldRankLabelFull: 'Sijoituksesi maailmassa',
+  worldLeaderLabel: 'Maailman johtaja',
   countryRankIn: 'maassa',
   countryRankPlayers: 'pelaajaa',
   countrySection: 'Maa',

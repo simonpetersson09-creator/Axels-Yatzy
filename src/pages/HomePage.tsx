@@ -47,6 +47,7 @@ export default function HomePage() {
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
+  const [worldLeader, setWorldLeader] = useState<WorldLeader | null>(null);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
   const [arrowOffset, setArrowOffset] = useState<number | null>(null);

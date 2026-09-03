@@ -495,6 +495,7 @@ export default function HomePage() {
             <AnimatePresence>
               {showAdBubble && (
                 <motion.div
+                  ref={bubbleRef}
                   initial={{ opacity: 0, y: 12, scale: 0.92 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
@@ -512,9 +513,15 @@ export default function HomePage() {
                       {t('adBubbleText')}
                     </p>
                   </div>
-                  {/* Longer, slightly diagonal arrow touching the optional-ad button */}
-                  <span className="absolute top-full left-[87.5%] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-t-[12px] border-t-primary/30 -translate-x-1/2 rotate-12 origin-top" />
-                  <span className="absolute top-full left-[87.5%] -mt-[1px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[11px] border-t-popover/95 -translate-x-1/2 rotate-12 origin-top" />
+                  {/* Magnet arrow locked to the optional-ad button center */}
+                  <span
+                    className="absolute top-full w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-t-[12px] border-t-primary/30 -translate-x-1/2 rotate-12 origin-top"
+                    style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0' }}
+                  />
+                  <span
+                    className="absolute top-full -mt-[1px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[11px] border-t-popover/95 -translate-x-1/2 rotate-12 origin-top"
+                    style={{ left: arrowOffset ?? '87.5%', translate: '-50% 0' }}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>

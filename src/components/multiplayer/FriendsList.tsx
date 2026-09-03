@@ -256,6 +256,7 @@ export function FriendsList() {
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
       const isOngoing = r.status === 'ongoing';
       const myScore = (iAmP1 ? r.player_1_score : r.player_2_score) ?? 0;
+      const oppScore = (iAmP1 ? r.player_2_score : r.player_1_score) ?? 0;
       const won = !isOngoing && r.winner_id === myId;
       const lost = !isOngoing && r.winner_id !== null && r.winner_id !== myId;
       const draw = !isOngoing && r.winner_id === null;
@@ -265,6 +266,8 @@ export function FriendsList() {
         opponentName: oppName,
         matches: 0, wins: 0, losses: 0, draws: 0,
         myHigh: 0,
+        myPoints: 0,
+        oppPoints: 0,
         lastMatch: r,
         ongoingMatch: null,
         mergedSourceIds: [],
@@ -279,11 +282,14 @@ export function FriendsList() {
         if (lost) cur.losses += 1;
         if (draw) cur.draws += 1;
         if (myScore > cur.myHigh) cur.myHigh = myScore;
+        cur.myPoints += myScore;
+        cur.oppPoints += oppScore;
         if (cur.matches === 1) {
           cur.lastMatch = r;
           cur.opponentName = oppName;
         }
       }
+
 
       if (rawOppId !== oppId) {
         let set = sourceTracker.get(oppId);

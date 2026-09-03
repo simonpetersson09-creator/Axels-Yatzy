@@ -482,40 +482,43 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
+          <AnimatePresence>
+            {showSettingsHint && (
+              <motion.div
+                className="flex justify-center"
+                initial={{ opacity: 0, y: -6, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+              >
+                <button
+                  onClick={() => {
+                    dismissSettingsHint();
+                    navigate('/settings');
+                  }}
+                  className="relative w-44 px-3 py-2 rounded-xl bg-popover text-popover-foreground text-xs font-medium text-center shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] border border-border/60 pointer-events-auto"
+                >
+                  {t('settingsHint')}
+                  <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-popover rotate-45 border-r border-b border-border/60" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Icon-only secondary actions */}
           <motion.div
-            className="relative flex items-center justify-center gap-2.5 mt-6"
+            className="flex items-center justify-center gap-2.5"
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
-            <div className="relative">
-              <AnimatePresence>
-                {showSettingsHint && (
-                  <motion.button
-                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.35, ease: 'easeOut' }}
-                    onClick={() => {
-                      dismissSettingsHint();
-                      navigate('/settings');
-                    }}
-                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-44 px-3 py-2 rounded-xl bg-popover text-popover-foreground text-xs font-medium text-center shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] border border-border/60 pointer-events-auto"
-                  >
-                    {t('settingsHint')}
-                    <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-popover rotate-45 border-r border-b border-border/60" />
-                  </motion.button>
-                )}
-              </AnimatePresence>
-              <motion.button
-                onClick={() => navigate('/settings')}
-                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center"
-                whileTap={{ scale: 0.92 }}
-                aria-label={t('goSettings')}
-              >
-                ⚙️
-              </motion.button>
-            </div>
+            <motion.button
+              onClick={() => navigate('/settings')}
+              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-primary/25 to-primary/10 text-primary border border-primary/30 shadow-[0_4px_16px_hsl(var(--primary)/0.18)] active:shadow-[0_2px_8px_hsl(var(--primary)/0.12)] transition-shadow flex items-center justify-center"
+              whileTap={{ scale: 0.92 }}
+              aria-label={t('goSettings')}
+            >
+              ⚙️
+            </motion.button>
             <motion.button
               onClick={() => navigate('/friends')}
               className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-game-info/25 to-game-info/10 text-game-info border border-game-info/30 shadow-[0_4px_16px_hsl(var(--game-info)/0.18)] active:shadow-[0_2px_8px_hsl(var(--game-info)/0.12)] transition-shadow flex items-center justify-center"

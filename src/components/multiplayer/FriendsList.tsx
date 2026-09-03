@@ -357,8 +357,8 @@ export function FriendsList() {
                   : 'bg-secondary/60 border-border/50'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <span className="font-display font-bold text-sm text-foreground truncate">
+              <div className="flex items-center justify-center gap-2">
+                <span className="font-display font-bold text-sm text-foreground truncate text-center">
                   {o.opponentName}
                 </span>
               </div>

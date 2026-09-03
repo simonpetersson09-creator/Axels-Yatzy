@@ -409,6 +409,27 @@ export function FriendsList() {
                   )}
                 </button>
               </div>
+              {o.matches > 0 && (
+                <div className="mt-1.5 text-center">
+                  {(() => {
+                    const diff = Math.round(((o.wins - o.losses) / o.matches) * 100);
+                    return (
+                      <span className={`text-[10px] font-bold ${
+                        diff > 0 ? 'text-game-success'
+                          : diff < 0 ? 'text-destructive'
+                          : 'text-muted-foreground'
+                      }`}>
+                        {diff > 0
+                          ? t('friendComparisonAhead', { pct: Math.abs(diff), name: o.opponentName })
+                          : diff < 0
+                          ? t('friendComparisonBehind', { pct: Math.abs(diff), name: o.opponentName })
+                          : t('friendComparisonEven')}
+                      </span>
+                    );
+                  })()}
+                </div>
+              )}
+
               {o.ongoingMatch ? (
                 <div className="mt-2 pt-2 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">
                   <span className="flex items-center gap-1.5 text-primary font-bold">

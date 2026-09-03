@@ -18,7 +18,7 @@ import { getRandomAiNames } from '@/lib/yatzy-ai';
 import { getPlayerName, getSessionId } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { supabase } from '@/integrations/supabase/client';
-import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Settings, Users } from 'lucide-react';
+import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Settings, Users, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';

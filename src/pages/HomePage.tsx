@@ -468,36 +468,12 @@ export default function HomePage() {
 
           {/* Premium round secondary actions */}
           <div className="relative w-full">
-            <AnimatePresence>
-              {showAdBubble && (
-                <motion.div
-                  initial={{ opacity: 0, y: 12, scale: 0.92 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                  onClick={() => setShowAdBubble(false)}
-                  className="absolute bottom-[calc(100%+4px)] z-50 w-[240px] px-3.5 py-3 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
-                  style={{ left: '50%', translate: '-50% 0' }}
-                  aria-label={t('adBubbleText')}
-                >
-                  <div className="flex items-center gap-2.5 text-left">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.25)]">
-                      <Heart className="w-4 h-4 text-primary fill-primary/40" />
-                    </div>
-                    <p className="text-[11px] font-medium text-foreground leading-snug">
-                      {t('adBubbleText')}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             <motion.div
               className="grid grid-cols-4 place-items-center gap-1 sm:gap-2 w-full"
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}
             >
-              <div className="relative flex flex-col items-center gap-1.5 group" ref={langPickerRef}>
+              <div className={`relative flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`} ref={langPickerRef}>
                 <motion.button
                   onClick={() => setShowLangPicker(v => !v)}
                   className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
@@ -539,7 +515,7 @@ export default function HomePage() {
 
               <motion.button
                 onClick={() => navigate('/settings')}
-                className="flex flex-col items-center gap-1.5 group"
+                className={`flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('goSettings')}
               >
@@ -551,7 +527,7 @@ export default function HomePage() {
 
               <motion.button
                 onClick={() => navigate('/friends')}
-                className="flex flex-col items-center gap-1.5 group"
+                className={`flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('friendsListTitle')}
               >
@@ -561,17 +537,49 @@ export default function HomePage() {
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
               </motion.button>
 
-              <motion.button
-                onClick={() => toast.info(t('adPlaceholderMessage'))}
-                className="flex flex-col items-center gap-1.5 group"
-                whileTap={{ scale: 0.92 }}
-                aria-label={t('adButtonLabel')}
-              >
-                <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                  <Play className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
-                </div>
-                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight inline-flex flex-col items-center justify-start h-5">{t('adButtonShort')}</span>
-              </motion.button>
+              <div className="relative w-full flex flex-col items-center gap-1.5 group">
+                <AnimatePresence>
+                  {showAdBubble && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 12, scale: 0.92 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                      onClick={() => setShowAdBubble(false)}
+                      className="absolute bottom-[calc(100%+6px)] right-0 z-50 w-[180px] px-3 py-2.5 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
+                      aria-label={t('adBubbleText')}
+                    >
+                      <div className="flex items-center gap-2.5 text-left">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.25)]">
+                          <Heart className="w-3.5 h-3.5 text-primary fill-primary/40" />
+                        </div>
+                        <p className="text-[10px] font-medium text-foreground leading-snug">
+                          {t('adBubbleText')}
+                        </p>
+                      </div>
+                      {/* Bubble tail pointing to the ad button */}
+                      <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-popover/95 border-r border-b border-primary/30 rotate-45" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <motion.button
+                  onClick={() => toast.info(t('adPlaceholderMessage'))}
+                  className="flex flex-col items-center gap-1.5 group"
+                  whileTap={{ scale: 0.92 }}
+                  aria-label={t('adButtonLabel')}
+                >
+                  <div className="relative">
+                    {showAdBubble && (
+                      <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
+                    )}
+                    <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
+                      <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble ? 'text-primary' : 'text-primary/90'}`} />
+                    </div>
+                  </div>
+                  <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight inline-flex flex-col items-center justify-start h-5">{t('adButtonShort')}</span>
+                </motion.button>
+              </div>
             </motion.div>
           </div>
 

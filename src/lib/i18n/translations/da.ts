@@ -164,6 +164,7 @@ export const da: typeof sv = {
   changeAvatar: 'Skift billede',
   removeAvatar: 'Fjern',
   language: 'Sprog',
+  selectLanguage: 'Vælg sprog',
   statistics: 'Statistik',
   resetStats: 'Nulstil statistik',
   resetStatsConfirm: 'Er du sikker? Al statistik slettes.',

@@ -164,6 +164,7 @@ export const de: typeof sv = {
   changeAvatar: 'Bild ändern',
   removeAvatar: 'Entfernen',
   language: 'Sprache',
+  selectLanguage: 'Sprache wählen',
   statistics: 'Statistik',
   resetStats: 'Statistik zurücksetzen',
   resetStatsConfirm: 'Bist du sicher? Alle Statistiken werden gelöscht.',

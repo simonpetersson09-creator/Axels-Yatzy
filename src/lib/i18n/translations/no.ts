@@ -164,6 +164,7 @@ export const no: typeof sv = {
   changeAvatar: 'Bytt bilde',
   removeAvatar: 'Fjern',
   language: 'Språk',
+  selectLanguage: 'Velg språk',
   statistics: 'Statistikk',
   resetStats: 'Tilbakestill statistikk',
   resetStatsConfirm: 'Er du sikker? All statistikk slettes.',

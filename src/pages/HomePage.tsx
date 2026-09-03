@@ -51,7 +51,7 @@ export default function HomePage() {
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
-  const [worldLeader, setWorldLeader] = useState<WorldLeader | null>(null);
+  const [worldLeaders, setWorldLeaders] = useState<WorldLeaders>([]);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
   const [adLoading, setAdLoading] = useState(false);

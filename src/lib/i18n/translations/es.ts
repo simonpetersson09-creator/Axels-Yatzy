@@ -52,7 +52,7 @@ export const es: typeof sv = {
   adFailed: 'No hay ningún anuncio disponible ahora.',
   adOnlyInApp: 'Los anuncios solo se muestran en la app.',
   adBubbleText: 'Ayúdanos a mantener Mr.B. Yatzy gratis. Si quieres, puedes ver un anuncio corto.',
-  adComingSoon: '(Skriv kommande)',
+  adComingSoon: '(Kommande)',
 
   newGame: 'Nueva partida',
   playerCount: 'Número de jugadores',

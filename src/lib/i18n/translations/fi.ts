@@ -52,7 +52,7 @@ export const fi: typeof sv = {
   adFailed: 'Mainosta ei ole juuri nyt saatavilla.',
   adOnlyInApp: 'Mainokset näytetään vain sovelluksessa.',
   adBubbleText: 'Auta meitä pitämään Mr.B. Yatzy ilmaisena. Jos haluat, voit katsella lyhyen mainoksen.',
-  adComingSoon: '(Skriv kommande)',
+  adComingSoon: '(Kommande)',
 
   newGame: 'Uusi peli',
   playerCount: 'Pelaajien määrä',

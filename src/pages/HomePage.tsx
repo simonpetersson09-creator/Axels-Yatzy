@@ -396,41 +396,46 @@ export default function HomePage() {
           )}
 
 
-          <div className="flex items-center gap-3 mb-10 sm:mb-11">
-            <motion.button
-              onClick={() => setShowQuickMatch(true)}
-              className="flex-1 py-3 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
-              whileTap={{ scale: 0.97 }}
-              variants={item}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-            >
-              🎲 <span className="truncate">{t('quickMatch')}</span>
-            </motion.button>
-
-            {/* Optional reward ad button — wire to real ad provider here */}
-            <motion.div
-              className="relative flex flex-col items-center"
-              variants={item}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-            >
-              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 pointer-events-none" />
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
               <motion.button
-                onClick={() => toast.info(t('adPlaceholderMessage'))}
-                className="group relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-background border-2 border-primary/80 shadow-[0_0_15px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_25px_hsl(var(--primary)/0.5)] transition-all overflow-hidden"
-                whileTap={{ scale: 0.92 }}
-                aria-label={t('adButtonLabel')}
+                onClick={() => setShowQuickMatch(true)}
+                className="flex-1 py-3 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
+                whileTap={{ scale: 0.97 }}
+                variants={item}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
               >
-                <div className="absolute inset-1 rounded-full border border-primary/20" />
-                <svg
-                  className="w-6 h-6 sm:w-7 sm:h-7 text-primary fill-current drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-30deg] group-hover:left-[100%] transition-all duration-700" />
+                🎲 <span className="truncate">{t('quickMatch')}</span>
               </motion.button>
 
-              <div className="absolute top-full mt-2 flex flex-col items-center w-28 sm:w-32 pointer-events-none">
+              {/* Optional reward ad button — wire to real ad provider here */}
+              <motion.div
+                className="relative flex flex-col items-center"
+                variants={item}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+              >
+                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 pointer-events-none" />
+                <motion.button
+                  onClick={() => toast.info(t('adPlaceholderMessage'))}
+                  className="group relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-background border-2 border-primary/80 shadow-[0_0_15px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_25px_hsl(var(--primary)/0.5)] transition-all overflow-hidden"
+                  whileTap={{ scale: 0.92 }}
+                  aria-label={t('adButtonLabel')}
+                >
+                  <div className="absolute inset-1 rounded-full border border-primary/20" />
+                  <svg
+                    className="w-6 h-6 sm:w-7 sm:h-7 text-primary fill-current drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-30deg] group-hover:left-[100%] transition-all duration-700" />
+                </motion.button>
+              </motion.div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="flex-1" aria-hidden="true" />
+              <div className="flex flex-col items-center w-14 sm:w-16">
                 <span className="text-[10px] font-bold text-primary uppercase tracking-widest mb-0.5">
                   {t('adButtonLabel')}
                 </span>
@@ -438,7 +443,22 @@ export default function HomePage() {
                   {t('adButtonHint')}
                 </p>
               </div>
-            </motion.div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 mt-3 mb-3">
+            <motion.button
+              onClick={() => navigate('/multiplayer')}
+              className="flex-1 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow"
+              whileTap={{ scale: 0.97 }}
+              variants={item}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+            >
+              🌐 <span className="truncate">{t('playWithFriends')}</span>
+            </motion.button>
+
+            {/* Invisible spacer matching the ad-ring width so this button aligns with Quick Match */}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0" aria-hidden="true" />
           </div>
 
           <AnimatePresence>
@@ -480,21 +500,6 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
-          <div className="flex items-center gap-3">
-            <motion.button
-              onClick={() => navigate('/multiplayer')}
-              className="flex-1 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow"
-              whileTap={{ scale: 0.97 }}
-              variants={item}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-            >
-              🌐 <span className="truncate">{t('playWithFriends')}</span>
-            </motion.button>
-
-            {/* Invisible spacer matching the ad-ring width so this button aligns with Quick Match */}
-            <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0" aria-hidden="true" />
-          </div>
-
           <motion.div
             className="grid grid-cols-2 gap-2.5"
             variants={item}
@@ -504,7 +509,7 @@ export default function HomePage() {
               <AnimatePresence>
                 {showSettingsHint && (
                   <motion.button
-                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                    initial={{ opacity: 0, y: -6, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.35, ease: 'easeOut' }}
@@ -512,10 +517,10 @@ export default function HomePage() {
                       dismissSettingsHint();
                       navigate('/settings');
                     }}
-                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-44 px-3 py-2 rounded-xl bg-popover text-popover-foreground text-xs font-medium text-center shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] border border-border/60 pointer-events-auto"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-44 px-3 py-2 rounded-xl bg-popover text-popover-foreground text-xs font-medium text-center shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] border border-border/60 pointer-events-auto"
                   >
                     {t('settingsHint')}
-                    <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-popover rotate-45 border-r border-b border-border/60" />
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 bg-popover rotate-45 border-l border-t border-border/60" />
                   </motion.button>
                 )}
               </AnimatePresence>

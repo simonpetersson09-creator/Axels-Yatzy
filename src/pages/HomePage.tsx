@@ -458,7 +458,7 @@ export default function HomePage() {
               >
                 <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </motion.button>
-              <span className="text-[9px] font-medium tracking-widest text-primary/60 uppercase">{t('language')}</span>
+              <span className="text-[7px] font-medium text-primary/60 uppercase whitespace-nowrap">{t('language')}</span>
 
               <AnimatePresence>
                 {showLangPicker && (
@@ -498,7 +498,7 @@ export default function HomePage() {
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
-              <span className="text-[9px] font-medium tracking-widest text-primary/60 uppercase">{t('settings')}</span>
+              <span className="text-[7px] font-medium text-primary/60 uppercase whitespace-nowrap">{t('settings')}</span>
             </motion.button>
 
             <motion.button
@@ -510,7 +510,7 @@ export default function HomePage() {
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
                 <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
-              <span className="text-[9px] font-medium tracking-widest text-primary/60 uppercase">{t('friends')}</span>
+              <span className="text-[7px] font-medium text-primary/60 uppercase whitespace-nowrap">{t('friends')}</span>
             </motion.button>
 
             <motion.button
@@ -522,7 +522,7 @@ export default function HomePage() {
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
                 <Play className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
               </div>
-              <span className="text-[9px] font-medium tracking-widest text-primary/60 uppercase">{t('adButtonShort')}</span>
+              <span className="text-[7px] font-medium text-primary/60 uppercase whitespace-nowrap">{t('adButtonShort')}</span>
             </motion.button>
           </motion.div>
 

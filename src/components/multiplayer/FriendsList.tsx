@@ -419,10 +419,13 @@ export function FriendsList() {
                   )}
                 </button>
               </div>
-              {o.matches > 0 && (
+              {o.matches > 0 && (o.myPoints > 0 || o.oppPoints > 0) && (
                 <div className="mt-1.5 text-center">
                   {(() => {
-                    const diff = Math.round(((o.wins - o.losses) / o.matches) * 100);
+                    // Retroaktiv jämförelse: summa av alla poäng i alla spelade matcher
+                    const diff = o.oppPoints > 0
+                      ? Math.round(((o.myPoints - o.oppPoints) / o.oppPoints) * 100)
+                      : 100;
                     return (
                       <span className={`text-[10px] font-bold ${
                         diff > 0 ? 'text-game-success'
@@ -439,6 +442,7 @@ export function FriendsList() {
                   })()}
                 </div>
               )}
+
 
               {o.ongoingMatch ? (
                 <div className="mt-2 pt-2 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">

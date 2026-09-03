@@ -367,7 +367,7 @@ export function FriendsList() {
                   : 'bg-secondary/60 border-border/50'
               }`}
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-start gap-2.5">
                 <button
                   onClick={() => navigate('/friend-stats', { state: { selectedId: o.opponentId } })}
                   className="flex-1 min-w-0 text-left active:opacity-80 transition"
@@ -384,8 +384,25 @@ export function FriendsList() {
                       )}
                     </div>
                   </div>
-                  <div className="text-[10px] text-muted-foreground mt-0.5">
-                    {o.matches} {t('friendsMatches')} · {t('friendsHighScore')}: {o.myHigh}
+
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="flex flex-col items-center justify-center rounded-xl bg-secondary/80 border border-border/50 py-2">
+                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t('friendsTotalMatches')}</span>
+                      <span className="text-lg font-display font-black text-foreground tabular-nums">{o.matches}</span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center rounded-xl bg-secondary/80 border border-border/50 py-2">
+                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t('friendsLastResult')}</span>
+                      {hasFinished ? (
+                        <span className={`text-2xl font-display font-black tabular-nums ${
+                          lastDraw ? 'text-muted-foreground'
+                            : lastWon ? 'text-game-success' : 'text-destructive'
+                        }`}>
+                          {myScore}–{oppScore}
+                        </span>
+                      ) : (
+                        <span className="text-2xl font-display font-black text-muted-foreground tabular-nums">–</span>
+                      )}
+                    </div>
                   </div>
                 </button>
                 <button
@@ -423,11 +440,8 @@ export function FriendsList() {
               ) : hasFinished ? (
                 <div className="mt-2 pt-2 border-t border-border/40 flex items-center justify-between text-[10px] uppercase tracking-wider">
                   <span className="text-muted-foreground">{t('friendsLastMatch')}</span>
-                  <span className={`font-bold ${
-                    lastDraw ? 'text-muted-foreground'
-                      : lastWon ? 'text-game-success' : 'text-destructive'
-                  }`}>
-                    {myScore}–{oppScore} · {last ? formatDate(last.created_at) : ''}
+                  <span className="text-muted-foreground normal-case tracking-normal">
+                    {last ? formatDate(last.created_at) : ''}
                   </span>
                 </div>
               ) : null}

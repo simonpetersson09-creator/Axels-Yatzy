@@ -24,6 +24,7 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeader, countryToFlag, countryName, type RankInfo, type WorldLeader } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, type Language } from '@/lib/profile';
+import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
 
 const item = {
   hidden: { opacity: 0, y: 16 },

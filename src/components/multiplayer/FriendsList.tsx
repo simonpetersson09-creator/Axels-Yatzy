@@ -310,6 +310,8 @@ export function FriendsList() {
         opponentName: kf.name,
         matches: 0, wins: 0, losses: 0, draws: 0,
         myHigh: 0,
+        myPoints: 0,
+        oppPoints: 0,
         lastMatch: null,
         ongoingMatch: null,
         mergedSourceIds: [],

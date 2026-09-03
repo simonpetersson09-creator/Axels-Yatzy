@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "cap:sync:ios": "npx cap sync ios && node scripts/set-ios-admob-plist.js",
+    "cap:ios:admob": "node scripts/set-ios-admob-plist.js"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.1.0",

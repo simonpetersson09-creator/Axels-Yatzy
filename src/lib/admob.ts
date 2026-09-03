@@ -18,9 +18,12 @@ const TEST_INTERSTITIAL_AD_UNIT_ID_IOS = 'ca-app-pub-3940256099942544/4411468910
 
 export const ADMOB_CONFIG = {
   /** iOS App ID – sätts i Info.plist som GADApplicationIdentifier. */
-  appIdIOS: 'ca-app-pub-7448540924654868~XXXXXXXXXX', // TODO: fyll i riktigt App ID
-  /** Produktions-ad unit ID för interstitial (iOS). */
-  interstitialAdUnitIdIOS: 'ca-app-pub-7448540924654868/XXXXXXXXXX', // TODO: fyll i riktigt Ad Unit ID
+  appIdIOS: 'ca-app-pub-7448540924654868~6494873071',
+  /**
+   * Produktions-ad unit ID för interstitial (iOS).
+   * Lämnas tom tills AdMob-verifieringen är klar och vi fått ett riktigt ID.
+   */
+  interstitialAdUnitIdIOS: '',
   /** true = använd Googles test-ID. Sätt till false först vid release. */
   useTestAds: true,
 } as const;

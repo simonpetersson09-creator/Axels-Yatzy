@@ -126,13 +126,11 @@ export default function HomePage() {
   useEffect(() => {
     const KEY = 'mrbyatzy_app_opens';
     const SESSION_FLAG = 'mrbyatzy_open_counted';
-    let count = parseInt(localStorage.getItem(KEY) || '0', 10) || 0;
-    if (!sessionStorage.getItem(SESSION_FLAG)) {
-      sessionStorage.setItem(SESSION_FLAG, '1');
-      count += 1;
-      localStorage.setItem(KEY, String(count));
-    }
-    if (count > 0 && count % 3 === 0) {
+    if (sessionStorage.getItem(SESSION_FLAG)) return;
+    sessionStorage.setItem(SESSION_FLAG, '1');
+    const count = (parseInt(localStorage.getItem(KEY) || '0', 10) || 0) + 1;
+    localStorage.setItem(KEY, String(count));
+    if (count % 3 === 0) {
       setShowAdBubble(true);
     }
   }, []);

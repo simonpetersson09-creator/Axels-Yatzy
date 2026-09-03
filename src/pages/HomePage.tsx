@@ -733,6 +733,23 @@ export default function HomePage() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 gap-2">
+            <div className="flex flex-col items-center justify-center gap-1 py-3 px-2 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
+              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider text-center relative z-10">
+                {t('worldLeaderLabel')}
+              </span>
+              <span className="text-4xl sm:text-5xl leading-none relative z-10" aria-hidden>
+                {worldLeader ? countryToFlag(worldLeader.country) : '🏳️'}
+              </span>
+              {worldLeader && (
+                <span className="text-[10px] font-medium text-muted-foreground relative z-10 text-center leading-tight">
+                  {countryName(worldLeader.country, getLanguage())}
+                </span>
+              )}
+            </div>
+          </div>
+
         </motion.div>
       </motion.div>
     </div>

@@ -41,6 +41,11 @@ export const no: typeof sv = {
   matchExpired: 'Kampen ble avsluttet fordi 48 timer har gått uten aktivitet.',
   matchTimedOut: 'Kampen gikk ut på tid',
 
+  // Ad button (optional reward ad)
+  adButtonLabel: 'Reklame',
+  adButtonHint: 'Se en kort reklame — helt frivillig!',
+  adPlaceholderMessage: 'Her vises en kort reklame (ikke koblet ennå).',
+
   newGame: 'Nytt spill',
   playerCount: 'Antall spillere',
   playerNames: 'Spillernavn',

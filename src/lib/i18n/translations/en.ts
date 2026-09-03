@@ -41,6 +41,11 @@ export const en: typeof sv = {
   matchExpired: 'The match was ended because 48 hours passed without activity.',
   matchTimedOut: 'The match timed out',
 
+  // Ad button (optional reward ad)
+  adButtonLabel: 'Ad',
+  adButtonHint: 'Watch a short ad — completely optional!',
+  adPlaceholderMessage: 'A short ad would appear here (not wired yet).',
+
   newGame: 'New game',
   playerCount: 'Number of players',
   playerNames: 'Player names',

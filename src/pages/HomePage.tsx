@@ -40,6 +40,9 @@ interface GameStatus {
 
 const ONLINE_THRESHOLD_MS = 90_000; // 90s
 
+/** Lås "Frivillig reklam"-knappen tills annonsintegrationen är redo. */
+const AD_BUTTON_LOCKED = true;
+
 export default function HomePage() {
   const navigate = useNavigate();
   const { t, lang } = useTranslation();
@@ -62,6 +65,7 @@ export default function HomePage() {
 
   /** Enda vägen till show(): användarens direkta tryck på "Frivillig reklam". */
   const handleOptionalAdClick = async () => {
+    if (AD_BUTTON_LOCKED) return;
     if (adInFlightRef.current) return;
     adInFlightRef.current = true;
     setShowAdBubble(false);
@@ -597,20 +601,23 @@ export default function HomePage() {
 
                 <motion.button
                   onClick={handleOptionalAdClick}
-                  disabled={adLoading}
+                  disabled={adLoading || AD_BUTTON_LOCKED}
                   className="flex flex-col items-center gap-1.5 group disabled:opacity-60"
-                  whileTap={{ scale: 0.92 }}
+                  whileTap={{ scale: AD_BUTTON_LOCKED ? 1 : 0.92 }}
                   aria-label={t('adButtonLabel')}
                 >
                   <div className="relative">
-                    {showAdBubble && (
+                    {showAdBubble && !AD_BUTTON_LOCKED && (
                       <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
                     )}
-                    <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
-                      <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble ? 'text-primary' : 'text-primary/90'}`} />
+                    <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
+                      <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
                     </div>
                   </div>
                   <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight inline-flex flex-col items-center justify-start h-5">{t('adButtonShort')}</span>
+                  {AD_BUTTON_LOCKED && (
+                    <span className="text-[7px] font-medium text-destructive text-center leading-none">{t('adComingSoon')}</span>
+                  )}
                 </motion.button>
               </div>
             </motion.div>

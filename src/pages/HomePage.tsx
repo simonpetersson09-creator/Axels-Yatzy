@@ -557,8 +557,8 @@ export default function HomePage() {
                           {t('adBubbleText')}
                         </p>
                       </div>
-                      {/* Bubble tail pointing to the ad button */}
-                      <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-popover/95 border-r border-b border-primary/30 rotate-45" />
+                      {/* Bubble tail pointing to the center top of the ad button */}
+                      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-popover/95 border-r border-b border-primary/30 rotate-45" />
                     </motion.div>
                   )}
                 </AnimatePresence>

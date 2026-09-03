@@ -190,6 +190,7 @@ export const fi: typeof sv = {
   friendsListTitle: 'Kaverilista',
   myFriends: 'Kaverini',
   friendsMatches: 'ottelua',
+  friendsTotalMatches: 'Pelatut pelit',
   friendsWins: 'Voitot',
   friendsLosses: 'Tappiot',
   friendsDraws: 'Tasapelit',

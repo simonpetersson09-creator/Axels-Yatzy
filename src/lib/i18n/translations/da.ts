@@ -190,6 +190,7 @@ export const da: typeof sv = {
   friendsListTitle: 'Venneliste',
   myFriends: 'Mine venner',
   friendsMatches: 'kampe',
+  friendsTotalMatches: 'Spillede kampe',
   friendsWins: 'Sejre',
   friendsLosses: 'Tab',
   friendsDraws: 'Uafgjort',

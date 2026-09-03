@@ -49,7 +49,10 @@ export default function HomePage() {
   const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
+  const [arrowOffset, setArrowOffset] = useState<number | null>(null);
   const langPickerRef = useRef<HTMLDivElement>(null);
+  const adButtonRef = useRef<HTMLButtonElement>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
 
   // Sync country + world ranking whenever the games_played count changes.
   useEffect(() => {

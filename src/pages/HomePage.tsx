@@ -471,7 +471,7 @@ export default function HomePage() {
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
                   onClick={() => setShowAdBubble(false)}
-                  className="absolute bottom-[calc(100%+10px)] z-50 w-[240px] px-3.5 py-3 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
+                  className="absolute bottom-[calc(100%+4px)] z-50 w-[240px] px-3.5 py-3 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
                   style={{ left: '50%', translate: '-50% 0' }}
                   aria-label={t('adBubbleText')}
                 >
@@ -483,9 +483,9 @@ export default function HomePage() {
                       {t('adBubbleText')}
                     </p>
                   </div>
-                  {/* Arrow pointing down toward the optional-ad button */}
-                  <span className="absolute top-full left-[87.5%] w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-t-[8px] border-t-primary/30" style={{ translate: '-50% 0' }} />
-                  <span className="absolute top-full left-[87.5%] -mt-[1px] w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[7px] border-t-popover/95" style={{ translate: '-50% 0' }} />
+                  {/* Longer, slightly diagonal arrow touching the optional-ad button */}
+                  <span className="absolute top-full left-[87.5%] w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-t-[12px] border-t-primary/30 -translate-x-1/2 rotate-12 origin-top" />
+                  <span className="absolute top-full left-[87.5%] -mt-[1px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[11px] border-t-popover/95 -translate-x-1/2 rotate-12 origin-top" />
                 </motion.div>
               )}
             </AnimatePresence>

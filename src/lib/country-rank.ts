@@ -112,6 +112,8 @@ export interface RankInfo {
   world: WorldRank | null;
 }
 
+export type WorldLeaders = WorldLeader[];
+
 /**
  * Push the player's current games_played to the server and read back their
  * rank within their profile country AND their global world rank. Returns
@@ -184,4 +186,25 @@ export async function syncWorldLeader(): Promise<WorldLeader | null> {
     return null;
   }
 }
+
+/**
+ * Fetch the top 3 countries leading the world ranking by total games played.
+ * Returns an empty array when no data is available.
+ */
+export async function syncWorldLeaders(): Promise<WorldLeaders> {
+  try {
+    const { data, error } = await supabase.rpc('get_world_leaders');
+    if (error) {
+      console.warn('[country-rank] world leaders fetch failed', error);
+      return [];
+    }
+    const d = data as { found: boolean; leaders: { country: string; games_played: number }[] } | null;
+    if (!d || !d.found || !Array.isArray(d.leaders)) return [];
+    return d.leaders.map(l => ({ country: l.country, games_played: l.games_played }));
+  } catch (e) {
+    console.warn('[country-rank] world leaders sync error', e);
+    return [];
+  }
+}
+
 

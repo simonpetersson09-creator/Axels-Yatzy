@@ -53,9 +53,8 @@ async function loadModule(): Promise<AdMobModule> {
 async function ensureInitialized(): Promise<AdMobModule> {
   const mod = await loadModule();
   if (!initialized) {
+    // Ingen ATT-popup: vi begär aldrig tracking-authorization automatiskt.
     await mod.AdMob.initialize({
-      // Ingen ATT-popup: vi begär aldrig tracking-authorization automatiskt.
-      requestTrackingAuthorization: false,
       initializeForTesting: ADMOB_CONFIG.useTestAds,
     });
     initialized = true;

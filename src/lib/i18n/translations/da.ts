@@ -47,7 +47,7 @@ export const da: typeof sv = {
   adButtonShort: 'Frivillig reklame',
   adButtonHint: 'Se en kort reklame — helt valgfrit!',
   adPlaceholderMessage: 'Her vises en kort reklame (ikke tilsluttet endnu).',
-  adBubbleText: 'Hjælp os med at holde Mr.B. Yatzy gratis. Hvis du vil, må du gerne se en kort reklame. ',
+  adBubbleText: 'Hjælp os med at holde Mr.B. Yatzy gratis. Hvis du vil, må du gerne se en kort reklame.',
 
   newGame: 'Nyt spil',
   playerCount: 'Antal spillere',

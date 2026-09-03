@@ -98,7 +98,7 @@ export default function HomePage() {
   // Auto-dismiss the ad bubble after a few seconds.
   useEffect(() => {
     if (!showAdBubble) return;
-    const timer = setTimeout(() => setShowAdBubble(false), 6000);
+    const timer = setTimeout(() => setShowAdBubble(false), 4000);
     return () => clearTimeout(timer);
   }, [showAdBubble]);
 

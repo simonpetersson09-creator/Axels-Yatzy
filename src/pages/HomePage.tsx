@@ -94,8 +94,8 @@ export default function HomePage() {
     void syncCountryRank(stats.gamesPlayed).then(res => {
       if (!cancelled) setRankInfo(res);
     });
-    void syncWorldLeader().then(res => {
-      if (!cancelled) setWorldLeader(res);
+    void syncWorldLeaders().then(res => {
+      if (!cancelled) setWorldLeaders(res);
     });
     return () => { cancelled = true; };
   }, [stats.gamesPlayed]);

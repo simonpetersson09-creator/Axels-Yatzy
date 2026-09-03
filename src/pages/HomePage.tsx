@@ -445,7 +445,7 @@ export default function HomePage() {
 
           {/* Premium round secondary actions */}
           <motion.div
-            className="flex items-start justify-center gap-5 sm:gap-6"
+            className="flex items-start justify-center gap-3 sm:gap-4"
             variants={item}
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >

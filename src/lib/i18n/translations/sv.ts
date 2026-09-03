@@ -54,6 +54,7 @@ export const sv = {
   adFailed: 'Ingen annons tillgänglig just nu.',
   adOnlyInApp: 'Annonser visas endast i appen.',
   adBubbleText: 'Hjälp oss hålla Mr.B. Yatzy gratis. Om du vill får du gärna se en kort annons.',
+  adComingSoon: '(Skriv kommande)',
 
   // Setup
   newGame: 'Nytt spel',

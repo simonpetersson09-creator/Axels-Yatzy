@@ -52,6 +52,7 @@ export const da: typeof sv = {
   adFailed: 'Ingen reklame tilgængelig lige nu.',
   adOnlyInApp: 'Reklamer vises kun i appen.',
   adBubbleText: 'Hjælp os med at holde Mr.B. Yatzy gratis. Hvis du vil, må du gerne se en kort reklame.',
+  adComingSoon: '(Skriv kommande)',
 
   newGame: 'Nyt spil',
   playerCount: 'Antal spillere',

@@ -573,7 +573,13 @@ export default function HomePage() {
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
               </motion.button>
 
-              <div className="relative w-full flex flex-col items-center gap-1.5 group">
+              <motion.button
+                onClick={handleOptionalAdClick}
+                disabled={adLoading || AD_BUTTON_LOCKED}
+                className={`relative flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'} disabled:opacity-60`}
+                whileTap={{ scale: AD_BUTTON_LOCKED ? 1 : 0.92 }}
+                aria-label={t('adButtonLabel')}
+              >
                 <AnimatePresence>
                   {showAdBubble && (
                     <motion.div
@@ -582,7 +588,7 @@ export default function HomePage() {
                       exit={{ opacity: 0, y: 8, scale: 0.95 }}
                       transition={{ duration: 0.3, ease: 'easeOut' }}
                       onClick={() => setShowAdBubble(false)}
-                      className="absolute bottom-[calc(100%+6px)] right-0 z-50 w-[180px] px-3 py-2.5 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
+                      className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 z-50 w-[180px] px-3 py-2.5 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
                       aria-label={t('adBubbleText')}
                     >
                       <div className="flex items-center gap-2.5 text-left">
@@ -594,32 +600,24 @@ export default function HomePage() {
                         </p>
                       </div>
                       {/* Bubble tail pointing to the ad button */}
-                      <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-popover/95 border-r border-b border-primary/30 rotate-45" />
+                      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-popover/95 border-r border-b border-primary/30 rotate-45" />
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                <motion.button
-                  onClick={handleOptionalAdClick}
-                  disabled={adLoading || AD_BUTTON_LOCKED}
-                  className="flex flex-col items-center gap-1.5 group disabled:opacity-60"
-                  whileTap={{ scale: AD_BUTTON_LOCKED ? 1 : 0.92 }}
-                  aria-label={t('adButtonLabel')}
-                >
-                  <div className="relative">
-                    {showAdBubble && !AD_BUTTON_LOCKED && (
-                      <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
-                    )}
-                    <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
-                      <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
-                    </div>
-                  </div>
-                  <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight inline-flex flex-col items-center justify-start h-5">{t('adButtonShort')}</span>
-                  {AD_BUTTON_LOCKED && (
-                    <span className="text-[7px] font-medium text-destructive text-center leading-none">{t('adComingSoon')}</span>
+                <div className="relative">
+                  {showAdBubble && !AD_BUTTON_LOCKED && (
+                    <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
                   )}
-                </motion.button>
-              </div>
+                  <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
+                    <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
+                  </div>
+                </div>
+                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight whitespace-nowrap">{t('adButtonShort')}</span>
+                {AD_BUTTON_LOCKED && (
+                  <span className="text-[7px] font-medium text-destructive text-center leading-none -mt-1">{t('adComingSoon')}</span>
+                )}
+              </motion.button>
             </motion.div>
           </div>
 

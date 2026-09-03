@@ -52,7 +52,7 @@ export const no: typeof sv = {
   adFailed: 'Ingen reklame tilgjengelig nå.',
   adOnlyInApp: 'Reklamer vises kun i appen.',
   adBubbleText: 'Hjelp oss å holde Mr.B. Yatzy gratis. Hvis du vil, kan du gjerne se en kort reklame.',
-  adComingSoon: '(Skriv kommande)',
+  adComingSoon: '(Kommande)',
 
   newGame: 'Nytt spill',
   playerCount: 'Antall spillere',

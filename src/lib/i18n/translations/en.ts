@@ -52,7 +52,7 @@ export const en: typeof sv = {
   adFailed: 'No ad available right now.',
   adOnlyInApp: 'Ads are only shown in the app.',
   adBubbleText: 'Help us keep Mr.B. Yatzy free. If you\'d like, you\'re welcome to watch a short ad.',
-  adComingSoon: '(Skriv kommande)',
+  adComingSoon: '(Kommande)',
 
   newGame: 'New game',
   playerCount: 'Number of players',

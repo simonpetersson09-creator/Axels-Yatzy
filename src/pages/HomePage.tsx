@@ -462,92 +462,102 @@ export default function HomePage() {
           </AnimatePresence>
 
           {/* Premium round secondary actions */}
-          <motion.div
-            className="grid grid-cols-4 place-items-center gap-1 sm:gap-2 w-full"
-            variants={item}
-            transition={{ duration: 0.45, ease: 'easeOut' }}
-          >
-            <div className="relative flex flex-col items-center gap-1.5 group" ref={langPickerRef}>
+          <div className="relative w-full">
+            <AnimatePresence>
+              {showAdBubble && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12, scale: 0.92 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  onClick={() => setShowAdBubble(false)}
+                  className="absolute bottom-[calc(100%+10px)] left-1/2 -translate-x-1/2 z-50 w-[260px] px-3.5 py-3 rounded-2xl bg-popover/95 border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-sm cursor-pointer"
+                  aria-label={t('adBubbleText')}
+                >
+                  <div className="flex items-center gap-2.5 text-left">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.25)]">
+                      <Heart className="w-4 h-4 text-primary fill-primary/40" />
+                    </div>
+                    <p className="text-[11px] font-medium text-foreground leading-snug">
+                      {t('adBubbleText')}
+                    </p>
+                  </div>
+                  {/* Arrow pointing down toward the optional-ad button */}
+                  <span className="absolute top-full left-[87.5%] -translate-x-1/2 w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-t-[8px] border-t-primary/30" />
+                  <span className="absolute top-full left-[87.5%] -translate-x-1/2 -mt-[1px] w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[7px] border-t-popover/95" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.div
+              className="grid grid-cols-4 place-items-center gap-1 sm:gap-2 w-full"
+              variants={item}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+            >
+              <div className="relative flex flex-col items-center gap-1.5 group" ref={langPickerRef}>
+                <motion.button
+                  onClick={() => setShowLangPicker(v => !v)}
+                  className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
+                  whileTap={{ scale: 0.92 }}
+                  aria-label={t('selectLanguage')}
+                >
+                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                </motion.button>
+                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('language')}</span>
+
+                <AnimatePresence>
+                  {showLangPicker && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 max-h-48 overflow-y-auto rounded-2xl bg-popover border border-border/60 shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] z-50 py-1.5 [&::-webkit-scrollbar]:hidden"
+                      style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    >
+                      {LANGUAGES.map((l) => (
+                        <button
+                          key={l.code}
+                          onClick={() => {
+                            setLanguage(l.code as Language);
+                            setShowLangPicker(false);
+                          }}
+                          className={`w-full px-3 py-2 flex items-center gap-2.5 text-sm transition-colors ${lang === l.code ? 'bg-primary/15 text-primary font-semibold' : 'text-popover-foreground hover:bg-secondary/60'}`}
+                        >
+                          <span className="text-base">{l.flag}</span>
+                          <span className="flex-1 text-left">{l.label}</span>
+                          {lang === l.code && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <motion.button
-                onClick={() => setShowLangPicker(v => !v)}
-                className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
+                onClick={() => navigate('/settings')}
+                className="flex flex-col items-center gap-1.5 group"
                 whileTap={{ scale: 0.92 }}
-                aria-label={t('selectLanguage')}
+                aria-label={t('goSettings')}
               >
-                <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                </div>
+                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('settings')}</span>
               </motion.button>
-              <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('language')}</span>
 
-              <AnimatePresence>
-                {showLangPicker && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 max-h-48 overflow-y-auto rounded-2xl bg-popover border border-border/60 shadow-[0_8px_24px_hsl(var(--popover-foreground)/0.12)] z-50 py-1.5 [&::-webkit-scrollbar]:hidden"
-                    style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                  >
-                    {LANGUAGES.map((l) => (
-                      <button
-                        key={l.code}
-                        onClick={() => {
-                          setLanguage(l.code as Language);
-                          setShowLangPicker(false);
-                        }}
-                        className={`w-full px-3 py-2 flex items-center gap-2.5 text-sm transition-colors ${lang === l.code ? 'bg-primary/15 text-primary font-semibold' : 'text-popover-foreground hover:bg-secondary/60'}`}
-                      >
-                        <span className="text-base">{l.flag}</span>
-                        <span className="flex-1 text-left">{l.label}</span>
-                        {lang === l.code && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+              <motion.button
+                onClick={() => navigate('/friends')}
+                className="flex flex-col items-center gap-1.5 group"
+                whileTap={{ scale: 0.92 }}
+                aria-label={t('friendsListTitle')}
+              >
+                <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                </div>
+                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
+              </motion.button>
 
-            <motion.button
-              onClick={() => navigate('/settings')}
-              className="flex flex-col items-center gap-1.5 group"
-              whileTap={{ scale: 0.92 }}
-              aria-label={t('goSettings')}
-            >
-              <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
-              </div>
-              <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('settings')}</span>
-            </motion.button>
-
-            <motion.button
-              onClick={() => navigate('/friends')}
-              className="flex flex-col items-center gap-1.5 group"
-              whileTap={{ scale: 0.92 }}
-              aria-label={t('friendsListTitle')}
-            >
-              <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
-              </div>
-              <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
-            </motion.button>
-
-            <div className="relative flex flex-col items-center">
-              <AnimatePresence>
-                {showAdBubble && (
-                  <motion.button
-                    initial={{ opacity: 0, y: -6, scale: 0.92 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -4, scale: 0.95 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
-                    onClick={() => setShowAdBubble(false)}
-                    className="absolute top-[calc(100%+10px)] right-0 z-50 min-w-[220px] max-w-[260px] px-3.5 py-2.5 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-950 text-[11px] font-semibold text-center leading-snug shadow-[0_6px_20px_rgba(0,0,0,0.25)] border border-amber-300/60 cursor-pointer"
-                    aria-label={t('adBubbleText')}
-                  >
-                    {t('adBubbleText')}
-                    <span className="absolute bottom-full right-[17px] -mb-0.5 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[7px] border-b-amber-200" />
-                  </motion.button>
-                )}
-              </AnimatePresence>
               <motion.button
                 onClick={() => toast.info(t('adPlaceholderMessage'))}
                 className="flex flex-col items-center gap-1.5 group"
@@ -559,8 +569,8 @@ export default function HomePage() {
                 </div>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight inline-flex flex-col items-center justify-start h-5">{t('adButtonShort')}</span>
               </motion.button>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
 
         </div>

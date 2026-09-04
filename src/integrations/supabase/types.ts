@@ -503,6 +503,20 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      log_analytics_events: {
+        Args: { p_device_id: string; p_events: Json }
+        Returns: undefined
+      }
+      log_analytics_session: {
+        Args: {
+          p_app_version: string
+          p_device_id: string
+          p_id: string
+          p_platform: string
+          p_started_at?: string
+        }
+        Returns: undefined
+      }
       maybe_create_ongoing_friend_match: {
         Args: { p_game_id: string }
         Returns: undefined

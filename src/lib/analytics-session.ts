@@ -9,6 +9,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
+import { claimSession } from '@/lib/session';
 
 const BACKGROUND_TIMEOUT_MS = 30 * 60 * 1000;
 const HEARTBEAT_MS = 60 * 1000;
@@ -46,6 +47,7 @@ export function getCurrentSessionId(): string {
 async function insertSession(id: string, startedAt: number): Promise<void> {
   try {
     await initDeviceId();
+    await claimSession();
     const deviceId = getDeviceIdSync();
     if (!deviceId) return;
     await supabase.rpc('log_analytics_session' as any, {

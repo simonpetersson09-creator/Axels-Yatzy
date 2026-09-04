@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mr.B. Yatzy – ljudförslag</title>
+  <title>Mr.B. Yatzy – nya ljudförslag</title>
   <style>
     :root {
       --bg: hsl(195 50% 14%);
@@ -11,53 +11,65 @@
       --text: hsl(40 30% 92%);
       --accent: hsl(43 85% 52%);
       --muted: hsl(195 20% 55%);
+      --green: hsl(145 55% 42%);
+      --blue: hsl(205 70% 55%);
+      --rose: hsl(340 65% 55%);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 20px;
+      padding: 22px;
     }
     .wrap {
       width: 100%;
-      max-width: 420px;
-      background: var(--card);
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      max-width: 520px;
+      margin: 0 auto;
     }
-    h1 { margin: 0 0 6px; font-size: 22px; }
-    p.sub { margin: 0 0 22px; color: var(--muted); font-size: 14px; }
+    h1 { margin: 0 0 6px; font-size: 24px; }
+    p.sub { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .option {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 16px 44px rgba(0,0,0,0.28);
+    }
+    .option h2 { margin: 0 0 6px; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+    .option p { margin: 0 0 16px; color: var(--muted); font-size: 13px; line-height: 1.5; }
     .btn {
       width: 100%;
       border: 0;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 12px;
-      font-size: 16px;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg, hsl(43 85% 52%), hsl(36 90% 45%));
-      color: hsl(195 50% 10%);
       transition: transform .08s, filter .15s;
     }
     .btn:hover { filter: brightness(1.08); }
     .btn:active { transform: scale(0.98); }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent), hsl(36 90% 45%));
+      color: hsl(195 50% 10%);
+    }
     .btn.secondary {
       background: hsl(195 35% 26%);
       color: var(--text);
     }
+    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    .dot.soft { background: var(--green); }
+    .dot.classic { background: var(--blue); }
+    .dot.minimal { background: var(--rose); }
     .timeline {
-      margin-top: 18px;
-      padding-top: 18px;
+      margin-top: 14px;
+      padding-top: 14px;
       border-top: 1px solid hsl(195 30% 28%);
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
       line-height: 1.6;
     }
@@ -66,33 +78,53 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>Föreslagna tärningsljud</h1>
-    <p class="sub">Tryck på knapparna för att höra varje enskilt ljud eller hela sekvensen.</p>
+    <h1>Nya ljudförslag</h1>
+    <p class="sub">
+      Här är tre alternativa riktningar. Tryck på <strong>Spela hela kastet</strong> för varje variant.
+      Ingenting i spelet är ändrat — detta är enbart en förhandslyssning.
+    </p>
 
-    <button class="btn" id="btn-full">Spela hela kastet</button>
-    <button class="btn secondary" id="btn-whoosh">Whoosh (kast startar)</button>
-    <button class="btn secondary" id="btn-impact">Impact (första landning)</button>
-    <button class="btn secondary" id="btn-rattle">Rattle (rull/snurr)</button>
-    <button class="btn secondary" id="btn-settle">Settle (sista stopp)</button>
+    <div class="option">
+      <h2><span class="dot soft"></span> A. Premium & mjuk</h2>
+      <p>Lågmäld, filtkänsla. Inga skarpa brus. Luftig whoosh, dämpade träffar och en diskret rasselton. Passar en polerad app-upplevelse.</p>
+      <button class="btn primary" data-play="soft">Spela hela kastet</button>
+      <button class="btn secondary" data-sound="soft-whoosh">Whoosh</button>
+      <button class="btn secondary" data-sound="soft-impact">Impact</button>
+      <button class="btn secondary" data-sound="soft-rattle">Rattle</button>
+      <button class="btn secondary" data-sound="soft-settle">Settle</button>
+    </div>
+
+    <div class="option">
+      <h2><span class="dot classic"></span> B. Klassiskt tärningsspel</h2>
+      <p>Mer igenkännbar "riktig" Yatzy-känsla: plastiga tärningar i en bägare, tydligare knack vid landning och ett skarpare rassel.</p>
+      <button class="btn primary" data-play="classic">Spela hela kastet</button>
+      <button class="btn secondary" data-sound="classic-whoosh">Whoosh</button>
+      <button class="btn secondary" data-sound="classic-impact">Impact</button>
+      <button class="btn secondary" data-sound="classic-rattle">Rattle</button>
+      <button class="btn secondary" data-sound="classic-settle">Settle</button>
+    </div>
+
+    <div class="option">
+      <h2><span class="dot minimal"></span> C. Minimal UI</h2>
+      <p>Inga realistiska tärningsljud alls. Bara en kort mekanisk kick vid kast och en mjuk bekräftelse när allt stillnat. Lätt att spela många matcher utan trötthet.</p>
+      <button class="btn primary" data-play="minimal">Spela hela kastet</button>
+      <button class="btn secondary" data-sound="minimal-whoosh">Kick</button>
+      <button class="btn secondary" data-sound="minimal-settle">Chime</button>
+    </div>
 
     <div class="timeline">
-      <strong>Tidslinje:</strong><br>
-      0 ms – whoosh<br>
-      ~775 ms – första impact<br>
-      775–1170 ms – rattle<br>
-      1170 ms – settle<br>
-      <em>Ljuden är syntetiserade i Web Audio API, inga filer behövs.</em>
+      <strong>Animationens tidslinje (oförändrad):</strong><br>
+      0 ms – kast startar<br>
+      ~775 ms – första tärning landar<br>
+      775–1170 ms – rull/snurr-fas<br>
+      1170 ms – sista tärningen stannar
     </div>
   </div>
 
   <script>
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    function resume() { if (ctx.state === 'suspended') ctx.resume(); }
 
-    function resume() {
-      if (ctx.state === 'suspended') ctx.resume();
-    }
-
-    // White-noise buffer, reused for all effects
     const noiseBuffer = (() => {
       const len = ctx.sampleRate * 2;
       const buf = ctx.createBuffer(1, len, ctx.sampleRate);
@@ -101,102 +133,160 @@
       return buf;
     })();
 
-    function noiseSource(gainValue, when, duration) {
+    function noiseSource({ when, duration, gain = 0.2, freq = 3000, type = 'lowpass', q = 0.7 }) {
       const src = ctx.createBufferSource();
       src.buffer = noiseBuffer;
       const g = ctx.createGain();
       const f = ctx.createBiquadFilter();
-      f.type = 'lowpass';
-      f.frequency.value = 2800;
+      f.type = type;
+      f.frequency.value = freq;
+      f.Q.value = q;
       src.connect(f).connect(g).connect(ctx.destination);
       g.gain.setValueAtTime(0, when);
-      g.gain.linearRampToValueAtTime(gainValue, when + 0.015);
+      g.gain.linearRampToValueAtTime(gain, when + 0.01);
       g.gain.exponentialRampToValueAtTime(0.001, when + duration);
       src.start(when);
-      src.stop(when + duration + 0.05);
+      src.stop(when + duration + 0.06);
     }
 
-    function whoosh(when) {
-      const src = ctx.createBufferSource();
-      src.buffer = noiseBuffer;
-      const g = ctx.createGain();
-      const f = ctx.createBiquadFilter();
-      f.type = 'bandpass';
-      f.frequency.value = 600;
-      f.Q.value = 0.6;
-      src.connect(f).connect(g).connect(ctx.destination);
-      g.gain.setValueAtTime(0, when);
-      g.gain.linearRampToValueAtTime(0.22, when + 0.04);
-      g.gain.exponentialRampToValueAtTime(0.001, when + 0.18);
-      f.frequency.setValueAtTime(180, when);
-      f.frequency.exponentialRampToValueAtTime(1400, when + 0.18);
-      src.start(when);
-      src.stop(when + 0.22);
-    }
-
-    function impact(when) {
-      // short noise burst
-      noiseSource(0.18, when, 0.07);
-      // low thud
+    function thud({ when, freq = 110, gain = 0.25, decay = 0.12 }) {
       const osc = ctx.createOscillator();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(160, when);
-      osc.frequency.exponentialRampToValueAtTime(45, when + 0.12);
+      osc.frequency.setValueAtTime(freq, when);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.35, when + decay);
       const g = ctx.createGain();
-      g.gain.setValueAtTime(0.28, when);
-      g.gain.exponentialRampToValueAtTime(0.001, when + 0.12);
+      g.gain.setValueAtTime(gain, when);
+      g.gain.exponentialRampToValueAtTime(0.001, when + decay);
       osc.connect(g).connect(ctx.destination);
       osc.start(when);
-      osc.stop(when + 0.13);
+      osc.stop(when + decay + 0.02);
     }
 
-    function rattle(when, duration = 0.4) {
+    // === A. PREMIUM SOFT ===
+    function softWhoosh(when) {
+      noiseSource({ when, duration: 0.22, gain: 0.14, freq: 700, type: 'bandpass', q: 0.6 });
+      // gentle airy sweep
       const src = ctx.createBufferSource();
       src.buffer = noiseBuffer;
       const g = ctx.createGain();
       const f = ctx.createBiquadFilter();
-      f.type = 'lowpass';
-      f.frequency.value = 4200;
+      f.type = 'highpass';
+      f.frequency.value = 400;
       src.connect(f).connect(g).connect(ctx.destination);
       g.gain.setValueAtTime(0, when);
-      g.gain.linearRampToValueAtTime(0.12, when + 0.03);
-      g.gain.setValueAtTime(0.12, when + duration - 0.08);
-      g.gain.linearRampToValueAtTime(0.001, when + duration);
+      g.gain.linearRampToValueAtTime(0.08, when + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, when + 0.22);
       src.start(when);
-      src.stop(when + duration + 0.05);
+      src.stop(when + 0.25);
+    }
+    function softImpact(when) {
+      thud({ when, freq: 135, gain: 0.18, decay: 0.09 });
+      noiseSource({ when, duration: 0.04, gain: 0.06, freq: 1600, type: 'lowpass', q: 1 });
+    }
+    function softRattle(when, duration = 0.4) {
+      noiseSource({ when, duration, gain: 0.05, freq: 2200, type: 'lowpass', q: 1.2 });
+    }
+    function softSettle(when) {
+      thud({ when, freq: 95, gain: 0.16, decay: 0.11 });
     }
 
-    function settle(when) {
+    // === B. CLASSIC BOARD GAME ===
+    function classicWhoosh(when) {
+      // cup shake / pour
+      noiseSource({ when, duration: 0.18, gain: 0.22, freq: 1800, type: 'highpass', q: 0.8 });
+      noiseSource({ when: when + 0.05, duration: 0.16, gain: 0.12, freq: 900, type: 'bandpass', q: 0.9 });
+    }
+    function classicImpact(when) {
+      thud({ when, freq: 180, gain: 0.24, decay: 0.08 });
+      noiseSource({ when, duration: 0.06, gain: 0.18, freq: 3500, type: 'highpass', q: 0.7 });
+    }
+    function classicRattle(when, duration = 0.4) {
+      noiseSource({ when, duration, gain: 0.13, freq: 4500, type: 'highpass', q: 0.6 });
+    }
+    function classicSettle(when) {
+      thud({ when, freq: 150, gain: 0.22, decay: 0.1 });
+      noiseSource({ when, duration: 0.05, gain: 0.1, freq: 2600, type: 'highpass', q: 0.8 });
+    }
+
+    // === C. MINIMAL UI ===
+    function minimalWhoosh(when) {
+      // short mechanical click/kick
       const osc = ctx.createOscillator();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(95, when);
-      osc.frequency.exponentialRampToValueAtTime(30, when + 0.14);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(320, when);
+      osc.frequency.exponentialRampToValueAtTime(120, when + 0.045);
       const g = ctx.createGain();
-      g.gain.setValueAtTime(0.32, when);
-      g.gain.exponentialRampToValueAtTime(0.001, when + 0.16);
-      osc.connect(g).connect(ctx.destination);
+      g.gain.setValueAtTime(0.08, when);
+      g.gain.exponentialRampToValueAtTime(0.001, when + 0.05);
+      const f = ctx.createBiquadFilter();
+      f.type = 'lowpass';
+      f.frequency.value = 1200;
+      osc.connect(f).connect(g).connect(ctx.destination);
       osc.start(when);
-      osc.stop(when + 0.18);
-      noiseSource(0.08, when, 0.05);
+      osc.stop(when + 0.06);
+    }
+    function minimalSettle(when) {
+      // soft confirmation chime
+      const osc1 = ctx.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(520, when);
+      const osc2 = ctx.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(780, when);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, when);
+      g.gain.linearRampToValueAtTime(0.12, when + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, when + 0.28);
+      osc1.connect(g).connect(ctx.destination);
+      osc2.connect(g).connect(ctx.destination);
+      osc1.start(when);
+      osc2.start(when);
+      osc1.stop(when + 0.3);
+      osc2.stop(when + 0.3);
     }
 
-    function playFullSequence() {
+    const sounds = {
+      'soft-whoosh': () => softWhoosh(ctx.currentTime + 0.05),
+      'soft-impact': () => softImpact(ctx.currentTime + 0.05),
+      'soft-rattle': () => softRattle(ctx.currentTime + 0.05, 0.45),
+      'soft-settle': () => softSettle(ctx.currentTime + 0.05),
+      'classic-whoosh': () => classicWhoosh(ctx.currentTime + 0.05),
+      'classic-impact': () => classicImpact(ctx.currentTime + 0.05),
+      'classic-rattle': () => classicRattle(ctx.currentTime + 0.05, 0.45),
+      'classic-settle': () => classicSettle(ctx.currentTime + 0.05),
+      'minimal-whoosh': () => minimalWhoosh(ctx.currentTime + 0.05),
+      'minimal-settle': () => minimalSettle(ctx.currentTime + 0.05),
+    };
+
+    function playFull(variant) {
       resume();
       const t0 = ctx.currentTime + 0.05;
-      whoosh(t0);
-      // staggered impacts for the 5 dice
       const impacts = [0, 40, 80, 120, 160].map(ms => t0 + 0.775 + ms / 1000);
-      impacts.forEach(t => impact(t));
-      // continuous rattle from first impact until settle
-      rattle(impacts[0], 1.17 - 0.775);
-      settle(t0 + 1.17);
+      if (variant === 'soft') {
+        softWhoosh(t0);
+        impacts.forEach(t => softImpact(t));
+        softRattle(impacts[0], 1.17 - 0.775);
+        softSettle(t0 + 1.17);
+      } else if (variant === 'classic') {
+        classicWhoosh(t0);
+        impacts.forEach(t => classicImpact(t));
+        classicRattle(impacts[0], 1.17 - 0.775);
+        classicSettle(t0 + 1.17);
+      } else if (variant === 'minimal') {
+        minimalWhoosh(t0);
+        minimalSettle(t0 + 1.17);
+      }
     }
 
-    document.getElementById('btn-full').onclick = playFullSequence;
-    document.getElementById('btn-whoosh').onclick = () => { resume(); whoosh(ctx.currentTime + 0.05); };
-    document.getElementById('btn-impact').onclick = () => { resume(); impact(ctx.currentTime + 0.05); };
-    document.getElementById('btn-rattle').onclick = () => { resume(); rattle(ctx.currentTime + 0.05, 0.45); };
-    document.getElementById('btn-settle').onclick = () => { resume(); settle(ctx.currentTime + 0.05); };
+    document.querySelectorAll('[data-play]').forEach(btn => {
+      btn.onclick = () => playFull(btn.dataset.play);
+    });
+    document.querySelectorAll('[data-sound]').forEach(btn => {
+      btn.onclick = () => {
+        resume();
+        sounds[btn.dataset.sound]();
+      };
+    });
   </script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import {
   initDeviceId,
 } from '@/lib/device';
 import { getCurrentSessionId } from '@/lib/analytics-session';
+import { claimSession } from '@/lib/session';
 
 const APP_VERSION = '1.0.0';
 
@@ -60,20 +61,32 @@ async function flush(): Promise<void> {
     flushTimer = null;
   }
   if (queue.length === 0) return;
-  // Make sure the device id is resolved before flushing the first batch
-  // so events sent during the brief init window get tagged correctly.
+  // Make sure the device id is resolved (and claimed server-side) before
+  // flushing so events get attributed to this device.
+  let deviceId: string | null = null;
   try {
-    const id = await initDeviceId();
-    for (const ev of queue) {
-      if (!ev.device_id) ev.device_id = id;
-      if (!ev.local_user_id) ev.local_user_id = id;
-    }
+    deviceId = await initDeviceId();
+    await claimSession();
   } catch {
-    // ignore; device id may stay null for these events
+    // ignore
   }
+  if (!deviceId) return;
   const batch = queue.splice(0, MAX_BATCH);
   try {
-    await supabase.from('analytics_events').insert(batch as any);
+    // Server-side RPC stamps device_id/auth_user_id itself; client-supplied
+    // identity fields are ignored.
+    await supabase.rpc('log_analytics_events' as any, {
+      p_device_id: deviceId,
+      p_events: batch.map((e) => ({
+        event_name: e.event_name,
+        session_id: e.session_id,
+        game_id: e.game_id,
+        game_mode: e.game_mode,
+        metadata: e.metadata,
+        platform: e.platform,
+        app_version: e.app_version,
+      })),
+    });
   } catch {
     // Swallow — never crash the app due to analytics.
   }

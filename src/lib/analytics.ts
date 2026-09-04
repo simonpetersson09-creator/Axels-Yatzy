@@ -6,6 +6,7 @@ import {
   initDeviceId,
 } from '@/lib/device';
 import { getCurrentSessionId } from '@/lib/analytics-session';
+import { claimSession } from '@/lib/session';
 
 const APP_VERSION = '1.0.0';
 

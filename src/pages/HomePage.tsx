@@ -42,8 +42,8 @@ interface GameStatus {
 
 const ONLINE_THRESHOLD_MS = 90_000; // 90s
 
-/** Lås "Frivillig reklam"-knappen tills annonsintegrationen är redo. */
-const AD_BUTTON_LOCKED = true;
+/** Annonsintegrationen är aktiv – knappen är upplåst. */
+const AD_BUTTON_LOCKED = false;
 
 export default function HomePage() {
   const navigate = useNavigate();

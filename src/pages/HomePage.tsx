@@ -107,7 +107,7 @@ export default function HomePage() {
     try {
       const result = await showOptionalInterstitial();
       toast.dismiss(loadingToast);
-      if (result !== 'shown') toast.error(t('adFailed'));
+      if (result === 'failed' || result === 'unavailable') toast.error(t('adFailed'));
       // Ingen reward eller spelmässig fördel ges. Användaren stannar i samma vy.
     } finally {
       toast.dismiss(loadingToast);

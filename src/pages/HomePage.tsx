@@ -23,7 +23,7 @@ import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
-import { getLanguage, setLanguage, LANGUAGES, type Language } from '@/lib/profile';
+import { getLanguage, setLanguage, LANGUAGES, getProfileCountry, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
@@ -116,7 +116,9 @@ export default function HomePage() {
     }
   };
 
-  // Sync country + world ranking whenever the games_played count changes.
+  // Sync country + world ranking whenever the games_played count changes,
+  // and re-run once the profile country becomes available (first launch).
+  const profileCountry = getProfileCountry();
   useEffect(() => {
     let cancelled = false;
     void syncCountryRank(stats.gamesPlayed).then(res => {
@@ -126,7 +128,7 @@ export default function HomePage() {
       if (!cancelled) setWorldLeaders(res);
     });
     return () => { cancelled = true; };
-  }, [stats.gamesPlayed]);
+  }, [stats.gamesPlayed, profileCountry]);
 
   useEffect(() => {
     const onFocus = () => {

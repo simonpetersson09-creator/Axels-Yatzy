@@ -118,7 +118,8 @@ export default function HomePage() {
 
   // Sync country + world ranking whenever the games_played count changes,
   // and re-run once the profile country becomes available (first launch).
-  const profileCountry = getProfileCountry();
+  // The country is read inside the effect so a profile-changed re-render
+  // (even without a language change) always re-syncs.
   useEffect(() => {
     let cancelled = false;
     void syncCountryRank(stats.gamesPlayed).then(res => {
@@ -128,7 +129,7 @@ export default function HomePage() {
       if (!cancelled) setWorldLeaders(res);
     });
     return () => { cancelled = true; };
-  }, [stats.gamesPlayed, profileCountry]);
+  }, [stats.gamesPlayed, profileVersion]);
 
   useEffect(() => {
     const onFocus = () => {

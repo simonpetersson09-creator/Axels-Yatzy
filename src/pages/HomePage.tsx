@@ -23,7 +23,7 @@ import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
-import { getLanguage, setLanguage, LANGUAGES, type Language } from '@/lib/profile';
+import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
@@ -57,6 +57,10 @@ export default function HomePage() {
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
+  // Bumps whenever any profile field (country, name, avatar) changes, so
+  // rank sync re-runs even when the language itself didn't change.
+  const [profileVersion, setProfileVersion] = useState(0);
+  useEffect(() => subscribeProfileChanges(() => setProfileVersion(v => v + 1)), []);
   const adInFlightRef = useRef(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
   const [showRatePrompt, setShowRatePrompt] = useState(false);
@@ -116,7 +120,10 @@ export default function HomePage() {
     }
   };
 
-  // Sync country + world ranking whenever the games_played count changes.
+  // Sync country + world ranking whenever the games_played count changes,
+  // and re-run once the profile country becomes available (first launch).
+  // The country is read inside the effect so a profile-changed re-render
+  // (even without a language change) always re-syncs.
   useEffect(() => {
     let cancelled = false;
     void syncCountryRank(stats.gamesPlayed).then(res => {
@@ -126,7 +133,7 @@ export default function HomePage() {
       if (!cancelled) setWorldLeaders(res);
     });
     return () => { cancelled = true; };
-  }, [stats.gamesPlayed]);
+  }, [stats.gamesPlayed, profileVersion]);
 
   useEffect(() => {
     const onFocus = () => {

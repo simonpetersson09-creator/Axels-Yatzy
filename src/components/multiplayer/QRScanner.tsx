@@ -36,7 +36,8 @@ export function QRScanner({ open, onClose, onScan }: QRScannerProps) {
   const startedRef = useRef(false);
   // On iOS/Android the WKWebView getUserMedia path is unreliable inside the
   // app; use the native scanner UI instead.
-  const isNative = Capacitor.isNativePlatform();
+  const isNative =
+    Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('CapacitorBarcodeScanner');
 
   // Keep latest callbacks in refs so the effect doesn't re-run on every render
   const onScanRef = useRef(onScan);

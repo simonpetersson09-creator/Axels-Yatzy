@@ -225,6 +225,9 @@ function bestPlacementValue(
     // instead of just baseline EV. This keeps yatzy/chance/full-house safe
     // and pushes the AI toward dumping ones/twos/straights first.
     if (raw === 0) {
+      // Never zero a premium category while another available slot would
+      // still give real points — that reads as throwing the game.
+      if (anyScoringOption && PREMIUM_CATS.has(catId)) continue;
       let penalty = SACRIFICE_PENALTY[catId] * sacrificeScale;
       // Yatzy in particular gets extra protection while plenty of turns remain.
       if (catId === 'yatzy') penalty *= lateGameFactor * 2 + 0.5;

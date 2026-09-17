@@ -225,6 +225,19 @@ export default function GamePage() {
       } else {
         const currentPlayer = gs.players[gs.currentPlayerIndex];
         const locks = aiDecideLocks(gs.dice, currentPlayer.scores, gs.rollsLeft);
+        // If the AI wants to keep every die (e.g. it already has a straight
+        // or a full hand), rerolling changes nothing — skip the pointless
+        // shake and go straight to picking a category.
+        if (locks.every(Boolean)) {
+          const cat = aiPickCategory(gs.dice, currentPlayer.scores);
+          setAiChosenCategory(cat);
+          setAiThinking(false);
+          innerTimer = setTimeout(() => {
+            selectCategoryFnRef.current(cat);
+            setAiChosenCategory(null);
+          }, 1200);
+          return;
+        }
         setLocks(locks);
         innerTimer = setTimeout(() => {
           rollFnRef.current();

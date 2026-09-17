@@ -428,9 +428,10 @@ function generateCandidateLocks(dice: number[], available: Set<string>): boolean
 
 function MC_SAMPLES(rollsRemaining: number): number {
   // More rolls left = more variance, more samples needed.
-  // Moderately boosted from 90/60 → 140/90 for steadier EV estimates
-  // without making decisions visibly slow.
-  return rollsRemaining >= 2 ? 140 : 90;
+  // Boosted from 140/90 → 300/200 for noticeably steadier EV estimates —
+  // fewer sporadic "odd" keep/category picks mid-game.
+  // Cost is a fraction of a second per roll, imperceptible.
+  return rollsRemaining >= 2 ? 300 : 200;
 }
 
 function evaluateKeepEV(

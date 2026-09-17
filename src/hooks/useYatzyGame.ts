@@ -42,8 +42,15 @@ export function useYatzyGame(localId?: string) {
     // Try to restore saved game on mount. `isRolling` must never survive a
     // reload/suspension: the timer that would have cleared it is gone, so a
     // persisted `true` freezes the game (the AI effect bails while rolling).
-    const saved = loadGameState<GameState>(localId);
-    return saved ? { ...saved, isRolling: false } : null;
+    const saved = loadGameState<unknown>(localId);
+    if (!isValidGameState(saved)) {
+      if (saved) {
+        console.warn('Discarding corrupt saved game state');
+        clearLocalActiveGame(localId);
+      }
+      return null;
+    }
+    return { ...saved, isRolling: false };
   });
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

@@ -197,11 +197,21 @@ function bestPlacementValue(
   // When very few categories remain, future opportunity cost shrinks
   // (we will rarely get a "better" version of this hand). Pull baselines
   // down and soften premium-protection so the AI takes immediate points.
+  // Premium protection is floored so the AI never dumps Yatzy/a straight
+  // for a couple of points elsewhere just because the game is almost over.
   const remaining = available.length;
   const veryLate = remaining <= 3;
-  const baselineScale = veryLate ? Math.max(0.35, remaining / 5) : 1;
-  const sacrificeScale = veryLate ? Math.max(0.45, remaining / 5) : 1;
-  const loyaltyScale = veryLate ? Math.max(0.4, remaining / 5) : 1;
+  const baselineScale = veryLate ? Math.max(0.5, remaining / 5) : 1;
+  const sacrificeScale = veryLate ? Math.max(0.75, remaining / 4) : 1;
+  const loyaltyScale = veryLate ? Math.max(0.6, remaining / 5) : 1;
+
+  // Any available category that would actually score points right now?
+  // Used below to hard-block zeroing a premium category while real
+  // points are still on the table.
+  const anyScoringOption = available.some(c => calculateScore(dice, c) > 0);
+  const PREMIUM_CATS: ReadonlySet<CategoryId> = new Set([
+    'yatzy', 'fullHouse', 'largeStraight', 'smallStraight', 'fourOfAKind',
+  ]);
 
   for (const catId of available) {
     const raw = calculateScore(dice, catId);

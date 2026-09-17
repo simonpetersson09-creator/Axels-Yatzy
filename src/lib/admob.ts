@@ -31,9 +31,9 @@ function interstitialAdId(): string {
     : ADMOB_CONFIG.interstitialAdUnitIdIOS;
 }
 
-/** AdMob finns bara på native-plattform (iOS). */
+/** AdMob finns bara på native-plattform (iOS) och när plugin:et är registrerat. */
 export function isAdMobAvailable(): boolean {
-  return Capacitor.isNativePlatform();
+  return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('AdMob');
 }
 
 type AdMobModule = typeof import('@capacitor-community/admob');

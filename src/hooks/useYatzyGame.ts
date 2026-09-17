@@ -11,6 +11,30 @@ function createPlayer(name: string, index: number): Player {
   };
 }
 
+/**
+ * A persisted save can be truncated (iOS kills the app mid-write) or come from
+ * an older/newer schema. Anything that fails this check is discarded rather
+ * than handed to the UI, which indexes `players` unconditionally.
+ */
+function isValidGameState(value: unknown): value is GameState {
+  if (!value || typeof value !== 'object') return false;
+  const s = value as Partial<GameState>;
+  if (!Array.isArray(s.players) || s.players.length === 0) return false;
+  const playersOk = s.players.every(
+    p => p && typeof p === 'object' && typeof p.id === 'string' &&
+      typeof p.name === 'string' && p.scores && typeof p.scores === 'object',
+  );
+  if (!playersOk) return false;
+  if (typeof s.currentPlayerIndex !== 'number' ||
+      s.currentPlayerIndex < 0 || s.currentPlayerIndex >= s.players.length) return false;
+  if (!Array.isArray(s.dice) || s.dice.length !== 5) return false;
+  if (!Array.isArray(s.lockedDice) || s.lockedDice.length !== 5) return false;
+  if (typeof s.rollsLeft !== 'number' || typeof s.round !== 'number') return false;
+  if (typeof s.gameOver !== 'boolean') return false;
+  return true;
+}
+
+
 export function useYatzyGame(localId?: string) {
   const localIdRef = useRef(localId);
   localIdRef.current = localId;
@@ -18,8 +42,15 @@ export function useYatzyGame(localId?: string) {
     // Try to restore saved game on mount. `isRolling` must never survive a
     // reload/suspension: the timer that would have cleared it is gone, so a
     // persisted `true` freezes the game (the AI effect bails while rolling).
-    const saved = loadGameState<GameState>(localId);
-    return saved ? { ...saved, isRolling: false } : null;
+    const saved = loadGameState<unknown>(localId);
+    if (!isValidGameState(saved)) {
+      if (saved) {
+        console.warn('Discarding corrupt saved game state');
+        clearLocalActiveGame(localId);
+      }
+      return null;
+    }
+    return { ...saved, isRolling: false };
   });
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

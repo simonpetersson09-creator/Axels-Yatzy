@@ -407,9 +407,9 @@ export function useMultiplayerGame() {
     // Heartbeat: update last_active_at every 15s
     if (heartbeatRef.current) clearInterval(heartbeatRef.current);
     // Send immediately
-    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
     heartbeatRef.current = setInterval(() => {
-      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
     }, HEARTBEAT_INTERVAL_MS);
   }, [sessionId]);
 
@@ -667,7 +667,7 @@ export function useMultiplayerGame() {
     pendingRollUpdateRef.current = null;
 
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: initial.gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: initial.gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
 
     // Do NOT await pending lock RPCs here — that added a visible delay between
     // the tap and the dice starting to spin (one server round-trip whenever the
@@ -956,7 +956,7 @@ export function useMultiplayerGame() {
     } : prev);
 
     // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then();
+    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
 
     // Release the optimistic hold on the animation clock, NOT on the network.
     // Previously we awaited submit-score (up to NETWORK_TIMEOUT_MS) before the

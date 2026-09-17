@@ -484,7 +484,7 @@ export default function HomePage() {
           <div className="flex flex-col gap-2.5">
             <motion.button
               onClick={() => setShowQuickMatch(true)}
-              className="w-[88%] mx-auto py-3 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
+              className="w-full py-3 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
               whileTap={{ scale: 0.97 }}
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}
@@ -494,7 +494,7 @@ export default function HomePage() {
 
             <motion.button
               onClick={() => navigate('/multiplayer')}
-              className="w-[88%] mx-auto py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow flex items-center justify-center gap-2"
+              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow flex items-center justify-center gap-2"
               whileTap={{ scale: 0.97 }}
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}

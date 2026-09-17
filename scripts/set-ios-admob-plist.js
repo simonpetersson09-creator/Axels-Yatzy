@@ -1,45 +1,70 @@
 /**
- * Patch iOS Info.plist with the real AdMob App ID (GADApplicationIdentifier).
+ * Patch iOS Info.plist with the keys the app needs at runtime.
+ *
+ * Missing keys here are fatal on iOS:
+ *  - GADApplicationIdentifier  → Google AdMob SDK crashes the app on init.
+ *  - NSCameraUsageDescription  → iOS terminates the process when the camera
+ *                                permission prompt would appear (QR scanner).
  *
  * Run after `npx cap add ios` / `npx cap sync ios` so the native iOS project
- * exists. The script is idempotent: it adds the key if missing, or updates it
+ * exists. The script is idempotent: it adds keys if missing, or updates them
  * if already present.
  */
 import { readFile, writeFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 
-const APP_ID_IOS = 'ca-app-pub-7448540924654868~6494873071';
 const PLIST_PATH = resolve(process.cwd(), 'ios/App/App/Info.plist');
+
+/** key → string value that must be present in Info.plist. */
+const REQUIRED_STRING_KEYS = {
+  GADApplicationIdentifier: 'ca-app-pub-7448540924654868~6494873071',
+  NSCameraUsageDescription:
+    'Kameran används endast för att skanna QR-koder när du ansluter till en väns spel.',
+  NSPhotoLibraryUsageDescription:
+    'Bildbiblioteket används endast om du vill välja en egen profilbild.',
+};
+
+function upsertStringKey(content, key, value) {
+  const keyTag = `<key>${key}</key>`;
+  if (content.includes(keyTag)) {
+    const re = new RegExp(`(<key>${key}</key>\\s*)<string>[^<]*</string>`);
+    console.log(`[iOS plist] Updated ${key}.`);
+    return content.replace(re, `$1<string>${value}</string>`);
+  }
+  console.log(`[iOS plist] Added ${key}.`);
+  return content.replace(
+    /<\/dict>\s*<\/plist>/,
+    `  <key>${key}</key>\n  <string>${value}</string>\n</dict>\n</plist>`,
+  );
+}
 
 async function main() {
   if (!existsSync(PLIST_PATH)) {
     console.warn(
-      `[AdMob] Info.plist not found at ${PLIST_PATH}. Run "npx cap add ios" first, then re-run this script.`
+      `[iOS plist] Info.plist not found at ${PLIST_PATH}. Run "npx cap add ios" first, then re-run this script.`,
     );
     process.exit(0);
   }
 
   let content = await readFile(PLIST_PATH, 'utf-8');
-
-  if (content.includes('<key>GADApplicationIdentifier</key>')) {
-    content = content.replace(
-      /(<key>GADApplicationIdentifier<\/key>\s*)<string>[^<]*<\/string>/,
-      `$1<string>${APP_ID_IOS}</string>`
-    );
-    console.log('[AdMob] Updated existing GADApplicationIdentifier.');
-  } else {
-    content = content.replace(
-      /<\/dict>\s*<\/plist>/,
-      `  <key>GADApplicationIdentifier</key>\n  <string>${APP_ID_IOS}</string>\n</dict>\n</plist>`
-    );
-    console.log('[AdMob] Added GADApplicationIdentifier to Info.plist.');
+  for (const [key, value] of Object.entries(REQUIRED_STRING_KEYS)) {
+    content = upsertStringKey(content, key, value);
   }
-
   await writeFile(PLIST_PATH, content, 'utf-8');
+
+  // Verify — a silently-failed regex replace must not pass unnoticed.
+  const missing = Object.keys(REQUIRED_STRING_KEYS).filter(
+    (key) => !content.includes(`<key>${key}</key>`),
+  );
+  if (missing.length) {
+    console.error(`[iOS plist] FAILED to set required keys: ${missing.join(', ')}`);
+    process.exit(1);
+  }
+  console.log('[iOS plist] All required keys present.');
 }
 
 main().catch((err) => {
-  console.error('[AdMob] Failed to update Info.plist:', err);
+  console.error('[iOS plist] Failed to update Info.plist:', err);
   process.exit(1);
 });

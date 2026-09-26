@@ -1,37 +1,28 @@
-# Flytta vänkort till "Spela med vänner"
+# Snabbspel online – steg 1
 
-Målet är att vänkorten (med inbjudningsknapp) som idag ligger på sidan **Vänner och statistik** ska visas i **multiplayer-lobbyn** under "Gå med"-knappen. Knappen *"Vänner och statistik →"* försvinner från startsidan. Statistik per vän nås istället genom att trycka på ett vänkort i lobbyn.
+## Vad spelaren ser
+1. Trycker på **Snabbspel** och väljer **Online (1 mot 1)** eller **Mot datorn** som idag.
+2. Skärmen "Söker motståndare…" visas med en nedräkning på 10 sekunder och en Avbryt-knapp.
+3. **Motståndare hittad:** matchen startar direkt i samma spelvy som vänmatcher, med motståndarens namn och flagga.
+4. **Ingen hittad:** en vanlig snabbmatch mot datorn startar automatiskt, med tydlig datorikon.
 
-## Vad som ändras
-
-1. **Ny komponent `FriendsList`** (`src/components/multiplayer/FriendsList.tsx`)
-   - Innehåller all logik som idag finns i `FriendStatsPage`s listvy: hämtning av `friend_match_results`, realtidsuppdatering, hopslagningar/alias, dolda vänner, aktiva inbjudningar och inbjudningsmodalen.
-   - Renderar samma kort som idag (namn, W/L/D, senaste match, "Bjud in"-knapp, pågående-match-indikator).
-   - Klick på ett kort → `navigate('/friend-stats', { state: { selectedId } })` för att se historik/detalj.
-   - Visar tomt-läge ("Spela med en vän för att bygga upp statistik") när inga vänner finns ännu.
-
-2. **`LobbyJoinForm`** (`src/components/multiplayer/LobbyJoinForm.tsx`)
-   - Under "Gå med"-knappen visas en sektion *"Mina vänner"* med `<FriendsList />`.
-   - Rubrik + tunn avgränsare så att listan inte konkurrerar visuellt med Skapa/Gå med-flödet.
-
-3. **`FriendStatsPage`** (`src/pages/FriendStatsPage.tsx`)
-   - Listvyn tas bort. Sidan blir enbart **detaljvy** för en vald vän (historik, hopslagningar, ta bort-knapp).
-   - Vald vän läses från `location.state.selectedId`. Saknas state → redirect till `/multiplayer` (där listan nu bor).
-   - "Tillbaka"-pilen går till `/multiplayer`.
-
-4. **`HomePage`** (`src/pages/HomePage.tsx`)
-   - "Vänner och statistik →"-knappen tas bort helt.
+## Regler i steg 1
+- Bara 2 spelare. Först till kvarn, ingen nivåmatchning.
+- Ingen chatt utöver de snabbmeddelanden som redan finns.
+- Onlinematcher räknas till världs- och landsrankingen som vänmatcher.
+- Onlinematcher pausas tills vidare som vänmatcher. Klocka per tur och att datorn tar över kommer i steg 2.
+- Motståndaren sparas inte automatiskt som vän (det kommer i steg 3).
 
 ## Tekniska detaljer
-
-- All Supabase-data, kanaler och invite-state flyttas oförändrade till `FriendsList` så att samma realtidsbeteende behålls.
-- `pendingInvite`-modalen flyttar med komponenten (renderas via portal/fixed overlay som idag).
-- Routen `/friend-stats` finns kvar i `App.tsx` — endast innehållet ändras.
-- Översättningsnycklar `friendStats`, `friendStatsTitle`, `friendStatsEmpty`, `friendStatsBack` återanvänds. En ny rubrik-nyckel `myFriends` läggs till på alla 10 språk för sektionen i lobbyn.
-- Ingen schemaändring, inga ändringar i serverlogik eller spelregler.
-
-## Påverkan
-
-- Startsidan blir mindre — färre knappar under stat-grid.
-- Multiplayer-lobbyn blir längre och scrollar (redan `overflow-y-auto`).
-- Befintliga djuplänkar till `/friend-stats` utan state landar i lobbyn istället för en tom sida.
+- Ny tabell `matchmaking_queue` (session_id, player_name, country, created_at, matched_game_id). Inga direkta klienträttigheter; bara service_role, med GRANTs och RLS enligt befintligt mönster.
+- Ny SECURITY DEFINER-funktion `find_or_join_match(p_session_id, p_player_name)`:
+  - Låser äldsta väntande post (`FOR UPDATE SKIP LOCKED`, max 15 s gammal, annan session).
+  - Hittas en: skapar spel via befintlig spelskapande logik, lägger till båda spelarna, sätter status `playing` och sparar `matched_game_id` på båda posterna.
+  - Annars: lägger in/uppdaterar egen post och returnerar "waiting".
+- `leave_matchmaking(p_session_id)` tar bort egen post vid Avbryt eller timeout.
+- Klienten anropar funktionen via en ny edge function `matchmaking` och frågar var 1,5 s (plus realtime på `games` när match hittas). Vid timeout: `leave_matchmaking` och sedan navigering till befintlig `/game` mot datorn.
+- Nya filer: `src/pages/MatchmakingPage.tsx`, `src/lib/matchmaking.ts`. Liten ändring i Snabbspel-flödet på startsidan/`GameSetupPage` för valet Online/Dator.
+- Den matchade spelet öppnas i befintlig `MultiplayerGamePage` via `MultiplayerProvider`, så spelregler, heartbeat och notiser återanvänds.
+- Gamla köposter städas bort i befintlig `cleanup-games`.
+- Nya texter översätts till alla nio språk.
+- Ny rad i `AGENTS.md` om matchmaking-arkitekturen.

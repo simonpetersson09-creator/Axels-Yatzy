@@ -210,7 +210,7 @@ function bestPlacementValue(
   // points are still on the table.
   const anyScoringOption = available.some(c => calculateScore(dice, c) > 0);
   const PREMIUM_CATS: ReadonlySet<CategoryId> = new Set([
-    'yatzy', 'fullHouse', 'largeStraight', 'smallStraight', 'fourOfAKind',
+    'yatzy', 'fullHouse',
   ]);
 
   for (const catId of available) {

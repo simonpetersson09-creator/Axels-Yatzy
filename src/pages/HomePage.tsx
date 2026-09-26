@@ -512,6 +512,13 @@ export default function HomePage() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.25 }}
               >
+                <motion.button
+                  onClick={() => navigate('/matchmaking')}
+                  className="w-full py-3 rounded-xl bg-secondary text-foreground font-display font-bold text-sm border border-primary/40 flex items-center justify-center gap-2"
+                  whileTap={{ scale: 0.97 }}
+                >
+                  🌍 {t('onlineMatch')}
+                </motion.button>
                 <p className="text-center text-sm text-muted-foreground font-medium">
                   {t('selectPlayerCount')}
                 </p>

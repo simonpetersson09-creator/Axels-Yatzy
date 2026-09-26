@@ -264,4 +264,7 @@ export const da: typeof sv = {
   errRollDice: 'Kunne ikke kaste terningerne',
   errSubmitScore: 'Kunne ikke gemme score',
   pickDiceHint: 'Vælg terninger\nat beholde',
+  searchingOpponent: 'Søger modstander…',
+  searchingOpponentHint: 'Findes ingen, spiller du mod computeren',
+  cancelSearch: 'Annuller',
 };

@@ -25,6 +25,7 @@ import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
+import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
 
@@ -60,6 +61,7 @@ export default function HomePage() {
   // Bumps whenever any profile field (country, name, avatar) changes, so
   // rank sync re-runs even when the language itself didn't change.
   const [profileVersion, setProfileVersion] = useState(0);
+  const [onlineSearch, setOnlineSearch] = useState<null | { humanName: string; playerNames: string[]; aiPlayers: number[] }>(null);
   useEffect(() => subscribeProfileChanges(() => setProfileVersion(v => v + 1)), []);
   const adInFlightRef = useRef(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
@@ -504,6 +506,25 @@ export default function HomePage() {
           </div>
 
           <AnimatePresence>
+            {onlineSearch && (
+              <QuickMatchSearch
+                playerName={onlineSearch.humanName}
+                onMatched={(id) => {
+                  setOnlineSearch(null);
+                  trackEvent('quick_match_online_matched', {}, { gameMode: 'quick_match_online' });
+                  navigate(`/multiplayer-game?gameId=${id}`);
+                }}
+                onNoMatch={() => {
+                  const { playerNames, aiPlayers } = onlineSearch;
+                  setOnlineSearch(null);
+                  trackEvent('quick_match_started', { opponents: 1, fallback: true }, { gameMode: 'quick_match' });
+                  navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
+                }}
+                onCancel={() => setOnlineSearch(null)}
+              />
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
             {showQuickMatch && (
               <motion.div
                 className="space-y-3"
@@ -526,6 +547,10 @@ export default function HomePage() {
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
                         if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
                           toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
+                          return;
+                        }
+                        if (opponents === 1) {
+                          setOnlineSearch({ humanName, playerNames, aiPlayers });
                           return;
                         }
                         trackEvent('quick_match_started', { opponents }, { gameMode: 'quick_match' });

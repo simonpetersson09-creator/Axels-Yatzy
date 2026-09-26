@@ -273,6 +273,9 @@ export const sv = {
   errRollDice: 'Kunde inte kasta tärningarna',
   errSubmitScore: 'Kunde inte spara poäng',
   pickDiceHint: 'Välj tärningar\natt behålla',
+  searchingOpponent: 'Söker motståndare…',
+  searchingOpponentHint: 'Hittas ingen spelar du mot datorn',
+  cancelSearch: 'Avbryt',
 };
 
 export type TranslationKey = keyof typeof sv;

@@ -264,4 +264,7 @@ export const no: typeof sv = {
   errRollDice: 'Kunne ikke kaste terningene',
   errSubmitScore: 'Kunne ikke lagre poeng',
   pickDiceHint: 'Velg terninger\nå beholde',
+  searchingOpponent: 'Søker motstander…',
+  searchingOpponentHint: 'Finnes ingen, spiller du mot datamaskinen',
+  cancelSearch: 'Avbryt',
 };

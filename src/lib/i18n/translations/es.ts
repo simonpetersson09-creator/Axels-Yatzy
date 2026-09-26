@@ -264,4 +264,7 @@ export const es: typeof sv = {
   errRollDice: 'No se pudieron tirar los dados',
   errSubmitScore: 'No se pudo guardar la puntuación',
   pickDiceHint: 'Elige dados\npara guardar',
+  searchingOpponent: 'Buscando rival…',
+  searchingOpponentHint: 'Si no se encuentra a nadie, juegas contra el ordenador',
+  cancelSearch: 'Cancelar',
 };

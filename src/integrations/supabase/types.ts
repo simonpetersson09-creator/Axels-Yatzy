@@ -279,38 +279,6 @@ export type Database = {
         }
         Relationships: []
       }
-      matchmaking_queue: {
-        Row: {
-          created_at: string
-          matched_game_id: string | null
-          player_name: string
-          session_id: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          matched_game_id?: string | null
-          player_name: string
-          session_id: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          matched_game_id?: string | null
-          player_name?: string
-          session_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "matchmaking_queue_matched_game_id_fkey"
-            columns: ["matched_game_id"]
-            isOneToOne: false
-            referencedRelation: "games"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       notification_log: {
         Row: {
           delivered: boolean
@@ -493,10 +461,6 @@ export type Database = {
       }
       expire_match: { Args: { p_game_id: string }; Returns: Json }
       expire_stale_matches: { Args: never; Returns: number }
-      find_or_join_match: {
-        Args: { p_player_name: string; p_session_id: string }
-        Returns: Json
-      }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
       get_world_leader: { Args: never; Returns: Json }
       get_world_leaders: { Args: never; Returns: Json }
@@ -518,7 +482,6 @@ export type Database = {
         }
         Returns: Json
       }
-      leave_matchmaking: { Args: { p_session_id: string }; Returns: Json }
       list_invites_for_session: {
         Args: { p_session_id: string }
         Returns: {

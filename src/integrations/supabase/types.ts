@@ -237,6 +237,7 @@ export type Database = {
           forfeited_by_session_id: string | null
           game_code: string
           id: string
+          is_quick_match: boolean
           is_rolling: boolean
           locked_dice: boolean[]
           max_players: number
@@ -253,6 +254,7 @@ export type Database = {
           forfeited_by_session_id?: string | null
           game_code: string
           id?: string
+          is_quick_match?: boolean
           is_rolling?: boolean
           locked_dice?: boolean[]
           max_players?: number
@@ -269,6 +271,7 @@ export type Database = {
           forfeited_by_session_id?: string | null
           game_code?: string
           id?: string
+          is_quick_match?: boolean
           is_rolling?: boolean
           locked_dice?: boolean[]
           max_players?: number

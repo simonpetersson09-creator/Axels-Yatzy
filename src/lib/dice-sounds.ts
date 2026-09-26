@@ -4,7 +4,7 @@ let audioCtx: AudioContext | null = null;
 function getCtx(): AudioContext | null {
   try {
     if (!audioCtx) audioCtx = new AudioContext();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (audioCtx.state === 'suspended') void audioCtx.resume().catch(() => {});
     return audioCtx;
   } catch {
     return null;

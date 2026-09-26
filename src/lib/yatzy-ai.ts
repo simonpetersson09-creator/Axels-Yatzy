@@ -215,7 +215,9 @@ function bestPlacementValue(
 
   for (const catId of available) {
     const raw = calculateScore(dice, catId);
-    const baseline = BASELINE_EV[catId] * baselineScale;
+    // Keep Chance as a late-game safety box: demand a higher sum early on.
+    const chanceHold = catId === 'chance' && remaining > 6 ? 3 : 0;
+    const baseline = BASELINE_EV[catId] * baselineScale + chanceHold;
 
     // Marginal value of placing here = score earned now minus
     // what we'd typically score for that slot later.

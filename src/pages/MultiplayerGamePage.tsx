@@ -25,6 +25,7 @@ import { trackEvent } from '@/lib/analytics';
 import { saveFriendMatchResult } from '@/lib/friend-stats';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
+import { QuickMatchTakeover } from '@/components/multiplayer/QuickMatchTakeover';
 
 const DEBUG = false;
 
@@ -543,6 +544,7 @@ export default function MultiplayerGamePage() {
         boxSizing: 'border-box',
       }}
     >
+      <QuickMatchTakeover gameId={gameId} />
       <YatzyCelebration
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}

@@ -259,4 +259,7 @@ export const de: typeof sv = {
   errRollDice: 'Würfeln nicht möglich',
   errSubmitScore: 'Punktzahl konnte nicht gespeichert werden',
   pickDiceHint: 'Würfel wählen\nzum Behalten',
+  searchingOpponent: 'Suche Gegner…',
+  searchingOpponentHint: 'Wird niemand gefunden, spielst du gegen den Computer',
+  cancelSearch: 'Abbrechen',
 };

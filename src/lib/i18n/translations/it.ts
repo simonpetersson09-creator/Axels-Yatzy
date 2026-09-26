@@ -259,4 +259,7 @@ export const it: typeof sv = {
   errRollDice: 'Impossibile lanciare i dadi',
   errSubmitScore: 'Impossibile salvare il punteggio',
   pickDiceHint: 'Scegli i dadi\nda tenere',
+  searchingOpponent: 'Cerco avversario…',
+  searchingOpponentHint: 'Se non si trova nessuno, giochi contro il computer',
+  cancelSearch: 'Annulla',
 };

@@ -264,4 +264,7 @@ export const fi: typeof sv = {
   errRollDice: 'Noppia ei voitu heittää',
   errSubmitScore: 'Pisteitä ei voitu tallentaa',
   pickDiceHint: 'Valitse nopat\njotka pidät',
+  searchingOpponent: 'Etsitään vastustajaa…',
+  searchingOpponentHint: 'Jos ketään ei löydy, pelaat tietokonetta vastaan',
+  cancelSearch: 'Peruuta',
 };

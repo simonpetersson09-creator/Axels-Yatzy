@@ -1,6 +1,6 @@
 # Roadmap – Snabbspel online
 
-- [ ] Utan internet: direkt datormatch (ingen 10 s väntan)
-- [ ] Datorikon vid datorspelare i onlinematcher
-- [ ] "Lägg till vän" efter onlinematch; främlingar hamnar inte automatiskt i vänlistan
-- [ ] Online 3–4 spelare, tomma platser fylls med datorn
+- [x] Utan internet: direkt datormatch (ingen 10 s väntan)
+- [x] Datorikon vid datorspelare i onlinematcher
+- [x] "Lägg till vän" efter onlinematch; främlingar hamnar inte automatiskt i vänlistan
+- [x] Online 3–4 spelare, tomma platser fylls med datorn

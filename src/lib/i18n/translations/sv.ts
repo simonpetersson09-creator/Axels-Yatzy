@@ -276,6 +276,7 @@ export const sv = {
   searchingOpponent: 'Söker motståndare…',
   searchingOpponentHint: 'Hittas ingen spelar du mot datorn',
   cancelSearch: 'Avbryt',
+  computerPlaysFor: 'Datorn spelar åt {name}',
 };
 
 export type TranslationKey = keyof typeof sv;

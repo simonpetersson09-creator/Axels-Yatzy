@@ -1,0 +1,2 @@
+ALTER TABLE public.notification_log DROP CONSTRAINT IF EXISTS notification_log_kind_check;
+ALTER TABLE public.notification_log ADD CONSTRAINT notification_log_kind_check CHECK (kind = ANY (ARRAY['turn'::text, 'reminder'::text, 'takeover'::text]));

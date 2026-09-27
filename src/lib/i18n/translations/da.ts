@@ -267,4 +267,5 @@ export const da: typeof sv = {
   searchingOpponent: 'Søger modstander…',
   searchingOpponentHint: 'Findes ingen, spiller du mod computeren',
   cancelSearch: 'Annuller',
+  computerPlaysFor: 'Computeren spiller for {name}',
 };

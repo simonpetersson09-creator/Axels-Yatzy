@@ -267,4 +267,5 @@ export const fi: typeof sv = {
   searchingOpponent: 'Etsitään vastustajaa…',
   searchingOpponentHint: 'Jos ketään ei löydy, pelaat tietokonetta vastaan',
   cancelSearch: 'Peruuta',
+  computerPlaysFor: 'Tietokone pelaa pelaajan {name} puolesta',
 };

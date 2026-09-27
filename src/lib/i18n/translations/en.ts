@@ -267,4 +267,5 @@ export const en: typeof sv = {
   searchingOpponent: 'Searching for opponent…',
   searchingOpponentHint: 'If no one is found, you play the computer',
   cancelSearch: 'Cancel',
+  computerPlaysFor: 'Computer is playing for {name}',
 };

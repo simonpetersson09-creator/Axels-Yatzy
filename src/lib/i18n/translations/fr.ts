@@ -262,4 +262,5 @@ export const fr: typeof sv = {
   searchingOpponent: 'Recherche d’un adversaire…',
   searchingOpponentHint: 'Si personne n’est trouvé, vous jouez contre l’ordinateur',
   cancelSearch: 'Annuler',
+  computerPlaysFor: 'L\'ordinateur joue pour {name}',
 };

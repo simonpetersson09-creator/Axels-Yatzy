@@ -267,4 +267,5 @@ export const no: typeof sv = {
   searchingOpponent: 'Søker motstander…',
   searchingOpponentHint: 'Finnes ingen, spiller du mot datamaskinen',
   cancelSearch: 'Avbryt',
+  computerPlaysFor: 'Datamaskinen spiller for {name}',
 };

@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
 
-const SEARCH_MS = 10_000;
+const SEARCH_MS = 20_000;
 const POLL_MS = 2_000;
 
 interface Props {

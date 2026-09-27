@@ -8,7 +8,7 @@ import { useTranslation } from '@/lib/i18n';
 
 /** Opponent must have been silent this long on their turn before the computer plays. */
 export const TAKEOVER_AFTER_MS = 60_000;
-const CHECK_MS = 5_000;
+const CHECK_MS = 3_000;
 
 /**
  * Online quick matches only (games.is_quick_match). Plays turns for:

@@ -31,11 +31,13 @@ interface PlayerRow {
   player_name: string;
   scores: Record<string, number | null>;
   last_active_at: string;
+  is_bot?: boolean;
 }
 
-const idle = (p: PlayerRow) => Date.now() - new Date(p.last_active_at).getTime() >= IDLE_MS;
+const idle = (p: PlayerRow) => !!p.is_bot || Date.now() - new Date(p.last_active_at).getTime() >= IDLE_MS;
 
 async function notifyTakeover(sb: Sb, gameId: string, p: PlayerRow) {
+  if (p.is_bot) return;
   const { data: existing } = await sb
     .from("notification_log")
     .select("id")
@@ -77,7 +79,7 @@ async function playTurn(sb: Sb, gameId: string): Promise<boolean> {
   if (!game || game.status !== "playing" || !game.is_quick_match) return false;
   const { data: players } = await sb
     .from("game_players")
-    .select("player_index, session_id, player_name, scores, last_active_at")
+    .select("player_index, session_id, player_name, scores, last_active_at, is_bot")
     .eq("game_id", gameId);
   const list = (players ?? []) as PlayerRow[];
   if (list.length === 0 || !list.every(idle)) return false; // someone is here → client handles it
@@ -141,7 +143,7 @@ Deno.serve(async (req) => {
       const { data: game } = await sb.from("games").select("status, is_quick_match, current_player_index").eq("id", game_id).maybeSingle();
       if (!game?.is_quick_match || game.status !== "playing") return json({ skipped: true });
       const { data: cur } = await sb.from("game_players")
-        .select("player_index, session_id, player_name, scores, last_active_at")
+        .select("player_index, session_id, player_name, scores, last_active_at, is_bot")
         .eq("game_id", game_id).eq("player_index", game.current_player_index).maybeSingle();
       if (!cur || !idle(cur as PlayerRow)) return json({ skipped: true });
       await notifyTakeover(sb, game_id, cur as PlayerRow);

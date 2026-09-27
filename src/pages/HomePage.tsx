@@ -27,6 +27,7 @@ import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Lang
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
+import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
 import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
 
 const item = {
@@ -66,6 +67,22 @@ export default function HomePage() {
   const adInFlightRef = useRef(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
   const [showRatePrompt, setShowRatePrompt] = useState(false);
+  const [showOnlineNews, setShowOnlineNews] = useState(false);
+
+  // One-time announcement of online quick match for existing players.
+  useEffect(() => {
+    if (!shouldShowOnlineNews(stats.gamesPlayed)) return;
+    const timer = setTimeout(() => setShowOnlineNews(true), 900);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const closeOnlineNews = (play: boolean) => {
+    markOnlineNewsSeen();
+    setShowOnlineNews(false);
+    trackEvent(play ? 'online_news_play' : 'online_news_dismiss');
+    if (play) setShowQuickMatch(true);
+  };
 
   // Ask for a rating once the player has finished 5 matches.
   useEffect(() => {

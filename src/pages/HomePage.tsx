@@ -838,7 +838,10 @@ export default function HomePage() {
       </motion.div>
 
       <AnimatePresence>
-        {showRatePrompt && (
+        {showOnlineNews && (
+          <OnlineNewsPrompt onPlay={() => closeOnlineNews(true)} onClose={() => closeOnlineNews(false)} />
+        )}
+        {showRatePrompt && !showOnlineNews && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
         )}
       </AnimatePresence>

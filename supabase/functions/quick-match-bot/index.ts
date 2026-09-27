@@ -100,7 +100,7 @@ async function playTurn(sb: Sb, gameId: string): Promise<boolean> {
       }
       locks = wanted;
     }
-    const { data } = await sb.rpc("perform_roll_dice", { p_game_id: gameId, p_session_id: cur.session_id });
+    const { data } = await sb.rpc("perform_roll_dice", { p_game_id: gameId, p_session_id: cur.session_id, p_client_dice: null });
     if (!data?.success) break;
     dice = data.dice;
     rollsLeft = data.rolls_left;
@@ -110,7 +110,7 @@ async function playTurn(sb: Sb, gameId: string): Promise<boolean> {
   const { data: fresh } = await sb.from("games").select("dice, rolls_left, current_player_index, status").eq("id", gameId).single();
   if (!fresh || fresh.status !== "playing" || fresh.current_player_index !== cur.player_index) return false;
   if (fresh.rolls_left === 3) {
-    const { data } = await sb.rpc("perform_roll_dice", { p_game_id: gameId, p_session_id: cur.session_id });
+    const { data } = await sb.rpc("perform_roll_dice", { p_game_id: gameId, p_session_id: cur.session_id, p_client_dice: null });
     if (data?.dice) fresh.dice = data.dice;
   }
   const category = aiPickCategory(fresh.dice, cur.scores as Record<CategoryId, number | null>);

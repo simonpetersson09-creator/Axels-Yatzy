@@ -268,4 +268,6 @@ export const en: typeof sv = {
   searchingOpponentHint: 'If no one is found, you play the computer',
   cancelSearch: 'Cancel',
   computerPlaysFor: 'Computer is playing for {name}',
+  addStrangerFriend: 'Add {name} as friend',
+  strangerFriendAdded: '{name} is now your friend',
 };

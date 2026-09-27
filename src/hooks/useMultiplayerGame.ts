@@ -209,7 +209,7 @@ export function useMultiplayerGame() {
   const refreshGameState = useCallback(async (gameId: string) => {
     const [gameRes, playersRes] = await Promise.all([
       supabase.from('games').select('*').eq('id', gameId).single(),
-      supabase.from('game_players').select('id, game_id, player_name, player_index, scores').eq('game_id', gameId).order('player_index'),
+      supabase.from('game_players').select('id, game_id, player_name, player_index, scores, is_bot').eq('game_id', gameId).order('player_index'),
     ]);
 
     if (gameRes.error || playersRes.error) {
@@ -228,7 +228,8 @@ export function useMultiplayerGame() {
 
     const players: Player[] = dbPlayers.map(p => ({
       id: p.id,
-      name: p.player_name,
+      // Computer seats in online quick matches are marked with a robot icon.
+      name: p.is_bot ? `🤖 ${p.player_name}` : p.player_name,
       scores: (p.scores as Record<string, number | null>) ?? {},
     }));
 

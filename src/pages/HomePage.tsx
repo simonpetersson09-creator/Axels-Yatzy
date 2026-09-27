@@ -509,15 +509,17 @@ export default function HomePage() {
             {onlineSearch && (
               <QuickMatchSearch
                 playerName={onlineSearch.humanName}
+                players={onlineSearch.playerNames.length}
                 onMatched={(id) => {
+                  const players = onlineSearch.playerNames.length;
                   setOnlineSearch(null);
-                  trackEvent('quick_match_online_matched', {}, { gameMode: 'quick_match_online' });
+                  trackEvent('quick_match_online_matched', { players }, { gameMode: 'quick_match_online' });
                   navigate(`/multiplayer-game?gameId=${id}`);
                 }}
                 onNoMatch={() => {
                   const { playerNames, aiPlayers } = onlineSearch;
                   setOnlineSearch(null);
-                  trackEvent('quick_match_started', { opponents: 1, fallback: true }, { gameMode: 'quick_match' });
+                  trackEvent('quick_match_started', { opponents: aiPlayers.length, fallback: true }, { gameMode: 'quick_match' });
                   navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
                 }}
                 onCancel={() => setOnlineSearch(null)}
@@ -549,12 +551,7 @@ export default function HomePage() {
                           toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
                           return;
                         }
-                        if (opponents === 1) {
-                          setOnlineSearch({ humanName, playerNames, aiPlayers });
-                          return;
-                        }
-                        trackEvent('quick_match_started', { opponents }, { gameMode: 'quick_match' });
-                        navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
+                        setOnlineSearch({ humanName, playerNames, aiPlayers });
                       }}
                       className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"
                       whileTap={{ scale: 0.95 }}

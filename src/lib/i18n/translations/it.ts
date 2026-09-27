@@ -263,4 +263,6 @@ export const it: typeof sv = {
   searchingOpponentHint: 'Se non si trova nessuno, giochi contro il computer',
   cancelSearch: 'Annulla',
   computerPlaysFor: 'Il computer gioca per {name}',
+  addStrangerFriend: 'Aggiungi {name} come amico',
+  strangerFriendAdded: '{name} ora è tuo amico',
 };

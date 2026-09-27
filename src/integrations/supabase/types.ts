@@ -191,6 +191,7 @@ export type Database = {
         Row: {
           game_id: string
           id: string
+          is_bot: boolean
           joined_at: string
           last_active_at: string
           player_index: number
@@ -201,6 +202,7 @@ export type Database = {
         Insert: {
           game_id: string
           id?: string
+          is_bot?: boolean
           joined_at?: string
           last_active_at?: string
           player_index: number
@@ -211,6 +213,7 @@ export type Database = {
         Update: {
           game_id?: string
           id?: string
+          is_bot?: boolean
           joined_at?: string
           last_active_at?: string
           player_index?: number
@@ -289,6 +292,7 @@ export type Database = {
           player_name: string
           session_id: string
           updated_at: string
+          wanted_players: number
         }
         Insert: {
           created_at?: string
@@ -296,6 +300,7 @@ export type Database = {
           player_name: string
           session_id: string
           updated_at?: string
+          wanted_players?: number
         }
         Update: {
           created_at?: string
@@ -303,6 +308,7 @@ export type Database = {
           player_name?: string
           session_id?: string
           updated_at?: string
+          wanted_players?: number
         }
         Relationships: [
           {
@@ -496,8 +502,13 @@ export type Database = {
       }
       expire_match: { Args: { p_game_id: string }; Returns: Json }
       expire_stale_matches: { Args: never; Returns: number }
+      finalize_matchmaking: { Args: { p_session_id: string }; Returns: Json }
       find_or_join_match: {
-        Args: { p_player_name: string; p_session_id: string }
+        Args: {
+          p_player_name: string
+          p_players?: number
+          p_session_id: string
+        }
         Returns: Json
       }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
@@ -507,6 +518,10 @@ export type Database = {
       heartbeat: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: undefined
+      }
+      internal_create_quick_match: {
+        Args: { p_names: string[]; p_sessions: string[]; p_size: number }
+        Returns: string
       }
       internal_record_friend_match: {
         Args: { p_game_id: string }

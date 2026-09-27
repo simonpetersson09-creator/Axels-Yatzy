@@ -277,6 +277,8 @@ export const sv = {
   searchingOpponentHint: 'Hittas ingen spelar du mot datorn',
   cancelSearch: 'Avbryt',
   computerPlaysFor: 'Datorn spelar åt {name}',
+  addStrangerFriend: 'Lägg till {name} som vän',
+  strangerFriendAdded: '{name} är nu din vän',
 };
 
 export type TranslationKey = keyof typeof sv;

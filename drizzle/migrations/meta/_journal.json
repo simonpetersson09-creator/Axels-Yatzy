@@ -15,6 +15,13 @@
       "when": 1790502703761,
       "tag": "0001_notification_kind_takeover",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790515378513,
+      "tag": "0002_quick_match_multi_and_bots",
+      "breakpoints": true
     }
   ]
 }

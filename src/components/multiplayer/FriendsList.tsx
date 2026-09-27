@@ -81,11 +81,21 @@ export function FriendsList() {
         .eq('session_id', myId)
         .order('joined_at', { ascending: false })
         .limit(100);
-      const gameIds = Array.from(new Set((mine ?? []).map((r) => r.game_id)));
+      const allIds = Array.from(new Set((mine ?? []).map((r) => r.game_id)));
+      if (cancelled || allIds.length === 0) return;
+      // Online quick matches (strangers + computer) are only added via the
+      // explicit "Add as friend" button on the results screen.
+      const { data: friendGames } = await supabase
+        .from('games')
+        .select('id')
+        .in('id', allIds)
+        .eq('is_quick_match', false);
+      const gameIds = (friendGames ?? []).map((g) => g.id);
       if (cancelled || gameIds.length === 0) return;
       const { data: others } = await supabase
         .from('game_players')
         .select('session_id, player_name')
+        .eq('is_bot', false)
         .in('game_id', gameIds);
       if (cancelled || !others) return;
       addKnownFriends(

@@ -263,4 +263,6 @@ export const fr: typeof sv = {
   searchingOpponentHint: 'Si personne n’est trouvé, vous jouez contre l’ordinateur',
   cancelSearch: 'Annuler',
   computerPlaysFor: 'L\'ordinateur joue pour {name}',
+  addStrangerFriend: 'Ajouter {name} en ami',
+  strangerFriendAdded: '{name} est maintenant ton ami',
 };

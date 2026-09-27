@@ -8,14 +8,15 @@ import { useTranslation } from '@/lib/i18n';
 
 /** Opponent must have been silent this long on their turn before the computer plays. */
 export const TAKEOVER_AFTER_MS = 60_000;
-const CHECK_MS = 5_000;
+const CHECK_MS = 3_000;
 
 /**
- * Online quick matches only (games.is_quick_match): when the opponent has left
- * (no heartbeat for 60 s) and it is their turn, this client plays their turn
- * with the computer AI and shows a "Computer is playing for X" badge. The absent
- * player gets a one-time push. If they come back, their heartbeat resumes and
- * they play again themselves. Friend matches are never affected.
+ * Online quick matches only (games.is_quick_match). Plays turns for:
+ *  - computer seats (game_players.is_bot) immediately, and
+ *  - human opponents who have been silent for 60 s on their turn (shows a
+ *    "Computer is playing for X" badge and sends them a one-time push).
+ * Exactly one client drives the computer: the present human with the lowest
+ * seat index, so turns are never played twice. Friend matches are never affected.
  */
 export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
   const { t } = useTranslation();
@@ -35,21 +36,35 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
         if (!game || !game.is_quick_match || game.status !== 'playing') { setBotFor(null); return; }
         const { data: players } = await supabase
           .from('game_players')
-          .select('player_index, player_name, scores, session_id, last_active_at')
+          .select('player_index, player_name, scores, session_id, last_active_at, is_bot')
           .eq('game_id', gameId);
-        const current = players?.find((p) => p.player_index === game.current_player_index);
-        if (!current || current.session_id === me || !players?.some((p) => p.session_id === me)) {
-          setBotFor(null);
+        const list = players ?? [];
+        const mine = list.find((p) => p.session_id === me);
+        const current = list.find((p) => p.player_index === game.current_player_index);
+        if (!mine || !current || current.session_id === me) { setBotFor(null); return; }
+
+        const isIdle = (p: typeof current) =>
+          p.is_bot || Date.now() - new Date(p.last_active_at).getTime() >= TAKEOVER_AFTER_MS;
+        if (!isIdle(current)) { setBotFor(null); return; }
+
+        // Only the present human with the lowest seat drives the computer.
+        const controller = list
+          .filter((p) => !p.is_bot && (p.session_id === me || !isIdle(p)))
+          .sort((a, b) => a.player_index - b.player_index)[0];
+        if (controller?.session_id !== me) {
+          setBotFor(current.is_bot ? null : current.player_name);
           return;
         }
-        const idleMs = Date.now() - new Date(current.last_active_at).getTime();
-        if (idleMs < TAKEOVER_AFTER_MS) { setBotFor(null); return; }
 
         busyRef.current = true;
-        setBotFor(current.player_name);
-        if (!notifiedRef.current) {
-          notifiedRef.current = true;
-          void supabase.functions.invoke('quick-match-bot', { body: { game_id: gameId } }).then(() => {}, () => {});
+        if (!current.is_bot) {
+          setBotFor(current.player_name);
+          if (!notifiedRef.current) {
+            notifiedRef.current = true;
+            void supabase.functions.invoke('quick-match-bot', { body: { game_id: gameId } }).then(() => {}, () => {});
+          }
+        } else {
+          setBotFor(null);
         }
         await playBotTurn(
           game as any,

@@ -268,4 +268,6 @@ export const no: typeof sv = {
   searchingOpponentHint: 'Finnes ingen, spiller du mot datamaskinen',
   cancelSearch: 'Avbryt',
   computerPlaysFor: 'Datamaskinen spiller for {name}',
+  addStrangerFriend: 'Legg til {name} som venn',
+  strangerFriendAdded: '{name} er nå din venn',
 };

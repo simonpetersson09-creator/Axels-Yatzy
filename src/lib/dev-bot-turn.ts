@@ -32,7 +32,12 @@ interface BotPlayer {
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 /** Subscribe to the same realtime channel the app uses, so the human sees the spin. */
-async function openChannel(gameId: string) {
+async function openChannel(gameId: string): Promise<{ channel: ReturnType<typeof supabase.channel>; owned: boolean }> {
+  // Reuse the game screen's own channel when it exists: creating a second one
+  // with the same topic and removing it afterwards would tear down the
+  // screen's realtime subscription.
+  const existing = supabase.getChannels().find((c) => c.topic === `realtime:yatzy-${gameId}`);
+  if (existing) return { channel: existing, owned: false };
   const channel = supabase.channel(`yatzy-${gameId}`);
   await new Promise<void>((resolve) => {
     let done = false;
@@ -40,7 +45,7 @@ async function openChannel(gameId: string) {
     channel.subscribe((status) => { if (status === 'SUBSCRIBED') finish(); });
     setTimeout(finish, 2000);
   });
-  return channel;
+  return { channel, owned: true };
 }
 
 export async function playBotTurn(
@@ -49,7 +54,7 @@ export async function playBotTurn(
   sessionId: string,
   log: (msg: string) => void = () => {},
 ): Promise<void> {
-  const channel = await openChannel(game.id);
+  const { channel, owned } = await openChannel(game.id);
   try {
     let dice = game.dice;
     let rollsLeft = game.rolls_left;
@@ -155,7 +160,7 @@ export async function playBotTurn(
       if (attempt < 3) await wait(600 * attempt);
     }
   } finally {
-    void supabase.removeChannel(channel);
+    if (owned) void supabase.removeChannel(channel);
   }
 }
 

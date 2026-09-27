@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, Flag, Swords, Loader2 } from 'lucide-react';
+import { Trophy, Flag, Swords, Loader2, UserPlus, Check } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { sendInvite } from '@/lib/invites';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { toast } from 'sonner';
 import { HeadToHeadStats } from '@/components/game/HeadToHeadStats';
+import { addKnownFriends, getKnownFriends } from '@/lib/known-friends';
+import { unhideFriend } from '@/lib/friend-stats';
 
 interface PlayerResult {
   name: string;
@@ -33,6 +35,37 @@ export default function ResultsPage() {
   const gameId: string | undefined = location.state?.gameId;
   const playerNames: string[] = results.map(r => r.name);
   const [inviting, setInviting] = useState(false);
+  // Online quick match: human opponents that can be added as friends.
+  const [quickMatch, setQuickMatch] = useState<null | Array<{ id: string; name: string }>>(null);
+  const [, setFriendsVersion] = useState(0);
+
+  useEffect(() => {
+    if (!isMultiplayer || !gameId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: g } = await supabase.from('games').select('is_quick_match').eq('id', gameId).maybeSingle();
+        if (cancelled || !g?.is_quick_match) return;
+        const { data: rows } = await supabase
+          .from('game_players')
+          .select('session_id, player_name, is_bot')
+          .eq('game_id', gameId);
+        if (cancelled) return;
+        const me = getSessionId();
+        setQuickMatch((rows ?? [])
+          .filter((r) => !r.is_bot && r.session_id !== me)
+          .map((r) => ({ id: r.session_id, name: r.player_name })));
+      } catch { /* ignore — button just won't appear */ }
+    })();
+    return () => { cancelled = true; };
+  }, [isMultiplayer, gameId]);
+
+  const handleAddFriend = (f: { id: string; name: string }) => {
+    addKnownFriends([f]);
+    unhideFriend(f.id);
+    setFriendsVersion((v) => v + 1);
+    toast.success(t('strangerFriendAdded', { name: f.name }));
+  };
 
   // Backfill: ensure friend_match_results row exists for this match.
   // submit-score / forfeit-game normally write it server-side, but if that
@@ -162,7 +195,7 @@ export default function ResultsPage() {
           ))}
         </div>
 
-        {isMultiplayer && rematchOpponent && (
+        {isMultiplayer && rematchOpponent && !quickMatch && (
           <HeadToHeadStats
             opponentId={rematchOpponent.sessionId}
             opponentName={rematchOpponent.name}
@@ -170,7 +203,22 @@ export default function ResultsPage() {
         )}
 
         <div className="space-y-3">
-          {isMultiplayer && rematchOpponent && (
+          {quickMatch?.map((f) => {
+            const already = getKnownFriends().some((k) => k.id === f.id);
+            return (
+              <motion.button
+                key={f.id}
+                onClick={() => handleAddFriend(f)}
+                disabled={already}
+                className="w-full py-3 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold flex items-center justify-center gap-2 disabled:opacity-60"
+                whileTap={{ scale: 0.97 }}
+              >
+                {already ? <Check className="w-5 h-5 text-primary" /> : <UserPlus className="w-5 h-5 text-primary" />}
+                {already ? t('strangerFriendAdded', { name: f.name }) : t('addStrangerFriend', { name: f.name })}
+              </motion.button>
+            );
+          })}
+          {isMultiplayer && rematchOpponent && !quickMatch && (
             <motion.button
               onClick={handleRematch}
               disabled={inviting}

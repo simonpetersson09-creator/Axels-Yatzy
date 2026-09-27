@@ -278,6 +278,8 @@ export const sv = {
   onlineNewsTitle: 'Nyhet: möt spelare online! 🌐',
   onlineNewsBody: 'I Snabbspel kan du nu möta riktiga spelare online. Hittas ingen fyller datorn de tomma platserna.',
   onlineNewsOk: 'Spela nu',
+  adPromptYes: 'Ja, gärna',
+  adPromptNo: 'Inte nu',
   cancelSearch: 'Avbryt',
   computerPlaysFor: 'Datorn spelar åt {name}',
   addStrangerFriend: 'Lägg till {name} som vän',

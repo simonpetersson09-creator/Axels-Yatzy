@@ -264,6 +264,8 @@ export const it: typeof sv = {
   onlineNewsTitle: 'Novità: gioca online! 🌐',
   onlineNewsBody: 'In Partita rapida ora puoi sfidare giocatori reali online. Se non si trova nessuno, il computer occupa i posti liberi.',
   onlineNewsOk: 'Gioca ora',
+  adPromptYes: 'Sì, volentieri',
+  adPromptNo: 'Non ora',
   cancelSearch: 'Annulla',
   computerPlaysFor: 'Il computer gioca per {name}',
   addStrangerFriend: 'Aggiungi {name} come amico',

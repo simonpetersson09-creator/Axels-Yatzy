@@ -269,6 +269,8 @@ export const da: typeof sv = {
   onlineNewsTitle: 'Nyhed: mød spillere online! 🌐',
   onlineNewsBody: 'I Hurtigt spil kan du nu møde rigtige spillere online. Findes ingen, udfylder computeren de tomme pladser.',
   onlineNewsOk: 'Spil nu',
+  adPromptYes: 'Ja, gerne',
+  adPromptNo: 'Ikke nu',
   cancelSearch: 'Annuller',
   computerPlaysFor: 'Computeren spiller for {name}',
   addStrangerFriend: 'Tilføj {name} som ven',

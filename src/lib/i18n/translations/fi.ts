@@ -269,6 +269,8 @@ export const fi: typeof sv = {
   onlineNewsTitle: 'Uutta: pelaa verkossa! 🌐',
   onlineNewsBody: 'Pikapelissä voit nyt pelata oikeita pelaajia vastaan verkossa. Jos ketään ei löydy, tietokone täyttää tyhjät paikat.',
   onlineNewsOk: 'Pelaa nyt',
+  adPromptYes: 'Kyllä',
+  adPromptNo: 'Ei nyt',
   cancelSearch: 'Peruuta',
   computerPlaysFor: 'Tietokone pelaa pelaajan {name} puolesta',
   addStrangerFriend: 'Lisää {name} kaveriksi',

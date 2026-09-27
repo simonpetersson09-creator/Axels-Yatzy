@@ -264,6 +264,8 @@ export const de: typeof sv = {
   onlineNewsTitle: 'Neu: spiel online gegen andere! 🌐',
   onlineNewsBody: 'Im Schnellspiel kannst du jetzt gegen echte Spieler online antreten. Wird niemand gefunden, übernimmt der Computer die freien Plätze.',
   onlineNewsOk: 'Jetzt spielen',
+  adPromptYes: 'Ja, gern',
+  adPromptNo: 'Nicht jetzt',
   cancelSearch: 'Abbrechen',
   computerPlaysFor: 'Der Computer spielt für {name}',
   addStrangerFriend: '{name} als Freund hinzufügen',

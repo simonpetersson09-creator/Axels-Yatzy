@@ -264,6 +264,8 @@ export const fr: typeof sv = {
   onlineNewsTitle: 'Nouveau : jouez en ligne ! 🌐',
   onlineNewsBody: 'En partie rapide, vous pouvez maintenant affronter de vrais joueurs en ligne. Si personne n’est trouvé, l’ordinateur prend les places libres.',
   onlineNewsOk: 'Jouer',
+  adPromptYes: 'Oui, volontiers',
+  adPromptNo: 'Pas maintenant',
   cancelSearch: 'Annuler',
   computerPlaysFor: 'L\'ordinateur joue pour {name}',
   addStrangerFriend: 'Ajouter {name} en ami',

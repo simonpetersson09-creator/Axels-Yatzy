@@ -269,6 +269,8 @@ export const en: typeof sv = {
   onlineNewsTitle: 'New: play people online! 🌐',
   onlineNewsBody: 'In Quick match you can now face real players online. If no one is found, the computer fills the empty seats.',
   onlineNewsOk: 'Play now',
+  adPromptYes: 'Yes, sure',
+  adPromptNo: 'Not now',
   cancelSearch: 'Cancel',
   computerPlaysFor: 'Computer is playing for {name}',
   addStrangerFriend: 'Add {name} as friend',

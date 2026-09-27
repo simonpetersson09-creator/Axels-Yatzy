@@ -268,4 +268,6 @@ export const da: typeof sv = {
   searchingOpponentHint: 'Findes ingen, spiller du mod computeren',
   cancelSearch: 'Annuller',
   computerPlaysFor: 'Computeren spiller for {name}',
+  addStrangerFriend: 'Tilføj {name} som ven',
+  strangerFriendAdded: '{name} er nu din ven',
 };

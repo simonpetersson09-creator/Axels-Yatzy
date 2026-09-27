@@ -126,8 +126,13 @@ Deno.serve(async (req) => {
     new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const secret = Deno.env.get("INTERNAL_NOTIFY_SECRET");
-  const isCron = !!secret && req.headers.get("x-internal-secret") === secret;
+  const secret = (Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "").trim();
+  const provided = (req.headers.get("x-internal-secret") ?? "").trim();
+  let isCron = !!secret && !!provided && provided === secret;
+  if (!isCron && provided) {
+    const { data } = await sb.rpc("internal_secret_matches", { p_secret: provided });
+    isCron = data === true;
+  }
 
   try {
     if (!isCron) {

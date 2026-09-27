@@ -28,6 +28,7 @@ import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from 
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
+import DailyAdPrompt, { shouldShowDailyAdPrompt, markDailyAdPromptShown } from '@/components/DailyAdPrompt';
 import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
 
 const item = {
@@ -106,8 +107,14 @@ export default function HomePage() {
     snoozeRatePrompt(stats.gamesPlayed);
     trackEvent('rate_prompt_later');
   };
-
-
+  // Daily voluntary ad question at startup (only in the iOS app, never day one).
+  const [showDailyAd, setShowDailyAd] = useState(false);
+  useEffect(() => {
+    if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
+    if (!shouldShowDailyAdPrompt()) return;
+    const timer = setTimeout(() => setShowDailyAd(true), 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Preload i bakgrunden – kan aldrig trigga visning.
   useEffect(() => {
@@ -843,6 +850,12 @@ export default function HomePage() {
         )}
         {showRatePrompt && !showOnlineNews && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
+        )}
+        {showDailyAd && !showOnlineNews && !showRatePrompt && (
+          <DailyAdPrompt
+            onYes={() => { markDailyAdPromptShown(); setShowDailyAd(false); trackEvent('daily_ad_yes'); void handleOptionalAdClick(); }}
+            onNo={() => { markDailyAdPromptShown(); setShowDailyAd(false); trackEvent('daily_ad_no'); }}
+          />
         )}
       </AnimatePresence>
     </div>

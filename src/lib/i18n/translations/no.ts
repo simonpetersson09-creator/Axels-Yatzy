@@ -269,6 +269,8 @@ export const no: typeof sv = {
   onlineNewsTitle: 'Nyhet: møt spillere online! 🌐',
   onlineNewsBody: 'I Hurtigspill kan du nå møte ekte spillere online. Finnes ingen, fyller datamaskinen de tomme plassene.',
   onlineNewsOk: 'Spill nå',
+  adPromptYes: 'Ja, gjerne',
+  adPromptNo: 'Ikke nå',
   cancelSearch: 'Avbryt',
   computerPlaysFor: 'Datamaskinen spiller for {name}',
   addStrangerFriend: 'Legg til {name} som venn',

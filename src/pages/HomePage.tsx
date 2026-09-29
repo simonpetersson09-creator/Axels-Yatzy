@@ -24,7 +24,7 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
-import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from '@/lib/admob';
+import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showAppOpenAd } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
@@ -118,10 +118,11 @@ export default function HomePage() {
     const timer = setTimeout(async () => {
       if (startupAdChecked) return;
       startupAdChecked = true;
-      if (!(await preloadInterstitial())) return; // ingen annons → appen fortsätter som vanligt
-      markDailyStartupAdShown();
-      trackEvent('daily_startup_ad');
-      void showOptionalInterstitial();
+      // App Open-annons; ingen annons → appen fortsätter som vanligt
+      if (await showAppOpenAd()) {
+        markDailyStartupAdShown();
+        trackEvent('daily_startup_ad');
+      }
     }, 1500);
     return () => clearTimeout(timer);
   }, []);

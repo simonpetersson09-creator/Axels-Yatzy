@@ -5,7 +5,8 @@
  * knappen "Frivillig reklam". Ingen automatisk visning vid appstart, mellan
  * matcher, vid navigation, efter timeout eller efter preload.
  *
- * showOptionalInterstitial() är den ENDA funktionen som anropar show().
+ * showOptionalInterstitial() är den ENDA funktionen som visar interstitials.
+ * Undantag: showAppOpenAd() visar en App Open-annons vid start, max 1 gång/dag.
  */
 import { Capacitor } from '@capacitor/core';
 
@@ -136,5 +137,45 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
     return 'failed';
   } finally {
     showing = false;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* App Open-annons (automatisk startannons, endast iOS)                */
+/* Helt separat från interstitial-flödet för "Frivillig reklam".       */
+/* ------------------------------------------------------------------ */
+
+/** Googles officiella test-ID för App Open (iOS). */
+const TEST_APP_OPEN_AD_UNIT_ID_IOS = 'ca-app-pub-3940256099942544/5575463023';
+const APP_OPEN_AD_UNIT_ID_IOS = 'ca-app-pub-7448540924654868/8707432437';
+/** Laddas annonsen inte inom denna tid visas den inte alls denna start. */
+const APP_OPEN_LOAD_TIMEOUT_MS = 5000;
+
+let appOpenShowing = false;
+
+/**
+ * Laddar och visar en App Open-annons vid appstart. Returnerar true om den
+ * visades. Kastar aldrig; misslyckas tyst så att appen fortsätter direkt.
+ */
+export async function showAppOpenAd(): Promise<boolean> {
+  if (!isAdMobAvailable() || Capacitor.getPlatform() !== 'ios') return false;
+  if (appOpenShowing || showing) return false;
+  appOpenShowing = true;
+  try {
+    const mod = await ensureInitialized();
+    const adId = ADMOB_CONFIG.useTestAds ? TEST_APP_OPEN_AD_UNIT_ID_IOS : APP_OPEN_AD_UNIT_ID_IOS;
+    const loaded = await Promise.race([
+      mod.AdMob.loadAppOpen({ adId }).then(() => true, () => false),
+      new Promise<boolean>(r => setTimeout(() => r(false), APP_OPEN_LOAD_TIMEOUT_MS)),
+    ]);
+    if (!loaded) return false;
+    const { value } = await mod.AdMob.isAppOpenLoaded();
+    if (!value) return false;
+    await mod.AdMob.showAppOpen();
+    return true;
+  } catch {
+    return false;
+  } finally {
+    appOpenShowing = false;
   }
 }

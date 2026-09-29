@@ -113,10 +113,11 @@ export default function HomePage() {
   // Startup ad: once per app launch, max once per day per user (iOS app only, never day one).
   useEffect(() => {
     if (startupAdChecked) return;
-    startupAdChecked = true;
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
     if (!shouldShowDailyStartupAd()) return;
     const timer = setTimeout(async () => {
+      if (startupAdChecked) return;
+      startupAdChecked = true;
       if (!(await preloadInterstitial())) return; // ingen annons → appen fortsätter som vanligt
       markDailyStartupAdShown();
       trackEvent('daily_startup_ad');

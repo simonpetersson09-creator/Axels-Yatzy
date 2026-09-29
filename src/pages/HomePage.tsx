@@ -659,28 +659,6 @@ export default function HomePage() {
               </motion.button>
 
               <div className="relative flex flex-col items-center">
-                <AnimatePresence>
-                  {showAdBubble && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 12, scale: 0.92 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                      transition={{ duration: 0.3, ease: 'easeOut' }}
-                      onClick={() => setShowAdBubble(false)}
-                      className="absolute bottom-[calc(100%+6px)] right-0 z-50 w-[150px] sm:w-[180px] px-3 py-2.5 rounded-2xl bg-popover border border-primary/30 shadow-[0_8px_28px_rgba(0,0,0,0.35)] cursor-pointer"
-                      aria-label={t('adBubbleText')}
-                    >
-                      <div className="flex items-center gap-2.5 text-left">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center shadow-[0_0_12px_hsl(var(--primary)/0.25)]">
-                          <Heart className="w-3.5 h-3.5 text-primary fill-primary/40" />
-                        </div>
-                        <p className="text-[10px] font-medium text-foreground leading-snug">
-                          {t('adBubbleText')}
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
                 <motion.button
                   onClick={handleOptionalAdClick}

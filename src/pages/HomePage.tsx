@@ -28,7 +28,10 @@ import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial } from 
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
-import DailyAdPrompt, { shouldShowDailyAdPrompt, markDailyAdPromptShown } from '@/components/DailyAdPrompt';
+import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
+
+/** Module-level: startup ad is only considered once per app launch. */
+let startupAdChecked = false;
 import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
 
 const item = {
@@ -107,12 +110,19 @@ export default function HomePage() {
     snoozeRatePrompt(stats.gamesPlayed);
     trackEvent('rate_prompt_later');
   };
-  // Daily voluntary ad question at startup (only in the iOS app, never day one).
-  const [showDailyAd, setShowDailyAd] = useState(false);
+  // Startup ad: once per app launch, max once per day per user (iOS app only, never day one).
   useEffect(() => {
+    if (startupAdChecked) return;
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
-    if (!shouldShowDailyAdPrompt()) return;
-    const timer = setTimeout(() => setShowDailyAd(true), 1200);
+    if (!shouldShowDailyStartupAd()) return;
+    const timer = setTimeout(async () => {
+      if (startupAdChecked) return;
+      startupAdChecked = true;
+      if (!(await preloadInterstitial())) return; // ingen annons → appen fortsätter som vanligt
+      markDailyStartupAdShown();
+      trackEvent('daily_startup_ad');
+      void showOptionalInterstitial();
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -850,12 +860,6 @@ export default function HomePage() {
         )}
         {showRatePrompt && !showOnlineNews && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
-        )}
-        {showDailyAd && !showOnlineNews && !showRatePrompt && (
-          <DailyAdPrompt
-            onYes={() => { markDailyAdPromptShown(); setShowDailyAd(false); trackEvent('daily_ad_yes'); void handleOptionalAdClick(); }}
-            onNo={() => { markDailyAdPromptShown(); setShowDailyAd(false); trackEvent('daily_ad_no'); }}
-          />
         )}
       </AnimatePresence>
     </div>

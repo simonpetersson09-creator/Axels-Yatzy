@@ -697,7 +697,7 @@ export default function HomePage() {
                       <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
                     </div>
                   </div>
-                  <span className={`text-[8px] font-medium tracking-wider text-primary/60 uppercase text-center leading-tight whitespace-nowrap transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adButtonShort')}</span>
+                  <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('adButtonShort')}</span>
                   {AD_BUTTON_LOCKED && (
                     <span className={`text-[7px] font-medium text-destructive text-center leading-none -mt-1 transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adComingSoon')}</span>
                   )}

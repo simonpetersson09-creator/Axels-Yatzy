@@ -236,7 +236,7 @@ export async function sendTestNotification(): Promise<{ ok: boolean; info: unkno
   try {
     const deviceId = getDeviceIdSync();
     const { data, error } = await supabase.functions.invoke('notify-test', {
-      body: { device_id: deviceId },
+      body: { device_id: deviceId, session_id: getSessionId() },
     });
     if (error) return { ok: false, info: { error: error.message } };
     return { ok: !!(data as { delivered?: boolean })?.delivered, info: data };

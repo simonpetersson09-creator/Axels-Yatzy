@@ -19,15 +19,29 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { device_id } = await req.json().catch(() => ({}));
-    if (!device_id || typeof device_id !== "string") {
-      return json({ error: "device_id required" }, 400);
+    const { device_id, session_id } = await req.json().catch(() => ({}));
+    if (
+      typeof device_id !== "string" || device_id.length < 8 || device_id.length > 64 ||
+      typeof session_id !== "string" || session_id.length < 8 || session_id.length > 64
+    ) {
+      return json({ error: "device_id and session_id required" }, 400);
     }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    // Caller must prove ownership: the session must be bound to this device
+    // (session_owners), and only that device's own token is ever used.
+    const { data: owner } = await supabase
+      .from("session_owners")
+      .select("device_id")
+      .eq("session_id", session_id)
+      .maybeSingle();
+    if (!owner || owner.device_id !== device_id) {
+      return json({ error: "Unauthorized" }, 403);
+    }
 
     // Rate limit: max 1 test notification per device per 45 seconds
     const rateKey = `notify-test:${device_id}`;
@@ -66,12 +80,14 @@ Deno.serve(async (req) => {
       .select("device_id, session_id, token, platform, enabled, updated_at")
       .eq("enabled", true)
       .eq("device_id", device_id)
+      .eq("session_id", session_id)
       .order("updated_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
     if (tokenErr) {
-      return json({ stage: "lookup_token", error: tokenErr.message }, 200);
+      console.error("notify-test lookup", tokenErr);
+      return json({ stage: "lookup_token", delivered: false }, 200);
     }
 
     const apnsConfigured = !!(
@@ -112,12 +128,12 @@ Deno.serve(async (req) => {
       stage: "sent",
       delivered: apnsResult.ok,
       apns_status: apnsResult.status,
-      apns_reason: apnsResult.reason,
       token_platform: token.platform,
       token_updated_at: token.updated_at,
     });
   } catch (err) {
-    return json({ stage: "exception", error: (err as Error).message }, 500);
+    console.error("notify-test failed", err);
+    return json({ stage: "exception", delivered: false }, 500);
   }
 });
 

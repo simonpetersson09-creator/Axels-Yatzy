@@ -80,7 +80,6 @@ Deno.serve(async (req) => {
       .select("device_id, session_id, token, platform, enabled, updated_at")
       .eq("enabled", true)
       .eq("device_id", device_id)
-      .eq("session_id", session_id)
       .order("updated_at", { ascending: false })
       .limit(1)
       .maybeSingle();

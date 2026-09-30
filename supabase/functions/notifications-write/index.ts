@@ -60,38 +60,53 @@ Deno.serve(async (req) => {
         },
         { onConflict: "device_id,token" },
       );
-      if (error) return json({ error: error.message }, 500);
+      if (error) { console.error("notifications-write", error); return json({ error: "Internt serverfel" }, 500); }
       return json({ ok: true });
     }
 
+    // Caller must prove it controls device_id: the session it sends must be
+    // bound to that exact device in the server-side ownership registry.
+    const ownsDevice = async (device_id: unknown, session_id: unknown): Promise<boolean> => {
+      if (typeof device_id !== "string" || device_id.length < 8 || device_id.length > 64) return false;
+      if (typeof session_id !== "string" || session_id.length < 8 || session_id.length > 64) return false;
+      const { data } = await supabase
+        .from("session_owners")
+        .select("device_id")
+        .eq("session_id", session_id)
+        .maybeSingle();
+      return !!data && data.device_id === device_id;
+    };
+
     if (action === "set_prefs") {
       const { device_id, turn_notifications, reminder_notifications } = body;
-      if (!device_id) return json({ error: "device_id required" }, 400);
+      if (!(await ownsDevice(device_id, body.session_id))) return json({ error: "Unauthorized" }, 403);
       const { error } = await supabase.from("notification_preferences").upsert({
         device_id,
         turn_notifications: !!turn_notifications,
         reminder_notifications: !!reminder_notifications,
         updated_at: new Date().toISOString(),
       });
-      if (error) return json({ error: error.message }, 500);
+      if (error) { console.error("notifications-write", error); return json({ error: "Internt serverfel" }, 500); }
       return json({ ok: true });
     }
 
     if (action === "mark_opened") {
       const { notification_id, device_id } = body;
-      if (!notification_id || !device_id) return json({ error: "missing fields" }, 400);
+      if (!notification_id || typeof notification_id !== "string") return json({ error: "missing fields" }, 400);
+      if (!(await ownsDevice(device_id, body.session_id))) return json({ error: "Unauthorized" }, 403);
       // Only mark opened if the device is actually the recipient.
       const { error } = await supabase
         .from("notification_log")
         .update({ opened_at: new Date().toISOString() })
         .eq("id", notification_id)
         .eq("recipient_device_id", device_id);
-      if (error) return json({ error: error.message }, 500);
+      if (error) { console.error("notifications-write", error); return json({ error: "Internt serverfel" }, 500); }
       return json({ ok: true });
     }
 
     return json({ error: "unknown action" }, 400);
   } catch (err) {
-    return json({ error: (err as Error).message }, 500);
+    console.error("notifications-write failed", err);
+    return json({ error: "Internt serverfel" }, 500);
   }
 });

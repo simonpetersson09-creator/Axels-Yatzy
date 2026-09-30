@@ -57,6 +57,7 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
       body: {
         action: 'set_prefs',
         device_id: deviceId,
+        session_id: getSessionId(),
         turn_notifications: prefs.turnNotifications,
         reminder_notifications: prefs.reminderNotifications,
       },
@@ -186,7 +187,7 @@ export async function initNotifications(): Promise<void> {
         try {
           const deviceId = await initDeviceId();
           await supabase.functions.invoke('notifications-write', {
-            body: { action: 'mark_opened', notification_id: notifId, device_id: deviceId },
+            body: { action: 'mark_opened', notification_id: notifId, device_id: deviceId, session_id: getSessionId() },
           });
         } catch {
           /* ignore */

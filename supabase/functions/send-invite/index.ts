@@ -50,6 +50,31 @@ Deno.serve(async (req) => {
       return json({ error: "Mottagaren hittades inte" }, 404);
     }
 
+    // Only players who have actually shared a game can invite each other,
+    // and the sender name shown to the recipient comes from the server.
+    const { data: senderGames } = await supabase
+      .from("game_players")
+      .select("game_id, player_name, joined_at")
+      .eq("session_id", from_session_id)
+      .order("joined_at", { ascending: false })
+      .limit(200);
+    const senderGameIds = (senderGames ?? []).map((r: { game_id: string }) => r.game_id);
+    if (senderGameIds.length === 0) {
+      return json({ error: "Ni har inte spelat tillsammans" }, 403);
+    }
+    const { data: shared } = await supabase
+      .from("game_players")
+      .select("game_id")
+      .eq("session_id", to_session_id)
+      .in("game_id", senderGameIds)
+      .limit(1)
+      .maybeSingle();
+    if (!shared) {
+      return json({ error: "Ni har inte spelat tillsammans" }, 403);
+    }
+    const serverName = String((senderGames ?? [])[0]?.player_name ?? "")
+      .replace(/[\u0000-\u001F\u007F<>]/g, "").trim().slice(0, 20) || "En vän";
+
     // Rate limit per device too, so one device can't rotate sender sessions.
     const { data: deviceAllowed } = await supabase.rpc("check_rate_limit", {
       p_key: `invite_device:${device_id}`,
@@ -105,7 +130,7 @@ Deno.serve(async (req) => {
         .from("game_invites")
         .insert({
           from_session_id,
-          from_name: String(from_name).replace(/[\u0000-\u001F\u007F<>]/g, "").trim().slice(0, 20) || "En vän",
+          from_name: serverName,
           to_session_id,
           to_name: String(to_name).slice(0, 20),
         })
@@ -116,7 +141,7 @@ Deno.serve(async (req) => {
     }
 
     // Push to recipient (sanitize name)
-    const safeName = String(from_name).replace(/[\u0000-\u001F\u007F<>]/g, "").trim().slice(0, 20) || "En vän";
+    const safeName = serverName;
     const title = `${safeName} utmanar dig 🎲`;
     const body = `Tryck för att spela Yatzy`;
     const { delivered, deviceId } = await pushToSession(supabase, to_session_id, {

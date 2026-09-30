@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
+import { getDeviceIdSync } from '@/lib/device';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 const SUBMIT_ANIM_MS = 700;
 import { calculateScore, rollSingleDie } from '@/lib/yatzy-scoring';
@@ -846,7 +847,7 @@ export function useMultiplayerGame() {
     const lockPromise = (async (): Promise<boolean> => {
       try {
         const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
-          body: { game_id: gameId, session_id: sessionId, dice_index: index },
+          body: { game_id: gameId, session_id: sessionId, dice_index: index, device_id: getDeviceIdSync(), actor_session_id: getSessionId() },
         }));
         if (error) {
           console.error('Toggle lock error:', error);

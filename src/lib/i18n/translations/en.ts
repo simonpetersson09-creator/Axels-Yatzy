@@ -273,6 +273,7 @@ export const en: typeof sv = {
   adPromptNo: 'Not now',
   cancelSearch: 'Cancel',
   computerPlaysFor: 'Computer is playing for {name}',
+  playerIsBack: '{name} is back and playing again',
   addStrangerFriend: 'Add {name} as friend',
   strangerFriendAdded: '{name} is now your friend',
 };

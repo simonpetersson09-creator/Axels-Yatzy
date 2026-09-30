@@ -273,6 +273,7 @@ export const es: typeof sv = {
   adPromptNo: 'Ahora no',
   cancelSearch: 'Cancelar',
   computerPlaysFor: 'El ordenador juega por {name}',
+  playerIsBack: '{name} ha vuelto y juega de nuevo',
   addStrangerFriend: 'Añadir a {name} como amigo',
   strangerFriendAdded: '{name} ya es tu amigo',
 };

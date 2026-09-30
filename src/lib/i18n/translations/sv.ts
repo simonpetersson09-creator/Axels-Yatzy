@@ -282,6 +282,7 @@ export const sv = {
   adPromptNo: 'Inte nu',
   cancelSearch: 'Avbryt',
   computerPlaysFor: 'Datorn spelar åt {name}',
+  playerIsBack: '{name} är tillbaka och spelar själv',
   addStrangerFriend: 'Lägg till {name} som vän',
   strangerFriendAdded: '{name} är nu din vän',
 };

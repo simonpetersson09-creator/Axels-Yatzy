@@ -23,6 +23,10 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
   const busyRef = useRef(false);
   const notifiedRef = useRef(false);
   const [botFor, setBotFor] = useState<string | null>(null);
+  const [backName, setBackName] = useState<string | null>(null);
+  const awayRef = useRef<Set<string>>(new Set());
+  const backTimerRef = useRef<number | null>(null);
+  useEffect(() => () => { if (backTimerRef.current) window.clearTimeout(backTimerRef.current); }, []);
 
   useEffect(() => {
     if (!gameId) return;
@@ -39,6 +43,19 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
           .select('player_index, player_name, scores, session_id, last_active_at, is_bot')
           .eq('game_id', gameId);
         const list = players ?? [];
+        // Detect opponents who were away (computer played for them) and are now back.
+        for (const p of list) {
+          if (p.is_bot || p.session_id === me) continue;
+          const age = Date.now() - new Date(p.last_active_at).getTime();
+          if (age >= TAKEOVER_AFTER_MS) {
+            awayRef.current.add(p.session_id);
+          } else if (age < 15_000 && awayRef.current.has(p.session_id)) {
+            awayRef.current.delete(p.session_id);
+            setBackName(p.player_name);
+            if (backTimerRef.current) window.clearTimeout(backTimerRef.current);
+            backTimerRef.current = window.setTimeout(() => setBackName(null), 4000);
+          }
+        }
         const mine = list.find((p) => p.session_id === me);
         const current = list.find((p) => p.player_index === game.current_player_index);
         if (!mine || !current || current.session_id === me) { setBotFor(null); return; }
@@ -84,8 +101,9 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
 
   return (
     <AnimatePresence>
-      {botFor && (
+      {(botFor || backName) && (
         <motion.div
+          key={botFor ? 'bot' : 'back'}
           className="fixed left-1/2 z-40 -translate-x-1/2 pointer-events-none"
           style={{ top: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
           initial={{ opacity: 0, y: -8 }}
@@ -93,8 +111,17 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
           exit={{ opacity: 0, y: -8 }}
         >
           <div className="flex items-center gap-1.5 rounded-full border border-primary/40 bg-card/95 px-3 py-1 text-xs font-semibold text-foreground shadow-lg backdrop-blur-sm">
-            <Bot className="h-3.5 w-3.5 text-primary" />
-            {t('computerPlaysFor', { name: botFor })}
+            {botFor ? (
+              <>
+                <Bot className="h-3.5 w-3.5 text-primary" />
+                {t('computerPlaysFor', { name: botFor })}
+              </>
+            ) : (
+              <>
+                <span aria-hidden>🌐</span>
+                {t('playerIsBack', { name: backName })}
+              </>
+            )}
           </div>
         </motion.div>
       )}

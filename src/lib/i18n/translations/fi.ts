@@ -273,6 +273,7 @@ export const fi: typeof sv = {
   adPromptNo: 'Ei nyt',
   cancelSearch: 'Peruuta',
   computerPlaysFor: 'Tietokone pelaa pelaajan {name} puolesta',
+  playerIsBack: '{name} on palannut ja pelaa itse',
   addStrangerFriend: 'Lisää {name} kaveriksi',
   strangerFriendAdded: '{name} on nyt kaverisi',
 };

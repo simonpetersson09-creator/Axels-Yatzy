@@ -268,6 +268,7 @@ export const fr: typeof sv = {
   adPromptNo: 'Pas maintenant',
   cancelSearch: 'Annuler',
   computerPlaysFor: 'L\'ordinateur joue pour {name}',
+  playerIsBack: '{name} est de retour et rejoue',
   addStrangerFriend: 'Ajouter {name} en ami',
   strangerFriendAdded: '{name} est maintenant ton ami',
 };

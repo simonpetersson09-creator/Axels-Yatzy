@@ -273,6 +273,7 @@ export const da: typeof sv = {
   adPromptNo: 'Ikke nu',
   cancelSearch: 'Annuller',
   computerPlaysFor: 'Computeren spiller for {name}',
+  playerIsBack: '{name} er tilbage og spiller selv',
   addStrangerFriend: 'Tilføj {name} som ven',
   strangerFriendAdded: '{name} er nu din ven',
 };

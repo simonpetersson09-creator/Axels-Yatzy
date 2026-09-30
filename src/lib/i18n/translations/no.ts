@@ -273,6 +273,7 @@ export const no: typeof sv = {
   adPromptNo: 'Ikke nå',
   cancelSearch: 'Avbryt',
   computerPlaysFor: 'Datamaskinen spiller for {name}',
+  playerIsBack: '{name} er tilbake og spiller selv',
   addStrangerFriend: 'Legg til {name} som venn',
   strangerFriendAdded: '{name} er nå din venn',
 };

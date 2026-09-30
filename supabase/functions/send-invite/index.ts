@@ -105,7 +105,7 @@ Deno.serve(async (req) => {
         .from("game_invites")
         .insert({
           from_session_id,
-          from_name: String(from_name).slice(0, 20),
+          from_name: String(from_name).replace(/[\u0000-\u001F\u007F<>]/g, "").trim().slice(0, 20) || "En vän",
           to_session_id,
           to_name: String(to_name).slice(0, 20),
         })
@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
     }
 
     // Push to recipient (sanitize name)
-    const safeName = String(from_name).slice(0, 20);
+    const safeName = String(from_name).replace(/[\u0000-\u001F\u007F<>]/g, "").trim().slice(0, 20) || "En vän";
     const title = `${safeName} utmanar dig 🎲`;
     const body = `Tryck för att spela Yatzy`;
     const { delivered, deviceId } = await pushToSession(supabase, to_session_id, {
@@ -136,6 +136,7 @@ Deno.serve(async (req) => {
 
     return json({ success: true, invite_id: invite.id, push_delivered: delivered });
   } catch (err) {
-    return json({ error: (err as Error).message }, 500);
+    console.error("send-invite failed", err);
+    return json({ error: "Internt serverfel" }, 500);
   }
 });

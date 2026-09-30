@@ -1,8 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { rollSingleDie } from '@/lib/yatzy-scoring';
-import { getDeviceIdSync } from '@/lib/device';
-import { getSessionId } from '@/lib/session';
 
 /**
  * Dev-only: plays one bot turn using the EXACT same path as the real app
@@ -71,7 +69,7 @@ export async function playBotTurn(
         for (let i = 0; i < 5; i += 1) {
           if (wanted[i] !== locks[i]) {
             const { error } = await supabase.functions.invoke('toggle-lock', {
-              body: { game_id: game.id, session_id: sessionId, dice_index: i, device_id: getDeviceIdSync(), actor_session_id: getSessionId() },
+              body: { game_id: game.id, session_id: sessionId, dice_index: i },
             });
             if (error) { log(`Bot lås-fel: ${error.message}`); break rollLoop; }
             await wait(BOT_LOCK_DELAY_MS);

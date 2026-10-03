@@ -11,8 +11,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "cap:sync:ios": "npx cap sync ios && node scripts/set-ios-admob-plist.js",
-    "cap:ios:admob": "node scripts/set-ios-admob-plist.js"
+    "cap:sync:ios": "npx cap sync ios && node scripts/set-ios-admob-plist.js && node scripts/set-ios-push.js",
+    "cap:ios:admob": "node scripts/set-ios-admob-plist.js",
+    "cap:ios:push": "node scripts/set-ios-push.js"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.1.0",

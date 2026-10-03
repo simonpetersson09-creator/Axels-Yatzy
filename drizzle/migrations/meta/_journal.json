@@ -22,13 +22,6 @@
       "when": 1790515378513,
       "tag": "0002_quick_match_multi_and_bots",
       "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1791055436391,
-      "tag": "0003_gold_dice_referral",
-      "breakpoints": true
     }
   ]
 }

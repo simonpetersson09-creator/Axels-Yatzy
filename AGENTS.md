@@ -1,2 +1,1 @@
 - iOS native patches (AdMob plist, push token forwarding + aps-environment entitlement) live in scripts/ and run via `npm run cap:sync:ios` — ios/ is regenerated outside the repo, so manual Xcode edits get lost.
-- Referral rewards (gold dice) are granted only server-side by a trigger on game_players joins; the client just reads get_gold_dice — prevents self-granting.

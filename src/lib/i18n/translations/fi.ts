@@ -69,7 +69,6 @@ export const fi: typeof sv = {
   joinSteps: "Avaa Mr.B. Yatzy, napauta Pelaa ystävien kanssa ja syötä yllä oleva koodi.",
   joinPlayWeb: "Pelaa selaimessa",
   shareInviteText: "Pelaa Yatzya kanssani! 🎲 Koodi: {code}",
-  goldEarned: "🏆 Ystäväsi latasi sovelluksen! Sinulla on kultanopat {days} päivää.",
   rateLater: "Myöhemmin",
 
   newGame: 'Uusi peli',

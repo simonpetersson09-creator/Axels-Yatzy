@@ -71,7 +71,6 @@ export const sv = {
   joinSteps: "Öppna Mr.B. Yatzy, tryck på Spela med vän och skriv in koden ovan.",
   joinPlayWeb: "Spela i webbläsaren i stället",
   shareInviteText: "Spela Yatzy med mig! 🎲 Kod: {code}",
-  goldEarned: "🏆 Din vän laddade ner appen! Du har guldtärningar i {days} dagar.",
   rateLater: "Senare",
 
   // Setup

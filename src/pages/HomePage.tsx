@@ -30,7 +30,6 @@ import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
 import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
-import { refreshGoldDice, goldDaysLeft } from '@/lib/gold-dice';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
 
@@ -72,15 +71,6 @@ export default function HomePage() {
   const [profileVersion, setProfileVersion] = useState(0);
   const [onlineSearch, setOnlineSearch] = useState<null | { humanName: string; playerNames: string[]; aiPlayers: number[] }>(null);
   useEffect(() => subscribeProfileChanges(() => setProfileVersion(v => v + 1)), []);
-  // Gold dice reward: check the server; celebrate when new days were earned.
-  useEffect(() => {
-    void refreshGoldDice().then(earned => {
-      if (!earned) return;
-      trackEvent('gold_dice_earned');
-      toast.success(t('goldEarned', { days: String(goldDaysLeft()) }), { duration: 6000 });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const adInFlightRef = useRef(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
   const [showRatePrompt, setShowRatePrompt] = useState(false);

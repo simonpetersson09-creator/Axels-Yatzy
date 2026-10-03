@@ -59,6 +59,24 @@ const heldMaterial = new MeshPhysicalMaterial({
   ior: 1.48,
 });
 
+/** Gold dice (referral reward): polished metallic gold. */
+const goldMaterial = new MeshPhysicalMaterial({
+  color: "#e9b949",
+  roughness: 0.22,
+  metalness: 0.85,
+  clearcoat: 0.6,
+  clearcoatRoughness: 0.15,
+  envMapIntensity: 1.6,
+});
+const goldHeldMaterial = new MeshPhysicalMaterial({
+  color: "#c99a32",
+  roughness: 0.2,
+  metalness: 0.85,
+  clearcoat: 0.7,
+  clearcoatRoughness: 0.12,
+  envMapIntensity: 1.7,
+});
+
 /** Deep black pips with a faint, ink-like gloss. */
 const pipMaterial = new MeshStandardMaterial({
   color: "#0b0b0c",

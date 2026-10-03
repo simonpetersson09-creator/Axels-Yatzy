@@ -69,6 +69,7 @@ export const it: typeof sv = {
   joinSteps: "Apri Mr.B. Yatzy, tocca Gioca con gli amici e inserisci il codice qui sopra.",
   joinPlayWeb: "Gioca nel browser",
   shareInviteText: "Gioca a Yatzy con me! 🎲 Codice: {code}",
+  goldEarned: "🏆 Il tuo amico ha scaricato l'app! Hai dadi d'oro per {days} giorni.",
   rateLater: "Più tardi",
 
   newGame: 'Nuova partita',

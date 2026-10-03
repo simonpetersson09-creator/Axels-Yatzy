@@ -5,7 +5,8 @@
  * sphere pips. Geometries and materials are created once at module level and
  * shared by every die instance, keeping GPU state changes and memory low.
  */
-import { forwardRef, memo, useMemo, useRef } from "react";
+import { forwardRef, memo, useMemo, useRef, useSyncExternalStore } from "react";
+import { isGoldDiceActive, subscribeGoldDice } from "@/lib/gold-dice";
 import { RoundedBox } from "@react-three/drei";
 import {
   CanvasTexture,
@@ -57,6 +58,24 @@ const heldMaterial = new MeshPhysicalMaterial({
   sheenColor: "#fff3dd",
   envMapIntensity: 1.15,
   ior: 1.48,
+});
+
+/** Gold dice (referral reward): polished metallic gold. */
+const goldMaterial = new MeshPhysicalMaterial({
+  color: "#f5cc5f",
+  roughness: 0.22,
+  metalness: 0.7,
+  clearcoat: 0.6,
+  clearcoatRoughness: 0.15,
+  envMapIntensity: 1.6,
+});
+const goldHeldMaterial = new MeshPhysicalMaterial({
+  color: "#d9a93c",
+  roughness: 0.2,
+  metalness: 0.7,
+  clearcoat: 0.7,
+  clearcoatRoughness: 0.12,
+  envMapIntensity: 1.7,
 });
 
 /** Deep black pips with a faint, ink-like gloss. */
@@ -299,6 +318,7 @@ function Dice3DImpl({
 
   // Tactile press feedback: tapping a die dips it to ~0.96 and springs back,
   // so locking/unlocking feels physical rather than instant.
+  const gold = useSyncExternalStore(subscribeGoldDice, isGoldDiceActive, () => false);
   const pressRef = useRef<Group>(null);
   const pressAmount = useRef(0);
 
@@ -364,7 +384,7 @@ function Dice3DImpl({
                   smoothness={10}
                   bevelSegments={8}
                   creaseAngle={0.5}
-                  material={held ? heldMaterial : bodyMaterial}
+                  material={gold ? (held ? goldHeldMaterial : goldMaterial) : held ? heldMaterial : bodyMaterial}
                 />
                 {FACES.map((face) => (
                   <group key={face.value} rotation={face.rotation}>

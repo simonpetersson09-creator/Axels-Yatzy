@@ -58,6 +58,10 @@ export const no: typeof sv = {
   rateTitle: "Liker du Mr.B. Yatzy?",
   rateBody: "Du har spilt 5 kamper! En vurdering hjelper oss enormt. 💛",
   rateNow: "Gi vurdering",
+  notifAskTitle: "Vil du vite når det er din tur? 🎲",
+  notifAskBody: "Vi gir beskjed når en venn har kastet eller inviterer deg. Ingen spam.",
+  notifAskYes: "Ja takk",
+  notifAskLater: "Ikke nå",
   rateLater: "Senere",
 
   newGame: 'Nytt spill',

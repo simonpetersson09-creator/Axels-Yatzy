@@ -58,6 +58,10 @@ export const fr: typeof sv = {
   rateTitle: "Vous aimez Mr.B. Yatzy ?",
   rateBody: "Vous avez joué 5 parties ! Une note nous aide beaucoup. 💛",
   rateNow: "Donner une note",
+  notifAskTitle: "Envie de savoir quand c'est ton tour ? 🎲",
+  notifAskBody: "On te prévient quand un ami a lancé les dés ou t'invite. Pas de spam.",
+  notifAskYes: "Oui, volontiers",
+  notifAskLater: "Pas maintenant",
   rateLater: "Plus tard",
 
   newGame: 'Nouvelle partie',

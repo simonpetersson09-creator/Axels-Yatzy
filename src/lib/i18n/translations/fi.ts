@@ -58,6 +58,10 @@ export const fi: typeof sv = {
   rateTitle: "Pidätkö Mr.B. Yatzysta?",
   rateBody: "Olet pelannut 5 ottelua! Arvostelu auttaa meitä valtavasti. 💛",
   rateNow: "Anna arvostelu",
+  notifAskTitle: "Haluatko tietää, kun on sinun vuorosi? 🎲",
+  notifAskBody: "Kerromme, kun ystävä on heittänyt tai kutsuu sinut. Ei roskapostia.",
+  notifAskYes: "Kyllä kiitos",
+  notifAskLater: "Ei nyt",
   rateLater: "Myöhemmin",
 
   newGame: 'Uusi peli',

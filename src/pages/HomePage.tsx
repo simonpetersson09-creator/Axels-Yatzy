@@ -27,6 +27,9 @@ import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Lang
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showAppOpenAd } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
+import NotificationAskPrompt from '@/components/NotificationAskPrompt';
+import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
+import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
 
@@ -109,6 +112,27 @@ export default function HomePage() {
     setShowRatePrompt(false);
     snoozeRatePrompt(stats.gamesPlayed);
     trackEvent('rate_prompt_later');
+  };
+
+  // Soft notification prompt after the first finished match (before Apple's sheet).
+  const [showNotifAsk, setShowNotifAsk] = useState(false);
+  useEffect(() => {
+    if (showNotifAsk || !shouldAskForNotifications(stats.gamesPlayed)) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      if ((await getPushPermissionState()) !== 'prompt' || cancelled) return;
+      setShowNotifAsk(true);
+      trackEvent('notif_ask_shown');
+    }, 1200);
+    return () => { cancelled = true; clearTimeout(timer); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stats.gamesPlayed]);
+
+  const closeNotifAsk = async (yes: boolean) => {
+    setShowNotifAsk(false);
+    markNotificationsAsked(stats.gamesPlayed, yes);
+    trackEvent(yes ? 'notif_ask_yes' : 'notif_ask_later');
+    if (yes) await requestPushPermission();
   };
   // Startup ad: on every cold start (iOS app only). Not on return from background.
   useEffect(() => {
@@ -827,6 +851,9 @@ export default function HomePage() {
         )}
         {showRatePrompt && !showOnlineNews && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
+        )}
+        {showNotifAsk && !showOnlineNews && !showRatePrompt && (
+          <NotificationAskPrompt onYes={() => closeNotifAsk(true)} onLater={() => closeNotifAsk(false)} />
         )}
       </AnimatePresence>
     </div>

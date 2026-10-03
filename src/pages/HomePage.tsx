@@ -869,10 +869,10 @@ export default function HomePage() {
 
       <AnimatePresence>
         {showOnlineNews && (
-          {showRefAsk && !showOnlineNews && <ReferralAskPrompt onClose={() => setShowRefAsk(false)} />}
           <OnlineNewsPrompt onPlay={() => closeOnlineNews(true)} onClose={() => closeOnlineNews(false)} />
         )}
-        {showRatePrompt && !showOnlineNews && (
+        {showRefAsk && !showOnlineNews && <ReferralAskPrompt onClose={() => setShowRefAsk(false)} />}
+        {showRatePrompt && !showOnlineNews && !showRefAsk && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
         )}
         {showNotifAsk && !showOnlineNews && !showRatePrompt && (

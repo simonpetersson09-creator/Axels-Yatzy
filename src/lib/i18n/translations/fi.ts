@@ -62,6 +62,13 @@ export const fi: typeof sv = {
   notifAskBody: "Kerromme, kun ystävä on heittänyt tai kutsuu sinut. Ei roskapostia.",
   notifAskYes: "Kyllä kiitos",
   notifAskLater: "Ei nyt",
+  joinTitle: "Sinut on kutsuttu Yatzyyn! 🎲",
+  joinBody: "Ystävä haluaa pelata Mr.B. Yatzya kanssasi. Lataa sovellus ilmaiseksi ja syötä koodi.",
+  joinDownload: "Lataa ilmaiseksi App Storesta",
+  joinHaveApp: "Onko sinulla jo sovellus?",
+  joinSteps: "Avaa Mr.B. Yatzy, napauta Pelaa ystävien kanssa ja syötä yllä oleva koodi.",
+  joinPlayWeb: "Pelaa selaimessa",
+  shareInviteText: "Pelaa Yatzya kanssani! 🎲 Koodi: {code}",
   rateLater: "Myöhemmin",
 
   newGame: 'Uusi peli',

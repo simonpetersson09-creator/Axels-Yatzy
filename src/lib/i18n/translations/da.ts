@@ -62,6 +62,13 @@ export const da: typeof sv = {
   notifAskBody: "Vi giver besked, når en ven har slået eller inviterer dig. Ingen spam.",
   notifAskYes: "Ja tak",
   notifAskLater: "Ikke nu",
+  joinTitle: "Du er inviteret til Yatzy! 🎲",
+  joinBody: "En ven vil spille Mr.B. Yatzy med dig. Hent appen gratis og indtast koden.",
+  joinDownload: "Hent gratis i App Store",
+  joinHaveApp: "Har du allerede appen?",
+  joinSteps: "Åbn Mr.B. Yatzy, tryk Spil med venner og indtast koden ovenfor.",
+  joinPlayWeb: "Spil i browseren i stedet",
+  shareInviteText: "Spil Yatzy med mig! 🎲 Kode: {code}",
   rateLater: "Senere",
 
   newGame: 'Nyt spil',

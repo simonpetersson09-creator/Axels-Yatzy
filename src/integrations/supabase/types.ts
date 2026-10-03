@@ -455,6 +455,48 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_credits: {
+        Row: {
+          created_at: string
+          game_id: string | null
+          invitee_session_id: string
+          inviter_session_id: string
+        }
+        Insert: {
+          created_at?: string
+          game_id?: string | null
+          invitee_session_id: string
+          inviter_session_id: string
+        }
+        Update: {
+          created_at?: string
+          game_id?: string | null
+          invitee_session_id?: string
+          inviter_session_id?: string
+        }
+        Relationships: []
+      }
+      referral_rewards: {
+        Row: {
+          friends_count: number
+          gold_until: string
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          friends_count?: number
+          gold_until: string
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          friends_count?: number
+          gold_until?: string
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       session_owners: {
         Row: {
           created_at: string
@@ -512,6 +554,7 @@ export type Database = {
         Returns: Json
       }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
+      get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
       get_world_leader: { Args: never; Returns: Json }
       get_world_leaders: { Args: never; Returns: Json }
       get_world_rank: { Args: { p_session_id: string }; Returns: Json }

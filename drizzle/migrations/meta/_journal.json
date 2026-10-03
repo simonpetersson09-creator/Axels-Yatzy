@@ -29,20 +29,6 @@
       "when": 1791055436391,
       "tag": "0003_gold_dice_referral",
       "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1791056612144,
-      "tag": "0004_referral_codes_and_clicks",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1791056630161,
-      "tag": "0005_referral_code_no_pgcrypto",
-      "breakpoints": true
     }
   ]
 }

@@ -67,11 +67,15 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
   trackEvent('notification_preferences_changed', { ...prefs });
 }
 
-let initialized = false;
+let initPromise: Promise<void> | null = null;
 
-export async function initNotifications(): Promise<void> {
-  if (initialized) return;
-  initialized = true;
+export function initNotifications(): Promise<void> {
+  if (!initPromise) initPromise = doInitNotifications();
+  return initPromise;
+}
+
+async function doInitNotifications(): Promise<void> {
+
 
   // Sync persisted prefs to server (in case the device was offline before)
   const prefs = getNotificationPrefs();

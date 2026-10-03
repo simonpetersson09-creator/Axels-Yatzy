@@ -16,7 +16,6 @@ import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
 import { toast } from 'sonner';
-import { GOLD_FRIENDS_NEEDED, isGoldUnlocked, getDiceSkin, setDiceSkin, refreshGoldProgress, type DiceSkin } from '@/lib/gold-dice';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -34,16 +33,6 @@ export default function SettingsPage() {
   const [statsSnapshot, setStatsSnapshot] = useState<LocalStats>(() => getLocalStats());
   const tapCountRef = useRef(0);
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [goldUnlocked, setGoldUnlocked] = useState(() => isGoldUnlocked());
-  const [skin, setSkin] = useState<DiceSkin>(() => getDiceSkin());
-  const [goldCount, setGoldCount] = useState(0);
-  useEffect(() => {
-    void refreshGoldProgress().then(({ count }) => {
-      setGoldCount(count);
-      setGoldUnlocked(isGoldUnlocked());
-      setSkin(getDiceSkin());
-    });
-  }, []);
 
 
   const updateNotifPref = (key: 'turnNotifications' | 'reminderNotifications', value: boolean) => {
@@ -312,43 +301,7 @@ export default function SettingsPage() {
           </Card>
         </Section>
 
-        {/* Dice skin (gold = reward for playing 3 different friends) */}
-        <Section title={t('diceSection')}>
-          <Card>
-            {goldUnlocked ? (
-              <div className="grid grid-cols-2 gap-2 p-3">
-                {(['classic', 'gold'] as const).map(s => (
-                  <button
-                    key={s}
-                    onClick={() => { setDiceSkin(s); setSkin(s); trackEvent('dice_skin_changed', { skin: s }); }}
-                    className={`flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold border transition-colors ${
-                      skin === s ? 'border-game-gold bg-primary/15 text-foreground' : 'border-border/50 text-muted-foreground'
-                    }`}
-                  >
-                    <span
-                      className={`w-5 h-5 rounded-md border border-border/50 ${s === 'gold' ? 'bg-game-gold' : 'bg-foreground'}`}
-                    />
-                    {s === 'gold' ? t('diceGold') : t('diceClassic')}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="px-4 py-3.5 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-foreground">🏆 {t('diceGold')}</span>
-                  <span className="text-xs font-bold text-game-gold">{Math.min(goldCount, GOLD_FRIENDS_NEEDED)}/{GOLD_FRIENDS_NEEDED}</span>
-                </div>
-                <div className="h-1.5 rounded-full bg-border/40 overflow-hidden">
-                  <div
-                    className="h-full bg-game-gold transition-all"
-                    style={{ width: `${(Math.min(goldCount, GOLD_FRIENDS_NEEDED) / GOLD_FRIENDS_NEEDED) * 100}%` }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">{t('goldLockedDesc', { needed: String(GOLD_FRIENDS_NEEDED) })}</p>
-              </div>
-            )}
-          </Card>
-        </Section>
+
 
         {/* Notifications */}
         <Section title={t('notifications')}>

@@ -25,7 +25,6 @@ import type { Group } from "three";
 import { useDiceAnimation } from "./useDiceAnimation";
 import { HoldIndicator } from "./HoldIndicator";
 import type { DiceValue } from "./types";
-import { useDiceSkin } from "@/lib/gold-dice";
 
 /* ---------------------------------------------------------------- shared */
 
@@ -59,21 +58,6 @@ const heldMaterial = new MeshPhysicalMaterial({
   envMapIntensity: 1.15,
   ior: 1.48,
 });
-
-/** Gold reward skin: polished metal-look body. */
-const goldMaterial = new MeshPhysicalMaterial({
-  color: "#e0b04a",
-  roughness: 0.26,
-  metalness: 0.55,
-  clearcoat: 1,
-  clearcoatRoughness: 0.08,
-  sheen: 0.4,
-  sheenColor: "#fff1b8",
-  emissive: "#5a3a08",
-  emissiveIntensity: 0.35,
-});
-const goldHeldMaterial = goldMaterial.clone();
-goldHeldMaterial.color.set("#b98a2e");
 
 /** Deep black pips with a faint, ink-like gloss. */
 const pipMaterial = new MeshStandardMaterial({
@@ -301,7 +285,6 @@ function Dice3DImpl({
   pipColor,
   holdColor,
 }: Dice3DProps) {
-  const skin = useDiceSkin();
   const { groupRef, travelRef } = useDiceAnimation({
     value,
     rolling,
@@ -381,11 +364,7 @@ function Dice3DImpl({
                   smoothness={10}
                   bevelSegments={8}
                   creaseAngle={0.5}
-                  material={
-                    skin === "gold"
-                      ? held ? goldHeldMaterial : goldMaterial
-                      : held ? heldMaterial : bodyMaterial
-                  }
+                  material={held ? heldMaterial : bodyMaterial}
                 />
                 {FACES.map((face) => (
                   <group key={face.value} rotation={face.rotation}>

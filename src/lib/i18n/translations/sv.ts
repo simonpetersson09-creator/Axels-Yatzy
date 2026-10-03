@@ -71,11 +71,6 @@ export const sv = {
   joinSteps: "Öppna Mr.B. Yatzy, tryck på Spela med vän och skriv in koden ovan.",
   joinPlayWeb: "Spela i webbläsaren i stället",
   shareInviteText: "Spela Yatzy med mig! 🎲 Kod: {code}",
-  diceSection: "Tärningar",
-  diceClassic: "Klassisk",
-  diceGold: "Guld",
-  goldLockedDesc: "Spela klart en match mot {needed} olika vänner för att låsa upp guldtärningar. Bjud in dem med Spela med vän!",
-  goldUnlockedToast: "🎉 Du har låst upp guldtärningar! Byt i Inställningar.",
   rateLater: "Senare",
 
   // Setup

@@ -18,15 +18,13 @@ export async function getMyReferralCode(): Promise<string | null> {
   return null;
 }
 
-/** Records that this install was seen; returns true when it is brand new (< 48h). */
-function isNewInstall(): boolean {
+/** Records first launch; true while this install is brand new (< 48h). */
+function isNewInstall(gamesPlayed: number): boolean {
   try {
     let first = parseInt(localStorage.getItem(FIRST_SEEN_KEY) || '0', 10);
     if (!first) {
-      // Existing players (any local history) are never "new".
-      const hasHistory = !!localStorage.getItem('yatzy_session_id_existing') ||
-        Object.keys(localStorage).some(k => k.startsWith('yatzy_stats') || k.startsWith('mrbyatzy_online_news'));
-      first = hasHistory ? 1 : Date.now();
+      // Players with earlier games are existing users, never "new".
+      first = gamesPlayed > 0 ? 1 : Date.now();
       localStorage.setItem(FIRST_SEEN_KEY, String(first));
     }
     return Date.now() - first < 48 * 3600_000;
@@ -47,9 +45,9 @@ async function callClaim(code?: string): Promise<{ matched: boolean; error?: str
  * Run once on startup. Tries automatic matching for new installs.
  * Returns 'ask' when the app should show the "Did someone invite you?" prompt.
  */
-export async function autoClaimReferral(): Promise<'none' | 'ask'> {
+export async function autoClaimReferral(gamesPlayed: number): Promise<'none' | 'ask'> {
   try {
-    if (!isNewInstall()) return 'none';
+    if (!isNewInstall(gamesPlayed)) return 'none';
     if (localStorage.getItem(CLAIM_KEY)) return 'none';
     const res = await callClaim();
     if (res.matched) { localStorage.setItem(CLAIM_KEY, 'matched'); return 'none'; }

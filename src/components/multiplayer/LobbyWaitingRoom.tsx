@@ -30,11 +30,10 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
   };
 
   const shareInvite = async () => {
-    const webOrigin = 'https://mrb-yatzy.lovable.app';
     const isNative = Capacitor.isNativePlatform();
-    const origin = isNative ? webOrigin : window.location.origin;
-    const joinUrl = `${origin}/multiplayer?code=${gameCode}`;
-    const text = `${t('gameCode')}: ${gameCode}\n${joinUrl}`;
+    const joinUrl = `${PUBLIC_WEB_ORIGIN}/join?code=${gameCode}`;
+    const text = `${t('shareInviteText', { code: gameCode })}\n${joinUrl}`;
+    trackEvent('invite_link_shared');
 
     try {
       if (isNative) {

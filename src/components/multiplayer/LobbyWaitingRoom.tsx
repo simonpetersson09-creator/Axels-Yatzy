@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import type { Player } from '@/types/yatzy';
 import { useTranslation } from '@/lib/i18n';
 import { PUBLIC_WEB_ORIGIN } from '@/lib/app-links';
+import { getMyReferralCode } from '@/lib/referral';
 import { trackEvent } from '@/lib/analytics';
 
 interface LobbyWaitingRoomProps {
@@ -33,8 +34,9 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
 
   const shareInvite = async () => {
     const isNative = Capacitor.isNativePlatform();
-    const joinUrl = `${PUBLIC_WEB_ORIGIN}/join?code=${gameCode}`;
-    const text = `${t('shareInviteText', { code: gameCode })}\n${joinUrl}`;
+    const ref = await getMyReferralCode();
+    const joinUrl = `${PUBLIC_WEB_ORIGIN}/join?code=${gameCode}${ref ? `&ref=${ref}` : ''}`;
+    const text = `${t('shareInviteText', { code: gameCode })}${ref ? `\n${t('shareRefCode', { ref })}` : ''}\n${joinUrl}`;
     trackEvent('invite_link_shared');
 
     try {

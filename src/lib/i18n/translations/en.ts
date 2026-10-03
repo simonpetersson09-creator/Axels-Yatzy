@@ -58,6 +58,10 @@ export const en: typeof sv = {
   rateTitle: "Enjoying Mr.B. Yatzy?",
   rateBody: "You've played 5 matches! A rating helps us a lot. 💛",
   rateNow: "Rate the app",
+  notifAskTitle: "Want to know when it's your turn? 🎲",
+  notifAskBody: "We'll let you know when a friend has rolled or invites you. No spam.",
+  notifAskYes: "Yes, please",
+  notifAskLater: "Not now",
   rateLater: "Later",
 
   newGame: 'New game',

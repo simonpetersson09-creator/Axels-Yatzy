@@ -60,6 +60,10 @@ export const sv = {
   rateTitle: "Gillar du Mr.B. Yatzy?",
   rateBody: "Du har spelat 5 matcher! Ett betyg hjälper oss enormt. 💛",
   rateNow: "Ge betyg",
+  notifAskTitle: "Vill du veta när det är din tur? 🎲",
+  notifAskBody: "Vi meddelar när en vän har slagit eller bjuder in dig. Inget spam.",
+  notifAskYes: "Ja, gärna",
+  notifAskLater: "Inte nu",
   rateLater: "Senare",
 
   // Setup

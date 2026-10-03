@@ -31,6 +31,8 @@ import NotificationAskPrompt from '@/components/NotificationAskPrompt';
 import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
 import { refreshGoldDice, goldDaysLeft } from '@/lib/gold-dice';
+import { autoClaimReferral } from '@/lib/referral';
+import ReferralAskPrompt from '@/components/ReferralAskPrompt';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
 
@@ -79,6 +81,16 @@ export default function HomePage() {
       trackEvent('gold_dice_earned');
       toast.success(t('goldEarned', { days: String(goldDaysLeft()) }), { duration: 6000 });
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // New installs: match to inviter automatically, otherwise ask once.
+  const [showRefAsk, setShowRefAsk] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    const timer = setTimeout(() => {
+      void autoClaimReferral(stats.gamesPlayed).then(r => { if (alive && r === 'ask') setShowRefAsk(true); });
+    }, 2500);
+    return () => { alive = false; clearTimeout(timer); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const adInFlightRef = useRef(false);
@@ -857,6 +869,7 @@ export default function HomePage() {
 
       <AnimatePresence>
         {showOnlineNews && (
+          {showRefAsk && !showOnlineNews && <ReferralAskPrompt onClose={() => setShowRefAsk(false)} />}
           <OnlineNewsPrompt onPlay={() => closeOnlineNews(true)} onClose={() => closeOnlineNews(false)} />
         )}
         {showRatePrompt && !showOnlineNews && (

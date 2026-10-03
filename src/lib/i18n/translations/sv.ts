@@ -72,6 +72,14 @@ export const sv = {
   joinPlayWeb: "Spela i webbläsaren i stället",
   shareInviteText: "Spela Yatzy med mig! 🎲 Kod: {code}",
   goldEarned: "🏆 Din vän laddade ner appen! Du har guldtärningar i {days} dagar.",
+  refAskTitle: "Bjöd någon in dig? 🎁",
+  refAskBody: "Skriv din väns inbjudningskod så får hen guldtärningar som tack.",
+  refAskPlaceholder: "Kod, t.ex. K7M2QX",
+  refAskSubmit: "Skicka",
+  refAskSkip: "Nej, hoppa över",
+  refAskThanks: "Tack! Din vän har fått guldtärningar 🏆",
+  refAskInvalid: "Koden fungerade inte",
+  shareRefCode: "Min inbjudningskod: {ref}",
   rateLater: "Senare",
 
   // Setup

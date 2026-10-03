@@ -1,5 +1,6 @@
 import { useSearchParams, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { logReferralClick } from '@/lib/referral';
 import { Copy, Check } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
@@ -10,7 +11,10 @@ export default function JoinPage() {
   const { t } = useTranslation();
   const [params] = useSearchParams();
   const code = (params.get('code') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+  const ref = (params.get('ref') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
   const [copied, setCopied] = useState(false);
+  // Remember this visit server-side so the new install can be matched to the inviter.
+  useEffect(() => { if (ref) void logReferralClick(ref); }, [ref]);
 
   const copy = async () => {
     try {
@@ -41,7 +45,7 @@ export default function JoinPage() {
 
       <a
         href={APP_STORE_URL}
-        onClick={() => trackEvent('join_page_download')}
+        onClick={() => { trackEvent('join_page_download'); if (ref) void logReferralClick(ref); }}
         className="w-full max-w-sm py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base shadow-[0_4px_16px_hsl(36_78%_55%/0.3)]"
       >
         {t('joinDownload')}

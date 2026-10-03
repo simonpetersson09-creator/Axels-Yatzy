@@ -204,30 +204,58 @@ export async function initNotifications(): Promise<void> {
       }
     });
 
+    registerPush = async () => {
+      await PushNotifications.register();
+      trackEvent('push_register_called');
+      // If neither 'registration' nor 'registrationError' fires within 15s,
+      // APNs callbacks are not reaching the plugin (see scripts/set-ios-push.js).
+      setTimeout(() => {
+        if (!registrationCallbackFired) {
+          console.warn('[notifications] no registration callback within 15s');
+          trackEvent('push_registration_timeout');
+        }
+      }, 15_000);
+    };
+
+    // Never ask at startup — the soft prompt (NotificationAskPrompt) asks after
+    // the first finished match. Only register if permission already exists.
     const perm = await PushNotifications.checkPermissions();
-    let granted = perm.receive === 'granted';
-    if (!granted) {
-      const req = await PushNotifications.requestPermissions();
-      granted = req.receive === 'granted';
-      trackEvent(granted ? 'notification_permission_granted' : 'notification_permission_denied');
-    }
-    if (!granted) return;
-
-    await PushNotifications.register();
-    trackEvent('push_register_called');
-
-    // If neither 'registration' nor 'registrationError' fires within 15s,
-    // APNs callbacks are not reaching the plugin — almost always means
-    // AppDelegate.swift lacks the capacitorDidRegisterForRemoteNotifications
-    // forwarding, or the binary lacks the aps-environment entitlement.
-    setTimeout(() => {
-      if (!registrationCallbackFired) {
-        console.warn('[notifications] no registration callback within 15s');
-        trackEvent('push_registration_timeout');
-      }
-    }, 15_000);
+    if (perm.receive === 'granted') await registerPush();
   } catch (err) {
     console.warn('[notifications] init failed', err);
+  }
+}
+
+let registerPush: (() => Promise<void>) | null = null;
+
+export type PushPermissionState = 'granted' | 'denied' | 'prompt' | 'unavailable';
+
+export async function getPushPermissionState(): Promise<PushPermissionState> {
+  if (!Capacitor.isNativePlatform()) return 'unavailable';
+  try {
+    const { PushNotifications } = await import('@capacitor/push-notifications');
+    const p = await PushNotifications.checkPermissions();
+    if (p.receive === 'granted') return 'granted';
+    if (p.receive === 'denied') return 'denied';
+    return 'prompt';
+  } catch {
+    return 'unavailable';
+  }
+}
+
+/** Shows Apple's permission sheet (only after the player said yes in our own prompt). */
+export async function requestPushPermission(): Promise<boolean> {
+  if (!Capacitor.isNativePlatform()) return false;
+  try {
+    await initNotifications();
+    const { PushNotifications } = await import('@capacitor/push-notifications');
+    const req = await PushNotifications.requestPermissions();
+    const granted = req.receive === 'granted';
+    trackEvent(granted ? 'notification_permission_granted' : 'notification_permission_denied');
+    if (granted && registerPush) await registerPush();
+    return granted;
+  } catch {
+    return false;
   }
 }
 

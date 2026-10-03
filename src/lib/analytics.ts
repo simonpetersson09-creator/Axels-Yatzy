@@ -7,6 +7,7 @@ import {
 } from '@/lib/device';
 import { getCurrentSessionId } from '@/lib/analytics-session';
 import { claimSession } from '@/lib/session';
+import { markHappyMoment } from '@/lib/rate-app';
 
 const APP_VERSION = '1.0.0';
 
@@ -110,6 +111,10 @@ export function trackEvent(
   metadata?: Record<string, unknown>,
   options?: TrackOptions,
 ): void {
+  // Happy moments (own Yatzy or a win) unlock the rating prompt.
+  if (eventName === 'yatzy_scored' || (eventName === 'game_finished' && metadata?.won === true)) {
+    markHappyMoment();
+  }
   try {
     const deviceId = getDeviceIdSync();
     queue.push({

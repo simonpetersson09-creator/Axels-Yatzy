@@ -64,6 +64,13 @@ export const sv = {
   notifAskBody: "Vi meddelar när en vän har slagit eller bjuder in dig. Inget spam.",
   notifAskYes: "Ja, gärna",
   notifAskLater: "Inte nu",
+  joinTitle: "Du är inbjuden till Yatzy! 🎲",
+  joinBody: "En vän vill spela Mr.B. Yatzy med dig. Ladda ner appen gratis och skriv in koden.",
+  joinDownload: "Ladda ner gratis i App Store",
+  joinHaveApp: "Har du redan appen?",
+  joinSteps: "Öppna Mr.B. Yatzy, tryck på Spela med vän och skriv in koden ovan.",
+  joinPlayWeb: "Spela i webbläsaren i stället",
+  shareInviteText: "Spela Yatzy med mig! 🎲 Kod: {code}",
   rateLater: "Senare",
 
   // Setup

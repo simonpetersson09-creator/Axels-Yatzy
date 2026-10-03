@@ -62,6 +62,13 @@ export const fr: typeof sv = {
   notifAskBody: "On te prévient quand un ami a lancé les dés ou t'invite. Pas de spam.",
   notifAskYes: "Oui, volontiers",
   notifAskLater: "Pas maintenant",
+  joinTitle: "Tu es invité(e) au Yatzy ! 🎲",
+  joinBody: "Un ami veut jouer à Mr.B. Yatzy avec toi. Télécharge l'appli gratuitement et saisis le code.",
+  joinDownload: "Télécharger gratuitement sur l'App Store",
+  joinHaveApp: "Tu as déjà l'appli ?",
+  joinSteps: "Ouvre Mr.B. Yatzy, touche Jouer avec des amis et saisis le code ci-dessus.",
+  joinPlayWeb: "Jouer dans le navigateur",
+  shareInviteText: "Joue au Yatzy avec moi ! 🎲 Code : {code}",
   rateLater: "Plus tard",
 
   newGame: 'Nouvelle partie',

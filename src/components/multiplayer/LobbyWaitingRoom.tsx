@@ -8,6 +8,8 @@ import { Capacitor } from '@capacitor/core';
 import { toast } from 'sonner';
 import type { Player } from '@/types/yatzy';
 import { useTranslation } from '@/lib/i18n';
+import { PUBLIC_WEB_ORIGIN } from '@/lib/app-links';
+import { trackEvent } from '@/lib/analytics';
 
 interface LobbyWaitingRoomProps {
   gameCode: string;
@@ -30,11 +32,10 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
   };
 
   const shareInvite = async () => {
-    const webOrigin = 'https://mrb-yatzy.lovable.app';
     const isNative = Capacitor.isNativePlatform();
-    const origin = isNative ? webOrigin : window.location.origin;
-    const joinUrl = `${origin}/multiplayer?code=${gameCode}`;
-    const text = `${t('gameCode')}: ${gameCode}\n${joinUrl}`;
+    const joinUrl = `${PUBLIC_WEB_ORIGIN}/join?code=${gameCode}`;
+    const text = `${t('shareInviteText', { code: gameCode })}\n${joinUrl}`;
+    trackEvent('invite_link_shared');
 
     try {
       if (isNative) {

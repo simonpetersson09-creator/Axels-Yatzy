@@ -14,6 +14,7 @@ import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import FriendStatsPage from "./pages/FriendStatsPage";
 import FriendsListPage from "./pages/FriendsListPage";
 import LegalPage from "./pages/LegalPage";
+import JoinPage from "./pages/JoinPage";
 import NotFound from "./pages/NotFound";
 import { MultiplayerProvider } from "./hooks/MultiplayerProvider";
 import { lazy, Suspense, useEffect } from "react";
@@ -55,6 +56,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/setup" element={<GameSetupPage />} />
+          <Route path="/join" element={<JoinPage />} />
           <Route path="/game" element={<GamePage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/settings" element={<SettingsPage />} />

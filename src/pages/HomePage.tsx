@@ -30,6 +30,7 @@ import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
 import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
+import { refreshGoldProgress } from '@/lib/gold-dice';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
 
@@ -90,6 +91,16 @@ export default function HomePage() {
     trackEvent(play ? 'online_news_play' : 'online_news_dismiss');
     if (play) setShowQuickMatch(true);
   };
+
+  // Gold dice reward: celebrate once when the 3rd different friend is reached.
+  useEffect(() => {
+    void refreshGoldProgress().then(({ newlyUnlocked }) => {
+      if (!newlyUnlocked) return;
+      trackEvent('gold_dice_unlocked');
+      toast.success(t('goldUnlockedToast'), { duration: 6000 });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Ask for a rating once the player has finished 5 matches.
   useEffect(() => {

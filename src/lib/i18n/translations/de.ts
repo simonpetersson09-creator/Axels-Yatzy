@@ -69,6 +69,11 @@ export const de: typeof sv = {
   joinSteps: "Öffne Mr.B. Yatzy, tippe auf Mit Freunden spielen und gib den Code oben ein.",
   joinPlayWeb: "Stattdessen im Browser spielen",
   shareInviteText: "Spiel Yatzy mit mir! 🎲 Code: {code}",
+  diceSection: "Würfel",
+  diceClassic: "Klassisch",
+  diceGold: "Gold",
+  goldLockedDesc: "Spiele ein Match gegen {needed} verschiedene Freunde zu Ende, um Goldwürfel freizuschalten. Lade sie ein!",
+  goldUnlockedToast: "🎉 Goldwürfel freigeschaltet! Wechsle in den Einstellungen.",
   rateLater: "Später",
 
   newGame: 'Neues Spiel',

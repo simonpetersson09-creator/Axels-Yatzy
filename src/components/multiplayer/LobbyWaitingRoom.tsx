@@ -8,6 +8,8 @@ import { Capacitor } from '@capacitor/core';
 import { toast } from 'sonner';
 import type { Player } from '@/types/yatzy';
 import { useTranslation } from '@/lib/i18n';
+import { PUBLIC_WEB_ORIGIN } from '@/lib/app-links';
+import { trackEvent } from '@/lib/analytics';
 
 interface LobbyWaitingRoomProps {
   gameCode: string;

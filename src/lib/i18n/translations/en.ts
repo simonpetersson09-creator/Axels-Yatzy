@@ -69,6 +69,11 @@ export const en: typeof sv = {
   joinSteps: "Open Mr.B. Yatzy, tap Play with friends and enter the code above.",
   joinPlayWeb: "Play in the browser instead",
   shareInviteText: "Play Yatzy with me! 🎲 Code: {code}",
+  diceSection: "Dice",
+  diceClassic: "Classic",
+  diceGold: "Gold",
+  goldLockedDesc: "Finish a match against {needed} different friends to unlock gold dice. Invite them with Play with friend!",
+  goldUnlockedToast: "🎉 You unlocked gold dice! Switch in Settings.",
   rateLater: "Later",
 
   newGame: 'New game',

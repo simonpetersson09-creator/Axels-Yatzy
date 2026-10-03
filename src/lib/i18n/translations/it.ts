@@ -69,6 +69,11 @@ export const it: typeof sv = {
   joinSteps: "Apri Mr.B. Yatzy, tocca Gioca con gli amici e inserisci il codice qui sopra.",
   joinPlayWeb: "Gioca nel browser",
   shareInviteText: "Gioca a Yatzy con me! 🎲 Codice: {code}",
+  diceSection: "Dadi",
+  diceClassic: "Classico",
+  diceGold: "Oro",
+  goldLockedDesc: "Completa una partita contro {needed} amici diversi per sbloccare i dadi d'oro. Invitali!",
+  goldUnlockedToast: "🎉 Hai sbloccato i dadi d'oro! Cambiali nelle Impostazioni.",
   rateLater: "Più tardi",
 
   newGame: 'Nuova partita',

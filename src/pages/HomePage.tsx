@@ -92,6 +92,16 @@ export default function HomePage() {
     if (play) setShowQuickMatch(true);
   };
 
+  // Gold dice reward: celebrate once when the 3rd different friend is reached.
+  useEffect(() => {
+    void refreshGoldProgress().then(({ newlyUnlocked }) => {
+      if (!newlyUnlocked) return;
+      trackEvent('gold_dice_unlocked');
+      toast.success(t('goldUnlockedToast'), { duration: 6000 });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Ask for a rating once the player has finished 5 matches.
   useEffect(() => {
     if (showRatePrompt) return;

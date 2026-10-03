@@ -110,7 +110,7 @@ export default function HomePage() {
     snoozeRatePrompt(stats.gamesPlayed);
     trackEvent('rate_prompt_later');
   };
-  // Startup ad: once per app launch, max once per day per user (iOS app only, never day one).
+  // Startup ad: on every cold start (iOS app only). Not on return from background.
   useEffect(() => {
     if (startupAdChecked) return;
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;

@@ -5,7 +5,8 @@
  * sphere pips. Geometries and materials are created once at module level and
  * shared by every die instance, keeping GPU state changes and memory low.
  */
-import { forwardRef, memo, useMemo, useRef } from "react";
+import { forwardRef, memo, useMemo, useRef, useSyncExternalStore } from "react";
+import { isGoldDiceActive, subscribeGoldDice } from "@/lib/gold-dice";
 import { RoundedBox } from "@react-three/drei";
 import {
   CanvasTexture,
@@ -317,6 +318,7 @@ function Dice3DImpl({
 
   // Tactile press feedback: tapping a die dips it to ~0.96 and springs back,
   // so locking/unlocking feels physical rather than instant.
+  const gold = useSyncExternalStore(subscribeGoldDice, isGoldDiceActive, () => false);
   const pressRef = useRef<Group>(null);
   const pressAmount = useRef(0);
 
@@ -382,7 +384,7 @@ function Dice3DImpl({
                   smoothness={10}
                   bevelSegments={8}
                   creaseAngle={0.5}
-                  material={held ? heldMaterial : bodyMaterial}
+                  material={gold ? (held ? goldHeldMaterial : goldMaterial) : held ? heldMaterial : bodyMaterial}
                 />
                 {FACES.map((face) => (
                   <group key={face.value} rotation={face.rotation}>

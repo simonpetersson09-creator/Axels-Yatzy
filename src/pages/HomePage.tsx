@@ -30,6 +30,7 @@ import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
 import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
+import { refreshGoldProgress } from '@/lib/gold-dice';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
 

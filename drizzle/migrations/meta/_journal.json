@@ -22,6 +22,20 @@
       "when": 1790515378513,
       "tag": "0002_quick_match_multi_and_bots",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791206697950,
+      "tag": "0003_migration",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791206840448,
+      "tag": "0004_migration",
+      "breakpoints": true
     }
   ]
 }

@@ -287,4 +287,13 @@ export const vi: typeof sv = {
   playerIsBack: '{name} đã trở lại và chơi tiếp',
   addStrangerFriend: 'Kết bạn với {name}',
   strangerFriendAdded: '{name} giờ là bạn của bạn',
+  statsPage: "Thống kê",
+  statsPageTitle: "Thống kê",
+  yourRankingsTitle: "Thứ hạng của bạn",
+  topCountriesTitle: "Top 10 quốc gia",
+  weeklyRankLabel: "Thứ hạng tuần trước của bạn",
+  weeklyGamesText: "{n} trận trong 7 ngày qua",
+  weeklyBuildingHint: "Chơi một trận để vào bảng xếp hạng tuần này",
+  statsNeedCountry: "Chọn quốc gia trong Cài đặt để xem thứ hạng của bạn.",
+  matchesShort: "trận",
 };

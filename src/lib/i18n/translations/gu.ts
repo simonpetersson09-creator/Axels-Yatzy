@@ -287,4 +287,13 @@ export const gu: typeof sv = {
   playerIsBack: '{name} પાછા આવીને ફરી રમે છે',
   addStrangerFriend: '{name}ને મિત્ર બનાવો',
   strangerFriendAdded: '{name} હવે તમારા મિત્ર છે',
+  statsPage: "આંકડા",
+  statsPageTitle: "આંકડા",
+  yourRankingsTitle: "તમારું રેન્કિંગ",
+  topCountriesTitle: "ટોચના 10 દેશો",
+  weeklyRankLabel: "ગયા અઠવાડિયે તમારો ક્રમ",
+  weeklyGamesText: "છેલ્લા 7 દિવસમાં {n} મેચ",
+  weeklyBuildingHint: "આ અઠવાડિયાની યાદીમાં જોડાવા એક મેચ રમો",
+  statsNeedCountry: "તમારું રેન્કિંગ જોવા સેટિંગ્સમાં તમારો દેશ પસંદ કરો.",
+  matchesShort: "મેચ",
 };

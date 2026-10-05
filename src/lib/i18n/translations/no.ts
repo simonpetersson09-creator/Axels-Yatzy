@@ -287,4 +287,13 @@ export const no: typeof sv = {
   playerIsBack: '{name} er tilbake og spiller selv',
   addStrangerFriend: 'Legg til {name} som venn',
   strangerFriendAdded: '{name} er nå din venn',
+  statsPage: "Statistikk",
+  statsPageTitle: "Statistikk",
+  yourRankingsTitle: "Dine plasseringer",
+  topCountriesTitle: "Topp 10 land",
+  weeklyRankLabel: "Din plassering forrige uke",
+  weeklyGamesText: "{n} kamper de siste 7 dagene",
+  weeklyBuildingHint: "Spill en kamp for å bli med på ukens liste",
+  statsNeedCountry: "Velg landet ditt i innstillingene for å se plasseringene dine.",
+  matchesShort: "kamper",
 };

@@ -287,4 +287,13 @@ export const da: typeof sv = {
   playerIsBack: '{name} er tilbage og spiller selv',
   addStrangerFriend: 'Tilføj {name} som ven',
   strangerFriendAdded: '{name} er nu din ven',
+  statsPage: "Statistik",
+  statsPageTitle: "Statistik",
+  yourRankingsTitle: "Dine placeringer",
+  topCountriesTitle: "Top 10 lande",
+  weeklyRankLabel: "Din placering i sidste uge",
+  weeklyGamesText: "{n} kampe de sidste 7 dage",
+  weeklyBuildingHint: "Spil en kamp for at komme på ugens liste",
+  statsNeedCountry: "Vælg dit land i Indstillinger for at se dine placeringer.",
+  matchesShort: "kampe",
 };

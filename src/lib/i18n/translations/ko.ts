@@ -287,4 +287,13 @@ export const ko: typeof sv = {
   playerIsBack: '{name} 님이 돌아와서 다시 플레이 중이야',
   addStrangerFriend: '{name} 친구 추가',
   strangerFriendAdded: '{name} 님과 친구가 됐어',
+  statsPage: "통계",
+  statsPageTitle: "통계",
+  yourRankingsTitle: "내 순위",
+  topCountriesTitle: "상위 10개국",
+  weeklyRankLabel: "지난주 내 순위",
+  weeklyGamesText: "최근 7일간 {n}경기",
+  weeklyBuildingHint: "한 경기 플레이하고 이번 주 순위에 참여하세요",
+  statsNeedCountry: "설정에서 국가를 선택하면 내 순위를 볼 수 있어요.",
+  matchesShort: "경기",
 };

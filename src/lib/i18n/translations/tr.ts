@@ -287,4 +287,13 @@ export const tr: typeof sv = {
   playerIsBack: '{name} döndü ve oynamaya devam ediyor',
   addStrangerFriend: '{name} adlı kişiyi arkadaş ekle',
   strangerFriendAdded: '{name} artık arkadaşın',
+  statsPage: "İstatistikler",
+  statsPageTitle: "İstatistikler",
+  yourRankingsTitle: "Sıralamaların",
+  topCountriesTitle: "İlk 10 ülke",
+  weeklyRankLabel: "Geçen haftaki sıran",
+  weeklyGamesText: "Son 7 günde {n} maç",
+  weeklyBuildingHint: "Bu haftanın listesine girmek için bir maç oyna",
+  statsNeedCountry: "Sıralamalarını görmek için Ayarlar'dan ülkeni seç.",
+  matchesShort: "maç",
 };

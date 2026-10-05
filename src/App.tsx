@@ -9,6 +9,7 @@ import GameSetupPage from "./pages/GameSetupPage";
 import GamePage from "./pages/GamePage";
 import ResultsPage from "./pages/ResultsPage";
 import SettingsPage from "./pages/SettingsPage";
+import StatsPage from "./pages/StatsPage";
 import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
 import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import FriendStatsPage from "./pages/FriendStatsPage";
@@ -60,6 +61,7 @@ const App = () => (
           <Route path="/game" element={<GamePage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/stats" element={<StatsPage />} />
           <Route element={<MultiplayerProvider />}>
             <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
             <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />

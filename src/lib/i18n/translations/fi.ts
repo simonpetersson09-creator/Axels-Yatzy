@@ -287,4 +287,13 @@ export const fi: typeof sv = {
   playerIsBack: '{name} on palannut ja pelaa itse',
   addStrangerFriend: 'Lisää {name} kaveriksi',
   strangerFriendAdded: '{name} on nyt kaverisi',
+  statsPage: "Tilastot",
+  statsPageTitle: "Tilastot",
+  yourRankingsTitle: "Sijoituksesi",
+  topCountriesTitle: "10 parasta maata",
+  weeklyRankLabel: "Sijoituksesi viime viikolla",
+  weeklyGamesText: "{n} ottelua viimeisten 7 päivän aikana",
+  weeklyBuildingHint: "Pelaa ottelu päästäksesi tämän viikon listalle",
+  statsNeedCountry: "Valitse maasi asetuksista nähdäksesi sijoituksesi.",
+  matchesShort: "ottelua",
 };

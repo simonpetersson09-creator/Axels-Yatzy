@@ -287,4 +287,13 @@ export const hu: typeof sv = {
   playerIsBack: '{name} visszatért és újra játszik',
   addStrangerFriend: '{name} felvétele barátnak',
   strangerFriendAdded: '{name} már a barátod',
+  statsPage: "Statisztika",
+  statsPageTitle: "Statisztika",
+  yourRankingsTitle: "Helyezéseid",
+  topCountriesTitle: "Top 10 ország",
+  weeklyRankLabel: "Múlt heti helyezésed",
+  weeklyGamesText: "{n} meccs az elmúlt 7 napban",
+  weeklyBuildingHint: "Játssz egy meccset, hogy felkerülj a heti listára",
+  statsNeedCountry: "Válassz országot a Beállításokban, hogy lásd a helyezéseidet.",
+  matchesShort: "meccs",
 };

@@ -287,4 +287,13 @@ export const en: typeof sv = {
   playerIsBack: '{name} is back and playing again',
   addStrangerFriend: 'Add {name} as friend',
   strangerFriendAdded: '{name} is now your friend',
+  statsPage: "Statistics",
+  statsPageTitle: "Statistics",
+  yourRankingsTitle: "Your rankings",
+  topCountriesTitle: "Top 10 countries",
+  weeklyRankLabel: "Your rank last week",
+  weeklyGamesText: "{n} matches in the last 7 days",
+  weeklyBuildingHint: "Play a match to join this week's list",
+  statsNeedCountry: "Choose your country in Settings to see your rankings.",
+  matchesShort: "matches",
 };

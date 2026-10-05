@@ -287,4 +287,13 @@ export const ta: typeof sv = {
   playerIsBack: '{name} திரும்பி வந்து மீண்டும் ஆடுகிறார்',
   addStrangerFriend: '{name}-ஐ நண்பராகச் சேர்',
   strangerFriendAdded: '{name} இப்போது உங்கள் நண்பர்',
+  statsPage: "புள்ளிவிவரங்கள்",
+  statsPageTitle: "புள்ளிவிவரங்கள்",
+  yourRankingsTitle: "உங்கள் தரவரிசைகள்",
+  topCountriesTitle: "முதல் 10 நாடுகள்",
+  weeklyRankLabel: "கடந்த வார உங்கள் தரவரிசை",
+  weeklyGamesText: "கடந்த 7 நாட்களில் {n} போட்டிகள்",
+  weeklyBuildingHint: "இந்த வாரப் பட்டியலில் சேர ஒரு போட்டி விளையாடுங்கள்",
+  statsNeedCountry: "உங்கள் தரவரிசைகளைக் காண அமைப்புகளில் உங்கள் நாட்டைத் தேர்ந்தெடுங்கள்.",
+  matchesShort: "போட்டிகள்",
 };

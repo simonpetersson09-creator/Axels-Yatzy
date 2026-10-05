@@ -296,6 +296,15 @@ export const sv = {
   playerIsBack: '{name} är tillbaka och spelar själv',
   addStrangerFriend: 'Lägg till {name} som vän',
   strangerFriendAdded: '{name} är nu din vän',
+  statsPage: "Statistik",
+  statsPageTitle: "Statistik",
+  yourRankingsTitle: "Dina placeringar",
+  topCountriesTitle: "Topp 10 länder",
+  weeklyRankLabel: "Din placering senaste veckan",
+  weeklyGamesText: "{n} matcher senaste 7 dagarna",
+  weeklyBuildingHint: "Spela en match för att komma med i veckans lista",
+  statsNeedCountry: "Välj ditt land i inställningarna för att se dina placeringar.",
+  matchesShort: "matcher",
 };
 
 export type TranslationKey = keyof typeof sv;

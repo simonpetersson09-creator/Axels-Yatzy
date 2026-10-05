@@ -287,4 +287,13 @@ export const kn: typeof sv = {
   playerIsBack: '{name} ಮರಳಿ ಬಂದು ಮತ್ತೆ ಆಡುತ್ತಿದ್ದಾರೆ',
   addStrangerFriend: '{name}ರನ್ನು ಸ್ನೇಹಿತರಾಗಿ ಸೇರಿಸು',
   strangerFriendAdded: '{name} ಈಗ ನಿನ್ನ ಸ್ನೇಹಿತರು',
+  statsPage: "ಅಂಕಿಅಂಶಗಳು",
+  statsPageTitle: "ಅಂಕಿಅಂಶಗಳು",
+  yourRankingsTitle: "ನಿಮ್ಮ ಶ್ರೇಯಾಂಕಗಳು",
+  topCountriesTitle: "ಅಗ್ರ 10 ದೇಶಗಳು",
+  weeklyRankLabel: "ಕಳೆದ ವಾರ ನಿಮ್ಮ ಶ್ರೇಯಾಂಕ",
+  weeklyGamesText: "ಕಳೆದ 7 ದಿನಗಳಲ್ಲಿ {n} ಪಂದ್ಯಗಳು",
+  weeklyBuildingHint: "ಈ ವಾರದ ಪಟ್ಟಿಗೆ ಸೇರಲು ಒಂದು ಪಂದ್ಯ ಆಡಿ",
+  statsNeedCountry: "ನಿಮ್ಮ ಶ್ರೇಯಾಂಕಗಳನ್ನು ನೋಡಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+  matchesShort: "ಪಂದ್ಯಗಳು",
 };

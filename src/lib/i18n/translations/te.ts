@@ -287,4 +287,13 @@ export const te: typeof sv = {
   playerIsBack: '{name} తిరిగొచ్చి మళ్లీ ఆడుతున్నారు',
   addStrangerFriend: '{name}ని స్నేహితుడిగా చేర్చు',
   strangerFriendAdded: '{name} ఇప్పుడు నీ స్నేహితుడు',
+  statsPage: "గణాంకాలు",
+  statsPageTitle: "గణాంకాలు",
+  yourRankingsTitle: "మీ ర్యాంకులు",
+  topCountriesTitle: "టాప్ 10 దేశాలు",
+  weeklyRankLabel: "గత వారం మీ ర్యాంకు",
+  weeklyGamesText: "గత 7 రోజుల్లో {n} మ్యాచ్‌లు",
+  weeklyBuildingHint: "ఈ వారం జాబితాలో చేరేందుకు ఒక మ్యాచ్ ఆడండి",
+  statsNeedCountry: "మీ ర్యాంకులు చూడటానికి సెట్టింగ్‌లలో మీ దేశాన్ని ఎంచుకోండి.",
+  matchesShort: "మ్యాచ్‌లు",
 };

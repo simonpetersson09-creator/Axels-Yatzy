@@ -286,4 +286,13 @@ export const ca: typeof sv = {
   playerIsBack: '{name} ha tornat i ja juga',
   addStrangerFriend: 'Afegeix {name} com a amic',
   strangerFriendAdded: '{name} ara és el teu amic',
+  statsPage: "Estadístiques",
+  statsPageTitle: "Estadístiques",
+  yourRankingsTitle: "Les teves classificacions",
+  topCountriesTitle: "Els 10 millors països",
+  weeklyRankLabel: "La teva posició la setmana passada",
+  weeklyGamesText: "{n} partides en els últims 7 dies",
+  weeklyBuildingHint: "Juga una partida per entrar a la llista d'aquesta setmana",
+  statsNeedCountry: "Tria el teu país a Configuració per veure les teves classificacions.",
+  matchesShort: "partides",
 };

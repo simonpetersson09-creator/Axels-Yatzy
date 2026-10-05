@@ -287,4 +287,13 @@ export const uk: typeof sv = {
   playerIsBack: '{name} знову в грі',
   addStrangerFriend: 'Додати {name} у друзі',
   strangerFriendAdded: '{name} тепер у твоїх друзях',
+  statsPage: "Статистика",
+  statsPageTitle: "Статистика",
+  yourRankingsTitle: "Ваші рейтинги",
+  topCountriesTitle: "Топ-10 країн",
+  weeklyRankLabel: "Ваше місце минулого тижня",
+  weeklyGamesText: "Матчів за останні 7 днів: {n}",
+  weeklyBuildingHint: "Зіграйте матч, щоб потрапити до рейтингу цього тижня",
+  statsNeedCountry: "Виберіть свою країну в налаштуваннях, щоб побачити свої рейтинги.",
+  matchesShort: "матчів",
 };

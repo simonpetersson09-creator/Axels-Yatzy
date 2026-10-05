@@ -287,4 +287,13 @@ export const sk: typeof sv = {
   playerIsBack: '{name} je späť a znova hrá',
   addStrangerFriend: 'Pridať {name} medzi kamarátov',
   strangerFriendAdded: '{name} je teraz medzi tvojimi kamarátmi',
+  statsPage: "Štatistiky",
+  statsPageTitle: "Štatistiky",
+  yourRankingsTitle: "Tvoje umiestnenia",
+  topCountriesTitle: "Top 10 krajín",
+  weeklyRankLabel: "Tvoje poradie minulý týždeň",
+  weeklyGamesText: "Počet zápasov za posledných 7 dní: {n}",
+  weeklyBuildingHint: "Zahraj si zápas a zapoj sa do tohtotýždňového rebríčka",
+  statsNeedCountry: "Vyber si krajinu v nastaveniach a pozri si svoje umiestnenia.",
+  matchesShort: "zápasy",
 };

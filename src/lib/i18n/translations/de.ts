@@ -306,4 +306,6 @@ export const de: typeof sv = {
   goldInfoRule2: "Ihr müsst das Spiel gemeinsam beenden. Wenn jemand aufgibt, zählt es nicht.",
   goldInfoRule3: "Dein Freund muss neu in der App sein und auf seinem eigenen Handy spielen.",
   goldInfoRule4: "Für jeden dritten Freund bekommst du 30 Tage lang goldene Würfel. Dein Freund erhält sie als Willkommensgeschenk für 3 Tage.",
+  goldLobbyHint: "✨ Beendet das Match gemeinsam, dann zählt dein Freund für die goldenen Würfel",
+  goldFriendCounted: "Dein Freund zählt! {n} von 3 geschafft ✨",
 };

@@ -320,6 +320,8 @@ export const sv = {
   goldInfoRule2: "Ni måste spela klart matchen tillsammans. Om någon ger upp räknas den inte.",
   goldInfoRule3: "Vännen måste vara ny i appen och spela på en egen telefon.",
   goldInfoRule4: "Var tredje vän ger dig guldtärningar i 30 dagar. Din vän får guldtärningar i 3 dagar som välkomstgåva.",
+  goldLobbyHint: "✨ Spela klart matchen tillsammans så räknas din vän mot guldtärningarna",
+  goldFriendCounted: "Din vän räknas! {n} av 3 klara ✨",
 };
 
 export type TranslationKey = keyof typeof sv;

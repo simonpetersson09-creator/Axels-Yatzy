@@ -311,4 +311,6 @@ export const ro: typeof sv = {
   goldInfoRule2: "Trebuie să terminați meciul împreună. Dacă cineva abandonează, nu se ia în calcul.",
   goldInfoRule3: "Prietenul tău trebuie să fie nou în aplicație și să joace pe propriul telefon.",
   goldInfoRule4: "La fiecare al treilea prieten, primești zaruri de aur pentru 30 de zile. Prietenul tău primește zaruri de aur pentru 3 zile, ca dar de bun venit.",
+  goldLobbyHint: "✨ Terminați meciul împreună și prietenul tău contează pentru zarurile aurii",
+  goldFriendCounted: "Prietenul tău a fost numărat! {n} din 3 ✨",
 };

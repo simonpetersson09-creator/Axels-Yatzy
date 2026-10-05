@@ -311,4 +311,6 @@ export const vi: typeof sv = {
   goldInfoRule2: "Cả hai phải chơi hết trận. Nếu có người bỏ cuộc thì không được tính.",
   goldInfoRule3: "Bạn của bạn phải là người mới dùng ứng dụng và chơi trên điện thoại riêng.",
   goldInfoRule4: "Cứ mời đủ 3 người bạn, bạn được dùng xúc xắc vàng trong 30 ngày. Mỗi người bạn được dùng xúc xắc vàng trong 3 ngày làm quà chào mừng.",
+  goldLobbyHint: "✨ Cùng chơi hết trận để được tính thêm một bạn vào tiến độ nhận xúc xắc vàng",
+  goldFriendCounted: "Đã tính thêm một bạn! Hoàn thành {n}/3 ✨",
 };

@@ -311,4 +311,6 @@ export const sl: typeof sv = {
   goldInfoRule2: "Tekmo morata končati skupaj. Če kdo odstopi, ne šteje.",
   goldInfoRule3: "Prijatelj mora biti nov uporabnik aplikacije in igrati na svojem telefonu.",
   goldInfoRule4: "Za vsakega tretjega prijatelja dobiš zlate kocke za 30 dni. Prijatelj jih za dobrodošlico dobi za 3 dni.",
+  goldLobbyHint: "✨ Dokončajta igro skupaj in prijatelj šteje za zlate kocke",
+  goldFriendCounted: "Prijatelj šteje! {n} od 3 opravljeno ✨",
 };

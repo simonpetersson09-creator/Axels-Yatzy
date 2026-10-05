@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
 import { useGoldPlayerIndexes, checkNewFriendCredit } from '@/lib/gold-dice';
 import { useNavigate, useSearchParams } from 'react-router-dom';

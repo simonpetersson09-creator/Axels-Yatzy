@@ -306,4 +306,6 @@ export const it: typeof sv = {
   goldInfoRule2: "Dovete finire la partita insieme. Se qualcuno si arrende, non conta.",
   goldInfoRule3: "Il tuo amico deve essere nuovo nell'app e giocare sul proprio telefono.",
   goldInfoRule4: "Ogni tre amici ottieni i dadi d'oro per 30 giorni. Il tuo amico riceve i dadi d'oro per 3 giorni come regalo di benvenuto.",
+  goldLobbyHint: "✨ Finite la partita insieme e il tuo amico conterà per i dadi d'oro",
+  goldFriendCounted: "Amico conteggiato! {n} su 3 ✨",
 };

@@ -311,4 +311,6 @@ export const ko: typeof sv = {
   goldInfoRule2: "함께 대전을 끝까지 마쳐야 해요. 누군가 기권하면 인정되지 않아요.",
   goldInfoRule3: "친구는 앱을 처음 이용하는 사용자여야 하며, 본인 휴대폰으로 플레이해야 해요.",
   goldInfoRule4: "친구 3명을 초대할 때마다 황금 주사위를 30일간 사용할 수 있어요. 친구는 환영 선물로 황금 주사위를 3일간 사용할 수 있어요.",
+  goldLobbyHint: "✨ 친구와 경기를 끝내면 황금 주사위 달성에 반영돼요",
+  goldFriendCounted: "친구가 반영됐어요! 3명 중 {n}명 완료 ✨",
 };

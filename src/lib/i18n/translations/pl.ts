@@ -311,4 +311,6 @@ export const pl: typeof sv = {
   goldInfoRule2: "Musicie razem ukończyć mecz. Jeśli ktoś się podda, mecz się nie liczy.",
   goldInfoRule3: "Znajomy musi być nowym użytkownikiem aplikacji i grać na własnym telefonie.",
   goldInfoRule4: "Za co trzeciego znajomego dostajesz złote kości na 30 dni. Znajomy dostaje złote kości na 3 dni na powitanie.",
+  goldLobbyHint: "✨ Dokończcie razem mecz, a znajomy przybliży Cię do złotych kości",
+  goldFriendCounted: "Znajomy zaliczony! {n} z 3 ✨",
 };

@@ -311,4 +311,6 @@ export const tr: typeof sv = {
   goldInfoRule2: "Maçı birlikte bitirmelisiniz. Biri pes ederse sayılmaz.",
   goldInfoRule3: "Arkadaşın uygulamada yeni olmalı ve kendi telefonunda oynamalı.",
   goldInfoRule4: "Her üç arkadaşta bir, 30 gün boyunca altın zar kazanırsın. Arkadaşın da hoş geldin hediyesi olarak 3 günlük altın zar kazanır.",
+  goldLobbyHint: "✨ Maçı birlikte bitirin, arkadaşınız altın zar hedefine sayılsın",
+  goldFriendCounted: "Arkadaşınız sayıldı! 3 arkadaştan {n} tamam ✨",
 };

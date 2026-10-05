@@ -311,4 +311,6 @@ export const hr: typeof sv = {
   goldInfoRule2: "Morate završiti meč zajedno. Ako netko odustane, ne računa se.",
   goldInfoRule3: "Prijatelj mora biti nov u aplikaciji i igrati na vlastitom mobitelu.",
   goldInfoRule4: "Svaki treći prijatelj donosi ti zlatne kockice na 30 dana. Prijatelj dobiva zlatne kockice na 3 dana kao poklon dobrodošlice.",
+  goldLobbyHint: "✨ Dovršite meč zajedno i prijatelj se ubraja za zlatne kockice",
+  goldFriendCounted: "Prijatelj se ubraja! {n} od 3 gotovo ✨",
 };

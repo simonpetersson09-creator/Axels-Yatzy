@@ -311,4 +311,6 @@ export const cs: typeof sv = {
   goldInfoRule2: "Zápas musíte společně dohrát. Pokud někdo vzdá, nepočítá se.",
   goldInfoRule3: "Kamarád musí být v aplikaci nový a hrát na vlastním telefonu.",
   goldInfoRule4: "Za každého třetího kamaráda získáš zlaté kostky na 30 dní. Kamarád je dostane na 3 dny jako dárek na uvítanou.",
+  goldLobbyHint: "✨ Dohrajte spolu zápas a kamarád se započítá do postupu ke zlatým kostkám",
+  goldFriendCounted: "Kamarád započítán! Hotovo {n} ze 3 ✨",
 };

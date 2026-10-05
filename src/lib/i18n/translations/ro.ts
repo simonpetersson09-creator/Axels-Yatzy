@@ -296,4 +296,6 @@ export const ro: typeof sv = {
   weeklyBuildingHint: "Joacă un meci pentru a intra în clasamentul săptămânii",
   statsNeedCountry: "Alege țara în Setări pentru a-ți vedea pozițiile în clasament.",
   matchesShort: "meciuri",
+  webBlockTitle: "Mr.B. Yatzy e pe App Store 🎲",
+  webBlockBody: "Acum joci în aplicație, pe iPhone. Descarc-o gratuit și continuă să joci.",
 };

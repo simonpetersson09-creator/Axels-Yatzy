@@ -296,4 +296,6 @@ export const sl: typeof sv = {
   weeklyBuildingHint: "Od igraj tekmo za uvrstitev na seznam tega tedna",
   statsNeedCountry: "Za ogled svojih uvrstitev izberi državo v nastavitvah.",
   matchesShort: "tekme",
+  webBlockTitle: "Mr.B. Yatzy je v trgovini App Store 🎲",
+  webBlockBody: "Zdaj lahko igraš v aplikaciji na svojem iPhone. Prenesi jo brezplačno in nadaljuj igro.",
 };

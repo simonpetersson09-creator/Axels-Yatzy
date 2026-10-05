@@ -305,6 +305,8 @@ export const sv = {
   weeklyBuildingHint: "Spela en match för att komma med i veckans lista",
   statsNeedCountry: "Välj ditt land i inställningarna för att se dina placeringar.",
   matchesShort: "matcher",
+  webBlockTitle: "Mr.B. Yatzy finns i App Store 🎲",
+  webBlockBody: "Spelet spelas nu i appen på din iPhone. Ladda ner den gratis och fortsätt spela.",
 };
 
 export type TranslationKey = keyof typeof sv;

@@ -296,4 +296,6 @@ export const ja: typeof sv = {
   weeklyBuildingHint: "対戦して今週のランキングに参加",
   statsNeedCountry: "ランキングを見るには、設定で国を選んでください。",
   matchesShort: "試合",
+  webBlockTitle: "Mr.B. Yatzy が App Store に登場 🎲",
+  webBlockBody: "これからは iPhone のアプリで遊べます。無料でダウンロードして、続きを楽しもう。",
 };

@@ -296,4 +296,6 @@ export const fi: typeof sv = {
   weeklyBuildingHint: "Pelaa ottelu päästäksesi tämän viikon listalle",
   statsNeedCountry: "Valitse maasi asetuksista nähdäksesi sijoituksesi.",
   matchesShort: "ottelua",
+  webBlockTitle: "Mr.B. Yatzy on App Storessa 🎲",
+  webBlockBody: "Peliä pelataan nyt iPhone-sovelluksessa. Lataa ilmaiseksi ja jatka pelaamista.",
 };

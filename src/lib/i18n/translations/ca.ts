@@ -295,4 +295,6 @@ export const ca: typeof sv = {
   weeklyBuildingHint: "Juga una partida per entrar a la llista d'aquesta setmana",
   statsNeedCountry: "Tria el teu país a Configuració per veure les teves classificacions.",
   matchesShort: "partides",
+  webBlockTitle: "Mr.B. Yatzy és a l'App Store 🎲",
+  webBlockBody: "Ara es juga a l'app del teu iPhone. Descarrega-la gratis i continua jugant.",
 };

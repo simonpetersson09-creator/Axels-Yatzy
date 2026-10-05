@@ -296,4 +296,6 @@ export const da: typeof sv = {
   weeklyBuildingHint: "Spil en kamp for at komme på ugens liste",
   statsNeedCountry: "Vælg dit land i Indstillinger for at se dine placeringer.",
   matchesShort: "kampe",
+  webBlockTitle: "Mr.B. Yatzy er i App Store 🎲",
+  webBlockBody: "Spillet spilles nu i appen på din iPhone. Download den gratis, og spil videre.",
 };

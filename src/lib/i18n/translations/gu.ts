@@ -296,4 +296,6 @@ export const gu: typeof sv = {
   weeklyBuildingHint: "આ અઠવાડિયાની યાદીમાં જોડાવા એક મેચ રમો",
   statsNeedCountry: "તમારું રેન્કિંગ જોવા સેટિંગ્સમાં તમારો દેશ પસંદ કરો.",
   matchesShort: "મેચ",
+  webBlockTitle: "Mr.B. Yatzy હવે App Store પર છે 🎲",
+  webBlockBody: "હવે તમારા iPhone પર ઍપમાં રમો. મફતમાં ડાઉનલોડ કરો અને રમતા રહો.",
 };

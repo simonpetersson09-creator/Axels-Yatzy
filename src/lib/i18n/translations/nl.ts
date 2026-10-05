@@ -296,4 +296,6 @@ export const nl: typeof sv = {
   weeklyBuildingHint: "Speel een wedstrijd om deze week op de lijst te komen",
   statsNeedCountry: "Kies je land in Instellingen om je posities te zien.",
   matchesShort: "wedstrijden",
+  webBlockTitle: "Mr.B. Yatzy staat in de App Store 🎲",
+  webBlockBody: "Je speelt nu in de app op je iPhone. Download de app gratis en speel verder.",
 };

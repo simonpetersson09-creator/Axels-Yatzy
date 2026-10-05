@@ -296,4 +296,6 @@ export const ko: typeof sv = {
   weeklyBuildingHint: "한 경기 플레이하고 이번 주 순위에 참여하세요",
   statsNeedCountry: "설정에서 국가를 선택하면 내 순위를 볼 수 있어요.",
   matchesShort: "경기",
+  webBlockTitle: "Mr.B. Yatzy, 이제 App Store에서 🎲",
+  webBlockBody: "이제 iPhone 앱에서 즐겨보세요. 무료로 다운로드하고 계속 플레이하세요.",
 };

@@ -296,4 +296,6 @@ export const vi: typeof sv = {
   weeklyBuildingHint: "Chơi một trận để vào bảng xếp hạng tuần này",
   statsNeedCountry: "Chọn quốc gia trong Cài đặt để xem thứ hạng của bạn.",
   matchesShort: "trận",
+  webBlockTitle: "Mr.B. Yatzy đã có trên App Store 🎲",
+  webBlockBody: "Giờ bạn có thể chơi trong ứng dụng trên iPhone. Tải miễn phí và chơi tiếp nhé.",
 };

@@ -296,4 +296,6 @@ export const uk: typeof sv = {
   weeklyBuildingHint: "Зіграйте матч, щоб потрапити до рейтингу цього тижня",
   statsNeedCountry: "Виберіть свою країну в налаштуваннях, щоб побачити свої рейтинги.",
   matchesShort: "матчів",
+  webBlockTitle: "Mr.B. Yatzy вже в App Store 🎲",
+  webBlockBody: "Тепер грайте в застосунку на iPhone. Завантажуйте безкоштовно та продовжуйте гру.",
 };

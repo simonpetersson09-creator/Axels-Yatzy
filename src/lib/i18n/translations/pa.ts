@@ -287,4 +287,13 @@ export const pa: typeof sv = {
   playerIsBack: '{name} ਵਾਪਸ ਆ ਕੇ ਫਿਰ ਖੇਡ ਰਿਹਾ ਹੈ',
   addStrangerFriend: '{name} ਨੂੰ ਦੋਸਤ ਬਣਾਓ',
   strangerFriendAdded: '{name} ਹੁਣ ਤੁਹਾਡਾ ਦੋਸਤ ਹੈ',
+  statsPage: "ਅੰਕੜੇ",
+  statsPageTitle: "ਅੰਕੜੇ",
+  yourRankingsTitle: "ਤੁਹਾਡੀ ਰੈਂਕਿੰਗ",
+  topCountriesTitle: "ਸਿਖਰਲੇ 10 ਦੇਸ਼",
+  weeklyRankLabel: "ਪਿਛਲੇ ਹਫ਼ਤੇ ਤੁਹਾਡਾ ਰੈਂਕ",
+  weeklyGamesText: "ਪਿਛਲੇ 7 ਦਿਨਾਂ ਵਿੱਚ {n} ਮੈਚ",
+  weeklyBuildingHint: "ਇਸ ਹਫ਼ਤੇ ਦੀ ਸੂਚੀ ਵਿੱਚ ਆਉਣ ਲਈ ਇੱਕ ਮੈਚ ਖੇਡੋ",
+  statsNeedCountry: "ਆਪਣੀ ਰੈਂਕਿੰਗ ਦੇਖਣ ਲਈ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣਾ ਦੇਸ਼ ਚੁਣੋ।",
+  matchesShort: "ਮੈਚ",
 };

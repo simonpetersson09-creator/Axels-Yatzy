@@ -287,4 +287,13 @@ export const nl: typeof sv = {
   playerIsBack: '{name} is terug en speelt weer mee',
   addStrangerFriend: '{name} als vriend toevoegen',
   strangerFriendAdded: '{name} is nu je vriend',
+  statsPage: "Statistieken",
+  statsPageTitle: "Statistieken",
+  yourRankingsTitle: "Jouw posities",
+  topCountriesTitle: "Top 10 landen",
+  weeklyRankLabel: "Jouw positie vorige week",
+  weeklyGamesText: "{n} wedstrijden in de afgelopen 7 dagen",
+  weeklyBuildingHint: "Speel een wedstrijd om deze week op de lijst te komen",
+  statsNeedCountry: "Kies je land in Instellingen om je posities te zien.",
+  matchesShort: "wedstrijden",
 };

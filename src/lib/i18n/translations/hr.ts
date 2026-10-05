@@ -287,4 +287,13 @@ export const hr: typeof sv = {
   playerIsBack: '{name} je opet tu i nastavlja igrati',
   addStrangerFriend: 'Dodaj {name} za prijatelja',
   strangerFriendAdded: '{name} je sada tvoj prijatelj',
+  statsPage: "Statistika",
+  statsPageTitle: "Statistika",
+  yourRankingsTitle: "Tvoj poredak",
+  topCountriesTitle: "Top 10 zemalja",
+  weeklyRankLabel: "Tvoje mjesto prošli tjedan",
+  weeklyGamesText: "Broj mečeva u zadnjih 7 dana: {n}",
+  weeklyBuildingHint: "Odigraj meč za ulazak na ovotjednu ljestvicu",
+  statsNeedCountry: "Odaberi svoju zemlju u postavkama za prikaz poretka.",
+  matchesShort: "mečeva",
 };

@@ -287,4 +287,13 @@ export const th: typeof sv = {
   playerIsBack: '{name} กลับมาเล่นต่อแล้ว',
   addStrangerFriend: 'เพิ่ม {name} เป็นเพื่อน',
   strangerFriendAdded: '{name} เป็นเพื่อนคุณแล้ว',
+  statsPage: "สถิติ",
+  statsPageTitle: "สถิติ",
+  yourRankingsTitle: "อันดับของคุณ",
+  topCountriesTitle: "10 ประเทศอันดับสูงสุด",
+  weeklyRankLabel: "อันดับของคุณสัปดาห์ที่แล้ว",
+  weeklyGamesText: "เล่น {n} แมตช์ใน 7 วันที่ผ่านมา",
+  weeklyBuildingHint: "เล่นหนึ่งแมตช์เพื่อติดอันดับสัปดาห์นี้",
+  statsNeedCountry: "เลือกประเทศในการตั้งค่าเพื่อดูอันดับของคุณ",
+  matchesShort: "แมตช์",
 };

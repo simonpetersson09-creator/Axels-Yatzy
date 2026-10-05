@@ -287,4 +287,13 @@ export const es: typeof sv = {
   playerIsBack: '{name} ha vuelto y juega de nuevo',
   addStrangerFriend: 'Añadir a {name} como amigo',
   strangerFriendAdded: '{name} ya es tu amigo',
+  statsPage: "Estadísticas",
+  statsPageTitle: "Estadísticas",
+  yourRankingsTitle: "Tus posiciones",
+  topCountriesTitle: "Los 10 mejores países",
+  weeklyRankLabel: "Tu posición la semana pasada",
+  weeklyGamesText: "{n} partidas en los últimos 7 días",
+  weeklyBuildingHint: "Juega una partida para entrar en la lista de esta semana",
+  statsNeedCountry: "Elige tu país en Ajustes para ver tus posiciones.",
+  matchesShort: "partidas",
 };

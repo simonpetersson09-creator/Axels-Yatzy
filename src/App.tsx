@@ -9,6 +9,7 @@ import GameSetupPage from "./pages/GameSetupPage";
 import GamePage from "./pages/GamePage";
 import ResultsPage from "./pages/ResultsPage";
 import SettingsPage from "./pages/SettingsPage";
+import StatsPage from "./pages/StatsPage";
 import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
 import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import FriendStatsPage from "./pages/FriendStatsPage";

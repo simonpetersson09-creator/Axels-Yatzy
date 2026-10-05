@@ -287,4 +287,13 @@ export const el: typeof sv = {
   playerIsBack: 'Ο παίκτης {name} επέστρεψε και παίζει ξανά',
   addStrangerFriend: 'Πρόσθεσε τον παίκτη {name} στους φίλους',
   strangerFriendAdded: 'Ο παίκτης {name} είναι πλέον στους φίλους σου',
+  statsPage: "Στατιστικά",
+  statsPageTitle: "Στατιστικά",
+  yourRankingsTitle: "Η κατάταξή σου",
+  topCountriesTitle: "Οι 10 κορυφαίες χώρες",
+  weeklyRankLabel: "Η θέση σου την περασμένη εβδομάδα",
+  weeklyGamesText: "{n} αγώνες τις τελευταίες 7 ημέρες",
+  weeklyBuildingHint: "Παίξε έναν αγώνα για να μπεις στη λίστα της εβδομάδας",
+  statsNeedCountry: "Επίλεξε τη χώρα σου στις Ρυθμίσεις για να δεις την κατάταξή σου.",
+  matchesShort: "αγώνες",
 };

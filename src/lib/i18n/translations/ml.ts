@@ -287,4 +287,13 @@ export const ml: typeof sv = {
   playerIsBack: '{name} തിരിച്ചെത്തി വീണ്ടും കളിക്കുന്നു',
   addStrangerFriend: '{name}-നെ സുഹൃത്താക്കൂ',
   strangerFriendAdded: '{name} ഇനി നിങ്ങളുടെ സുഹൃത്താണ്',
+  statsPage: "സ്ഥിതിവിവരങ്ങൾ",
+  statsPageTitle: "സ്ഥിതിവിവരങ്ങൾ",
+  yourRankingsTitle: "നിങ്ങളുടെ റാങ്കുകൾ",
+  topCountriesTitle: "മികച്ച 10 രാജ്യങ്ങൾ",
+  weeklyRankLabel: "കഴിഞ്ഞ ആഴ്ചയിലെ നിങ്ങളുടെ റാങ്ക്",
+  weeklyGamesText: "കഴിഞ്ഞ 7 ദിവസത്തിൽ {n} മത്സരങ്ങൾ",
+  weeklyBuildingHint: "ഈ ആഴ്ചയിലെ പട്ടികയിൽ ചേരാൻ ഒരു മത്സരം കളിക്കൂ",
+  statsNeedCountry: "നിങ്ങളുടെ റാങ്കുകൾ കാണാൻ ക്രമീകരണങ്ങളിൽ രാജ്യം തിരഞ്ഞെടുക്കൂ.",
+  matchesShort: "മത്സരങ്ങൾ",
 };

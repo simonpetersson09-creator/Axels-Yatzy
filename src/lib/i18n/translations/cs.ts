@@ -287,4 +287,13 @@ export const cs: typeof sv = {
   playerIsBack: '{name} je zpět a znovu hraje',
   addStrangerFriend: 'Přidat {name} do přátel',
   strangerFriendAdded: '{name} je teď mezi tvými přáteli',
+  statsPage: "Statistiky",
+  statsPageTitle: "Statistiky",
+  yourRankingsTitle: "Tvoje umístění",
+  topCountriesTitle: "Top 10 zemí",
+  weeklyRankLabel: "Tvoje pořadí minulý týden",
+  weeklyGamesText: "Počet zápasů za posledních 7 dní: {n}",
+  weeklyBuildingHint: "Zahraj si zápas a zapoj se do žebříčku tohoto týdne",
+  statsNeedCountry: "Vyber si zemi v nastavení a uvidíš své umístění.",
+  matchesShort: "zápasy",
 };

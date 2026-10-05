@@ -286,4 +286,13 @@ export const ru: typeof sv = {
   playerIsBack: '{name} снова в игре',
   addStrangerFriend: 'Добавить {name} в друзья',
   strangerFriendAdded: '{name} теперь в твоих друзьях',
+  statsPage: "Статистика",
+  statsPageTitle: "Статистика",
+  yourRankingsTitle: "Ваши места в рейтинге",
+  topCountriesTitle: "Топ-10 стран",
+  weeklyRankLabel: "Ваше место на прошлой неделе",
+  weeklyGamesText: "Матчей за последние 7 дней: {n}",
+  weeklyBuildingHint: "Сыграйте матч, чтобы попасть в рейтинг этой недели",
+  statsNeedCountry: "Выберите свою страну в настройках, чтобы увидеть свои места в рейтинге.",
+  matchesShort: "матчей",
 };

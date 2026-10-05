@@ -287,4 +287,13 @@ export const or: typeof sv = {
   playerIsBack: '{name} ଫେରି ପୁଣି ଖେଳୁଛନ୍ତି',
   addStrangerFriend: '{name}ଙ୍କୁ ସାଙ୍ଗ କର',
   strangerFriendAdded: '{name} ଏବେ ତୁମ ସାଙ୍ଗ',
+  statsPage: "ପରିସଂଖ୍ୟାନ",
+  statsPageTitle: "ପରିସଂଖ୍ୟାନ",
+  yourRankingsTitle: "ଆପଣଙ୍କ ର‍୍ୟାଙ୍କିଙ୍ଗ୍",
+  topCountriesTitle: "ଶୀର୍ଷ ୧୦ଟି ଦେଶ",
+  weeklyRankLabel: "ଗତ ସପ୍ତାହରେ ଆପଣଙ୍କ ସ୍ଥାନ",
+  weeklyGamesText: "ଗତ ୭ ଦିନରେ {n}ଟି ମ୍ୟାଚ୍",
+  weeklyBuildingHint: "ଏହି ସପ୍ତାହର ତାଲିକାରେ ଯୋଗଦେବାକୁ ଏକ ମ୍ୟାଚ୍ ଖେଳନ୍ତୁ",
+  statsNeedCountry: "ଆପଣଙ୍କ ର‍୍ୟାଙ୍କିଙ୍ଗ୍ ଦେଖିବାକୁ ସେଟିଂସ୍‌ରେ ନିଜ ଦେଶ ବାଛନ୍ତୁ।",
+  matchesShort: "ମ୍ୟାଚ୍",
 };

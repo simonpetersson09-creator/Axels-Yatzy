@@ -287,4 +287,13 @@ export const mr: typeof sv = {
   playerIsBack: '{name} परत येऊन पुन्हा खेळतोय',
   addStrangerFriend: '{name} ला मित्र बनव',
   strangerFriendAdded: '{name} आता तुझा मित्र आहे',
+  statsPage: "आकडेवारी",
+  statsPageTitle: "आकडेवारी",
+  yourRankingsTitle: "तुमचे क्रमांक",
+  topCountriesTitle: "अव्वल 10 देश",
+  weeklyRankLabel: "मागील आठवड्यातील तुमचा क्रमांक",
+  weeklyGamesText: "गेल्या 7 दिवसांत {n} सामने",
+  weeklyBuildingHint: "या आठवड्याच्या यादीत येण्यासाठी एक सामना खेळा",
+  statsNeedCountry: "तुमचे क्रमांक पाहण्यासाठी सेटिंग्जमध्ये तुमचा देश निवडा.",
+  matchesShort: "सामने",
 };

@@ -287,4 +287,13 @@ export const sl: typeof sv = {
   playerIsBack: '{name} je nazaj in spet igra',
   addStrangerFriend: 'Dodaj {name} med prijatelje',
   strangerFriendAdded: '{name} je zdaj med tvojimi prijatelji',
+  statsPage: "Statistika",
+  statsPageTitle: "Statistika",
+  yourRankingsTitle: "Tvoje uvrstitve",
+  topCountriesTitle: "Najboljših 10 držav",
+  weeklyRankLabel: "Tvoja uvrstitev prejšnji teden",
+  weeklyGamesText: "Število tekem v zadnjih 7 dneh: {n}",
+  weeklyBuildingHint: "Od igraj tekmo za uvrstitev na seznam tega tedna",
+  statsNeedCountry: "Za ogled svojih uvrstitev izberi državo v nastavitvah.",
+  matchesShort: "tekme",
 };

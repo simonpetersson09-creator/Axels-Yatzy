@@ -287,4 +287,13 @@ export const ja: typeof sv = {
   playerIsBack: '{name}が戻ってプレイを再開したよ',
   addStrangerFriend: '{name}を友達に追加',
   strangerFriendAdded: '{name}と友達になったよ',
+  statsPage: "統計",
+  statsPageTitle: "統計",
+  yourRankingsTitle: "あなたのランキング",
+  topCountriesTitle: "国別トップ10",
+  weeklyRankLabel: "先週の順位",
+  weeklyGamesText: "過去7日間で{n}試合",
+  weeklyBuildingHint: "対戦して今週のランキングに参加",
+  statsNeedCountry: "ランキングを見るには、設定で国を選んでください。",
+  matchesShort: "試合",
 };

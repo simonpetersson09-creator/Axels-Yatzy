@@ -287,4 +287,13 @@ export const ro: typeof sv = {
   playerIsBack: '{name} a revenit și joacă din nou',
   addStrangerFriend: 'Adaugă pe {name} ca prieten',
   strangerFriendAdded: '{name} este acum prietenul tău',
+  statsPage: "Statistici",
+  statsPageTitle: "Statistici",
+  yourRankingsTitle: "Pozițiile tale",
+  topCountriesTitle: "Top 10 țări",
+  weeklyRankLabel: "Poziția ta săptămâna trecută",
+  weeklyGamesText: "{n} meciuri în ultimele 7 zile",
+  weeklyBuildingHint: "Joacă un meci pentru a intra în clasamentul săptămânii",
+  statsNeedCountry: "Alege țara în Setări pentru a-ți vedea pozițiile în clasament.",
+  matchesShort: "meciuri",
 };

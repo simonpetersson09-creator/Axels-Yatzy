@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
-import { useGoldPlayerIndexes, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
+import { useDiceSkins, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -43,7 +43,7 @@ export default function MultiplayerGamePage() {
   } = useMultiplayerGame();
 
   const gameId = searchParams.get('gameId');
-  const goldPlayers = useGoldPlayerIndexes(gameId);
+  const diceSkins = useDiceSkins(gameId);
   const statsRecordedRef = useRef(false);
   const rejoinCalledRef = useRef<string | null>(null);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
@@ -667,7 +667,7 @@ export default function MultiplayerGamePage() {
                 onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
                 compact
                 playerIndex={gameState.currentPlayerIndex}
-                gold={goldPlayers.has(gameState.currentPlayerIndex)}
+                skin={diceSkins.get(gameState.currentPlayerIndex) ?? 'white'}
                 className="mt-0"
               />
             </div>

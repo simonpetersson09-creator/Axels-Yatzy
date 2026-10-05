@@ -1,19 +1,24 @@
-// Gold dice reward: invite 3 friends (who finish their first friend match with
-// you) → gold dice for 30 days. The server owns the rules; this only reads.
+// Dice colours: each counted friend → +10 days temporary gold; permanent
+// bronze/silver/gold from finished matches with a Yatzy (10/50/200). The server owns the rules; this only reads.
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
+import { getDeviceIdSync } from '@/lib/device';
+import { asSkin, type DiceSkin } from '@/lib/dice-skin';
 
 export interface GoldStatus {
   goldUntil: string | null;
   friends: number;
   /** Friends counted toward the next reward (0–2). */
   progress: number;
+  /** Permanent tier earned from matches with a Yatzy. */
+  tier: DiceSkin;
+  yatzyMatches: number;
 }
 
 const CACHE_KEY = 'mrb_gold_status_v1';
 const SEEN_KEY = 'mrb_gold_seen_until_v1';
-const EMPTY: GoldStatus = { goldUntil: null, friends: 0, progress: 0 };
+const EMPTY: GoldStatus = { goldUntil: null, friends: 0, progress: 0, tier: 'white', yatzyMatches: 0 };
 
 function readCache(): GoldStatus {
   try {
@@ -27,6 +32,23 @@ export function isGoldActive(s: GoldStatus | null | undefined): boolean {
   return !!s?.goldUntil && Date.parse(s.goldUntil) > Date.now();
 }
 
+/** Dice colour to show: temporary gold wins, otherwise the permanent tier. */
+export function effectiveSkin(s: GoldStatus): DiceSkin {
+  return isGoldActive(s) ? 'gold' : s.tier;
+}
+
+/** Report a finished match vs the computer that had a Yatzy (server dedupes per match). */
+export async function reportLocalYatzyMatch(matchKey: string): Promise<void> {
+  try {
+    const device = getDeviceIdSync();
+    if (!device) return;
+    await supabase.rpc('record_local_yatzy_match', {
+      p_session_id: getSessionId(), p_device_id: device, p_match_key: `sp:${matchKey}`,
+    });
+    await fetchGoldStatus(); // refresh cache so Home shows new progress
+  } catch { /* cosmetic; ignore */ }
+}
+
 export function goldDaysLeft(s: GoldStatus): number {
   if (!isGoldActive(s)) return 0;
   return Math.max(1, Math.ceil((Date.parse(s.goldUntil!) - Date.now()) / 86_400_000));
@@ -36,11 +58,13 @@ export async function fetchGoldStatus(): Promise<GoldStatus> {
   try {
     const { data, error } = await supabase.rpc('get_gold_dice', { p_session_id: getSessionId() });
     if (error || !data) return readCache();
-    const d = data as { gold_until?: string | null; friends?: number; progress?: number };
+    const d = data as { gold_until?: string | null; friends?: number; progress?: number; tier?: string; yatzy_matches?: number };
     const s: GoldStatus = {
       goldUntil: d.gold_until ?? null,
       friends: Number(d.friends ?? 0),
       progress: Number(d.progress ?? 0),
+      tier: asSkin(d.tier),
+      yatzyMatches: Number(d.yatzy_matches ?? 0),
     };
     localStorage.setItem(CACHE_KEY, JSON.stringify(s));
     return s;
@@ -78,9 +102,9 @@ export function consumeNewGold(s: GoldStatus): boolean {
   return true;
 }
 
-/** Player indexes in an online game that currently have gold dice. */
-export function useGoldPlayerIndexes(gameId: string | null): Set<number> {
-  const [set, setSet] = useState<Set<number>>(new Set());
+/** Dice colour per player index in an online game (white when missing). */
+export function useDiceSkins(gameId: string | null): Map<number, DiceSkin> {
+  const [map, setMap] = useState<Map<number, DiceSkin>>(new Map());
   useEffect(() => {
     if (!gameId) return;
     let alive = true;
@@ -92,16 +116,16 @@ export function useGoldPlayerIndexes(gameId: string | null): Set<number> {
           .eq('game_id', gameId);
         const humans = (rows ?? []).filter((r) => !r.is_bot);
         if (!humans.length) return;
-        const { data } = await supabase.rpc('get_gold_players', {
+        const { data } = await supabase.rpc('get_dice_skins', {
           p_session_ids: humans.map((r) => r.session_id),
         });
-        const gold = new Set((data as string[] | null) ?? []);
-        if (alive) setSet(new Set(humans.filter((r) => gold.has(r.session_id)).map((r) => r.player_index)));
-      } catch { /* gold is cosmetic; ignore */ }
+        const skins = (data as Record<string, string> | null) ?? {};
+        if (alive) setMap(new Map(humans.map((r) => [r.player_index, asSkin(skins[r.session_id])])));
+      } catch { /* cosmetic; ignore */ }
     })();
     return () => { alive = false; };
   }, [gameId]);
-  return set;
+  return map;
 }
 
 const KNOWN_FRIENDS_KEY = 'mrb_gold_known_friends_v1';

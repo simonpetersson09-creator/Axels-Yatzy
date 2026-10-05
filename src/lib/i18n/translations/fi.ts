@@ -306,4 +306,9 @@ export const fi: typeof sv = {
   goldEndingSoon: "Päättyy pian – kutsu lisää kavereita",
   goldEarned: "Sait kultanopat 30 päiväksi! ✨",
   goldWelcome: "Tervetuliaislahja: kultanopat 3 päiväksi! ✨",
+  goldInfoTitle: "Näin saat kultaiset nopat ✨",
+  goldInfoRule1: "Kutsu ystävä luomaasi kaveripeliin. Pikapelit eivät kelpaa.",
+  goldInfoRule2: "Teidän on pelattava peli loppuun yhdessä. Jos joku luovuttaa, peli ei kelpaa.",
+  goldInfoRule3: "Ystäväsi on oltava uusi käyttäjä ja pelattava omalla puhelimellaan.",
+  goldInfoRule4: "Joka kolmas ystävä tuo sinulle kultaiset nopat 30 päiväksi. Ystäväsi saa kultaiset nopat 3 päiväksi tervetuliaislahjaksi.",
 };

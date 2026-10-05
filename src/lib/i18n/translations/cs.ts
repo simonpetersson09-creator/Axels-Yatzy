@@ -306,4 +306,9 @@ export const cs: typeof sv = {
   goldEndingSoon: "Brzy končí – pozvi další přátele",
   goldEarned: "Máš zlaté kostky na 30 dní! ✨",
   goldWelcome: "Dárek na uvítanou: zlaté kostky na 3 dny! ✨",
+  goldInfoTitle: "Jak získat zlaté kostky ✨",
+  goldInfoRule1: "Vytvoř přátelský zápas a pozvi kamaráda. Rychlé zápasy se nepočítají.",
+  goldInfoRule2: "Zápas musíte společně dohrát. Pokud někdo vzdá, nepočítá se.",
+  goldInfoRule3: "Kamarád musí být v aplikaci nový a hrát na vlastním telefonu.",
+  goldInfoRule4: "Za každého třetího kamaráda získáš zlaté kostky na 30 dní. Kamarád je dostane na 3 dny jako dárek na uvítanou.",
 };

@@ -306,4 +306,9 @@ export const tr: typeof sv = {
   goldEndingSoon: "Yakında bitiyor – daha çok arkadaşını davet et",
   goldEarned: "30 gün altın zar kazandın! ✨",
   goldWelcome: "Hoş geldin hediyesi: 3 gün altın zar! ✨",
+  goldInfoTitle: "Altın zar nasıl kazanılır ✨",
+  goldInfoRule1: "Oluşturduğun arkadaş maçına bir arkadaşını davet et. Hızlı maçlar sayılmaz.",
+  goldInfoRule2: "Maçı birlikte bitirmelisiniz. Biri pes ederse sayılmaz.",
+  goldInfoRule3: "Arkadaşın uygulamada yeni olmalı ve kendi telefonunda oynamalı.",
+  goldInfoRule4: "Her üç arkadaşta bir, 30 gün boyunca altın zar kazanırsın. Arkadaşın da hoş geldin hediyesi olarak 3 günlük altın zar kazanır.",
 };

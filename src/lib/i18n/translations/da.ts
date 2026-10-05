@@ -306,4 +306,9 @@ export const da: typeof sv = {
   goldEndingSoon: "Udløber snart – invitér flere venner",
   goldEarned: "Du har guldterninger i 30 dage! ✨",
   goldWelcome: "Velkomstgave: guldterninger i 3 dage! ✨",
+  goldInfoTitle: "Sådan får du guldterninger ✨",
+  goldInfoRule1: "Inviter en ven til en vennekamp, du opretter. Hurtige kampe tæller ikke.",
+  goldInfoRule2: "I skal spille kampen færdig sammen. Hvis nogen giver op, tæller den ikke.",
+  goldInfoRule3: "Din ven skal være ny i appen og spille på sin egen telefon.",
+  goldInfoRule4: "Hver tredje ven giver dig guldterninger i 30 dage. Din ven får guldterninger i 3 dage som velkomstgave.",
 };

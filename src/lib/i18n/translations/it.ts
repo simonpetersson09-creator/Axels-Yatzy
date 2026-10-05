@@ -301,4 +301,9 @@ export const it: typeof sv = {
   goldEndingSoon: "In scadenza – invita altri amici",
   goldEarned: "Hai dadi d'oro per 30 giorni! ✨",
   goldWelcome: "Regalo di benvenuto: dadi d'oro per 3 giorni! ✨",
+  goldInfoTitle: "Come ottenere i dadi d'oro ✨",
+  goldInfoRule1: "Invita un amico a una partita tra amici creata da te. Le partite rapide non contano.",
+  goldInfoRule2: "Dovete finire la partita insieme. Se qualcuno si arrende, non conta.",
+  goldInfoRule3: "Il tuo amico deve essere nuovo nell'app e giocare sul proprio telefono.",
+  goldInfoRule4: "Ogni tre amici ottieni i dadi d'oro per 30 giorni. Il tuo amico riceve i dadi d'oro per 3 giorni come regalo di benvenuto.",
 };

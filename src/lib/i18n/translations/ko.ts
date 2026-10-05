@@ -306,4 +306,9 @@ export const ko: typeof sv = {
   goldEndingSoon: "곧 만료 – 친구를 더 초대하세요",
   goldEarned: "황금 주사위 30일 획득! ✨",
   goldWelcome: "환영 선물: 황금 주사위 3일! ✨",
+  goldInfoTitle: "황금 주사위 받는 법 ✨",
+  goldInfoRule1: "직접 만든 친구 대전에 친구를 초대하세요. 빠른 대전은 포함되지 않아요.",
+  goldInfoRule2: "함께 대전을 끝까지 마쳐야 해요. 누군가 기권하면 인정되지 않아요.",
+  goldInfoRule3: "친구는 앱을 처음 이용하는 사용자여야 하며, 본인 휴대폰으로 플레이해야 해요.",
+  goldInfoRule4: "친구 3명을 초대할 때마다 황금 주사위를 30일간 사용할 수 있어요. 친구는 환영 선물로 황금 주사위를 3일간 사용할 수 있어요.",
 };

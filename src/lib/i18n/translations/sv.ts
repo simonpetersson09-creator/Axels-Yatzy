@@ -315,6 +315,11 @@ export const sv = {
   goldEndingSoon: "Tar snart slut – bjud in fler vänner",
   goldEarned: "Du har guldtärningar i 30 dagar! ✨",
   goldWelcome: "Välkomstgåva: guldtärningar i 3 dagar! ✨",
+  goldInfoTitle: "Så får du guldtärningar ✨",
+  goldInfoRule1: "Bjud in en vän till en vänmatch som du skapar. Snabbspel räknas inte.",
+  goldInfoRule2: "Ni måste spela klart matchen tillsammans. Om någon ger upp räknas den inte.",
+  goldInfoRule3: "Vännen måste vara ny i appen och spela på en egen telefon.",
+  goldInfoRule4: "Var tredje vän ger dig guldtärningar i 30 dagar. Din vän får guldtärningar i 3 dagar som välkomstgåva.",
 };
 
 export type TranslationKey = keyof typeof sv;

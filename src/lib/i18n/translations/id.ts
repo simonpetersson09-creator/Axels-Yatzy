@@ -306,4 +306,9 @@ export const id: typeof sv = {
   goldEndingSoon: "Segera habis – undang teman lagi",
   goldEarned: "Kamu dapat dadu emas 30 hari! ✨",
   goldWelcome: "Hadiah selamat datang: dadu emas 3 hari! ✨",
+  goldInfoTitle: "Cara mendapatkan dadu emas ✨",
+  goldInfoRule1: "Undang teman ke laga teman yang kamu buat. Laga cepat tidak dihitung.",
+  goldInfoRule2: "Kalian harus menyelesaikan laga bersama. Jika ada yang menyerah, laga tidak dihitung.",
+  goldInfoRule3: "Temanmu harus pengguna baru dan bermain di ponselnya sendiri.",
+  goldInfoRule4: "Setiap 3 teman, kamu mendapat dadu emas selama 30 hari. Temanmu mendapat dadu emas selama 3 hari sebagai hadiah selamat datang.",
 };

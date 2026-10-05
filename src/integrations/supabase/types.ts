@@ -612,6 +612,7 @@ export type Database = {
       }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
+      get_gold_players: { Args: { p_session_ids: string[] }; Returns: string[] }
       get_referral_code: {
         Args: { p_device_id: string; p_session_id: string }
         Returns: string
@@ -624,6 +625,10 @@ export type Database = {
       heartbeat: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: undefined
+      }
+      internal_award_referral: {
+        Args: { p_game: string; p_invitee: string; p_inviter: string }
+        Returns: boolean
       }
       internal_create_quick_match: {
         Args: { p_names: string[]; p_sessions: string[]; p_size: number }

@@ -298,4 +298,12 @@ export const tr: typeof sv = {
   matchesShort: "maç",
   webBlockTitle: "Mr.B. Yatzy App Store'da 🎲",
   webBlockBody: "Oyun artık iPhone'undaki uygulamada. Ücretsiz indir, oynamaya devam et.",
+  goldCardTitle: "3 arkadaşını davet et → 30 gün altın zar",
+  goldCardProgress: "{n}/3 tamamlandı",
+  goldCardHint: "ilk maçından sonra sayılır",
+  goldCardInvite: "Davet et",
+  goldActive: "✨ Altın zar: {days} gün kaldı",
+  goldEndingSoon: "Yakında bitiyor – daha çok arkadaşını davet et",
+  goldEarned: "30 gün altın zar kazandın! ✨",
+  goldWelcome: "Hoş geldin hediyesi: 3 gün altın zar! ✨",
 };

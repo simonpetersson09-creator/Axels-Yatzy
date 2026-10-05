@@ -12,6 +12,8 @@ interface DiceAreaProps {
   className?: string;
   /** Drives the hold-ring colour; pips stay black. */
   playerIndex?: number;
+  /** Gold dice reward skin for the player whose turn it is. */
+  gold?: boolean;
 }
 
 type Five<T> = [T, T, T, T, T];
@@ -33,6 +35,7 @@ export function DiceArea({
   compact = false,
   className,
   playerIndex = 0,
+  gold = false,
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 54 : 60;
@@ -110,6 +113,7 @@ export function DiceArea({
             }}
             spacing={spacing}
             holdColor={HOLD_COLORS[playerIndex % HOLD_COLORS.length]}
+            gold={gold}
             fill={1 / OVERSCAN}
             duration={1.3}
             className="h-full w-full"

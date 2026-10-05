@@ -298,4 +298,12 @@ export const cs: typeof sv = {
   matchesShort: "zápasy",
   webBlockTitle: "Mr.B. Yatzy je na App Store 🎲",
   webBlockBody: "Teď se hraje v aplikaci na iPhonu. Stáhněte si ji zdarma a hrajte dál.",
+  goldCardTitle: "Pozvi 3 přátele → zlaté kostky na 30 dní",
+  goldCardProgress: "{n} ze 3 hotovo",
+  goldCardHint: "počítá se po tvém prvním zápase",
+  goldCardInvite: "Pozvat",
+  goldActive: "✨ Zlaté kostky: zbývá {days} dní",
+  goldEndingSoon: "Brzy končí – pozvi další přátele",
+  goldEarned: "Máš zlaté kostky na 30 dní! ✨",
+  goldWelcome: "Dárek na uvítanou: zlaté kostky na 3 dny! ✨",
 };

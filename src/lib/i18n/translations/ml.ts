@@ -298,4 +298,12 @@ export const ml: typeof sv = {
   matchesShort: "മത്സരങ്ങൾ",
   webBlockTitle: "Mr.B. Yatzy ഇപ്പോൾ App Store-ൽ 🎲",
   webBlockBody: "ഇനി നിങ്ങളുടെ iPhone-ലെ ആപ്പിൽ കളിക്കാം. സൗജന്യമായി ഡൗൺലോഡ് ചെയ്ത് കളി തുടരൂ.",
+  goldCardTitle: "3 സുഹൃത്തുക്കളെ ക്ഷണിക്കൂ → 30 ദിവസത്തേക്ക് സ്വർണ ഡൈസ്",
+  goldCardProgress: "3-ൽ {n} പൂർത്തിയായി",
+  goldCardHint: "ആദ്യ മത്സരത്തിന് ശേഷം കണക്കാക്കും",
+  goldCardInvite: "ക്ഷണിക്കൂ",
+  goldActive: "✨ സ്വർണ ഡൈസ്: {days} ദിവസം ബാക്കി",
+  goldEndingSoon: "ഉടൻ തീരും – കൂടുതൽ പേരെ ക്ഷണിക്കൂ",
+  goldEarned: "30 ദിവസത്തേക്ക് സ്വർണ ഡൈസ് ലഭിച്ചു! ✨",
+  goldWelcome: "സ്വാഗത സമ്മാനം: 3 ദിവസത്തേക്ക് സ്വർണ ഡൈസ്! ✨",
 };

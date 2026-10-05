@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -551,6 +552,8 @@ export default function HomePage() {
               🌐 <span className="truncate">{t('playWithFriends')}</span>
             </motion.button>
           </div>
+
+          <GoldInviteCard />
 
           <AnimatePresence>
             {onlineSearch && (

@@ -29,6 +29,8 @@ export type DiceSetProps = {
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour), e.g. the active player's colour. */
   holdColor?: string | undefined;
+  /** Gold dice reward skin. */
+  gold?: boolean | undefined;
 } & DiceConfig & {
     /** Optional className for the wrapper (fills its container by default). */
     className?: string;
@@ -50,6 +52,7 @@ function DiceSetImpl({
   resetKey = 0,
   pipColor,
   holdColor,
+  gold,
   className,
 }: DiceSetProps) {
   const safeValues = values.map(clampValue);
@@ -77,6 +80,7 @@ function DiceSetImpl({
       resetKey={resetKey}
       pipColor={pipColor}
       holdColor={holdColor}
+      gold={gold}
       {...(onDieClick ? { onToggleHold: onDieClick } : {})}
       {...(className ? { className } : {})}
     />

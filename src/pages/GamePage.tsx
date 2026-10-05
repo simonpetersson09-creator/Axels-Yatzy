@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
+import { useGoldStatus, isGoldActive } from '@/lib/gold-dice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -67,6 +68,7 @@ export default function GamePage() {
 
   // Human is always player index 0 in this app
   const HUMAN_INDEX = 0;
+  const myGold = isGoldActive(useGoldStatus());
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
   useEffect(() => subscribeProfileChanges(() => setAvatarUrl(getProfileAvatar())), []);
 
@@ -491,6 +493,7 @@ export default function GamePage() {
                 onToggleLock={isCurrentAi ? () => {} : (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); }}
                 compact
                 playerIndex={gameState.currentPlayerIndex}
+                gold={myGold && gameState.currentPlayerIndex === HUMAN_INDEX && !isCurrentAi}
                 className="mt-0"
               />
             </div>

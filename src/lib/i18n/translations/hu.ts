@@ -298,4 +298,12 @@ export const hu: typeof sv = {
   matchesShort: "meccs",
   webBlockTitle: "A Mr.B. Yatzy már az App Store-ban 🎲",
   webBlockBody: "Mostantól az iPhone-odon, az appban játszhatsz. Töltsd le ingyen, és folytasd a játékot!",
+  goldCardTitle: "Hívj meg 3 barátot → aranykockák 30 napra",
+  goldCardProgress: "{n}/3 kész",
+  goldCardHint: "az első meccsed után számít",
+  goldCardInvite: "Meghívás",
+  goldActive: "✨ Aranykockák: még {days} nap",
+  goldEndingSoon: "Hamarosan lejár – hívj meg több barátot",
+  goldEarned: "Aranykockákat kaptál 30 napra! ✨",
+  goldWelcome: "Üdvözlő ajándék: aranykockák 3 napra! ✨",
 };

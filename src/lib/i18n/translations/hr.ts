@@ -298,4 +298,12 @@ export const hr: typeof sv = {
   matchesShort: "mečeva",
   webBlockTitle: "Mr.B. Yatzy je na App Storeu 🎲",
   webBlockBody: "Sada se igra u aplikaciji na tvom iPhoneu. Preuzmi je besplatno i nastavi igrati.",
+  goldCardTitle: "Pozovi 3 prijatelja → zlatne kockice na 30 dana",
+  goldCardProgress: "{n} od 3 dovršeno",
+  goldCardHint: "računa se nakon tvoje prve partije",
+  goldCardInvite: "Pozovi",
+  goldActive: "✨ Zlatne kockice: još {days} dana",
+  goldEndingSoon: "Uskoro istječe – pozovi još prijatelja",
+  goldEarned: "Imaš zlatne kockice na 30 dana! ✨",
+  goldWelcome: "Dar dobrodošlice: zlatne kockice na 3 dana! ✨",
 };

@@ -298,4 +298,12 @@ export const te: typeof sv = {
   matchesShort: "మ్యాచ్‌లు",
   webBlockTitle: "Mr.B. Yatzy ఇప్పుడు App Storeలో 🎲",
   webBlockBody: "ఇక మీ iPhoneలోని యాప్‌లో ఆడండి. ఉచితంగా డౌన్‌లోడ్ చేసుకుని ఆట కొనసాగించండి.",
+  goldCardTitle: "3 మిత్రులను ఆహ్వానించండి → 30 రోజులు బంగారు పాచికలు",
+  goldCardProgress: "3లో {n} పూర్తి",
+  goldCardHint: "మీ తొలి మ్యాచ్ తర్వాత లెక్కలోకి వస్తుంది",
+  goldCardInvite: "ఆహ్వానించండి",
+  goldActive: "✨ బంగారు పాచికలు: ఇంకా {days} రోజులు",
+  goldEndingSoon: "త్వరలో ముగుస్తుంది – మరింతమందిని ఆహ్వానించండి",
+  goldEarned: "మీకు 30 రోజులు బంగారు పాచికలు! ✨",
+  goldWelcome: "స్వాగత కానుక: 3 రోజులు బంగారు పాచికలు! ✨",
 };

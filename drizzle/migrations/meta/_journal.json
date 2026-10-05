@@ -36,6 +36,13 @@
       "when": 1791206840448,
       "tag": "0004_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791230221055,
+      "tag": "0005_gold_dice_three_friends",
+      "breakpoints": true
     }
   ]
 }

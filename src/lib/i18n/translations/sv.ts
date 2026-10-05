@@ -307,6 +307,14 @@ export const sv = {
   matchesShort: "matcher",
   webBlockTitle: "Mr.B. Yatzy finns i App Store 🎲",
   webBlockBody: "Spelet spelas nu i appen på din iPhone. Ladda ner den gratis och fortsätt spela.",
+  goldCardTitle: "Bjud in 3 vänner → guldtärningar i 30 dagar",
+  goldCardProgress: "{n} av 3 klara",
+  goldCardHint: "räknas efter er första match",
+  goldCardInvite: "Bjud in",
+  goldActive: "✨ Guldtärningar: {days} dagar kvar",
+  goldEndingSoon: "Tar snart slut – bjud in fler vänner",
+  goldEarned: "Du har guldtärningar i 30 dagar! ✨",
+  goldWelcome: "Välkomstgåva: guldtärningar i 3 dagar! ✨",
 };
 
 export type TranslationKey = keyof typeof sv;

@@ -298,4 +298,12 @@ export const da: typeof sv = {
   matchesShort: "kampe",
   webBlockTitle: "Mr.B. Yatzy er i App Store 🎲",
   webBlockBody: "Spillet spilles nu i appen på din iPhone. Download den gratis, og spil videre.",
+  goldCardTitle: "Invitér 3 venner → guldterninger i 30 dage",
+  goldCardProgress: "{n} af 3 klaret",
+  goldCardHint: "tæller efter din første kamp",
+  goldCardInvite: "Invitér",
+  goldActive: "✨ Guldterninger: {days} dage tilbage",
+  goldEndingSoon: "Udløber snart – invitér flere venner",
+  goldEarned: "Du har guldterninger i 30 dage! ✨",
+  goldWelcome: "Velkomstgave: guldterninger i 3 dage! ✨",
 };

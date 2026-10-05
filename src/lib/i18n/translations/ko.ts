@@ -298,4 +298,12 @@ export const ko: typeof sv = {
   matchesShort: "경기",
   webBlockTitle: "Mr.B. Yatzy, 이제 App Store에서 🎲",
   webBlockBody: "이제 iPhone 앱에서 즐겨보세요. 무료로 다운로드하고 계속 플레이하세요.",
+  goldCardTitle: "친구 3명 초대 → 황금 주사위 30일",
+  goldCardProgress: "{n}/3명 완료",
+  goldCardHint: "첫 대전 후 인정",
+  goldCardInvite: "초대",
+  goldActive: "✨ 황금 주사위: {days}일 남음",
+  goldEndingSoon: "곧 만료 – 친구를 더 초대하세요",
+  goldEarned: "황금 주사위 30일 획득! ✨",
+  goldWelcome: "환영 선물: 황금 주사위 3일! ✨",
 };

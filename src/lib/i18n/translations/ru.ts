@@ -297,4 +297,12 @@ export const ru: typeof sv = {
   matchesShort: "матчей",
   webBlockTitle: "Mr.B. Yatzy уже в App Store 🎲",
   webBlockBody: "Теперь игра доступна в приложении на iPhone. Скачайте бесплатно и продолжайте играть.",
+  goldCardTitle: "Пригласи 3 друзей → золотые кости на 30 дней",
+  goldCardProgress: "Готово: {n} из 3",
+  goldCardHint: "засчитывается после твоего первого матча",
+  goldCardInvite: "Пригласить",
+  goldActive: "✨ Золотые кости: осталось дней — {days}",
+  goldEndingSoon: "Скоро закончатся – пригласи ещё друзей",
+  goldEarned: "У тебя золотые кости на 30 дней! ✨",
+  goldWelcome: "Приветственный подарок: золотые кости на 3 дня! ✨",
 };

@@ -17,6 +17,7 @@ const LANG_TO_COUNTRY: Record<Language, string> = {
   nl: 'NL', ca: 'ES', ro: 'RO', tr: 'TR', pl: 'PL', cs: 'CZ', sk: 'SK',
   sl: 'SI', hr: 'HR', hu: 'HU', pt: 'PT', 'pt-BR': 'BR', id: 'ID',
   ms: 'MY', vi: 'VN', el: 'GR', ru: 'RU', uk: 'UA',
+  ja: 'JP', ko: 'KR', th: 'TH', hi: 'IN', bn: 'BD', gu: 'IN', kn: 'IN', ml: 'IN', mr: 'IN', or: 'IN', pa: 'IN', ta: 'IN', te: 'IN',
 };
 
 function guessFromLocale(): string | null {

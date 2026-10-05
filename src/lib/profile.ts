@@ -9,7 +9,8 @@ const COUNTRY_KEY = 'yatzy_player_country'; // ISO-3166 alpha-2, e.g. "SE"
 export type Language =
   | 'sv' | 'fi' | 'no' | 'da' | 'en' | 'es' | 'fr' | 'it' | 'de'
   | 'nl' | 'ca' | 'ro' | 'tr' | 'pl' | 'cs' | 'sk' | 'sl' | 'hr' | 'hu'
-  | 'pt' | 'pt-BR' | 'id' | 'ms' | 'vi' | 'el' | 'ru' | 'uk';
+  | 'pt' | 'pt-BR' | 'id' | 'ms' | 'vi' | 'el' | 'ru' | 'uk'
+  | 'ja' | 'ko' | 'th' | 'hi' | 'bn' | 'gu' | 'kn' | 'ml' | 'mr' | 'or' | 'pa' | 'ta' | 'te';
 
 export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'sv', label: 'Svenska', flag: '🇸🇪' },
@@ -39,6 +40,19 @@ export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
   { code: 'ms', label: 'Bahasa Melayu', flag: '🇲🇾' },
   { code: 'vi', label: 'Tiếng Việt', flag: '🇻🇳' },
+  { code: 'ja', label: '日本語', flag: '🇯🇵' },
+  { code: 'ko', label: '한국어', flag: '🇰🇷' },
+  { code: 'th', label: 'ไทย', flag: '🇹🇭' },
+  { code: 'hi', label: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'bn', label: 'বাংলা', flag: '🇧🇩' },
+  { code: 'gu', label: 'ગુજરાતી', flag: '🇮🇳' },
+  { code: 'kn', label: 'ಕನ್ನಡ', flag: '🇮🇳' },
+  { code: 'ml', label: 'മലയാളം', flag: '🇮🇳' },
+  { code: 'mr', label: 'मराठी', flag: '🇮🇳' },
+  { code: 'or', label: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
+  { code: 'pa', label: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+  { code: 'ta', label: 'தமிழ்', flag: '🇮🇳' },
+  { code: 'te', label: 'తెలుగు', flag: '🇮🇳' },
 ];
 
 export function getProfileName(): string {
@@ -96,6 +110,19 @@ export function mapTagToLanguage(tag: string): Language | null {
     case 'el': return 'el';
     case 'ru': return 'ru';
     case 'uk': return 'uk';
+    case 'ja': return 'ja';
+    case 'ko': return 'ko';
+    case 'th': return 'th';
+    case 'hi': return 'hi';
+    case 'bn': return 'bn';
+    case 'gu': return 'gu';
+    case 'kn': return 'kn';
+    case 'ml': return 'ml';
+    case 'mr': return 'mr';
+    case 'or': return 'or';
+    case 'pa': return 'pa';
+    case 'ta': return 'ta';
+    case 'te': return 'te';
     default: return null;
   }
 }
@@ -157,7 +184,7 @@ export const COUNTRIES: string[] = [
   'DE','NL','BE','LU','FR','ES','PT','IT','CH','AT',
   'PL','CZ','SK','HU','RO','BG','GR','HR','SI','EE','LV','LT',
   'BR','MX','AR','CL','JP','KR','CN','IN','ZA','TR','UA',
-  'RU','ID','MY','VN',
+  'RU','ID','MY','VN','TH','BD',
 ];
 
 export function getProfileCountry(): string | null {

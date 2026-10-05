@@ -20,7 +20,7 @@ export function GoldInviteCard() {
 
   useEffect(() => {
     if (!consumeNewGold(status)) return;
-    const earned = status.friends > 0 && status.progress === 0;
+    const earned = status.friends > 0;
     fireWinConfetti({ durationMs: 1800 });
     toast.success(t(earned ? 'goldEarned' : 'goldWelcome'), { duration: 5000 });
     trackEvent(earned ? 'gold_dice_earned' : 'gold_dice_welcome');
@@ -40,20 +40,16 @@ export function GoldInviteCard() {
       >
         <Info className="w-3.5 h-3.5" />
       </button>
-      <div className="flex gap-1 shrink-0" aria-hidden>
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            className={cn(
-              'w-5 h-5 rounded-md border flex items-center justify-center text-[10px] font-bold',
-              i < status.progress
-                ? 'bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark border-game-gold text-primary-foreground'
-                : 'bg-background/40 border-border text-muted-foreground/50',
-            )}
-          >
-            {i < status.progress ? '✓' : i + 1}
-          </span>
-        ))}
+      <div
+        className={cn(
+          'shrink-0 w-9 h-9 rounded-xl border flex items-center justify-center font-display font-black text-sm',
+          status.friends > 0
+            ? 'bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark border-game-gold text-primary-foreground'
+            : 'bg-background/40 border-border text-muted-foreground/60',
+        )}
+        aria-hidden
+      >
+        {status.friends}
       </div>
 
       <div className="flex-1 min-w-0 text-left">
@@ -63,7 +59,7 @@ export function GoldInviteCard() {
         <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
           {active && days <= 3
             ? t('goldEndingSoon')
-            : `${t('goldCardProgress', { n: status.progress })} · ${t('goldCardHint')}`}
+            : `${t('goldCardProgress', { n: status.friends })} · ${t('goldCardHint')}`}
         </p>
       </div>
 

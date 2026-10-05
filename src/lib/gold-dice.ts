@@ -54,7 +54,13 @@ export function useGoldStatus(): GoldStatus {
   const [s, setS] = useState<GoldStatus>(readCache);
   useEffect(() => {
     let alive = true;
-    fetchGoldStatus().then((v) => { if (alive) setS(v); });
+    fetchGoldStatus().then((v) => {
+      // Baseline for the "your friend counts" confirmation after a match.
+      if (localStorage.getItem('mrb_gold_known_friends_v1') === null) {
+        localStorage.setItem('mrb_gold_known_friends_v1', String(v.friends));
+      }
+      if (alive) setS(v);
+    });
     return () => { alive = false; };
   }, []);
   return s;

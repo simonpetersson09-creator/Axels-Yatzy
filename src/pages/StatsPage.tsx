@@ -96,7 +96,6 @@ export default function StatsPage() {
                 <span className="text-xl">{countryToFlag(c.country)}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate">{countryName(c.country, lang)}</p>
-                  <p className="text-[11px] text-muted-foreground">{fmt(c.players)} {t('countryRankPlayers')}</p>
                 </div>
                 <div className="text-right">
                   <p className="font-display font-bold tabular-nums">{fmt(c.games_played)}</p>

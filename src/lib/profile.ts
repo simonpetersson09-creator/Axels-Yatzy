@@ -6,7 +6,10 @@ const AVATAR_KEY = 'yatzy_player_avatar'; // data URL (jpeg/png)
 const LANG_KEY = 'yatzy_language';
 const COUNTRY_KEY = 'yatzy_player_country'; // ISO-3166 alpha-2, e.g. "SE"
 
-export type Language = 'sv' | 'fi' | 'no' | 'da' | 'en' | 'es' | 'fr' | 'it' | 'de';
+export type Language =
+  | 'sv' | 'fi' | 'no' | 'da' | 'en' | 'es' | 'fr' | 'it' | 'de'
+  | 'nl' | 'ca' | 'ro' | 'tr' | 'pl' | 'cs' | 'sk' | 'sl' | 'hr' | 'hu'
+  | 'pt' | 'pt-BR' | 'id' | 'ms' | 'vi' | 'el' | 'ru' | 'uk';
 
 export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'sv', label: 'Svenska', flag: '🇸🇪' },
@@ -18,6 +21,24 @@ export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'fi', label: 'Suomi', flag: '🇫🇮' },
   { code: 'no', label: 'Norsk', flag: '🇳🇴' },
   { code: 'da', label: 'Dansk', flag: '🇩🇰' },
+  { code: 'nl', label: 'Nederlands', flag: '🇳🇱' },
+  { code: 'pt-BR', label: 'Português (BR)', flag: '🇧🇷' },
+  { code: 'pt', label: 'Português (PT)', flag: '🇵🇹' },
+  { code: 'pl', label: 'Polski', flag: '🇵🇱' },
+  { code: 'tr', label: 'Türkçe', flag: '🇹🇷' },
+  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+  { code: 'uk', label: 'Українська', flag: '🇺🇦' },
+  { code: 'cs', label: 'Čeština', flag: '🇨🇿' },
+  { code: 'sk', label: 'Slovenčina', flag: '🇸🇰' },
+  { code: 'sl', label: 'Slovenščina', flag: '🇸🇮' },
+  { code: 'hr', label: 'Hrvatski', flag: '🇭🇷' },
+  { code: 'hu', label: 'Magyar', flag: '🇭🇺' },
+  { code: 'ro', label: 'Română', flag: '🇷🇴' },
+  { code: 'el', label: 'Ελληνικά', flag: '🇬🇷' },
+  { code: 'ca', label: 'Català', flag: '🇪🇸' },
+  { code: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
+  { code: 'ms', label: 'Bahasa Melayu', flag: '🇲🇾' },
+  { code: 'vi', label: 'Tiếng Việt', flag: '🇻🇳' },
 ];
 
 export function getProfileName(): string {
@@ -41,7 +62,8 @@ const LANG_SOURCE_KEY = 'yatzy_language_source'; // 'manual' | 'auto'
 
 /** Map a BCP-47 tag (e.g. "sv-SE", "nb-NO") to a supported app language. */
 export function mapTagToLanguage(tag: string): Language | null {
-  const base = tag.toLowerCase().split(/[-_]/)[0];
+  const parts = tag.toLowerCase().split(/[-_]/);
+  const base = parts[0];
   switch (base) {
     case 'sv': return 'sv';
     case 'da': return 'da';
@@ -54,6 +76,26 @@ export function mapTagToLanguage(tag: string): Language | null {
     case 'es': return 'es';
     case 'it': return 'it';
     case 'en': return 'en';
+    case 'nl': return 'nl';
+    case 'ca': return 'ca';
+    case 'ro': return 'ro';
+    case 'tr': return 'tr';
+    case 'pl': return 'pl';
+    case 'cs': return 'cs';
+    case 'sk': return 'sk';
+    case 'sl': return 'sl';
+    case 'hr':
+    case 'bs':
+    case 'sr': return 'hr';
+    case 'hu': return 'hu';
+    case 'pt': return parts.includes('pt') ? 'pt' : 'pt-BR';
+    case 'id':
+    case 'in': return 'id';
+    case 'ms': return 'ms';
+    case 'vi': return 'vi';
+    case 'el': return 'el';
+    case 'ru': return 'ru';
+    case 'uk': return 'uk';
     default: return null;
   }
 }

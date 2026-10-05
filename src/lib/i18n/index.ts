@@ -9,8 +9,29 @@ import { es } from './translations/es';
 import { fr } from './translations/fr';
 import { it } from './translations/it';
 import { de } from './translations/de';
+import { nl } from './translations/nl';
+import { ca } from './translations/ca';
+import { ro } from './translations/ro';
+import { tr } from './translations/tr';
+import { pl } from './translations/pl';
+import { cs } from './translations/cs';
+import { sk } from './translations/sk';
+import { sl } from './translations/sl';
+import { hr } from './translations/hr';
+import { hu } from './translations/hu';
+import { pt } from './translations/pt';
+import { ptBR } from './translations/ptBR';
+import { id } from './translations/id';
+import { ms } from './translations/ms';
+import { vi } from './translations/vi';
+import { el } from './translations/el';
+import { ru } from './translations/ru';
+import { uk } from './translations/uk';
 
-const DICTS: Record<Language, typeof sv> = { sv, en, no, da, fi, es, fr, it, de };
+const DICTS: Record<Language, typeof sv> = {
+  sv, en, no, da, fi, es, fr, it, de,
+  nl, ca, ro, tr, pl, cs, sk, sl, hr, hu, pt, 'pt-BR': ptBR, id, ms, vi, el, ru, uk,
+};
 
 export type { TranslationKey } from './translations/sv';
 

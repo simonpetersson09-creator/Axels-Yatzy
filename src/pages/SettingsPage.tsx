@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, User, Camera, Trash2, Check, Bell, BellRing, Globe } from 'lucide-react';
+import { ArrowLeft, User, Camera, Trash2, Check, Bell, BellRing, Globe, BarChart3, ChevronRight } from 'lucide-react';
 import {
   getProfileName, setProfileName,
   getProfileAvatar, setProfileAvatar,
@@ -346,6 +346,15 @@ export default function SettingsPage() {
                 <div className="border-t border-border/40" />
               </>
             )}
+            <motion.button
+              onClick={() => navigate('/stats')}
+              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors border-b border-border/40"
+              whileTap={{ scale: 0.985 }}
+            >
+              <BarChart3 className="w-4 h-4 text-primary" />
+              <span className="flex-1 text-sm font-medium text-foreground">{t('statsPage')}</span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </motion.button>
             <motion.button
               onClick={resetStats}
               className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-destructive/10 transition-colors"

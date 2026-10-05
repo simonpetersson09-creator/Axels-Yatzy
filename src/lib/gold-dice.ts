@@ -102,25 +102,36 @@ export function consumeNewGold(s: GoldStatus): boolean {
   return true;
 }
 
-/** Dice colour per player index in an online game (white when missing). */
-export function useDiceSkins(gameId: string | null): Map<number, DiceSkin> {
-  const [map, setMap] = useState<Map<number, DiceSkin>>(new Map());
+export interface DiceProfile {
+  isBot: boolean;
+  tier: DiceSkin;
+  yatzyMatches: number;
+  /** Temporary gold from inviting friends is active. */
+  inviteGold: boolean;
+}
+
+export function profileSkin(p: DiceProfile | undefined): DiceSkin {
+  if (!p) return 'white';
+  return p.inviteGold ? 'gold' : p.tier;
+}
+
+export function ownProfile(s: GoldStatus): DiceProfile {
+  return { isBot: false, tier: s.tier, yatzyMatches: s.yatzyMatches, inviteGold: isGoldActive(s) };
+}
+
+/** Public dice info per player index in an online game. */
+export function useDiceProfiles(gameId: string | null): Map<number, DiceProfile> {
+  const [map, setMap] = useState<Map<number, DiceProfile>>(new Map());
   useEffect(() => {
     if (!gameId) return;
     let alive = true;
     (async () => {
       try {
-        const { data: rows } = await supabase
-          .from('game_players')
-          .select('player_index, session_id, is_bot')
-          .eq('game_id', gameId);
-        const humans = (rows ?? []).filter((r) => !r.is_bot);
-        if (!humans.length) return;
-        const { data } = await supabase.rpc('get_dice_skins', {
-          p_session_ids: humans.map((r) => r.session_id),
-        });
-        const skins = (data as Record<string, string> | null) ?? {};
-        if (alive) setMap(new Map(humans.map((r) => [r.player_index, asSkin(skins[r.session_id])])));
+        const { data } = await supabase.rpc('get_dice_profiles', { p_game_id: gameId });
+        const rows = (data as Array<{ player_index: number; is_bot: boolean; tier: string; yatzy_matches: number; invite_gold: boolean }> | null) ?? [];
+        if (alive) setMap(new Map(rows.map((r) => [r.player_index, {
+          isBot: !!r.is_bot, tier: asSkin(r.tier), yatzyMatches: Number(r.yatzy_matches ?? 0), inviteGold: !!r.invite_gold,
+        }])));
       } catch { /* cosmetic; ignore */ }
     })();
     return () => { alive = false; };

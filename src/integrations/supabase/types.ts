@@ -407,6 +407,24 @@ export type Database = {
         }
         Relationships: []
       }
+      player_games_history: {
+        Row: {
+          day: string
+          games_played: number
+          session_id: string
+        }
+        Insert: {
+          day: string
+          games_played?: number
+          session_id: string
+        }
+        Update: {
+          day?: string
+          games_played?: number
+          session_id?: string
+        }
+        Relationships: []
+      }
       push_tokens: {
         Row: {
           created_at: string
@@ -598,6 +616,8 @@ export type Database = {
         Args: { p_device_id: string; p_session_id: string }
         Returns: string
       }
+      get_top_countries: { Args: { p_limit?: number }; Returns: Json }
+      get_weekly_rank: { Args: { p_session_id: string }; Returns: Json }
       get_world_leader: { Args: never; Returns: Json }
       get_world_leaders: { Args: never; Returns: Json }
       get_world_rank: { Args: { p_session_id: string }; Returns: Json }

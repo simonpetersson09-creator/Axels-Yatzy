@@ -306,4 +306,9 @@ export const vi: typeof sv = {
   goldEndingSoon: "Sắp hết hạn – mời thêm bạn",
   goldEarned: "Bạn có xúc xắc vàng trong 30 ngày! ✨",
   goldWelcome: "Quà chào mừng: xúc xắc vàng trong 3 ngày! ✨",
+  goldInfoTitle: "Cách nhận xúc xắc vàng ✨",
+  goldInfoRule1: "Mời một người bạn vào trận đấu bạn bè do bạn tạo. Trận đấu nhanh không được tính.",
+  goldInfoRule2: "Cả hai phải chơi hết trận. Nếu có người bỏ cuộc thì không được tính.",
+  goldInfoRule3: "Bạn của bạn phải là người mới dùng ứng dụng và chơi trên điện thoại riêng.",
+  goldInfoRule4: "Cứ mời đủ 3 người bạn, bạn được dùng xúc xắc vàng trong 30 ngày. Mỗi người bạn được dùng xúc xắc vàng trong 3 ngày làm quà chào mừng.",
 };

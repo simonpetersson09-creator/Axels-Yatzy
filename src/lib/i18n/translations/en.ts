@@ -306,4 +306,9 @@ export const en: typeof sv = {
   goldEndingSoon: "Ending soon – invite more friends",
   goldEarned: "You have gold dice for 30 days! ✨",
   goldWelcome: "Welcome gift: gold dice for 3 days! ✨",
+  goldInfoTitle: "How to get gold dice ✨",
+  goldInfoRule1: "Invite a friend to a friend match that you create. Quick matches don't count.",
+  goldInfoRule2: "You must finish the match together. If someone forfeits, it doesn't count.",
+  goldInfoRule3: "Your friend must be new to the app and play on their own phone.",
+  goldInfoRule4: "Every third friend gives you gold dice for 30 days. Your friend gets gold dice for 3 days as a welcome gift.",
 };

@@ -306,4 +306,9 @@ export const pl: typeof sv = {
   goldEndingSoon: "Wkrótce koniec – zaproś więcej znajomych",
   goldEarned: "Masz złote kości na 30 dni! ✨",
   goldWelcome: "Na powitanie: złote kości na 3 dni! ✨",
+  goldInfoTitle: "Jak zdobyć złote kości ✨",
+  goldInfoRule1: "Zaproś znajomego do utworzonego przez siebie meczu ze znajomymi. Szybkie mecze się nie liczą.",
+  goldInfoRule2: "Musicie razem ukończyć mecz. Jeśli ktoś się podda, mecz się nie liczy.",
+  goldInfoRule3: "Znajomy musi być nowym użytkownikiem aplikacji i grać na własnym telefonie.",
+  goldInfoRule4: "Za co trzeciego znajomego dostajesz złote kości na 30 dni. Znajomy dostaje złote kości na 3 dni na powitanie.",
 };

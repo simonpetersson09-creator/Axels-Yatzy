@@ -306,4 +306,9 @@ export const es: typeof sv = {
   goldEndingSoon: "Termina pronto – invita a más amigos",
   goldEarned: "¡Tienes dados dorados por 30 días! ✨",
   goldWelcome: "¡Regalo de bienvenida: dados dorados por 3 días! ✨",
+  goldInfoTitle: "Cómo conseguir dados de oro ✨",
+  goldInfoRule1: "Invita a un amigo a una partida con amigos creada por ti. Las partidas rápidas no cuentan.",
+  goldInfoRule2: "Debéis terminar la partida juntos. Si alguien abandona, no cuenta.",
+  goldInfoRule3: "Tu amigo debe ser nuevo en la app y jugar en su propio teléfono.",
+  goldInfoRule4: "Por cada tres amigos, recibes dados de oro durante 30 días. Tu amigo recibe dados de oro durante 3 días como regalo de bienvenida.",
 };

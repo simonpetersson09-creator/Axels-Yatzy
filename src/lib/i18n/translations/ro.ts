@@ -306,4 +306,9 @@ export const ro: typeof sv = {
   goldEndingSoon: "Expiră curând – invită alți prieteni",
   goldEarned: "Ai zaruri aurii pentru 30 de zile! ✨",
   goldWelcome: "Cadou de bun venit: zaruri aurii 3 zile! ✨",
+  goldInfoTitle: "Cum obții zaruri de aur ✨",
+  goldInfoRule1: "Invită un prieten la un meci între prieteni creat de tine. Meciurile rapide nu se iau în calcul.",
+  goldInfoRule2: "Trebuie să terminați meciul împreună. Dacă cineva abandonează, nu se ia în calcul.",
+  goldInfoRule3: "Prietenul tău trebuie să fie nou în aplicație și să joace pe propriul telefon.",
+  goldInfoRule4: "La fiecare al treilea prieten, primești zaruri de aur pentru 30 de zile. Prietenul tău primește zaruri de aur pentru 3 zile, ca dar de bun venit.",
 };

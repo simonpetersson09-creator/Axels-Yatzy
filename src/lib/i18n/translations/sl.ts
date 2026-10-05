@@ -306,4 +306,9 @@ export const sl: typeof sv = {
   goldEndingSoon: "Kmalu poteče – povabi več prijateljev",
   goldEarned: "Imaš zlate kocke za 30 dni! ✨",
   goldWelcome: "Darilo za dobrodošlico: zlate kocke za 3 dni! ✨",
+  goldInfoTitle: "Kako do zlatih kock ✨",
+  goldInfoRule1: "Ustvari tekmo s prijateljem in ga povabi. Hitre tekme ne štejejo.",
+  goldInfoRule2: "Tekmo morata končati skupaj. Če kdo odstopi, ne šteje.",
+  goldInfoRule3: "Prijatelj mora biti nov uporabnik aplikacije in igrati na svojem telefonu.",
+  goldInfoRule4: "Za vsakega tretjega prijatelja dobiš zlate kocke za 30 dni. Prijatelj jih za dobrodošlico dobi za 3 dni.",
 };

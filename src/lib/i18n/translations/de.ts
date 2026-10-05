@@ -301,4 +301,9 @@ export const de: typeof sv = {
   goldEndingSoon: "Endet bald – mehr Freunde einladen",
   goldEarned: "Du hast 30 Tage Goldwürfel! ✨",
   goldWelcome: "Willkommensgeschenk: 3 Tage Goldwürfel! ✨",
+  goldInfoTitle: "So bekommst du goldene Würfel ✨",
+  goldInfoRule1: "Erstelle ein Freundschaftsspiel und lade einen Freund ein. Schnelle Spiele zählen nicht.",
+  goldInfoRule2: "Ihr müsst das Spiel gemeinsam beenden. Wenn jemand aufgibt, zählt es nicht.",
+  goldInfoRule3: "Dein Freund muss neu in der App sein und auf seinem eigenen Handy spielen.",
+  goldInfoRule4: "Für jeden dritten Freund bekommst du 30 Tage lang goldene Würfel. Dein Freund erhält sie als Willkommensgeschenk für 3 Tage.",
 };

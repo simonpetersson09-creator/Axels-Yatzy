@@ -301,4 +301,9 @@ export const fr: typeof sv = {
   goldEndingSoon: "Expire bientôt – invite plus d’amis",
   goldEarned: "Tu as les dés dorés pour 30 jours ! ✨",
   goldWelcome: "Cadeau de bienvenue : dés dorés pour 3 jours ! ✨",
+  goldInfoTitle: "Comment obtenir des dés dorés ✨",
+  goldInfoRule1: "Invitez un ami à une partie entre amis que vous créez. Les parties rapides ne comptent pas.",
+  goldInfoRule2: "Vous devez terminer la partie ensemble. Si quelqu’un abandonne, elle ne compte pas.",
+  goldInfoRule3: "Votre ami doit être nouveau sur l’appli et jouer sur son propre téléphone.",
+  goldInfoRule4: "Tous les 3 amis invités, vous recevez des dés dorés pour 30 jours. Votre ami en reçoit pour 3 jours en cadeau de bienvenue.",
 };

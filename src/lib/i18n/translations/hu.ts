@@ -306,4 +306,9 @@ export const hu: typeof sv = {
   goldEndingSoon: "Hamarosan lejár – hívj meg több barátot",
   goldEarned: "Aranykockákat kaptál 30 napra! ✨",
   goldWelcome: "Üdvözlő ajándék: aranykockák 3 napra! ✨",
+  goldInfoTitle: "Így szerezhetsz aranykockákat ✨",
+  goldInfoRule1: "Hívj meg egy barátot egy általad indított baráti meccsre. A gyorsmeccsek nem számítanak.",
+  goldInfoRule2: "Együtt kell befejeznetek a meccset. Ha valaki feladja, nem számít.",
+  goldInfoRule3: "A barátodnak új felhasználónak kell lennie, és a saját telefonján kell játszania.",
+  goldInfoRule4: "Minden harmadik barát után 30 napra kapsz aranykockákat. A barátod üdvözlőajándékként 3 napra kap aranykockákat.",
 };

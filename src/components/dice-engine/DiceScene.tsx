@@ -1,3 +1,4 @@
+import type { DiceSkin } from '@/lib/dice-skin';
 /**
  * `<DiceScene />` — the public entry point of the dice engine.
  *
@@ -57,7 +58,7 @@ function DiceSceneImpl({
   resetKey = 0,
   pipColor,
   holdColor,
-  gold,
+  skin,
   onToggleHold,
   className,
 }: DiceSceneProps) {
@@ -141,7 +142,7 @@ function DiceSceneImpl({
           resetKey={resetKey}
           pipColor={pipColor}
           holdColor={holdColor}
-          gold={gold}
+          skin={skin}
           onToggleHold={onToggleHold}
         />
         <Warmup />

@@ -1,3 +1,4 @@
+import type { DiceSkin } from '@/lib/dice-skin';
 /**
  * `<DiceSet />` — the portable public API of the dice engine.
  *
@@ -30,7 +31,7 @@ export type DiceSetProps = {
   /** Optional hold-ring tint (any CSS colour), e.g. the active player's colour. */
   holdColor?: string | undefined;
   /** Gold dice reward skin. */
-  gold?: boolean | undefined;
+  skin?: DiceSkin | undefined;
 } & DiceConfig & {
     /** Optional className for the wrapper (fills its container by default). */
     className?: string;
@@ -52,7 +53,7 @@ function DiceSetImpl({
   resetKey = 0,
   pipColor,
   holdColor,
-  gold,
+  skin,
   className,
 }: DiceSetProps) {
   const safeValues = values.map(clampValue);
@@ -80,7 +81,7 @@ function DiceSetImpl({
       resetKey={resetKey}
       pipColor={pipColor}
       holdColor={holdColor}
-      gold={gold}
+      skin={skin}
       {...(onDieClick ? { onToggleHold: onDieClick } : {})}
       {...(className ? { className } : {})}
     />

@@ -1,3 +1,4 @@
+import type { DiceSkin } from '@/lib/dice-skin';
 /**
  * A single premium-looking 3D die.
  *
@@ -287,7 +288,7 @@ export interface Dice3DProps {
   /** Optional hold-ring tint (any CSS colour). */
   holdColor?: string | undefined;
   /** Gold dice reward skin. */
-  gold?: boolean | undefined;
+  skin?: DiceSkin | undefined;
 }
 
 function Dice3DImpl({
@@ -304,7 +305,7 @@ function Dice3DImpl({
   resetKey,
   pipColor,
   holdColor,
-  gold,
+  skin,
 }: Dice3DProps) {
   const { groupRef, travelRef } = useDiceAnimation({
     value,

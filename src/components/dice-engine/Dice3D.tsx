@@ -59,6 +59,24 @@ const heldMaterial = new MeshPhysicalMaterial({
   ior: 1.48,
 });
 
+/** Gold reward skin: polished metallic gold, slightly deeper when held. */
+const goldMaterial = new MeshPhysicalMaterial({
+  color: "#e8b84a",
+  roughness: 0.22,
+  metalness: 0.85,
+  clearcoat: 0.6,
+  clearcoatRoughness: 0.15,
+  envMapIntensity: 1.4,
+});
+const goldHeldMaterial = new MeshPhysicalMaterial({
+  color: "#c99a32",
+  roughness: 0.25,
+  metalness: 0.85,
+  clearcoat: 0.6,
+  clearcoatRoughness: 0.15,
+  envMapIntensity: 1.3,
+});
+
 /** Deep black pips with a faint, ink-like gloss. */
 const pipMaterial = new MeshStandardMaterial({
   color: "#0b0b0c",
@@ -268,6 +286,8 @@ export interface Dice3DProps {
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour). */
   holdColor?: string | undefined;
+  /** Gold dice reward skin. */
+  gold?: boolean | undefined;
 }
 
 function Dice3DImpl({
@@ -284,6 +304,7 @@ function Dice3DImpl({
   resetKey,
   pipColor,
   holdColor,
+  gold,
 }: Dice3DProps) {
   const { groupRef, travelRef } = useDiceAnimation({
     value,
@@ -364,7 +385,7 @@ function Dice3DImpl({
                   smoothness={10}
                   bevelSegments={8}
                   creaseAngle={0.5}
-                  material={held ? heldMaterial : bodyMaterial}
+                  material={gold ? (held ? goldHeldMaterial : goldMaterial) : held ? heldMaterial : bodyMaterial}
                 />
                 {FACES.map((face) => (
                   <group key={face.value} rotation={face.rotation}>

@@ -57,6 +57,7 @@ function DiceSceneImpl({
   resetKey = 0,
   pipColor,
   holdColor,
+  gold,
   onToggleHold,
   className,
 }: DiceSceneProps) {
@@ -140,6 +141,7 @@ function DiceSceneImpl({
           resetKey={resetKey}
           pipColor={pipColor}
           holdColor={holdColor}
+          gold={gold}
           onToggleHold={onToggleHold}
         />
         <Warmup />

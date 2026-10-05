@@ -41,6 +41,8 @@ export interface DiceSceneProps extends DiceConfig {
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour), e.g. the active player's colour. */
   holdColor?: string | undefined;
+  /** Gold dice reward skin. */
+  gold?: boolean | undefined;
   /** Fired when a die is tapped/clicked. */
   onToggleHold?: (index: number) => void;
   /** Optional className for the wrapping element (full size by default). */

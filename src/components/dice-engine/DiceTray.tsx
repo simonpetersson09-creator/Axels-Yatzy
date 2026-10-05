@@ -25,6 +25,7 @@ export interface DiceTrayProps {
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour). */
   holdColor?: string | undefined;
+  gold?: boolean | undefined;
 }
 
 function DiceTrayImpl({
@@ -39,6 +40,7 @@ function DiceTrayImpl({
   resetKey = 0,
   pipColor,
   holdColor,
+  gold,
 }: DiceTrayProps) {
   const cameraRef = useRef<PerspectiveCameraImpl>(null);
   const viewportWidth = useThree((s) => s.size.width);
@@ -163,6 +165,7 @@ function DiceTrayImpl({
           resetKey={resetKey}
           pipColor={pipColor}
           holdColor={holdColor}
+          gold={gold}
           onTap={onToggleHold}
         />
       ))}

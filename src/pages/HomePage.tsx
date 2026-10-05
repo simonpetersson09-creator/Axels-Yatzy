@@ -841,7 +841,7 @@ export default function HomePage() {
                 );
               })}
             </div>
-            <div className="mt-3">
+            <div className="mt-3 pb-6">
               <GoldInviteCard />
             </div>
           </div>

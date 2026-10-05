@@ -102,11 +102,11 @@ export default function StatsPage() {
             {top.map((c, i) => (
               <div
                 key={c.country}
-                className={`flex items-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${c.country === myCountry ? 'bg-primary/10' : ''}`}
+                className={`flex items-center justify-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${c.country === myCountry ? 'bg-primary/10' : ''}`}
               >
                 <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-primary' : 'text-muted-foreground'}`}>{i + 1}</span>
                 <span className="text-lg">{countryToFlag(c.country)}</span>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0">
                   <p className="text-sm font-semibold truncate">{countryName(c.country, lang)}</p>
                 </div>
               </div>
@@ -125,7 +125,7 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
   return (
     <div className="rounded-2xl bg-secondary/50 border border-border/40 px-3.5 py-2.5 flex items-center gap-3">
       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">{icon}</div>
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0">
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
         {sub && <p className="text-[11px] text-muted-foreground/80 mt-0.5">{sub}</p>}
       </div>

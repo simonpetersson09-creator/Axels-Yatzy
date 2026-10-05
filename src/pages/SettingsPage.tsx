@@ -1,3 +1,6 @@
+import { Dices } from 'lucide-react';
+import { DiceInfoSheet } from '@/components/DiceInfoSheet';
+import { useGoldStatus, ownProfile, goldDaysLeft } from '@/lib/gold-dice';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,6 +22,8 @@ import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const goldStatus = useGoldStatus();
+  const [myDiceOpen, setMyDiceOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(() => getProfileName());
@@ -355,6 +360,23 @@ export default function SettingsPage() {
               <span className="flex-1 text-sm font-medium text-foreground">{t('statsPage')}</span>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </motion.button>
+            <motion.button
+              onClick={() => { setMyDiceOpen(true); trackEvent('my_dice_opened', { from: 'settings' }); }}
+              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors border-b border-border/40"
+              whileTap={{ scale: 0.985 }}
+            >
+              <Dices className="w-4 h-4 text-primary" />
+              <span className="flex-1 text-sm font-medium text-foreground">{t('myDice')}</span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </motion.button>
+            <DiceInfoSheet
+              open={myDiceOpen}
+              onClose={() => setMyDiceOpen(false)}
+              name={t('myDice')}
+              profile={ownProfile(goldStatus)}
+              inviteDaysLeft={goldDaysLeft(goldStatus) || undefined}
+              showLadder
+            />
             <motion.button
               onClick={resetStats}
               className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-destructive/10 transition-colors"

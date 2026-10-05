@@ -1,6 +1,7 @@
 import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
-import { useDiceSkins, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
+import { useDiceProfiles, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
+import { DiceInfoSheet, SKIN_SWATCH } from '@/components/DiceInfoSheet';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -43,7 +44,10 @@ export default function MultiplayerGamePage() {
   } = useMultiplayerGame();
 
   const gameId = searchParams.get('gameId');
-  const diceSkins = useDiceSkins(gameId);
+  const diceProfiles = useDiceProfiles(gameId);
+  // Tapped player's dice level (bottom sheet); closes when the turn moves on.
+  const [infoIndex, setInfoIndex] = useState<number | null>(null);
+  useEffect(() => { setInfoIndex(null); }, [gameState?.currentPlayerIndex]);
   const statsRecordedRef = useRef(false);
   const rejoinCalledRef = useRef<string | null>(null);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
@@ -564,6 +568,12 @@ export default function MultiplayerGamePage() {
       }}
     >
       <QuickMatchTakeover gameId={gameId} />
+      <DiceInfoSheet
+        open={infoIndex !== null}
+        onClose={() => setInfoIndex(null)}
+        name={infoIndex !== null ? (gameState.players[infoIndex]?.name ?? '') : ''}
+        profile={infoIndex !== null ? diceProfiles.get(infoIndex) : undefined}
+      />
       <YatzyCelebration
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
@@ -617,6 +627,8 @@ export default function MultiplayerGamePage() {
                     className={`flex items-center gap-2.5 px-2 py-1 rounded-xl transition-all ${
                       isCurrent ? 'bg-secondary/80' : ''
                     }`}
+                    onClick={() => { setInfoIndex(idx); trackEvent('dice_info_opened', { from: 'name' }); }}
+                    role="button"
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
@@ -634,6 +646,9 @@ export default function MultiplayerGamePage() {
                     }`}>
                       {player.name}{isMe ? t('youSuffix') : ''}
                     </span>
+                    {diceProfiles.get(idx) && !diceProfiles.get(idx)!.isBot && (
+                      <span className={`w-2 h-2 rounded-full border shrink-0 ${SKIN_SWATCH[profileSkin(diceProfiles.get(idx))]}`} aria-hidden />
+                    )}
                     {isCurrent && (
                       <motion.span
                         className="text-[9px] text-primary font-bold uppercase tracking-wider ml-auto"
@@ -648,8 +663,11 @@ export default function MultiplayerGamePage() {
               })}
             </div>
 
-            {/* Dice */}
-            <div className="relative mt-2">
+            {/* Dice — tapping the opponent's dice shows their level */}
+            <div
+              className="relative mt-2"
+              onClick={!isMyTurn ? () => { setInfoIndex(gameState.currentPlayerIndex); trackEvent('dice_info_opened', { from: 'dice' }); } : undefined}
+            >
               <PickDiceHint
                 show={
                   gameState.rollsLeft === 2 &&
@@ -667,7 +685,7 @@ export default function MultiplayerGamePage() {
                 onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
                 compact
                 playerIndex={gameState.currentPlayerIndex}
-                skin={diceSkins.get(gameState.currentPlayerIndex) ?? 'white'}
+                skin={profileSkin(diceProfiles.get(gameState.currentPlayerIndex))}
                 className="mt-0"
               />
             </div>

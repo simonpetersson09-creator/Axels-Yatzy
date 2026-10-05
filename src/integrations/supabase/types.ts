@@ -650,6 +650,7 @@ export type Database = {
         Returns: Json
       }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
+      get_dice_profiles: { Args: { p_game_id: string }; Returns: Json }
       get_dice_skins: { Args: { p_session_ids: string[] }; Returns: Json }
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
       get_gold_players: { Args: { p_session_ids: string[] }; Returns: string[] }

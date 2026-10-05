@@ -57,6 +57,13 @@
       "when": 1791232535077,
       "tag": "0007_permanent_dice_tiers",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791233072472,
+      "tag": "0008_dice_profiles_for_game",
+      "breakpoints": true
     }
   ]
 }

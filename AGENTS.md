@@ -1,1 +1,2 @@
 - iOS native patches (AdMob plist, push token forwarding + aps-environment entitlement) live in scripts/ and run via `npm run cap:sync:ios` — ios/ is regenerated outside the repo, so manual Xcode edits get lost.
+- Screenshot/QA scripts must never seed stats on the live preview without cleanup: seeded stats sync to the shared world leaderboard (player_country_stats) and push real players down.

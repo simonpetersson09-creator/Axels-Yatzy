@@ -109,9 +109,6 @@ export default function StatsPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate">{countryName(c.country, lang)}</p>
                 </div>
-                <div className="text-right">
-                  <p className="font-display font-bold tabular-nums">{fmt(c.games_played)}</p>
-                </div>
               </div>
             ))}
           </div>

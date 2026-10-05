@@ -553,8 +553,6 @@ export default function HomePage() {
             </motion.button>
           </div>
 
-          <GoldInviteCard />
-
           <AnimatePresence>
             {onlineSearch && (
               <QuickMatchSearch
@@ -842,6 +840,9 @@ export default function HomePage() {
                   </div>
                 );
               })}
+            </div>
+            <div className="mt-3">
+              <GoldInviteCard />
             </div>
           </div>
 

@@ -311,6 +311,13 @@ export const pl: typeof sv = {
   goldInfoRule2: "Musicie razem ukończyć mecz. Jeśli ktoś się podda, mecz się nie liczy.",
   goldInfoRule3: "Znajomy musi być nowym użytkownikiem aplikacji i grać na własnym telefonie.",
   goldInfoRule4: "Każdy znajomy daje ci złote kości na 10 dni, a dni się sumują. Twój znajomy dostaje złote kości na 3 dni w prezencie powitalnym.",
+  diceTierTitle: "Twoje kości",
+  diceTierProgress: "{n} z {goal} gier z Yatzy → {tier}",
+  diceTierMax: "Złote kości na zawsze ✨ · {n} gier z Yatzy",
+  diceTierUnlocked: "Nowe kości odblokowane: {tier}! ✨",
+  tierBronze: "brąz",
+  tierSilver: "srebro",
+  tierGold: "złoto",
   goldLobbyHint: "✨ Dokończcie razem mecz, a znajomy przybliży Cię do złotych kości",
   goldFriendCounted: "Znajomy zaliczony! {n} z 3 ✨",
 };

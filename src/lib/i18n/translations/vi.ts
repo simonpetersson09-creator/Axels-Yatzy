@@ -311,6 +311,13 @@ export const vi: typeof sv = {
   goldInfoRule2: "Cả hai phải chơi hết trận. Nếu có người bỏ cuộc thì không được tính.",
   goldInfoRule3: "Bạn của bạn phải là người mới dùng ứng dụng và chơi trên điện thoại riêng.",
   goldInfoRule4: "Mỗi người bạn mang lại cho bạn xúc xắc vàng trong 10 ngày, và số ngày được cộng dồn. Bạn của bạn nhận xúc xắc vàng trong 3 ngày làm quà chào mừng.",
+  diceTierTitle: "Xúc xắc của bạn",
+  diceTierProgress: "{n}/{goal} ván có Yatzy → {tier}",
+  diceTierMax: "Xúc xắc vàng mãi mãi ✨ · {n} ván có Yatzy",
+  diceTierUnlocked: "Đã mở khóa xúc xắc mới: {tier}! ✨",
+  tierBronze: "đồng",
+  tierSilver: "bạc",
+  tierGold: "vàng",
   goldLobbyHint: "✨ Cùng chơi hết trận để được tính thêm một bạn vào tiến độ nhận xúc xắc vàng",
   goldFriendCounted: "Đã tính thêm một bạn! Hoàn thành {n}/3 ✨",
 };

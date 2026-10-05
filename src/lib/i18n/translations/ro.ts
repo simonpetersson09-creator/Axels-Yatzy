@@ -311,6 +311,13 @@ export const ro: typeof sv = {
   goldInfoRule2: "Trebuie să terminați meciul împreună. Dacă cineva abandonează, nu se ia în calcul.",
   goldInfoRule3: "Prietenul tău trebuie să fie nou în aplicație și să joace pe propriul telefon.",
   goldInfoRule4: "Fiecare prieten îți aduce zaruri aurii timp de 10 zile, iar zilele se adună. Prietenul tău primește zaruri aurii timp de 3 zile cadou de bun venit.",
+  diceTierTitle: "Zarurile tale",
+  diceTierProgress: "{n} din {goal} meciuri cu Yatzy → {tier}",
+  diceTierMax: "Zaruri aurii pentru totdeauna ✨ · {n} meciuri cu Yatzy",
+  diceTierUnlocked: "Zaruri noi deblocate: {tier}! ✨",
+  tierBronze: "bronz",
+  tierSilver: "argint",
+  tierGold: "aur",
   goldLobbyHint: "✨ Terminați meciul împreună și prietenul tău contează pentru zarurile aurii",
   goldFriendCounted: "Prietenul tău a fost numărat! {n} din 3 ✨",
 };

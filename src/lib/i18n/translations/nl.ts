@@ -311,6 +311,13 @@ export const nl: typeof sv = {
   goldInfoRule2: "Jullie moeten de wedstrijd samen uitspelen. Als iemand opgeeft, telt die niet mee.",
   goldInfoRule3: "Je vriend moet nieuw zijn in de app en op een eigen telefoon spelen.",
   goldInfoRule4: "Elke vriend geeft je 10 dagen gouden dobbelstenen, en de dagen tellen op. Je vriend krijgt 3 dagen gouden dobbelstenen als welkomstcadeau.",
+  diceTierTitle: "Jouw dobbelstenen",
+  diceTierProgress: "{n} van {goal} potjes met Yatzy → {tier}",
+  diceTierMax: "Gouden dobbelstenen voor altijd ✨ · {n} potjes met Yatzy",
+  diceTierUnlocked: "Nieuwe dobbelstenen ontgrendeld: {tier}! ✨",
+  tierBronze: "brons",
+  tierSilver: "zilver",
+  tierGold: "goud",
   goldLobbyHint: "✨ Speel samen de wedstrijd uit en je vriend telt mee voor gouden dobbelstenen",
   goldFriendCounted: "Je vriend telt mee! {n} van 3 voltooid ✨",
 };

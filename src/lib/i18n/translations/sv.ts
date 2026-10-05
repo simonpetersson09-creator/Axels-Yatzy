@@ -320,6 +320,13 @@ export const sv = {
   goldInfoRule2: "Ni måste spela klart matchen tillsammans. Om någon ger upp räknas den inte.",
   goldInfoRule3: "Vännen måste vara ny i appen och spela på en egen telefon.",
   goldInfoRule4: "Varje vän ger dig guldtärningar i 10 dagar, och dagarna läggs ihop. Din vän får guldtärningar i 3 dagar som välkomstgåva.",
+  diceTierTitle: "Dina tärningar",
+  diceTierProgress: "{n} av {goal} matcher med Yatzy → {tier}",
+  diceTierMax: "Guldtärningar för alltid ✨ · {n} matcher med Yatzy",
+  diceTierUnlocked: "Nya tärningar upplåsta: {tier}! ✨",
+  tierBronze: "brons",
+  tierSilver: "silver",
+  tierGold: "guld",
   goldLobbyHint: "✨ Spela klart matchen tillsammans så räknas din vän mot guldtärningarna",
   goldFriendCounted: "Din vän räknas! {n} av 3 klara ✨",
 };

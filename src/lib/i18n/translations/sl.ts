@@ -311,6 +311,13 @@ export const sl: typeof sv = {
   goldInfoRule2: "Tekmo morata končati skupaj. Če kdo odstopi, ne šteje.",
   goldInfoRule3: "Prijatelj mora biti nov uporabnik aplikacije in igrati na svojem telefonu.",
   goldInfoRule4: "Vsak prijatelj ti prinese zlate kocke za 10 dni, dnevi se seštevajo. Tvoj prijatelj dobi zlate kocke za 3 dni kot darilo dobrodošlice.",
+  diceTierTitle: "Tvoje kocke",
+  diceTierProgress: "{n} od {goal} iger z Yatzy → {tier}",
+  diceTierMax: "Zlate kocke za vedno ✨ · {n} iger z Yatzy",
+  diceTierUnlocked: "Nove kocke odklenjene: {tier}! ✨",
+  tierBronze: "bron",
+  tierSilver: "srebro",
+  tierGold: "zlato",
   goldLobbyHint: "✨ Dokončajta igro skupaj in prijatelj šteje za zlate kocke",
   goldFriendCounted: "Prijatelj šteje! {n} od 3 opravljeno ✨",
 };

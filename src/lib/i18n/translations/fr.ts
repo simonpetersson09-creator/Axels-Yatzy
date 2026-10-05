@@ -306,6 +306,13 @@ export const fr: typeof sv = {
   goldInfoRule2: "Vous devez terminer la partie ensemble. Si quelqu’un abandonne, elle ne compte pas.",
   goldInfoRule3: "Votre ami doit être nouveau sur l’appli et jouer sur son propre téléphone.",
   goldInfoRule4: "Chaque ami t'offre des dés dorés pendant 10 jours, et les jours s'additionnent. Ton ami reçoit des dés dorés pendant 3 jours en cadeau de bienvenue.",
+  diceTierTitle: "Tes dés",
+  diceTierProgress: "{n} sur {goal} parties avec un Yatzy → {tier}",
+  diceTierMax: "Dés dorés pour toujours ✨ · {n} parties avec un Yatzy",
+  diceTierUnlocked: "Nouveaux dés débloqués : {tier} ! ✨",
+  tierBronze: "bronze",
+  tierSilver: "argent",
+  tierGold: "or",
   goldLobbyHint: "✨ Terminez la partie ensemble : votre ami comptera pour les dés dorés",
   goldFriendCounted: "Votre ami compte ! {n} sur 3 ✨",
 };

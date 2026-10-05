@@ -311,6 +311,13 @@ export const tr: typeof sv = {
   goldInfoRule2: "Maçı birlikte bitirmelisiniz. Biri pes ederse sayılmaz.",
   goldInfoRule3: "Arkadaşın uygulamada yeni olmalı ve kendi telefonunda oynamalı.",
   goldInfoRule4: "Her arkadaş sana 10 gün altın zar kazandırır ve günler toplanır. Arkadaşın hoş geldin hediyesi olarak 3 gün altın zar alır.",
+  diceTierTitle: "Zarların",
+  diceTierProgress: "Yatzy'li {goal} maçtan {n} → {tier}",
+  diceTierMax: "Sonsuza dek altın zar ✨ · Yatzy'li {n} maç",
+  diceTierUnlocked: "Yeni zar açıldı: {tier}! ✨",
+  tierBronze: "bronz",
+  tierSilver: "gümüş",
+  tierGold: "altın",
   goldLobbyHint: "✨ Maçı birlikte bitirin, arkadaşınız altın zar hedefine sayılsın",
   goldFriendCounted: "Arkadaşınız sayıldı! 3 arkadaştan {n} tamam ✨",
 };

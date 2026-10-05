@@ -311,6 +311,13 @@ export const ja: typeof sv = {
   goldInfoRule2: "2人で最後まで対戦しましょう。途中で誰かが棄権するとカウントされません。",
   goldInfoRule3: "招待する友達は、このアプリを初めて使い、自分のスマホでプレイする必要があります。",
   goldInfoRule4: "友達1人ごとに金のサイコロを10日間使えて、日数は加算されます。招待された友達も歓迎ギフトとして3日間使えます。",
+  diceTierTitle: "あなたのサイコロ",
+  diceTierProgress: "ヨット達成試合 {n}/{goal} → {tier}",
+  diceTierMax: "ずっと金のサイコロ ✨ · ヨット達成 {n}試合",
+  diceTierUnlocked: "新しいサイコロ解放：{tier}！✨",
+  tierBronze: "ブロンズ",
+  tierSilver: "シルバー",
+  tierGold: "ゴールド",
   goldLobbyHint: "✨ 友達と最後まで対戦すると、ゴールドダイス獲得にカウントされます",
   goldFriendCounted: "友達がカウントされました！3人中{n}人達成 ✨",
 };

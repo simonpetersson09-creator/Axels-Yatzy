@@ -15,8 +15,8 @@ const TIER_LABEL: Record<Exclude<DiceSkin, 'white'>, TranslationKey> = {
 
 const SWATCH: Record<DiceSkin, string> = {
   white: 'bg-foreground/90 border-border',
-  bronze: 'bg-gradient-to-br from-[hsl(26_55%_62%)] to-[hsl(24_50%_38%)] border-[hsl(26_45%_50%)]',
-  silver: 'bg-gradient-to-br from-[hsl(210_15%_92%)] to-[hsl(210_8%_62%)] border-[hsl(210_10%_75%)]',
+  bronze: 'bg-gradient-to-br from-dice-bronze-light to-dice-bronze-dark border-dice-bronze-dark',
+  silver: 'bg-gradient-to-br from-dice-silver-light to-dice-silver-dark border-dice-silver-dark',
   gold: 'bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark border-game-gold',
 };
 

@@ -18,6 +18,12 @@ export default {
         display: ['Space Grotesk', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Gujarati', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Thai', 'sans-serif'],
       },
       colors: {
+        dice: {
+          "bronze-light": "hsl(var(--dice-bronze-light))",
+          "bronze-dark": "hsl(var(--dice-bronze-dark))",
+          "silver-light": "hsl(var(--dice-silver-light))",
+          "silver-dark": "hsl(var(--dice-silver-dark))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

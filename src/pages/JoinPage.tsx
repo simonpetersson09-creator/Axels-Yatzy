@@ -1,4 +1,4 @@
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
@@ -51,12 +51,6 @@ export default function JoinPage() {
         <p className="font-semibold text-foreground mb-1">{t('joinHaveApp')}</p>
         <p>{t('joinSteps')}</p>
       </div>
-
-      {code && (
-        <Link to={`/multiplayer?code=${code}`} className="text-xs text-muted-foreground underline">
-          {t('joinPlayWeb')}
-        </Link>
-      )}
     </div>
   );
 }

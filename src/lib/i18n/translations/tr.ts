@@ -296,4 +296,6 @@ export const tr: typeof sv = {
   weeklyBuildingHint: "Bu haftanın listesine girmek için bir maç oyna",
   statsNeedCountry: "Sıralamalarını görmek için Ayarlar'dan ülkeni seç.",
   matchesShort: "maç",
+  webBlockTitle: "Mr.B. Yatzy App Store'da 🎲",
+  webBlockBody: "Oyun artık iPhone'undaki uygulamada. Ücretsiz indir, oynamaya devam et.",
 };

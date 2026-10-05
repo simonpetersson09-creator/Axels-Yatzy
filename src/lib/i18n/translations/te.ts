@@ -296,4 +296,6 @@ export const te: typeof sv = {
   weeklyBuildingHint: "ఈ వారం జాబితాలో చేరేందుకు ఒక మ్యాచ్ ఆడండి",
   statsNeedCountry: "మీ ర్యాంకులు చూడటానికి సెట్టింగ్‌లలో మీ దేశాన్ని ఎంచుకోండి.",
   matchesShort: "మ్యాచ్‌లు",
+  webBlockTitle: "Mr.B. Yatzy ఇప్పుడు App Storeలో 🎲",
+  webBlockBody: "ఇక మీ iPhoneలోని యాప్‌లో ఆడండి. ఉచితంగా డౌన్‌లోడ్ చేసుకుని ఆట కొనసాగించండి.",
 };

@@ -296,4 +296,6 @@ export const hu: typeof sv = {
   weeklyBuildingHint: "Játssz egy meccset, hogy felkerülj a heti listára",
   statsNeedCountry: "Válassz országot a Beállításokban, hogy lásd a helyezéseidet.",
   matchesShort: "meccs",
+  webBlockTitle: "A Mr.B. Yatzy már az App Store-ban 🎲",
+  webBlockBody: "Mostantól az iPhone-odon, az appban játszhatsz. Töltsd le ingyen, és folytasd a játékot!",
 };

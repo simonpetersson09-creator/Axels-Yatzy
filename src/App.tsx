@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +10,7 @@ import GamePage from "./pages/GamePage";
 import ResultsPage from "./pages/ResultsPage";
 import SettingsPage from "./pages/SettingsPage";
 import StatsPage from "./pages/StatsPage";
+import WebOnlyAppPage from "./pages/WebOnlyAppPage";
 import MultiplayerLobbyPage from "./pages/MultiplayerLobbyPage";
 import MultiplayerGamePage from "./pages/MultiplayerGamePage";
 import FriendStatsPage from "./pages/FriendStatsPage";
@@ -25,6 +26,23 @@ import NotificationNavigator from "./components/NotificationNavigator";
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
+// The game is iPhone-app only. On the public web every game route shows an
+// App Store page instead; the Lovable preview and local dev stay playable.
+const IS_PREVIEW_HOST = (() => {
+  try {
+    const h = window.location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || h.startsWith('id-preview--') || h.endsWith('.lovableproject.com');
+  } catch { return false; }
+})();
+const WEB_BLOCKED = !Capacitor.isNativePlatform() && !import.meta.env.DEV && !IS_PREVIEW_HOST;
+const WEB_OPEN_PATHS = ['/join', '/legal', '/admin'];
+
+const WebGate = ({ children }: { children: React.ReactNode }) => {
+  const { pathname } = useLocation();
+  if (WEB_BLOCKED && !WEB_OPEN_PATHS.includes(pathname)) return <WebOnlyAppPage />;
+  return <>{children}</>;
+};
+
 const ADMIN_ENABLED = import.meta.env.DEV || !Capacitor.isNativePlatform();
 const AdminPage = ADMIN_ENABLED ? lazy(() => import("./pages/AdminPage")) : null;
 const DevFriendPage = ADMIN_ENABLED ? lazy(() => import("./pages/DevFriendPage")) : null;
@@ -54,6 +72,7 @@ const App = () => (
             <DevFriendBotRunner />
           </Suspense>
         )}
+        <WebGate>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/setup" element={<GameSetupPage />} />
@@ -92,6 +111,7 @@ const App = () => (
           )}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </WebGate>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

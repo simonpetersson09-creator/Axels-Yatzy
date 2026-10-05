@@ -296,4 +296,6 @@ export const kn: typeof sv = {
   weeklyBuildingHint: "ಈ ವಾರದ ಪಟ್ಟಿಗೆ ಸೇರಲು ಒಂದು ಪಂದ್ಯ ಆಡಿ",
   statsNeedCountry: "ನಿಮ್ಮ ಶ್ರೇಯಾಂಕಗಳನ್ನು ನೋಡಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
   matchesShort: "ಪಂದ್ಯಗಳು",
+  webBlockTitle: "Mr.B. Yatzy ಈಗ App Store ನಲ್ಲಿ 🎲",
+  webBlockBody: "ಈಗ ನಿಮ್ಮ iPhone ಆ್ಯಪ್‌ನಲ್ಲಿ ಆಡಬಹುದು. ಉಚಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ಆಟ ಮುಂದುವರಿಸಿ.",
 };

@@ -296,4 +296,6 @@ export const el: typeof sv = {
   weeklyBuildingHint: "Παίξε έναν αγώνα για να μπεις στη λίστα της εβδομάδας",
   statsNeedCountry: "Επίλεξε τη χώρα σου στις Ρυθμίσεις για να δεις την κατάταξή σου.",
   matchesShort: "αγώνες",
+  webBlockTitle: "Το Mr.B. Yatzy είναι στο App Store 🎲",
+  webBlockBody: "Το παιχνίδι παίζεται πλέον στην εφαρμογή στο iPhone σας. Κατεβάστε τη δωρεάν και συνεχίστε να παίζετε.",
 };

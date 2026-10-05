@@ -33,7 +33,19 @@ export default function StatsPage() {
   const fmt = (n: number) => n.toLocaleString(lang);
 
   return (
-    <div className="app-screen px-5 py-6 safe-top safe-bottom overflow-y-auto overscroll-contain">
+    <div
+      className="overflow-y-auto overscroll-contain px-5 [&::-webkit-scrollbar]:hidden"
+      style={{
+        height: 'var(--app-dvh, 100dvh)',
+        maxHeight: 'var(--app-dvh, 100dvh)',
+        WebkitOverflowScrolling: 'touch',
+        touchAction: 'pan-y',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+        paddingTop: 'calc(24px + env(safe-area-inset-top))',
+        paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',
+      }}
+    >
       <motion.div className="max-w-md mx-auto space-y-6" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors" aria-label={t('back')}>
@@ -99,7 +111,6 @@ export default function StatsPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-display font-bold tabular-nums">{fmt(c.games_played)}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t('matchesShort')}</p>
                 </div>
               </div>
             ))}

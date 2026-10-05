@@ -92,6 +92,27 @@ export type Database = {
         }
         Relationships: []
       }
+      dice_progress: {
+        Row: {
+          session_id: string
+          tier: string
+          updated_at: string
+          yatzy_matches: number
+        }
+        Insert: {
+          session_id: string
+          tier?: string
+          updated_at?: string
+          yatzy_matches?: number
+        }
+        Update: {
+          session_id?: string
+          tier?: string
+          updated_at?: string
+          yatzy_matches?: number
+        }
+        Relationships: []
+      }
       friend_match_results: {
         Row: {
           created_at: string
@@ -572,6 +593,24 @@ export type Database = {
         }
         Relationships: []
       }
+      yatzy_match_log: {
+        Row: {
+          created_at: string
+          match_key: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          match_key: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          match_key?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -611,6 +650,7 @@ export type Database = {
         Returns: Json
       }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
+      get_dice_skins: { Args: { p_session_ids: string[] }; Returns: Json }
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
       get_gold_players: { Args: { p_session_ids: string[] }; Returns: string[] }
       get_referral_code: {
@@ -625,6 +665,10 @@ export type Database = {
       heartbeat: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: undefined
+      }
+      internal_add_yatzy_match: {
+        Args: { p_key: string; p_session: string }
+        Returns: boolean
       }
       internal_award_referral: {
         Args: { p_game: string; p_invitee: string; p_inviter: string }
@@ -643,6 +687,8 @@ export type Database = {
         Returns: undefined
       }
       internal_secret_matches: { Args: { p_secret: string }; Returns: boolean }
+      internal_tier_for: { Args: { p_n: number }; Returns: string }
+      internal_tier_rank: { Args: { p_tier: string }; Returns: number }
       join_game: {
         Args: {
           p_game_code: string
@@ -719,6 +765,10 @@ export type Database = {
       }
       record_friend_match: {
         Args: { p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
+      record_local_yatzy_match: {
+        Args: { p_device_id: string; p_match_key: string; p_session_id: string }
         Returns: Json
       }
       skip_inactive_turn: {

@@ -311,6 +311,13 @@ export const ptBR: typeof sv = {
   goldInfoRule2: "Vocês precisam terminar a partida juntos. Se alguém desistir, não conta.",
   goldInfoRule3: "Seu amigo precisa ser novo no app e jogar no próprio celular.",
   goldInfoRule4: "Cada amigo te dá dados dourados por 10 dias, e os dias se somam. Seu amigo ganha dados dourados por 3 dias como presente de boas-vindas.",
+  diceTierTitle: "Seus dados",
+  diceTierProgress: "{n} de {goal} partidas com Yatzy → {tier}",
+  diceTierMax: "Dados dourados para sempre ✨ · {n} partidas com Yatzy",
+  diceTierUnlocked: "Novos dados desbloqueados: {tier}! ✨",
+  tierBronze: "bronze",
+  tierSilver: "prata",
+  tierGold: "ouro",
   goldLobbyHint: "✨ Terminem a partida juntos e seu amigo conta para os dados dourados",
   goldFriendCounted: "Seu amigo contou! {n} de 3 concluídos ✨",
 };

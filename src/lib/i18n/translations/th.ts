@@ -311,6 +311,13 @@ export const th: typeof sv = {
   goldInfoRule2: "ต้องเล่นด้วยกันจนจบแมตช์ ถ้ามีใครยอมแพ้จะไม่นับ",
   goldInfoRule3: "เพื่อนต้องเป็นผู้ใช้ใหม่และเล่นบนมือถือของตัวเอง",
   goldInfoRule4: "เพื่อนแต่ละคนให้ลูกเต๋าทองแก่คุณ 10 วัน และวันจะรวมกัน เพื่อนของคุณได้ลูกเต๋าทอง 3 วันเป็นของขวัญต้อนรับ",
+  diceTierTitle: "ลูกเต๋าของคุณ",
+  diceTierProgress: "แมตช์ที่ได้ Yatzy {n}/{goal} → {tier}",
+  diceTierMax: "ลูกเต๋าทองตลอดไป ✨ · {n} แมตช์ที่ได้ Yatzy",
+  diceTierUnlocked: "ปลดล็อกลูกเต๋าใหม่: {tier}! ✨",
+  tierBronze: "ทองแดง",
+  tierSilver: "เงิน",
+  tierGold: "ทอง",
   goldLobbyHint: "✨ เล่นให้จบด้วยกัน แล้วเพื่อนจะนับรวมเพื่อรับลูกเต๋าทอง",
   goldFriendCounted: "นับเพื่อนแล้ว! ครบ {n} จาก 3 คน ✨",
 };

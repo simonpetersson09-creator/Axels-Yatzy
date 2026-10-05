@@ -311,6 +311,13 @@ export const da: typeof sv = {
   goldInfoRule2: "I skal spille kampen færdig sammen. Hvis nogen giver op, tæller den ikke.",
   goldInfoRule3: "Din ven skal være ny i appen og spille på sin egen telefon.",
   goldInfoRule4: "Hver ven giver dig guldterninger i 10 dage, og dagene lægges sammen. Din ven får guldterninger i 3 dage som velkomstgave.",
+  diceTierTitle: "Dine terninger",
+  diceTierProgress: "{n} af {goal} kampe med Yatzy → {tier}",
+  diceTierMax: "Guldterninger for altid ✨ · {n} kampe med Yatzy",
+  diceTierUnlocked: "Nye terninger låst op: {tier}! ✨",
+  tierBronze: "bronze",
+  tierSilver: "sølv",
+  tierGold: "guld",
   goldLobbyHint: "✨ Spil kampen færdig sammen, så tæller din ven med til guldterninger",
   goldFriendCounted: "Din ven tæller med! {n} af 3 klaret ✨",
 };

@@ -50,6 +50,13 @@
       "when": 1791231391014,
       "tag": "0006_gold_dice_ten_days_per_friend",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791232535077,
+      "tag": "0007_permanent_dice_tiers",
+      "breakpoints": true
     }
   ]
 }

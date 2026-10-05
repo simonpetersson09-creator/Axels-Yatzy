@@ -311,6 +311,13 @@ export const en: typeof sv = {
   goldInfoRule2: "You must finish the match together. If someone forfeits, it doesn't count.",
   goldInfoRule3: "Your friend must be new to the app and play on their own phone.",
   goldInfoRule4: "Every friend gives you gold dice for 10 days, and the days add up. Your friend gets gold dice for 3 days as a welcome gift.",
+  diceTierTitle: "Your dice",
+  diceTierProgress: "{n} of {goal} matches with a Yatzy → {tier}",
+  diceTierMax: "Gold dice forever ✨ · {n} matches with a Yatzy",
+  diceTierUnlocked: "New dice unlocked: {tier}! ✨",
+  tierBronze: "bronze",
+  tierSilver: "silver",
+  tierGold: "gold",
   goldLobbyHint: "✨ Finish the match together and your friend counts toward gold dice",
   goldFriendCounted: "Your friend counts! {n} of 3 done ✨",
 };

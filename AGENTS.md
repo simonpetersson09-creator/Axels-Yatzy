@@ -1,3 +1,4 @@
 - iOS native patches (AdMob plist, push token forwarding + aps-environment entitlement) live in scripts/ and run via `npm run cap:sync:ios` — ios/ is regenerated outside the repo, so manual Xcode edits get lost.
 - Screenshot/QA scripts must never seed stats on the live preview without cleanup: seeded stats sync to the shared world leaderboard (player_country_stats) and push real players down.
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
+- Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — keeps unlocks tamper-resistant and in sync across devices.

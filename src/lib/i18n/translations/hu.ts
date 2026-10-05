@@ -311,6 +311,13 @@ export const hu: typeof sv = {
   goldInfoRule2: "Együtt kell befejeznetek a meccset. Ha valaki feladja, nem számít.",
   goldInfoRule3: "A barátodnak új felhasználónak kell lennie, és a saját telefonján kell játszania.",
   goldInfoRule4: "Minden barát 10 nap arany kockát ad, és a napok összeadódnak. A barátod 3 nap arany kockát kap üdvözlő ajándékként.",
+  diceTierTitle: "A kockáid",
+  diceTierProgress: "{n}/{goal} meccs Yatzyval → {tier}",
+  diceTierMax: "Arany kocka örökre ✨ · {n} meccs Yatzyval",
+  diceTierUnlocked: "Új kocka feloldva: {tier}! ✨",
+  tierBronze: "bronz",
+  tierSilver: "ezüst",
+  tierGold: "arany",
   goldLobbyHint: "✨ Fejezzétek be együtt a meccset, és a barátod beleszámít az aranykockákhoz",
   goldFriendCounted: "A barátod beleszámít! 3-ból {n} kész ✨",
 };

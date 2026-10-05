@@ -306,6 +306,13 @@ export const de: typeof sv = {
   goldInfoRule2: "Ihr müsst das Spiel gemeinsam beenden. Wenn jemand aufgibt, zählt es nicht.",
   goldInfoRule3: "Dein Freund muss neu in der App sein und auf seinem eigenen Handy spielen.",
   goldInfoRule4: "Jeder Freund bringt dir 10 Tage Goldwürfel, die Tage werden addiert. Dein Freund bekommt 3 Tage Goldwürfel als Willkommensgeschenk.",
+  diceTierTitle: "Deine Würfel",
+  diceTierProgress: "{n} von {goal} Spielen mit Yatzy → {tier}",
+  diceTierMax: "Goldwürfel für immer ✨ · {n} Spiele mit Yatzy",
+  diceTierUnlocked: "Neue Würfel freigeschaltet: {tier}! ✨",
+  tierBronze: "Bronze",
+  tierSilver: "Silber",
+  tierGold: "Gold",
   goldLobbyHint: "✨ Beendet das Match gemeinsam, dann zählt dein Freund für die goldenen Würfel",
   goldFriendCounted: "Dein Freund zählt! {n} von 3 geschafft ✨",
 };

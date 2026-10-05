@@ -306,6 +306,13 @@ export const it: typeof sv = {
   goldInfoRule2: "Dovete finire la partita insieme. Se qualcuno si arrende, non conta.",
   goldInfoRule3: "Il tuo amico deve essere nuovo nell'app e giocare sul proprio telefono.",
   goldInfoRule4: "Ogni amico ti dà dadi d'oro per 10 giorni, e i giorni si sommano. Il tuo amico riceve dadi d'oro per 3 giorni come regalo di benvenuto.",
+  diceTierTitle: "I tuoi dadi",
+  diceTierProgress: "{n} su {goal} partite con Yatzy → {tier}",
+  diceTierMax: "Dadi d'oro per sempre ✨ · {n} partite con Yatzy",
+  diceTierUnlocked: "Nuovi dadi sbloccati: {tier}! ✨",
+  tierBronze: "bronzo",
+  tierSilver: "argento",
+  tierGold: "oro",
   goldLobbyHint: "✨ Finite la partita insieme e il tuo amico conterà per i dadi d'oro",
   goldFriendCounted: "Amico conteggiato! {n} su 3 ✨",
 };

@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
-import { useGoldStatus, isGoldActive } from '@/lib/gold-dice';
+import { useGoldStatus, effectiveSkin, reportLocalYatzyMatch } from '@/lib/gold-dice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -68,7 +68,7 @@ export default function GamePage() {
 
   // Human is always player index 0 in this app
   const HUMAN_INDEX = 0;
-  const myGold = isGoldActive(useGoldStatus());
+  const mySkin = effectiveSkin(useGoldStatus());
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
   useEffect(() => subscribeProfileChanges(() => setAvatarUrl(getProfileAvatar())), []);
 
@@ -129,7 +129,8 @@ export default function GamePage() {
       // Only count as win if human is sole max-scorer (ties = no win)
       const won = humanScore === maxScore && winnersCount === 1 && !aiPlayers.includes(0);
       const yatzys = (gameState.players[0].scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
-      recordGameResult(humanScore, won, yatzys, localMatchKeyRef.current);
+      const isNewResult = recordGameResult(humanScore, won, yatzys, localMatchKeyRef.current);
+      if (isNewResult && yatzys > 0) void reportLocalYatzyMatch(localMatchKeyRef.current);
       trackEvent('game_finished', { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -493,7 +494,7 @@ export default function GamePage() {
                 onToggleLock={isCurrentAi ? () => {} : (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); }}
                 compact
                 playerIndex={gameState.currentPlayerIndex}
-                gold={myGold && gameState.currentPlayerIndex === HUMAN_INDEX && !isCurrentAi}
+                skin={gameState.currentPlayerIndex === HUMAN_INDEX && !isCurrentAi ? mySkin : 'white'}
                 className="mt-0"
               />
             </div>

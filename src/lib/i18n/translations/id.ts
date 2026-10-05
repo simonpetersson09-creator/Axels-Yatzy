@@ -311,6 +311,13 @@ export const id: typeof sv = {
   goldInfoRule2: "Kalian harus menyelesaikan laga bersama. Jika ada yang menyerah, laga tidak dihitung.",
   goldInfoRule3: "Temanmu harus pengguna baru dan bermain di ponselnya sendiri.",
   goldInfoRule4: "Setiap teman memberimu dadu emas selama 10 hari, dan harinya dijumlahkan. Temanmu dapat dadu emas selama 3 hari sebagai hadiah selamat datang.",
+  diceTierTitle: "Dadumu",
+  diceTierProgress: "{n} dari {goal} pertandingan dengan Yatzy → {tier}",
+  diceTierMax: "Dadu emas selamanya ✨ · {n} pertandingan dengan Yatzy",
+  diceTierUnlocked: "Dadu baru terbuka: {tier}! ✨",
+  tierBronze: "perunggu",
+  tierSilver: "perak",
+  tierGold: "emas",
   goldLobbyHint: "✨ Selesaikan pertandingan bersama agar temanmu dihitung untuk dadu emas",
   goldFriendCounted: "Temanmu dihitung! {n} dari 3 selesai ✨",
 };

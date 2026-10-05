@@ -1,3 +1,4 @@
+import type { DiceSkin } from '@/lib/dice-skin';
 import { useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { DiceSet } from '@/components/dice-engine';
@@ -12,8 +13,8 @@ interface DiceAreaProps {
   className?: string;
   /** Drives the hold-ring colour; pips stay black. */
   playerIndex?: number;
-  /** Gold dice reward skin for the player whose turn it is. */
-  gold?: boolean;
+  /** Dice colour for the player whose turn it is. */
+  skin?: DiceSkin;
 }
 
 type Five<T> = [T, T, T, T, T];
@@ -35,7 +36,7 @@ export function DiceArea({
   compact = false,
   className,
   playerIndex = 0,
-  gold = false,
+  skin = 'white',
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   const diceSize = compact ? 54 : 60;
@@ -113,7 +114,7 @@ export function DiceArea({
             }}
             spacing={spacing}
             holdColor={HOLD_COLORS[playerIndex % HOLD_COLORS.length]}
-            gold={gold}
+            skin={skin}
             fill={1 / OVERSCAN}
             duration={1.3}
             className="h-full w-full"

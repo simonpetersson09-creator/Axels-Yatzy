@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { GoldInviteCard } from '@/components/GoldInviteCard';
+import { DiceTierCard } from '@/components/DiceTierCard';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -841,7 +842,8 @@ export default function HomePage() {
                 );
               })}
             </div>
-            <div className="mt-3 pb-6">
+            <div className="mt-3 pb-6 space-y-3">
+              <DiceTierCard />
               <GoldInviteCard />
             </div>
           </div>

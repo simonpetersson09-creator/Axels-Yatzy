@@ -51,6 +51,10 @@
     /* Game tokens */
     --game-gold: 36 78% 55%;
     --game-gold-light: 38 72% 68%;
+    --dice-bronze-light: 26 55% 62%;
+    --dice-bronze-dark: 24 50% 38%;
+    --dice-silver-light: 210 15% 92%;
+    --dice-silver-dark: 210 8% 62%;
     --game-gold-dark: 32 80% 40%;
     --game-surface: 195 40% 17%;
     --game-surface-hover: 195 35% 22%;

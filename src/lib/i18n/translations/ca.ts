@@ -310,6 +310,13 @@ export const ca: typeof sv = {
   goldInfoRule2: "Heu d'acabar la partida junts. Si algú abandona, no compta.",
   goldInfoRule3: "El teu amic ha de ser nou a l'app i jugar amb el seu propi mòbil.",
   goldInfoRule4: "Cada amic et dona daus daurats durant 10 dies, i els dies se sumen. El teu amic rep daus daurats durant 3 dies com a regal de benvinguda.",
+  diceTierTitle: "Els teus daus",
+  diceTierProgress: "{n} de {goal} partides amb Yatzy → {tier}",
+  diceTierMax: "Daus daurats per sempre ✨ · {n} partides amb Yatzy",
+  diceTierUnlocked: "Daus nous desbloquejats: {tier}! ✨",
+  tierBronze: "bronze",
+  tierSilver: "plata",
+  tierGold: "or",
   goldLobbyHint: "✨ Acabeu la partida junts i el teu amic comptarà per als daus d'or",
   goldFriendCounted: "El teu amic ja compta! {n} de 3 ✨",
 };

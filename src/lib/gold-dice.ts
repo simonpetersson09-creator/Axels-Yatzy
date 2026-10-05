@@ -2,8 +2,8 @@
 // bronze/silver/gold from finished matches with a Yatzy (10/50/200). The server owns the rules; this only reads.
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId } from '@/lib/session';
-import { getDeviceIdSync } from '@/lib/device';
+import { getSessionId, claimSession } from '@/lib/session';
+import { getDeviceIdSync, initDeviceId } from '@/lib/device';
 import { asSkin, type DiceSkin } from '@/lib/dice-skin';
 
 export interface GoldStatus {
@@ -40,8 +40,10 @@ export function effectiveSkin(s: GoldStatus): DiceSkin {
 /** Report a finished match vs the computer that had a Yatzy (server dedupes per match). */
 export async function reportLocalYatzyMatch(matchKey: string): Promise<void> {
   try {
-    const device = getDeviceIdSync();
+    // Device id and session ownership must be ready, or the server rejects the report.
+    const device = await initDeviceId().catch(() => getDeviceIdSync());
     if (!device) return;
+    await claimSession();
     await supabase.rpc('record_local_yatzy_match', {
       p_session_id: getSessionId(), p_device_id: device, p_match_key: `sp:${matchKey}`,
     });

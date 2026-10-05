@@ -212,3 +212,47 @@ export async function syncWorldLeaders(): Promise<WorldLeaders> {
 }
 
 
+
+export interface WeeklyRank {
+  rank: number;
+  total: number;
+  games_played: number;
+}
+
+export interface TopCountry {
+  country: string;
+  games_played: number;
+  players: number;
+}
+
+/** Rank by matches played over the last 7 days. Call after syncCountryRank(). */
+export async function syncWeeklyRank(): Promise<WeeklyRank | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_weekly_rank', { p_session_id: getSessionId() });
+    if (error) {
+      console.warn('[weekly-rank] fetch failed', error);
+      return null;
+    }
+    const d = data as { found: boolean; rank: number; total: number; games_played: number } | null;
+    if (!d || !d.found) return null;
+    return { rank: d.rank, total: d.total, games_played: d.games_played };
+  } catch (e) {
+    console.warn('[weekly-rank] sync error', e);
+    return null;
+  }
+}
+
+/** Top countries by total matches — same source as the home screen leaders. */
+export async function syncTopCountries(limit = 10): Promise<TopCountry[]> {
+  try {
+    const { data, error } = await supabase.rpc('get_top_countries', { p_limit: limit });
+    if (error || !Array.isArray(data)) {
+      if (error) console.warn('[top-countries] fetch failed', error);
+      return [];
+    }
+    return (data as unknown as TopCountry[]).map(c => ({ country: c.country, games_played: c.games_played, players: c.players }));
+  } catch (e) {
+    console.warn('[top-countries] sync error', e);
+    return [];
+  }
+}

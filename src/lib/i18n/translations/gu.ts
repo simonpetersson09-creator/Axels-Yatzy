@@ -298,4 +298,12 @@ export const gu: typeof sv = {
   matchesShort: "મેચ",
   webBlockTitle: "Mr.B. Yatzy હવે App Store પર છે 🎲",
   webBlockBody: "હવે તમારા iPhone પર ઍપમાં રમો. મફતમાં ડાઉનલોડ કરો અને રમતા રહો.",
+  goldCardTitle: "3 મિત્રોને બોલાવો → 30 દિવસ સોનેરી પાસા",
+  goldCardProgress: "3 માંથી {n} પૂરાં",
+  goldCardHint: "તમારી પહેલી મેચ પછી ગણાશે",
+  goldCardInvite: "બોલાવો",
+  goldActive: "✨ સોનેરી પાસા: {days} દિવસ બાકી",
+  goldEndingSoon: "જલ્દી પૂરું થશે – વધુ મિત્રોને બોલાવો",
+  goldEarned: "તમને 30 દિવસ માટે સોનેરી પાસા મળ્યા! ✨",
+  goldWelcome: "સ્વાગત ભેટ: 3 દિવસ માટે સોનેરી પાસા! ✨",
 };

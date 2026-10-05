@@ -293,4 +293,12 @@ export const fr: typeof sv = {
   matchesShort: "parties",
   webBlockTitle: "Mr.B. Yatzy est sur l’App Store 🎲",
   webBlockBody: "Le jeu se joue désormais dans l’app sur votre iPhone. Téléchargez-la gratuitement et continuez à jouer.",
+  goldCardTitle: "Invite 3 amis → dés dorés pendant 30 jours",
+  goldCardProgress: "{n} sur 3 validés",
+  goldCardHint: "compté après ton premier match",
+  goldCardInvite: "Inviter",
+  goldActive: "✨ Dés dorés : encore {days} jours",
+  goldEndingSoon: "Expire bientôt – invite plus d’amis",
+  goldEarned: "Tu as les dés dorés pour 30 jours ! ✨",
+  goldWelcome: "Cadeau de bienvenue : dés dorés pour 3 jours ! ✨",
 };

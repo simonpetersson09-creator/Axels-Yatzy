@@ -298,4 +298,12 @@ export const bn: typeof sv = {
   matchesShort: "ম্যাচ",
   webBlockTitle: "Mr.B. Yatzy এখন App Store-এ 🎲",
   webBlockBody: "এখন আপনার iPhone-এর অ্যাপেই খেলুন। বিনামূল্যে ডাউনলোড করুন আর খেলা চালিয়ে যান।",
+  goldCardTitle: "৩ বন্ধুকে ডাকুন → ৩০ দিনের সোনালি পাশা",
+  goldCardProgress: "৩টির মধ্যে {n}টি সম্পন্ন",
+  goldCardHint: "আপনার প্রথম ম্যাচের পর গণনা হবে",
+  goldCardInvite: "আমন্ত্রণ",
+  goldActive: "✨ সোনালি পাশা: বাকি {days} দিন",
+  goldEndingSoon: "শীঘ্রই শেষ – আরও বন্ধু ডাকুন",
+  goldEarned: "৩০ দিনের সোনালি পাশা পেয়েছেন! ✨",
+  goldWelcome: "স্বাগত উপহার: ৩ দিনের সোনালি পাশা! ✨",
 };

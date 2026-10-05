@@ -298,4 +298,12 @@ export const nl: typeof sv = {
   matchesShort: "wedstrijden",
   webBlockTitle: "Mr.B. Yatzy staat in de App Store 🎲",
   webBlockBody: "Je speelt nu in de app op je iPhone. Download de app gratis en speel verder.",
+  goldCardTitle: "Nodig 3 vrienden uit → 30 dagen gouden dobbelstenen",
+  goldCardProgress: "{n} van 3 voltooid",
+  goldCardHint: "telt na je eerste potje",
+  goldCardInvite: "Uitnodigen",
+  goldActive: "✨ Gouden dobbelstenen: nog {days} dagen",
+  goldEndingSoon: "Bijna voorbij – nodig meer vrienden uit",
+  goldEarned: "Je hebt 30 dagen gouden dobbelstenen! ✨",
+  goldWelcome: "Welkomstcadeau: 3 dagen gouden dobbelstenen! ✨",
 };

@@ -298,4 +298,12 @@ export const fi: typeof sv = {
   matchesShort: "ottelua",
   webBlockTitle: "Mr.B. Yatzy on App Storessa 🎲",
   webBlockBody: "Peliä pelataan nyt iPhone-sovelluksessa. Lataa ilmaiseksi ja jatka pelaamista.",
+  goldCardTitle: "Kutsu 3 kaveria → kultanopat 30 päiväksi",
+  goldCardProgress: "{n}/3 valmiina",
+  goldCardHint: "lasketaan mukaan ensimmäisen pelisi jälkeen",
+  goldCardInvite: "Kutsu",
+  goldActive: "✨ Kultanopat: {days} päivää jäljellä",
+  goldEndingSoon: "Päättyy pian – kutsu lisää kavereita",
+  goldEarned: "Sait kultanopat 30 päiväksi! ✨",
+  goldWelcome: "Tervetuliaislahja: kultanopat 3 päiväksi! ✨",
 };

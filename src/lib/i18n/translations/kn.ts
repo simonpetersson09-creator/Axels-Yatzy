@@ -298,4 +298,12 @@ export const kn: typeof sv = {
   matchesShort: "ಪಂದ್ಯಗಳು",
   webBlockTitle: "Mr.B. Yatzy ಈಗ App Store ನಲ್ಲಿ 🎲",
   webBlockBody: "ಈಗ ನಿಮ್ಮ iPhone ಆ್ಯಪ್‌ನಲ್ಲಿ ಆಡಬಹುದು. ಉಚಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ಆಟ ಮುಂದುವರಿಸಿ.",
+  goldCardTitle: "3 ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ → 30 ದಿನ ಚಿನ್ನದ ದಾಳಗಳು",
+  goldCardProgress: "3ರಲ್ಲಿ {n} ಪೂರ್ಣ",
+  goldCardHint: "ನಿಮ್ಮ ಮೊದಲ ಪಂದ್ಯದ ಬಳಿಕ ಲೆಕ್ಕಕ್ಕೆ ಬರುತ್ತದೆ",
+  goldCardInvite: "ಆಹ್ವಾನಿಸಿ",
+  goldActive: "✨ ಚಿನ್ನದ ದಾಳಗಳು: {days} ದಿನ ಬಾಕಿ",
+  goldEndingSoon: "ಶೀಘ್ರದಲ್ಲೇ ಮುಗಿಯುತ್ತದೆ – ಇನ್ನಷ್ಟು ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ",
+  goldEarned: "ನಿಮಗೆ 30 ದಿನ ಚಿನ್ನದ ದಾಳಗಳು! ✨",
+  goldWelcome: "ಸ್ವಾಗತ ಉಡುಗೊರೆ: 3 ದಿನ ಚಿನ್ನದ ದಾಳಗಳು! ✨",
 };

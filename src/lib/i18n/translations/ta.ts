@@ -298,4 +298,12 @@ export const ta: typeof sv = {
   matchesShort: "போட்டிகள்",
   webBlockTitle: "Mr.B. Yatzy இப்போது App Store-இல் 🎲",
   webBlockBody: "இனி உங்கள் iPhone செயலியில் விளையாடலாம். இலவசமாகப் பதிவிறக்கி, தொடர்ந்து விளையாடுங்கள்.",
+  goldCardTitle: "3 நண்பர்களை அழையுங்கள் → 30 நாட்களுக்கு தங்கப் பகடை",
+  goldCardProgress: "3-இல் {n} முடிந்தது",
+  goldCardHint: "உங்கள் முதல் ஆட்டத்துக்குப் பின் கணக்கில் சேரும்",
+  goldCardInvite: "அழை",
+  goldActive: "✨ தங்கப் பகடை: இன்னும் {days} நாட்கள்",
+  goldEndingSoon: "விரைவில் முடிகிறது – மேலும் நண்பர்களை அழையுங்கள்",
+  goldEarned: "உங்களுக்கு 30 நாட்களுக்கு தங்கப் பகடை! ✨",
+  goldWelcome: "வரவேற்புப் பரிசு: 3 நாட்களுக்கு தங்கப் பகடை! ✨",
 };

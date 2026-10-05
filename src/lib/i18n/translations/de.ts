@@ -293,4 +293,12 @@ export const de: typeof sv = {
   matchesShort: "Spiele",
   webBlockTitle: "Mr.B. Yatzy ist im App Store 🎲",
   webBlockBody: "Gespielt wird jetzt in der App auf deinem iPhone. Lade sie kostenlos herunter und spiel weiter.",
+  goldCardTitle: "3 Freunde einladen → 30 Tage Goldwürfel",
+  goldCardProgress: "{n} von 3 geschafft",
+  goldCardHint: "zählt nach deinem ersten Spiel",
+  goldCardInvite: "Einladen",
+  goldActive: "✨ Goldwürfel: noch {days} Tage",
+  goldEndingSoon: "Endet bald – mehr Freunde einladen",
+  goldEarned: "Du hast 30 Tage Goldwürfel! ✨",
+  goldWelcome: "Willkommensgeschenk: 3 Tage Goldwürfel! ✨",
 };

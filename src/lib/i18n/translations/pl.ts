@@ -298,4 +298,12 @@ export const pl: typeof sv = {
   matchesShort: "mecze",
   webBlockTitle: "Mr.B. Yatzy jest w App Store 🎲",
   webBlockBody: "Teraz gramy w aplikacji na iPhone. Pobierz ją za darmo i graj dalej.",
+  goldCardTitle: "Zaproś 3 znajomych → złote kości na 30 dni",
+  goldCardProgress: "{n} z 3 gotowe",
+  goldCardHint: "liczy się po twoim pierwszym meczu",
+  goldCardInvite: "Zaproś",
+  goldActive: "✨ Złote kości: zostało {days} dni",
+  goldEndingSoon: "Wkrótce koniec – zaproś więcej znajomych",
+  goldEarned: "Masz złote kości na 30 dni! ✨",
+  goldWelcome: "Na powitanie: złote kości na 3 dni! ✨",
 };

@@ -298,4 +298,12 @@ export const id: typeof sv = {
   matchesShort: "pertandingan",
   webBlockTitle: "Mr.B. Yatzy ada di App Store 🎲",
   webBlockBody: "Sekarang mainnya lewat aplikasi di iPhone kamu. Unduh gratis dan lanjut main.",
+  goldCardTitle: "Undang 3 teman → dadu emas 30 hari",
+  goldCardProgress: "{n} dari 3 selesai",
+  goldCardHint: "dihitung setelah laga pertamamu",
+  goldCardInvite: "Undang",
+  goldActive: "✨ Dadu emas: sisa {days} hari",
+  goldEndingSoon: "Segera habis – undang teman lagi",
+  goldEarned: "Kamu dapat dadu emas 30 hari! ✨",
+  goldWelcome: "Hadiah selamat datang: dadu emas 3 hari! ✨",
 };

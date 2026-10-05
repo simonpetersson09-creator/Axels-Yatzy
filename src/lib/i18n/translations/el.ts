@@ -298,4 +298,12 @@ export const el: typeof sv = {
   matchesShort: "αγώνες",
   webBlockTitle: "Το Mr.B. Yatzy είναι στο App Store 🎲",
   webBlockBody: "Το παιχνίδι παίζεται πλέον στην εφαρμογή στο iPhone σας. Κατεβάστε τη δωρεάν και συνεχίστε να παίζετε.",
+  goldCardTitle: "Κάλεσε 3 φίλους → χρυσά ζάρια για 30 μέρες",
+  goldCardProgress: "{n} από 3",
+  goldCardHint: "μετράει μετά τον πρώτο σου αγώνα",
+  goldCardInvite: "Πρόσκληση",
+  goldActive: "✨ Χρυσά ζάρια: απομένουν {days} μέρες",
+  goldEndingSoon: "Λήγει σύντομα – κάλεσε κι άλλους φίλους",
+  goldEarned: "Έχεις χρυσά ζάρια για 30 μέρες! ✨",
+  goldWelcome: "Δώρο υποδοχής: χρυσά ζάρια για 3 μέρες! ✨",
 };

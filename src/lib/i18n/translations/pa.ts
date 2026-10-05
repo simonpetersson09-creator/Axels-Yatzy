@@ -298,4 +298,12 @@ export const pa: typeof sv = {
   matchesShort: "ਮੈਚ",
   webBlockTitle: "Mr.B. Yatzy ਹੁਣ App Store 'ਤੇ ਹੈ 🎲",
   webBlockBody: "ਹੁਣ ਆਪਣੇ iPhone 'ਤੇ ਐਪ ਵਿੱਚ ਖੇਡੋ। ਮੁਫ਼ਤ ਡਾਊਨਲੋਡ ਕਰੋ ਤੇ ਖੇਡਦੇ ਰਹੋ।",
+  goldCardTitle: "3 ਦੋਸਤ ਸੱਦੋ → 30 ਦਿਨ ਲਈ ਸੁਨਹਿਰੀ ਪਾਸੇ",
+  goldCardProgress: "3 ਵਿੱਚੋਂ {n} ਪੂਰੇ",
+  goldCardHint: "ਤੁਹਾਡੇ ਪਹਿਲੇ ਮੈਚ ਤੋਂ ਬਾਅਦ ਗਿਣਿਆ ਜਾਵੇਗਾ",
+  goldCardInvite: "ਸੱਦੋ",
+  goldActive: "✨ ਸੁਨਹਿਰੀ ਪਾਸੇ: {days} ਦਿਨ ਬਾਕੀ",
+  goldEndingSoon: "ਛੇਤੀ ਖ਼ਤਮ – ਹੋਰ ਦੋਸਤ ਸੱਦੋ",
+  goldEarned: "ਤੁਹਾਨੂੰ 30 ਦਿਨ ਲਈ ਸੁਨਹਿਰੀ ਪਾਸੇ ਮਿਲੇ! ✨",
+  goldWelcome: "ਜੀ ਆਇਆਂ ਨੂੰ ਤੋਹਫ਼ਾ: 3 ਦਿਨ ਲਈ ਸੁਨਹਿਰੀ ਪਾਸੇ! ✨",
 };

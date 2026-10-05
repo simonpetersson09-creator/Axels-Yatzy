@@ -298,4 +298,12 @@ export const th: typeof sv = {
   matchesShort: "แมตช์",
   webBlockTitle: "Mr.B. Yatzy พร้อมให้โหลดบน App Store แล้ว 🎲",
   webBlockBody: "ตอนนี้เล่นเกมได้ในแอปบน iPhone ดาวน์โหลดฟรีแล้วเล่นต่อได้เลย",
+  goldCardTitle: "ชวนเพื่อน 3 คน → ลูกเต๋าทอง 30 วัน",
+  goldCardProgress: "ครบแล้ว {n} จาก 3 คน",
+  goldCardHint: "นับหลังเล่นแมตช์แรก",
+  goldCardInvite: "ชวนเพื่อน",
+  goldActive: "✨ ลูกเต๋าทอง: เหลือ {days} วัน",
+  goldEndingSoon: "ใกล้หมดแล้ว – ชวนเพื่อนเพิ่ม",
+  goldEarned: "คุณได้ลูกเต๋าทอง 30 วัน! ✨",
+  goldWelcome: "ของขวัญต้อนรับ: ลูกเต๋าทอง 3 วัน! ✨",
 };

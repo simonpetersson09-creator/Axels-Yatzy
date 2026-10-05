@@ -293,4 +293,12 @@ export const it: typeof sv = {
   matchesShort: "partite",
   webBlockTitle: "Mr.B. Yatzy è su App Store 🎲",
   webBlockBody: "Ora si gioca nell'app sul tuo iPhone. Scaricala gratis e continua a giocare.",
+  goldCardTitle: "Invita 3 amici → dadi d'oro per 30 giorni",
+  goldCardProgress: "{n} su 3 completati",
+  goldCardHint: "vale dopo la tua prima partita",
+  goldCardInvite: "Invita",
+  goldActive: "✨ Dadi d'oro: restano {days} giorni",
+  goldEndingSoon: "In scadenza – invita altri amici",
+  goldEarned: "Hai dadi d'oro per 30 giorni! ✨",
+  goldWelcome: "Regalo di benvenuto: dadi d'oro per 3 giorni! ✨",
 };

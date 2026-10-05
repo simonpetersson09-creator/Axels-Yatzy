@@ -298,4 +298,12 @@ export const ptBR: typeof sv = {
   matchesShort: "partidas",
   webBlockTitle: "Mr.B. Yatzy está na App Store 🎲",
   webBlockBody: "Agora você joga pelo app no seu iPhone. Baixe grátis e continue jogando.",
+  goldCardTitle: "Convide 3 amigos → dados dourados por 30 dias",
+  goldCardProgress: "{n} de 3 concluídos",
+  goldCardHint: "conta após sua primeira partida",
+  goldCardInvite: "Convidar",
+  goldActive: "✨ Dados dourados: restam {days} dias",
+  goldEndingSoon: "Acaba em breve – convide mais amigos",
+  goldEarned: "Você ganhou dados dourados por 30 dias! ✨",
+  goldWelcome: "Presente de boas-vindas: dados dourados por 3 dias! ✨",
 };

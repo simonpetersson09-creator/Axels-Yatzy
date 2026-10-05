@@ -298,4 +298,12 @@ export const ja: typeof sv = {
   matchesShort: "試合",
   webBlockTitle: "Mr.B. Yatzy が App Store に登場 🎲",
   webBlockBody: "これからは iPhone のアプリで遊べます。無料でダウンロードして、続きを楽しもう。",
+  goldCardTitle: "友達3人を招待 → 金のサイコロ30日間",
+  goldCardProgress: "3人中{n}人達成",
+  goldCardHint: "初対戦後にカウント",
+  goldCardInvite: "招待",
+  goldActive: "✨ 金のサイコロ：残り{days}日",
+  goldEndingSoon: "まもなく終了 – 友達をもっと招待",
+  goldEarned: "金のサイコロを30日間ゲット！ ✨",
+  goldWelcome: "初回特典：金のサイコロ3日間！ ✨",
 };

@@ -298,4 +298,12 @@ export const ro: typeof sv = {
   matchesShort: "meciuri",
   webBlockTitle: "Mr.B. Yatzy e pe App Store 🎲",
   webBlockBody: "Acum joci în aplicație, pe iPhone. Descarc-o gratuit și continuă să joci.",
+  goldCardTitle: "Invită 3 prieteni → zaruri aurii 30 de zile",
+  goldCardProgress: "{n} din 3 invitați",
+  goldCardHint: "se contorizează după primul tău meci",
+  goldCardInvite: "Invită",
+  goldActive: "✨ Zaruri aurii: încă {days} zile",
+  goldEndingSoon: "Expiră curând – invită alți prieteni",
+  goldEarned: "Ai zaruri aurii pentru 30 de zile! ✨",
+  goldWelcome: "Cadou de bun venit: zaruri aurii 3 zile! ✨",
 };

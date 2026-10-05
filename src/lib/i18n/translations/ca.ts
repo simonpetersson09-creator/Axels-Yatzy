@@ -297,4 +297,12 @@ export const ca: typeof sv = {
   matchesShort: "partides",
   webBlockTitle: "Mr.B. Yatzy és a l'App Store 🎲",
   webBlockBody: "Ara es juga a l'app del teu iPhone. Descarrega-la gratis i continua jugant.",
+  goldCardTitle: "Convida 3 amics → daus d'or durant 30 dies",
+  goldCardProgress: "{n} de 3 completats",
+  goldCardHint: "compta després de la teva primera partida",
+  goldCardInvite: "Convida",
+  goldActive: "✨ Daus d'or: queden {days} dies",
+  goldEndingSoon: "S'acaba aviat – convida més amics",
+  goldEarned: "Tens daus d'or durant 30 dies! ✨",
+  goldWelcome: "Regal de benvinguda: daus d'or durant 3 dies! ✨",
 };

@@ -298,4 +298,12 @@ export const vi: typeof sv = {
   matchesShort: "trận",
   webBlockTitle: "Mr.B. Yatzy đã có trên App Store 🎲",
   webBlockBody: "Giờ bạn có thể chơi trong ứng dụng trên iPhone. Tải miễn phí và chơi tiếp nhé.",
+  goldCardTitle: "Mời 3 bạn → xúc xắc vàng trong 30 ngày",
+  goldCardProgress: "Đã xong {n}/3",
+  goldCardHint: "tính sau trận đầu tiên của bạn",
+  goldCardInvite: "Mời",
+  goldActive: "✨ Xúc xắc vàng: còn {days} ngày",
+  goldEndingSoon: "Sắp hết hạn – mời thêm bạn",
+  goldEarned: "Bạn có xúc xắc vàng trong 30 ngày! ✨",
+  goldWelcome: "Quà chào mừng: xúc xắc vàng trong 3 ngày! ✨",
 };

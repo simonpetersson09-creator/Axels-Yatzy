@@ -97,3 +97,17 @@ export function useGoldPlayerIndexes(gameId: string | null): Set<number> {
   }, [gameId]);
   return set;
 }
+
+const KNOWN_FRIENDS_KEY = 'mrb_gold_known_friends_v1';
+
+/**
+ * Re-reads gold status and returns it when a new friend has been counted
+ * since last check (null otherwise). The first check only records a baseline.
+ */
+export async function checkNewFriendCredit(): Promise<GoldStatus | null> {
+  const s = await fetchGoldStatus();
+  const raw = localStorage.getItem(KNOWN_FRIENDS_KEY);
+  localStorage.setItem(KNOWN_FRIENDS_KEY, String(s.friends));
+  if (raw === null) return null;
+  return s.friends > Number(raw) ? s : null;
+}

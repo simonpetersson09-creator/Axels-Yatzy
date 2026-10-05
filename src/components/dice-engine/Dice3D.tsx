@@ -78,6 +78,16 @@ const goldHeldMaterial = new MeshPhysicalMaterial({
   envMapIntensity: 1.3,
 });
 
+const metal = (color: string) => new MeshPhysicalMaterial({
+  color, roughness: 0.24, metalness: 0.85, clearcoat: 0.6, clearcoatRoughness: 0.15, envMapIntensity: 1.4,
+});
+/** Permanent tier skins (bronze/silver) plus the gold skin; held = slightly deeper. */
+const SKIN_MATERIALS = {
+  bronze: { body: metal("#c8834f"), held: metal("#a86a3c") },
+  silver: { body: metal("#d9dde2"), held: metal("#b4bac1") },
+  gold: { body: goldMaterial, held: goldHeldMaterial },
+} as const;
+
 /** Deep black pips with a faint, ink-like gloss. */
 const pipMaterial = new MeshStandardMaterial({
   color: "#0b0b0c",
@@ -386,7 +396,7 @@ function Dice3DImpl({
                   smoothness={10}
                   bevelSegments={8}
                   creaseAngle={0.5}
-                  material={gold ? (held ? goldHeldMaterial : goldMaterial) : held ? heldMaterial : bodyMaterial}
+                  material={skin && skin !== 'white' ? (held ? SKIN_MATERIALS[skin].held : SKIN_MATERIALS[skin].body) : held ? heldMaterial : bodyMaterial}
                 />
                 {FACES.map((face) => (
                   <group key={face.value} rotation={face.rotation}>

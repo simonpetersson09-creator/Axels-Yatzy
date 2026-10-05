@@ -1,5 +1,6 @@
+import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
-import { useGoldPlayerIndexes } from '@/lib/gold-dice';
+import { useGoldPlayerIndexes, checkNewFriendCredit } from '@/lib/gold-dice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -134,6 +135,21 @@ export default function MultiplayerGamePage() {
       removeActiveGame(gameId);
     }
   }, [gameId, status, gameState, myPlayerIndex]);
+
+  // Host of a finished friend match: confirm when the friend counted toward gold dice.
+  const friendCreditCheckedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (status !== 'finished' || !gameId || myPlayerIndex !== 0) return;
+    if (friendCreditCheckedRef.current === gameId) return;
+    friendCreditCheckedRef.current = gameId;
+    const id = window.setTimeout(() => {
+      void checkNewFriendCredit().then((s) => {
+        if (!s || s.progress === 0) return; // 3rd friend → Home celebrates the gold itself
+        toast.success(t('goldFriendCounted', { n: s.progress }), { duration: 5000 });
+      });
+    }, 2000);
+    return () => window.clearTimeout(id);
+  }, [status, gameId, myPlayerIndex, t]);
 
 
   // Scroll-lock handled by CSS only; avoid global touchmove blockers that can leak into lobby scroll.

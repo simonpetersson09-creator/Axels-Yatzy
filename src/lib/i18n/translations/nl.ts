@@ -311,4 +311,6 @@ export const nl: typeof sv = {
   goldInfoRule2: "Jullie moeten de wedstrijd samen uitspelen. Als iemand opgeeft, telt die niet mee.",
   goldInfoRule3: "Je vriend moet nieuw zijn in de app en op een eigen telefoon spelen.",
   goldInfoRule4: "Voor elke derde vriend krijg je 30 dagen gouden dobbelstenen. Je vriend krijgt als welkomstcadeau 3 dagen gouden dobbelstenen.",
+  goldLobbyHint: "✨ Speel samen de wedstrijd uit en je vriend telt mee voor gouden dobbelstenen",
+  goldFriendCounted: "Je vriend telt mee! {n} van 3 voltooid ✨",
 };

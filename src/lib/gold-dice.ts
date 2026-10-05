@@ -54,7 +54,13 @@ export function useGoldStatus(): GoldStatus {
   const [s, setS] = useState<GoldStatus>(readCache);
   useEffect(() => {
     let alive = true;
-    fetchGoldStatus().then((v) => { if (alive) setS(v); });
+    fetchGoldStatus().then((v) => {
+      // Baseline for the "your friend counts" confirmation after a match.
+      if (localStorage.getItem('mrb_gold_known_friends_v1') === null) {
+        localStorage.setItem('mrb_gold_known_friends_v1', String(v.friends));
+      }
+      if (alive) setS(v);
+    });
     return () => { alive = false; };
   }, []);
   return s;
@@ -96,4 +102,18 @@ export function useGoldPlayerIndexes(gameId: string | null): Set<number> {
     return () => { alive = false; };
   }, [gameId]);
   return set;
+}
+
+const KNOWN_FRIENDS_KEY = 'mrb_gold_known_friends_v1';
+
+/**
+ * Re-reads gold status and returns it when a new friend has been counted
+ * since last check (null otherwise). The first check only records a baseline.
+ */
+export async function checkNewFriendCredit(): Promise<GoldStatus | null> {
+  const s = await fetchGoldStatus();
+  const raw = localStorage.getItem(KNOWN_FRIENDS_KEY);
+  localStorage.setItem(KNOWN_FRIENDS_KEY, String(s.friends));
+  if (raw === null) return null;
+  return s.friends > Number(raw) ? s : null;
 }

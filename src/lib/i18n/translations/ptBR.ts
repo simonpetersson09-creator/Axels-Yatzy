@@ -311,4 +311,6 @@ export const ptBR: typeof sv = {
   goldInfoRule2: "Vocês precisam terminar a partida juntos. Se alguém desistir, não conta.",
   goldInfoRule3: "Seu amigo precisa ser novo no app e jogar no próprio celular.",
   goldInfoRule4: "A cada três amigos, você ganha dados dourados por 30 dias. Seu amigo ganha dados dourados por 3 dias como presente de boas-vindas.",
+  goldLobbyHint: "✨ Terminem a partida juntos e seu amigo conta para os dados dourados",
+  goldFriendCounted: "Seu amigo contou! {n} de 3 concluídos ✨",
 };

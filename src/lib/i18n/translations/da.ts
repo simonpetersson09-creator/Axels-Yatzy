@@ -311,4 +311,6 @@ export const da: typeof sv = {
   goldInfoRule2: "I skal spille kampen færdig sammen. Hvis nogen giver op, tæller den ikke.",
   goldInfoRule3: "Din ven skal være ny i appen og spille på sin egen telefon.",
   goldInfoRule4: "Hver tredje ven giver dig guldterninger i 30 dage. Din ven får guldterninger i 3 dage som velkomstgave.",
+  goldLobbyHint: "✨ Spil kampen færdig sammen, så tæller din ven med til guldterninger",
+  goldFriendCounted: "Din ven tæller med! {n} af 3 klaret ✨",
 };

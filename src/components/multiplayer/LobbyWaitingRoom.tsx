@@ -161,6 +161,10 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
         {!isHost && (
           <p className="text-center text-sm text-muted-foreground">{t('waitingForHost')}</p>
         )}
+
+        {isHost && (
+          <p className="text-center text-xs text-game-gold/90 leading-snug px-2">{t('goldLobbyHint')}</p>
+        )}
       </motion.div>
     </div>
   );

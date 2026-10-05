@@ -310,4 +310,6 @@ export const ca: typeof sv = {
   goldInfoRule2: "Heu d'acabar la partida junts. Si algú abandona, no compta.",
   goldInfoRule3: "El teu amic ha de ser nou a l'app i jugar amb el seu propi mòbil.",
   goldInfoRule4: "Per cada tres amics, reps daus d'or durant 30 dies. El teu amic rep daus d'or durant 3 dies com a regal de benvinguda.",
+  goldLobbyHint: "✨ Acabeu la partida junts i el teu amic comptarà per als daus d'or",
+  goldFriendCounted: "El teu amic ja compta! {n} de 3 ✨",
 };

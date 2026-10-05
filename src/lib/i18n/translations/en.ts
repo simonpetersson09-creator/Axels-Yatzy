@@ -311,4 +311,6 @@ export const en: typeof sv = {
   goldInfoRule2: "You must finish the match together. If someone forfeits, it doesn't count.",
   goldInfoRule3: "Your friend must be new to the app and play on their own phone.",
   goldInfoRule4: "Every third friend gives you gold dice for 30 days. Your friend gets gold dice for 3 days as a welcome gift.",
+  goldLobbyHint: "✨ Finish the match together and your friend counts toward gold dice",
+  goldFriendCounted: "Your friend counts! {n} of 3 done ✨",
 };

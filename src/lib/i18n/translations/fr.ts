@@ -306,4 +306,6 @@ export const fr: typeof sv = {
   goldInfoRule2: "Vous devez terminer la partie ensemble. Si quelqu’un abandonne, elle ne compte pas.",
   goldInfoRule3: "Votre ami doit être nouveau sur l’appli et jouer sur son propre téléphone.",
   goldInfoRule4: "Tous les 3 amis invités, vous recevez des dés dorés pour 30 jours. Votre ami en reçoit pour 3 jours en cadeau de bienvenue.",
+  goldLobbyHint: "✨ Terminez la partie ensemble : votre ami comptera pour les dés dorés",
+  goldFriendCounted: "Votre ami compte ! {n} sur 3 ✨",
 };

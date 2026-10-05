@@ -311,4 +311,6 @@ export const hu: typeof sv = {
   goldInfoRule2: "Együtt kell befejeznetek a meccset. Ha valaki feladja, nem számít.",
   goldInfoRule3: "A barátodnak új felhasználónak kell lennie, és a saját telefonján kell játszania.",
   goldInfoRule4: "Minden harmadik barát után 30 napra kapsz aranykockákat. A barátod üdvözlőajándékként 3 napra kap aranykockákat.",
+  goldLobbyHint: "✨ Fejezzétek be együtt a meccset, és a barátod beleszámít az aranykockákhoz",
+  goldFriendCounted: "A barátod beleszámít! 3-ból {n} kész ✨",
 };

@@ -311,4 +311,6 @@ export const ms: typeof sv = {
   goldInfoRule2: "Anda mesti habiskan perlawanan bersama. Jika ada yang menyerah kalah, ia tidak dikira.",
   goldInfoRule3: "Rakan anda mesti pengguna baharu aplikasi ini dan bermain di telefon sendiri.",
   goldInfoRule4: "Bagi setiap 3 rakan, anda dapat dadu emas selama 30 hari. Rakan anda dapat dadu emas selama 3 hari sebagai hadiah alu-aluan.",
+  goldLobbyHint: "✨ Habiskan perlawanan bersama dan rakan anda dikira untuk dadu emas",
+  goldFriendCounted: "Rakan anda dikira! {n} daripada 3 selesai ✨",
 };

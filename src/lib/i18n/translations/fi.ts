@@ -311,4 +311,6 @@ export const fi: typeof sv = {
   goldInfoRule2: "Teidän on pelattava peli loppuun yhdessä. Jos joku luovuttaa, peli ei kelpaa.",
   goldInfoRule3: "Ystäväsi on oltava uusi käyttäjä ja pelattava omalla puhelimellaan.",
   goldInfoRule4: "Joka kolmas ystävä tuo sinulle kultaiset nopat 30 päiväksi. Ystäväsi saa kultaiset nopat 3 päiväksi tervetuliaislahjaksi.",
+  goldLobbyHint: "✨ Pelatkaa ottelu loppuun yhdessä, niin kaverisi lasketaan mukaan kultanoppien tavoitteluun",
+  goldFriendCounted: "Kaverisi laskettiin mukaan! {n}/3 valmiina ✨",
 };

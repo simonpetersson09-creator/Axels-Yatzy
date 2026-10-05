@@ -60,32 +60,25 @@ const heldMaterial = new MeshPhysicalMaterial({
   ior: 1.48,
 });
 
-/** Gold reward skin: polished metallic gold, slightly deeper when held. */
-const goldMaterial = new MeshPhysicalMaterial({
-  color: "#e8b84a",
-  roughness: 0.22,
-  metalness: 0.85,
-  clearcoat: 0.6,
-  clearcoatRoughness: 0.15,
-  envMapIntensity: 1.4,
+/**
+ * Metal skins (bronze/silver/gold). Kept bright — semi-metallic with a soft
+ * self-glow — so the black pips stay easy to read against the dark table.
+ */
+const metal = (color: string, glow: string) => new MeshPhysicalMaterial({
+  color,
+  roughness: 0.3,
+  metalness: 0.5,
+  clearcoat: 0.7,
+  clearcoatRoughness: 0.12,
+  envMapIntensity: 1.2,
+  emissive: glow,
+  emissiveIntensity: 0.35,
 });
-const goldHeldMaterial = new MeshPhysicalMaterial({
-  color: "#c99a32",
-  roughness: 0.25,
-  metalness: 0.85,
-  clearcoat: 0.6,
-  clearcoatRoughness: 0.15,
-  envMapIntensity: 1.3,
-});
-
-const metal = (color: string) => new MeshPhysicalMaterial({
-  color, roughness: 0.24, metalness: 0.85, clearcoat: 0.6, clearcoatRoughness: 0.15, envMapIntensity: 1.4,
-});
-/** Permanent tier skins (bronze/silver) plus the gold skin; held = slightly deeper. */
+/** Held = slightly deeper tone. */
 const SKIN_MATERIALS = {
-  bronze: { body: metal("#c8834f"), held: metal("#a86a3c") },
-  silver: { body: metal("#d9dde2"), held: metal("#b4bac1") },
-  gold: { body: goldMaterial, held: goldHeldMaterial },
+  bronze: { body: metal("#e09a63", "#6a3a1c"), held: metal("#c9824d", "#55301a") },
+  silver: { body: metal("#f1f3f6", "#5c6168"), held: metal("#d3d8de", "#4a4f55") },
+  gold: { body: metal("#f5cc5e", "#7a5a14"), held: metal("#deb144", "#634810") },
 } as const;
 
 /** Deep black pips with a faint, ink-like gloss. */

@@ -47,6 +47,7 @@ export default function MultiplayerGamePage() {
   const diceProfiles = useDiceProfiles(gameId);
   // Tapped player's dice level (bottom sheet); closes when the turn moves on.
   const [infoIndex, setInfoIndex] = useState<number | null>(null);
+  useEffect(() => { setInfoIndex(null); }, [gameState?.currentPlayerIndex]);
   const statsRecordedRef = useRef(false);
   const rejoinCalledRef = useRef<string | null>(null);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
@@ -567,6 +568,12 @@ export default function MultiplayerGamePage() {
       }}
     >
       <QuickMatchTakeover gameId={gameId} />
+      <DiceInfoSheet
+        open={infoIndex !== null}
+        onClose={() => setInfoIndex(null)}
+        name={infoIndex !== null ? (gameState.players[infoIndex]?.name ?? '') : ''}
+        profile={infoIndex !== null ? diceProfiles.get(infoIndex) : undefined}
+      />
       <YatzyCelebration
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}

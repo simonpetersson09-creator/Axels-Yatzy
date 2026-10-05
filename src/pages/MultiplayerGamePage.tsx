@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
-import { useGoldPlayerIndexes, checkNewFriendCredit } from '@/lib/gold-dice';
+import { useGoldPlayerIndexes, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -144,8 +144,9 @@ export default function MultiplayerGamePage() {
     friendCreditCheckedRef.current = gameId;
     const id = window.setTimeout(() => {
       void checkNewFriendCredit().then((s) => {
-        if (!s || s.progress === 0) return; // 3rd friend → Home celebrates the gold itself
-        toast.success(t('goldFriendCounted', { n: s.progress }), { duration: 5000 });
+        if (!s) return;
+        consumeNewGold(s); // Home shouldn't celebrate the same days again
+        toast.success(t('goldEarned'), { duration: 5000 });
       });
     }, 2000);
     return () => window.clearTimeout(id);

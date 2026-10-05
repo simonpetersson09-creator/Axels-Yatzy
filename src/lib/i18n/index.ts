@@ -27,10 +27,24 @@ import { vi } from './translations/vi';
 import { el } from './translations/el';
 import { ru } from './translations/ru';
 import { uk } from './translations/uk';
+import { ja } from './translations/ja';
+import { ko } from './translations/ko';
+import { th } from './translations/th';
+import { hi } from './translations/hi';
+import { bn } from './translations/bn';
+import { gu } from './translations/gu';
+import { kn } from './translations/kn';
+import { ml } from './translations/ml';
+import { mr } from './translations/mr';
+import { or } from './translations/or';
+import { pa } from './translations/pa';
+import { ta } from './translations/ta';
+import { te } from './translations/te';
 
 const DICTS: Record<Language, typeof sv> = {
   sv, en, no, da, fi, es, fr, it, de,
   nl, ca, ro, tr, pl, cs, sk, sl, hr, hu, pt, 'pt-BR': ptBR, id, ms, vi, el, ru, uk,
+  ja, ko, th, hi, bn, gu, kn, ml, mr, or, pa, ta, te,
 };
 
 export type { TranslationKey } from './translations/sv';

@@ -104,9 +104,9 @@ export default function StatsPage() {
                 key={c.country}
                 className={`flex items-center justify-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${c.country === myCountry ? 'bg-primary/10' : ''}`}
               >
-                <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-primary' : 'text-muted-foreground'}`}>{i + 1}</span>
-                <span className="text-lg">{countryToFlag(c.country)}</span>
-                <div className="min-w-0">
+                <div className="w-48 flex items-center gap-3 min-w-0">
+                  <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-primary' : 'text-muted-foreground'}`}>{i + 1}</span>
+                  <span className="text-lg">{countryToFlag(c.country)}</span>
                   <p className="text-sm font-semibold truncate">{countryName(c.country, lang)}</p>
                 </div>
               </div>

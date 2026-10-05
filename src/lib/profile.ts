@@ -88,7 +88,7 @@ export function mapTagToLanguage(tag: string): Language | null {
     case 'bs':
     case 'sr': return 'hr';
     case 'hu': return 'hu';
-    case 'pt': return parts.includes('pt') ? 'pt' : 'pt-BR';
+    case 'pt': return parts[1] === 'pt' ? 'pt' : 'pt-BR';
     case 'id':
     case 'in': return 'id';
     case 'ms': return 'ms';
@@ -157,6 +157,7 @@ export const COUNTRIES: string[] = [
   'DE','NL','BE','LU','FR','ES','PT','IT','CH','AT',
   'PL','CZ','SK','HU','RO','BG','GR','HR','SI','EE','LV','LT',
   'BR','MX','AR','CL','JP','KR','CN','IN','ZA','TR','UA',
+  'RU','ID','MY','VN',
 ];
 
 export function getProfileCountry(): string | null {

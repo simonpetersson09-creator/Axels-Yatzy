@@ -48,7 +48,11 @@ export default function StatsPage() {
     >
       <motion.div className="max-w-md mx-auto space-y-4" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors" aria-label={t('back')}>
+          <button
+            onClick={() => ((window.history.state?.idx ?? 0) > 0 ? navigate(-1) : navigate('/settings', { replace: true }))}
+            className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors"
+            aria-label={t('back')}
+          >
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
           <h1 className="text-xl font-display font-bold">{t('statsPageTitle')}</h1>

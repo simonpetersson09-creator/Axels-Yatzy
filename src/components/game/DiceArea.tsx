@@ -13,7 +13,7 @@ interface DiceAreaProps {
   className?: string;
   /** Drives the hold-ring colour; pips stay black. */
   playerIndex?: number;
-  /** Gold dice reward skin for the player whose turn it is. */
+  /** Dice colour for the player whose turn it is. */
   skin?: DiceSkin;
 }
 

@@ -18,6 +18,7 @@ import FriendsListPage from "./pages/FriendsListPage";
 import LegalPage from "./pages/LegalPage";
 import JoinPage from "./pages/JoinPage";
 import NotFound from "./pages/NotFound";
+import TmpDiceSkins from "./pages/TmpDiceSkins";
 import { MultiplayerProvider } from "./hooks/MultiplayerProvider";
 import { lazy, Suspense, useEffect } from "react";
 import { preloadDiceEngine } from "./components/dice-engine/preload";
@@ -75,6 +76,7 @@ const App = () => (
         <WebGate>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/tmp-dice" element={<TmpDiceSkins />} />
           <Route path="/index" element={<Navigate to="/" replace />} />
           <Route path="/setup" element={<GameSetupPage />} />
           <Route path="/join" element={<JoinPage />} />

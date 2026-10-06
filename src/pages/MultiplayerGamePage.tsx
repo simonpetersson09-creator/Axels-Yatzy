@@ -44,7 +44,7 @@ export default function MultiplayerGamePage() {
   } = useMultiplayerGame();
 
   const gameId = searchParams.get('gameId');
-  const diceProfiles = useDiceProfiles(gameId);
+  const diceProfiles = useDiceProfiles(gameId, gameState?.players.map(p => p.name).join('|'));
   // Tapped player's dice level (bottom sheet); closes when the turn moves on.
   const [infoIndex, setInfoIndex] = useState<number | null>(null);
   useEffect(() => { setInfoIndex(null); }, [gameState?.currentPlayerIndex]);

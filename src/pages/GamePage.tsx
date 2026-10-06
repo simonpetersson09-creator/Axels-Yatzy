@@ -71,6 +71,7 @@ export default function GamePage() {
   const HUMAN_INDEX = 0;
   const mySkin = effectiveSkin(useGoldStatus());
   const [aiInfoOpen, setAiInfoOpen] = useState(false);
+  useEffect(() => { setAiInfoOpen(false); }, [gameState?.currentPlayerIndex]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
   useEffect(() => subscribeProfileChanges(() => setAvatarUrl(getProfileAvatar())), []);
 

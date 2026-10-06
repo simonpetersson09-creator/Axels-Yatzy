@@ -50,6 +50,17 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     onJoinGame(joinCode.toUpperCase(), name);
   };
 
+  // Gold card "Invite" on Home: behave exactly like pressing "Create game".
+  const autoCreatedRef = useRef(false);
+  const autoCreate = (location.state as { autoCreate?: boolean } | null)?.autoCreate;
+  useEffect(() => {
+    if (!autoCreate || autoCreatedRef.current || loading) return;
+    autoCreatedRef.current = true;
+    navigate(location.pathname + location.search, { replace: true, state: null }); // don't re-create on back/refresh
+    handleCreate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoCreate, loading]);
+
   // Auto-join when arriving via shared invite link (?code=XXXXXX) and we already have a saved name
   const autoJoinedRef = useRef(false);
   useEffect(() => {

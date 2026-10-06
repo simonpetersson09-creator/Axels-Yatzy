@@ -401,3 +401,16 @@
   .ui-scale-pulse-sm { animation: ui-scale-pulse-sm 1.4s ease-in-out infinite; }
   .ui-shadow-pulse { animation: ui-shadow-pulse 1.8s ease-in-out infinite; }
 }
+
+/* Hide scrollbars app-wide (still scrollable); admin keeps them. */
+html:not(.admin-route), html:not(.admin-route) body, html:not(.admin-route) #root,
+html:not(.admin-route) #root * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html:not(.admin-route)::-webkit-scrollbar,
+html:not(.admin-route) body::-webkit-scrollbar,
+html:not(.admin-route) #root::-webkit-scrollbar,
+html:not(.admin-route) #root *::-webkit-scrollbar {
+  display: none;
+}

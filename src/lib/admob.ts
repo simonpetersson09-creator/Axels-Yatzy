@@ -44,7 +44,7 @@ export const ADMOB_IDS: Record<'ios' | 'android', PlatformAdIds> = {
   android: {
     appId: null,
     appOpen: 'ca-app-pub-7448540924654868/8646549226',
-    optional: null,
+    optional: 'ca-app-pub-7448540924654868/7960153510',
   },
 };
 

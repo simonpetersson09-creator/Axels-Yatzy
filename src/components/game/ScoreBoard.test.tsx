@@ -16,6 +16,8 @@ const players: Player[] = [
   { id: 'player-1', name: 'Simon P', scores: {} },
 ];
 
+localStorage.setItem('yatzy_language', 'sv');
+
 describe('ScoreBoard category hit mapping', () => {
   it('sends chance when the visible Chans row is clicked', () => {
     const onSelectCategory = vi.fn();

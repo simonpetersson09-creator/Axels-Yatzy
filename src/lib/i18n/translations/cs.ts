@@ -327,6 +327,7 @@ export const cs: typeof sv = {
   diceInviteGoldDays: "Zlato za pozvání kamaráda · zbývá {d} dní",
   diceComputer: "Počítač",
   diceLadderGoal: "{goal} her s Yatzy",
+  diceVisibleToOthers: "Ostatní online hráči vidí tvou úroveň a počet her s Yatzy.",
   goldLobbyHint: "✨ Dohrajte spolu zápas a kamarád se započítá do postupu ke zlatým kostkám",
   goldFriendCounted: "Kamarád započítán! Hotovo {n} ze 3 ✨",
 };

@@ -327,6 +327,7 @@ export const el: typeof sv = {
   diceInviteGoldDays: "Χρυσά από πρόσκληση φίλου · {d} ημέρες ακόμα",
   diceComputer: "Υπολογιστής",
   diceLadderGoal: "{goal} παιχνίδια με Yatzy",
+  diceVisibleToOthers: "Άλλοι online παίκτες βλέπουν το επίπεδό σου και πόσα παιχνίδια με Yatzy έχεις.",
   goldLobbyHint: "✨ Ολοκληρώστε μαζί την παρτίδα και ο φίλος σου μετράει για τα χρυσά ζάρια",
   goldFriendCounted: "Ο φίλος σου μέτρησε! {n} από 3 ✨",
 };

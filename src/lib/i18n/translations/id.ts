@@ -327,6 +327,7 @@ export const id: typeof sv = {
   diceInviteGoldDays: "Emas dari undangan teman · sisa {d} hari",
   diceComputer: "Komputer",
   diceLadderGoal: "{goal} pertandingan dengan Yatzy",
+  diceVisibleToOthers: "Pemain online lain dapat melihat level dan jumlah pertandingan Yatzy-mu.",
   goldLobbyHint: "✨ Selesaikan pertandingan bersama agar temanmu dihitung untuk dadu emas",
   goldFriendCounted: "Temanmu dihitung! {n} dari 3 selesai ✨",
 };

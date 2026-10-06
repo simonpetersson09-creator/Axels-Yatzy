@@ -327,6 +327,7 @@ export const no: typeof sv = {
   diceInviteGoldDays: "Gull via venneinvitasjon · {d} dager igjen",
   diceComputer: "Datamaskinen",
   diceLadderGoal: "{goal} kamper med Yatzy",
+  diceVisibleToOthers: "Andre nettspillere ser nivået ditt og hvor mange kamper med Yatzy du har.",
   goldLobbyHint: "✨ Fullfør kampen sammen, så teller vennen din mot gullterninger",
   goldFriendCounted: "Vennen din teller med! {n} av 3 ferdig ✨",
 };

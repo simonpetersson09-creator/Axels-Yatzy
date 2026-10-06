@@ -326,6 +326,7 @@ export const ru: typeof sv = {
   diceInviteGoldDays: "Золото за приглашение друга · осталось {d} дн.",
   diceComputer: "Компьютер",
   diceLadderGoal: "{goal} матчей с Yatzy",
+  diceVisibleToOthers: "Другие онлайн-игроки видят твой уровень и число матчей с Yatzy.",
   goldLobbyHint: "✨ Завершите матч вместе — и ваш друг пойдёт в зачёт для золотых костей",
   goldFriendCounted: "Друг засчитан! Уже {n} из 3 ✨",
 };

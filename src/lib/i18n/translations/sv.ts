@@ -336,6 +336,7 @@ export const sv = {
   diceInviteGoldDays: "Guld via väninbjudan · {d} dagar kvar",
   diceComputer: "Datorn",
   diceLadderGoal: "{goal} matcher med Yatzy",
+  diceVisibleToOthers: "Andra onlinespelare ser din nivå och hur många matcher med Yatzy du har.",
   goldLobbyHint: "✨ Spela klart matchen tillsammans så räknas din vän mot guldtärningarna",
   goldFriendCounted: "Din vän räknas! {n} av 3 klara ✨",
 };

@@ -326,6 +326,7 @@ export const ca: typeof sv = {
   diceInviteGoldDays: "Or per invitar un amic · queden {d} dies",
   diceComputer: "Ordinador",
   diceLadderGoal: "{goal} partides amb Yatzy",
+  diceVisibleToOthers: "Altres jugadors en línia veuen el teu nivell i quantes partides amb Yatzy tens.",
   goldLobbyHint: "✨ Acabeu la partida junts i el teu amic comptarà per als daus d'or",
   goldFriendCounted: "El teu amic ja compta! {n} de 3 ✨",
 };

@@ -64,6 +64,13 @@
       "when": 1791233072472,
       "tag": "0008_dice_profiles_for_game",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791266467795,
+      "tag": "0009_yatzy_by_computer_not_counted",
+      "breakpoints": true
     }
   ]
 }

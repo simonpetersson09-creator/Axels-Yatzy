@@ -219,6 +219,7 @@ export type Database = {
           player_name: string
           scores: Json
           session_id: string
+          yatzy_by_computer: boolean
         }
         Insert: {
           game_id: string
@@ -230,6 +231,7 @@ export type Database = {
           player_name: string
           scores?: Json
           session_id: string
+          yatzy_by_computer?: boolean
         }
         Update: {
           game_id?: string
@@ -241,6 +243,7 @@ export type Database = {
           player_name?: string
           scores?: Json
           session_id?: string
+          yatzy_by_computer?: boolean
         }
         Relationships: [
           {

@@ -3,6 +3,7 @@ import { useGoldStatus, effectiveSkin, reportLocalYatzyMatch } from '@/lib/gold-
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
+import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
@@ -69,6 +70,8 @@ export default function GamePage() {
   // Human is always player index 0 in this app
   const HUMAN_INDEX = 0;
   const mySkin = effectiveSkin(useGoldStatus());
+  const [aiInfoOpen, setAiInfoOpen] = useState(false);
+  useEffect(() => { setAiInfoOpen(false); }, [gameState?.currentPlayerIndex]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());
   useEffect(() => subscribeProfileChanges(() => setAvatarUrl(getProfileAvatar())), []);
 
@@ -402,6 +405,12 @@ export default function GamePage() {
         onPlayAgain={handlePlayAgain}
         onBackToMenu={handleBackToMenu}
       />
+      <DiceInfoSheet
+        open={aiInfoOpen && isCurrentAi}
+        onClose={() => setAiInfoOpen(false)}
+        name={playerNames[gameState.currentPlayerIndex] ?? ''}
+        profile={{ isBot: true, tier: 'white', yatzyMatches: 0, inviteGold: false }}
+      />
       <YatzyCelebration
         show={showYatzyCelebration}
         onComplete={() => setShowYatzyCelebration(false)}
@@ -475,8 +484,8 @@ export default function GamePage() {
               })}
             </div>
 
-            {/* Dice */}
-            <div className="relative mt-2">
+            {/* Dice — tapping the computer's dice shows its info */}
+            <div className="relative mt-2" onClick={isCurrentAi ? () => setAiInfoOpen(true) : undefined}>
               <PickDiceHint
                 show={
                   gameState.rollsLeft === 2 &&

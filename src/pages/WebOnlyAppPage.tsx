@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { APP_STORE_URL } from '@/lib/app-links';
+import { StoreButtons } from '@/components/StoreButtons';
 
 /** Shown instead of the game on the public web: the game is iPhone-app only. */
 export default function WebOnlyAppPage() {
@@ -18,13 +18,7 @@ export default function WebOnlyAppPage() {
         <h1 className="text-2xl font-display font-bold text-foreground">{t('webBlockTitle')}</h1>
         <p className="text-sm text-muted-foreground leading-relaxed">{t('webBlockBody')}</p>
       </div>
-      <a
-        href={APP_STORE_URL}
-        onClick={() => trackEvent('web_blocked_download')}
-        className="w-full max-w-sm py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base shadow-[0_4px_16px_hsl(36_78%_55%/0.3)]"
-      >
-        {t('joinDownload')}
-      </a>
+      <StoreButtons onClick={(store) => trackEvent('web_blocked_download', { store })} />
     </div>
   );
 }

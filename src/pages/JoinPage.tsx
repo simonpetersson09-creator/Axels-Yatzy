@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { APP_STORE_URL } from '@/lib/app-links';
+import { StoreButtons } from '@/components/StoreButtons';
 
 /** Landing page for shared invite links: download the app, then enter the code. */
 export default function JoinPage() {
@@ -39,13 +39,7 @@ export default function JoinPage() {
         </button>
       )}
 
-      <a
-        href={APP_STORE_URL}
-        onClick={() => trackEvent('join_page_download')}
-        className="w-full max-w-sm py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base shadow-[0_4px_16px_hsl(36_78%_55%/0.3)]"
-      >
-        {t('joinDownload')}
-      </a>
+      <StoreButtons onClick={(store) => trackEvent('join_page_download', { store })} />
 
       <div className="max-w-sm text-xs text-muted-foreground leading-relaxed">
         <p className="font-semibold text-foreground mb-1">{t('joinHaveApp')}</p>

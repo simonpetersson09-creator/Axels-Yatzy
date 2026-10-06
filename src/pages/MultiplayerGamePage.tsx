@@ -572,7 +572,7 @@ export default function MultiplayerGamePage() {
         open={infoIndex !== null}
         onClose={() => setInfoIndex(null)}
         name={infoIndex !== null ? (gameState.players[infoIndex]?.name ?? '') : ''}
-        profile={infoIndex !== null ? diceProfiles.get(infoIndex) : undefined}
+        profile={infoIndex !== null ? (diceProfiles.get(infoIndex) ?? { isBot: false, tier: 'white', yatzyMatches: 0, inviteGold: false }) : undefined}
       />
       <YatzyCelebration
         show={showYatzyCelebration}

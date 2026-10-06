@@ -1,12 +1,13 @@
+import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { useGoldStatus, ownProfile, goldDaysLeft } from '@/lib/gold-dice';
-import { DiceInfoSheet, SKIN_SWATCH as SHEET_SWATCH } from '@/components/DiceInfoSheet';
+import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { nextTier, SKIN_RANK, type DiceSkin } from '@/lib/dice-skin';
 import { fireWinConfetti } from '@/lib/confetti';
 import { trackEvent } from '@/lib/analytics';
-import { cn } from '@/lib/utils';
+import goldDie from '@/assets/gold-die.png';
 
 const SEEN_TIER_KEY = 'mrb_dice_tier_seen_v1';
 
@@ -14,7 +15,6 @@ const TIER_LABEL: Record<Exclude<DiceSkin, 'white'>, TranslationKey> = {
   bronze: 'tierBronze', silver: 'tierSilver', gold: 'tierGold',
 };
 
-const SWATCH = SHEET_SWATCH;
 
 /** Home card: progress toward permanent bronze/silver/gold dice. */
 export function DiceTierCard() {
@@ -34,7 +34,6 @@ export function DiceTierCard() {
     trackEvent('dice_tier_unlocked', { tier: status.tier });
   }, [status.tier, t]);
 
-  const shown: DiceSkin = next ? next.tier : 'gold';
   const pct = next ? Math.min(100, (status.yatzyMatches / next.goal) * 100) : 100;
 
   return (
@@ -44,7 +43,7 @@ export function DiceTierCard() {
       aria-label={t('myDice')}
       className="w-full rounded-2xl bg-secondary/60 border border-border px-3 py-2.5 flex items-center gap-3 active:scale-[0.98] transition-transform"
     >
-      <div className={cn('shrink-0 w-9 h-9 rounded-xl border', SWATCH[shown])} aria-hidden />
+      <img src={goldDie} alt="" aria-hidden className="shrink-0 w-10 h-10 object-contain drop-shadow-[0_2px_4px_hsl(var(--background)/0.6)]" />
       <div className="flex-1 min-w-0 text-left">
         <p className="text-sm font-bold text-foreground truncate">{t('diceTierTitle')}</p>
         <p className="text-[11px] text-muted-foreground truncate">
@@ -56,7 +55,7 @@ export function DiceTierCard() {
           <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
         </div>
       </div>
-      <span className="shrink-0 text-[11px] font-semibold text-primary">{t('myDice')} ›</span>
+      <ChevronRight className="shrink-0 w-4 h-4 text-muted-foreground" aria-hidden />
     </button>
     <DiceInfoSheet
       open={open}

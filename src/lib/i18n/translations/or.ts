@@ -319,6 +319,7 @@ export const or: typeof sv = {
   tierSilver: "ରୁପା",
   tierGold: "ସୁନା",
   myDice: "ମୋ ପଶା",
+  challengesLabel: "ଚ୍ୟାଲେଞ୍ଜ",
   tierWhite: "ଧଳା",
   diceTierLine: "{tier} · {next} ପର୍ଯ୍ୟନ୍ତ {n}/{goal}",
   dicePermGold: "ସୁନା · Yatzy ଥିବା {n} ମ୍ୟାଚ୍",

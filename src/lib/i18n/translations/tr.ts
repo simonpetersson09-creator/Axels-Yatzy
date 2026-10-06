@@ -319,6 +319,7 @@ export const tr: typeof sv = {
   tierSilver: "gümüş",
   tierGold: "altın",
   myDice: "Zarlarım",
+  challengesLabel: "Görevler",
   tierWhite: "beyaz",
   diceTierLine: "{tier} · {next} için {n}/{goal}",
   dicePermGold: "Altın · Yatzy'li {n} maç",

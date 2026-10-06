@@ -319,6 +319,7 @@ export const no: typeof sv = {
   tierSilver: "sølv",
   tierGold: "gull",
   myDice: "Mine terninger",
+  challengesLabel: "Utfordringer",
   tierWhite: "hvit",
   diceTierLine: "{tier} · {n}/{goal} til {next}",
   dicePermGold: "Gull · {n} kamper med Yatzy",

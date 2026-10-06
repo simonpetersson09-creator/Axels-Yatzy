@@ -319,6 +319,7 @@ export const hu: typeof sv = {
   tierSilver: "ezüst",
   tierGold: "arany",
   myDice: "Kockáim",
+  challengesLabel: "Kihívások",
   tierWhite: "fehér",
   diceTierLine: "{tier} · {n}/{goal} a következőig: {next}",
   dicePermGold: "Arany · {n} meccs Yatzyval",

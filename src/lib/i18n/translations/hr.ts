@@ -319,6 +319,7 @@ export const hr: typeof sv = {
   tierSilver: "srebro",
   tierGold: "zlato",
   myDice: "Moje kocke",
+  challengesLabel: "Izazovi",
   tierWhite: "bijela",
   diceTierLine: "{tier} · {n}/{goal} do {next}",
   dicePermGold: "Zlato · {n} igara s Yatzyjem",

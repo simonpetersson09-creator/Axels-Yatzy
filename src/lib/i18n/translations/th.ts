@@ -319,6 +319,7 @@ export const th: typeof sv = {
   tierSilver: "เงิน",
   tierGold: "ทอง",
   myDice: "ลูกเต๋าของฉัน",
+  challengesLabel: "ความท้าทาย",
   tierWhite: "ขาว",
   diceTierLine: "{tier} · {n}/{goal} ถึง{next}",
   dicePermGold: "ทอง · {n} แมตช์ที่ได้ Yatzy",

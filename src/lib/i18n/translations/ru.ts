@@ -318,6 +318,7 @@ export const ru: typeof sv = {
   tierSilver: "серебро",
   tierGold: "золото",
   myDice: "Мои кости",
+  challengesLabel: "Испытания",
   tierWhite: "белые",
   diceTierLine: "{tier} · {n}/{goal} до {next}",
   dicePermGold: "Золото · {n} матчей с Yatzy",

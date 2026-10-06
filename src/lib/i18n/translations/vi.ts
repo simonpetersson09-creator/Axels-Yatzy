@@ -319,6 +319,7 @@ export const vi: typeof sv = {
   tierSilver: "bạc",
   tierGold: "vàng",
   myDice: "Xúc xắc của tôi",
+  challengesLabel: "Thử thách",
   tierWhite: "trắng",
   diceTierLine: "{tier} · {n}/{goal} đến {next}",
   dicePermGold: "Vàng · {n} ván có Yatzy",

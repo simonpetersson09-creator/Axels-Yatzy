@@ -319,6 +319,7 @@ export const ro: typeof sv = {
   tierSilver: "argint",
   tierGold: "aur",
   myDice: "Zarurile mele",
+  challengesLabel: "Provocări",
   tierWhite: "alb",
   diceTierLine: "{tier} · {n}/{goal} până la {next}",
   dicePermGold: "Aur · {n} meciuri cu Yatzy",

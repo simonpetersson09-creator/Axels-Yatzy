@@ -319,6 +319,7 @@ export const gu: typeof sv = {
   tierSilver: "ચાંદી",
   tierGold: "સોનું",
   myDice: "મારા પાસા",
+  challengesLabel: "પડકારો",
   tierWhite: "સફેદ",
   diceTierLine: "{tier} · {next} સુધી {n}/{goal}",
   dicePermGold: "સોનું · Yatzy વાળી {n} મેચ",

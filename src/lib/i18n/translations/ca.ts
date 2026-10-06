@@ -318,6 +318,7 @@ export const ca: typeof sv = {
   tierSilver: "plata",
   tierGold: "or",
   myDice: "Els meus daus",
+  challengesLabel: "Reptes",
   tierWhite: "blanc",
   diceTierLine: "{tier} · {n}/{goal} per a {next}",
   dicePermGold: "Or · {n} partides amb Yatzy",

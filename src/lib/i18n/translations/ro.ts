@@ -327,6 +327,7 @@ export const ro: typeof sv = {
   diceInviteGoldDays: "Aur prin invitarea unui prieten · mai sunt {d} zile",
   diceComputer: "Calculatorul",
   diceLadderGoal: "{goal} meciuri cu Yatzy",
+  leaveMatchConfirm: "Părăsești meciul? Poți continua mai târziu din ecranul principal.",
   diceVisibleToOthers: "Ceilalți jucători online îți văd nivelul și câte meciuri cu Yatzy ai.",
   goldLobbyHint: "✨ Terminați meciul împreună și prietenul tău contează pentru zarurile aurii",
   goldFriendCounted: "Prietenul tău a fost numărat! {n} din 3 ✨",

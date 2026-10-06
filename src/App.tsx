@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, useLocation, Navigate } from "react-route
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AndroidBackButton } from '@/components/AndroidBackButton';
 import { Capacitor } from "@capacitor/core";
 import HomePage from "./pages/HomePage";
 import GameSetupPage from "./pages/GameSetupPage";
@@ -67,6 +68,7 @@ const App = () => (
         <DiceEnginePreloader />
         <InviteOverlay />
         <NotificationNavigator />
+        <AndroidBackButton />
         {ADMIN_ENABLED && DevFriendBotRunner && (
           <Suspense fallback={null}>
             <DevFriendBotRunner />

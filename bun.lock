@@ -7,6 +7,7 @@
       "dependencies": {
         "@capacitor-community/admob": "^8.1.0",
         "@capacitor-community/in-app-review": "^8.0.0",
+        "@capacitor/android": "^8.3.1",
         "@capacitor/app": "^8.1.1",
         "@capacitor/barcode-scanner": "3.1.2",
         "@capacitor/camera": "^8.2.0",
@@ -83,6 +84,8 @@
     "@capacitor-community/admob": ["@capacitor-community/admob@8.1.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor-community/admob/-/admob-8.1.0.tgz", { "dependencies": { "@capacitor/core": "^8.0.0", "@rdlabo/capacitor-docgen": "^0.4.1" } }, "sha512-DMIxg80CwQsJd0EcvsCNtpWizFcesZUFCFNVxRctv4HLSH8RPGfaS3pxRuq+tXw6jy0za5o3g5l/+z201nHNsw=="],
 
     "@capacitor-community/in-app-review": ["@capacitor-community/in-app-review@8.0.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor-community/in-app-review/-/in-app-review-8.0.0.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-AYpEkIjdv27WGS3hnlc7xAQ1BhaBvD2svgQBfHF4P2Olw1N6a7MSCOQC6O4SuxmdBdJ2fM6uFeo1jyNjKLtIPw=="],
+
+    "@capacitor/android": ["@capacitor/android@8.5.2", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/android/-/android-8.5.2.tgz", { "peerDependencies": { "@capacitor/core": "^8.5.0" } }, "sha512-rtiaz78egCcS+vs29wkWCL3C+RhazKMSygXcjutwWP8NmO6r5UBxOvGf3Wjz5+ahobyQ723tn9gCePwRwcNDZQ=="],
 
     "@capacitor/app": ["@capacitor/app@8.1.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/app/-/app-8.1.1.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-xM2ZTX5jK60tFtmjsmJv+Cdj1Qsb6NcavkqmdEnCPQBeya9oKhamZJxYOnQNj1ZvcJM7sWfG6BEtSLx42pisbA=="],
 

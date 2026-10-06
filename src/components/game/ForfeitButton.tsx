@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flag } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { useBackHandler } from '@/lib/back-handler';
 
 interface ForfeitDialogProps {
   onConfirm: () => void;
@@ -16,6 +17,7 @@ export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(f
 ) {
   const { t } = useTranslation();
   const [showDialog, setShowDialog] = useState(false);
+  useBackHandler(showDialog, () => setShowDialog(false));
 
   return (
     <>

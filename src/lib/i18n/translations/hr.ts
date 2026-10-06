@@ -327,6 +327,7 @@ export const hr: typeof sv = {
   diceInviteGoldDays: "Zlato preko pozivnice prijatelju · još {d} dana",
   diceComputer: "Računalo",
   diceLadderGoal: "{goal} igara s Yatzyjem",
+  leaveMatchConfirm: "Napustiti igru? Možeš nastaviti kasnije s početnog zaslona.",
   diceVisibleToOthers: "Drugi online igrači vide tvoju razinu i broj igara s Yatzyjem.",
   goldLobbyHint: "✨ Dovršite meč zajedno i prijatelj se ubraja za zlatne kockice",
   goldFriendCounted: "Prijatelj se ubraja! {n} od 3 gotovo ✨",

@@ -327,6 +327,7 @@ export const hu: typeof sv = {
   diceInviteGoldDays: "Arany baráti meghívásért · még {d} nap",
   diceComputer: "Számítógép",
   diceLadderGoal: "{goal} meccs Yatzyval",
+  leaveMatchConfirm: "Kilépsz a meccsből? Később folytathatod a kezdőképernyőről.",
   diceVisibleToOthers: "Más online játékosok látják a szintedet és a Yatzys meccseid számát.",
   goldLobbyHint: "✨ Fejezzétek be együtt a meccset, és a barátod beleszámít az aranykockákhoz",
   goldFriendCounted: "A barátod beleszámít! 3-ból {n} kész ✨",

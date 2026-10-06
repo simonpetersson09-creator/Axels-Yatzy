@@ -327,6 +327,7 @@ export const te: typeof sv = {
   diceInviteGoldDays: "స్నేహితుని ఆహ్వానంతో బంగారం · {d} రోజులు మిగిలాయి",
   diceComputer: "కంప్యూటర్",
   diceLadderGoal: "Yatzy ఉన్న {goal} మ్యాచ్‌లు",
+  leaveMatchConfirm: "మ్యాచ్ వదిలేయాలా? తర్వాత హోమ్ స్క్రీన్ నుండి కొనసాగించవచ్చు.",
   diceVisibleToOthers: "ఇతర ఆన్‌లైన్ ఆటగాళ్లు మీ స్థాయిని, Yatzy మ్యాచ్‌ల సంఖ్యను చూడగలరు.",
   goldLobbyHint: "✨ కలిసి మ్యాచ్ పూర్తి చేస్తే గోల్డ్ డైస్ కోసం మీ స్నేహితుడు లెక్కలో చేరుతారు",
   goldFriendCounted: "మీ స్నేహితుడు లెక్కలో చేరారు! 3లో {n} పూర్తి ✨",

@@ -327,6 +327,7 @@ export const pa: typeof sv = {
   diceInviteGoldDays: "ਦੋਸਤ ਸੱਦੇ ਤੋਂ ਸੋਨਾ · {d} ਦਿਨ ਬਾਕੀ",
   diceComputer: "ਕੰਪਿਊਟਰ",
   diceLadderGoal: "Yatzy ਵਾਲੇ {goal} ਮੈਚ",
+  leaveMatchConfirm: "ਮੈਚ ਛੱਡਣਾ ਹੈ? ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਹੋਮ ਸਕ੍ਰੀਨ ਤੋਂ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ।",
   diceVisibleToOthers: "ਹੋਰ ਔਨਲਾਈਨ ਖਿਡਾਰੀ ਤੁਹਾਡਾ ਪੱਧਰ ਅਤੇ Yatzy ਵਾਲੇ ਮੈਚਾਂ ਦੀ ਗਿਣਤੀ ਦੇਖ ਸਕਦੇ ਹਨ।",
   goldLobbyHint: "✨ ਇਕੱਠੇ ਮੈਚ ਪੂਰਾ ਕਰੋ ਤੇ ਤੁਹਾਡਾ ਦੋਸਤ ਸੁਨਹਿਰੀ ਪਾਸਿਆਂ ਲਈ ਗਿਣਿਆ ਜਾਵੇਗਾ",
   goldFriendCounted: "ਤੁਹਾਡਾ ਦੋਸਤ ਗਿਣਿਆ ਗਿਆ! 3 ਵਿੱਚੋਂ {n} ਪੂਰੇ ✨",

@@ -327,6 +327,7 @@ export const ko: typeof sv = {
   diceInviteGoldDays: "친구 초대 골드 · {d}일 남음",
   diceComputer: "컴퓨터",
   diceLadderGoal: "Yatzy 경기 {goal}회",
+  leaveMatchConfirm: "경기를 나갈까요? 나중에 홈 화면에서 계속할 수 있습니다.",
   diceVisibleToOthers: "다른 온라인 플레이어는 내 등급과 Yatzy 경기 수를 볼 수 있습니다.",
   goldLobbyHint: "✨ 친구와 경기를 끝내면 황금 주사위 달성에 반영돼요",
   goldFriendCounted: "친구가 반영됐어요! 3명 중 {n}명 완료 ✨",

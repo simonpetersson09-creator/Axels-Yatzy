@@ -327,6 +327,7 @@ export const ptBR: typeof sv = {
   diceInviteGoldDays: "Ouro por convite de amigo · faltam {d} dias",
   diceComputer: "Computador",
   diceLadderGoal: "{goal} partidas com Yatzy",
+  leaveMatchConfirm: "Sair da partida? Você pode continuar depois pela tela inicial.",
   diceVisibleToOthers: "Outros jogadores online veem seu nível e quantas partidas com Yatzy você tem.",
   goldLobbyHint: "✨ Terminem a partida juntos e seu amigo conta para os dados dourados",
   goldFriendCounted: "Seu amigo contou! {n} de 3 concluídos ✨",

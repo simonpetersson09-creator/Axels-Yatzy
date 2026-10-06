@@ -327,6 +327,7 @@ export const sk: typeof sv = {
   diceInviteGoldDays: "Zlato za pozvanie kamaráta · zostáva {d} dní",
   diceComputer: "Počítač",
   diceLadderGoal: "{goal} hier s Yatzy",
+  leaveMatchConfirm: "Opustiť hru? Môžeš pokračovať neskôr z úvodnej obrazovky.",
   diceVisibleToOthers: "Ostatní online hráči vidia tvoju úroveň a počet hier s Yatzy.",
   goldLobbyHint: "✨ Dokončite spolu zápas a kamarát sa započíta k zlatým kockám",
   goldFriendCounted: "Kamarát sa započítal! {n} z 3 hotovo ✨",

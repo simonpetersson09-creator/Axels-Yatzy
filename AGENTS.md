@@ -2,3 +2,7 @@
 - Screenshot/QA scripts must never seed stats on the live preview without cleanup: seeded stats sync to the shared world leaderboard (player_country_stats) and push real players down.
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — keeps unlocks tamper-resistant and in sync across devices.
+- Android native patches (AdMob App ID in AndroidManifest) run via `npm run cap:sync:android`; android/ is generated outside the repo like ios/, so manual edits get lost.
+- AdMob IDs are per platform in ADMOB_IDS (src/lib/admob.ts); a null ID disables that ad type on that platform so iOS IDs can never be used on Android.
+- Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
+- Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.

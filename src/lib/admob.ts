@@ -14,25 +14,60 @@ import { Capacitor } from '@capacitor/core';
 /* Central konfiguration                                               */
 /* ------------------------------------------------------------------ */
 
-/** Googles officiella test-ID (används i development). */
-const TEST_INTERSTITIAL_AD_UNIT_ID_IOS = 'ca-app-pub-3940256099942544/4411468910';
+/**
+ * Plattformsberoende AdMob-konfiguration. iOS och Android har HELT separata
+ * ID:n – iOS-ID:n används aldrig på Android. Ett tomt (null) ID betyder att
+ * annonstypen är avstängd på den plattformen tills ett riktigt ID lagts in.
+ */
+type PlatformAdIds = {
+  /** AdMob App ID (iOS: Info.plist, Android: AndroidManifest via scripts/). */
+  appId: string | null;
+  /** App Open-annons vid start. */
+  appOpen: string | null;
+  /** Frivillig annons ("Frivillig reklam"-knappen). */
+  optional: string | null;
+};
+
+/** Googles officiella test-ID:n (används i development). */
+const GOOGLE_TEST_IDS: Record<'ios' | 'android', Omit<PlatformAdIds, 'appId'>> = {
+  ios: { appOpen: 'ca-app-pub-3940256099942544/5575463023', optional: 'ca-app-pub-3940256099942544/4411468910' },
+  android: { appOpen: 'ca-app-pub-3940256099942544/9257395921', optional: 'ca-app-pub-3940256099942544/1033173712' },
+};
+
+export const ADMOB_IDS: Record<'ios' | 'android', PlatformAdIds> = {
+  ios: {
+    appId: 'ca-app-pub-7448540924654868~6494873071',
+    appOpen: 'ca-app-pub-7448540924654868/8707432437',
+    optional: 'ca-app-pub-7448540924654868/6422685490',
+  },
+  // TODO: fyll i från AdMob (Android-appen) innan Android-release.
+  android: {
+    appId: null,
+    appOpen: null,
+    optional: null,
+  },
+};
 
 export const ADMOB_CONFIG = {
-  /** iOS App ID – sätts i Info.plist som GADApplicationIdentifier. */
-  appIdIOS: 'ca-app-pub-7448540924654868~6494873071',
-  /** Produktions-ad unit ID för interstitial (iOS). */
-  interstitialAdUnitIdIOS: 'ca-app-pub-7448540924654868/6422685490',
   /** Test-annonser i dev, riktiga annonser i release-bygget. */
   useTestAds: import.meta.env.DEV,
 } as const;
 
-function interstitialAdId(): string {
-  return ADMOB_CONFIG.useTestAds
-    ? TEST_INTERSTITIAL_AD_UNIT_ID_IOS
-    : ADMOB_CONFIG.interstitialAdUnitIdIOS;
+function adPlatform(): 'ios' | 'android' | null {
+  const p = Capacitor.getPlatform();
+  return p === 'ios' || p === 'android' ? p : null;
 }
 
-/** AdMob finns bara på native-plattform (iOS) och när plugin:et är registrerat. */
+/** Rätt ID för plattformen, eller null om annonstypen inte är konfigurerad där. */
+function adUnitId(kind: 'appOpen' | 'optional'): string | null {
+  const p = adPlatform();
+  if (!p) return null;
+  const real = ADMOB_IDS[p][kind];
+  if (!real) return null; // aldrig annonser på en plattform utan egna riktiga ID:n
+  return ADMOB_CONFIG.useTestAds ? GOOGLE_TEST_IDS[p][kind] : real;
+}
+
+/** AdMob finns bara på native-plattform och när plugin:et är registrerat. */
 export function isAdMobAvailable(): boolean {
   return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('AdMob');
 }
@@ -87,15 +122,17 @@ async function ensureInitialized(): Promise<AdMobModule> {
  * Säker att anropa när som helst – den kan inte trigga visning.
  */
 export async function preloadInterstitial(): Promise<boolean> {
-  if (!isAdMobAvailable()) return false;
+  if (!isAdMobAvailable() || !adUnitId('optional')) return false;
   if (preparing) return preparing;
   if (preparedAt && Date.now() - preparedAt < PREPARED_TTL_MS) return true;
 
   preparing = (async () => {
     try {
       const mod = await ensureInitialized();
+      const adId = adUnitId('optional');
+      if (!adId) return false;
       await mod.AdMob.prepareInterstitial({
-        adId: interstitialAdId(),
+        adId,
         isTesting: ADMOB_CONFIG.useTestAds,
       });
       preparedAt = Date.now();
@@ -141,13 +178,10 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
 }
 
 /* ------------------------------------------------------------------ */
-/* App Open-annons (automatisk startannons, endast iOS)                */
+/* App Open-annons (automatisk startannons; plattform med eget ID)    */
 /* Helt separat från interstitial-flödet för "Frivillig reklam".       */
 /* ------------------------------------------------------------------ */
 
-/** Googles officiella test-ID för App Open (iOS). */
-const TEST_APP_OPEN_AD_UNIT_ID_IOS = 'ca-app-pub-3940256099942544/5575463023';
-const APP_OPEN_AD_UNIT_ID_IOS = 'ca-app-pub-7448540924654868/8707432437';
 /** Laddas annonsen inte inom denna tid visas den inte alls denna start. */
 const APP_OPEN_LOAD_TIMEOUT_MS = 5000;
 
@@ -158,12 +192,12 @@ let appOpenShowing = false;
  * visades. Kastar aldrig; misslyckas tyst så att appen fortsätter direkt.
  */
 export async function showAppOpenAd(): Promise<boolean> {
-  if (!isAdMobAvailable() || Capacitor.getPlatform() !== 'ios') return false;
+  const adId = adUnitId('appOpen');
+  if (!isAdMobAvailable() || !adId) return false;
   if (appOpenShowing || showing) return false;
   appOpenShowing = true;
   try {
     const mod = await ensureInitialized();
-    const adId = ADMOB_CONFIG.useTestAds ? TEST_APP_OPEN_AD_UNIT_ID_IOS : APP_OPEN_AD_UNIT_ID_IOS;
     const loaded = await Promise.race([
       mod.AdMob.loadAppOpen({ adId }).then(() => true, () => false),
       new Promise<boolean>(r => setTimeout(() => r(false), APP_OPEN_LOAD_TIMEOUT_MS)),

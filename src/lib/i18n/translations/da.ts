@@ -327,6 +327,7 @@ export const da: typeof sv = {
   diceInviteGoldDays: "Guld via veninvitation · {d} dage tilbage",
   diceComputer: "Computeren",
   diceLadderGoal: "{goal} kampe med Yatzy",
+  leaveMatchConfirm: "Forlad kampen? Du kan fortsætte senere fra startsiden.",
   diceVisibleToOthers: "Andre onlinespillere kan se dit niveau og hvor mange kampe med Yatzy du har.",
   goldLobbyHint: "✨ Spil kampen færdig sammen, så tæller din ven med til guldterninger",
   goldFriendCounted: "Din ven tæller med! {n} af 3 klaret ✨",

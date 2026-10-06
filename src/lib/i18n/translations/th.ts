@@ -327,6 +327,7 @@ export const th: typeof sv = {
   diceInviteGoldDays: "ทองจากการชวนเพื่อน · เหลือ {d} วัน",
   diceComputer: "คอมพิวเตอร์",
   diceLadderGoal: "{goal} แมตช์ที่ได้ Yatzy",
+  leaveMatchConfirm: "ออกจากเกมไหม? คุณเล่นต่อได้ภายหลังจากหน้าแรก",
   diceVisibleToOthers: "ผู้เล่นออนไลน์คนอื่นเห็นระดับของคุณและจำนวนแมตช์ที่ได้ Yatzy",
   goldLobbyHint: "✨ เล่นให้จบด้วยกัน แล้วเพื่อนจะนับรวมเพื่อรับลูกเต๋าทอง",
   goldFriendCounted: "นับเพื่อนแล้ว! ครบ {n} จาก 3 คน ✨",

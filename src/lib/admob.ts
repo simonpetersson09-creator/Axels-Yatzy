@@ -122,7 +122,7 @@ async function ensureInitialized(): Promise<AdMobModule> {
  * Säker att anropa när som helst – den kan inte trigga visning.
  */
 export async function preloadInterstitial(): Promise<boolean> {
-  if (!isAdMobAvailable()) return false;
+  if (!isAdMobAvailable() || !adUnitId('optional')) return false;
   if (preparing) return preparing;
   if (preparedAt && Date.now() - preparedAt < PREPARED_TTL_MS) return true;
 

@@ -122,7 +122,7 @@ export function ownProfile(s: GoldStatus): DiceProfile {
 }
 
 /** Public dice info per player index in an online game. */
-export function useDiceProfiles(gameId: string | null): Map<number, DiceProfile> {
+export function useDiceProfiles(gameId: string | null, refreshKey: unknown = 0): Map<number, DiceProfile> {
   const [map, setMap] = useState<Map<number, DiceProfile>>(new Map());
   useEffect(() => {
     if (!gameId) return;
@@ -137,7 +137,7 @@ export function useDiceProfiles(gameId: string | null): Map<number, DiceProfile>
       } catch { /* cosmetic; ignore */ }
     })();
     return () => { alive = false; };
-  }, [gameId]);
+  }, [gameId, refreshKey]);
   return map;
 }
 

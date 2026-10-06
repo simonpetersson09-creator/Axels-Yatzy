@@ -314,6 +314,7 @@ export const de: typeof sv = {
   tierSilver: "Silber",
   tierGold: "Gold",
   myDice: "Meine Würfel",
+  challengesLabel: "Herausforderungen",
   tierWhite: "weiß",
   diceTierLine: "{tier} · {n}/{goal} bis {next}",
   dicePermGold: "Gold · {n} Spiele mit Yatzy",

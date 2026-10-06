@@ -319,6 +319,7 @@ export const id: typeof sv = {
   tierSilver: "perak",
   tierGold: "emas",
   myDice: "Daduku",
+  challengesLabel: "Tantangan",
   tierWhite: "putih",
   diceTierLine: "{tier} · {n}/{goal} menuju {next}",
   dicePermGold: "Emas · {n} pertandingan dengan Yatzy",

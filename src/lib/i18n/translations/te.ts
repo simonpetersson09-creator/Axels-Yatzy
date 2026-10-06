@@ -319,6 +319,7 @@ export const te: typeof sv = {
   tierSilver: "వెండి",
   tierGold: "బంగారం",
   myDice: "నా పాచికలు",
+  challengesLabel: "సవాళ్లు",
   tierWhite: "తెలుపు",
   diceTierLine: "{tier} · {next} వరకు {n}/{goal}",
   dicePermGold: "బంగారం · Yatzy ఉన్న {n} మ్యాచ్‌లు",

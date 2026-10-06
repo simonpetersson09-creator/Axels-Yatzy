@@ -319,6 +319,7 @@ export const nl: typeof sv = {
   tierSilver: "zilver",
   tierGold: "goud",
   myDice: "Mijn dobbelstenen",
+  challengesLabel: "Uitdagingen",
   tierWhite: "wit",
   diceTierLine: "{tier} · {n}/{goal} tot {next}",
   dicePermGold: "Goud · {n} potjes met Yatzy",

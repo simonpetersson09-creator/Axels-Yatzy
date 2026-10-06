@@ -319,6 +319,7 @@ export const ta: typeof sv = {
   tierSilver: "வெள்ளி",
   tierGold: "தங்கம்",
   myDice: "என் பகடைகள்",
+  challengesLabel: "சவால்கள்",
   tierWhite: "வெள்ளை",
   diceTierLine: "{tier} · {next} வரை {n}/{goal}",
   dicePermGold: "தங்கம் · Yatzy உள்ள {n} போட்டிகள்",

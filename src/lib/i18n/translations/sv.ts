@@ -328,6 +328,7 @@ export const sv = {
   tierSilver: "silver",
   tierGold: "guld",
   myDice: "Mina tärningar",
+  challengesLabel: "Utmaningar",
   tierWhite: "vit",
   diceTierLine: "{tier} · {n}/{goal} till {next}",
   dicePermGold: "Guld · {n} matcher med Yatzy",

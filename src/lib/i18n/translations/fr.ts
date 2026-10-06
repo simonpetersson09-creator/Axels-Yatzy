@@ -314,6 +314,7 @@ export const fr: typeof sv = {
   tierSilver: "argent",
   tierGold: "or",
   myDice: "Mes dés",
+  challengesLabel: "Défis",
   tierWhite: "blanc",
   diceTierLine: "{tier} · {n}/{goal} avant {next}",
   dicePermGold: "Or · {n} parties avec un Yatzy",

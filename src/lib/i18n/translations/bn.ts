@@ -319,6 +319,7 @@ export const bn: typeof sv = {
   tierSilver: "রুপা",
   tierGold: "সোনা",
   myDice: "আমার ছক্কা",
+  challengesLabel: "চ্যালেঞ্জ",
   tierWhite: "সাদা",
   diceTierLine: "{tier} · {next} পর্যন্ত {n}/{goal}",
   dicePermGold: "সোনা · Yatzy সহ {n} ম্যাচ",

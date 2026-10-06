@@ -319,6 +319,7 @@ export const ko: typeof sv = {
   tierSilver: "실버",
   tierGold: "골드",
   myDice: "내 주사위",
+  challengesLabel: "도전 과제",
   tierWhite: "화이트",
   diceTierLine: "{tier} · {next}까지 {n}/{goal}",
   dicePermGold: "골드 · Yatzy 경기 {n}회",

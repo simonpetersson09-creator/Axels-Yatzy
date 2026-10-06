@@ -319,6 +319,7 @@ export const cs: typeof sv = {
   tierSilver: "stříbro",
   tierGold: "zlato",
   myDice: "Moje kostky",
+  challengesLabel: "Výzvy",
   tierWhite: "bílá",
   diceTierLine: "{tier} · {n}/{goal} do {next}",
   dicePermGold: "Zlato · {n} her s Yatzy",

@@ -319,6 +319,7 @@ export const pl: typeof sv = {
   tierSilver: "srebro",
   tierGold: "złoto",
   myDice: "Moje kości",
+  challengesLabel: "Wyzwania",
   tierWhite: "biały",
   diceTierLine: "{tier} · {n}/{goal} do {next}",
   dicePermGold: "Złoto · {n} gier z Yatzy",

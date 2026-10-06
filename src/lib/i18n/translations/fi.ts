@@ -319,6 +319,7 @@ export const fi: typeof sv = {
   tierSilver: "hopea",
   tierGold: "kulta",
   myDice: "Omat nopat",
+  challengesLabel: "Haasteet",
   tierWhite: "valkoinen",
   diceTierLine: "{tier} · {n}/{goal} → {next}",
   dicePermGold: "Kulta · {n} peliä Yatzylla",

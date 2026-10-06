@@ -319,6 +319,7 @@ export const kn: typeof sv = {
   tierSilver: "ಬೆಳ್ಳಿ",
   tierGold: "ಚಿನ್ನ",
   myDice: "ನನ್ನ ದಾಳಗಳು",
+  challengesLabel: "ಸವಾಲುಗಳು",
   tierWhite: "ಬಿಳಿ",
   diceTierLine: "{tier} · {next}ಗೆ {n}/{goal}",
   dicePermGold: "ಚಿನ್ನ · Yatzy ಇರುವ {n} ಪಂದ್ಯಗಳು",

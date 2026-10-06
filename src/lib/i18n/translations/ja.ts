@@ -319,6 +319,7 @@ export const ja: typeof sv = {
   tierSilver: "シルバー",
   tierGold: "ゴールド",
   myDice: "マイサイコロ",
+  challengesLabel: "チャレンジ",
   tierWhite: "ホワイト",
   diceTierLine: "{tier} · {next}まで {n}/{goal}",
   dicePermGold: "ゴールド · ヨット達成 {n}試合",

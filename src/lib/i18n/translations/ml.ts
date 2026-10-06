@@ -319,6 +319,7 @@ export const ml: typeof sv = {
   tierSilver: "വെള്ളി",
   tierGold: "സ്വർണ്ണം",
   myDice: "എന്റെ പകിടകൾ",
+  challengesLabel: "വെല്ലുവിളികൾ",
   tierWhite: "വെള്ള",
   diceTierLine: "{tier} · {next} വരെ {n}/{goal}",
   dicePermGold: "സ്വർണ്ണം · Yatzy ഉള്ള {n} മത്സരങ്ങൾ",

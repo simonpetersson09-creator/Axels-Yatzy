@@ -319,6 +319,7 @@ export const pa: typeof sv = {
   tierSilver: "ਚਾਂਦੀ",
   tierGold: "ਸੋਨਾ",
   myDice: "ਮੇਰੇ ਪਾਸੇ",
+  challengesLabel: "ਚੁਣੌਤੀਆਂ",
   tierWhite: "ਚਿੱਟੇ",
   diceTierLine: "{tier} · {next} ਤੱਕ {n}/{goal}",
   dicePermGold: "ਸੋਨਾ · Yatzy ਵਾਲੇ {n} ਮੈਚ",

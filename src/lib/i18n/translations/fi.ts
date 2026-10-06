@@ -327,6 +327,7 @@ export const fi: typeof sv = {
   diceInviteGoldDays: "Kulta ystäväkutsusta · {d} päivää jäljellä",
   diceComputer: "Tietokone",
   diceLadderGoal: "{goal} peliä Yatzylla",
+  diceVisibleToOthers: "Muut verkkopelaajat näkevät tasosi ja Yatzy-peliesi määrän.",
   goldLobbyHint: "✨ Pelatkaa ottelu loppuun yhdessä, niin kaverisi lasketaan mukaan kultanoppien tavoitteluun",
   goldFriendCounted: "Kaverisi laskettiin mukaan! {n}/3 valmiina ✨",
 };

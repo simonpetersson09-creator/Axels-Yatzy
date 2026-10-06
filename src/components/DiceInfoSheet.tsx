@@ -100,6 +100,9 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
             })}
           </ul>
         )}
+        {showLadder && !profile.isBot && (
+          <p className="mt-4 text-[11px] text-muted-foreground">{t('diceVisibleToOthers')}</p>
+        )}
       </motion.div>
     </div>,
     document.body,

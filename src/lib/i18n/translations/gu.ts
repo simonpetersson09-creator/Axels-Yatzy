@@ -327,6 +327,7 @@ export const gu: typeof sv = {
   diceInviteGoldDays: "મિત્ર આમંત્રણથી સોનું · {d} દિવસ બાકી",
   diceComputer: "કમ્પ્યુટર",
   diceLadderGoal: "Yatzy વાળી {goal} મેચ",
+  diceVisibleToOthers: "અન્ય ઓનલાઇન ખેલાડીઓ તમારું સ્તર અને Yatzy વાળી મેચોની સંખ્યા જોઈ શકે છે.",
   goldLobbyHint: "✨ સાથે મેચ પૂરી કરો અને ગોલ્ડ ડાઇસ માટે તમારા મિત્રની ગણતરી થશે",
   goldFriendCounted: "તમારા મિત્રની ગણતરી થઈ! 3 માંથી {n} પૂરાં ✨",
 };

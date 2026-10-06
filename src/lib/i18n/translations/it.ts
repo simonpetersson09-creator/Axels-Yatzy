@@ -322,6 +322,7 @@ export const it: typeof sv = {
   diceInviteGoldDays: "Oro da invito amico · {d} giorni rimasti",
   diceComputer: "Computer",
   diceLadderGoal: "{goal} partite con Yatzy",
+  diceVisibleToOthers: "Gli altri giocatori online vedono il tuo livello e quante partite con Yatzy hai.",
   goldLobbyHint: "✨ Finite la partita insieme e il tuo amico conterà per i dadi d'oro",
   goldFriendCounted: "Amico conteggiato! {n} su 3 ✨",
 };

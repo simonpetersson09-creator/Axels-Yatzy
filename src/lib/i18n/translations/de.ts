@@ -322,6 +322,7 @@ export const de: typeof sv = {
   diceInviteGoldDays: "Gold durch Freundeseinladung · noch {d} Tage",
   diceComputer: "Computer",
   diceLadderGoal: "{goal} Spiele mit Yatzy",
+  diceVisibleToOthers: "Andere Online-Spieler sehen dein Level und wie viele Spiele mit Yatzy du hast.",
   goldLobbyHint: "✨ Beendet das Match gemeinsam, dann zählt dein Freund für die goldenen Würfel",
   goldFriendCounted: "Dein Freund zählt! {n} von 3 geschafft ✨",
 };

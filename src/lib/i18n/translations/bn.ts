@@ -327,6 +327,7 @@ export const bn: typeof sv = {
   diceInviteGoldDays: "বন্ধু আমন্ত্রণের সোনা · {d} দিন বাকি",
   diceComputer: "কম্পিউটার",
   diceLadderGoal: "Yatzy সহ {goal} ম্যাচ",
+  diceVisibleToOthers: "অন্য অনলাইন খেলোয়াড়রা আপনার স্তর ও Yatzy সহ ম্যাচের সংখ্যা দেখতে পায়।",
   goldLobbyHint: "✨ একসঙ্গে ম্যাচ শেষ করলে আপনার বন্ধু সোনালি পাশা পাওয়ার হিসাবে গণ্য হবে",
   goldFriendCounted: "আপনার বন্ধু গণনায় যোগ হয়েছে! ৩ জনের মধ্যে {n} জন সম্পূর্ণ ✨",
 };

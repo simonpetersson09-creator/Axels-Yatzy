@@ -322,6 +322,7 @@ export const fr: typeof sv = {
   diceInviteGoldDays: "Or grâce à une invitation · {d} jours restants",
   diceComputer: "Ordinateur",
   diceLadderGoal: "{goal} parties avec un Yatzy",
+  diceVisibleToOthers: "Les autres joueurs en ligne voient ton niveau et ton nombre de parties avec un Yatzy.",
   goldLobbyHint: "✨ Terminez la partie ensemble : votre ami comptera pour les dés dorés",
   goldFriendCounted: "Votre ami compte ! {n} sur 3 ✨",
 };

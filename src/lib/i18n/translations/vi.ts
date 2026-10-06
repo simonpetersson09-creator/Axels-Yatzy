@@ -327,6 +327,7 @@ export const vi: typeof sv = {
   diceInviteGoldDays: "Vàng nhờ mời bạn · còn {d} ngày",
   diceComputer: "Máy",
   diceLadderGoal: "{goal} ván có Yatzy",
+  diceVisibleToOthers: "Người chơi trực tuyến khác thấy cấp độ và số ván có Yatzy của bạn.",
   goldLobbyHint: "✨ Cùng chơi hết trận để được tính thêm một bạn vào tiến độ nhận xúc xắc vàng",
   goldFriendCounted: "Đã tính thêm một bạn! Hoàn thành {n}/3 ✨",
 };

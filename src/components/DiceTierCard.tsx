@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
@@ -54,7 +55,7 @@ export function DiceTierCard() {
           <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
         </div>
       </div>
-      <span className="shrink-0 text-[11px] font-semibold text-primary">{t('myDice')} ›</span>
+      <ChevronRight className="shrink-0 w-4 h-4 text-muted-foreground" aria-hidden />
     </button>
     <DiceInfoSheet
       open={open}

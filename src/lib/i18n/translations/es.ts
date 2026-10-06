@@ -327,6 +327,7 @@ export const es: typeof sv = {
   diceInviteGoldDays: "Oro por invitar a un amigo · quedan {d} días",
   diceComputer: "Ordenador",
   diceLadderGoal: "{goal} partidas con Yatzy",
+  leaveMatchConfirm: "¿Salir de la partida? Puedes continuar más tarde desde el inicio.",
   diceVisibleToOthers: "Otros jugadores en línea ven tu nivel y cuántas partidas con Yatzy tienes.",
   goldLobbyHint: "✨ Termina la partida con tu amigo para que cuente para los dados dorados",
   goldFriendCounted: "¡Tu amigo ya cuenta! {n} de 3 ✨",

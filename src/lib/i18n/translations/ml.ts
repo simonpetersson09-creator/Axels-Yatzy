@@ -327,6 +327,7 @@ export const ml: typeof sv = {
   diceInviteGoldDays: "സുഹൃത്ത് ക്ഷണത്തിലൂടെ സ്വർണ്ണം · {d} ദിവസം ബാക്കി",
   diceComputer: "കമ്പ്യൂട്ടർ",
   diceLadderGoal: "Yatzy ഉള്ള {goal} മത്സരങ്ങൾ",
+  leaveMatchConfirm: "മത്സരം വിടണോ? പിന്നീട് ഹോം സ്ക്രീനിൽ നിന്ന് തുടരാം.",
   diceVisibleToOthers: "മറ്റ് ഓൺലൈൻ കളിക്കാർക്ക് നിങ്ങളുടെ നിലയും Yatzy മത്സരങ്ങളുടെ എണ്ണവും കാണാം.",
   goldLobbyHint: "✨ ഒരുമിച്ച് കളി പൂർത്തിയാക്കിയാൽ ഗോൾഡ് ഡൈസിനായി സുഹൃത്തും കണക്കിൽപ്പെടും",
   goldFriendCounted: "സുഹൃത്ത് കണക്കിൽപ്പെട്ടു! 3-ൽ {n} പൂർത്തിയായി ✨",

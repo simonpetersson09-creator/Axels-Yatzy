@@ -327,6 +327,7 @@ export const nl: typeof sv = {
   diceInviteGoldDays: "Goud via vriendenuitnodiging · nog {d} dagen",
   diceComputer: "Computer",
   diceLadderGoal: "{goal} potjes met Yatzy",
+  leaveMatchConfirm: "Potje verlaten? Je kunt later verdergaan vanaf het startscherm.",
   diceVisibleToOthers: "Andere online spelers zien je niveau en hoeveel potjes met Yatzy je hebt.",
   goldLobbyHint: "✨ Speel samen de wedstrijd uit en je vriend telt mee voor gouden dobbelstenen",
   goldFriendCounted: "Je vriend telt mee! {n} van 3 voltooid ✨",

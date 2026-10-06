@@ -327,6 +327,7 @@ export const tr: typeof sv = {
   diceInviteGoldDays: "Arkadaş davetiyle altın · {d} gün kaldı",
   diceComputer: "Bilgisayar",
   diceLadderGoal: "Yatzy'li {goal} maç",
+  leaveMatchConfirm: "Maçtan çıkılsın mı? Daha sonra ana ekrandan devam edebilirsin.",
   diceVisibleToOthers: "Diğer çevrim içi oyuncular seviyeni ve Yatzy'li maç sayını görebilir.",
   goldLobbyHint: "✨ Maçı birlikte bitirin, arkadaşınız altın zar hedefine sayılsın",
   goldFriendCounted: "Arkadaşınız sayıldı! 3 arkadaştan {n} tamam ✨",

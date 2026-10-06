@@ -327,6 +327,7 @@ export const sl: typeof sv = {
   diceInviteGoldDays: "Zlato prek povabila prijatelja · še {d} dni",
   diceComputer: "Računalnik",
   diceLadderGoal: "{goal} iger z Yatzy",
+  leaveMatchConfirm: "Zapustim igro? Kasneje lahko nadaljuješ z začetnega zaslona.",
   diceVisibleToOthers: "Drugi spletni igralci vidijo tvojo raven in število iger z Yatzy.",
   goldLobbyHint: "✨ Dokončajta igro skupaj in prijatelj šteje za zlate kocke",
   goldFriendCounted: "Prijatelj šteje! {n} od 3 opravljeno ✨",

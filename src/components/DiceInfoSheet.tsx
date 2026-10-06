@@ -5,6 +5,7 @@ import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { nextTier, TIER_GOALS, SKIN_RANK, type DiceSkin } from '@/lib/dice-skin';
 import { profileSkin, type DiceProfile } from '@/lib/gold-dice';
 import { cn } from '@/lib/utils';
+import { useBackHandler } from '@/lib/back-handler';
 
 export const TIER_NAME: Record<DiceSkin, TranslationKey> = {
   white: 'tierWhite', bronze: 'tierBronze', silver: 'tierSilver', gold: 'tierGold',
@@ -46,6 +47,7 @@ interface Props {
 export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder }: Props) {
   const { t } = useTranslation();
   const tierLine = useTierLine();
+  useBackHandler(open && !!profile, onClose);
   if (!open || !profile) return null;
   const skin = profileSkin(profile);
 

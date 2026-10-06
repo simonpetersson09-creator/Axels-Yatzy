@@ -327,6 +327,7 @@ export const hi: typeof sv = {
   diceInviteGoldDays: "दोस्त को बुलाने से सोना · {d} दिन बाकी",
   diceComputer: "कंप्यूटर",
   diceLadderGoal: "Yatzy वाले {goal} मैच",
+  leaveMatchConfirm: "मैच छोड़ें? आप बाद में होम स्क्रीन से जारी रख सकते हैं।",
   diceVisibleToOthers: "अन्य ऑनलाइन खिलाड़ी आपका स्तर और Yatzy वाले मैचों की संख्या देख सकते हैं।",
   goldLobbyHint: "✨ साथ में मैच पूरा करें और आपके दोस्त को गोल्ड डाइस के लिए गिना जाएगा",
   goldFriendCounted: "आपका दोस्त गिन लिया गया! 3 में से {n} पूरे ✨",

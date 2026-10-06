@@ -327,6 +327,7 @@ export const ja: typeof sv = {
   diceInviteGoldDays: "友達招待のゴールド · 残り{d}日",
   diceComputer: "コンピューター",
   diceLadderGoal: "ヨット達成 {goal}試合",
+  leaveMatchConfirm: "試合を離れますか？あとでホーム画面から続けられます。",
   diceVisibleToOthers: "他のオンラインプレイヤーにはあなたのレベルとヨット達成試合数が表示されます。",
   goldLobbyHint: "✨ 友達と最後まで対戦すると、ゴールドダイス獲得にカウントされます",
   goldFriendCounted: "友達がカウントされました！3人中{n}人達成 ✨",

@@ -137,7 +137,6 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
         <p className="font-display font-bold text-xl tabular-nums text-primary">
           {loading ? '…' : rank ? `#${fmt(rank)}` : '—'}
         </p>
-        {!loading && total ? <p className="text-[10px] text-muted-foreground">/ {fmt(total)} {playersWord}</p> : null}
       </div>
     </div>
   );

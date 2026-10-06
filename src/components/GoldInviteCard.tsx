@@ -28,7 +28,7 @@ export function GoldInviteCard() {
 
   const invite = () => {
     trackEvent('gold_card_invite');
-    navigate('/multiplayer');
+    navigate('/multiplayer', { state: { autoCreate: true } });
   };
 
   return (

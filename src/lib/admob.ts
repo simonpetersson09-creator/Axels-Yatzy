@@ -43,7 +43,7 @@ export const ADMOB_IDS: Record<'ios' | 'android', PlatformAdIds> = {
   // TODO: fyll i från AdMob (Android-appen) innan Android-release.
   android: {
     appId: null,
-    appOpen: null,
+    appOpen: 'ca-app-pub-7448540924654868/8646549226',
     optional: null,
   },
 };

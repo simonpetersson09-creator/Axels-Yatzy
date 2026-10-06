@@ -1,3 +1,4 @@
+import { BarChart3, ChevronRight } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
@@ -842,7 +843,20 @@ export default function HomePage() {
                 );
               })}
             </div>
-            <div className="mt-3 pb-6 space-y-3">
+            <button
+              onClick={() => navigate('/stats')}
+              className="mt-2 w-full flex items-center justify-center gap-2 py-1.5 rounded-2xl bg-secondary/60 border border-border/50 active:scale-[0.98] transition-transform"
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[11px] font-semibold text-foreground">{t('statsPage')}</span>
+              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
+            <div className="text-center mt-2 mb-1">
+              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
+                {t('challengesLabel')}
+              </span>
+            </div>
+            <div className="pb-6 space-y-3">
               <DiceTierCard />
               <GoldInviteCard />
             </div>

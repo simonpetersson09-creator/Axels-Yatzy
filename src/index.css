@@ -234,13 +234,26 @@
     background-image: none;
   }
 
-  /* When the preview window is smaller than the iPhone frame, scale the
-     whole frame down (factor set by native-viewport.ts) instead of cutting
-     off the bottom of the screen. */
-  html.preview-frame #root:not(.admin-route) {
-    transform: scale(var(--preview-scale, 1));
-    transform-origin: center center;
-    flex-shrink: 0;
+  /* Hide the preview frame when the window is too small to fit it
+     (e.g. Lovable's mobile preview / a phone browser) — fall back to
+     fullscreen so layout still matches the device. */
+  @media (max-width: 392px), (max-height: 851px) {
+    html.preview-frame,
+    html.preview-frame body {
+      display: block;
+      height: var(--app-dvh, 100dvh);
+      max-height: var(--app-dvh, 100dvh);
+    }
+    html.preview-frame #root {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      box-shadow: none;
+    }
   }
   h1, h2, h3, h4 {
     font-family: 'Space Grotesk', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Gujarati', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Thai', sans-serif;

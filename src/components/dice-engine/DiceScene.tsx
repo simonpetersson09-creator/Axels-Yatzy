@@ -128,9 +128,6 @@ function DiceSceneImpl({
         key={canvasKey}
         // Draw only while something moves; see <DemandDriver />.
         frameloop="demand"
-        // Measure layout size, not on-screen size, so a scaled preview frame
-        // does not shrink the canvas twice.
-        resize={{ offsetSize: true }}
         // The dice occupy a narrow strip, so edge quality matters more than
         // fill rate here: allow the device's full DPR (up to 3) for crisp,
         // supersampled silhouettes and pips on modern phones.

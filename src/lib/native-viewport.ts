@@ -85,10 +85,6 @@ export function installNativeViewportSync() {
         // so app-fixed-screen / game-scroll-lock size to the frame, not the window.
         root.style.setProperty('--app-dvh', `${PREVIEW_H}px`);
         root.style.setProperty('--app-vw', `${PREVIEW_W}px`);
-        // Shrink the whole frame when the preview window is smaller than an
-        // iPhone, so the bottom of the game (roll button) stays reachable.
-        const scale = Math.min(1, window.innerWidth / PREVIEW_W, window.innerHeight / PREVIEW_H);
-        root.style.setProperty('--preview-scale', String(scale));
         return;
       }
       const viewport = window.visualViewport;

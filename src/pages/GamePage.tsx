@@ -338,7 +338,7 @@ export default function GamePage() {
         aiPlayers,
       },
     });
-  }, [gameState, navigate]);
+  }, [gameState, navigate, aiPlayers, localGameId]);
 
   const handleRoll = useCallback(() => {
     roll();

@@ -40,11 +40,10 @@ export const ADMOB_IDS: Record<'ios' | 'android', PlatformAdIds> = {
     appOpen: 'ca-app-pub-7448540924654868/8707432437',
     optional: 'ca-app-pub-7448540924654868/6422685490',
   },
-  // TODO: fyll i från AdMob (Android-appen) innan Android-release.
   android: {
-    appId: null,
-    appOpen: 'ca-app-pub-7448540924654868/8646549226',
-    optional: 'ca-app-pub-7448540924654868/7960153510',
+    appId: 'ca-app-pub-7448540924654868~1382689760',
+    appOpen: 'ca-app-pub-7448540924654868/2580221366',
+    optional: 'ca-app-pub-7448540924654868/2558286041',
   },
 };
 

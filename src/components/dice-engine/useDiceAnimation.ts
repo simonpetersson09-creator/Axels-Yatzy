@@ -21,6 +21,7 @@ import {
   randomInt,
 } from "./diceRotations";
 import type { DiceValue } from "./types";
+import { isDiceAwaiting } from "./await-store";
 
 /** Respects the OS "reduce motion" setting; animations become near-instant. */
 export function usePrefersReducedMotion(): boolean {
@@ -65,6 +66,12 @@ const DEFAULT_RIGHT: [number, number, number] = [1, 0, 0];
 const DEFAULT_UP: [number, number, number] = [0, 1, 0];
 
 const easeInCubic = (t: number) => t * t * t;
+
+/** Point in the roll (0–1) where a die waits for a server-decided value. */
+const AWAIT_HOLD_T = 0.55;
+/** Radians per second of extra tumble while waiting. */
+const AWAIT_SPIN_SPEED = 9;
+const IDENTITY = new Quaternion();
 
 
 export function useDiceAnimation({
@@ -124,9 +131,36 @@ export function useDiceAnimation({
       sweepAxis: randomAxis(new Vector3()),
       /** A roll requested while the sweep is still on its way out. */
       pendingRoll: false,
+      /* --- server-decided rolls ------------------------------------- */
+      /** Pose correction after a mid-flight re-aim; decays to identity. */
+      corr: new Quaternion(),
+      corrNow: new Quaternion(),
+      corrT0: 1,
+      /** Extra spin while waiting for the server's value. */
+      spin: 0,
+      spinQ: new Quaternion(),
+      waiting: false,
+      scratch: new Quaternion(),
     }),
     [duration],
   );
+
+  /**
+   * Make `target * corr * offsets(t)` equal the pose currently on screen, so
+   * changing target (or dropping the waiting spin) never makes the die jump.
+   */
+  const rebase = (current: Quaternion, t: number) => {
+    const a = (1 - easeOutCubic(t)) * state.turnsA * Math.PI * 2;
+    const b = (1 - easeOutQuart(t)) * state.turnsB * Math.PI * 2;
+    state.offsetA.setFromAxisAngle(state.axisA, a);
+    state.offsetB.setFromAxisAngle(state.axisB, b);
+    // offsets = A * B  →  corr = target⁻¹ * current * (A * B)⁻¹
+    state.scratch.copy(state.offsetA).multiply(state.offsetB).invert();
+    state.corr.copy(state.target).invert().multiply(current).multiply(state.scratch);
+    state.corrT0 = t;
+    state.spin = 0;
+  };
+
 
   /** Snap immediately to the requested face (used on mount and for held dice). */
   const settle = () => {
@@ -212,14 +246,25 @@ export function useDiceAnimation({
     // face — restarting the flight would teleport the die back off-screen and
     // throw it in a second time (the "dice disappear for half a second" bug).
     if (state.animating || state.pendingRoll) {
+      if (state.rollValue === value) return;
       getFaceQuaternion(value, randomInt(0, 3), state.target);
       state.rollValue = value;
+      // Mid-flight re-aim: keep the visible pose continuous instead of
+      // jumping to the new target (seen as a twitch near the end).
+      if (state.animating) {
+        const tNow = Math.min(Math.max((state.elapsed - state.delay) / state.duration, 0), 1);
+        rebase(groupRef.current!.quaternion, tNow);
+      }
       return;
     }
 
     getFaceQuaternion(value, randomInt(0, 3), state.target);
     randomAxis(state.axisA);
     randomAxis(state.axisB);
+    state.corr.identity();
+    state.corrT0 = 1;
+    state.spin = 0;
+    state.waiting = false;
     // Livelier tumble: more revolutions while still landing exactly on target.
     state.turnsA = randomInt(3, 5);
     state.turnsB = randomInt(2, 3);
@@ -342,8 +387,22 @@ export function useDiceAnimation({
     state.right.set(screenRight[0], screenRight[1], screenRight[2]).normalize();
     state.up.set(screenUp[0], screenUp[1], screenUp[2]).normalize();
 
-    state.elapsed += Math.min(delta, 1 / 20); // clamp to survive frame drops
-    const t = Math.min(Math.max((state.elapsed - state.delay) / state.duration, 0), 1);
+    const dt = Math.min(delta, 1 / 20); // clamp to survive frame drops
+    state.elapsed += dt;
+    let t = Math.min(Math.max((state.elapsed - state.delay) / state.duration, 0), 1);
+
+    // Server hasn't decided the value yet: keep tumbling in place just before
+    // the landing phase. When it arrives, fold the extra spin into the
+    // correction so the motion continues without any jump.
+    if (isDiceAwaiting() && t > AWAIT_HOLD_T) {
+      state.elapsed = state.delay + AWAIT_HOLD_T * state.duration;
+      t = AWAIT_HOLD_T;
+      state.spin += dt * AWAIT_SPIN_SPEED;
+      state.waiting = true;
+    } else if (state.waiting) {
+      state.waiting = false;
+      rebase(group.quaternion, t);
+    }
 
     // Two decaying rotations around independent axes -> natural tumbling.
     // Both use whole turns, so they resolve to identity exactly at t = 1,
@@ -352,7 +411,17 @@ export function useDiceAnimation({
     const b = (1 - easeOutQuart(t)) * state.turnsB * Math.PI * 2;
     state.offsetA.setFromAxisAngle(state.axisA, a);
     state.offsetB.setFromAxisAngle(state.axisB, b);
-    group.quaternion.copy(state.target).multiply(state.offsetA).multiply(state.offsetB);
+    // Correction left over from a re-aim; decays to identity by t = 1 so the
+    // die still lands exactly on its target face.
+    const k = state.corrT0 >= 1 ? 1 : Math.min(Math.max((t - state.corrT0) / (1 - state.corrT0), 0), 1);
+    state.corrNow.copy(state.corr).slerp(IDENTITY, easeOutCubic(k));
+    state.spinQ.setFromAxisAngle(state.axisB, state.spin);
+    group.quaternion
+      .copy(state.target)
+      .multiply(state.corrNow)
+      .multiply(state.spinQ)
+      .multiply(state.offsetA)
+      .multiply(state.offsetB);
 
     // Slide in from the right: the horizontal travel resolves at t = 0.7,
     // exactly where `bounceHeight` switches from the toss arc to the single

@@ -18,21 +18,10 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id, client_dice } = await req.json();
+    const { game_id, session_id } = await req.json();
 
     if (!game_id || !session_id) {
       return json({ error: "game_id and session_id required" }, 400);
-    }
-
-    // Validate optional client_dice: must be array of 5 ints in [1,6].
-    // Invalid input → ignored (server RNG is used as fallback).
-    let clientDice: number[] | null = null;
-    if (
-      Array.isArray(client_dice) &&
-      client_dice.length === 5 &&
-      client_dice.every((n) => Number.isInteger(n) && n >= 1 && n <= 6)
-    ) {
-      clientDice = client_dice as number[];
     }
 
     const supabase = createClient(
@@ -40,11 +29,12 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Call atomic RPC — all validation + dice roll + update in one transaction
+    // The server always rolls (fair play). Any client_dice sent by older app
+    // versions is ignored on purpose.
     const { data, error } = await supabase.rpc("perform_roll_dice", {
       p_game_id: game_id,
       p_session_id: session_id,
-      p_client_dice: clientDice,
+      p_client_dice: null,
     });
 
     if (error) {

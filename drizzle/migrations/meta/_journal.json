@@ -71,6 +71,20 @@
       "when": 1791266467795,
       "tag": "0009_yatzy_by_computer_not_counted",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791402262412,
+      "tag": "0010_server_only_roll_dice",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791402303597,
+      "tag": "0011_cleanup_qa_roll_test",
+      "breakpoints": true
     }
   ]
 }

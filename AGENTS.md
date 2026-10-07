@@ -8,3 +8,4 @@
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - Push routing: push_tokens.platform decides the channel — 'android' goes to FCM (via the Firebase connector, _shared/fcm.ts), everything else to APNs; all notify functions call sendPush so iOS delivery stays untouched.
 - google-services.json lives git-ignored in firebase/ and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.
+- Android minSdk is forced to 26 by scripts/set-android-min-sdk.js (run in cap:sync:android) because the barcode-scanner library requires it; android/ is regenerated so variables.gradle edits would be lost.

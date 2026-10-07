@@ -276,6 +276,7 @@ export const ko: typeof sv = {
   errSubmitScore: '점수를 저장하지 못했어',
   pickDiceHint: '남길 주사위를\n골라줘',
   rollFirstHint: "굴리기를 눌러\n시작하세요",
+  slowConnection: "연결이 느립니다…",
   searchingOpponent: '상대 찾는 중…',
   searchingOpponentHint: '상대가 없으면 컴퓨터와 플레이해',
   onlineNewsTitle: '새 기능: 온라인 대전! 🌐',

@@ -276,6 +276,7 @@ export const el: typeof sv = {
   errSubmitScore: 'Αποτυχία αποθήκευσης σκορ',
   pickDiceHint: 'Διάλεξε ζάρια\nνα κρατήσεις',
   rollFirstHint: "Πάτα Ρίξε\nγια να ξεκινήσεις",
+  slowConnection: "Αργή σύνδεση…",
   searchingOpponent: 'Αναζήτηση αντιπάλου…',
   searchingOpponentHint: 'Αν δεν βρεθεί κανείς, παίζεις με τον υπολογιστή',
   onlineNewsTitle: 'Νέο: παίξε με άλλους online! 🌐',

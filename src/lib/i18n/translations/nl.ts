@@ -276,6 +276,7 @@ export const nl: typeof sv = {
   errSubmitScore: 'Score opslaan mislukt',
   pickDiceHint: 'Kies stenen\nom te houden',
   rollFirstHint: "Tik op Gooien\nom te beginnen",
+  slowConnection: "Trage verbinding…",
   searchingOpponent: 'Tegenstander zoeken…',
   searchingOpponentHint: 'Als we niemand vinden, speel je tegen de computer',
   onlineNewsTitle: 'Nieuw: speel online tegen anderen! 🌐',

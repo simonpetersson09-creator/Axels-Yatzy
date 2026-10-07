@@ -276,6 +276,7 @@ export const da: typeof sv = {
   errSubmitScore: 'Kunne ikke gemme score',
   pickDiceHint: 'Vælg terninger\nat beholde',
   rollFirstHint: "Tryk på Kast\nfor at starte",
+  slowConnection: "Langsom forbindelse…",
   searchingOpponent: 'Søger modstander…',
   searchingOpponentHint: 'Findes ingen, spiller du mod computeren',
   onlineNewsTitle: 'Nyhed: mød spillere online! 🌐',

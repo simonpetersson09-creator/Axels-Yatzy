@@ -276,6 +276,7 @@ export const th: typeof sv = {
   errSubmitScore: 'บันทึกคะแนนไม่ได้',
   pickDiceHint: 'เลือกลูกเต๋า\nที่จะเก็บไว้',
   rollFirstHint: "แตะ ทอย\nเพื่อเริ่ม",
+  slowConnection: "การเชื่อมต่อช้า…",
   searchingOpponent: 'กำลังหาคู่แข่ง…',
   searchingOpponentHint: 'ถ้าไม่เจอใคร จะได้เล่นกับคอมพิวเตอร์',
   onlineNewsTitle: 'ใหม่: เล่นกับคนออนไลน์! 🌐',

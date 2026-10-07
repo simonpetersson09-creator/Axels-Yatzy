@@ -276,6 +276,7 @@ export const en: typeof sv = {
   errSubmitScore: 'Could not save the score',
   pickDiceHint: 'Pick dice\nto keep',
   rollFirstHint: "Tap Roll\nto start",
+  slowConnection: "Slow connection…",
   searchingOpponent: 'Searching for opponent…',
   searchingOpponentHint: 'If no one is found, you play the computer',
   onlineNewsTitle: 'New: play people online! 🌐',

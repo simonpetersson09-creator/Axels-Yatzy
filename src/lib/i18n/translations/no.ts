@@ -276,6 +276,7 @@ export const no: typeof sv = {
   errSubmitScore: 'Kunne ikke lagre poeng',
   pickDiceHint: 'Velg terninger\nå beholde',
   rollFirstHint: "Trykk på Kast\nfor å starte",
+  slowConnection: "Treg forbindelse…",
   searchingOpponent: 'Søker motstander…',
   searchingOpponentHint: 'Finnes ingen, spiller du mot datamaskinen',
   onlineNewsTitle: 'Nyhet: møt spillere online! 🌐',

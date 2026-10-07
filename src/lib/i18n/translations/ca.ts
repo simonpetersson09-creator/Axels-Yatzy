@@ -275,6 +275,7 @@ export const ca: typeof sv = {
   errSubmitScore: 'No s’ha pogut desar la puntuació',
   pickDiceHint: 'Tria els daus\nque vols guardar',
   rollFirstHint: "Toca Llançar\nper començar",
+  slowConnection: "Connexió lenta…",
   searchingOpponent: 'Buscant rival…',
   searchingOpponentHint: 'Si no trobem ningú, jugaràs contra l’ordinador',
   onlineNewsTitle: 'Novetat: juga amb gent en línia! 🌐',

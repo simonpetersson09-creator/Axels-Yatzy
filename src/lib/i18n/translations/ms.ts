@@ -276,6 +276,7 @@ export const ms: typeof sv = {
   errSubmitScore: 'Tak dapat simpan skor',
   pickDiceHint: 'Pilih dadu\nuntuk disimpan',
   rollFirstHint: "Ketik Baling\nuntuk mula",
+  slowConnection: "Sambungan perlahan…",
   searchingOpponent: 'Mencari lawan…',
   searchingOpponentHint: 'Jika tiada pemain ditemui, awak lawan komputer',
   onlineNewsTitle: 'Baharu: lawan pemain dalam talian! 🌐',

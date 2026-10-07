@@ -276,6 +276,7 @@ export const hu: typeof sv = {
   errSubmitScore: 'Nem sikerült menteni a pontszámot',
   pickDiceHint: 'Válaszd ki, melyik\nkockák maradjanak',
   rollFirstHint: "Koppints a Dobásra\na kezdéshez",
+  slowConnection: "Lassú kapcsolat…",
   searchingOpponent: 'Ellenfél keresése…',
   searchingOpponentHint: 'Ha nincs ellenfél, a gép ellen játszol',
   onlineNewsTitle: 'Új: játssz másokkal online! 🌐',

@@ -276,6 +276,7 @@ export const ptBR: typeof sv = {
   errSubmitScore: 'Não foi possível salvar os pontos',
   pickDiceHint: 'Escolha os dados\npara guardar',
   rollFirstHint: "Toque em Jogar\npara começar",
+  slowConnection: "Conexão lenta…",
   searchingOpponent: 'Buscando adversário…',
   searchingOpponentHint: 'Se ninguém aparecer, você joga contra o computador',
   onlineNewsTitle: 'Novidade: jogue com pessoas online! 🌐',

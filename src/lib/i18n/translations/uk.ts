@@ -276,6 +276,7 @@ export const uk: typeof sv = {
   errSubmitScore: 'Не вдалося зберегти бали',
   pickDiceHint: 'Вибери кості,\nякі залишити',
   rollFirstHint: "Натисни «Кидок»,\nщоб почати",
+  slowConnection: "Повільне з’єднання…",
   searchingOpponent: 'Шукаємо суперника…',
   searchingOpponentHint: 'Якщо нікого не знайдемо, зіграєш із комп’ютером',
   onlineNewsTitle: 'Новинка: грай з людьми онлайн! 🌐',

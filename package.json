@@ -15,6 +15,7 @@
     "cap:ios:admob": "node scripts/set-ios-admob-plist.js",
     "cap:ios:push": "node scripts/set-ios-push.js",
     "cap:sync:android": "npx cap sync android && node scripts/set-android-admob-manifest.js && node scripts/set-android-firebase.js",
+    "cap:android:check-release": "node scripts/check-android-release-ads.js",
     "cap:android:firebase": "node scripts/set-android-firebase.js",
     "cap:android:admob": "node scripts/set-android-admob-manifest.js"
   },

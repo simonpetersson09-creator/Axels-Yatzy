@@ -123,6 +123,8 @@ export function useMultiplayerGame() {
   const [locksPending, setLocksPending] = useState(false);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);
+  const rollConfirmedRef = useRef(true);
+  const [rollPending, setRollPending] = useState(false);
   const remoteRollingGuardRef = useRef(false);
   // Pending category surfaces an `aiChosenCategory`-style highlight while the
   // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
@@ -787,6 +789,16 @@ export function useMultiplayerGame() {
     // locks we animated with. Server writes the client_dice we provided
     // (validated 1..6) so the authoritative values match what's on screen.
     const rollStartedAt = Date.now();
+    // Scoring stays blocked until the server has confirmed this roll (or the
+    // real state has been reloaded after a failure).
+    rollConfirmedRef.current = false;
+    if (mountedRef.current) setRollPending(true);
+    const settleRoll = (gid: string) => {
+      Promise.resolve(refreshGameStateRef.current?.(gid)).catch(() => {}).finally(() => {
+        rollConfirmedRef.current = true;
+        if (mountedRef.current) setRollPending(false);
+      });
+    };
     const rpcPromise = locksPromise.then(async (locksConfirmed) => {
       if (!locksConfirmed) {
         reportMpIssue('roll_lock_unconfirmed', latest.gameId, { shown: optimisticDice, locked: optimisticLocked });
@@ -820,6 +832,14 @@ export function useMultiplayerGame() {
           isRolling: false,
         };
       }
+      if (error) {
+        // The roll never reached the server: put the real dice back on screen.
+        if (mountedRef.current) setState(prev => ({ ...prev, error: t('errRollDice') }));
+        settleRoll(latest.gameId!);
+      } else {
+        rollConfirmedRef.current = true;
+        if (mountedRef.current) setRollPending(false);
+      }
       return { ok: !error } as const;
     }).catch((err) => {
       console.error('Roll dice failed:', err);
@@ -829,7 +849,7 @@ export function useMultiplayerGame() {
         : t('errRollDice');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
       // Reload the real match state so the screen never stays on guessed dice.
-      refreshGameStateRef.current?.(latest.gameId!);
+      settleRoll(latest.gameId!);
       return { ok: false } as const;
     });
 
@@ -952,6 +972,8 @@ export function useMultiplayerGame() {
     // M-NEW-2: read latest state via ref to avoid stale closure guards
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState || rollingGuardRef.current) return;
+    // Never score dice the server hasn't confirmed yet.
+    if (!rollConfirmedRef.current) return;
     const gs = latest.gameState;
     if (gs.rollsLeft === 3 || latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
@@ -1040,8 +1062,10 @@ export function useMultiplayerGame() {
 
     const submitStartedAt = Date.now();
     const shownDice = [...gs.dice];
+    // expected_dice: the server refuses the score if its dice differ from what
+    // the player saw, instead of silently scoring the wrong dice (e.g. 0).
     withTimeout(supabase.functions.invoke('submit-score', {
-      body: { game_id: gameId, session_id: sessionId, category_id: categoryId },
+      body: { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice },
     }))
       .then(({ data, error }) => {
         const submitMs = Date.now() - submitStartedAt;
@@ -1054,6 +1078,7 @@ export function useMultiplayerGame() {
         }
         console.error('Submit score error:', error);
         reportMpIssue('submit_error', gameId, { ms: submitMs, category: categoryId, err: errText(error) });
+        if (mountedRef.current) setState(prev => ({ ...prev, error: t('errSubmitScore') }));
         releaseOptimistic();
         refreshGameStateRef.current?.(gameId);
       })
@@ -1231,6 +1256,7 @@ export function useMultiplayerGame() {
     isMyTurn,
     localRolling,
     locksPending,
+    rollPending,
     remoteRolling,
     pendingCategory,
     pendingPlayerIndex,

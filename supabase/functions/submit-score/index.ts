@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id, category_id } = await req.json();
+    const { game_id, session_id, category_id, expected_dice } = await req.json();
 
     if (!game_id || !session_id || !category_id) {
       return json({ error: "game_id, session_id, and category_id required" }, 400);
@@ -28,6 +28,24 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Refuse to score when the server's dice differ from what the player saw
+    // (e.g. a roll that never got saved during a server hiccup). Older app
+    // versions don't send expected_dice and keep the previous behaviour.
+    if (
+      Array.isArray(expected_dice) &&
+      expected_dice.length === 5 &&
+      expected_dice.every((n) => Number.isInteger(n) && n >= 1 && n <= 6)
+    ) {
+      const { data: g, error: gErr } = await supabase
+        .from("games").select("dice").eq("id", game_id).maybeSingle();
+      if (gErr) return json({ error: "Databasfel vid poängsparning" }, 500);
+      const serverDice = (g?.dice ?? []) as number[];
+      const same = serverDice.length === 5 && serverDice.every((d, i) => d === expected_dice[i]);
+      if (!same) {
+        return json({ error: "dice_mismatch", dice: serverDice }, 409);
+      }
+    }
 
     // Call atomic RPC — score calc + player update + game state update in one transaction
     const { data, error } = await supabase.rpc("perform_submit_score", {

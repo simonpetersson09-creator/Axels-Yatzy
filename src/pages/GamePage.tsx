@@ -23,6 +23,7 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { Home } from 'lucide-react';
 import { getPlayerName } from '@/lib/session';
+import { toast } from 'sonner';
 
 const newMatchKey = () => `local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 
@@ -33,7 +34,17 @@ export default function GamePage() {
   const { t } = useTranslation();
   // Each local match lives in its own slot so several games can run in parallel.
   const [localGameId] = useState<string>(() => location.state?.localGameId ?? newLocalGameId());
-  const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame(localGameId);
+  const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory, aiCatchUp } = useYatzyGame(localGameId);
+
+  // Came back after the computer played while the app was closed: show what it scored.
+  useEffect(() => {
+    if (aiCatchUp.length === 0) return;
+    const lines = aiCatchUp.slice(-6).map(
+      x => `${x.name}: ${t(`cat_${x.category}` as never)} – ${x.score}`,
+    );
+    toast(lines.join('\n'), { duration: 6000, style: { whiteSpace: 'pre-line' } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const incomingPlayerNames: string[] | undefined = location.state?.playerNames;
   const incomingAiPlayers: number[] | undefined = location.state?.aiPlayers;

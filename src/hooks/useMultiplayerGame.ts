@@ -820,6 +820,14 @@ export function useMultiplayerGame() {
           isRolling: false,
         };
       }
+      if (error) {
+        // The roll never reached the server: put the real dice back on screen.
+        if (mountedRef.current) setState(prev => ({ ...prev, error: t('errRollDice') }));
+        settleRoll(latest.gameId!);
+      } else {
+        rollConfirmedRef.current = true;
+        if (mountedRef.current) setRollPending(false);
+      }
       return { ok: !error } as const;
     }).catch((err) => {
       console.error('Roll dice failed:', err);
@@ -829,7 +837,7 @@ export function useMultiplayerGame() {
         : t('errRollDice');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
       // Reload the real match state so the screen never stays on guessed dice.
-      refreshGameStateRef.current?.(latest.gameId!);
+      settleRoll(latest.gameId!);
       return { ok: false } as const;
     });
 
@@ -952,6 +960,8 @@ export function useMultiplayerGame() {
     // M-NEW-2: read latest state via ref to avoid stale closure guards
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState || rollingGuardRef.current) return;
+    // Never score dice the server hasn't confirmed yet.
+    if (!rollConfirmedRef.current) return;
     const gs = latest.gameState;
     if (gs.rollsLeft === 3 || latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
@@ -1040,20 +1050,15 @@ export function useMultiplayerGame() {
 
     const submitStartedAt = Date.now();
     const shownDice = [...gs.dice];
+    // expected_dice: the server refuses the score if its dice differ from what
+    // the player saw, instead of silently scoring the wrong dice (e.g. 0).
     withTimeout(supabase.functions.invoke('submit-score', {
-      body: { game_id: gameId, session_id: sessionId, category_id: categoryId },
+      body: { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice },
     }))
-      .then(({ data, error }) => {
-        const submitMs = Date.now() - submitStartedAt;
-        if (!error) {
-          if (submitMs > MP_SLOW_MS) reportMpIssue('submit_slow', gameId, { ms: submitMs, category: categoryId });
-          if (typeof data?.score === 'number' && data.score !== optimisticScore) {
-            reportMpIssue('score_mismatch', gameId, { category: categoryId, shown: shownDice, shownScore: optimisticScore, serverScore: data.score, ms: submitMs });
-          }
-          return;
-        }
+...
         console.error('Submit score error:', error);
         reportMpIssue('submit_error', gameId, { ms: submitMs, category: categoryId, err: errText(error) });
+        if (mountedRef.current) setState(prev => ({ ...prev, error: t('errSubmitScore') }));
         releaseOptimistic();
         refreshGameStateRef.current?.(gameId);
       })

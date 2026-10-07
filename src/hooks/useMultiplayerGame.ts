@@ -9,6 +9,16 @@ import { trackEvent } from '@/lib/analytics';
 import { getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
 import { t } from '@/lib/i18n';
 
+// Online-spelets felrapportering: skickas tyst som 'mp_issue' i analytics så
+// vi kan se fel, långsamma anrop och skillnader mellan skärm och server.
+const MP_SLOW_MS = 3000;
+function reportMpIssue(kind: string, gameId: string | null | undefined, meta: Record<string, unknown> = {}) {
+  try { trackEvent('mp_issue', { kind, ...meta }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' }); } catch { /* never throw */ }
+}
+function errText(e: unknown): string {
+  return String((e as Error)?.message ?? e ?? '').slice(0, 200);
+}
+
 
 type RollDicePart = { dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number };
 type RollStartedPayload = {
@@ -751,8 +761,10 @@ export function useMultiplayerGame() {
     // It waits for the pending lock RPCs first so the server sees the same
     // locks we animated with. Server writes the client_dice we provided
     // (validated 1..6) so the authoritative values match what's on screen.
+    const rollStartedAt = Date.now();
     const rpcPromise = locksPromise.then(async (locksConfirmed) => {
       if (!locksConfirmed) {
+        reportMpIssue('roll_lock_unconfirmed', latest.gameId, { shown: optimisticDice, locked: optimisticLocked });
         // Server lock state is unknown — resync instead of rolling.
         refreshGameStateRef.current?.(latest.gameId!);
         return { data: null, error: new Error('lock-unconfirmed') } as { data: any; error: any };
@@ -762,6 +774,15 @@ export function useMultiplayerGame() {
       }));
     }).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
+      const rollMs = Date.now() - rollStartedAt;
+      if (error && (error as Error)?.message !== 'lock-unconfirmed') {
+        reportMpIssue('roll_error', latest.gameId, { ms: rollMs, err: errText(error) });
+      } else if (!error) {
+        if (rollMs > MP_SLOW_MS) reportMpIssue('roll_slow', latest.gameId, { ms: rollMs });
+        if (Array.isArray(data?.dice) && !sameArray(data.dice, optimisticDice)) {
+          reportMpIssue('roll_dice_mismatch', latest.gameId, { shown: optimisticDice, server: data.dice, locked: optimisticLocked, ms: rollMs });
+        }
+      }
       // Only buffer while the roll is still in flight. If the grace period
       // already released the UI, writing here would flush later and make the
       // dice change faces after they visually landed.
@@ -777,6 +798,7 @@ export function useMultiplayerGame() {
       return { ok: !error } as const;
     }).catch((err) => {
       console.error('Roll dice failed:', err);
+      reportMpIssue('roll_failed', latest.gameId, { ms: Date.now() - rollStartedAt, err: errText(err) });
       const msg = (err as Error)?.message === 'timeout'
         ? t('errTimeout')
         : t('errRollDice');
@@ -843,6 +865,7 @@ export function useMultiplayerGame() {
     supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId })
       .then(({ error }) => { if (error) console.warn('[multiplayer] toggleLock heartbeat failed', error); });
 
+    const lockStartedAt = Date.now();
     const lockPromise = (async (): Promise<boolean> => {
       try {
         const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
@@ -850,12 +873,15 @@ export function useMultiplayerGame() {
         }));
         if (error) {
           console.error('Toggle lock error:', error);
+          reportMpIssue('lock_error', gameId, { ms: Date.now() - lockStartedAt, index, err: errText(error) });
           if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq) {
             pendingLockRef.current = null;
           }
           refreshGameStateRef.current?.(gameId);
           return false;
         }
+        const lockMs = Date.now() - lockStartedAt;
+        if (lockMs > MP_SLOW_MS) reportMpIssue('lock_slow', gameId, { ms: lockMs, index });
         lockTimerRef.current = setTimeout(() => {
           if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq && sameArray(pendingLockRef.current.lockedDice, optimisticLocks)) {
             pendingLockRef.current = null;
@@ -864,6 +890,7 @@ export function useMultiplayerGame() {
         return true;
       } catch (err) {
         console.error('Toggle lock failed:', err);
+        reportMpIssue('lock_failed', gameId, { ms: Date.now() - lockStartedAt, index, err: errText(err) });
         if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq) {
           pendingLockRef.current = null;
         }
@@ -982,17 +1009,28 @@ export function useMultiplayerGame() {
       refreshGameStateRef.current?.(gameId);
     }, SUBMIT_ANIM_MS);
 
+    const submitStartedAt = Date.now();
+    const shownDice = [...gs.dice];
     withTimeout(supabase.functions.invoke('submit-score', {
       body: { game_id: gameId, session_id: sessionId, category_id: categoryId },
     }))
-      .then(({ error }) => {
-        if (!error) return;
+      .then(({ data, error }) => {
+        const submitMs = Date.now() - submitStartedAt;
+        if (!error) {
+          if (submitMs > MP_SLOW_MS) reportMpIssue('submit_slow', gameId, { ms: submitMs, category: categoryId });
+          if (typeof data?.score === 'number' && data.score !== optimisticScore) {
+            reportMpIssue('score_mismatch', gameId, { category: categoryId, shown: shownDice, shownScore: optimisticScore, serverScore: data.score, ms: submitMs });
+          }
+          return;
+        }
         console.error('Submit score error:', error);
+        reportMpIssue('submit_error', gameId, { ms: submitMs, category: categoryId, err: errText(error) });
         releaseOptimistic();
         refreshGameStateRef.current?.(gameId);
       })
       .catch((err) => {
         console.error('Submit score failed:', err);
+        reportMpIssue('submit_failed', gameId, { ms: Date.now() - submitStartedAt, category: categoryId, err: errText(err) });
         const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
         if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
         releaseOptimistic();

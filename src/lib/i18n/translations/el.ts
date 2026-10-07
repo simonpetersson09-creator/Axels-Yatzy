@@ -333,4 +333,8 @@ export const el: typeof sv = {
   diceVisibleToOthers: "Άλλοι online παίκτες βλέπουν το επίπεδό σου και πόσα παιχνίδια με Yatzy έχεις.",
   goldLobbyHint: "✨ Ολοκληρώστε μαζί την παρτίδα και ο φίλος σου μετράει για τα χρυσά ζάρια",
   goldFriendCounted: "Ο φίλος σου μέτρησε! {n} από 3 ✨",
+  statMatches: "Αγώνες",
+  statAvg: "Μέσος όρος",
+  statBest: "Καλύτερο",
+  statOnlineWins: "Νίκες online",
 };

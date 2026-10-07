@@ -328,4 +328,8 @@ export const it: typeof sv = {
   diceVisibleToOthers: "Gli altri giocatori online vedono il tuo livello e quante partite con Yatzy hai.",
   goldLobbyHint: "✨ Finite la partita insieme e il tuo amico conterà per i dadi d'oro",
   goldFriendCounted: "Amico conteggiato! {n} su 3 ✨",
+  statMatches: "Partite",
+  statAvg: "Media punti",
+  statBest: "Migliore",
+  statOnlineWins: "Vittorie online",
 };

@@ -3,7 +3,7 @@ import { Check, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { nextTier, TIER_GOALS, SKIN_RANK, type DiceSkin } from '@/lib/dice-skin';
-import { profileSkin, type DiceProfile } from '@/lib/gold-dice';
+import { profileSkin, type DiceProfile, type PlayerStats } from '@/lib/gold-dice';
 import { cn } from '@/lib/utils';
 import { useBackHandler } from '@/lib/back-handler';
 
@@ -41,10 +41,12 @@ interface Props {
   inviteDaysLeft?: number;
   /** Show all levels (own "My dice" view). */
   showLadder?: boolean;
+  /** Online: public match stats for this player. */
+  stats?: PlayerStats;
 }
 
 /** Small bottom sheet with a player's dice level. Never pauses the game. */
-export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder }: Props) {
+export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder, stats }: Props) {
   const { t } = useTranslation();
   const tierLine = useTierLine();
   useBackHandler(open && !!profile, onClose);
@@ -81,6 +83,22 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
             )}
           </div>
         </div>
+
+        {stats && !profile.isBot && (
+          <div className="mt-4 grid grid-cols-4 gap-2 text-center">
+            {[
+              { label: t('statMatches'), value: String(stats.matches) },
+              { label: t('statAvg'), value: stats.avgScore != null ? String(stats.avgScore) : '–' },
+              { label: t('statBest'), value: stats.bestScore != null ? String(stats.bestScore) : '–' },
+              { label: t('statOnlineWins'), value: stats.onlineMatches ? `${Math.round((stats.onlineWins / stats.onlineMatches) * 100)} %` : '–' },
+            ].map((s) => (
+              <div key={s.label} className="rounded-lg bg-muted/40 px-1 py-2">
+                <p className="text-base font-bold text-foreground leading-none">{s.value}</p>
+                <p className="mt-1 text-[10px] text-muted-foreground leading-tight">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
         {showLadder && !profile.isBot && (
           <ul className="mt-4 space-y-2">

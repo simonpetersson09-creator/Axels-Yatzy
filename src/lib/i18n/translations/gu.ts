@@ -333,4 +333,8 @@ export const gu: typeof sv = {
   diceVisibleToOthers: "અન્ય ઓનલાઇન ખેલાડીઓ તમારું સ્તર અને Yatzy વાળી મેચોની સંખ્યા જોઈ શકે છે.",
   goldLobbyHint: "✨ સાથે મેચ પૂરી કરો અને ગોલ્ડ ડાઇસ માટે તમારા મિત્રની ગણતરી થશે",
   goldFriendCounted: "તમારા મિત્રની ગણતરી થઈ! 3 માંથી {n} પૂરાં ✨",
+  statMatches: "મેચ",
+  statAvg: "સરેરાશ સ્કોર",
+  statBest: "શ્રેષ્ઠ",
+  statOnlineWins: "ઑનલાઇન જીત",
 };

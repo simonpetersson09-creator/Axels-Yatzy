@@ -657,6 +657,7 @@ export type Database = {
       get_dice_skins: { Args: { p_session_ids: string[] }; Returns: Json }
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
       get_gold_players: { Args: { p_session_ids: string[] }; Returns: string[] }
+      get_player_stats: { Args: { p_game_id: string }; Returns: Json }
       get_referral_code: {
         Args: { p_device_id: string; p_session_id: string }
         Returns: string

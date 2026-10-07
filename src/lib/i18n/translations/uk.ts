@@ -333,4 +333,8 @@ export const uk: typeof sv = {
   diceVisibleToOthers: "Інші онлайн-гравці бачать твій рівень і кількість матчів з Yatzy.",
   goldLobbyHint: "✨ Завершіть матч разом, і друга буде зараховано для отримання золотих кубиків",
   goldFriendCounted: "Друга зараховано! Уже {n} із 3 ✨",
+  statMatches: "Матчі",
+  statAvg: "Середній бал",
+  statBest: "Найкращий",
+  statOnlineWins: "Перемоги онлайн",
 };

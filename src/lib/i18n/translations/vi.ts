@@ -333,4 +333,8 @@ export const vi: typeof sv = {
   diceVisibleToOthers: "Người chơi trực tuyến khác thấy cấp độ và số ván có Yatzy của bạn.",
   goldLobbyHint: "✨ Cùng chơi hết trận để được tính thêm một bạn vào tiến độ nhận xúc xắc vàng",
   goldFriendCounted: "Đã tính thêm một bạn! Hoàn thành {n}/3 ✨",
+  statMatches: "Số trận",
+  statAvg: "Điểm TB",
+  statBest: "Cao nhất",
+  statOnlineWins: "Thắng online",
 };

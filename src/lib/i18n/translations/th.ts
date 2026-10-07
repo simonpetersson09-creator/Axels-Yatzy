@@ -333,4 +333,8 @@ export const th: typeof sv = {
   diceVisibleToOthers: "ผู้เล่นออนไลน์คนอื่นเห็นระดับของคุณและจำนวนแมตช์ที่ได้ Yatzy",
   goldLobbyHint: "✨ เล่นให้จบด้วยกัน แล้วเพื่อนจะนับรวมเพื่อรับลูกเต๋าทอง",
   goldFriendCounted: "นับเพื่อนแล้ว! ครบ {n} จาก 3 คน ✨",
+  statMatches: "แมตช์",
+  statAvg: "คะแนนเฉลี่ย",
+  statBest: "สูงสุด",
+  statOnlineWins: "ชนะออนไลน์",
 };

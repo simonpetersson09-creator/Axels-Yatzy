@@ -333,4 +333,8 @@ export const id: typeof sv = {
   diceVisibleToOthers: "Pemain online lain dapat melihat level dan jumlah pertandingan Yatzy-mu.",
   goldLobbyHint: "✨ Selesaikan pertandingan bersama agar temanmu dihitung untuk dadu emas",
   goldFriendCounted: "Temanmu dihitung! {n} dari 3 selesai ✨",
+  statMatches: "Pertandingan",
+  statAvg: "Rata-rata",
+  statBest: "Terbaik",
+  statOnlineWins: "Menang online",
 };

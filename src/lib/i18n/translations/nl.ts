@@ -333,4 +333,8 @@ export const nl: typeof sv = {
   diceVisibleToOthers: "Andere online spelers zien je niveau en hoeveel potjes met Yatzy je hebt.",
   goldLobbyHint: "✨ Speel samen de wedstrijd uit en je vriend telt mee voor gouden dobbelstenen",
   goldFriendCounted: "Je vriend telt mee! {n} van 3 voltooid ✨",
+  statMatches: "Potjes",
+  statAvg: "Gem. score",
+  statBest: "Beste",
+  statOnlineWins: "Online gewonnen",
 };

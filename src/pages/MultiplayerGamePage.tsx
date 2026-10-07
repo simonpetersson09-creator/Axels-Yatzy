@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
-import { useDiceProfiles, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
+import { useDiceProfiles, usePlayerStats, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
 import { DiceInfoSheet, SKIN_SWATCH } from '@/components/DiceInfoSheet';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
@@ -59,6 +59,7 @@ export default function MultiplayerGamePage() {
 
   const gameId = searchParams.get('gameId');
   const diceProfiles = useDiceProfiles(gameId, gameState?.players.map(p => p.name).join('|'));
+  const playerStats = usePlayerStats(gameId, gameState?.players.map(p => p.name).join('|'));
   // Tapped player's dice level (bottom sheet); closes when the turn moves on.
   const [infoIndex, setInfoIndex] = useState<number | null>(null);
   useEffect(() => { setInfoIndex(null); }, [gameState?.currentPlayerIndex]);
@@ -604,6 +605,7 @@ export default function MultiplayerGamePage() {
         onClose={() => setInfoIndex(null)}
         name={infoIndex !== null ? (gameState.players[infoIndex]?.name ?? '') : ''}
         profile={infoIndex !== null ? (diceProfiles.get(infoIndex) ?? { isBot: false, tier: 'white', yatzyMatches: 0, inviteGold: false }) : undefined}
+        stats={infoIndex !== null ? playerStats.get(infoIndex) : undefined}
       />
       <YatzyCelebration
         show={showYatzyCelebration}

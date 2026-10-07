@@ -333,4 +333,8 @@ export const mr: typeof sv = {
   diceVisibleToOthers: "इतर ऑनलाइन खेळाडू तुमची पातळी आणि Yatzy असलेल्या सामन्यांची संख्या पाहू शकतात.",
   goldLobbyHint: "✨ सोबत सामना पूर्ण करा आणि सोनेरी फाशांसाठी तुमचा मित्र मोजला जाईल",
   goldFriendCounted: "तुमचा मित्र मोजला गेला! 3 पैकी {n} पूर्ण ✨",
+  statMatches: "सामने",
+  statAvg: "सरासरी",
+  statBest: "सर्वोत्तम",
+  statOnlineWins: "ऑनलाइन विजय",
 };

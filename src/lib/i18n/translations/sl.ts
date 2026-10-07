@@ -333,4 +333,8 @@ export const sl: typeof sv = {
   diceVisibleToOthers: "Drugi spletni igralci vidijo tvojo raven in število iger z Yatzy.",
   goldLobbyHint: "✨ Dokončajta igro skupaj in prijatelj šteje za zlate kocke",
   goldFriendCounted: "Prijatelj šteje! {n} od 3 opravljeno ✨",
+  statMatches: "Tekme",
+  statAvg: "Povprečje",
+  statBest: "Najboljše",
+  statOnlineWins: "Zmage na spletu",
 };

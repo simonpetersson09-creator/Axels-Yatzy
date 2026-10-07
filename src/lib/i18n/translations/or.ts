@@ -333,4 +333,8 @@ export const or: typeof sv = {
   diceVisibleToOthers: "ଅନ୍ୟ ଅନଲାଇନ ଖେଳାଳି ଆପଣଙ୍କ ସ୍ତର ଓ Yatzy ମ୍ୟାଚ୍ ସଂଖ୍ୟା ଦେଖିପାରିବେ।",
   goldLobbyHint: "✨ ଏକାଠି ମ୍ୟାଚ୍ ସାରନ୍ତୁ, ସୁନା ପଶା ପାଇଁ ଆପଣଙ୍କ ସାଙ୍ଗ ଗଣାଯିବେ",
   goldFriendCounted: "ଆପଣଙ୍କ ସାଙ୍ଗ ଗଣାଗଲେ! 3ରୁ {n} ପୂରା ✨",
+  statMatches: "ମ୍ୟାଚ୍",
+  statAvg: "ହାରାହାରି",
+  statBest: "ସର୍ବୋତ୍ତମ",
+  statOnlineWins: "ଅନଲାଇନ ଜିତ",
 };

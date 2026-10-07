@@ -333,4 +333,8 @@ export const en: typeof sv = {
   diceVisibleToOthers: "Other online players can see your level and how many matches with a Yatzy you have.",
   goldLobbyHint: "✨ Finish the match together and your friend counts toward gold dice",
   goldFriendCounted: "Your friend counts! {n} of 3 done ✨",
+  statMatches: "Matches",
+  statAvg: "Avg. score",
+  statBest: "Best",
+  statOnlineWins: "Online wins",
 };

@@ -16,11 +16,12 @@ const fail = (m) => { console.error('FAIL:', m); failed = true; };
 
 const src = await readFile(ADMOB_TS, 'utf8');
 const android = src.match(/android:\s*\{([\s\S]*?)\}/)?.[1] ?? '';
+const realUnits = [];
 for (const k of ['appId', 'appOpen', 'optional']) {
   const v = android.match(new RegExp(`${k}:\\s*(null|'([^']+)')`))?.[2];
   if (!v) fail(`ADMOB_IDS.android.${k} is not set in src/lib/admob.ts`);
   else if (v.startsWith(SAMPLE_PUB)) fail(`ADMOB_IDS.android.${k} is a Google sample ID`);
-  else console.log(`OK  android.${k} = ${v}`);
+  else { console.log(`OK  android.${k} = ${v}`); if (k !== 'appId') realUnits.push(v); }
 }
 
 if (!existsSync(MANIFEST)) fail('AndroidManifest.xml not found (run cap:sync:android)');
@@ -47,8 +48,8 @@ if (!existsSync(ASSETS)) fail('android web assets missing (run npm run build + c
 else {
   const files = await walk(ASSETS);
   const all = (await Promise.all(files.map((f) => readFile(f, 'utf8')))).join('\n');
-  for (const id of ['8646549226', '7960153510']) {
-    if (!all.includes(id)) fail(`real Android ad unit …/${id} not found in the built app`);
+  for (const id of realUnits) {
+    if (!all.includes(id)) fail(`real Android ad unit ${id} not found in the built app`);
   }
   if (/useTestAds:\s*!0/.test(all)) fail('built app has useTestAds = true (dev build?) — run "npm run build"');
   else console.log('OK  production build (useTestAds = false)');

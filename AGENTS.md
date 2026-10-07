@@ -10,3 +10,4 @@
 - google-services.json lives git-ignored in firebase/ and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.
 - Android minSdk is forced to 26 by scripts/set-android-min-sdk.js (run in cap:sync:android) because the barcode-scanner library requires it; android/ is regenerated so variables.gradle edits would be lost.
 - Android launcher icons are generated from resources/icon.png into committed resources/android/res/ and copied over Capacitor's defaults by scripts/set-android-icons.js (run in cap:sync:android); android/ is regenerated so edits there would be lost.
+- Online-game problems (errors, slow calls >3 s, screen/server dice or score mismatches) are reported silently as analytics_events 'mp_issue' from useMultiplayerGame — lets us diagnose desync reports without user effort.

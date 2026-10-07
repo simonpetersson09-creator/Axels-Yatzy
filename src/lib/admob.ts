@@ -64,6 +64,9 @@ function adUnitId(kind: 'appOpen' | 'optional'): string | null {
   if (!p) return null;
   const real = ADMOB_IDS[p][kind];
   if (!real) return null; // aldrig annonser på en plattform utan egna riktiga ID:n
+  // Utan plattformens eget App-ID står Googles prov-App-ID i manifestet; riktiga
+  // annons-ID:n får aldrig blandas med det, så annonserna stängs av helt.
+  if (!ADMOB_IDS[p].appId) return null;
   return ADMOB_CONFIG.useTestAds ? GOOGLE_TEST_IDS[p][kind] : real;
 }
 

@@ -276,6 +276,7 @@ export const gu: typeof sv = {
   errSubmitScore: 'સ્કોર સાચવી શકાયો નહીં',
   pickDiceHint: 'રાખવાના પાસા\nપસંદ કરો',
   rollFirstHint: "શરૂ કરવા\nરોલ દબાવો",
+  slowConnection: "ધીમું કનેક્શન…",
   searchingOpponent: 'હરીફ શોધાય છે…',
   searchingOpponentHint: 'કોઈ નહીં મળે તો કમ્પ્યુટર સામે રમશો',
   onlineNewsTitle: 'નવું: લોકો સાથે ઑનલાઇન રમો! 🌐',

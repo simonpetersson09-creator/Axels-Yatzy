@@ -276,6 +276,7 @@ export const cs: typeof sv = {
   errSubmitScore: 'Skóre se nepodařilo uložit',
   pickDiceHint: 'Vyber kostky,\nkteré si necháš',
   rollFirstHint: "Klepni na Hodit\npro začátek",
+  slowConnection: "Pomalé připojení…",
   searchingOpponent: 'Hledání soupeře…',
   searchingOpponentHint: 'Když se nikdo nenajde, hraješ proti počítači',
   onlineNewsTitle: 'Novinka: hraj s lidmi online! 🌐',

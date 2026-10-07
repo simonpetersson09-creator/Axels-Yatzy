@@ -276,6 +276,7 @@ export const mr: typeof sv = {
   errSubmitScore: 'गुण सेव्ह करता आले नाहीत',
   pickDiceHint: 'ठेवायचे फासे\nनिवड',
   rollFirstHint: "सुरू करण्यासाठी\nरोल दाबा",
+  slowConnection: "मंद कनेक्शन…",
   searchingOpponent: 'प्रतिस्पर्धी शोधतोय…',
   searchingOpponentHint: 'कोणी सापडलं नाही तर संगणकासोबत खेळशील',
   onlineNewsTitle: 'नवीन: इतरांशी ऑनलाइन खेळ! 🌐',

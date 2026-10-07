@@ -276,6 +276,7 @@ export const te: typeof sv = {
   errSubmitScore: 'స్కోరు సేవ్ చేయలేకపోయాం',
   pickDiceHint: 'ఉంచే పాచికలు\nఎంచుకో',
   rollFirstHint: "ప్రారంభించడానికి\nరోల్ నొక్కండి",
+  slowConnection: "నెమ్మదిగా కనెక్షన్…",
   searchingOpponent: 'ప్రత్యర్థి కోసం వెతుకుతున్నాం…',
   searchingOpponentHint: 'ఎవరూ దొరక్కపోతే కంప్యూటర్‌తో ఆడతావు',
   onlineNewsTitle: 'కొత్తది: ఆన్‌లైన్‌లో ఇతరులతో ఆడు! 🌐',

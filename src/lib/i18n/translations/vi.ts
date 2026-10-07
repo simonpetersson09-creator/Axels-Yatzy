@@ -276,6 +276,7 @@ export const vi: typeof sv = {
   errSubmitScore: 'Không thể lưu điểm',
   pickDiceHint: 'Chọn xúc xắc\nđể giữ',
   rollFirstHint: "Chạm Đổ\nđể bắt đầu",
+  slowConnection: "Kết nối chậm…",
   searchingOpponent: 'Đang tìm đối thủ…',
   searchingOpponentHint: 'Nếu không tìm thấy ai, bạn sẽ chơi với máy',
   onlineNewsTitle: 'Mới: chơi với người thật online! 🌐',

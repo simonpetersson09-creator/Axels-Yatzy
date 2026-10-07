@@ -276,6 +276,7 @@ export const pt: typeof sv = {
   errSubmitScore: 'Não foi possível guardar a pontuação',
   pickDiceHint: 'Escolhe os dados\nque queres guardar',
   rollFirstHint: "Toque em Lançar\npara começar",
+  slowConnection: "Ligação lenta…",
   searchingOpponent: 'A procurar adversário…',
   searchingOpponentHint: 'Se não houver ninguém, jogas contra o computador',
   onlineNewsTitle: 'Novidade: joga com pessoas online! 🌐',

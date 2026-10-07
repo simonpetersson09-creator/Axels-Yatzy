@@ -271,6 +271,7 @@ export const de: typeof sv = {
   errSubmitScore: 'Punktzahl konnte nicht gespeichert werden',
   pickDiceHint: 'Würfel wählen\nzum Behalten',
   rollFirstHint: "Tippe auf Würfeln\nzum Starten",
+  slowConnection: "Langsame Verbindung…",
   searchingOpponent: 'Suche Gegner…',
   searchingOpponentHint: 'Wird niemand gefunden, spielst du gegen den Computer',
   onlineNewsTitle: 'Neu: spiel online gegen andere! 🌐',

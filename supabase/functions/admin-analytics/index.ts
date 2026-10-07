@@ -111,6 +111,7 @@ Deno.serve(async (req) => {
     let roomsCreated = 0;
     let roomsJoined = 0;
     const langs = new Map<string, number>();
+    const issuesByDay = new Map<string, Map<string, number>>();
 
     const now = Date.now();
     const day1 = new Date(now - 1 * 86400000).toISOString().slice(0, 10);
@@ -167,6 +168,13 @@ Deno.serve(async (req) => {
         case "yatzy_scored":
           yatzyCount++;
           break;
+        case "mp_issue": {
+          const kind = String((e.metadata as { kind?: string } | null)?.kind ?? "unknown");
+          if (!issuesByDay.has(day)) issuesByDay.set(day, new Map());
+          const m = issuesByDay.get(day)!;
+          m.set(kind, (m.get(kind) ?? 0) + 1);
+          break;
+        }
         case "multiplayer_room_created":
           roomsCreated++;
           break;
@@ -273,6 +281,13 @@ Deno.serve(async (req) => {
       languages: Object.fromEntries(langs),
       platforms: Object.fromEntries(platforms),
       topEvents,
+      issues: Array.from(issuesByDay.entries())
+        .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+        .map(([day, m]) => ({
+          day,
+          total: Array.from(m.values()).reduce((s, n) => s + n, 0),
+          kinds: Object.fromEntries(Array.from(m.entries()).sort((a, b) => b[1] - a[1])),
+        })),
       recent: evs.slice(0, 100),
     });
   } catch (err) {

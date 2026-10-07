@@ -276,6 +276,7 @@ export const kn: typeof sv = {
   errSubmitScore: 'ಅಂಕ ಉಳಿಸಲಾಗಲಿಲ್ಲ',
   pickDiceHint: 'ಉಳಿಸಿಕೊಳ್ಳಲು\nದಾಳ ಆರಿಸು',
   rollFirstHint: "ಪ್ರಾರಂಭಿಸಲು\nರೋಲ್ ಒತ್ತಿ",
+  slowConnection: "ನಿಧಾನ ಸಂಪರ್ಕ…",
   searchingOpponent: 'ಎದುರಾಳಿಯನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ…',
   searchingOpponentHint: 'ಯಾರೂ ಸಿಗದಿದ್ದರೆ ಕಂಪ್ಯೂಟರ್ ಜೊತೆ ಆಡುವೆ',
   onlineNewsTitle: 'ಹೊಸತು: ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಇತರರ ಜೊತೆ ಆಡು! 🌐',

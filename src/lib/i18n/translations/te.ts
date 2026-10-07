@@ -333,4 +333,8 @@ export const te: typeof sv = {
   diceVisibleToOthers: "ఇతర ఆన్‌లైన్ ఆటగాళ్లు మీ స్థాయిని, Yatzy మ్యాచ్‌ల సంఖ్యను చూడగలరు.",
   goldLobbyHint: "✨ కలిసి మ్యాచ్ పూర్తి చేస్తే గోల్డ్ డైస్ కోసం మీ స్నేహితుడు లెక్కలో చేరుతారు",
   goldFriendCounted: "మీ స్నేహితుడు లెక్కలో చేరారు! 3లో {n} పూర్తి ✨",
+  statMatches: "మ్యాచ్‌లు",
+  statAvg: "సగటు",
+  statBest: "ఉత్తమం",
+  statOnlineWins: "ఆన్‌లైన్ విజయాలు",
 };

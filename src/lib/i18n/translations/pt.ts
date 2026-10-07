@@ -333,4 +333,8 @@ export const pt: typeof sv = {
   diceVisibleToOthers: "Outros jogadores online veem o teu nível e quantos jogos com Yatzy tens.",
   goldLobbyHint: "✨ Terminem a partida juntos e o teu amigo conta para os dados dourados",
   goldFriendCounted: "O teu amigo contou! {n} de 3 concluídos ✨",
+  statMatches: "Jogos",
+  statAvg: "Média",
+  statBest: "Melhor",
+  statOnlineWins: "Vitórias online",
 };

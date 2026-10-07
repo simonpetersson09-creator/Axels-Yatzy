@@ -333,4 +333,8 @@ export const ja: typeof sv = {
   diceVisibleToOthers: "他のオンラインプレイヤーにはあなたのレベルとヨット達成試合数が表示されます。",
   goldLobbyHint: "✨ 友達と最後まで対戦すると、ゴールドダイス獲得にカウントされます",
   goldFriendCounted: "友達がカウントされました！3人中{n}人達成 ✨",
+  statMatches: "試合数",
+  statAvg: "平均点",
+  statBest: "最高点",
+  statOnlineWins: "オンライン勝利",
 };

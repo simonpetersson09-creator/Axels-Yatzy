@@ -333,4 +333,8 @@ export const ms: typeof sv = {
   diceVisibleToOthers: "Pemain dalam talian lain boleh melihat tahap dan bilangan perlawanan Yatzy anda.",
   goldLobbyHint: "✨ Habiskan perlawanan bersama dan rakan anda dikira untuk dadu emas",
   goldFriendCounted: "Rakan anda dikira! {n} daripada 3 selesai ✨",
+  statMatches: "Perlawanan",
+  statAvg: "Purata",
+  statBest: "Terbaik",
+  statOnlineWins: "Menang dalam talian",
 };

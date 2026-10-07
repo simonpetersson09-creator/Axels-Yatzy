@@ -333,4 +333,8 @@ export const tr: typeof sv = {
   diceVisibleToOthers: "Diğer çevrim içi oyuncular seviyeni ve Yatzy'li maç sayını görebilir.",
   goldLobbyHint: "✨ Maçı birlikte bitirin, arkadaşınız altın zar hedefine sayılsın",
   goldFriendCounted: "Arkadaşınız sayıldı! 3 arkadaştan {n} tamam ✨",
+  statMatches: "Maçlar",
+  statAvg: "Ort. puan",
+  statBest: "En iyi",
+  statOnlineWins: "Online galibiyet",
 };

@@ -333,4 +333,8 @@ export const ml: typeof sv = {
   diceVisibleToOthers: "മറ്റ് ഓൺലൈൻ കളിക്കാർക്ക് നിങ്ങളുടെ നിലയും Yatzy മത്സരങ്ങളുടെ എണ്ണവും കാണാം.",
   goldLobbyHint: "✨ ഒരുമിച്ച് കളി പൂർത്തിയാക്കിയാൽ ഗോൾഡ് ഡൈസിനായി സുഹൃത്തും കണക്കിൽപ്പെടും",
   goldFriendCounted: "സുഹൃത്ത് കണക്കിൽപ്പെട്ടു! 3-ൽ {n} പൂർത്തിയായി ✨",
+  statMatches: "മത്സരങ്ങൾ",
+  statAvg: "ശരാശരി",
+  statBest: "മികച്ചത്",
+  statOnlineWins: "ഓൺലൈൻ വിജയം",
 };

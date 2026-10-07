@@ -328,4 +328,8 @@ export const de: typeof sv = {
   diceVisibleToOthers: "Andere Online-Spieler sehen dein Level und wie viele Spiele mit Yatzy du hast.",
   goldLobbyHint: "✨ Beendet das Match gemeinsam, dann zählt dein Freund für die goldenen Würfel",
   goldFriendCounted: "Dein Freund zählt! {n} von 3 geschafft ✨",
+  statMatches: "Spiele",
+  statAvg: "Ø Punkte",
+  statBest: "Bestwert",
+  statOnlineWins: "Online-Siege",
 };

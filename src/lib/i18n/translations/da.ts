@@ -333,4 +333,8 @@ export const da: typeof sv = {
   diceVisibleToOthers: "Andre onlinespillere kan se dit niveau og hvor mange kampe med Yatzy du har.",
   goldLobbyHint: "✨ Spil kampen færdig sammen, så tæller din ven med til guldterninger",
   goldFriendCounted: "Din ven tæller med! {n} af 3 klaret ✨",
+  statMatches: "Kampe",
+  statAvg: "Gns. point",
+  statBest: "Bedste",
+  statOnlineWins: "Online-sejre",
 };

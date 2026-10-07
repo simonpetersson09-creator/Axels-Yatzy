@@ -333,4 +333,8 @@ export const cs: typeof sv = {
   diceVisibleToOthers: "Ostatní online hráči vidí tvou úroveň a počet her s Yatzy.",
   goldLobbyHint: "✨ Dohrajte spolu zápas a kamarád se započítá do postupu ke zlatým kostkám",
   goldFriendCounted: "Kamarád započítán! Hotovo {n} ze 3 ✨",
+  statMatches: "Zápasy",
+  statAvg: "Průměr",
+  statBest: "Nejlepší",
+  statOnlineWins: "Výhry online",
 };

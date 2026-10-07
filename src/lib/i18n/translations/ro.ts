@@ -333,4 +333,8 @@ export const ro: typeof sv = {
   diceVisibleToOthers: "Ceilalți jucători online îți văd nivelul și câte meciuri cu Yatzy ai.",
   goldLobbyHint: "✨ Terminați meciul împreună și prietenul tău contează pentru zarurile aurii",
   goldFriendCounted: "Prietenul tău a fost numărat! {n} din 3 ✨",
+  statMatches: "Meciuri",
+  statAvg: "Medie",
+  statBest: "Cel mai bun",
+  statOnlineWins: "Victorii online",
 };

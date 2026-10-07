@@ -332,4 +332,8 @@ export const ca: typeof sv = {
   diceVisibleToOthers: "Altres jugadors en línia veuen el teu nivell i quantes partides amb Yatzy tens.",
   goldLobbyHint: "✨ Acabeu la partida junts i el teu amic comptarà per als daus d'or",
   goldFriendCounted: "El teu amic ja compta! {n} de 3 ✨",
+  statMatches: "Partides",
+  statAvg: "Mitjana",
+  statBest: "Millor",
+  statOnlineWins: "Victòries en línia",
 };

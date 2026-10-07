@@ -1259,6 +1259,8 @@ export function useMultiplayerGame() {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      // The await flag is shared by every dice view; never leave it on.
+      setDiceAwait(false);
     };
   }, []);
 

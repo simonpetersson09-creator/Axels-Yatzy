@@ -758,7 +758,7 @@ export default function MultiplayerGamePage() {
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   disabled={!canRoll || localRolling}
                   className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
-                    canRoll && !localRolling
+                    (canRoll || locksPending) && !localRolling
                       ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
                       : 'bg-secondary text-muted-foreground shadow-none'
                   }`}

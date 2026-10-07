@@ -15,7 +15,8 @@ let failed = false;
 const fail = (m) => { console.error('FAIL:', m); failed = true; };
 
 const src = await readFile(ADMOB_TS, 'utf8');
-const android = src.match(/android:\s*\{([\s\S]*?)\}/)?.[1] ?? '';
+const ids = src.slice(src.indexOf('export const ADMOB_IDS'));
+const android = ids.match(/android:\s*\{([\s\S]*?)\}/)?.[1] ?? '';
 const realUnits = [];
 for (const k of ['appId', 'appOpen', 'optional']) {
   const v = android.match(new RegExp(`${k}:\\s*(null|'([^']+)')`))?.[2];

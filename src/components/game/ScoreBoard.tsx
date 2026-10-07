@@ -46,7 +46,7 @@ const PLAYER_HSL = ['36 82% 52%', '210 70% 52%', '155 60% 42%', '350 65% 52%'];
 
 const SLOT_COUNT = 4;
 const COL_W = 'min-w-[42px] w-[42px]';
-const LABEL_W = 'w-[90px] min-w-[90px]';
+const LABEL_W = 'w-[86px] min-w-[86px]';
 const ROW_H = 'h-[34px]';
 
 function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor }: {
@@ -342,7 +342,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         'flex-shrink-0 px-1.5 border-r border-yatzy-line/40 flex items-center', ROW_H, LABEL_W,
         idx % 2 === 0 ? 'bg-yatzy-bg' : 'bg-yatzy-section-header/50',
       )}>
-        <span className={cn(catName(cat.id).length > 11 ? "text-[9.5px] tracking-tight" : "text-[11px]", " font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full")}>{catName(cat.id)}</span>
+        <span className={cn(catName(cat.id).length > 11 ? "text-[9px] tracking-tight" : "text-[11px]", " font-medium text-yatzy-text/80 leading-none whitespace-nowrap overflow-hidden text-ellipsis block w-full")}>{catName(cat.id)}</span>
       </div>
       {Array.from({ length: SLOT_COUNT }).map((_, i) => renderCell(cat, i))}
     </button>

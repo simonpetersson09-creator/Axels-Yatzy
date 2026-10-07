@@ -13,7 +13,7 @@ import type { DiceSkin } from '@/lib/dice-skin';
  *   />
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 import { DiceTray } from "./DiceTray";
 import type { DiceSceneProps } from "./types";
@@ -37,6 +37,34 @@ function Warmup() {
       /* Warmup is best-effort only. */
     }
   }, [gl, scene, camera]);
+  return null;
+}
+
+/**
+ * On-demand rendering driver. The canvas uses frameloop="demand", so nothing
+ * is drawn while the dice lie still. Any change that starts an animation
+ * (new values, holds, rolling, reset, skin, size) or a tap on the canvas keeps
+ * frames coming for ACTIVE_MS — longer than the longest roll/sweep/settle —
+ * and continuously while `rolling` is true.
+ */
+const ACTIVE_MS = 2600;
+function DemandDriver({ wakeKey, rolling }: { wakeKey: string; rolling: boolean }) {
+  const invalidate = useThree((s) => s.invalidate);
+  const gl = useThree((s) => s.gl);
+  const activeUntil = useRef(0);
+  const wake = useCallback(() => {
+    activeUntil.current = performance.now() + ACTIVE_MS;
+    invalidate();
+  }, [invalidate]);
+  useEffect(() => { wake(); }, [wakeKey, rolling, wake]);
+  useEffect(() => {
+    const el = gl.domElement;
+    el.addEventListener("pointerdown", wake);
+    return () => el.removeEventListener("pointerdown", wake);
+  }, [gl, wake]);
+  useFrame(() => {
+    if (rolling || performance.now() < activeUntil.current) invalidate();
+  });
   return null;
 }
 
@@ -98,6 +126,8 @@ function DiceSceneImpl({
 
       <Canvas
         key={canvasKey}
+        // Draw only while something moves; see <DemandDriver />.
+        frameloop="demand"
         // The dice occupy a narrow strip, so edge quality matters more than
         // fill rate here: allow the device's full DPR (up to 3) for crisp,
         // supersampled silhouettes and pips on modern phones.
@@ -146,6 +176,10 @@ function DiceSceneImpl({
           onToggleHold={onToggleHold}
         />
         <Warmup />
+        <DemandDriver
+          rolling={rolling}
+          wakeKey={`${values.join(",")}|${heldSafe.join(",")}|${resetKey}|${size}|${fill}|${spacing}|${pipColor ?? ""}|${holdColor ?? ""}|${typeof skin === "object" ? JSON.stringify(skin) : String(skin ?? "")}`}
+        />
       </Canvas>
     </div>
   );

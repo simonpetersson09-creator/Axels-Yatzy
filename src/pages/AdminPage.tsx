@@ -44,6 +44,7 @@ interface Stats {
   languages: Record<string, number>;
   platforms: Record<string, number>;
   topEvents: { name: string; count: number }[];
+  issues?: { day: string; total: number; kinds: Record<string, number> }[];
   recent: {
     event_name: string;
     local_user_id: string | null;
@@ -419,6 +420,37 @@ export default function AdminPage() {
                 </table>
               )}
             </div>
+          </section>
+
+          {/* Online-game problems reported silently by the app (mp_issue) */}
+          <section className="mb-8 rounded-lg border border-border/40 bg-secondary/20 p-4">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Online problems per day
+            </h2>
+            {(stats.issues?.length ?? 0) === 0 ? (
+              <p className="text-xs text-muted-foreground">No problems reported.</p>
+            ) : (
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-left text-muted-foreground">
+                    <th className="py-1 pr-4">Day</th>
+                    <th className="py-1 pr-4 text-right">Total</th>
+                    <th className="py-1">Kinds</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.issues!.map((d) => (
+                    <tr key={d.day} className="border-t border-border/30 align-top">
+                      <td className="py-1 pr-4 font-mono">{d.day}</td>
+                      <td className="py-1 pr-4 text-right tabular-nums">{d.total}</td>
+                      <td className="py-1 font-mono text-muted-foreground">
+                        {Object.entries(d.kinds).map(([k, n]) => `${k} ${n}`).join(' · ')}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </section>
 
           {/* Daily breakdown table */}

@@ -6,3 +6,5 @@
 - AdMob IDs are per platform in ADMOB_IDS (src/lib/admob.ts); a null ID disables that ad type on that platform so iOS IDs can never be used on Android.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
+- Push routing: push_tokens.platform decides the channel — 'android' goes to FCM (via the Firebase connector, _shared/fcm.ts), everything else to APNs; all notify functions call sendPush so iOS delivery stays untouched.
+- google-services.json lives git-ignored in firebase/ and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.

@@ -31,7 +31,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { QuickMatchTakeover } from '@/components/multiplayer/QuickMatchTakeover';
 
-const DEBUG = false;
+const DEBUG = true;
 
 
 export default function MultiplayerGamePage() {
@@ -200,6 +200,7 @@ export default function MultiplayerGamePage() {
 
   // Auto-roll "Kast 1" on my turn — the player's first tap is therefore "Kast 2".
   useEffect(() => {
+    DEBUG && console.log("[auto-roll] check", JSON.stringify({st: status, my: isMyTurn, rl: gameState?.rollsLeft, lr: localRolling, rr: remoteRolling, ir: gameState?.isRolling, cp: gameState?.currentPlayerIndex, rd: gameState?.round}));
     if (!gameState || status !== 'playing') return;
     if (!isMyTurn) return;
     if (gameState.rollsLeft !== 3) return;

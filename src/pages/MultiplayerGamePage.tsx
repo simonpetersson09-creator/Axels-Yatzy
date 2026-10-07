@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
-import { useDiceProfiles, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
+import { useDiceProfiles, usePlayerStats, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
 import { DiceInfoSheet, SKIN_SWATCH } from '@/components/DiceInfoSheet';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';

@@ -48,10 +48,13 @@ export default function MultiplayerGamePage() {
   // 3 s say the connection is slow so it never looks like the app froze.
   const waitingServer = (rollPending || locksPending) && isMyTurn;
   const [slowServer, setSlowServer] = useState(false);
+  const [showWait, setShowWait] = useState(false);
   useEffect(() => {
-    if (!waitingServer) { setSlowServer(false); return; }
-    const tm = setTimeout(() => setSlowServer(true), 3000);
-    return () => clearTimeout(tm);
+    if (!waitingServer) { setSlowServer(false); setShowWait(false); return; }
+    // Short delay so quick confirmations never flash a spinner.
+    const t1 = setTimeout(() => setShowWait(true), 500);
+    const t2 = setTimeout(() => setSlowServer(true), 3000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [waitingServer]);
 
   const gameId = searchParams.get('gameId');

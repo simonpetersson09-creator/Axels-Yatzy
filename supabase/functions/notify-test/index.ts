@@ -2,6 +2,7 @@
 // and returns rich debug info so we can see exactly where the chain breaks.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { sendFcm, isFcmConfigured } from "../_shared/fcm.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -102,6 +103,33 @@ Deno.serve(async (req) => {
         delivered: false,
         apns_configured: apnsConfigured,
         hint: "Ingen push-token hittades. Öppna appen på din iPhone, godkänn notiser, och försök igen.",
+      });
+    }
+
+    if (token.platform === "android") {
+      if (!isFcmConfigured()) {
+        return json({
+          stage: "fcm_not_configured",
+          delivered: false,
+          token_found: true,
+          token_platform: token.platform,
+          token_updated_at: token.updated_at,
+          hint: "Firebase Cloud Messaging är inte kopplat i Lovable Cloud.",
+        });
+      }
+      const fcmResult = await sendFcm({
+        deviceToken: token.token,
+        title: "Testnotis 🎲",
+        body: "Om du ser detta funkar pushkedjan hela vägen.",
+        data: { kind: "test" },
+      });
+      return json({
+        stage: "sent",
+        delivered: fcmResult.ok,
+        fcm_status: fcmResult.status,
+        fcm_reason: fcmResult.reason,
+        token_platform: token.platform,
+        token_updated_at: token.updated_at,
       });
     }
 

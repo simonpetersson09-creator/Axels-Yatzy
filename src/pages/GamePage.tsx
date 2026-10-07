@@ -22,6 +22,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { Home } from 'lucide-react';
+import { getPlayerName } from '@/lib/session';
 
 const newMatchKey = () => `local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 
@@ -44,8 +45,8 @@ export default function GamePage() {
     if (incomingPlayerNames) return incomingPlayerNames;
     try {
       const saved = localStorage.getItem(namesKey);
-      return saved ? JSON.parse(saved) : ['Spelare 1'];
-    } catch { return ['Spelare 1']; }
+      return saved ? JSON.parse(saved) : [getPlayerName() || t('playerN', { n: 1 })];
+    } catch { return [getPlayerName() || t('playerN', { n: 1 })]; }
   });
 
   const [aiPlayers, setAiPlayers] = useState<number[]>(() => {

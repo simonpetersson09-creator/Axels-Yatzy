@@ -664,7 +664,7 @@ export default function MultiplayerGamePage() {
                     <span className={`text-[10px] font-semibold truncate max-w-[80px] max-[379px]:max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
-                      {player.name}{isMe ? t('youSuffix') : ''}
+                      {player.name}
                     </span>
                     {diceProfiles.get(idx) && !diceProfiles.get(idx)!.isBot && (
                       <span className={`w-2 h-2 rounded-full border shrink-0 ${SKIN_SWATCH[profileSkin(diceProfiles.get(idx))]}`} aria-hidden />

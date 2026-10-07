@@ -123,6 +123,8 @@ export function useMultiplayerGame() {
   const [locksPending, setLocksPending] = useState(false);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);
+  const rollConfirmedRef = useRef(true);
+  const [rollPending, setRollPending] = useState(false);
   const remoteRollingGuardRef = useRef(false);
   // Pending category surfaces an `aiChosenCategory`-style highlight while the
   // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
@@ -787,6 +789,16 @@ export function useMultiplayerGame() {
     // locks we animated with. Server writes the client_dice we provided
     // (validated 1..6) so the authoritative values match what's on screen.
     const rollStartedAt = Date.now();
+    // Scoring stays blocked until the server has confirmed this roll (or the
+    // real state has been reloaded after a failure).
+    rollConfirmedRef.current = false;
+    if (mountedRef.current) setRollPending(true);
+    const settleRoll = (gid: string) => {
+      Promise.resolve(refreshGameStateRef.current?.(gid)).catch(() => {}).finally(() => {
+        rollConfirmedRef.current = true;
+        if (mountedRef.current) setRollPending(false);
+      });
+    };
     const rpcPromise = locksPromise.then(async (locksConfirmed) => {
       if (!locksConfirmed) {
         reportMpIssue('roll_lock_unconfirmed', latest.gameId, { shown: optimisticDice, locked: optimisticLocked });
@@ -1236,6 +1248,7 @@ export function useMultiplayerGame() {
     isMyTurn,
     localRolling,
     locksPending,
+    rollPending,
     remoteRolling,
     pendingCategory,
     pendingPlayerIndex,

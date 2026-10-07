@@ -3,7 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 const SUBMIT_ANIM_MS = 700;
-import { calculateScore, rollSingleDie } from '@/lib/yatzy-scoring';
+import { calculateScore } from '@/lib/yatzy-scoring';
+import { setDiceAwait } from '@/components/dice-engine/await-store';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
 import { getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
@@ -168,6 +169,9 @@ export function useMultiplayerGame() {
         ...dicePart,
         lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? dicePart.lockedDice,
       };
+      // Numbers are known — any value-less spin can land now.
+      remoteResultAtRef.current = Date.now();
+      setDiceAwait(false);
       pendingRollUpdateRef.current = visibleDicePart;
       setState(prev => prev.gameState ? {
         ...prev,
@@ -509,6 +513,18 @@ export function useMultiplayerGame() {
         // via postgres_changes and are applied once known.
         startRemoteRolling();
       })
+      .on('broadcast', { event: 'roll_result' }, (msg) => {
+        const payload = (msg as any).payload as RollStartedPayload | undefined;
+        const prevGS = stateRef.current.gameState;
+        const myIdx = stateRef.current.myPlayerIndex;
+        if (!prevGS || myIdx === null || !payload) return;
+        if (typeof payload.player === 'number' && payload.player === myIdx) return;
+        if (rollingGuardRef.current) return;
+        if (payload.dice?.length !== 5 || payload.lockedDice?.length !== 5 || typeof payload.rollsLeft !== 'number') return;
+        const part = { dice: payload.dice, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, isRolling: false };
+        if (remoteRollingGuardRef.current) applyRemoteResult(part);
+        else if (payload.rollsLeft < prevGS.rollsLeft) startRemoteRolling(part); // missed roll_started
+      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
         const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number };
         const prevGS = stateRef.current.gameState;
@@ -534,6 +550,15 @@ export function useMultiplayerGame() {
             rollsLeft: next.rolls_left!,
             isRolling: !!next.is_rolling,
           });
+        } else if (
+          // Fallback when roll_result was missed: the saved roll lands the
+          // dice that are already spinning.
+          prevGS && myIdx !== null && remoteRollingGuardRef.current && remoteResultAtRef.current === 0 &&
+          next.dice?.length === 5 && next.locked_dice && typeof next.rolls_left === 'number' &&
+          next.current_player_index === prevGS.currentPlayerIndex && myIdx !== next.current_player_index &&
+          next.round === prevGS.round && next.rolls_left < prevGS.rollsLeft
+        ) {
+          applyRemoteResult({ dice: next.dice, lockedDice: next.locked_dice, rollsLeft: next.rolls_left, isRolling: false });
         }
 
         // Turn hand-off (the opponent scored): apply the turn change straight

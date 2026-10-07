@@ -260,15 +260,22 @@ export default function MultiplayerGamePage() {
         prev: prevTurnKeyRef.current,
         next: key,
       });
-      if (autoRollTimerRef.current) {
-        clearTimeout(autoRollTimerRef.current);
-        autoRollTimerRef.current = null;
+      // This effect runs AFTER the auto-roll effect in the same commit, so the
+      // auto-roll may already have scheduled "Kast 1" for the NEW turn. Only
+      // cancel a timer that belongs to an older turn — clearing the new one
+      // left the player stuck on "Kast 1" (the auto-roll effect does not
+      // re-run because its deps did not change again).
+      if (autoRollPendingRef.current !== key) {
+        if (autoRollTimerRef.current) {
+          clearTimeout(autoRollTimerRef.current);
+          autoRollTimerRef.current = null;
+        }
+        autoRollPendingRef.current = null;
       }
       if (autoRollRetryTimerRef.current) {
         clearTimeout(autoRollRetryTimerRef.current);
         autoRollRetryTimerRef.current = null;
       }
-      autoRollPendingRef.current = null;
       autoRollRetryCountRef.current.clear();
       // autoRollRef stays as-is; fire-time guard checks against current key
     }

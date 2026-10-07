@@ -323,7 +323,7 @@ export function useDiceAnimation({
 
 
     if (state.settling) {
-      state.settleT = Math.min(state.settleT + delta / 0.22, 1);
+      state.settleT = Math.min(state.settleT + Math.min(delta, 1 / 20) / 0.22, 1);
       group.quaternion
         .copy(state.settleFrom)
         .slerp(state.target, easeOutCubic(state.settleT));

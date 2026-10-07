@@ -327,7 +327,8 @@ function Dice3DImpl({
   const pressRef = useRef<Group>(null);
   const pressAmount = useRef(0);
 
-  useFrame((_, delta) => {
+  useFrame((_, rawDelta) => {
+    const delta = Math.min(rawDelta, 1 / 20); // on-demand rendering: clamp idle gaps
     const g = pressRef.current;
     if (!g) return;
     if (pressAmount.current > 0.0005) {

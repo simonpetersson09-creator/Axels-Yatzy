@@ -42,7 +42,10 @@ function HoldIndicatorImpl({ held, size, phase = 0, color }: HoldIndicatorProps)
   // 0 = released, 1 = fully locked. Eased every frame for a smooth transition.
   const t = useRef(0);
 
-  useFrame((state, delta) => {
+  useFrame((state, rawDelta) => {
+    // Clamp: with on-demand rendering the first frame after a pause can carry
+    // a delta of several seconds.
+    const delta = Math.min(rawDelta, 1 / 20);
     const target = held ? 1 : 0;
     // Quick in, and an equally snappy release so unlocking feels instant.
     const speed = held ? 9 : 26;

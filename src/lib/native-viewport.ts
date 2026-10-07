@@ -80,9 +80,13 @@ export function installNativeViewportSync() {
   const sync = () => {
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(() => {
-      if (isPreviewFrame) {
-        // Lock the app's viewport variables to the iPhone 15 frame size,
-        // so app-fixed-screen / game-scroll-lock size to the frame, not the window.
+      // Lock the app's viewport variables to the iPhone 15 frame size, so
+      // app-fixed-screen / game-scroll-lock size to the frame, not the window.
+      // When the window is smaller than the frame, index.css drops the frame
+      // (fullscreen fallback) — then follow the real window size, otherwise the
+      // bottom of the game (the roll button) is pushed off-screen.
+      const fitsFrame = window.innerWidth >= PREVIEW_W && window.innerHeight >= PREVIEW_H;
+      if (isPreviewFrame && fitsFrame) {
         root.style.setProperty('--app-dvh', `${PREVIEW_H}px`);
         root.style.setProperty('--app-vw', `${PREVIEW_W}px`);
         return;

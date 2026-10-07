@@ -51,6 +51,8 @@ const ROLL_LAND_MS = 750;
 // the server re-validates locks anyway, and a refresh reconciles afterwards.
 // Kept short so tapping Kasta right after locking a die never feels frozen.
 const LOCK_CONFIRM_MAX_WAIT_MS = 8_000;
+// Lock taps are batched into one server call this long after the last tap.
+const LOCK_BATCH_MS = 250;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {
@@ -108,6 +110,8 @@ export function useMultiplayerGame() {
   const pendingLockSeqRef = useRef(0);
   const pendingLockPromisesRef = useRef<Set<Promise<boolean>>>(new Set());
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lockBatchRef = useRef<{ gameId: string; timer: ReturnType<typeof setTimeout> | null; promise: Promise<boolean>; resolve: (ok: boolean) => void } | null>(null);
+  const lockChainRef = useRef<Promise<unknown>>(Promise.resolve());
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
   // reset dice) isn't briefly overwritten by a stale server snapshot.
@@ -940,48 +944,64 @@ export function useMultiplayerGame() {
       gameState: { ...prev.gameState, lockedDice: optimisticLocks },
     } : prev);
 
-    // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId })
-      .then(({ error }) => { if (error) console.warn('[multiplayer] toggleLock heartbeat failed', error); });
-
-    const lockStartedAt = Date.now();
-    const lockPromise = (async (): Promise<boolean> => {
-      try {
-        const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
-          body: { game_id: gameId, session_id: sessionId, dice_index: index },
-        }));
-        if (error) {
-          console.error('Toggle lock error:', error);
-          reportMpIssue('lock_error', gameId, { ms: Date.now() - lockStartedAt, index, err: errText(error) });
-          if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq) {
-            pendingLockRef.current = null;
+    // Batch rapid taps: one server call with the final lock state, sent
+    // LOCK_BATCH_MS after the last tap. Avoids queuing one call per die.
+    let batch = lockBatchRef.current;
+    if (!batch || batch.gameId !== gameId) {
+      let resolve!: (ok: boolean) => void;
+      const promise = new Promise<boolean>((r) => { resolve = r; });
+      batch = { gameId, timer: null, promise, resolve };
+      lockBatchRef.current = batch;
+      pendingLockPromisesRef.current.add(promise);
+      setLocksPending(true);
+    }
+    if (batch.timer) clearTimeout(batch.timer);
+    const current = batch;
+    current.timer = setTimeout(() => {
+      if (lockBatchRef.current === current) lockBatchRef.current = null;
+      const prev = lockChainRef.current;
+      const send = (async () => {
+        await prev.catch(() => undefined); // keep calls in order
+        const pending = pendingLockRef.current;
+        const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
+        const locks = pending?.gameId === gameId ? pending.lockedDice : null;
+        if (!locks) { current.resolve(true); return; }
+        supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId })
+          .then(({ error }) => { if (error) console.warn('[multiplayer] toggleLock heartbeat failed', error); });
+        const lockStartedAt = Date.now();
+        try {
+          const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
+            body: { game_id: gameId, session_id: sessionId, locked_dice: locks },
+          }));
+          if (error) {
+            console.error('Toggle lock error:', error);
+            reportMpIssue('lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error) });
+            if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq) pendingLockRef.current = null;
+            refreshGameStateRef.current?.(gameId);
+            current.resolve(false);
+            return;
           }
+          const lockMs = Date.now() - lockStartedAt;
+          if (lockMs > MP_SLOW_MS) reportMpIssue('lock_slow', gameId, { ms: lockMs });
+          lockTimerRef.current = setTimeout(() => {
+            if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq && sameArray(pendingLockRef.current.lockedDice, locks)) {
+              pendingLockRef.current = null;
+            }
+          }, LOCK_OPTIMISTIC_MS);
+          current.resolve(true);
+        } catch (err) {
+          console.error('Toggle lock failed:', err);
+          reportMpIssue('lock_failed', gameId, { ms: Date.now() - lockStartedAt, err: errText(err) });
+          if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq) pendingLockRef.current = null;
           refreshGameStateRef.current?.(gameId);
-          return false;
+          current.resolve(false);
+        } finally {
+          pendingLockPromisesRef.current.delete(current.promise);
+          if (mountedRef.current) setLocksPending(pendingLockPromisesRef.current.size > 0);
         }
-        const lockMs = Date.now() - lockStartedAt;
-        if (lockMs > MP_SLOW_MS) reportMpIssue('lock_slow', gameId, { ms: lockMs, index });
-        lockTimerRef.current = setTimeout(() => {
-          if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq && sameArray(pendingLockRef.current.lockedDice, optimisticLocks)) {
-            pendingLockRef.current = null;
-          }
-        }, LOCK_OPTIMISTIC_MS);
-        return true;
-      } catch (err) {
-        console.error('Toggle lock failed:', err);
-        reportMpIssue('lock_failed', gameId, { ms: Date.now() - lockStartedAt, index, err: errText(err) });
-        if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === seq) {
-          pendingLockRef.current = null;
-        }
-        refreshGameStateRef.current?.(gameId);
-        return false;
-      } finally {
-        pendingLockPromisesRef.current.delete(lockPromise);
-        if (mountedRef.current) setLocksPending(pendingLockPromisesRef.current.size > 0);
-      }
-    })();
-    pendingLockPromisesRef.current.add(lockPromise);
-    setLocksPending(true);
+      })();
+      lockChainRef.current = send;
+    }, LOCK_BATCH_MS);
   }, [sessionId, getPendingLockForTurn]);
 
   // Get possible scores

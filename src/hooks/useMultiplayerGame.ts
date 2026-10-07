@@ -48,7 +48,7 @@ const ROLL_RESPONSE_GRACE_MS = 150;
 // Max time roll() waits for in-flight toggle-lock RPCs. On timeout we proceed:
 // the server re-validates locks anyway, and a refresh reconciles afterwards.
 // Kept short so tapping Kasta right after locking a die never feels frozen.
-const LOCK_CONFIRM_MAX_WAIT_MS = 1200;
+const LOCK_CONFIRM_MAX_WAIT_MS = 8_000;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {
@@ -98,7 +98,7 @@ export function useMultiplayerGame() {
   // localStorage read once per hook lifetime instead of on every render.
   const sessionId = useMemo(() => getSessionId(), []);
   // Use ref to avoid stale closure in debouncedRefresh
-  const refreshGameStateRef = useRef<((gameId: string) => Promise<void>) | null>(null);
+  const refreshGameStateRef = useRef<((gameId: string, attempt?: number) => Promise<void>) | null>(null);
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
   const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
@@ -118,6 +118,9 @@ export function useMultiplayerGame() {
   // visually landed and look like a post-landing face change.
   const ROLL_ANIM_MS = 1350;
   const [localRolling, setLocalRolling] = useState(false);
+  // True while a lock tap is still unconfirmed by the server — the roll button
+  // waits so the server never rolls a die the player believes is held.
+  const [locksPending, setLocksPending] = useState(false);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);
   const remoteRollingGuardRef = useRef(false);
@@ -192,12 +195,13 @@ export function useMultiplayerGame() {
     // livelock the loop, permanently blocking roll().
     const snapshot = [...pendingLockPromisesRef.current];
     if (snapshot.length === 0) return true;
-    // Never block the turn indefinitely: if the lock RPCs are slow, proceed.
+    // Unconfirmed locks must never be rolled over: on timeout report failure
+    // so roll() resyncs with the server instead of guessing.
     const guard = new Promise<'timeout'>((resolve) =>
       setTimeout(() => resolve('timeout'), LOCK_CONFIRM_MAX_WAIT_MS),
     );
     const results = await Promise.race([Promise.allSettled(snapshot), guard]);
-    if (results === 'timeout') return true;
+    if (results === 'timeout') return false;
     return results.every(result => result.status === 'fulfilled' && result.value);
   }, []);
 
@@ -216,7 +220,7 @@ export function useMultiplayerGame() {
     if (debounceRef.current) { clearTimeout(debounceRef.current); debounceRef.current = null; }
   }, []);
 
-  const refreshGameState = useCallback(async (gameId: string) => {
+  const refreshGameState = useCallback(async (gameId: string, attempt = 0) => {
     const [gameRes, playersRes] = await Promise.all([
       supabase.from('games').select('*').eq('id', gameId).single(),
       supabase.from('game_players').select('id, game_id, player_name, player_index, scores, is_bot').eq('game_id', gameId).order('player_index'),
@@ -230,6 +234,13 @@ export function useMultiplayerGame() {
       // Clear any pending submit guard so the next realtime payload isn't
       // permanently ignored if the DB blip leaves the ref stuck.
       pendingSubmitRef.current = null;
+      // Retry a few times so a server hiccup heals itself instead of leaving
+      // the match showing stale dice/scores.
+      if (attempt < 3) {
+        setTimeout(() => {
+          if (mountedRef.current) void refreshGameStateRef.current?.(gameId, attempt + 1);
+        }, 2000 * (attempt + 1));
+      }
       return;
     }
 
@@ -689,7 +700,19 @@ export function useMultiplayerGame() {
     // optimistic roll are already known locally via getPendingLockForTurn, so
     // we start the animation immediately and only gate the server call on the
     // lock confirmation (see locksPromise below).
-    const locksPromise = waitForPendingLocks();
+    // Fix: wait until the server has confirmed every lock tap BEFORE the roll
+    // starts. The button is disabled meanwhile (locksPending), so this wait is
+    // normally invisible; if confirmation fails we resync instead of rolling.
+    if (pendingLockPromisesRef.current.size > 0) {
+      const locksOk = await waitForPendingLocks();
+      if (!locksOk) {
+        reportMpIssue('roll_lock_unconfirmed', initial.gameId, {});
+        rollingGuardRef.current = false;
+        refreshGameStateRef.current?.(initial.gameId);
+        return false;
+      }
+    }
+    const locksPromise = Promise.resolve(true);
 
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState) {
@@ -805,6 +828,8 @@ export function useMultiplayerGame() {
         ? t('errTimeout')
         : t('errRollDice');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
+      // Reload the real match state so the screen never stays on guessed dice.
+      refreshGameStateRef.current?.(latest.gameId!);
       return { ok: false } as const;
     });
 
@@ -900,9 +925,11 @@ export function useMultiplayerGame() {
         return false;
       } finally {
         pendingLockPromisesRef.current.delete(lockPromise);
+        if (mountedRef.current) setLocksPending(pendingLockPromisesRef.current.size > 0);
       }
     })();
     pendingLockPromisesRef.current.add(lockPromise);
+    setLocksPending(true);
   }, [sessionId, getPendingLockForTurn]);
 
   // Get possible scores
@@ -1203,6 +1230,7 @@ export function useMultiplayerGame() {
     ...state,
     isMyTurn,
     localRolling,
+    locksPending,
     remoteRolling,
     pendingCategory,
     pendingPlayerIndex,

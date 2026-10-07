@@ -18,8 +18,30 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id, dice_index } = await req.json();
+    const { game_id, session_id, dice_index, locked_dice } = await req.json();
 
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // New app versions send the whole lock state in one call (batched taps).
+    if (locked_dice !== undefined) {
+      if (!game_id || !session_id || !Array.isArray(locked_dice) || locked_dice.length !== 5 || !locked_dice.every((b) => typeof b === "boolean")) {
+        return json({ error: "game_id, session_id and locked_dice[5] required" }, 400);
+      }
+      const { data, error } = await supabase.rpc("perform_set_locks", {
+        p_game_id: game_id,
+        p_session_id: session_id,
+        p_locked: locked_dice,
+      });
+      if (error) return json({ error: "Databasfel vid låsning" }, 500);
+      const r = data as { success: boolean; error?: string; locked_dice?: boolean[] };
+      if (!r.success) return json({ error: r.error }, 400);
+      return json({ success: true, locked_dice: r.locked_dice });
+    }
+
+    // Older app versions: one toggle per tap.
     if (!game_id || !session_id || dice_index === undefined || dice_index === null) {
       return json({ error: "game_id, session_id and dice_index required" }, 400);
     }
@@ -27,11 +49,6 @@ Deno.serve(async (req) => {
     if (typeof dice_index !== "number" || !Number.isInteger(dice_index) || dice_index < 0 || dice_index > 4) {
       return json({ error: "dice_index must be an integer between 0 and 4" }, 400);
     }
-
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
 
     const { data, error } = await supabase.rpc("perform_toggle_lock", {
       p_game_id: game_id,

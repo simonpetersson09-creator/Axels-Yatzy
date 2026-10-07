@@ -514,6 +514,7 @@ export default function MultiplayerGamePage() {
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending;
+  const showRollFirstHint = rollFirstHintDue && gameState.rollsLeft === 3 && isMyTurn && !localRolling && !remoteRolling && status === 'playing';
 
   const PLAYER_COLORS_HSL = [
     '36 82% 52%', // P1 amber
@@ -690,11 +691,14 @@ export default function MultiplayerGamePage() {
             >
               <PickDiceHint
                 show={
-                  gameState.rollsLeft === 2 &&
-                  isMyTurn &&
-                  !(localRolling || remoteRolling || gameState.isRolling) &&
-                  !gameState.lockedDice.some(Boolean)
+                  showRollFirstHint || (
+                    gameState.rollsLeft === 2 &&
+                    isMyTurn &&
+                    !(localRolling || remoteRolling || gameState.isRolling) &&
+                    !gameState.lockedDice.some(Boolean)
+                  )
                 }
+                text={showRollFirstHint ? t('rollFirstHint') : undefined}
                 className="mx-auto mb-1"
               />
               <DiceArea

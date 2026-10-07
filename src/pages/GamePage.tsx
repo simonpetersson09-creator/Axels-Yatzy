@@ -22,6 +22,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { Home } from 'lucide-react';
+import { getPlayerName } from '@/lib/session';
 
 const newMatchKey = () => `local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 

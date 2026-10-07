@@ -1,4 +1,4 @@
-import { useState, MutableRefObject, forwardRef } from 'react';
+import { useState, useRef, MutableRefObject, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flag } from 'lucide-react';
@@ -17,6 +17,14 @@ export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(f
 ) {
   const { t } = useTranslation();
   const [showDialog, setShowDialog] = useState(false);
+  // On touch screens the browser fires a "click" right after pointerup at the
+  // same spot — which is now the dialog's backdrop, so it closed instantly.
+  // Ignore backdrop taps for a moment after opening.
+  const openedAtRef = useRef(0);
+  const closeFromBackdrop = () => {
+    if (Date.now() - openedAtRef.current < 450) return;
+    setShowDialog(false);
+  };
   useBackHandler(showDialog, () => setShowDialog(false));
 
   return (
@@ -33,6 +41,7 @@ export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(f
           e.stopPropagation();
           if (pressedButtonRef && pressedButtonRef.current !== 'forfeit') return;
           if (pressedButtonRef) pressedButtonRef.current = null;
+          openedAtRef.current = Date.now();
           setShowDialog(true);
         }}
         onPointerCancel={() => { if (pressedButtonRef) pressedButtonRef.current = null; }}
@@ -61,7 +70,7 @@ export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(f
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setShowDialog(false)}
+                onClick={closeFromBackdrop}
               />
 
               <motion.div

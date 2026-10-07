@@ -83,6 +83,15 @@ async function doInitNotifications(): Promise<void> {
 
   if (!Capacitor.isNativePlatform()) return;
 
+  // Android: PushNotifications.register() crashes the app when Firebase is not
+  // configured (no google-services.json in the build). Only register once the
+  // build says FCM is set up — see scripts/set-android-firebase.js.
+  if (Capacitor.getPlatform() === 'android' && !(await isAndroidFcmConfigured())) {
+    console.warn('[notifications] Android build has no Firebase config — push disabled');
+    trackEvent('push_android_fcm_missing');
+    return;
+  }
+
   try {
     const { PushNotifications } = await import('@capacitor/push-notifications');
 
@@ -231,6 +240,19 @@ async function doInitNotifications(): Promise<void> {
 }
 
 let registerPush: (() => Promise<void>) | null = null;
+
+/** Written into the Android build by scripts/set-android-firebase.js only when
+ *  google-services.json was copied in. Missing file → push stays off (no crash). */
+async function isAndroidFcmConfigured(): Promise<boolean> {
+  try {
+    const res = await fetch('/native-push-config.json', { cache: 'no-store' });
+    if (!res.ok) return false;
+    const cfg = (await res.json()) as { androidFcm?: boolean };
+    return cfg.androidFcm === true;
+  } catch {
+    return false;
+  }
+}
 
 export type PushPermissionState = 'granted' | 'denied' | 'prompt' | 'unavailable';
 

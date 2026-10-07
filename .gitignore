@@ -31,3 +31,7 @@ dist-ssr
 # Capacitor / native
 ios/
 android/
+
+# Firebase client config (kept locally, copied into android/ by scripts/set-android-firebase.js)
+firebase/google-services.json
+google-services.json

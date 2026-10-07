@@ -23,7 +23,7 @@ import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { motion } from 'framer-motion';
-import { Bot, Globe } from 'lucide-react';
+import { Bot, Globe, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { saveFriendMatchResult } from '@/lib/friend-stats';
@@ -40,9 +40,19 @@ export default function MultiplayerGamePage() {
   const [searchParams] = useSearchParams();
   const {
     gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
-    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex, locksPending,
+    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex, locksPending, rollPending,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
+
+  // Waiting for the server to confirm a roll/lock: lock the sheet, and after
+  // 3 s say the connection is slow so it never looks like the app froze.
+  const waitingServer = (rollPending || locksPending) && isMyTurn;
+  const [slowServer, setSlowServer] = useState(false);
+  useEffect(() => {
+    if (!waitingServer) { setSlowServer(false); return; }
+    const tm = setTimeout(() => setSlowServer(true), 3000);
+    return () => clearTimeout(tm);
+  }, [waitingServer]);
 
   const gameId = searchParams.get('gameId');
   const diceProfiles = useDiceProfiles(gameId, gameState?.players.map(p => p.name).join('|'));
@@ -624,8 +634,16 @@ export default function MultiplayerGamePage() {
                 rollsLeft={gameState.rollsLeft}
                 aiChosenCategory={pendingCategory}
                 aiChosenPlayerIndex={pendingPlayerIndex}
-                selectionDisabled={!isMyTurn}
+                selectionDisabled={!isMyTurn || (rollPending && !localRolling)}
               />
+              {waitingServer && !localRolling && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/35 pointer-events-auto">
+                  <div className="flex items-center gap-2 rounded-full bg-card/90 px-3 py-1.5 shadow-lg">
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    {slowServer && <span className="text-[11px] font-medium text-foreground">{t('slowConnection')}</span>}
+                  </div>
+                </div>
+              )}
               <CombinationCelebration type={activeCelebration} />
             </div>
           </div>

@@ -620,7 +620,7 @@ export default function MultiplayerGamePage() {
             </div>
           </div>
 
-          <div className="ios-side-zone flex w-[108px] flex-shrink-0 flex-col gap-2 self-start">
+          <div className="ios-side-zone flex w-[124px] max-[379px]:w-[108px] flex-shrink-0 flex-col gap-2 self-start">
             {/* Player indicators */}
             <div className="flex flex-col gap-1 h-[124px]">
               {gameState.players.map((player, idx) => {
@@ -661,7 +661,7 @@ export default function MultiplayerGamePage() {
                       </span>
                     )}
                     </div>
-                    <span className={`text-[10px] font-semibold truncate max-w-[64px] ${
+                    <span className={`text-[10px] font-semibold truncate max-w-[80px] max-[379px]:max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
                       {player.name}{isMe ? t('youSuffix') : ''}

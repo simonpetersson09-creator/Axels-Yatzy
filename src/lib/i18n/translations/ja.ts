@@ -275,6 +275,7 @@ export const ja: typeof sv = {
   errRollDice: 'サイコロを振れなかったよ',
   errSubmitScore: 'スコアを保存できなかったよ',
   pickDiceHint: '残すサイコロを\n選んでね',
+  rollFirstHint: "「振る」をタップ\nして開始",
   searchingOpponent: '対戦相手を探してるよ…',
   searchingOpponentHint: '見つからない時はコンピューターと対戦するよ',
   onlineNewsTitle: '新登場：オンライン対戦！ 🌐',

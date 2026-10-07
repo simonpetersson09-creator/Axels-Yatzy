@@ -275,6 +275,7 @@ export const nl: typeof sv = {
   errRollDice: 'Dobbelstenen gooien mislukt',
   errSubmitScore: 'Score opslaan mislukt',
   pickDiceHint: 'Kies stenen\nom te houden',
+  rollFirstHint: "Tik op Gooien\nom te beginnen",
   searchingOpponent: 'Tegenstander zoeken…',
   searchingOpponentHint: 'Als we niemand vinden, speel je tegen de computer',
   onlineNewsTitle: 'Nieuw: speel online tegen anderen! 🌐',

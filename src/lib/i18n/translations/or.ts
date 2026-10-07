@@ -275,6 +275,7 @@ export const or: typeof sv = {
   errRollDice: 'ପଶା ପକାଇ ହେଲାନି',
   errSubmitScore: 'ସ୍କୋର୍ ସଞ୍ଚୟ ହେଲାନି',
   pickDiceHint: 'ରଖିବାକୁ ପଶା\nବାଛ',
+  rollFirstHint: "ଆରମ୍ଭ କରିବାକୁ\nରୋଲ୍ ଦବାନ୍ତୁ",
   searchingOpponent: 'ପ୍ରତିଦ୍ୱନ୍ଦ୍ୱୀ ଖୋଜୁଛି…',
   searchingOpponentHint: 'କେହି ନ ମିଳିଲେ କମ୍ପ୍ୟୁଟର୍ ସହ ଖେଳିବ',
   onlineNewsTitle: 'ନୂଆ: ଅନଲାଇନ୍‌ରେ ଅନ୍ୟମାନଙ୍କ ସହ ଖେଳ! 🌐',

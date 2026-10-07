@@ -275,6 +275,7 @@ export const ptBR: typeof sv = {
   errRollDice: 'Não foi possível rolar os dados',
   errSubmitScore: 'Não foi possível salvar os pontos',
   pickDiceHint: 'Escolha os dados\npara guardar',
+  rollFirstHint: "Toque em Jogar\npara começar",
   searchingOpponent: 'Buscando adversário…',
   searchingOpponentHint: 'Se ninguém aparecer, você joga contra o computador',
   onlineNewsTitle: 'Novidade: jogue com pessoas online! 🌐',

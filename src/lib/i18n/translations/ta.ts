@@ -275,6 +275,7 @@ export const ta: typeof sv = {
   errRollDice: 'பகடைகளை உருட்ட முடியவில்லை',
   errSubmitScore: 'புள்ளிகளைச் சேமிக்க முடியவில்லை',
   pickDiceHint: 'வைத்துக்கொள்ளும்\nபகடைகளைத் தேர்ந்தெடு',
+  rollFirstHint: "தொடங்க\nஉருட்டு அழுத்தவும்",
   searchingOpponent: 'எதிராளியைத் தேடுகிறோம்…',
   searchingOpponentHint: 'யாரும் கிடைக்காவிட்டால் கணினியுடன் ஆடலாம்',
   onlineNewsTitle: 'புதிது: ஆன்லைனில் மற்றவர்களுடன் ஆடுங்கள்! 🌐',

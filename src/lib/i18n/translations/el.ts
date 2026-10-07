@@ -275,6 +275,7 @@ export const el: typeof sv = {
   errRollDice: 'Αποτυχία ρίψης ζαριών',
   errSubmitScore: 'Αποτυχία αποθήκευσης σκορ',
   pickDiceHint: 'Διάλεξε ζάρια\nνα κρατήσεις',
+  rollFirstHint: "Πάτα Ρίξε\nγια να ξεκινήσεις",
   searchingOpponent: 'Αναζήτηση αντιπάλου…',
   searchingOpponentHint: 'Αν δεν βρεθεί κανείς, παίζεις με τον υπολογιστή',
   onlineNewsTitle: 'Νέο: παίξε με άλλους online! 🌐',

@@ -270,6 +270,7 @@ export const fr: typeof sv = {
   errRollDice: 'Impossible de lancer les dés',
   errSubmitScore: 'Impossible d’enregistrer le score',
   pickDiceHint: 'Choisis les dés\nà garder',
+  rollFirstHint: "Touchez Lancer\npour commencer",
   searchingOpponent: 'Recherche d’un adversaire…',
   searchingOpponentHint: 'Si personne n’est trouvé, vous jouez contre l’ordinateur',
   onlineNewsTitle: 'Nouveau : jouez en ligne ! 🌐',

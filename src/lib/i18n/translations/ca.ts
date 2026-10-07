@@ -274,6 +274,7 @@ export const ca: typeof sv = {
   errRollDice: 'No s’han pogut tirar els daus',
   errSubmitScore: 'No s’ha pogut desar la puntuació',
   pickDiceHint: 'Tria els daus\nque vols guardar',
+  rollFirstHint: "Toca Llançar\nper començar",
   searchingOpponent: 'Buscant rival…',
   searchingOpponentHint: 'Si no trobem ningú, jugaràs contra l’ordinador',
   onlineNewsTitle: 'Novetat: juga amb gent en línia! 🌐',

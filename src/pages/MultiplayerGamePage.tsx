@@ -69,6 +69,15 @@ export default function MultiplayerGamePage() {
 
   const [showTurnTransition, setShowTurnTransition] = useState(false);
   const [glowActive, setGlowActive] = useState(false);
+  // If the automatic first roll hasn't happened ~2.5 s into my turn, show a
+  // small hint so the player knows to tap the roll button themselves.
+  const [rollFirstHintDue, setRollFirstHintDue] = useState(false);
+  useEffect(() => {
+    setRollFirstHintDue(false);
+    if (!isMyTurn || gameState?.rollsLeft !== 3) return;
+    const timer = window.setTimeout(() => setRollFirstHintDue(true), 2500);
+    return () => window.clearTimeout(timer);
+  }, [isMyTurn, gameState?.rollsLeft, gameState?.currentPlayerIndex, gameState?.round]);
   const prevPlayerRef = useRef<number | null>(null);
   const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -514,6 +523,7 @@ export default function MultiplayerGamePage() {
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending;
+  const showRollFirstHint = rollFirstHintDue && gameState.rollsLeft === 3 && isMyTurn && !localRolling && !remoteRolling && status === 'playing';
 
   const PLAYER_COLORS_HSL = [
     '36 82% 52%', // P1 amber
@@ -690,11 +700,14 @@ export default function MultiplayerGamePage() {
             >
               <PickDiceHint
                 show={
-                  gameState.rollsLeft === 2 &&
-                  isMyTurn &&
-                  !(localRolling || remoteRolling || gameState.isRolling) &&
-                  !gameState.lockedDice.some(Boolean)
+                  showRollFirstHint || (
+                    gameState.rollsLeft === 2 &&
+                    isMyTurn &&
+                    !(localRolling || remoteRolling || gameState.isRolling) &&
+                    !gameState.lockedDice.some(Boolean)
+                  )
                 }
+                text={showRollFirstHint ? t('rollFirstHint') : undefined}
                 className="mx-auto mb-1"
               />
               <DiceArea

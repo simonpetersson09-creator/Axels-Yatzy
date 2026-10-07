@@ -274,6 +274,7 @@ export const ru: typeof sv = {
   errRollDice: 'Не удалось бросить кости',
   errSubmitScore: 'Не удалось сохранить счёт',
   pickDiceHint: 'Выбери кости,\nчтобы оставить',
+  rollFirstHint: "Нажми «Бросок»,\nчтобы начать",
   searchingOpponent: 'Ищем соперника…',
   searchingOpponentHint: 'Если никого не найдём, сыграешь с компьютером',
   onlineNewsTitle: 'Новинка: играй с людьми онлайн! 🌐',

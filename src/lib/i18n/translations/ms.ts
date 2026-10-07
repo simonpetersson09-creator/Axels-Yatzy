@@ -275,6 +275,7 @@ export const ms: typeof sv = {
   errRollDice: 'Tak dapat baling dadu',
   errSubmitScore: 'Tak dapat simpan skor',
   pickDiceHint: 'Pilih dadu\nuntuk disimpan',
+  rollFirstHint: "Ketik Baling\nuntuk mula",
   searchingOpponent: 'Mencari lawan…',
   searchingOpponentHint: 'Jika tiada pemain ditemui, awak lawan komputer',
   onlineNewsTitle: 'Baharu: lawan pemain dalam talian! 🌐',

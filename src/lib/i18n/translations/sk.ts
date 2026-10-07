@@ -275,6 +275,7 @@ export const sk: typeof sv = {
   errRollDice: 'Nepodarilo sa hodiť kockami',
   errSubmitScore: 'Nepodarilo sa uložiť skóre',
   pickDiceHint: 'Vyber kocky,\nktoré si necháš',
+  rollFirstHint: "Ťukni na Hodiť\npre začiatok",
   searchingOpponent: 'Hľadá sa súper…',
   searchingOpponentHint: 'Ak sa nikto nenájde, zahráš si proti počítaču',
   onlineNewsTitle: 'Novinka: hraj s ľuďmi online! 🌐',

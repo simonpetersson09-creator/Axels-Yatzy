@@ -275,6 +275,7 @@ export const es: typeof sv = {
   errRollDice: 'No se pudieron tirar los dados',
   errSubmitScore: 'No se pudo guardar la puntuación',
   pickDiceHint: 'Elige dados\npara guardar',
+  rollFirstHint: "Toca Lanzar\npara empezar",
   searchingOpponent: 'Buscando rival…',
   searchingOpponentHint: 'Si no se encuentra a nadie, juegas contra el ordenador',
   onlineNewsTitle: 'Novedad: ¡juega online! 🌐',

@@ -275,6 +275,7 @@ export const tr: typeof sv = {
   errRollDice: 'Zar atılamadı',
   errSubmitScore: 'Puan kaydedilemedi',
   pickDiceHint: 'Tutacağın\nzarları seç',
+  rollFirstHint: "Başlamak için\nAt'a dokun",
   searchingOpponent: 'Rakip aranıyor…',
   searchingOpponentHint: 'Kimse bulunamazsa bilgisayarla oynarsın',
   onlineNewsTitle: 'Yeni: çevrimiçi rakiplerle oyna! 🌐',

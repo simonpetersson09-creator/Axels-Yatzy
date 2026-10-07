@@ -275,6 +275,7 @@ export const bn: typeof sv = {
   errRollDice: 'পাশা ছোড়া যায়নি',
   errSubmitScore: 'স্কোর সেভ করা যায়নি',
   pickDiceHint: 'রাখার জন্য\nপাশা বাছো',
+  rollFirstHint: "শুরু করতে\nরোল চাপুন",
   searchingOpponent: 'প্রতিপক্ষ খোঁজা হচ্ছে…',
   searchingOpponentHint: 'কাউকে না পেলে কম্পিউটারের সাথে খেলবে',
   onlineNewsTitle: 'নতুন: অনলাইনে সবার সাথে খেলো! 🌐',

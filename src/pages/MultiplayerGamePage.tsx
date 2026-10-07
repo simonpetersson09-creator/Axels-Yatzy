@@ -40,7 +40,7 @@ export default function MultiplayerGamePage() {
   const [searchParams] = useSearchParams();
   const {
     gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
-    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex,
+    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex, locksPending,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 
@@ -513,7 +513,7 @@ export default function MultiplayerGamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
-  const canRoll = gameState.rollsLeft > 0 && isMyTurn;
+  const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending;
 
   const PLAYER_COLORS_HSL = [
     '36 82% 52%', // P1 amber

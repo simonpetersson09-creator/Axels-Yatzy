@@ -1067,7 +1067,15 @@ export function useMultiplayerGame() {
     withTimeout(supabase.functions.invoke('submit-score', {
       body: { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice },
     }))
-...
+      .then(({ data, error }) => {
+        const submitMs = Date.now() - submitStartedAt;
+        if (!error) {
+          if (submitMs > MP_SLOW_MS) reportMpIssue('submit_slow', gameId, { ms: submitMs, category: categoryId });
+          if (typeof data?.score === 'number' && data.score !== optimisticScore) {
+            reportMpIssue('score_mismatch', gameId, { category: categoryId, shown: shownDice, shownScore: optimisticScore, serverScore: data.score, ms: submitMs });
+          }
+          return;
+        }
         console.error('Submit score error:', error);
         reportMpIssue('submit_error', gameId, { ms: submitMs, category: categoryId, err: errText(error) });
         if (mountedRef.current) setState(prev => ({ ...prev, error: t('errSubmitScore') }));

@@ -2,7 +2,7 @@
 // Best-effort: never throws; logs to notification_log with kind='forfeit'.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { sendApns } from "../_shared/apns.ts";
+import { sendPush } from "../_shared/apns.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -117,7 +117,8 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      const apns = await sendApns({
+      const apns = await sendPush({
+        platform: token.platform,
         deviceToken: token.token,
         title,
         body,

@@ -2,7 +2,7 @@
 // for 30+ minutes and sends a friendly reminder, throttled to once per 6h per recipient/game.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { sendApns } from "../_shared/apns.ts";
+import { sendPush } from "../_shared/apns.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -168,7 +168,8 @@ Deno.serve(async (req) => {
 
       let delivered = false;
       if (token?.token) {
-        const apns = await sendApns({
+        const apns = await sendPush({
+          platform: token.platform,
           deviceToken: token.token,
           title,
           body,

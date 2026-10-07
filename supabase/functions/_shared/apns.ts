@@ -1,4 +1,7 @@
 // Shared APNs sender used by invite/turn/forfeit notify functions.
+// sendPush() routes Android tokens to FCM; every other token uses APNs unchanged.
+
+import { sendFcm } from "./fcm.ts";
 
 export interface ApnsArgs {
   deviceToken: string;
@@ -60,6 +63,12 @@ export async function sendApns(args: ApnsArgs): Promise<ApnsResult> {
   }
 }
 
+/** Platform router: 'android' tokens go to FCM, everything else (iOS) to APNs. */
+export function sendPush(args: ApnsArgs & { platform?: string | null }): Promise<ApnsResult> {
+  const { platform, ...rest } = args;
+  return platform === "android" ? sendFcm(rest) : sendApns(rest);
+}
+
 // APNs returns 410 (Unregistered) or 400 BadDeviceToken when a token is no longer valid.
 export function isStaleTokenResult(r: ApnsResult): boolean {
   if (r.status === 410) return true;
@@ -119,7 +128,7 @@ export async function pushToSession(
     .limit(1)
     .maybeSingle();
   if (!token?.token) return { delivered: false, deviceId: token?.device_id ?? null };
-  const result = await sendApns({ ...args, deviceToken: token.token });
+  const result = await sendPush({ ...args, deviceToken: token.token, platform: token.platform });
   await disableTokenIfStale(supabase, token.token, result);
   return { delivered: result.ok, deviceId: token.device_id };
 }

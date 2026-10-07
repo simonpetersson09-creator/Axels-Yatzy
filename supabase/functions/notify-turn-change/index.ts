@@ -4,7 +4,7 @@
 // is logged as queued (delivered=false) so analytics still works.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { sendApns } from "../_shared/apns.ts";
+import { sendPush } from "../_shared/apns.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -130,7 +130,8 @@ Deno.serve(async (req) => {
 
     let delivered = false;
     if (token?.token) {
-      const apns = await sendApns({
+      const apns = await sendPush({
+        platform: token.platform,
         deviceToken: token.token,
         title,
         body,

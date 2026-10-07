@@ -81,7 +81,9 @@ function applyCategory(prev: GameState | null, categoryId: CategoryId): GameStat
  * When the app was closed during the computer's turn, play all pending
  * computer turns instantly so the player comes back to their own turn.
  */
-function fastForwardAi(state: GameState, localId?: string): GameState {
+export interface AiCatchUpTurn { name: string; category: CategoryId; score: number }
+
+function fastForwardAi(state: GameState, localId?: string, log?: AiCatchUpTurn[]): GameState {
   let ai: number[] = [];
   try {
     const raw = localId ? localStorage.getItem(`yatzy-ai-players:${localId}`) : null;
@@ -102,8 +104,10 @@ function fastForwardAi(state: GameState, localId?: string): GameState {
       }
       continue;
     }
-    const next = applyCategory(s, aiPickCategory(s.dice, scores));
+    const cat = aiPickCategory(s.dice, scores);
+    const next = applyCategory(s, cat);
     if (!next || next === s) break;
+    log?.push({ name: s.players[s.currentPlayerIndex].name, category: cat, score: calculateScore(s.dice, cat) });
     s = next;
   }
   if (s.gameOver) clearLocalActiveGame(localId);
@@ -113,6 +117,7 @@ function fastForwardAi(state: GameState, localId?: string): GameState {
 export function useYatzyGame(localId?: string) {
   const localIdRef = useRef(localId);
   localIdRef.current = localId;
+  const catchUpRef = useRef<AiCatchUpTurn[]>([]);
   const [gameState, setGameState] = useState<GameState | null>(() => {
     // Try to restore saved game on mount. `isRolling` must never survive a
     // reload/suspension: the timer that would have cleared it is gone, so a
@@ -125,8 +130,9 @@ export function useYatzyGame(localId?: string) {
       }
       return null;
     }
-    return fastForwardAi({ ...saved, isRolling: false }, localId);
+    return fastForwardAi({ ...saved, isRolling: false }, localId, catchUpRef.current);
   });
+  const [aiCatchUp] = useState<AiCatchUpTurn[]>(() => catchUpRef.current);
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -254,5 +260,6 @@ export function useYatzyGame(localId?: string) {
     getPossibleScores,
     selectCategory,
     resetGame,
+    aiCatchUp,
   };
 }

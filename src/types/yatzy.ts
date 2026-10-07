@@ -38,6 +38,8 @@ export interface Player {
   id: string;
   name: string;
   scores: PlayerScore;
+  /** Online only: shown as a small badge on the player's ring instead of in the name. */
+  badge?: 'online' | 'bot';
 }
 
 export interface GameState {

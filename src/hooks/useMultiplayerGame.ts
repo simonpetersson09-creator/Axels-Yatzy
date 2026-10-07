@@ -239,8 +239,10 @@ export function useMultiplayerGame() {
     const isQuick = !!(game as { is_quick_match?: boolean }).is_quick_match;
     const players: Player[] = dbPlayers.map(p => ({
       id: p.id,
-      // Online quick matches: computer seats get a robot, real online players a globe.
-      name: p.is_bot ? `🤖 ${p.player_name}` : isQuick ? `🌐 ${p.player_name}` : p.player_name,
+      name: p.player_name,
+      // Online quick matches: computer seats get a robot badge, real online
+      // players a globe badge — drawn on the player ring, not in the name.
+      badge: p.is_bot ? 'bot' : isQuick ? 'online' : undefined,
       scores: (p.scores as Record<string, number | null>) ?? {},
     }));
 

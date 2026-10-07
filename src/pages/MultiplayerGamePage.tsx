@@ -632,6 +632,7 @@ export default function MultiplayerGamePage() {
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
+                    <div className="relative shrink-0">
                     <div className={`w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
                     } ${isMe && glowActive ? 'animate-pulse-gold' : ''} transition-all flex items-center justify-center`}>
@@ -640,6 +641,17 @@ export default function MultiplayerGamePage() {
                       ) : (
                         <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
                       )}
+                    </div>
+                    {player.badge && (
+                      <span
+                        className="absolute -bottom-1.5 -right-1.5 w-3 h-3 rounded-full bg-background border border-border flex items-center justify-center shadow-sm"
+                        aria-label={player.badge === 'bot' ? 'Datorn' : 'Online'}
+                      >
+                        {player.badge === 'bot'
+                          ? <Bot className="w-2 h-2 text-muted-foreground" strokeWidth={2.75} />
+                          : <Globe className="w-2 h-2 text-primary" strokeWidth={2.75} />}
+                      </span>
+                    )}
                     </div>
                     <span className={`text-[10px] font-semibold truncate max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'

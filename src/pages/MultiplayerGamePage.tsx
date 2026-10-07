@@ -23,6 +23,7 @@ import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { motion } from 'framer-motion';
+import { Bot, Globe } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { saveFriendMatchResult } from '@/lib/friend-stats';

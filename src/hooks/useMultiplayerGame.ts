@@ -834,7 +834,7 @@ export function useMultiplayerGame() {
         return { data: null, error: new Error('lock-unconfirmed') } as { data: any; error: any };
       }
       return withTimeout(supabase.functions.invoke('roll-dice', {
-        body: { game_id: latest.gameId, session_id: sessionId },
+        body: { game_id: latest.gameId, session_id: sessionId, server_rolls: true },
       }));
     }).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);

@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id } = await req.json();
+    const { game_id, session_id, client_dice, server_rolls } = await req.json();
 
     if (!game_id || !session_id) {
       return json({ error: "game_id and session_id required" }, 400);
@@ -29,12 +29,24 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // The server always rolls (fair play). Any client_dice sent by older app
-    // versions is ignored on purpose.
+    // New app versions send server_rolls: true and the server rolls (fair
+    // play). TEMPORARY: older versions (no flag) still get their own dice
+    // accepted so their animation keeps matching. Remove this fallback once
+    // most players have updated — until then the old path can be abused.
+    let clientDice: number[] | null = null;
+    if (
+      server_rolls !== true &&
+      Array.isArray(client_dice) &&
+      client_dice.length === 5 &&
+      client_dice.every((n) => Number.isInteger(n) && n >= 1 && n <= 6)
+    ) {
+      clientDice = client_dice as number[];
+    }
+
     const { data, error } = await supabase.rpc("perform_roll_dice", {
       p_game_id: game_id,
       p_session_id: session_id,
-      p_client_dice: null,
+      p_client_dice: clientDice,
     });
 
     if (error) {

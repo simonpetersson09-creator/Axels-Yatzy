@@ -90,6 +90,9 @@ function fastForwardAi(state: GameState, localId?: string, log?: AiCatchUpTurn[]
     ai = raw ? JSON.parse(raw) : [];
   } catch { ai = []; }
   if (!Array.isArray(ai) || ai.length === 0) return state;
+  // Never auto-play the human seat (index 0), even if a save is corrupt.
+  ai = ai.filter(i => i !== 0);
+  if (ai.length === 0) return state;
 
   let s: GameState = state;
   let guard = 0;

@@ -194,7 +194,7 @@ export function useMultiplayerGame() {
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
     const startedAt = Date.now();
     const finish = () => {
-      if (!mountedRef.current) return;
+      if (!mountedRef.current) { setDiceAwait(false); remoteRollingGuardRef.current = false; return; }
       // Still waiting for the numbers: keep spinning (capped), then land.
       if (!dicePart && remoteResultAtRef.current === 0 && Date.now() - startedAt < NETWORK_TIMEOUT_MS) {
         remoteRollingTimerRef.current = setTimeout(finish, 150);
@@ -400,6 +400,7 @@ export function useMultiplayerGame() {
       const opponentRolled =
         prevGS &&
         !rollingGuardRef.current &&
+        !remoteRollingGuardRef.current &&
         !isMyTurnNow &&
         restPart.currentPlayerIndex === prevGS.currentPlayerIndex &&
         restPart.round === prevGS.round &&
@@ -1258,6 +1259,8 @@ export function useMultiplayerGame() {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      // The await flag is shared by every dice view; never leave it on.
+      setDiceAwait(false);
     };
   }, []);
 

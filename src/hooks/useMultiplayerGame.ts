@@ -127,6 +127,8 @@ export function useMultiplayerGame() {
   const rollConfirmedRef = useRef(true);
   const [rollPending, setRollPending] = useState(false);
   const remoteRollingGuardRef = useRef(false);
+  /** When the opponent's numbers arrived (0 = still waiting). */
+  const remoteResultAtRef = useRef(0);
   // Pending category surfaces an `aiChosenCategory`-style highlight while the
   // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
   // pendingSubmitRef.
@@ -178,19 +180,48 @@ export function useMultiplayerGame() {
         },
       } : prev);
     } else {
-      // Broadcast path — only flip the visual rolling flag; do NOT mutate
-      // dice/lockedDice/isRolling in state and do NOT pre-fill the buffer.
+      // Broadcast path — the server is still rolling. Spin without a value
+      // (diceAwait) until roll_result / postgres_changes delivers the numbers.
+      remoteResultAtRef.current = 0;
+      setDiceAwait(true);
     }
     remoteRollingGuardRef.current = true;
     setRemoteRolling(true);
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
-    remoteRollingTimerRef.current = setTimeout(() => {
+    const startedAt = Date.now();
+    const finish = () => {
       if (!mountedRef.current) return;
+      // Still waiting for the numbers: keep spinning (capped), then land.
+      if (!dicePart && remoteResultAtRef.current === 0 && Date.now() - startedAt < NETWORK_TIMEOUT_MS) {
+        remoteRollingTimerRef.current = setTimeout(finish, 150);
+        return;
+      }
+      const landLeft = remoteResultAtRef.current ? remoteResultAtRef.current + ROLL_LAND_MS - Date.now() : 0;
+      if (landLeft > 0) { remoteRollingTimerRef.current = setTimeout(finish, landLeft); return; }
+      remoteRollingTimerRef.current = null;
+      setDiceAwait(false);
       flushPendingRoll();
       remoteRollingGuardRef.current = false;
       setRemoteRolling(false);
-    }, ROLL_ANIM_MS);
+    };
+    remoteRollingTimerRef.current = setTimeout(finish, ROLL_ANIM_MS);
   }, [flushPendingRoll, getPendingLockForTurn]);
+
+  // The opponent's server-rolled numbers arrived while their dice spin.
+  const applyRemoteResult = useCallback((part: RollDicePart) => {
+    const prevGS = stateRef.current.gameState;
+    const visible = {
+      ...part,
+      lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? part.lockedDice,
+    };
+    pendingRollUpdateRef.current = visible;
+    remoteResultAtRef.current = Date.now();
+    setState(prev => prev.gameState ? {
+      ...prev,
+      gameState: { ...prev.gameState, dice: visible.dice, lockedDice: visible.lockedDice, rollsLeft: visible.rollsLeft },
+    } : prev);
+    setDiceAwait(false);
+  }, [getPendingLockForTurn]);
 
   const waitForPendingLocks = useCallback(async () => {
     // Snapshot the pending promises ONCE on entry. If we re-read the live ref

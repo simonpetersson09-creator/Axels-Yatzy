@@ -438,7 +438,7 @@ export default function GamePage() {
             </div>
           </div>
 
-          <div className="ios-side-zone flex w-[124px] flex-shrink-0 flex-col gap-2 self-start">
+          <div className="ios-side-zone flex w-[124px] max-[379px]:w-[108px] flex-shrink-0 flex-col gap-2 self-start">
             {/* Player indicators */}
             <div className="flex flex-col gap-1 h-[124px]">
               {gameState.players.map((player, idx) => {
@@ -465,7 +465,7 @@ export default function GamePage() {
                         <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
                       )}
                     </div>
-                    <span className={`text-[10px] font-semibold truncate max-w-[80px] ${
+                    <span className={`text-[10px] font-semibold truncate max-w-[80px] max-[379px]:max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
                       {player.name}

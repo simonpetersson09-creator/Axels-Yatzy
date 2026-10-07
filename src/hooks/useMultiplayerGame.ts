@@ -44,7 +44,8 @@ const LOCK_OPTIMISTIC_MS = 1500;
 // Max time the UI is allowed to keep spinning AFTER the dice animation while
 // waiting for the roll RPC. Without this cap a slow/hanging edge function
 // froze the whole turn for up to NETWORK_TIMEOUT_MS.
-const ROLL_RESPONSE_GRACE_MS = 150;
+/** Time a tumbling die needs to land after the server's numbers arrive. */
+const ROLL_LAND_MS = 750;
 // Max time roll() waits for in-flight toggle-lock RPCs. On timeout we proceed:
 // the server re-validates locks anyway, and a refresh reconciles afterwards.
 // Kept short so tapping Kasta right after locking a die never feels frozen.
@@ -724,70 +725,41 @@ export function useMultiplayerGame() {
     const gs = latest.gameState;
     const activeLockedDice = getPendingLockForTurn(latest.gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
 
-    // Optimistic dice: generate final values locally so the Dice animation
-    // spins toward the real result from t=0 (same as Snabb match). Prevents
-    // the visible "extra rotation" that happened when the server response
-    // arrived mid-spin and forced a retarget. Server still validates turn /
-    // rolls_left / locks; it accepts our dice as the authoritative values.
+    // The SERVER rolls the dice (fair play: the phone can't choose its own
+    // numbers). The dice start tumbling right away without a known value and
+    // keep tumbling (diceAwait) until the server's numbers arrive; then they
+    // re-aim smoothly and land. Locked dice stay put.
     const willResetLocks = gs.rollsLeft === 3;
     const optimisticLocked = willResetLocks ? [false, false, false, false, false] : activeLockedDice;
-    // Same unbiased crypto RNG as Snabb match (rejection sampling, no modulo bias).
-    const optimisticDice = gs.dice.map((prev, i) =>
-      !willResetLocks && optimisticLocked[i] ? prev : rollSingleDie(),
-    );
     const optimisticRollsLeft = gs.rollsLeft - 1;
 
-    // CRITICAL: flip rolling AND commit optimistic dice in a single batched
-    // update so the Dice component's rolling useEffect reads the final target
-    // value on its very first run — no mid-spin retarget, no extra rotation.
+    setDiceAwait(true);
     if (mountedRef.current) {
       setLocalRolling(true);
       setState(prev => prev.gameState ? {
         ...prev,
         gameState: {
           ...prev.gameState,
-          dice: optimisticDice,
           lockedDice: optimisticLocked,
-          // CRITICAL: also commit optimistic rollsLeft so `hasRolled`
-          // (rollsLeft < 3) flips to true on the same render the dice
-          // animation begins. Otherwise Dice.tsx keeps displaying the
-          // randomized initialFace as the spin target on the first roll,
-          // and swaps to the real value at flush-time — visible as dice
-          // "flipping" in the last frame of the animation.
+          // Commit rollsLeft with the rolling flag so `hasRolled` flips on
+          // the same render the animation begins.
           rollsLeft: optimisticRollsLeft,
         },
       } : prev);
     }
-    // Pre-buffer so the animation-end flush lands on the same values.
-    pendingRollUpdateRef.current = {
-      dice: optimisticDice,
-      lockedDice: optimisticLocked,
-      rollsLeft: optimisticRollsLeft,
-      isRolling: false,
-    };
+    pendingRollUpdateRef.current = null;
 
-    // Broadcast roll-start so the opponent can begin their spin animation
-    // without waiting for the postgres_changes event. Sent AFTER lock-confirm
-    // so we never trigger a phantom spin on rollback.
+    // Tell the opponent to start spinning; the numbers follow in roll_result.
     try {
       channelRef.current?.send({
         type: 'broadcast',
         event: 'roll_started',
-        payload: {
-          player: latest.myPlayerIndex,
-          dice: optimisticDice,
-          lockedDice: optimisticLocked,
-          rollsLeft: optimisticRollsLeft,
-        },
+        payload: { player: latest.myPlayerIndex, lockedDice: optimisticLocked, rollsLeft: optimisticRollsLeft },
       });
-    } catch (err) {
+    } catch {
       // Non-fatal — opponent will still spin via postgres_changes fallback.
     }
 
-    // Fire RPC in parallel — we don't await it for the animation timing.
-    // It waits for the pending lock RPCs first so the server sees the same
-    // locks we animated with. Server writes the client_dice we provided
-    // (validated 1..6) so the authoritative values match what's on screen.
     const rollStartedAt = Date.now();
     // Scoring stays blocked until the server has confirmed this roll (or the
     // real state has been reloaded after a failure).
@@ -799,51 +771,55 @@ export function useMultiplayerGame() {
         if (mountedRef.current) setRollPending(false);
       });
     };
+    let serverDoneAt = 0;
     const rpcPromise = locksPromise.then(async (locksConfirmed) => {
       if (!locksConfirmed) {
-        reportMpIssue('roll_lock_unconfirmed', latest.gameId, { shown: optimisticDice, locked: optimisticLocked });
-        // Server lock state is unknown — resync instead of rolling.
-        refreshGameStateRef.current?.(latest.gameId!);
+        reportMpIssue('roll_lock_unconfirmed', latest.gameId, { locked: optimisticLocked });
         return { data: null, error: new Error('lock-unconfirmed') } as { data: any; error: any };
       }
       return withTimeout(supabase.functions.invoke('roll-dice', {
-        body: { game_id: latest.gameId, session_id: sessionId, client_dice: optimisticDice },
+        body: { game_id: latest.gameId, session_id: sessionId },
       }));
     }).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
       const rollMs = Date.now() - rollStartedAt;
+      const ok = !error && Array.isArray(data?.dice) && data.dice.length === 5 && typeof data?.rolls_left === 'number';
       if (error && (error as Error)?.message !== 'lock-unconfirmed') {
         reportMpIssue('roll_error', latest.gameId, { ms: rollMs, err: errText(error) });
-      } else if (!error) {
-        if (rollMs > MP_SLOW_MS) reportMpIssue('roll_slow', latest.gameId, { ms: rollMs });
-        if (Array.isArray(data?.dice) && !sameArray(data.dice, optimisticDice)) {
-          reportMpIssue('roll_dice_mismatch', latest.gameId, { shown: optimisticDice, server: data.dice, locked: optimisticLocked, ms: rollMs });
-        }
+      } else if (ok && rollMs > MP_SLOW_MS) {
+        reportMpIssue('roll_slow', latest.gameId, { ms: rollMs });
       }
-      // Only buffer while the roll is still in flight. If the grace period
-      // already released the UI, writing here would flush later and make the
-      // dice change faces after they visually landed.
-      if (!error && rollingGuardRef.current && data?.dice && typeof data?.rolls_left === 'number') {
-        // Update buffer to server's authoritative values (should match ours).
-        pendingRollUpdateRef.current = {
-          dice: data.dice,
-          lockedDice: optimisticLocked,
-          rollsLeft: data.rolls_left,
-          isRolling: false,
-        };
-      }
-      if (error) {
-        // The roll never reached the server: put the real dice back on screen.
-        if (mountedRef.current) setState(prev => ({ ...prev, error: t('errRollDice') }));
-        settleRoll(latest.gameId!);
-      } else {
+      serverDoneAt = Date.now();
+      if (ok) {
+        const part = { dice: data.dice as number[], lockedDice: optimisticLocked, rollsLeft: data.rolls_left as number, isRolling: false };
+        pendingRollUpdateRef.current = part;
+        // Give the tumbling dice their landing values.
+        if (mountedRef.current) setState(prev => prev.gameState ? {
+          ...prev,
+          gameState: { ...prev.gameState, dice: part.dice, rollsLeft: part.rollsLeft },
+        } : prev);
+        setDiceAwait(false);
+        try {
+          channelRef.current?.send({
+            type: 'broadcast',
+            event: 'roll_result',
+            payload: { player: latest.myPlayerIndex, dice: part.dice, lockedDice: part.lockedDice, rollsLeft: part.rollsLeft },
+          });
+        } catch { /* opponent falls back to postgres_changes */ }
         rollConfirmedRef.current = true;
         if (mountedRef.current) setRollPending(false);
+        return { ok: true } as const;
       }
-      return { ok: !error } as const;
+      // The roll never reached the server: land on the old dice and reload.
+      setDiceAwait(false);
+      if (mountedRef.current) setState(prev => ({ ...prev, error: t('errRollDice') }));
+      settleRoll(latest.gameId!);
+      return { ok: false } as const;
     }).catch((err) => {
       console.error('Roll dice failed:', err);
       reportMpIssue('roll_failed', latest.gameId, { ms: Date.now() - rollStartedAt, err: errText(err) });
+      serverDoneAt = Date.now();
+      setDiceAwait(false);
       const msg = (err as Error)?.message === 'timeout'
         ? t('errTimeout')
         : t('errRollDice');
@@ -853,29 +829,25 @@ export function useMultiplayerGame() {
       return { ok: false } as const;
     });
 
-    // Wait for the animation, then give the server a SHORT grace period to
-    // land its authoritative values. If it's slower than that we release the
-    // UI anyway (optimistic dice are already correct) — otherwise a slow or
-    // hanging edge function froze the whole turn for many seconds.
+    // Release when BOTH the normal animation time has passed AND the dice
+    // have had time to land after the server answered.
     if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
     const animPromise = new Promise<void>((resolve) => {
       rollingTimerRef.current = setTimeout(() => resolve(), ROLL_ANIM_MS);
     });
-    const graced = animPromise.then(() =>
-      Promise.race([
-        rpcPromise,
-        new Promise<{ ok: boolean }>((resolve) =>
-          setTimeout(() => resolve({ ok: true }), ROLL_RESPONSE_GRACE_MS),
-        ),
-      ]),
-    );
+    const done = Promise.all([animPromise, rpcPromise]).then(async ([, result]) => {
+      const landLeft = serverDoneAt + ROLL_LAND_MS - Date.now();
+      if (landLeft > 0) await new Promise((r) => setTimeout(r, landLeft));
+      return result;
+    });
     return new Promise<boolean>((resolve) => {
-      graced.then((result) => {
+      done.then((result) => {
         // Always release the guard, even if unmounted, so a remounted view
         // never inherits a permanently "rolling" lock.
         rollingGuardRef.current = false;
         if (!mountedRef.current) { resolve(false); return; }
-        flushPendingRoll();
+        if (result.ok) flushPendingRoll();
+        else pendingRollUpdateRef.current = null;
         setLocalRolling(false);
         resolve(result.ok);
       });

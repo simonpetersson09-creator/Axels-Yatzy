@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Player, CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, rollDice } from '@/lib/yatzy-scoring';
+import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { setActiveGame, updateLastRollTime, saveGameState, loadGameState, clearLocalActiveGame } from '@/lib/active-game';
 
 function createPlayer(name: string, index: number): Player {
@@ -34,6 +35,80 @@ function isValidGameState(value: unknown): value is GameState {
   return true;
 }
 
+/** Pure scoring step: writes the category for the current player and advances the turn. */
+function applyCategory(prev: GameState | null, categoryId: CategoryId): GameState | null {
+  if (!prev || prev.rollsLeft === 3) return prev;
+  const currentPlayer = prev.players[prev.currentPlayerIndex];
+  if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return prev;
+
+  const score = calculateScore(prev.dice, categoryId);
+  const updatedPlayers = prev.players.map((p, i) => {
+    if (i !== prev.currentPlayerIndex) return p;
+    return { ...p, scores: { ...p.scores, [categoryId]: score } };
+  });
+
+  const allDone = updatedPlayers.every(p => CATEGORIES.every(cat => p.scores[cat.id] !== undefined && p.scores[cat.id] !== null));
+  const gameOver = allDone;
+
+  let nextPlayerIndex = (prev.currentPlayerIndex + 1) % prev.players.length;
+  if (!gameOver) {
+    for (let i = 0; i < prev.players.length; i++) {
+      const candidate = (prev.currentPlayerIndex + 1 + i) % prev.players.length;
+      const hasOpen = CATEGORIES.some(cat => updatedPlayers[candidate].scores[cat.id] === undefined || updatedPlayers[candidate].scores[cat.id] === null);
+      if (hasOpen) {
+        nextPlayerIndex = candidate;
+        break;
+      }
+    }
+  }
+
+  // Bump the round whenever we loop back (not only at index 0): the first
+  // player can finish early, and round-derived keys in GamePage would freeze.
+  const wrapped = !gameOver && nextPlayerIndex <= prev.currentPlayerIndex;
+  return {
+    ...prev,
+    players: updatedPlayers,
+    currentPlayerIndex: gameOver ? prev.currentPlayerIndex : nextPlayerIndex,
+    dice: [1, 1, 1, 1, 1],
+    lockedDice: [false, false, false, false, false],
+    rollsLeft: 3,
+    gameOver,
+    round: wrapped ? prev.round + 1 : prev.round,
+  };
+}
+
+/**
+ * When the app was closed during the computer's turn, play all pending
+ * computer turns instantly so the player comes back to their own turn.
+ */
+function fastForwardAi(state: GameState, localId?: string): GameState {
+  let ai: number[] = [];
+  try {
+    const raw = localId ? localStorage.getItem(`yatzy-ai-players:${localId}`) : null;
+    ai = raw ? JSON.parse(raw) : [];
+  } catch { ai = []; }
+  if (!Array.isArray(ai) || ai.length === 0) return state;
+
+  let s: GameState = state;
+  let guard = 0;
+  while (!s.gameOver && ai.includes(s.currentPlayerIndex) && guard++ < 200) {
+    const scores = s.players[s.currentPlayerIndex].scores;
+    if (s.rollsLeft > 0) {
+      const locks = s.rollsLeft === 3 ? [false, false, false, false, false] : s.lockedDice;
+      s = { ...s, dice: rollDice(s.dice, locks), lockedDice: locks, rollsLeft: s.rollsLeft - 1 };
+      if (s.rollsLeft > 0) {
+        s = { ...s, lockedDice: aiDecideLocks(s.dice, scores, s.rollsLeft) };
+        if (s.lockedDice.every(Boolean)) s = { ...s, rollsLeft: 0 };
+      }
+      continue;
+    }
+    const next = applyCategory(s, aiPickCategory(s.dice, scores));
+    if (!next || next === s) break;
+    s = next;
+  }
+  if (s.gameOver) clearLocalActiveGame(localId);
+  return s;
+}
 
 export function useYatzyGame(localId?: string) {
   const localIdRef = useRef(localId);
@@ -50,7 +125,7 @@ export function useYatzyGame(localId?: string) {
       }
       return null;
     }
-    return { ...saved, isRolling: false };
+    return fastForwardAi({ ...saved, isRolling: false }, localId);
   });
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -159,56 +234,9 @@ export function useYatzyGame(localId?: string) {
 
   const selectCategory = useCallback((categoryId: CategoryId, debug?: { rowText?: string; clickedCategoryId?: CategoryId; renderedRowIndex?: number | null; score?: number | null }) => {
     setGameState(prev => {
-      if (!prev || prev.rollsLeft === 3) return prev;
-      const currentPlayer = prev.players[prev.currentPlayerIndex];
-      if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return prev;
-
-      const score = calculateScore(prev.dice, categoryId);
-
-
-      const updatedPlayers = prev.players.map((p, i) => {
-        if (i !== prev.currentPlayerIndex) return p;
-        return { ...p, scores: { ...p.scores, [categoryId]: score } };
-      });
-
-      // Check if ALL players have filled all categories
-      const allDone = updatedPlayers.every(p => CATEGORIES.every(cat => p.scores[cat.id] !== undefined && p.scores[cat.id] !== null));
-      let gameOver = allDone;
-
-      // Find next player who still has open categories (skip finished players)
-      let nextPlayerIndex = (prev.currentPlayerIndex + 1) % prev.players.length;
-      if (!gameOver) {
-        for (let i = 0; i < prev.players.length; i++) {
-          const candidate = (prev.currentPlayerIndex + 1 + i) % prev.players.length;
-          const hasOpen = CATEGORIES.some(cat => updatedPlayers[candidate].scores[cat.id] === undefined || updatedPlayers[candidate].scores[cat.id] === null);
-          if (hasOpen) {
-            nextPlayerIndex = candidate;
-            break;
-          }
-        }
-      }
-
-      if (gameOver) {
-        clearLocalActiveGame(localIdRef.current);
-      }
-
-      // Detect "wrap" around the player list. We must bump the round whenever
-      // we loop back — not only when nextPlayerIndex === 0 — because the
-      // first player can finish their card before the others, in which case
-      // the cycle never lands on index 0 again. Without this bump, the
-      // round-derived keys in GamePage (auto-roll + AI effects) stay
-      // identical between cycles and the AI players freeze.
-      const wrapped = !gameOver && nextPlayerIndex <= prev.currentPlayerIndex;
-      return {
-        ...prev,
-        players: updatedPlayers,
-        currentPlayerIndex: gameOver ? prev.currentPlayerIndex : nextPlayerIndex,
-        dice: [1, 1, 1, 1, 1],
-        lockedDice: [false, false, false, false, false],
-        rollsLeft: 3,
-        gameOver,
-        round: wrapped ? prev.round + 1 : prev.round,
-      };
+      const next = applyCategory(prev, categoryId);
+      if (next !== prev && next?.gameOver) clearLocalActiveGame(localIdRef.current);
+      return next;
     });
   }, []);
 

@@ -275,6 +275,7 @@ export const ro: typeof sv = {
   errRollDice: 'Nu s-au putut arunca zarurile',
   errSubmitScore: 'Nu s-a putut salva scorul',
   pickDiceHint: 'Alege zarurile\nde păstrat',
+  rollFirstHint: "Atinge Aruncă\npentru a începe",
   searchingOpponent: 'Căutăm un adversar…',
   searchingOpponentHint: 'Dacă nu găsim pe nimeni, joci cu calculatorul',
   onlineNewsTitle: 'Nou: joacă online cu alții! 🌐',

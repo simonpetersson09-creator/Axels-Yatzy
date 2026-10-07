@@ -275,6 +275,7 @@ export const ml: typeof sv = {
   errRollDice: 'ഡൈസ് ഉരുട്ടാനായില്ല',
   errSubmitScore: 'സ്കോർ സേവ് ചെയ്യാനായില്ല',
   pickDiceHint: 'സൂക്ഷിക്കേണ്ട ഡൈസ്\nതിരഞ്ഞെടുക്കൂ',
+  rollFirstHint: "തുടങ്ങാൻ\nറോൾ അമർത്തുക",
   searchingOpponent: 'എതിരാളിയെ തിരയുന്നു…',
   searchingOpponentHint: 'ആരെയും കിട്ടിയില്ലെങ്കിൽ കമ്പ്യൂട്ടറുമായി കളിക്കാം',
   onlineNewsTitle: 'പുതിയത്: ഓൺലൈനിൽ കളിക്കാം! 🌐',

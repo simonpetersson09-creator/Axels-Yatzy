@@ -275,6 +275,7 @@ export const mr: typeof sv = {
   errRollDice: 'फासे टाकता आले नाहीत',
   errSubmitScore: 'गुण सेव्ह करता आले नाहीत',
   pickDiceHint: 'ठेवायचे फासे\nनिवड',
+  rollFirstHint: "सुरू करण्यासाठी\nरोल दाबा",
   searchingOpponent: 'प्रतिस्पर्धी शोधतोय…',
   searchingOpponentHint: 'कोणी सापडलं नाही तर संगणकासोबत खेळशील',
   onlineNewsTitle: 'नवीन: इतरांशी ऑनलाइन खेळ! 🌐',

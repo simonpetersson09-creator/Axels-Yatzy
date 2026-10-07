@@ -270,6 +270,7 @@ export const it: typeof sv = {
   errRollDice: 'Impossibile lanciare i dadi',
   errSubmitScore: 'Impossibile salvare il punteggio',
   pickDiceHint: 'Scegli i dadi\nda tenere',
+  rollFirstHint: "Tocca Lancia\nper iniziare",
   searchingOpponent: 'Cerco avversario…',
   searchingOpponentHint: 'Se non si trova nessuno, giochi contro il computer',
   onlineNewsTitle: 'Novità: gioca online! 🌐',

@@ -275,6 +275,7 @@ export const id: typeof sv = {
   errRollDice: 'Gagal melempar dadu',
   errSubmitScore: 'Gagal menyimpan skor',
   pickDiceHint: 'Pilih dadu\nuntuk disimpan',
+  rollFirstHint: "Ketuk Lempar\nuntuk mulai",
   searchingOpponent: 'Mencari lawan…',
   searchingOpponentHint: 'Kalau tak ada lawan, kamu melawan komputer',
   onlineNewsTitle: 'Baru: main melawan orang online! 🌐',

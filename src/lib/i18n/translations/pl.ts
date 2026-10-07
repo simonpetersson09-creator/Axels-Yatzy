@@ -275,6 +275,7 @@ export const pl: typeof sv = {
   errRollDice: 'Nie udało się rzucić kośćmi',
   errSubmitScore: 'Nie udało się zapisać wyniku',
   pickDiceHint: 'Wybierz kości\ndo zatrzymania',
+  rollFirstHint: "Dotknij Rzuć,\naby zacząć",
   searchingOpponent: 'Szukanie rywala…',
   searchingOpponentHint: 'Jeśli nikt się nie znajdzie, zagrasz z komputerem',
   onlineNewsTitle: 'Nowość: graj z ludźmi online! 🌐',

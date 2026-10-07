@@ -5,6 +5,8 @@ interface PickDiceHintProps {
   /** Render the hint (fades out when false). */
   show: boolean;
   className?: string;
+  /** Alternative text, e.g. the "tap Roll to start" hint. */
+  text?: string;
 }
 
 /**
@@ -12,7 +14,7 @@ interface PickDiceHintProps {
  * to pick the dice they want to keep. Absolutely positioned by the parent so it
  * never shifts the layout, and fades out as soon as a die is held.
  */
-export function PickDiceHint({ show, className }: PickDiceHintProps) {
+export function PickDiceHint({ show, className, text }: PickDiceHintProps) {
   const { t } = useTranslation();
   return (
     <div
@@ -30,7 +32,7 @@ export function PickDiceHint({ show, className }: PickDiceHintProps) {
         background: 'hsl(var(--game-gold) / 0.08)',
       }}
     >
-      {t('pickDiceHint')}
+      {text ?? t('pickDiceHint')}
     </div>
   );
 }

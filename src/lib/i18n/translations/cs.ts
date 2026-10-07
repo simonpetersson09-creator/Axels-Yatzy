@@ -275,6 +275,7 @@ export const cs: typeof sv = {
   errRollDice: 'Kostkami se nepodařilo hodit',
   errSubmitScore: 'Skóre se nepodařilo uložit',
   pickDiceHint: 'Vyber kostky,\nkteré si necháš',
+  rollFirstHint: "Klepni na Hodit\npro začátek",
   searchingOpponent: 'Hledání soupeře…',
   searchingOpponentHint: 'Když se nikdo nenajde, hraješ proti počítači',
   onlineNewsTitle: 'Novinka: hraj s lidmi online! 🌐',

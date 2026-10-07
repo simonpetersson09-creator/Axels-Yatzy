@@ -275,6 +275,7 @@ export const hr: typeof sv = {
   errRollDice: 'Nije moguće baciti kockice',
   errSubmitScore: 'Nije moguće spremiti rezultat',
   pickDiceHint: 'Odaberi kockice\nza zadržavanje',
+  rollFirstHint: "Dodirni Baci\nza početak",
   searchingOpponent: 'Tražimo protivnika…',
   searchingOpponentHint: 'Ako nikoga ne nađemo, igraš protiv računala',
   onlineNewsTitle: 'Novo: igraj s ljudima online! 🌐',

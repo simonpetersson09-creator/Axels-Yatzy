@@ -275,6 +275,7 @@ export const gu: typeof sv = {
   errRollDice: 'પાસા ફેંકી શકાયા નહીં',
   errSubmitScore: 'સ્કોર સાચવી શકાયો નહીં',
   pickDiceHint: 'રાખવાના પાસા\nપસંદ કરો',
+  rollFirstHint: "શરૂ કરવા\nરોલ દબાવો",
   searchingOpponent: 'હરીફ શોધાય છે…',
   searchingOpponentHint: 'કોઈ નહીં મળે તો કમ્પ્યુટર સામે રમશો',
   onlineNewsTitle: 'નવું: લોકો સાથે ઑનલાઇન રમો! 🌐',

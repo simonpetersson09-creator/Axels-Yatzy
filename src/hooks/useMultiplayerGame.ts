@@ -523,7 +523,10 @@ export function useMultiplayerGame() {
         if (rollingGuardRef.current) return;
         if (payload.dice?.length !== 5 || payload.lockedDice?.length !== 5 || typeof payload.rollsLeft !== 'number') return;
         const part = { dice: payload.dice, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, isRolling: false };
-        if (remoteRollingGuardRef.current) applyRemoteResult(part);
+        if (remoteRollingGuardRef.current) {
+          // Result already applied (e.g. via postgres_changes) — don't extend the spin.
+          if (remoteResultAtRef.current === 0) applyRemoteResult(part);
+        }
         else if (payload.rollsLeft < prevGS.rollsLeft) startRemoteRolling(part); // missed roll_started
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {

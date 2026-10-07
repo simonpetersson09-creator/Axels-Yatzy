@@ -154,3 +154,32 @@ export async function checkNewFriendCredit(): Promise<GoldStatus | null> {
   if (raw === null) return null;
   return s.friends > Number(raw) ? s : null;
 }
+
+export interface PlayerStats {
+  matches: number;
+  onlineMatches: number;
+  avgScore: number | null;
+  bestScore: number | null;
+  onlineWins: number;
+}
+
+/** Public match stats per player index in an online game (server-computed). */
+export function usePlayerStats(gameId: string | null, refreshKey: unknown = 0): Map<number, PlayerStats> {
+  const [map, setMap] = useState<Map<number, PlayerStats>>(new Map());
+  useEffect(() => {
+    if (!gameId) return;
+    let alive = true;
+    (async () => {
+      try {
+        const { data } = await supabase.rpc('get_player_stats', { p_game_id: gameId });
+        const rows = (data as Array<{ player_index: number; is_bot: boolean; matches: number; online_matches: number; avg_score: number | null; best_score: number | null; online_wins: number }> | null) ?? [];
+        if (alive) setMap(new Map(rows.filter((r) => !r.is_bot).map((r) => [r.player_index, {
+          matches: Number(r.matches ?? 0), onlineMatches: Number(r.online_matches ?? 0),
+          avgScore: r.avg_score ?? null, bestScore: r.best_score ?? null, onlineWins: Number(r.online_wins ?? 0),
+        }])));
+      } catch { /* cosmetic; ignore */ }
+    })();
+    return () => { alive = false; };
+  }, [gameId, refreshKey]);
+  return map;
+}

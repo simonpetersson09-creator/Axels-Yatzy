@@ -535,7 +535,7 @@ export default function MultiplayerGamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
-  const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending;
+  const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending;
   const showRollFirstHint = rollFirstHintDue && gameState.rollsLeft === 3 && isMyTurn && !localRolling && !remoteRolling && status === 'playing';
 
   const PLAYER_COLORS_HSL = [

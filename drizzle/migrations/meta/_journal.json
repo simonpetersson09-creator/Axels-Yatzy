@@ -127,6 +127,13 @@
       "when": 1791435513652,
       "tag": "0017_dice_roll_log",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1791436404121,
+      "tag": "0018_optimize_player_indexes",
+      "breakpoints": true
     }
   ]
 }

@@ -299,6 +299,9 @@ export function useDiceAnimation({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rolling, held, value, duration, reducedMotion, index, size]);
 
+  // A die unmounted mid-flight must not block the next landing signal.
+  useEffect(() => () => setDieFlying(index, false), [index]);
+
 
 
   useFrame((_, delta) => {
@@ -358,6 +361,7 @@ export function useDiceAnimation({
         state.sweeping = false;
         state.pendingRoll = false;
         state.animating = true;
+        setDieFlying(index, true);
         state.elapsed = 0;
         return;
       }

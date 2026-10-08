@@ -48,15 +48,17 @@ Deno.serve(async (req) => {
 
     const { data: player, error: playerErr } = await supabase
       .from("game_players")
-      .select("session_id, player_name, player_index, last_active_at, game_id")
+      .select("session_id, player_name, player_index, last_active_at, game_id, away")
       .eq("game_id", game_id)
       .eq("player_index", game.current_player_index)
       .single();
     if (playerErr || !player) return json({ error: "current player not found" }, 404);
 
-    // Don't notify someone who is actively in the app.
+    // Don't notify someone who has the match on screen. New app versions mark
+    // `away` the moment they leave the match/background the app, so they get
+    // the notification right away; old versions fall back to the heartbeat age.
     const lastActive = new Date(player.last_active_at).getTime();
-    if (Date.now() - lastActive < ACTIVE_HEARTBEAT_S * 1000) {
+    if (!player.away && Date.now() - lastActive < ACTIVE_HEARTBEAT_S * 1000) {
       return json({ skipped: "recipient is active" });
     }
 

@@ -249,7 +249,7 @@ export const cs: typeof sv = {
   inviteSent: 'Pozvánka odeslána',
   minimize: 'Minimalizovat',
   inviteWaitingTitle: 'Čekání na {name}…',
-  inviteWaitingDesc: 'Hra začne automaticky po přijetí pozvánky. Pozvánka vyprší za 10 minut.',
+  inviteWaitingDesc: 'Hra začne automaticky po přijetí pozvánky. Pozvánka vyprší za 6 hodin.',
   lobbyShareCodeAgain: 'Vytvoř hru a sdílej kód s {name}, ať si zahrajete znovu.',
 
   // Chat / turns

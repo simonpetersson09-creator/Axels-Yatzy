@@ -248,7 +248,7 @@ export const ru: typeof sv = {
   inviteSent: 'Приглашение отправлено',
   minimize: 'Свернуть',
   inviteWaitingTitle: 'Ждём {name}…',
-  inviteWaitingDesc: 'Игра начнётся автоматически, когда приглашение примут. Оно действует 10 минут.',
+  inviteWaitingDesc: 'Игра начнётся автоматически, когда приглашение примут. Оно действует 6 часов.',
   lobbyShareCodeAgain: 'Создай игру и отправь код игроку {name}, чтобы сыграть снова.',
 
   // Chat / turns

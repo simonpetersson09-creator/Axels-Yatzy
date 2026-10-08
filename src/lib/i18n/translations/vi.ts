@@ -249,7 +249,7 @@ export const vi: typeof sv = {
   inviteSent: 'Đã gửi lời mời',
   minimize: 'Thu nhỏ',
   inviteWaitingTitle: 'Đang chờ {name}…',
-  inviteWaitingDesc: 'Ván tự bắt đầu khi lời mời được chấp nhận. Lời mời hết hạn sau 10 phút.',
+  inviteWaitingDesc: 'Ván tự bắt đầu khi lời mời được chấp nhận. Lời mời hết hạn sau 6 giờ.',
   lobbyShareCodeAgain: 'Tạo ván và chia sẻ mã với {name} để chơi lại.',
 
   // Chat / turns

@@ -249,7 +249,7 @@ export const ml: typeof sv = {
   inviteSent: 'ക്ഷണം അയച്ചു',
   minimize: 'ചെറുതാക്കൂ',
   inviteWaitingTitle: '{name} വരാൻ കാത്തിരിക്കുന്നു…',
-  inviteWaitingDesc: 'ക്ഷണം സ്വീകരിച്ചാൽ കളി തനിയെ തുടങ്ങും. ക്ഷണം 10 മിനിറ്റിൽ കാലഹരണപ്പെടും.',
+  inviteWaitingDesc: 'ക്ഷണം സ്വീകരിച്ചാലുടൻ കളി സ്വയം ആരംഭിക്കും. ക്ഷണം 6 മണിക്കൂറിന് ശേഷം കാലഹരണപ്പെടും.',
   lobbyShareCodeAgain: 'വീണ്ടും കളിക്കാൻ ഒരു കളി സൃഷ്ടിച്ച് {name}-ന് കോഡ് അയക്കൂ.',
 
   // Chat / turns

@@ -249,7 +249,7 @@ export const pt: typeof sv = {
   inviteSent: 'Convite enviado',
   minimize: 'Minimizar',
   inviteWaitingTitle: 'À espera de {name}…',
-  inviteWaitingDesc: 'O jogo começa automaticamente quando o convite for aceite. O convite expira após 10 minutos.',
+  inviteWaitingDesc: 'O jogo começa automaticamente quando o convite for aceite. O convite expira após 6 horas.',
   lobbyShareCodeAgain: 'Cria um jogo e partilha o código com {name} para jogar de novo.',
 
   // Chat / turns

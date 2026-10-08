@@ -249,7 +249,7 @@ export const hu: typeof sv = {
   inviteSent: 'Meghívó elküldve',
   minimize: 'Kis méret',
   inviteWaitingTitle: 'Várakozás: {name}…',
-  inviteWaitingDesc: 'A játék a meghívó elfogadásakor automatikusan elindul. A meghívó 10 perc múlva lejár.',
+  inviteWaitingDesc: 'A játék a meghívó elfogadásakor automatikusan elindul. A meghívó 6 óra múlva lejár.',
   lobbyShareCodeAgain: 'Hozz létre egy játékot, és küldd el a kódot neki: {name}.',
 
   // Chat / turns

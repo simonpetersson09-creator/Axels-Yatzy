@@ -258,7 +258,7 @@ export const sv = {
   inviteSent: 'Inbjudan skickad',
   minimize: 'Minimera',
   inviteWaitingTitle: 'Väntar på {name}…',
-  inviteWaitingDesc: 'Spelet startar automatiskt när inbjudan accepteras. Den går ut efter 10 minuter.',
+  inviteWaitingDesc: 'Spelet startar automatiskt när inbjudan accepteras. Den går ut efter 6 timmar.',
   lobbyShareCodeAgain: 'Skapa ett spel och dela koden med {name} för att spela igen.',
 
   // Chat / turns

@@ -249,7 +249,7 @@ export const or: typeof sv = {
   inviteSent: 'ନିମନ୍ତ୍ରଣ ପଠାଗଲା',
   minimize: 'ଛୋଟ କର',
   inviteWaitingTitle: '{name}ଙ୍କୁ ଅପେକ୍ଷା…',
-  inviteWaitingDesc: 'ନିମନ୍ତ୍ରଣ ଗ୍ରହଣ କଲେ ଖେଳ ଆପେ ଆରମ୍ଭ ହେବ। ନିମନ୍ତ୍ରଣ 10 ମିନିଟ୍ ପରେ ସରିଯିବ।',
+  inviteWaitingDesc: 'ନିମନ୍ତ୍ରଣ ଗ୍ରହଣ କଲେ ଖେଳ ଆପେ ଆରମ୍ଭ ହେବ। ନିମନ୍ତ୍ରଣ 6 ଘଣ୍ଟା ପରେ ସରିଯିବ।',
   lobbyShareCodeAgain: 'ପୁଣି ଖେଳିବାକୁ ଖେଳ ତିଆରି କରି {name}ଙ୍କୁ କୋଡ୍ ପଠାଅ।',
 
   // Chat / turns

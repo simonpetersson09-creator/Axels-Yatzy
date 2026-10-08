@@ -249,7 +249,7 @@ export const ms: typeof sv = {
   inviteSent: 'Jemputan dihantar',
   minimize: 'Kecilkan',
   inviteWaitingTitle: 'Menunggu {name}…',
-  inviteWaitingDesc: 'Permainan bermula automatik apabila jemputan diterima. Jemputan luput selepas 10 minit.',
+  inviteWaitingDesc: 'Permainan bermula secara automatik apabila jemputan diterima. Jemputan tamat selepas 6 jam.',
   lobbyShareCodeAgain: 'Cipta permainan dan kongsi kod dengan {name} untuk main lagi.',
 
   // Chat / turns

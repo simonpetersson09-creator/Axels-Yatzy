@@ -249,7 +249,7 @@ export const mr: typeof sv = {
   inviteSent: 'आमंत्रण पाठवलं',
   minimize: 'लहान कर',
   inviteWaitingTitle: '{name} ची वाट पाहतोय…',
-  inviteWaitingDesc: 'आमंत्रण स्वीकारल्यावर खेळ आपोआप सुरू होईल. आमंत्रण १० मिनिटांनी संपेल.',
+  inviteWaitingDesc: 'आमंत्रण स्वीकारताच खेळ आपोआप सुरू होईल. आमंत्रण 6 तासांनंतर संपेल.',
   lobbyShareCodeAgain: 'पुन्हा खेळण्यासाठी खेळ तयार कर आणि {name} ला कोड पाठव.',
 
   // Chat / turns

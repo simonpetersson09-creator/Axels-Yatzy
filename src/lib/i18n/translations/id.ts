@@ -249,7 +249,7 @@ export const id: typeof sv = {
   inviteSent: 'Undangan terkirim',
   minimize: 'Perkecil',
   inviteWaitingTitle: 'Menunggu {name}…',
-  inviteWaitingDesc: 'Game otomatis dimulai saat undangan diterima. Undangan berlaku 10 menit.',
+  inviteWaitingDesc: 'Game otomatis dimulai saat undangan diterima. Undangan berlaku 6 jam.',
   lobbyShareCodeAgain: 'Buat game dan bagikan kodenya ke {name} untuk main lagi.',
 
   // Chat / turns

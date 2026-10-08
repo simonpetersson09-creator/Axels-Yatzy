@@ -249,7 +249,7 @@ export const ro: typeof sv = {
   inviteSent: 'Invitație trimisă',
   minimize: 'Minimizează',
   inviteWaitingTitle: 'Îl așteptăm pe {name}…',
-  inviteWaitingDesc: 'Jocul începe automat când invitația este acceptată. Invitația expiră după 10 minute.',
+  inviteWaitingDesc: 'Jocul începe automat când invitația este acceptată. Expiră după 6 ore.',
   lobbyShareCodeAgain: 'Creează un joc și trimite codul lui {name} ca să jucați din nou.',
 
   // Chat / turns

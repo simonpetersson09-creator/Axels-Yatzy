@@ -249,7 +249,7 @@ export const hi: typeof sv = {
   inviteSent: 'बुलावा भेज दिया',
   minimize: 'छोटा करो',
   inviteWaitingTitle: '{name} का इंतज़ार है…',
-  inviteWaitingDesc: 'बुलावा स्वीकार होते ही खेल शुरू हो जाएगा। बुलावा 10 मिनट में खत्म हो जाएगा।',
+  inviteWaitingDesc: 'निमंत्रण स्वीकार होते ही खेल अपने आप शुरू होगा। निमंत्रण 6 घंटे बाद समाप्त हो जाएगा।',
   lobbyShareCodeAgain: 'फिर खेलने के लिए खेल बनाओ और {name} को कोड भेजो।',
 
   // Chat / turns

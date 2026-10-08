@@ -249,7 +249,7 @@ export const kn: typeof sv = {
   inviteSent: 'ಆಹ್ವಾನ ಕಳುಹಿಸಲಾಗಿದೆ',
   minimize: 'ಕುಗ್ಗಿಸು',
   inviteWaitingTitle: '{name}ಗಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ…',
-  inviteWaitingDesc: 'ಆಹ್ವಾನ ಒಪ್ಪಿದಾಗ ಆಟ ತಾನಾಗಿಯೇ ಶುರುವಾಗುತ್ತದೆ. ಆಹ್ವಾನ 10 ನಿಮಿಷಗಳ ಬಳಿಕ ಮುಗಿಯುತ್ತದೆ.',
+  inviteWaitingDesc: 'ಆಹ್ವಾನ ಒಪ್ಪಿದ ತಕ್ಷಣ ಆಟ ತಾನಾಗಿ ಆರಂಭವಾಗುತ್ತದೆ. ಆಹ್ವಾನ 6 ಗಂಟೆಗಳ ನಂತರ ಮುಗಿಯುತ್ತದೆ.',
   lobbyShareCodeAgain: 'ಮತ್ತೆ ಆಡಲು ಆಟ ರಚಿಸಿ {name} ಜೊತೆ ಕೋಡ್ ಹಂಚಿಕೊ.',
 
   // Chat / turns

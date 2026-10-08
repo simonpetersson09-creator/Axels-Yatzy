@@ -249,7 +249,7 @@ export const en: typeof sv = {
   inviteSent: 'Invitation sent',
   minimize: 'Minimize',
   inviteWaitingTitle: 'Waiting for {name}…',
-  inviteWaitingDesc: 'The game starts automatically when the invitation is accepted. It expires after 10 minutes.',
+  inviteWaitingDesc: 'The game starts automatically when the invitation is accepted. It expires after 6 hours.',
   lobbyShareCodeAgain: 'Create a game and share the code with {name} to play again.',
 
   // Chat / turns

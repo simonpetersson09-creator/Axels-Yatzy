@@ -249,7 +249,7 @@ export const nl: typeof sv = {
   inviteSent: 'Uitnodiging verstuurd',
   minimize: 'Minimaliseren',
   inviteWaitingTitle: 'Wachten op {name}…',
-  inviteWaitingDesc: 'Het spel start vanzelf zodra de uitnodiging is geaccepteerd. Die verloopt na 10 minuten.',
+  inviteWaitingDesc: 'Het spel start vanzelf zodra de uitnodiging is geaccepteerd. Ze verloopt na 6 uur.',
   lobbyShareCodeAgain: 'Maak een spel en deel de code met {name} om opnieuw te spelen.',
 
   // Chat / turns

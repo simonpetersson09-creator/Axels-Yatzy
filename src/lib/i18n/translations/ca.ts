@@ -248,7 +248,7 @@ export const ca: typeof sv = {
   inviteSent: 'Invitació enviada',
   minimize: 'Minimitza',
   inviteWaitingTitle: 'Esperant {name}…',
-  inviteWaitingDesc: 'La partida comença automàticament quan s’accepta la invitació. Caduca al cap de 10 minuts.',
+  inviteWaitingDesc: 'La partida comença automàticament quan s’accepta la invitació. Caduca al cap de 6 hores.',
   lobbyShareCodeAgain: 'Crea una partida i comparteix el codi amb {name} per tornar a jugar.',
 
   // Chat / turns

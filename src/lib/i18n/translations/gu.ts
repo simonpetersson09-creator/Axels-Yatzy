@@ -249,7 +249,7 @@ export const gu: typeof sv = {
   inviteSent: 'આમંત્રણ મોકલ્યું',
   minimize: 'નાનું કરો',
   inviteWaitingTitle: '{name}ની રાહ છે…',
-  inviteWaitingDesc: 'આમંત્રણ સ્વીકારતાં રમત આપમેળે શરૂ થશે. આમંત્રણ 10 મિનિટ પછી સમાપ્ત થશે.',
+  inviteWaitingDesc: 'આમંત્રણ સ્વીકારતા જ રમત આપમેળે શરૂ થશે. આમંત્રણ 6 કલાક પછી સમાપ્ત થશે.',
   lobbyShareCodeAgain: 'ફરી રમવા રમત બનાવો અને {name}ને કોડ મોકલો.',
 
   // Chat / turns

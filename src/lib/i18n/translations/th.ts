@@ -249,7 +249,7 @@ export const th: typeof sv = {
   inviteSent: 'ส่งคำเชิญแล้ว',
   minimize: 'ย่อ',
   inviteWaitingTitle: 'กำลังรอ {name}…',
-  inviteWaitingDesc: 'เกมจะเริ่มอัตโนมัติเมื่อตอบรับคำเชิญ คำเชิญหมดอายุใน 10 นาที',
+  inviteWaitingDesc: 'เกมจะเริ่มอัตโนมัติเมื่อตอบรับคำเชิญ คำเชิญหมดอายุใน 6 ชั่วโมง',
   lobbyShareCodeAgain: 'สร้างเกมแล้วแชร์รหัสให้ {name} เพื่อเล่นอีกครั้ง',
 
   // Chat / turns

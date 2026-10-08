@@ -249,7 +249,7 @@ export const uk: typeof sv = {
   inviteSent: 'Запрошення надіслано',
   minimize: 'Згорнути',
   inviteWaitingTitle: 'Чекаємо на {name}…',
-  inviteWaitingDesc: 'Гра почнеться автоматично, коли запрошення приймуть. Воно діє 10 хвилин.',
+  inviteWaitingDesc: 'Гра почнеться автоматично, коли запрошення приймуть. Воно діє 6 годин.',
   lobbyShareCodeAgain: 'Створи гру й поділися кодом із {name}, щоб зіграти ще.',
 
   // Chat / turns

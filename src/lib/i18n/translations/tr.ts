@@ -249,7 +249,7 @@ export const tr: typeof sv = {
   inviteSent: 'Davet gönderildi',
   minimize: 'Küçült',
   inviteWaitingTitle: '{name} bekleniyor…',
-  inviteWaitingDesc: 'Davet kabul edilince oyun otomatik başlar. Davetin süresi 10 dakika.',
+  inviteWaitingDesc: 'Davet kabul edilince oyun otomatik başlar. Davetin süresi 6 saat.',
   lobbyShareCodeAgain: 'Tekrar oynamak için bir oyun kur ve kodu {name} ile paylaş.',
 
   // Chat / turns

@@ -249,7 +249,7 @@ export const no: typeof sv = {
   inviteSent: 'Invitasjon sendt',
   minimize: 'Minimer',
   inviteWaitingTitle: 'Venter på {name}…',
-  inviteWaitingDesc: 'Spillet starter automatisk når invitasjonen godtas. Den utløper etter 10 minutter.',
+  inviteWaitingDesc: 'Spillet starter automatisk når invitasjonen godtas. Den utløper etter 6 timer.',
   lobbyShareCodeAgain: 'Opprett et spill og del koden med {name} for å spille igjen.',
 
   // Chat / turns

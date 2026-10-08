@@ -249,7 +249,7 @@ export const es: typeof sv = {
   inviteSent: 'Invitación enviada',
   minimize: 'Minimizar',
   inviteWaitingTitle: 'Esperando a {name}…',
-  inviteWaitingDesc: 'La partida empieza automáticamente cuando se acepta. Caduca en 10 minutos.',
+  inviteWaitingDesc: 'La partida empieza automáticamente cuando se acepta la invitación. Caduca a las 6 horas.',
   lobbyShareCodeAgain: 'Crea una partida y comparte el código con {name} para volver a jugar.',
 
   // Chat / turns

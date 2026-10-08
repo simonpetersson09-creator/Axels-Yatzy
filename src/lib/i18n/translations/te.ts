@@ -249,7 +249,7 @@ export const te: typeof sv = {
   inviteSent: 'ఆహ్వానం పంపాం',
   minimize: 'చిన్నదిగా చెయ్యి',
   inviteWaitingTitle: '{name} కోసం వేచి ఉంది…',
-  inviteWaitingDesc: 'ఆహ్వానాన్ని ఒప్పుకోగానే ఆట మొదలవుతుంది. ఆహ్వానం గడువు 10 నిమిషాలు.',
+  inviteWaitingDesc: 'ఆహ్వానాన్ని ఒప్పుకోగానే ఆట మొదలవుతుంది. ఆహ్వానం గడువు 6 గంటలు.',
   lobbyShareCodeAgain: 'మళ్లీ ఆడటానికి ఆట సృష్టించి, {name}తో కోడ్ పంచుకో.',
 
   // Chat / turns

@@ -249,7 +249,7 @@ export const hr: typeof sv = {
   inviteSent: 'Poziv poslan',
   minimize: 'Smanji',
   inviteWaitingTitle: 'Čekamo: {name}…',
-  inviteWaitingDesc: 'Igra počinje čim se poziv prihvati. Poziv istječe nakon 10 minuta.',
+  inviteWaitingDesc: 'Igra počinje čim se poziv prihvati. Poziv istječe nakon 6 sati.',
   lobbyShareCodeAgain: 'Stvori igru i podijeli kod s {name} za novu partiju.',
 
   // Chat / turns

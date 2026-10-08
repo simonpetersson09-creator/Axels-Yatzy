@@ -249,7 +249,7 @@ export const sl: typeof sv = {
   inviteSent: 'Vabilo poslano',
   minimize: 'Pomanjšaj',
   inviteWaitingTitle: 'Čakamo na {name}…',
-  inviteWaitingDesc: 'Igra se začne samodejno ob sprejetju vabila. Vabilo poteče po 10 minutah.',
+  inviteWaitingDesc: 'Igra se začne samodejno, ko je povabilo sprejeto. Povabilo poteče po 6 urah.',
   lobbyShareCodeAgain: 'Za novo igro ustvari igro in deli kodo z {name}.',
 
   // Chat / turns

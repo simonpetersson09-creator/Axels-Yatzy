@@ -249,7 +249,7 @@ export const ja: typeof sv = {
   inviteSent: '招待を送ったよ',
   minimize: '最小化',
   inviteWaitingTitle: '{name}を待ってるよ…',
-  inviteWaitingDesc: '招待を受けると自動で対戦が始まるよ。招待は10分で期限切れになるよ。',
+  inviteWaitingDesc: '招待が承認されると自動でゲームが始まります。招待の有効期限は6時間です。',
   lobbyShareCodeAgain: 'もう一度遊ぶには、部屋を作って{name}にコードを教えてね。',
 
   // Chat / turns

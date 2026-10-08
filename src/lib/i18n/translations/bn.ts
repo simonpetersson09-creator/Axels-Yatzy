@@ -249,7 +249,7 @@ export const bn: typeof sv = {
   inviteSent: 'আমন্ত্রণ পাঠানো হয়েছে',
   minimize: 'ছোট করো',
   inviteWaitingTitle: '{name}-এর অপেক্ষায়…',
-  inviteWaitingDesc: 'আমন্ত্রণ গ্রহণ করলেই খেলা শুরু হবে। আমন্ত্রণের মেয়াদ ১০ মিনিট।',
+  inviteWaitingDesc: 'আমন্ত্রণ গ্রহণ করলেই খেলা নিজে থেকে শুরু হবে। আমন্ত্রণটি ৬ ঘণ্টা পরে শেষ হয়ে যাবে।',
   lobbyShareCodeAgain: 'আবার খেলতে খেলা তৈরি করে {name}-কে কোড পাঠাও।',
 
   // Chat / turns

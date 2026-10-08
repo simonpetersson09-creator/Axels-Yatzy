@@ -249,7 +249,7 @@ export const pa: typeof sv = {
   inviteSent: 'ਸੱਦਾ ਭੇਜ ਦਿੱਤਾ',
   minimize: 'ਛੋਟਾ ਕਰੋ',
   inviteWaitingTitle: '{name} ਦੀ ਉਡੀਕ…',
-  inviteWaitingDesc: 'ਸੱਦਾ ਮੰਨਦੇ ਹੀ ਖੇਡ ਆਪੇ ਸ਼ੁਰੂ ਹੋਵੇਗੀ। ਸੱਦਾ 10 ਮਿੰਟ ਬਾਅਦ ਮੁੱਕ ਜਾਵੇਗਾ।',
+  inviteWaitingDesc: 'ਸੱਦਾ ਮੰਨਦੇ ਹੀ ਖੇਡ ਆਪੇ ਸ਼ੁਰੂ ਹੋਵੇਗੀ। ਸੱਦਾ 6 ਘੰਟੇ ਬਾਅਦ ਮੁੱਕ ਜਾਵੇਗਾ।',
   lobbyShareCodeAgain: 'ਦੁਬਾਰਾ ਖੇਡਣ ਲਈ ਖੇਡ ਬਣਾਓ ਤੇ {name} ਨਾਲ ਕੋਡ ਸਾਂਝਾ ਕਰੋ।',
 
   // Chat / turns

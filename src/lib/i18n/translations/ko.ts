@@ -249,7 +249,7 @@ export const ko: typeof sv = {
   inviteSent: '초대를 보냈어',
   minimize: '최소화',
   inviteWaitingTitle: '{name} 기다리는 중…',
-  inviteWaitingDesc: '초대를 수락하면 게임이 자동으로 시작돼. 초대는 10분 뒤 만료돼.',
+  inviteWaitingDesc: '초대가 수락되면 게임이 자동으로 시작됩니다. 초대는 6시간 후 만료됩니다.',
   lobbyShareCodeAgain: '다시 하려면 방을 만들고 {name} 님에게 코드를 공유해줘.',
 
   // Chat / turns

@@ -249,7 +249,7 @@ export const pl: typeof sv = {
   inviteSent: 'Zaproszenie wysłane',
   minimize: 'Zminimalizuj',
   inviteWaitingTitle: 'Czekamy na {name}…',
-  inviteWaitingDesc: 'Gra ruszy automatycznie po przyjęciu zaproszenia. Zaproszenie wygasa po 10 minutach.',
+  inviteWaitingDesc: 'Gra ruszy automatycznie po przyjęciu zaproszenia. Zaproszenie wygasa po 6 godzinach.',
   lobbyShareCodeAgain: 'Utwórz grę i udostępnij kod graczowi {name}, by zagrać ponownie.',
 
   // Chat / turns

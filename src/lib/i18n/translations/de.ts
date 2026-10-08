@@ -246,7 +246,7 @@ export const de: typeof sv = {
   inviteSent: 'Einladung gesendet',
   minimize: 'Minimieren',
   inviteWaitingTitle: 'Warte auf {name}…',
-  inviteWaitingDesc: 'Das Spiel startet automatisch, sobald die Einladung angenommen wird. Sie läuft nach 10 Minuten ab.',
+  inviteWaitingDesc: 'Das Spiel startet automatisch, sobald die Einladung angenommen wird. Sie läuft nach 6 Stunden ab.',
   lobbyShareCodeAgain: 'Erstelle ein Spiel und teile den Code mit {name}, um wieder zu spielen.',
 
   quickMessages: 'Schnellnachrichten',

@@ -164,8 +164,8 @@ export default function DevFriendPage() {
     const ids = [...new Set((rows ?? []).map((r) => r.game_id as string))];
     let closed = 0;
     for (const id of ids) {
-      const { data } = await supabase.rpc('perform_forfeit', {
-        p_game_id: id, p_session_id: ghostSession,
+      const { data } = await supabase.functions.invoke('forfeit-game', {
+        body: { game_id: id, session_id: ghostSession, device_id: await initDeviceId() },
       });
       if ((data as { success?: boolean } | null)?.success) closed++;
     }
@@ -218,7 +218,7 @@ export default function DevFriendPage() {
       return;
     }
     const { data, error } = await supabase.functions.invoke('respond-invite', {
-      body: { invite_id: pending.id, session_id: ghostSession, action: 'accept' },
+      body: { invite_id: pending.id, session_id: ghostSession, action: 'accept', device_id: await initDeviceId() },
     });
     if (error) return push(`Accept misslyckades: ${await readFnError(error)}`);
     const res = data as { success?: boolean; error?: string; game_id?: string };
@@ -248,8 +248,8 @@ export default function DevFriendPage() {
   const startGame = () =>
     run('Starta', async () => {
       if (!game) return;
-      const { data, error } = await supabase.rpc('perform_start_game', {
-        p_game_id: game.id, p_session_id: ghostSession,
+      const { data, error } = await supabase.functions.invoke('start-game', {
+        body: { game_id: game.id, session_id: ghostSession, device_id: await initDeviceId() },
       });
       push(error ? `Start-fel: ${error.message}` : `Start: ${JSON.stringify(data)}`);
     });
@@ -257,8 +257,8 @@ export default function DevFriendPage() {
   const forfeit = () =>
     run('Forfeit', async () => {
       if (!game) return;
-      const { data, error } = await supabase.rpc('perform_forfeit', {
-        p_game_id: game.id, p_session_id: ghostSession,
+      const { data, error } = await supabase.functions.invoke('forfeit-game', {
+        body: { game_id: game.id, session_id: ghostSession, device_id: await initDeviceId() },
       });
       push(error ? `Forfeit-fel: ${error.message}` : `Bot gav upp: ${JSON.stringify(data)}`);
     });

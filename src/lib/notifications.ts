@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
 import { getSessionId } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
+import { getLanguage, subscribeProfileChanges } from '@/lib/profile';
 
 const PREFS_KEY = 'yatzy_notif_prefs_v1';
 
@@ -59,6 +60,7 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
         device_id: deviceId,
         turn_notifications: prefs.turnNotifications,
         reminder_notifications: prefs.reminderNotifications,
+        lang: getLanguage(),
       },
     });
   } catch (err) {
@@ -69,8 +71,25 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
 
 let initPromise: Promise<void> | null = null;
 
+const LANG_SYNC_KEY = 'yatzy_notif_lang_v1';
+
+/** Tells the server which language push texts should use; only sends when it changed. */
+function syncNotificationLanguage(): void {
+  const lang = getLanguage();
+  try {
+    if (localStorage.getItem(LANG_SYNC_KEY) === lang) return;
+  } catch { /* ignore */ }
+  void setNotificationPrefs(getNotificationPrefs()).then(() => {
+    try { localStorage.setItem(LANG_SYNC_KEY, lang); } catch { /* ignore */ }
+  });
+}
+
 export function initNotifications(): Promise<void> {
-  if (!initPromise) initPromise = doInitNotifications();
+  if (!initPromise) {
+    syncNotificationLanguage();
+    subscribeProfileChanges(syncNotificationLanguage);
+    initPromise = doInitNotifications();
+  }
   return initPromise;
 }
 

@@ -251,6 +251,7 @@ export type Database = {
       }
       game_players: {
         Row: {
+          away: boolean
           game_id: string
           id: string
           is_bot: boolean
@@ -263,6 +264,7 @@ export type Database = {
           yatzy_by_computer: boolean
         }
         Insert: {
+          away?: boolean
           game_id: string
           id?: string
           is_bot?: boolean
@@ -275,6 +277,7 @@ export type Database = {
           yatzy_by_computer?: boolean
         }
         Update: {
+          away?: boolean
           game_id?: string
           id?: string
           is_bot?: boolean
@@ -820,6 +823,10 @@ export type Database = {
       record_local_yatzy_match: {
         Args: { p_device_id: string; p_match_key: string; p_session_id: string }
         Returns: Json
+      }
+      set_away: {
+        Args: { p_game_id: string; p_session_id: string }
+        Returns: undefined
       }
       skip_inactive_turn: {
         Args: { p_game_id: string; p_timeout_seconds?: number }

@@ -298,3 +298,21 @@ export async function sendTestNotification(): Promise<{ ok: boolean; info: unkno
     return { ok: false, info: { error: String(err) } };
   }
 }
+
+/** Removes this match's notifications from the lock screen / notification
+ *  centre once the player has the match open, so stale "your turn" banners
+ *  don't linger after they've already played. No-op on web. */
+export async function clearGameNotifications(gameId: string): Promise<void> {
+  if (!Capacitor.isNativePlatform() || !gameId) return;
+  try {
+    const { PushNotifications } = await import('@capacitor/push-notifications');
+    const { notifications } = await PushNotifications.getDeliveredNotifications();
+    const mine = notifications.filter((n) => {
+      const d = (n.data ?? {}) as Record<string, unknown>;
+      return d.game_id === gameId;
+    });
+    if (mine.length) await PushNotifications.removeDeliveredNotifications({ notifications: mine });
+  } catch {
+    /* ignore — clearing is best effort */
+  }
+}

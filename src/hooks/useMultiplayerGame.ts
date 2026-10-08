@@ -11,6 +11,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
 import { getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
 import { t } from '@/lib/i18n';
+import { clearGameNotifications } from '@/lib/notifications';
 
 // Online-spelets felrapportering: skickas tyst som 'mp_issue' i analytics så
 // vi kan se fel, långsamma anrop och skillnader mellan skärm och server.
@@ -1256,6 +1257,7 @@ export function useMultiplayerGame() {
       coalesceTimer = null;
       lastRunAt = Date.now();
       if (document.visibilityState !== 'visible') return;
+      clearGameNotifications(gameId);
       // Re-subscribe (cleanupChannel inside subscribeToGame avoids duplicates)
       subscribeToGame(gameId);
       // Pull latest state
@@ -1267,15 +1269,23 @@ export function useMultiplayerGame() {
         });
     };
 
+    const markAway = () => {
+      void supabase.rpc('set_away', { p_game_id: gameId, p_session_id: sessionId })
+        .then(({ error }) => { if (error) console.warn('[multiplayer] set_away failed', error.message); });
+    };
+
     const handleForeground = () => {
+      if (document.visibilityState === 'hidden') { markAway(); return; }
       // Skip if we just ran (another resume event firing back-to-back)
       if (Date.now() - lastRunAt < 1000) return;
       if (coalesceTimer) return;
       coalesceTimer = setTimeout(runForeground, 150);
     };
 
+    clearGameNotifications(gameId);
     document.addEventListener('visibilitychange', handleForeground);
     window.addEventListener('pageshow', handleForeground);
+    window.addEventListener('pagehide', markAway);
     // Note: 'focus' intentionally omitted — fires too aggressively (tab switches,
     // devtools focus, in-app clicks) and is already covered by visibilitychange.
 
@@ -1283,6 +1293,9 @@ export function useMultiplayerGame() {
       if (coalesceTimer) clearTimeout(coalesceTimer);
       document.removeEventListener('visibilitychange', handleForeground);
       window.removeEventListener('pageshow', handleForeground);
+      window.removeEventListener('pagehide', markAway);
+      // Leaving the match screen = away, so the next turn notifies immediately.
+      markAway();
     };
   }, [state.gameId, state.status, subscribeToGame, sessionId]);
 

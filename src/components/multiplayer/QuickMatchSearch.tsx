@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useBackHandler } from '@/lib/back-handler';
 import { motion } from 'framer-motion';
 import { Dices } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,6 +29,8 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
   const cbRef = useRef({ onMatched, onNoMatch });
   cbRef.current = { onMatched, onNoMatch };
   const [searching, setSearching] = useState(1);
+  // Android back = Avbryt (otherwise the app minimizes while still searching).
+  useBackHandler(true, onCancel);
 
   useEffect(() => {
     const sessionId = getSessionId();

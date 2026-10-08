@@ -23,3 +23,19 @@ export function isDiceAwaiting() {
   }
   return true;
 }
+
+/**
+ * Landing tracker: every die reports when its roll animation starts and when
+ * it has visibly come to rest. When the last flying die lands, a
+ * `dice:landed` window event fires — the one moment UI like the combination
+ * celebrations should react to, instead of guessing with timers.
+ */
+const flying = new Set<number>();
+export function setDieFlying(index: number, isFlying: boolean) {
+  const had = flying.size > 0;
+  if (isFlying) flying.add(index);
+  else flying.delete(index);
+  if (had && flying.size === 0 && typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('dice:landed'));
+  }
+}

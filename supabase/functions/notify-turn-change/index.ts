@@ -4,6 +4,7 @@
 // is logged as queued (delivered=false) so analytics still works.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { pushText } from "../_shared/push-i18n.ts";
 import { sendPush } from "../_shared/apns.ts";
 
 const corsHeaders = {
@@ -83,13 +84,15 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     let allowed = true;
+    let lang: string | null = null;
     if (token?.device_id) {
       const { data: prefs } = await supabase
         .from("notification_preferences")
-        .select("turn_notifications")
+        .select("turn_notifications, lang")
         .eq("device_id", token.device_id)
         .maybeSingle();
       if (prefs && prefs.turn_notifications === false) allowed = false;
+      lang = prefs?.lang ?? null;
 
       // Don't notify the device that just triggered the turn change
       if (sender_device_id && token.device_id === sender_device_id) {
@@ -103,8 +106,7 @@ Deno.serve(async (req) => {
       return json({ skipped: "sender is recipient session" });
     }
 
-    const title = `${opponentName} väntar 🎲`;
-    const body = `Det är din tur i Yatzy-matchen`;
+    const { title, body } = pushText(lang, "turn", opponentName);
 
     // Idempotent insert via unique partial index
     const { data: logRow, error: insertErr } = await supabase

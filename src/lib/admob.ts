@@ -228,7 +228,7 @@ let appOpenShowing = false;
  * Laddar och visar en App Open-annons vid appstart. Returnerar true om den
  * visades. Kastar aldrig; misslyckas tyst så att appen fortsätter direkt.
  */
-export async function showAppOpenAd(): Promise<boolean> {
+export async function showAppOpenAd(canShow: () => boolean = () => true): Promise<boolean> {
   const adId = adUnitId('appOpen');
   if (!isAdMobAvailable() || !adId) return false;
   if (appOpenShowing || showing) return false;
@@ -239,6 +239,8 @@ export async function showAppOpenAd(): Promise<boolean> {
     await withTimeout(mod.AdMob.loadAppOpen({ adId }), APP_OPEN_LOAD_TIMEOUT_MS, 'load');
     const { value } = await mod.AdMob.isAppOpenLoaded();
     if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
+    // Loaded too late (player already left the start screen): never cover a game.
+    if (!canShow()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
     await withTimeout(mod.AdMob.showAppOpen(), SHOW_TIMEOUT_MS, 'show');
     reportAd('appOpen', 'shown', startedAt);
     return true;

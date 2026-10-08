@@ -1294,8 +1294,8 @@ export function useMultiplayerGame() {
       document.removeEventListener('visibilitychange', handleForeground);
       window.removeEventListener('pageshow', handleForeground);
       window.removeEventListener('pagehide', markAway);
-      // Leaving the match screen = away, so the next turn notifies immediately.
-      markAway();
+      // Leaving the match screen is reported by MultiplayerGamePage on unmount;
+      // re-runs of this effect (e.g. status changes) must NOT mark away.
     };
   }, [state.gameId, state.status, subscribeToGame, sessionId]);
 

@@ -433,18 +433,21 @@ export type Database = {
       notification_preferences: {
         Row: {
           device_id: string
+          lang: string | null
           reminder_notifications: boolean
           turn_notifications: boolean
           updated_at: string
         }
         Insert: {
           device_id: string
+          lang?: string | null
           reminder_notifications?: boolean
           turn_notifications?: boolean
           updated_at?: string
         }
         Update: {
           device_id?: string
+          lang?: string | null
           reminder_notifications?: boolean
           turn_notifications?: boolean
           updated_at?: string

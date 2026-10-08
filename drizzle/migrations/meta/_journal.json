@@ -141,6 +141,13 @@
       "when": 1791437927209,
       "tag": "0019_player_away_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1791446051976,
+      "tag": "0020_notif_pref_language",
+      "breakpoints": true
     }
   ]
 }

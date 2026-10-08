@@ -61,7 +61,7 @@ export function SentInvitesCards() {
               <p className="font-display font-bold text-sm truncate">{inv.to_name}</p>
               <p className="flex items-center gap-1 mt-px text-[10px] text-muted-foreground/80">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                <span className="truncate">{t('inviteWaitingTitle', { name: inv.to_name })}</span>
+                <span className="truncate">{t('inviteSent')} · {t('waitingShort')}…</span>
               </p>
             </div>
             <button

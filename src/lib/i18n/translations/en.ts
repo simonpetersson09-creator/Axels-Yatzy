@@ -120,8 +120,8 @@ export const en: typeof sv = {
   cat_chance: 'Chance',
   cat_yatzy: 'Yatzy',
 
-  celeb_threeOfAKind: 'Three!',
-  celeb_fourOfAKind: 'Four!',
+  celeb_threeOfAKind: 'Three of a kind!',
+  celeb_fourOfAKind: 'Four of a kind!',
   celeb_smallStraight: 'Small straight',
   celeb_largeStraight: 'Large straight!',
   celeb_fullHouse: 'Full house!',

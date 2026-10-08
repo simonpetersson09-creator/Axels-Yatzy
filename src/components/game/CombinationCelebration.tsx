@@ -106,7 +106,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
 
           {/* Text — smooth fade/scale-in, hold, soft fade-out */}
           <motion.div
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center w-full px-6"
             initial={{ scale: 0.85, opacity: 0, y: 4 }}
             animate={{
               scale: config.bounce ? [0.85, 1.06, 1, 1, 1] : [0.92, 1.02, 1, 1, 1],
@@ -126,7 +126,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
             }}
           >
             <span
-              className={`font-display ${config.fontWeight} ${config.fontSize} tracking-wide`}
+              className={`block text-center leading-tight [text-wrap:balance] font-display ${config.fontWeight} ${config.fontSize} tracking-wide`}
               style={{
                 ...(config.gradient
                   ? {

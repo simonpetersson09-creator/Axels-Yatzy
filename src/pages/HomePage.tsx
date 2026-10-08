@@ -2,6 +2,7 @@ import { BarChart3, ChevronRight } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
+import { SentInvitesCards } from '@/components/SentInvitesCards';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -452,6 +453,7 @@ export default function HomePage() {
         </motion.div>
 
         <div className="w-full space-y-2 sm:space-y-3">
+          <SentInvitesCards />
           {activeGames.length > 0 && (
             <motion.div className="space-y-1.5" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               {[...activeGames].sort((a, b) => {

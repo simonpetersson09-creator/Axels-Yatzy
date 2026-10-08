@@ -160,7 +160,7 @@ export async function preloadInterstitial(): Promise<boolean> {
 
   preparing = (async () => {
     try {
-      const mod = await ensureInitialized();
+      const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
       const adId = adUnitId('optional');
       if (!adId) return false;
       await withTimeout(mod.AdMob.prepareInterstitial({

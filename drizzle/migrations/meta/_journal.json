@@ -120,6 +120,13 @@
       "when": 1791431830685,
       "tag": "0016_server_only_game_actions",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1791435513652,
+      "tag": "0017_dice_roll_log",
+      "breakpoints": true
     }
   ]
 }

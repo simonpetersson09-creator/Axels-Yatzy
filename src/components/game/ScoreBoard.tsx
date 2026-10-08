@@ -49,7 +49,7 @@ const COL_W = 'min-w-[42px] w-[42px]';
 const LABEL_W = 'w-[86px] min-w-[86px]';
 const ROW_H = 'h-[34px]';
 
-function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor }: {
+function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor, justPlaced }: {
   isScored: boolean;
   scoreValue: number | null | undefined;
   possibleScore: number | undefined;
@@ -58,6 +58,8 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   bgStyle?: React.CSSProperties;
   isAiChosen?: boolean;
   playerColor?: string;
+  /** Latest placement — stays highlighted in the player's colour so the next player sees it. */
+  justPlaced?: boolean;
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);
@@ -142,6 +144,25 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
         </span>
       )}
       <AnimatePresence>
+        {justPlaced && playerColor && (
+          <motion.span
+            key="placed"
+            aria-hidden
+            className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[4]"
+            style={{
+              border: `2px solid hsl(${playerColor})`,
+              backgroundColor: `hsl(${playerColor} / 0.22)`,
+              boxShadow: `0 0 8px hsl(${playerColor} / 0.6)`,
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0.45, 1, 0.45, 1] }}
+            exit={{ opacity: 0, transition: { duration: 0.6 } }}
+            transition={{ duration: 2.4, ease: 'easeInOut' }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {justScored && sparkles.map((s, i) => (
           <motion.div
             key={`sp-${i}`}
@@ -222,6 +243,28 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     prevFilledRef.current = filledCount;
   }, [filledCount]);
 
+  // Remember which cell was filled last so it can be highlighted for a
+  // moment — the next player then sees where the previous score went.
+  const prevScoresRef = useRef<Set<string> | null>(null);
+  const [lastPlaced, setLastPlaced] = useState<string | null>(null);
+  useEffect(() => {
+    const now = new Set<string>();
+    players.forEach((p, i) => CATEGORIES.forEach((c) => {
+      if (p.scores[c.id] !== undefined && p.scores[c.id] !== null) now.add(`${i}:${c.id}`);
+    }));
+    const prev = prevScoresRef.current;
+    prevScoresRef.current = now;
+    if (!prev) return; // first render / reopened match: nothing "new"
+    const added = [...now].filter((k) => !prev.has(k));
+    if (added.length !== 1) return; // only a single fresh placement, never a bulk reload
+    setLastPlaced(added[0]);
+  }, [players]);
+  useEffect(() => {
+    if (!lastPlaced) return;
+    const t = setTimeout(() => setLastPlaced(null), 3500);
+    return () => clearTimeout(t);
+  }, [lastPlaced]);
+
   const cellBg = (slotIdx: number): { className: string; style?: React.CSSProperties } => {
     const isCurrent = slotIdx === currentPlayerIndex;
     const player = players[slotIdx];
@@ -260,6 +303,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         bgStyle={bg.style}
         isAiChosen={slotIdx === aiChosenPlayerIndex && aiChosenCategory === cat.id}
         playerColor={PLAYER_HSL[slotIdx]}
+        justPlaced={lastPlaced === `${slotIdx}:${cat.id}`}
       />
     );
   };

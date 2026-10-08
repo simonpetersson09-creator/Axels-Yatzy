@@ -1,3 +1,4 @@
+import { getDeviceIdSync } from '@/lib/device';
 import { supabase } from '@/integrations/supabase/client';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { rollSingleDie } from '@/lib/yatzy-scoring';
@@ -69,7 +70,7 @@ export async function playBotTurn(
         for (let i = 0; i < 5; i += 1) {
           if (wanted[i] !== locks[i]) {
             const { error } = await supabase.functions.invoke('toggle-lock', {
-              body: { game_id: game.id, session_id: sessionId, dice_index: i },
+              body: { game_id: game.id, session_id: sessionId, dice_index: i, device_id: getDeviceIdSync() ?? undefined },
             });
             if (error) { log(`Bot lås-fel: ${error.message}`); break rollLoop; }
             await wait(BOT_LOCK_DELAY_MS);
@@ -100,7 +101,7 @@ export async function playBotTurn(
       } catch { /* non-fatal — postgres_changes fallback */ }
 
       const rollPromise = supabase.functions.invoke('roll-dice', {
-        body: { game_id: game.id, session_id: sessionId, client_dice: optimisticDice },
+        body: { game_id: game.id, session_id: sessionId, client_dice: optimisticDice, device_id: getDeviceIdSync() ?? undefined },
       });
       // Let the opponent's spin animation run to completion, exactly like the app.
       const [{ data, error }] = await Promise.all([rollPromise, wait(BOT_ROLL_ANIM_MS)]);
@@ -137,7 +138,7 @@ export async function playBotTurn(
     if (freshGame?.rolls_left === 3) {
       log('Bot: inget kast registrerat — kastar en gång till innan poängval');
       const { data: rollData, error: rollErr } = await supabase.functions.invoke('roll-dice', {
-        body: { game_id: game.id, session_id: sessionId },
+        body: { game_id: game.id, session_id: sessionId, device_id: getDeviceIdSync() ?? undefined },
       });
       if (rollErr) { log(`Bot roll-fel (fallback): ${rollErr.message}`); return; }
       serverDice = (rollData?.dice as number[] | undefined) ?? serverDice;
@@ -152,7 +153,7 @@ export async function playBotTurn(
     // Retry: a single transient network/rate-limit hiccup must not freeze the match.
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       const { error } = await supabase.functions.invoke('submit-score', {
-        body: { game_id: game.id, session_id: sessionId, category_id: category },
+        body: { game_id: game.id, session_id: sessionId, category_id: category, device_id: getDeviceIdSync() ?? undefined },
       });
       if (!error) { log(`Bot valde ${category}`); return; }
       log(`Bot poäng-fel (försök ${attempt}): ${error.message}`);

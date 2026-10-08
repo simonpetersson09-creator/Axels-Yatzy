@@ -65,14 +65,17 @@ Deno.serve(async (req) => {
     }
 
     if (action === "set_prefs") {
-      const { device_id, turn_notifications, reminder_notifications } = body;
+      const { device_id, turn_notifications, reminder_notifications, lang } = body;
       if (!device_id) return json({ error: "device_id required" }, 400);
-      const { error } = await supabase.from("notification_preferences").upsert({
+      const row: Record<string, unknown> = {
         device_id,
         turn_notifications: !!turn_notifications,
         reminder_notifications: !!reminder_notifications,
         updated_at: new Date().toISOString(),
-      });
+      };
+      // Old app versions send no lang — keep whatever is stored.
+      if (typeof lang === "string" && /^[a-zA-Z-]{2,6}$/.test(lang)) row.lang = lang;
+      const { error } = await supabase.from("notification_preferences").upsert(row);
       if (error) return json({ error: error.message }, 500);
       return json({ ok: true });
     }

@@ -2,6 +2,7 @@
 // for 30+ minutes and sends a friendly reminder, throttled to once per 6h per recipient/game.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { pushText } from "../_shared/push-i18n.ts";
 import { sendPush } from "../_shared/apns.ts";
 
 const corsHeaders = {
@@ -134,19 +135,20 @@ Deno.serve(async (req) => {
       ]);
       const opponentName = opp?.player_name ?? "Din motståndare";
 
+      let lang: string | null = null;
       if (token?.device_id) {
         const { data: prefs } = await supabase
           .from("notification_preferences")
-          .select("reminder_notifications")
+          .select("reminder_notifications, lang")
           .eq("device_id", token.device_id)
           .maybeSingle();
         if (prefs && prefs.reminder_notifications === false) {
           return { skipped: { game_id: game.id, reason: "preferences disabled" } };
         }
+        lang = prefs?.lang ?? null;
       }
 
-      const title = "Din match väntar 👀";
-      const body = `${opponentName} väntar på ditt drag`;
+      const { title, body } = pushText(lang, "reminder", opponentName);
 
       const { data: logRow, error: insertErr } = await supabase
         .from("notification_log")

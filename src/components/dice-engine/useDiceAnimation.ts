@@ -21,7 +21,7 @@ import {
   randomInt,
 } from "./diceRotations";
 import type { DiceValue } from "./types";
-import { isDiceAwaiting } from "./await-store";
+import { isDiceAwaiting, setDieFlying } from "./await-store";
 
 /** Respects the OS "reduce motion" setting; animations become near-instant. */
 export function usePrefersReducedMotion(): boolean {
@@ -202,6 +202,7 @@ export function useDiceAnimation({
     state.pendingRoll = false;
     state.sweeping = true;
     state.settledValue = value;
+    setDieFlying(index, false);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);
@@ -289,6 +290,7 @@ export function useDiceAnimation({
       state.sweeping = false;
       state.pendingRoll = false;
       state.animating = true;
+      setDieFlying(index, true);
     }
     state.elapsed = 0;
 
@@ -378,6 +380,7 @@ export function useDiceAnimation({
         group.quaternion.copy(state.target);
         travelNow?.position.set(0, 0, 0);
         state.settling = false;
+        setDieFlying(index, false);
       }
       return;
     }
@@ -444,6 +447,7 @@ export function useDiceAnimation({
       travel?.position.set(0, 0, 0);
       state.animating = false;
       state.settledValue = state.rollValue;
+      setDieFlying(index, false);
     }
   });
 

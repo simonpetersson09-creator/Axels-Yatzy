@@ -50,13 +50,13 @@ export function SentInvitesCards() {
         {invites.map((inv) => (
           <motion.div
             key={inv.id}
-            className="w-full px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-left bg-secondary/70 text-foreground border border-border/60 border-l-4 border-l-primary/80"
+            className="w-full px-3 py-1.5 rounded-xl flex items-center gap-2.5 text-left bg-secondary/70 text-foreground border border-border/60 border-l-4 border-l-primary/80"
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-primary/15">
-              <Send className="w-4 h-4 text-primary" />
+            <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center bg-primary/15">
+              <Send className="w-3.5 h-3.5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-display font-bold text-sm truncate">{inv.to_name}</p>
@@ -72,7 +72,7 @@ export function SentInvitesCards() {
             <button
               onClick={() => cancel(inv.id)}
               disabled={cancelling === inv.id}
-              className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-full bg-muted/70 text-muted-foreground active:scale-95 transition disabled:opacity-60"
+              className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-muted/70 text-muted-foreground active:scale-95 transition disabled:opacity-60"
             >
               {cancelling === inv.id ? <Loader2 className="w-3 h-3 animate-spin" /> : t('cancel')}
             </button>

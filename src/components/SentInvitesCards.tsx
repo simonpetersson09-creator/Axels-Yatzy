@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Clock } from 'lucide-react';
+import { formatTimeRemaining } from '@/lib/active-game';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { respondInvite, type InviteRow } from '@/lib/invites';
@@ -62,6 +63,10 @@ export function SentInvitesCards() {
               <p className="flex items-center gap-1 mt-px text-[10px] text-muted-foreground/80">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 <span className="truncate">{t('inviteSent')} · {t('waitingShort')}…</span>
+                <Clock className="w-3 h-3 ml-1 flex-shrink-0" />
+                <span className="tabular-nums flex-shrink-0">
+                  {formatTimeRemaining(new Date(inv.expires_at).getTime() - Date.now())}
+                </span>
               </p>
             </div>
             <button

@@ -11,6 +11,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { trackEvent } from '@/lib/analytics';
 import { getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
 import { t } from '@/lib/i18n';
+import { clearGameNotifications } from '@/lib/notifications';
 
 // Online-spelets felrapportering: skickas tyst som 'mp_issue' i analytics så
 // vi kan se fel, långsamma anrop och skillnader mellan skärm och server.

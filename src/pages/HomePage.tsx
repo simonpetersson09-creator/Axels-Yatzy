@@ -146,7 +146,7 @@ export default function HomePage() {
       if (startupAdChecked) return;
       startupAdChecked = true;
       // App Open-annons; ingen annons → appen fortsätter som vanligt
-      if (await showAppOpenAd()) {
+      if (await showAppOpenAd(() => window.location.pathname === '/' && document.visibilityState === 'visible')) {
         markDailyStartupAdShown();
         trackEvent('daily_startup_ad');
       }

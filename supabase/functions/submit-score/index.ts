@@ -1,3 +1,4 @@
+import { verifySessionOwner } from "../_shared/session-auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -18,7 +19,7 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id, category_id, expected_dice } = await req.json();
+    const { game_id, session_id, device_id, category_id, expected_dice } = await req.json();
 
     if (!game_id || !session_id || !category_id) {
       return json({ error: "game_id, session_id, and category_id required" }, 400);
@@ -28,6 +29,9 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    const owner = await verifySessionOwner(supabase, session_id, device_id);
+    if (!owner.ok) return json({ error: owner.error }, 403);
 
     // Refuse to score when the server's dice differ from what the player saw
     // (e.g. a roll that never got saved during a server hiccup). Older app

@@ -1,3 +1,4 @@
+import { verifySessionOwner } from "../_shared/session-auth.ts";
 // Accept or decline a friend invite. On accept creates the game atomically.
 // Either party can also cancel a pending invite by calling with action='decline'.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
@@ -15,7 +16,7 @@ Deno.serve(async (req) => {
     new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   try {
-    const { invite_id, session_id, action } = await req.json();
+    const { invite_id, session_id, device_id, action } = await req.json();
     if (!invite_id || !session_id || !["accept", "decline"].includes(action)) {
       return json({ error: "invite_id, session_id, action(accept|decline) required" }, 400);
     }
@@ -24,6 +25,9 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    const owner = await verifySessionOwner(supabase, session_id, device_id);
+    if (!owner.ok) return json({ error: owner.error }, 403);
 
     const { data: invite } = await supabase
       .from("game_invites")

@@ -1,3 +1,4 @@
+import { verifySessionOwner } from "../_shared/session-auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -18,12 +19,15 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id, dice_index, locked_dice } = await req.json();
+    const { game_id, session_id, device_id, dice_index, locked_dice } = await req.json();
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    const owner = await verifySessionOwner(supabase, session_id, device_id);
+    if (!owner.ok) return json({ error: owner.error }, 403);
 
     // New app versions send the whole lock state in one call (batched taps).
     if (locked_dice !== undefined) {

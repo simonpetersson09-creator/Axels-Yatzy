@@ -44,6 +44,17 @@ export default function MultiplayerGamePage() {
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 
+  // Leaving the match screen = away, so the next "your turn" notifies at once.
+  const awayGameId = searchParams.get('gameId');
+  useEffect(() => {
+    if (!awayGameId) return;
+    return () => {
+      void supabase.rpc('set_away', { p_game_id: awayGameId, p_session_id: getSessionId() })
+        .then(({ error }) => { if (error) console.warn('[multiplayer] set_away failed', error.message); });
+    };
+  }, [awayGameId]);
+
+
   // Waiting for the server to confirm a roll/lock: lock the sheet, and after
   // 3 s say the connection is slow so it never looks like the app froze.
   const waitingServer = (rollPending || locksPending) && isMyTurn;

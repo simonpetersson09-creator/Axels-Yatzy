@@ -25,8 +25,6 @@ export function useCombinationCelebration(gameState: GameState | null) {
   const [activeCelebration, setActiveCelebration] = useState<CombinationType | null>(null);
   const [yatzyTrigger, setYatzyTrigger] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const yatzyPendingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stateRef = useRef<GameState | null>(gameState);
   stateRef.current = gameState;
   const celebratedKeyRef = useRef<string | null>(null);
@@ -71,8 +69,6 @@ export function useCombinationCelebration(gameState: GameState | null) {
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (pendingRef.current) clearTimeout(pendingRef.current);
-      if (yatzyPendingRef.current) clearTimeout(yatzyPendingRef.current);
     };
   }, []);
 

@@ -113,6 +113,47 @@ export type Database = {
         }
         Relationships: []
       }
+      dice_roll_log: {
+        Row: {
+          created_at: string
+          dice: number[]
+          game_id: string
+          id: number
+          locked: boolean[]
+          player_index: number
+          roll_no: number
+          round: number
+        }
+        Insert: {
+          created_at?: string
+          dice: number[]
+          game_id: string
+          id?: number
+          locked: boolean[]
+          player_index: number
+          roll_no: number
+          round: number
+        }
+        Update: {
+          created_at?: string
+          dice?: number[]
+          game_id?: string
+          id?: number
+          locked?: boolean[]
+          player_index?: number
+          roll_no?: number
+          round?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dice_roll_log_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_match_results: {
         Row: {
           created_at: string

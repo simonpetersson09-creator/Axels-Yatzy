@@ -541,7 +541,11 @@ export function useMultiplayerGame() {
         else if (payload.rollsLeft < prevGS.rollsLeft) startRemoteRolling(part); // missed roll_started
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
-        const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number };
+        const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number; updated_at?: string };
+        // Live updates also count as "seen", so a slower refresh can't roll them back.
+        if (next.updated_at && !isStaleSnapshot(lastSnapshotRef.current, gameId, next.updated_at)) {
+          lastSnapshotRef.current = { gameId, updatedAt: next.updated_at };
+        }
         const prevGS = stateRef.current.gameState;
         const myIdx = stateRef.current.myPlayerIndex;
         const opponentRolled =

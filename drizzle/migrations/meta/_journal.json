@@ -113,6 +113,13 @@
       "when": 1791415965710,
       "tag": "0015_player_stats_for_game",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791431830685,
+      "tag": "0016_server_only_game_actions",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { getDeviceIdSync } from '@/lib/device';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trophy, Flag, Swords, Loader2, UserPlus, Check } from 'lucide-react';
@@ -82,7 +83,7 @@ export default function ResultsPage() {
           .maybeSingle();
         if (cancelled || existing) return;
         await supabase.functions.invoke('backfill-friend-match', {
-          body: { game_id: gameId, session_id: getSessionId() },
+          body: { game_id: gameId, session_id: getSessionId(), device_id: getDeviceIdSync() ?? undefined },
         });
       } catch (err) {
         console.warn('[results] backfill-friend-match failed', err);

@@ -1,3 +1,4 @@
+import { verifySessionOwner } from "../_shared/session-auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -18,7 +19,7 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id } = await req.json();
+    const { game_id, session_id, device_id } = await req.json();
 
     if (!game_id || !session_id) {
       return json({ error: "game_id and session_id required" }, 400);
@@ -28,6 +29,9 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    const owner = await verifySessionOwner(supabase, session_id, device_id);
+    if (!owner.ok) return json({ error: owner.error }, 403);
 
     const { data, error } = await supabase.rpc("perform_start_game", {
       p_game_id: game_id,

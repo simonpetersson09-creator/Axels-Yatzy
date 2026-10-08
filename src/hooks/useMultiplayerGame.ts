@@ -1,4 +1,5 @@
 import { isStaleSnapshot } from '@/lib/snapshot-order';
+import { getDeviceIdSync } from '@/lib/device';
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
@@ -735,7 +736,7 @@ export function useMultiplayerGame() {
     if (!gameId || latest.myPlayerIndex !== 0) return;
 
     const { data, error } = await supabase.functions.invoke('start-game', {
-      body: { game_id: gameId, session_id: sessionId },
+      body: { game_id: gameId, session_id: sessionId, device_id: getDeviceIdSync() ?? undefined },
     });
 
     if (error) {
@@ -853,7 +854,7 @@ export function useMultiplayerGame() {
         return { data: null, error: new Error('lock-unconfirmed') } as { data: any; error: any };
       }
       return withTimeout(supabase.functions.invoke('roll-dice', {
-        body: { game_id: latest.gameId, session_id: sessionId, server_rolls: true },
+        body: { game_id: latest.gameId, session_id: sessionId, server_rolls: true, device_id: getDeviceIdSync() ?? undefined },
       }));
     }).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
@@ -982,7 +983,7 @@ export function useMultiplayerGame() {
         const lockStartedAt = Date.now();
         try {
           const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
-            body: { game_id: gameId, session_id: sessionId, locked_dice: locks },
+            body: { game_id: gameId, session_id: sessionId, locked_dice: locks, device_id: getDeviceIdSync() ?? undefined },
           }));
           if (error) {
             console.error('Toggle lock error:', error);
@@ -1128,7 +1129,7 @@ export function useMultiplayerGame() {
     // expected_dice: the server refuses the score if its dice differ from what
     // the player saw, instead of silently scoring the wrong dice (e.g. 0).
     withTimeout(supabase.functions.invoke('submit-score', {
-      body: { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice },
+      body: { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice, device_id: getDeviceIdSync() ?? undefined },
     }))
       .then(({ data, error }) => {
         const submitMs = Date.now() - submitStartedAt;
@@ -1183,7 +1184,7 @@ export function useMultiplayerGame() {
 
     try {
       const { error } = await withTimeout(supabase.functions.invoke('forfeit-game', {
-        body: { game_id: gameId, session_id: sessionId },
+        body: { game_id: gameId, session_id: sessionId, device_id: getDeviceIdSync() ?? undefined },
       }));
       if (error) throw error;
       trackEvent('game_forfeited', undefined, { gameId, gameMode: 'multiplayer' });

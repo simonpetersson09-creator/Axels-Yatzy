@@ -1,3 +1,4 @@
+import { verifySessionOwner } from "../_shared/session-auth.ts";
 // Fallback endpoint: lets either player of a finished 2-player match ensure that
 // a friend_match_results row exists. The actual write happens via the
 // SECURITY DEFINER RPC record_friend_match, but we first validate that the
@@ -21,7 +22,7 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id } = await req.json().catch(() => ({}));
+    const { game_id, session_id, device_id } = await req.json().catch(() => ({}));
     if (!game_id || !session_id) {
       return json({ error: "game_id and session_id required" }, 400);
     }
@@ -30,6 +31,9 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    const owner = await verifySessionOwner(supabase, session_id, device_id);
+    if (!owner.ok) return json({ error: owner.error }, 403);
 
     // M8: rate-limit per (session, game) — max 1 call per 5 seconds. Prevents
     // a buggy client from looping into the SECURITY DEFINER RPC.

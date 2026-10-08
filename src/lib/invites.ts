@@ -49,6 +49,7 @@ export async function respondInvite(opts: {
       invite_id: opts.inviteId,
       session_id: getSessionId(),
       action: opts.action,
+      device_id: await initDeviceId(),
     },
   });
   if (error) return { ok: false, error: error.message };

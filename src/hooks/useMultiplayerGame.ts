@@ -1,3 +1,4 @@
+import { isStaleSnapshot } from '@/lib/snapshot-order';
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
@@ -112,6 +113,7 @@ export function useMultiplayerGame() {
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lockBatchRef = useRef<{ gameId: string; timer: ReturnType<typeof setTimeout> | null; promise: Promise<boolean>; resolve: (ok: boolean) => void } | null>(null);
   const lockChainRef = useRef<Promise<unknown>>(Promise.resolve());
+  const lastSnapshotRef = useRef<{ gameId: string; updatedAt: string } | null>(null);
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
   // reset dice) isn't briefly overwritten by a stale server snapshot.
@@ -288,6 +290,11 @@ export function useMultiplayerGame() {
 
     const game = gameRes.data;
     const dbPlayers = playersRes.data;
+
+    // Several refreshes can be in flight at once; never let an older server
+    // snapshot (lower updated_at) overwrite a newer one already applied.
+    if (isStaleSnapshot(lastSnapshotRef.current, gameId, (game as { updated_at?: string }).updated_at)) return;
+    lastSnapshotRef.current = { gameId, updatedAt: (game as { updated_at?: string }).updated_at ?? '' };
 
     const isQuick = !!(game as { is_quick_match?: boolean }).is_quick_match;
     const players: Player[] = dbPlayers.map(p => ({

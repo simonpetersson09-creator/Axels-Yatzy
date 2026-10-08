@@ -82,8 +82,38 @@ let preparedAt = 0;
 let preparing: Promise<boolean> | null = null;
 let showing = false;
 let dismissListenerAttached = false;
+let lastPrepareError: string | undefined;
 
 const PREPARED_TTL_MS = 45 * 60 * 1000; // AdMob-annonser blir inaktuella efter ~1h
+
+/** Never let a native ad call hang the UI (seen on iPad: no reply at all). */
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, rej) => setTimeout(() => rej(new Error(`${label}_timeout`)), ms)),
+  ]);
+}
+
+function reasonOf(err: unknown): string {
+  const e = err as { message?: string; code?: unknown } | undefined;
+  return String(e?.message ?? e?.code ?? err ?? 'unknown').slice(0, 160);
+}
+
+/** Silent diagnostics so failing ads (e.g. on iPad) show up in analytics. */
+function reportAd(kind: 'appOpen' | 'optional', result: string, startedAt: number, reason?: string) {
+  void import('@/lib/analytics').then(({ trackEvent }) =>
+    trackEvent('ad_result', {
+      kind,
+      result,
+      reason,
+      ms: Date.now() - startedAt,
+      ipad: typeof navigator !== 'undefined' && /iPad|Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1,
+    }),
+  ).catch(() => {});
+}
+
+const PREPARE_TIMEOUT_MS = 10_000;
+const SHOW_TIMEOUT_MS = 8_000;
 
 async function loadModule(): Promise<AdMobModule> {
   if (!modulePromise) modulePromise = import('@capacitor-community/admob');
@@ -133,13 +163,14 @@ export async function preloadInterstitial(): Promise<boolean> {
       const mod = await ensureInitialized();
       const adId = adUnitId('optional');
       if (!adId) return false;
-      await mod.AdMob.prepareInterstitial({
+      await withTimeout(mod.AdMob.prepareInterstitial({
         adId,
         isTesting: ADMOB_CONFIG.useTestAds,
-      });
+      }), PREPARE_TIMEOUT_MS, 'prepare');
       preparedAt = Date.now();
       return true;
-    } catch {
+    } catch (err) {
+      lastPrepareError = reasonOf(err);
       preparedAt = 0;
       return false;
     } finally {
@@ -160,19 +191,23 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
   if (!isAdMobAvailable()) return 'unavailable';
   if (showing) return 'busy';
   showing = true;
+  const startedAt = Date.now();
   try {
     const ready = await preloadInterstitial();
     if (!ready) {
       showing = false;
+      reportAd('optional', 'load_failed', startedAt, lastPrepareError);
       return 'failed';
     }
     const mod = await loadModule();
-    await mod.AdMob.showInterstitial();
+    await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
     preparedAt = 0; // förbrukad – laddas om via Dismissed-lyssnaren
+    reportAd('optional', 'shown', startedAt);
     void preloadInterstitial();
     return 'shown';
-  } catch {
+  } catch (err) {
     preparedAt = 0;
+    reportAd('optional', 'show_failed', startedAt, reasonOf(err));
     return 'failed';
   } finally {
     showing = false;
@@ -185,7 +220,7 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
 /* ------------------------------------------------------------------ */
 
 /** Laddas annonsen inte inom denna tid visas den inte alls denna start. */
-const APP_OPEN_LOAD_TIMEOUT_MS = 5000;
+const APP_OPEN_LOAD_TIMEOUT_MS = 8000;
 
 let appOpenShowing = false;
 
@@ -198,18 +233,17 @@ export async function showAppOpenAd(): Promise<boolean> {
   if (!isAdMobAvailable() || !adId) return false;
   if (appOpenShowing || showing) return false;
   appOpenShowing = true;
+  const startedAt = Date.now();
   try {
-    const mod = await ensureInitialized();
-    const loaded = await Promise.race([
-      mod.AdMob.loadAppOpen({ adId }).then(() => true, () => false),
-      new Promise<boolean>(r => setTimeout(() => r(false), APP_OPEN_LOAD_TIMEOUT_MS)),
-    ]);
-    if (!loaded) return false;
+    const mod = await withTimeout(ensureInitialized(), APP_OPEN_LOAD_TIMEOUT_MS, 'init');
+    await withTimeout(mod.AdMob.loadAppOpen({ adId }), APP_OPEN_LOAD_TIMEOUT_MS, 'load');
     const { value } = await mod.AdMob.isAppOpenLoaded();
-    if (!value) return false;
-    await mod.AdMob.showAppOpen();
+    if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
+    await withTimeout(mod.AdMob.showAppOpen(), SHOW_TIMEOUT_MS, 'show');
+    reportAd('appOpen', 'shown', startedAt);
     return true;
-  } catch {
+  } catch (err) {
+    reportAd('appOpen', 'failed', startedAt, reasonOf(err));
     return false;
   } finally {
     appOpenShowing = false;

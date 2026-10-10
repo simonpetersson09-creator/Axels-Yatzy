@@ -168,6 +168,30 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Resume ad: when the app comes back from the background to the start
+  // screen after at least RESUME_AD_MIN_AWAY_MS. Ads themselves can push the
+  // app to background briefly, so the away-time guard also stops loops.
+  useEffect(() => {
+    if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
+    let remove: (() => void) | undefined;
+    let cancelled = false;
+    void (async () => {
+      const { App } = await import('@capacitor/app');
+      const sub = await App.addListener('appStateChange', async ({ isActive }) => {
+        if (!isActive) { backgroundedAt = Date.now(); return; }
+        const away = backgroundedAt ? Date.now() - backgroundedAt : 0;
+        backgroundedAt = 0;
+        if (away < RESUME_AD_MIN_AWAY_MS) return;
+        if (window.location.pathname !== '/') return;
+        if (await showAppOpenAd(() => window.location.pathname === '/' && document.visibilityState === 'visible')) {
+          trackEvent('resume_ad');
+        }
+      });
+      if (cancelled) sub.remove(); else remove = () => sub.remove();
+    })();
+    return () => { cancelled = true; remove?.(); };
+  }, []);
+
   // Preload i bakgrunden – kan aldrig trigga visning.
   useEffect(() => {
     if (isAdMobAvailable()) void preloadInterstitial();

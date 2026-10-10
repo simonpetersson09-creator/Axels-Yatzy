@@ -7,6 +7,24 @@ import { getSessionId } from '@/lib/session';
 import { respondInvite, type InviteRow } from '@/lib/invites';
 import { useTranslation } from '@/lib/i18n';
 
+const CACHE_KEY = 'yatzy-sent-invites';
+
+function readCache(myId: string): InviteRow[] {
+  try {
+    const list = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]') as InviteRow[];
+    const now = Date.now();
+    return Array.isArray(list)
+      ? list.filter((i) => i.from_session_id === myId && new Date(i.expires_at).getTime() > now)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCache(list: InviteRow[]) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(list)); } catch { /* noop */ }
+}
+
 /**
  * Home-screen cards for invitations I have sent that are still waiting for
  * an answer — so a minimized invite doesn't just disappear.

@@ -40,6 +40,9 @@ import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/
 
 /** Module-level: startup ad is only considered once per app launch. */
 let startupAdChecked = false;
+/** Module-level so it survives HomePage remounts while the app is in background. */
+let backgroundedAt = 0;
+const RESUME_AD_MIN_AWAY_MS = 60_000;
 import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
 
 const item = {

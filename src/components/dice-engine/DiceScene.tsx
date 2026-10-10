@@ -128,10 +128,9 @@ function DiceSceneImpl({
         key={canvasKey}
         // Draw only while something moves; see <DemandDriver />.
         frameloop="demand"
-        // The dice occupy a narrow strip, so edge quality matters more than
-        // fill rate here: allow the device's full DPR (up to 3) for crisp,
-        // supersampled silhouettes and pips on modern phones.
-        dpr={[1, 3]}
+        // Capped at 2× (with MSAA): visually near-identical to 3× on phones,
+        // but ~55 % fewer pixels per frame, so the roll animation stays smooth.
+        dpr={[1, 2]}
         
         
         gl={{

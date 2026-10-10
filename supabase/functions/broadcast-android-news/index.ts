@@ -27,11 +27,6 @@ Deno.serve(async (req) => {
 
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-  const { data: claimed, error: gErr } = await supabase
-    .from("rate_limits").upsert({ key: GUARD }, { onConflict: "key", ignoreDuplicates: true }).select("key");
-  if (gErr) return json({ error: gErr.message }, 500);
-  if (!claimed || claimed.length === 0) return json({ error: "already_sent" }, 409);
-
   const { data: tokens } = await supabase.from("push_tokens").select("device_id, token, platform").eq("enabled", true);
   const { data: prefs } = await supabase.from("notification_preferences").select("device_id, lang");
   const lang = new Map((prefs ?? []).map((p) => [p.device_id, p.lang as string | null]));
@@ -40,10 +35,21 @@ Deno.serve(async (req) => {
   const reasons: Record<string, number> = {};
   for (const t of tokens ?? []) {
     if (t.platform === "android") continue; // Android players already have it
+    // Per-device guard: re-running the function never sends twice to anyone.
+    const key = `${GUARD}:${t.device_id}`;
+    const { data: claimed } = await supabase
+      .from("rate_limits").upsert({ key }, { onConflict: "key", ignoreDuplicates: true }).select("key");
+    if (!claimed || claimed.length === 0) continue;
     const [title, body] = TEXT[lang.get(t.device_id) ?? "sv"] ?? TEXT.en;
     const r = await sendPush({ deviceToken: t.token, platform: t.platform, title, body, data: { kind: "news" } });
     if (r.ok) sent++;
     else {
+      if (r.status === 429) {
+        // Apple throttled us: release this device and stop; run again later.
+        await supabase.from("rate_limits").delete().eq("key", key);
+        reasons[r.reason ?? "429"] = (reasons[r.reason ?? "429"] ?? 0) + 1;
+        break;
+      }
       failed++;
       reasons[r.reason ?? "unknown"] = (reasons[r.reason ?? "unknown"] ?? 0) + 1;
       await disableTokenIfStale(supabase, t.token, r);

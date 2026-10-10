@@ -537,7 +537,7 @@ export default function HomePage() {
           {/* Main actions stacked */}
           <div className="flex flex-col gap-2.5">
             <motion.button
-              onClick={() => setShowQuickMatch(true)}
+              onClick={() => setShowQuickMatch(v => !v)}
               className="w-full py-3 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
               whileTap={{ scale: 0.97 }}
               variants={item}

@@ -35,6 +35,7 @@ import NotificationAskPrompt from '@/components/NotificationAskPrompt';
 import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
+import AndroidNewsPrompt, { shouldShowAndroidNews, markAndroidNewsSeen } from '@/components/AndroidNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
 
 /** Module-level: startup ad is only considered once per app launch. */
@@ -93,6 +94,18 @@ export default function HomePage() {
     setShowOnlineNews(false);
     trackEvent(play ? 'online_news_play' : 'online_news_dismiss');
     if (play) setShowQuickMatch(true);
+  };
+
+  // One-time box: the app is now available on Android (Google Play).
+  const [showAndroidNews, setShowAndroidNews] = useState(false);
+  useEffect(() => {
+    if (!shouldShowAndroidNews()) return;
+    const timer = setTimeout(() => setShowAndroidNews(true), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+  const closeAndroidNews = () => {
+    markAndroidNewsSeen();
+    setShowAndroidNews(false);
   };
 
   // Ask for a rating once the player has finished 5 matches.
@@ -871,7 +884,10 @@ export default function HomePage() {
         {showOnlineNews && (
           <OnlineNewsPrompt onPlay={() => closeOnlineNews(true)} onClose={() => closeOnlineNews(false)} />
         )}
-        {showRatePrompt && !showOnlineNews && (
+        {showAndroidNews && !showOnlineNews && (
+          <AndroidNewsPrompt onClose={closeAndroidNews} />
+        )}
+        {showRatePrompt && !showOnlineNews && !showAndroidNews && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
         )}
         {showNotifAsk && !showOnlineNews && !showRatePrompt && (

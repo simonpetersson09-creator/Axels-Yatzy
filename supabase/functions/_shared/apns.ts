@@ -26,7 +26,7 @@ export async function sendApns(args: ApnsArgs): Promise<ApnsResult> {
   if (!keyId || !teamId || !bundleId || !authKey) return { ok: false, reason: "secrets_missing" };
 
   try {
-    const jwt = await buildApnsJwt({ keyId, teamId, authKey });
+    const jwt = await getCachedApnsJwt({ keyId, teamId, authKey });
     const host = env === "sandbox" ? "api.sandbox.push.apple.com" : "api.push.apple.com";
     const url = `https://${host}/3/device/${args.deviceToken}`;
     const payload: Record<string, unknown> = {
@@ -89,6 +89,18 @@ export async function disableTokenIfStale(supabase: any, tokenValue: string, res
   } catch (err) {
     console.warn("[apns] disable stale token threw", err);
   }
+}
+
+// Apple rejects provider tokens that are refreshed more than about once per
+// 20 minutes (429 TooManyProviderTokenUpdates), so reuse one JWT per instance
+// for 40 minutes (Apple accepts them for up to 60).
+let cachedJwt: { jwt: string; at: number; keyId: string } | null = null;
+const JWT_TTL_MS = 40 * 60 * 1000;
+export async function getCachedApnsJwt(a: { keyId: string; teamId: string; authKey: string }): Promise<string> {
+  if (cachedJwt && cachedJwt.keyId === a.keyId && Date.now() - cachedJwt.at < JWT_TTL_MS) return cachedJwt.jwt;
+  const jwt = await buildApnsJwt(a);
+  cachedJwt = { jwt, at: Date.now(), keyId: a.keyId };
+  return jwt;
 }
 
 export async function buildApnsJwt(a: { keyId: string; teamId: string; authKey: string }): Promise<string> {

@@ -7,6 +7,24 @@ import { getSessionId } from '@/lib/session';
 import { respondInvite, type InviteRow } from '@/lib/invites';
 import { useTranslation } from '@/lib/i18n';
 
+const CACHE_KEY = 'yatzy-sent-invites';
+
+function readCache(myId: string): InviteRow[] {
+  try {
+    const list = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]') as InviteRow[];
+    const now = Date.now();
+    return Array.isArray(list)
+      ? list.filter((i) => i.from_session_id === myId && new Date(i.expires_at).getTime() > now)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCache(list: InviteRow[]) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(list)); } catch { /* noop */ }
+}
+
 /**
  * Home-screen cards for invitations I have sent that are still waiting for
  * an answer — so a minimized invite doesn't just disappear.
@@ -14,7 +32,9 @@ import { useTranslation } from '@/lib/i18n';
 export function SentInvitesCards() {
   const { t } = useTranslation();
   const myId = getSessionId();
-  const [invites, setInvites] = useState<InviteRow[]>([]);
+  // Start from the last known list so the cards are there on first paint and
+  // the buttons below don't jump down when the server answers.
+  const [invites, setInvites] = useState<InviteRow[]>(() => readCache(myId));
   const [cancelling, setCancelling] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,11 +43,11 @@ export function SentInvitesCards() {
       const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: myId });
       if (cancelled || !data) return;
       const now = Date.now();
-      setInvites(
-        (data as InviteRow[]).filter(
-          (i) => i.from_session_id === myId && i.status === 'pending' && new Date(i.expires_at).getTime() > now,
-        ),
+      const list = (data as InviteRow[]).filter(
+        (i) => i.from_session_id === myId && i.status === 'pending' && new Date(i.expires_at).getTime() > now,
       );
+      writeCache(list);
+      setInvites(list);
     };
     void load();
     const iv = setInterval(load, 5000);

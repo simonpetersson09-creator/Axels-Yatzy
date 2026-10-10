@@ -545,43 +545,10 @@ export default function HomePage() {
             >
               🎲 <span className="truncate">{t('quickMatch')}</span>
             </motion.button>
-
-            <motion.button
-              onClick={() => navigate('/multiplayer')}
-              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow flex items-center justify-center gap-2"
-              whileTap={{ scale: 0.97 }}
-              variants={item}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-            >
-              🌐 <span className="truncate">{t('playWithFriends')}</span>
-            </motion.button>
-          </div>
-
-          <AnimatePresence>
-            {onlineSearch && (
-              <QuickMatchSearch
-                playerName={onlineSearch.humanName}
-                players={onlineSearch.playerNames.length}
-                onMatched={(id) => {
-                  const players = onlineSearch.playerNames.length;
-                  setOnlineSearch(null);
-                  trackEvent('quick_match_online_matched', { players }, { gameMode: 'quick_match_online' });
-                  navigate(`/multiplayer-game?gameId=${id}`);
-                }}
-                onNoMatch={() => {
-                  const { playerNames, aiPlayers } = onlineSearch;
-                  setOnlineSearch(null);
-                  trackEvent('quick_match_started', { opponents: aiPlayers.length, fallback: true }, { gameMode: 'quick_match' });
-                  navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
-                }}
-                onCancel={() => setOnlineSearch(null)}
-              />
-            )}
-          </AnimatePresence>
           <AnimatePresence>
             {showQuickMatch && (
               <motion.div
-                className="space-y-3"
+                className="space-y-2 overflow-hidden"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -613,6 +580,39 @@ export default function HomePage() {
                   ))}
                 </div>
               </motion.div>
+            )}
+          </AnimatePresence>
+
+            <motion.button
+              onClick={() => navigate('/multiplayer')}
+              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow flex items-center justify-center gap-2"
+              whileTap={{ scale: 0.97 }}
+              variants={item}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+            >
+              🌐 <span className="truncate">{t('playWithFriends')}</span>
+            </motion.button>
+          </div>
+
+          <AnimatePresence>
+            {onlineSearch && (
+              <QuickMatchSearch
+                playerName={onlineSearch.humanName}
+                players={onlineSearch.playerNames.length}
+                onMatched={(id) => {
+                  const players = onlineSearch.playerNames.length;
+                  setOnlineSearch(null);
+                  trackEvent('quick_match_online_matched', { players }, { gameMode: 'quick_match_online' });
+                  navigate(`/multiplayer-game?gameId=${id}`);
+                }}
+                onNoMatch={() => {
+                  const { playerNames, aiPlayers } = onlineSearch;
+                  setOnlineSearch(null);
+                  trackEvent('quick_match_started', { opponents: aiPlayers.length, fallback: true }, { gameMode: 'quick_match' });
+                  navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
+                }}
+                onCancel={() => setOnlineSearch(null)}
+              />
             )}
           </AnimatePresence>
 

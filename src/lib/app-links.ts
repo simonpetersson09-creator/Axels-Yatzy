@@ -10,7 +10,7 @@ export const ANDROID_PACKAGE_ID = 'com.simonpetersson.axelsyatzy';
  * Google Play listing. Set PLAY_STORE_LIVE to true once the app is published
  * on Google Play; until then no Google Play link is shown anywhere.
  */
-export const PLAY_STORE_LIVE = false;
+export const PLAY_STORE_LIVE = true;
 export const PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${ANDROID_PACKAGE_ID}`;
 
 /** Public web address used in shared invite links (works for people without the app). */

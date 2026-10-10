@@ -20,7 +20,7 @@ export function StoreButtons({ onClick }: { onClick?: (store: string) => void })
               : 'bg-secondary text-foreground border border-border/50',
           )}
         >
-          {l.store === 'apple' ? t('joinDownload') : 'Get it on Google Play'}
+          {l.store === 'apple' ? t('joinDownload') : t('googlePlayDownload')}
         </a>
       ))}
     </div>

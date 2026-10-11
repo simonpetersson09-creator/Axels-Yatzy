@@ -74,6 +74,17 @@ const metal = (color: string, glow: string) => new MeshPhysicalMaterial({
   emissive: glow,
   emissiveIntensity: 0.35,
 });
+/** Silver: cool grey polished metal — clearly darker than the cream-white base dice. */
+const silverMetal = (color: string, glow: string) => new MeshPhysicalMaterial({
+  color,
+  roughness: 0.22,
+  metalness: 0.65,
+  clearcoat: 0.8,
+  clearcoatRoughness: 0.08,
+  envMapIntensity: 1.6,
+  emissive: glow,
+  emissiveIntensity: 0.5,
+});
 /** Platinum: polished, more mirror-like, with a cool icy-blue sheen so it never reads as silver. */
 const platinumMetal = (color: string, glow: string) => new MeshPhysicalMaterial({
   color,
@@ -92,7 +103,7 @@ const platinumMetal = (color: string, glow: string) => new MeshPhysicalMaterial(
 /** Held = slightly deeper tone. */
 const SKIN_MATERIALS = {
   bronze: { body: metal("#e09a63", "#6a3a1c"), held: metal("#c9824d", "#55301a") },
-  silver: { body: metal("#f1f3f6", "#5c6168"), held: metal("#d3d8de", "#4a4f55") },
+  silver: { body: silverMetal("#cdd3db", "#5d6670"), held: silverMetal("#b2bac3", "#4b535c") },
   gold: { body: metal("#f5cc5e", "#7a5a14"), held: metal("#deb144", "#634810") },
   platinum: { body: platinumMetal("#eef4fb", "#5a7fa8"), held: platinumMetal("#cfdceb", "#3f5f86") },
 } as const;

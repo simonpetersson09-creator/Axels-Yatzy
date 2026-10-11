@@ -25,6 +25,7 @@ import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { motion } from 'framer-motion';
 import { Bot, Globe, Loader2 } from 'lucide-react';
+import { askNotificationsFor } from '@/lib/notif-context';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { saveFriendMatchResult } from '@/lib/friend-stats';
@@ -44,6 +45,14 @@ export default function MultiplayerGamePage() {
     localRolling, remoteRolling, pendingCategory, pendingPlayerIndex, locksPending, rollPending,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
+
+  // Friend match, waiting for someone else's turn → good moment to offer notifications.
+  const isFriendMatch = !!gameState && gameState.players.every((p) => !(p as { badge?: string }).badge);
+  useEffect(() => {
+    if (status !== 'playing' || isMyTurn || !isFriendMatch) return;
+    const timer = setTimeout(() => { void askNotificationsFor('turn'); }, 2500);
+    return () => clearTimeout(timer);
+  }, [status, isMyTurn, isFriendMatch]);
 
   // Leaving the match screen = away, so the next "your turn" notifies at once.
   const awayGameId = searchParams.get('gameId');

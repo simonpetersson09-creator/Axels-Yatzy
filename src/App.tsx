@@ -24,6 +24,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { preloadDiceEngine } from "./components/dice-engine/preload";
 import InviteOverlay from "./components/InviteOverlay";
 import NotificationNavigator from "./components/NotificationNavigator";
+import NotificationAskHost from "./components/NotificationAskHost";
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
@@ -68,6 +69,7 @@ const App = () => (
         <DiceEnginePreloader />
         <InviteOverlay />
         <NotificationNavigator />
+        <NotificationAskHost />
         <AndroidBackButton />
         {ADMIN_ENABLED && DevFriendBotRunner && (
           <Suspense fallback={null}>

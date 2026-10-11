@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { FriendRequestsList } from '@/components/FriendRequestsList';
 import { FriendsList } from '@/components/multiplayer/FriendsList';
 import { useTranslation } from '@/lib/i18n';
+import NotificationsOffBanner from '@/components/NotificationsOffBanner';
 
 export default function FriendsListPage() {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ export default function FriendsListPage() {
           {t('friendsListReminder')}
         </p>
 
+        <NotificationsOffBanner />
         <FriendRequestsList />
         <FriendsList />
       </div>

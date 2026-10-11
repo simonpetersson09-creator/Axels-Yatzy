@@ -1,3 +1,4 @@
+import NotificationsOffBanner from '@/components/NotificationsOffBanner';
 import { Dices } from 'lucide-react';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { useGoldStatus, ownProfile, goldDaysLeft } from '@/lib/gold-dice';
@@ -310,6 +311,7 @@ export default function SettingsPage() {
 
         {/* Notifications */}
         <Section title={t('notifications')}>
+          <NotificationsOffBanner className="mb-2" />
           <Card>
             <ToggleRow
               icon={<Bell className="w-4 h-4 text-primary" />}

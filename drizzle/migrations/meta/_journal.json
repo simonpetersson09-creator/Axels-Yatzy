@@ -176,6 +176,13 @@
       "when": 1791730980515,
       "tag": "0024_friend_request_game_status",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1791732180204,
+      "tag": "0025_get_avatars",
+      "breakpoints": true
     }
   ]
 }

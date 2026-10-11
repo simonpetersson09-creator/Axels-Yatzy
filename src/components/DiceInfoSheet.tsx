@@ -84,8 +84,14 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
           </div>
         </div>
 
+        {stats && !profile.isBot && stats.worldRank != null && (
+          <div className="mt-4 flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
+            <span className="text-xs text-muted-foreground">🌍 {t('worldRankLabelFull')}</span>
+            <span className="text-base font-bold text-game-gold leading-none">#{stats.worldRank}</span>
+          </div>
+        )}
         {stats && !profile.isBot && (
-          <div className="mt-4 grid grid-cols-4 gap-2 text-center">
+          <div className={cn('grid grid-cols-4 gap-2 text-center', stats.worldRank != null ? 'mt-2' : 'mt-4')}>
             {[
               { label: t('statMatches'), value: String(stats.matches) },
               { label: t('statAvg'), value: stats.avgScore != null ? String(stats.avgScore) : '–' },

@@ -57,9 +57,17 @@ export function SentInvitesCards() {
   const cancel = async (id: string) => {
     if (cancelling) return;
     setCancelling(id);
-    await respondInvite({ inviteId: id, action: 'decline' });
-    setInvites((cur) => cur.filter((i) => i.id !== id));
-    setCancelling(null);
+    try {
+      const res = await respondInvite({ inviteId: id, action: 'decline' });
+      // Only drop the card once the server confirms; otherwise the invite is
+      // still live and the friend could accept a "cancelled" invite.
+      if (res.ok) setInvites((cur) => cur.filter((i) => i.id !== id));
+      else toast.error(t('errorGeneric'));
+    } catch {
+      toast.error(t('errorGeneric'));
+    } finally {
+      setCancelling(null);
+    }
   };
 
   if (invites.length === 0) return null;

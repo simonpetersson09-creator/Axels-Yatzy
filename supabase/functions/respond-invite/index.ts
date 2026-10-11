@@ -48,6 +48,17 @@ Deno.serve(async (req) => {
     }
 
     if (action === "accept") {
+      // Re-check the active-game cap at accept time: the sender-side check
+      // alone lets a recipient pile up games by accepting several invites.
+      const { data: activeRows } = await supabase
+        .from("game_players")
+        .select("game_id, games!inner(status)")
+        .eq("session_id", session_id)
+        .in("games.status", ["waiting", "playing"]);
+      const activeCount = new Set((activeRows ?? []).map((r: { game_id: string }) => r.game_id)).size;
+      if (activeCount >= 3) {
+        return json({ error: "max_active_games" }, 400);
+      }
       const { data, error } = await supabase.rpc("accept_invite", {
         p_invite_id: invite_id,
         p_session_id: session_id,

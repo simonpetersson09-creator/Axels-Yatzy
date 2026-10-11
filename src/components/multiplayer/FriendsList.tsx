@@ -512,7 +512,7 @@ export function FriendsList() {
                 <button
                   onClick={cancelInvite}
                   disabled={!pendingInvite.inviteId}
-                  className="disabled:opacity-50 "flex-1 py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
+                  className="disabled:opacity-50 flex-1 py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
                 >
                   {t('cancel')}
                 </button>

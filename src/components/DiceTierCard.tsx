@@ -40,7 +40,7 @@ export function DiceTierCard() {
     <>
     <button
       onClick={() => { setOpen(true); trackEvent('my_dice_opened', { from: 'home' }); }}
-      aria-label={t('myDice')}
+      aria-label={t('diceTierTitle')}
       className="w-full rounded-2xl bg-secondary/60 border border-border px-3 py-2.5 flex items-center gap-3 active:scale-[0.98] transition-transform"
     >
       <img src={goldDie} alt="" aria-hidden className="shrink-0 w-10 h-10 object-contain drop-shadow-[0_2px_4px_hsl(var(--background)/0.6)]" />

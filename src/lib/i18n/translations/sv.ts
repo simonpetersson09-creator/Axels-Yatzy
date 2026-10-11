@@ -358,6 +358,17 @@ export const sv = {
   statAvg: "Snittpoäng",
   statBest: "Bästa",
   statOnlineWins: "Vinster online",
+  inviteInactive: "Inbjudan är inte längre aktiv",
+  inviteExpiredMsg: "Inbjudan har gått ut",
+  cameraBlocked: "Kameran är blockerad. Tillåt kameraåtkomst för Mr.B Yatzy i Inställningar.",
+  inviteCopiedMsg: "Inbjudan kopierad",
+  inviteShareFailed: "Kunde inte dela inbjudan",
+  errorGeneric: "Något gick fel",
+  unmergeDone: "Hopslagning ångrad",
+  mergedWith: "{a} hopslagen med {b}",
+  appErrTitle: "Något gick fel",
+  appErrBody: "Appen stötte på ett oväntat fel. Starta om så fortsätter spelet där du var.",
+  appErrRestart: "Starta om",
 };
 
 export type TranslationKey = keyof typeof sv;

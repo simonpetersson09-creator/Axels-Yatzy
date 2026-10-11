@@ -162,6 +162,13 @@
       "when": 1791728914841,
       "tag": "0022_player_avatars",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1791730951739,
+      "tag": "0023_friend_requests",
+      "breakpoints": true
     }
   ]
 }

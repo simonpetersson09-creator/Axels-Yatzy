@@ -202,6 +202,39 @@ export type Database = {
         }
         Relationships: []
       }
+      friend_requests: {
+        Row: {
+          created_at: string
+          from_name: string
+          from_session_id: string
+          id: string
+          responded_at: string | null
+          status: string
+          to_name: string
+          to_session_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_name: string
+          from_session_id: string
+          id?: string
+          responded_at?: string | null
+          status?: string
+          to_name: string
+          to_session_id: string
+        }
+        Update: {
+          created_at?: string
+          from_name?: string
+          from_session_id?: string
+          id?: string
+          responded_at?: string | null
+          status?: string
+          to_name?: string
+          to_session_id?: string
+        }
+        Relationships: []
+      }
       game_invites: {
         Row: {
           created_at: string
@@ -717,6 +750,10 @@ export type Database = {
         }
         Returns: Json
       }
+      friend_request_status: {
+        Args: { p_other_session_ids: string[]; p_session_id: string }
+        Returns: Json
+      }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
       get_dice_profiles: { Args: { p_game_id: string }; Returns: Json }
       get_dice_skins: { Args: { p_session_ids: string[] }; Returns: Json }
@@ -769,6 +806,10 @@ export type Database = {
         Returns: Json
       }
       leave_matchmaking: { Args: { p_session_id: string }; Returns: Json }
+      list_friend_requests: {
+        Args: { p_device_id: string; p_session_id: string }
+        Returns: Json
+      }
       list_invites_for_session: {
         Args: { p_session_id: string }
         Returns: {
@@ -844,6 +885,24 @@ export type Database = {
       }
       record_local_yatzy_match: {
         Args: { p_device_id: string; p_match_key: string; p_session_id: string }
+        Returns: Json
+      }
+      respond_friend_request: {
+        Args: {
+          p_accept: boolean
+          p_device_id: string
+          p_id: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
+      send_friend_request: {
+        Args: {
+          p_device_id: string
+          p_game_id: string
+          p_session_id: string
+          p_to_index: number
+        }
         Returns: Json
       }
       set_away: {

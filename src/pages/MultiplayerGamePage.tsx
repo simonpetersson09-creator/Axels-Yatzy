@@ -1,5 +1,6 @@
 import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
+import { useGameAvatars, syncOwnAvatar } from '@/lib/avatar-sync';
 import { useDiceProfiles, usePlayerStats, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
 import { DiceInfoSheet, SKIN_SWATCH } from '@/components/DiceInfoSheet';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -71,6 +72,8 @@ export default function MultiplayerGamePage() {
   const gameId = searchParams.get('gameId');
   const diceProfiles = useDiceProfiles(gameId, gameState?.players.map(p => p.name).join('|'));
   const playerStats = usePlayerStats(gameId, gameState?.players.map(p => p.name).join('|'));
+  const gameAvatars = useGameAvatars(gameId, gameState?.players.map(p => p.name).join('|'));
+  useEffect(() => { void syncOwnAvatar(); }, []);
   // Tapped player's dice level (bottom sheet); closes when the turn moves on.
   const [infoIndex, setInfoIndex] = useState<number | null>(null);
   useEffect(() => { setInfoIndex(null); }, [gameState?.currentPlayerIndex]);
@@ -617,7 +620,7 @@ export default function MultiplayerGamePage() {
         name={infoIndex !== null ? (gameState.players[infoIndex]?.name ?? '') : ''}
         profile={infoIndex !== null ? (diceProfiles.get(infoIndex) ?? { isBot: false, tier: 'white', yatzyMatches: 0, inviteGold: false }) : undefined}
         stats={infoIndex !== null ? playerStats.get(infoIndex) : undefined}
-        avatarUrl={infoIndex !== null && infoIndex === myPlayerIndex ? avatarUrl : null}
+        avatarUrl={infoIndex === null ? null : infoIndex === myPlayerIndex ? avatarUrl : gameAvatars.get(infoIndex) ?? null}
       />
       <YatzyCelebration
         show={showYatzyCelebration}
@@ -673,7 +676,8 @@ export default function MultiplayerGamePage() {
                 const isMe = idx === myPlayerIndex;
                 const color = PLAYER_COLORS[idx];
                 const label = `P${idx + 1}`;
-                const showAvatar = isMe && !!avatarUrl;
+                const playerAvatar = isMe ? avatarUrl : gameAvatars.get(idx) ?? null;
+                const showAvatar = !!playerAvatar;
                 return (
                   <motion.div
                     key={player.id}
@@ -690,7 +694,7 @@ export default function MultiplayerGamePage() {
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
                     } ${isMe && glowActive ? 'animate-pulse-gold' : ''} transition-all flex items-center justify-center`}>
                       {showAvatar ? (
-                        <img src={avatarUrl!} alt="" className="w-full h-full object-cover" />
+                        <img src={playerAvatar!} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
                       )}

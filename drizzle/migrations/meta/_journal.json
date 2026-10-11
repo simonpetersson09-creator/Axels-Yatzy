@@ -148,6 +148,13 @@
       "when": 1791446051976,
       "tag": "0020_notif_pref_language",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1791727730271,
+      "tag": "0021_migration",
+      "breakpoints": true
     }
   ]
 }

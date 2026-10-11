@@ -260,7 +260,7 @@ export default function FriendStatsPage() {
                     <div key={srcId} className="flex items-center justify-between gap-2 text-xs">
                       <span className="text-muted-foreground font-mono truncate">…{srcId.slice(-8)}</span>
                       <button
-                        onClick={() => { unmergeFriend(srcId); toast.success('Hopslagning ångrad'); }}
+                        onClick={() => { unmergeFriend(srcId); toast.success(t('unmergeDone')); }}
                         className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/80 text-foreground active:scale-95 transition"
                       >
                         <Unlink className="w-3 h-3" />
@@ -384,7 +384,7 @@ export default function FriendStatsPage() {
                       onClick={() => {
                         mergeFriend(o.opponentId, selected!);
                         setMergePickerOpen(false);
-                        toast.success(`${o.opponentName} hopslagen med ${detailSummary.opponentName}`);
+                        toast.success(t('mergedWith', { a: o.opponentName, b: detailSummary.opponentName }));
                       }}
                       className="w-full p-3 rounded-xl bg-secondary/60 border border-border/40 flex items-center justify-between active:scale-[0.98] transition"
                     >

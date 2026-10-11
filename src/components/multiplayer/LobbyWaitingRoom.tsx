@@ -52,16 +52,16 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
         return;
       }
       await navigator.clipboard.writeText(text);
-      toast.success('Inbjudan kopierad');
+      toast.success(t('inviteCopiedMsg'));
     } catch (err: any) {
       if (err?.message?.toLowerCase?.().includes('cancel')) return;
       if (err?.name === 'AbortError') return;
       console.error('[shareInvite] failed', err);
       try {
         await navigator.clipboard.writeText(text);
-        toast.success('Inbjudan kopierad');
+        toast.success(t('inviteCopiedMsg'));
       } catch {
-        toast.error('Kunde inte dela inbjudan');
+        toast.error(t('inviteShareFailed'));
       }
     }
   };

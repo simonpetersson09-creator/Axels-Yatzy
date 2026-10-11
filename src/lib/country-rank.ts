@@ -164,7 +164,9 @@ export async function syncCountryRank(gamesPlayed?: number): Promise<RankInfo> {
       console.warn('[world-rank] fetch failed', worldRes.error);
     }
 
-    return { country: countryRank, world: worldRank };
+    const out = { country: countryRank, world: worldRank };
+    writeCache(RANK_CACHE, out);
+    return out;
   } catch (e) {
     console.warn('[country-rank] sync error', e);
     return empty;
@@ -204,7 +206,9 @@ export async function syncWorldLeaders(): Promise<WorldLeaders> {
     }
     const d = data as { found: boolean; leaders: { country: string; games_played: number }[] } | null;
     if (!d || !d.found || !Array.isArray(d.leaders)) return [];
-    return d.leaders.map(l => ({ country: l.country, games_played: l.games_played }));
+    const leaders = d.leaders.map(l => ({ country: l.country, games_played: l.games_played }));
+    writeCache(LEADERS_CACHE, leaders);
+    return leaders;
   } catch (e) {
     console.warn('[country-rank] world leaders sync error', e);
     return [];
@@ -255,4 +259,22 @@ export async function syncTopCountries(limit = 10): Promise<TopCountry[]> {
     console.warn('[top-countries] sync error', e);
     return [];
   }
+}
+
+// Last known values so the home screen can show numbers instantly and refresh
+// them in the background.
+const RANK_CACHE = 'mrb_rank_cache_v1';
+const LEADERS_CACHE = 'mrb_world_leaders_cache_v1';
+function writeCache(key: string, v: unknown) {
+  try { localStorage.setItem(key, JSON.stringify(v)); } catch { /* ignore */ }
+}
+function readCacheKey<T>(key: string, fallback: T): T {
+  try { const r = localStorage.getItem(key); return r ? (JSON.parse(r) as T) : fallback; } catch { return fallback; }
+}
+export function getCachedRankInfo(): RankInfo {
+  if (!getProfileCountry()) return { country: null, world: null };
+  return readCacheKey<RankInfo>(RANK_CACHE, { country: null, world: null });
+}
+export function getCachedWorldLeaders(): WorldLeaders {
+  return readCacheKey<WorldLeaders>(LEADERS_CACHE, []);
 }

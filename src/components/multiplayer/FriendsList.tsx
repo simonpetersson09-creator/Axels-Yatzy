@@ -49,14 +49,29 @@ interface OpponentSummary {
   sortAt: string;
 }
 
+// Last loaded match rows per session, so the list shows instantly next time
+// and refreshes in the background.
+const ROWS_CACHE = 'mrb_friends_rows_v1:';
+function readRowsCache(id: string): FriendMatchRow[] | null {
+  try { const r = localStorage.getItem(ROWS_CACHE + id); return r ? (JSON.parse(r) as FriendMatchRow[]) : null; } catch { return null; }
+}
+function writeRowsCache(id: string, rows: FriendMatchRow[]) {
+  try { localStorage.setItem(ROWS_CACHE + id, JSON.stringify(rows)); } catch { /* ignore */ }
+}
+
 export function FriendsList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const myId = getSessionId();
 
-  const [rows, setRows] = useState<FriendMatchRow[] | null>(null);
+  const [rows, setRows] = useState<FriendMatchRow[] | null>(() => {
+    const cached = readRowsCache(myId);
+    if (cached) return cached;
+    // No cache yet but friends saved on the phone → show them right away.
+    return getKnownFriends().length > 0 ? [] : null;
+  });
   const [inviting, setInviting] = useState<string | null>(null);
-  const [pendingInvite, setPendingInvite] = useState<{ inviteId: string; opponentName: string } | null>(null);
+  const [pendingInvite, setPendingInvite] = useState<{ inviteId: string | null; opponentName: string } | null>(null);
   const [activeInvites, setActiveInvites] = useState<Record<string, { inviteId: string; gameId?: string }>>({});
   const [hiddenFriends] = useState<string[]>(() => getHiddenFriends());
   const [aliasVersion, setAliasVersion] = useState(0);
@@ -108,18 +123,21 @@ export function FriendsList() {
   const handleInvite = async (opponentId: string, opponentName: string) => {
     if (inviting) return;
     setInviting(opponentId);
+    // Show the waiting dialog immediately; the invite id arrives with the reply.
+    setPendingInvite({ inviteId: null, opponentName });
     const res = await sendInvite({ toSessionId: opponentId, toName: opponentName });
     setInviting(null);
     if (!res.ok) {
+      setPendingInvite(null);
       toast.error(res.error ?? t('errSendInvite'));
       return;
     }
-    setPendingInvite({ inviteId: res.inviteId!, opponentName });
+    setPendingInvite((cur) => (cur ? { ...cur, inviteId: res.inviteId! } : cur));
     setActiveInvites((cur) => ({ ...cur, [opponentId]: { inviteId: res.inviteId! } }));
   };
 
   const cancelInvite = async () => {
-    if (!pendingInvite) return;
+    if (!pendingInvite?.inviteId) return;
     await respondInvite({ inviteId: pendingInvite.inviteId, action: 'decline' });
     setPendingInvite(null);
   };
@@ -144,9 +162,11 @@ export function FriendsList() {
       if (cancelled) return;
       if (error) {
         console.warn('[friends-list] load error', error.message);
-        setRows([]);
+        setRows((cur) => cur ?? []);
       } else {
-        setRows((data ?? []) as FriendMatchRow[]);
+        const next = (data ?? []) as FriendMatchRow[];
+        writeRowsCache(myId, next);
+        setRows(next);
       }
     };
     load();
@@ -491,7 +511,8 @@ export function FriendsList() {
                 </button>
                 <button
                   onClick={cancelInvite}
-                  className="flex-1 py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
+                  disabled={!pendingInvite.inviteId}
+                  className="disabled:opacity-50 "flex-1 py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
                 >
                   {t('cancel')}
                 </button>

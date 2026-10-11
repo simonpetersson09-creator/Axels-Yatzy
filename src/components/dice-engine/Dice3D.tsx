@@ -74,12 +74,27 @@ const metal = (color: string, glow: string) => new MeshPhysicalMaterial({
   emissive: glow,
   emissiveIntensity: 0.35,
 });
+/** Platinum: polished, more mirror-like, with a cool icy-blue sheen so it never reads as silver. */
+const platinumMetal = (color: string, glow: string) => new MeshPhysicalMaterial({
+  color,
+  roughness: 0.16,
+  metalness: 0.75,
+  clearcoat: 1,
+  clearcoatRoughness: 0.04,
+  envMapIntensity: 1.7,
+  emissive: glow,
+  emissiveIntensity: 0.5,
+  sheen: 0.6,
+  sheenColor: "#bfe0ff",
+  iridescence: 0.35,
+  iridescenceIOR: 1.4,
+});
 /** Held = slightly deeper tone. */
 const SKIN_MATERIALS = {
   bronze: { body: metal("#e09a63", "#6a3a1c"), held: metal("#c9824d", "#55301a") },
   silver: { body: metal("#f1f3f6", "#5c6168"), held: metal("#d3d8de", "#4a4f55") },
   gold: { body: metal("#f5cc5e", "#7a5a14"), held: metal("#deb144", "#634810") },
-  platinum: { body: metal("#e6f0fb", "#4d6f96"), held: metal("#c4d6ea", "#3d5a7c") },
+  platinum: { body: platinumMetal("#d6e8fb", "#3f6fa8"), held: platinumMetal("#b3cde8", "#2f5683") },
 } as const;
 
 /** Deep black pips with a faint, ink-like gloss. */

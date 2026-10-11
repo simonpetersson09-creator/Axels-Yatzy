@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
         .in("games.status", ["waiting", "playing"]);
       const activeCount = new Set((activeRows ?? []).map((r: { game_id: string }) => r.game_id)).size;
       if (activeCount >= 3) {
-        return json({ error: "max_active_games" }, 400);
+        return json({ success: false, error: "max_active_games" }, 200);
       }
       const { data, error } = await supabase.rpc("accept_invite", {
         p_invite_id: invite_id,

@@ -197,6 +197,13 @@
       "when": 1791735306724,
       "tag": "0027_platinum_tier",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1791752053010,
+      "tag": "0028_weekly_reminder",
+      "breakpoints": true
     }
   ]
 }

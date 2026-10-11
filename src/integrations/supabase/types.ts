@@ -694,6 +694,30 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_reminder_log: {
+        Row: {
+          delivered: boolean
+          device_id: string
+          id: string
+          sent_at: string
+          session_id: string | null
+        }
+        Insert: {
+          delivered?: boolean
+          device_id: string
+          id?: string
+          sent_at?: string
+          session_id?: string | null
+        }
+        Update: {
+          delivered?: boolean
+          device_id?: string
+          id?: string
+          sent_at?: string
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       yatzy_match_log: {
         Row: {
           created_at: string
@@ -773,6 +797,16 @@ export type Database = {
       }
       get_top_countries: { Args: { p_limit?: number }; Returns: Json }
       get_weekly_rank: { Args: { p_session_id: string }; Returns: Json }
+      get_weekly_reminder_targets: {
+        Args: never
+        Returns: {
+          device_id: string
+          lang: string
+          platform: string
+          session_id: string
+          token: string
+        }[]
+      }
       get_world_leader: { Args: never; Returns: Json }
       get_world_leaders: { Args: never; Returns: Json }
       get_world_rank: { Args: { p_session_id: string }; Returns: Json }

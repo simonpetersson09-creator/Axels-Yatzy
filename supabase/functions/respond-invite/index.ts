@@ -26,14 +26,29 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const owner = await verifySessionOwner(supabase, session_id, device_id);
-    if (!owner.ok) return json({ error: owner.error }, 403);
+    // Pushes run after the response so the player isn't kept waiting on Apple/Google.
+    const later = (p: Promise<unknown>) => {
+      const safe = p.catch((e) => console.warn("[respond-invite] push failed", e));
+      // deno-lint-ignore no-explicit-any
+      const rt = (globalThis as any).EdgeRuntime;
+      if (rt?.waitUntil) rt.waitUntil(safe);
+      else return safe;
+    };
 
-    const { data: invite } = await supabase
-      .from("game_invites")
-      .select("*")
-      .eq("id", invite_id)
-      .maybeSingle();
+    // Independent lookups in parallel.
+    const [owner, inviteRes, activeRes] = await Promise.all([
+      verifySessionOwner(supabase, session_id, device_id),
+      supabase.from("game_invites").select("*").eq("id", invite_id).maybeSingle(),
+      action === "accept"
+        ? supabase
+            .from("game_players")
+            .select("game_id, games!inner(status)")
+            .eq("session_id", session_id)
+            .in("games.status", ["waiting", "playing"])
+        : Promise.resolve({ data: [] as Array<{ game_id: string }> }),
+    ]);
+    if (!owner.ok) return json({ error: owner.error }, 403);
+    const invite = inviteRes.data;
     if (!invite) return json({ error: "Inbjudan finns inte" }, 404);
 
     // Caller must be a party to the invite. Accept requires the recipient
@@ -50,12 +65,7 @@ Deno.serve(async (req) => {
     if (action === "accept") {
       // Re-check the active-game cap at accept time: the sender-side check
       // alone lets a recipient pile up games by accepting several invites.
-      const { data: activeRows } = await supabase
-        .from("game_players")
-        .select("game_id, games!inner(status)")
-        .eq("session_id", session_id)
-        .in("games.status", ["waiting", "playing"]);
-      const activeCount = new Set((activeRows ?? []).map((r: { game_id: string }) => r.game_id)).size;
+      const activeCount = new Set((activeRes.data ?? []).map((r: { game_id: string }) => r.game_id)).size;
       if (activeCount >= 3) {
         return json({ success: false, error: "max_active_games" }, 200);
       }
@@ -68,11 +78,11 @@ Deno.serve(async (req) => {
       if (!res.success) return json({ error: res.error }, 400);
 
       // Push back to sender so they auto-navigate
-      await pushToSession(supabase, invite.from_session_id, {
+      await later(pushToSession(supabase, invite.from_session_id, {
         title: "Inbjudan accepterad 🎲",
         body: `${invite.to_name} hoppade in i spelet`,
         data: { kind: "invite_accepted", game_id: res.game_id ?? "", invite_id },
-      });
+      }));
       return json({ success: true, action, game_id: res.game_id, game_code: res.game_code });
     }
 
@@ -88,18 +98,18 @@ Deno.serve(async (req) => {
     if (!res.noop) {
       if (invite.to_session_id === session_id) {
         // Invitee declined → notify sender
-        await pushToSession(supabase, invite.from_session_id, {
+        await later(pushToSession(supabase, invite.from_session_id, {
           title: "Inbjudan avböjd",
           body: `${invite.to_name} kan inte spela just nu`,
           data: { kind: "invite_declined", invite_id },
-        });
+        }));
       } else if (invite.from_session_id === session_id) {
         // Sender cancelled → notify recipient (silent data push closes overlay via realtime UPDATE)
-        await pushToSession(supabase, invite.to_session_id, {
+        await later(pushToSession(supabase, invite.to_session_id, {
           title: "Inbjudan avbruten",
           body: `${invite.from_name} avbröt inbjudan`,
           data: { kind: "invite_cancelled", invite_id },
-        });
+        }));
       }
     }
 

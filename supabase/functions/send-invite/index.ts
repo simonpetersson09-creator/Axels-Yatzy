@@ -32,99 +32,74 @@ Deno.serve(async (req) => {
     if (typeof device_id !== "string" || device_id.length < 8 || device_id.length > 64) {
       return json({ error: "Ogiltig avsändare" }, 403);
     }
-    const { data: owns } = await supabase.rpc("claim_session", {
-      p_session_id: from_session_id,
-      p_device_id: device_id,
-    });
-    if (owns !== true) {
-      return json({ error: "Ogiltig avsändare" }, 403);
-    }
 
+    // Independent checks run in parallel to keep the invite button snappy.
+    const [ownsRes, recipientRes, senderGamesRes, activeRes] = await Promise.all([
+      supabase.rpc("claim_session", { p_session_id: from_session_id, p_device_id: device_id }),
+      supabase.from("session_owners").select("session_id").eq("session_id", to_session_id).maybeSingle(),
+      supabase
+        .from("game_players")
+        .select("game_id, player_name, joined_at")
+        .eq("session_id", from_session_id)
+        .order("joined_at", { ascending: false })
+        .limit(200),
+      supabase
+        .from("game_players")
+        .select("game_id, games!inner(status)")
+        .eq("session_id", from_session_id)
+        .in("games.status", ["waiting", "playing"]),
+    ]);
+
+    if (ownsRes.data !== true) return json({ error: "Ogiltig avsändare" }, 403);
     // Recipient must be a real app install (claimed session), not an arbitrary id.
-    const { data: recipient } = await supabase
-      .from("session_owners")
-      .select("session_id")
-      .eq("session_id", to_session_id)
-      .maybeSingle();
-    if (!recipient) {
-      return json({ error: "Mottagaren hittades inte" }, 404);
-    }
+    if (!recipientRes.data) return json({ error: "Mottagaren hittades inte" }, 404);
 
     // Only players who have actually shared a game can invite each other,
     // and the sender name shown to the recipient comes from the server.
-    const { data: senderGames } = await supabase
-      .from("game_players")
-      .select("game_id, player_name, joined_at")
-      .eq("session_id", from_session_id)
-      .order("joined_at", { ascending: false })
-      .limit(200);
-    const senderGameIds = (senderGames ?? []).map((r: { game_id: string }) => r.game_id);
-    if (senderGameIds.length === 0) {
-      return json({ error: "Ni har inte spelat tillsammans" }, 403);
-    }
-    const { data: shared } = await supabase
-      .from("game_players")
-      .select("game_id")
-      .eq("session_id", to_session_id)
-      .in("game_id", senderGameIds)
-      .limit(1)
-      .maybeSingle();
-    if (!shared) {
-      return json({ error: "Ni har inte spelat tillsammans" }, 403);
-    }
-    const serverName = String((senderGames ?? [])[0]?.player_name ?? "")
+    const senderGames = senderGamesRes.data ?? [];
+    const senderGameIds = senderGames.map((r: { game_id: string }) => r.game_id);
+    if (senderGameIds.length === 0) return json({ error: "Ni har inte spelat tillsammans" }, 403);
+
+    const nowIso = new Date().toISOString();
+    const [sharedRes, existingRes] = await Promise.all([
+      supabase
+        .from("game_players")
+        .select("game_id")
+        .eq("session_id", to_session_id)
+        .in("game_id", senderGameIds)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("game_invites")
+        .select("*")
+        .eq("from_session_id", from_session_id)
+        .eq("to_session_id", to_session_id)
+        .eq("status", "pending")
+        .gt("expires_at", nowIso)
+        .maybeSingle(),
+    ]);
+    if (!sharedRes.data) return json({ error: "Ni har inte spelat tillsammans" }, 403);
+    const serverName = String(senderGames[0]?.player_name ?? "")
       .replace(/[\u0000-\u001F\u007F<>]/g, "").trim().slice(0, 20) || "En vän";
 
-    // Rate limit per device too, so one device can't rotate sender sessions.
-    const { data: deviceAllowed } = await supabase.rpc("check_rate_limit", {
-      p_key: `invite_device:${device_id}`,
-      p_min_interval_seconds: 10,
-    });
-    if (deviceAllowed !== true) {
-      return json({ error: "För många inbjudningar. Försök igen om en stund." }, 429);
-    }
-
-    // Rate limit: at most one invite per sender / per recipient every 20s.
-    for (const key of [`invite_from:${from_session_id}`, `invite_to:${to_session_id}`]) {
-      const { data: allowed } = await supabase.rpc("check_rate_limit", {
-        p_key: key,
-        p_min_interval_seconds: 20,
-      });
-      if (allowed !== true) {
-        return json({ error: "För många inbjudningar. Försök igen om en stund." }, 429);
-      }
-    }
-
     // Block if sender already has 3 active games (distinct game_ids)
-    const { data: activeRows } = await supabase
-      .from("game_players")
-      .select("game_id, games!inner(status)")
-      .eq("session_id", from_session_id)
-      .in("games.status", ["waiting", "playing"]);
-    const activeCount = new Set((activeRows ?? []).map((r: { game_id: string }) => r.game_id)).size;
+    const activeCount = new Set((activeRes.data ?? []).map((r: { game_id: string }) => r.game_id)).size;
     if (activeCount >= 3) {
       return json({ error: "Du har redan 3 aktiva spel. Avsluta något först." }, 400);
     }
 
+    // Rate limits (per device, sender and recipient) — checked only after the
+    // request is otherwise valid so rejected calls don't burn the window.
+    const [devOk, fromOk, toOk] = await Promise.all([
+      supabase.rpc("check_rate_limit", { p_key: `invite_device:${device_id}`, p_min_interval_seconds: 10 }),
+      supabase.rpc("check_rate_limit", { p_key: `invite_from:${from_session_id}`, p_min_interval_seconds: 20 }),
+      supabase.rpc("check_rate_limit", { p_key: `invite_to:${to_session_id}`, p_min_interval_seconds: 20 }),
+    ]);
+    if (devOk.data !== true || fromOk.data !== true || toOk.data !== true) {
+      return json({ error: "För många inbjudningar. Försök igen om en stund." }, 429);
+    }
 
-
-    // Expire stale invites; reuse existing pending invite if one already exists
-    await supabase
-      .from("game_invites")
-      .update({ status: "expired" })
-      .eq("status", "pending")
-      .lt("expires_at", new Date().toISOString());
-
-    const { data: existing } = await supabase
-      .from("game_invites")
-      .select("*")
-      .eq("from_session_id", from_session_id)
-      .eq("to_session_id", to_session_id)
-      .eq("status", "pending")
-      .gt("expires_at", new Date().toISOString())
-      .maybeSingle();
-
-    let invite = existing;
+    let invite = existingRes.data;
     if (!invite) {
       const { data: inserted, error: insErr } = await supabase
         .from("game_invites")
@@ -140,26 +115,40 @@ Deno.serve(async (req) => {
       invite = inserted;
     }
 
-    // Push to recipient (sanitize name)
+    // Push + housekeeping run after the response so the sender isn't kept
+    // waiting on Apple/Google.
     const safeName = serverName;
-    const title = `${safeName} utmanar dig 🎲`;
-    const body = `Tryck för att spela Yatzy`;
-    const { delivered, deviceId } = await pushToSession(supabase, to_session_id, {
-      title, body,
-      data: { kind: "invite", invite_id: invite.id, from_name: safeName },
-    });
+    const inviteId = invite.id;
+    const background = (async () => {
+      try {
+        await supabase
+          .from("game_invites")
+          .update({ status: "expired" })
+          .eq("status", "pending")
+          .lt("expires_at", new Date().toISOString());
+        const { delivered, deviceId } = await pushToSession(supabase, to_session_id, {
+          title: `${safeName} utmanar dig 🎲`,
+          body: `Tryck för att spela Yatzy`,
+          data: { kind: "invite", invite_id: inviteId, from_name: safeName },
+        });
+        await supabase.from("analytics_events").insert({
+          event_name: "invite_sent",
+          device_id: deviceId,
+          local_user_id: deviceId,
+          metadata: { delivered, to_name },
+          platform: "server",
+          app_version: "1.0.0",
+        });
+      } catch (e) {
+        console.error("send-invite background failed", e);
+      }
+    })();
+    // deno-lint-ignore no-explicit-any
+    const rt = (globalThis as any).EdgeRuntime;
+    if (rt?.waitUntil) rt.waitUntil(background);
+    else await background;
 
-
-    await supabase.from("analytics_events").insert({
-      event_name: "invite_sent",
-      device_id: deviceId,
-      local_user_id: deviceId,
-      metadata: { delivered, to_name },
-      platform: "server",
-      app_version: "1.0.0",
-    });
-
-    return json({ success: true, invite_id: invite.id, push_delivered: delivered });
+    return json({ success: true, invite_id: inviteId });
   } catch (err) {
     console.error("send-invite failed", err);
     return json({ error: "Internt serverfel" }, 500);

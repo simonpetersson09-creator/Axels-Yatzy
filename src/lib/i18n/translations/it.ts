@@ -58,7 +58,7 @@ export const it: typeof sv = {
   adFailed: 'Nessun annuncio disponibile al momento.',
   adOnlyInApp: 'Gli annunci vengono mostrati solo nell’app.',
   adBubbleText: 'Aiutaci a mantenere Mr.B. Yatzy gratuito. Se vuoi, puoi guardare uno spot breve.',
-  adComingSoon: '(Kommande)',
+  adComingSoon: '(In arrivo)',
 
   // Rate app
   rateTitle: "Ti piace Mr.B. Yatzy?",

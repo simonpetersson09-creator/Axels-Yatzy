@@ -1,5 +1,8 @@
 import { createPortal } from 'react-dom';
-import { Check, X } from 'lucide-react';
+import { Check, X, UserPlus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { friendRequestExists, sendFriendRequest } from '@/lib/friend-requests';
 import { motion } from 'framer-motion';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { nextTier, TIER_GOALS, SKIN_RANK, type DiceSkin } from '@/lib/dice-skin';
@@ -45,13 +48,34 @@ interface Props {
   stats?: PlayerStats;
   /** Profile picture (only known for the own player; stored on the phone). */
   avatarUrl?: string | null;
+  /** Online opponent: show "Add friend" (one request per pair). */
+  friendTarget?: { gameId: string; index: number } | null;
 }
 
 /** Small bottom sheet with a player's dice level. Never pauses the game. */
-export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder, stats, avatarUrl }: Props) {
+export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder, stats, avatarUrl, friendTarget }: Props) {
   const { t } = useTranslation();
   const tierLine = useTierLine();
   useBackHandler(open && !!profile, onClose);
+  const [friendState, setFriendState] = useState<'unknown' | 'can' | 'sending' | 'sent'>('unknown');
+  const targetKey = friendTarget ? `${friendTarget.gameId}:${friendTarget.index}` : '';
+  useEffect(() => {
+    if (!open || !friendTarget) return;
+    let alive = true;
+    setFriendState('unknown');
+    friendRequestExists(friendTarget.gameId, friendTarget.index)
+      .then((e) => { if (alive) setFriendState(e ? 'sent' : 'can'); }, () => { if (alive) setFriendState('can'); });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, targetKey]);
+  const addFriend = async () => {
+    if (!friendTarget || friendState !== 'can') return;
+    setFriendState('sending');
+    const r = await sendFriendRequest(friendTarget.gameId, friendTarget.index);
+    if (r === 'error') { setFriendState('can'); toast.error(t('errGeneric')); return; }
+    setFriendState('sent');
+    if (r === 'sent') toast.success(t('friendRequestSent'));
+  };
   if (!open || !profile) return null;
   const skin = profileSkin(profile);
 
@@ -113,6 +137,18 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
               </div>
             ))}
           </div>
+        )}
+
+        {friendTarget && !profile.isBot && friendState !== 'unknown' && (
+          <button
+            onClick={addFriend}
+            disabled={friendState !== 'can'}
+            className={cn('mt-3 w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold active:scale-[0.98] transition',
+              friendState === 'can' ? 'bg-primary text-primary-foreground' : 'bg-muted/40 text-muted-foreground')}
+          >
+            {friendState === 'sent' ? <Check className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+            {friendState === 'sent' ? t('friendRequestSent') : t('addFriendBtn')}
+          </button>
         )}
 
         {showLadder && !profile.isBot && (

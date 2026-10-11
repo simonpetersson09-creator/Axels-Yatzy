@@ -329,7 +329,7 @@ export function FriendsList() {
       if (entry) entry.mergedSourceIds = Array.from(set);
     }
     return Array.from(map.values()).sort((a, b) => {
-      if (!!a.ongoingMatch !== !!b.ongoingMatch) return a.ongoingMatch ? -1 : 1;
+      if (a.matches !== b.matches) return b.matches - a.matches;
       const aT = a.ongoingMatch?.created_at ?? a.lastMatch?.created_at ?? a.sortAt;
       const bT = b.ongoingMatch?.created_at ?? b.lastMatch?.created_at ?? b.sortAt;
       return new Date(bT).getTime() - new Date(aT).getTime();

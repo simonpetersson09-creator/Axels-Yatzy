@@ -331,6 +331,7 @@ export const ko: typeof sv = {
   tierBronze: "브론즈",
   tierSilver: "실버",
   tierGold: "골드",
+  tierPlatinum: "플래티넘",
   myDice: "내 주사위",
   challengesLabel: "도전 과제",
   tierWhite: "화이트",

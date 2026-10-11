@@ -331,6 +331,7 @@ export const gu: typeof sv = {
   tierBronze: "કાંસ્ય",
   tierSilver: "ચાંદી",
   tierGold: "સોનું",
+  tierPlatinum: "પ્લેટિનમ",
   myDice: "મારા પાસા",
   challengesLabel: "પડકારો",
   tierWhite: "સફેદ",

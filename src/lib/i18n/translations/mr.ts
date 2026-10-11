@@ -331,6 +331,7 @@ export const mr: typeof sv = {
   tierBronze: "कांस्य",
   tierSilver: "चांदी",
   tierGold: "सोने",
+  tierPlatinum: "प्लॅटिनम",
   myDice: "माझे फासे",
   challengesLabel: "आव्हाने",
   tierWhite: "पांढरे",

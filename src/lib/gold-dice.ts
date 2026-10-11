@@ -1,5 +1,5 @@
 // Dice colours: each counted friend → +10 days temporary gold; permanent
-// bronze/silver/gold from finished matches with a Yatzy (10/50/200). The server owns the rules; this only reads.
+// bronze/silver/gold/platinum from finished matches with a Yatzy (10/50/200/1000). The server owns the rules; this only reads.
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
@@ -34,7 +34,7 @@ export function isGoldActive(s: GoldStatus | null | undefined): boolean {
 
 /** Dice colour to show: temporary gold wins, otherwise the permanent tier. */
 export function effectiveSkin(s: GoldStatus): DiceSkin {
-  return isGoldActive(s) ? 'gold' : s.tier;
+  return isGoldActive(s) && s.tier !== 'platinum' ? 'gold' : s.tier;
 }
 
 /** Report a finished match vs the computer that had a Yatzy (server dedupes per match). */
@@ -114,7 +114,7 @@ export interface DiceProfile {
 
 export function profileSkin(p: DiceProfile | undefined): DiceSkin {
   if (!p) return 'white';
-  return p.inviteGold ? 'gold' : p.tier;
+  return p.inviteGold && p.tier !== 'platinum' ? 'gold' : p.tier;
 }
 
 export function ownProfile(s: GoldStatus): DiceProfile {

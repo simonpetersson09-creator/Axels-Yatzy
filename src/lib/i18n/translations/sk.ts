@@ -331,6 +331,7 @@ export const sk: typeof sv = {
   tierBronze: "bronz",
   tierSilver: "striebro",
   tierGold: "zlato",
+  tierPlatinum: "platina",
   myDice: "Moje kocky",
   challengesLabel: "Výzvy",
   tierWhite: "biela",

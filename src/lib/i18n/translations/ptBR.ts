@@ -331,6 +331,7 @@ export const ptBR: typeof sv = {
   tierBronze: "bronze",
   tierSilver: "prata",
   tierGold: "ouro",
+  tierPlatinum: "platina",
   myDice: "Meus dados",
   challengesLabel: "Desafios",
   tierWhite: "branco",

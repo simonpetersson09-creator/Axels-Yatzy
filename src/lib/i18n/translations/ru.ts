@@ -330,6 +330,7 @@ export const ru: typeof sv = {
   tierBronze: "бронза",
   tierSilver: "серебро",
   tierGold: "золото",
+  tierPlatinum: "платина",
   myDice: "Мои кости",
   challengesLabel: "Испытания",
   tierWhite: "белые",

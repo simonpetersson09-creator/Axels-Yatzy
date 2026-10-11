@@ -331,6 +331,7 @@ export const bn: typeof sv = {
   tierBronze: "ব্রোঞ্জ",
   tierSilver: "রুপা",
   tierGold: "সোনা",
+  tierPlatinum: "প্লাটিনাম",
   myDice: "আমার ছক্কা",
   challengesLabel: "চ্যালেঞ্জ",
   tierWhite: "সাদা",

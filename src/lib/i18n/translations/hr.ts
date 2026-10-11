@@ -331,6 +331,7 @@ export const hr: typeof sv = {
   tierBronze: "bronca",
   tierSilver: "srebro",
   tierGold: "zlato",
+  tierPlatinum: "platina",
   myDice: "Moje kocke",
   challengesLabel: "Izazovi",
   tierWhite: "bijela",

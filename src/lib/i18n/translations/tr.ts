@@ -331,6 +331,7 @@ export const tr: typeof sv = {
   tierBronze: "bronz",
   tierSilver: "gümüş",
   tierGold: "altın",
+  tierPlatinum: "platin",
   myDice: "Zarlarım",
   challengesLabel: "Görevler",
   tierWhite: "beyaz",

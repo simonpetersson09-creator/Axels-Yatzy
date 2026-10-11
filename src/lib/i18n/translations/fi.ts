@@ -331,6 +331,7 @@ export const fi: typeof sv = {
   tierBronze: "pronssi",
   tierSilver: "hopea",
   tierGold: "kulta",
+  tierPlatinum: "platina",
   myDice: "Omat nopat",
   challengesLabel: "Haasteet",
   tierWhite: "valkoinen",

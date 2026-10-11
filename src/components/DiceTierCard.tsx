@@ -12,7 +12,7 @@ import goldDie from '@/assets/gold-die.png';
 const SEEN_TIER_KEY = 'mrb_dice_tier_seen_v1';
 
 const TIER_LABEL: Record<Exclude<DiceSkin, 'white'>, TranslationKey> = {
-  bronze: 'tierBronze', silver: 'tierSilver', gold: 'tierGold',
+  bronze: 'tierBronze', silver: 'tierSilver', gold: 'tierGold', platinum: 'tierPlatinum',
 };
 
 
@@ -49,7 +49,7 @@ export function DiceTierCard() {
         <p className="text-[11px] text-muted-foreground truncate">
           {next
             ? t('diceTierProgress', { n: status.yatzyMatches, goal: next.goal, tier: t(TIER_LABEL[next.tier]) })
-            : t('diceTierMax', { n: status.yatzyMatches })}
+            : `${t('tierPlatinum').charAt(0).toUpperCase()}${t('tierPlatinum').slice(1)} ✨ · ${t('diceLadderGoal', { goal: status.yatzyMatches })}`}
         </p>
         <div className="mt-1.5 h-1 rounded-full bg-background/50 overflow-hidden">
           <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />

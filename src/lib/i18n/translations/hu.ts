@@ -331,6 +331,7 @@ export const hu: typeof sv = {
   tierBronze: "bronz",
   tierSilver: "ezüst",
   tierGold: "arany",
+  tierPlatinum: "platina",
   myDice: "Kockáim",
   challengesLabel: "Kihívások",
   tierWhite: "fehér",

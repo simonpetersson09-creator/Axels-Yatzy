@@ -326,6 +326,7 @@ export const fr: typeof sv = {
   tierBronze: "bronze",
   tierSilver: "argent",
   tierGold: "or",
+  tierPlatinum: "platine",
   myDice: "Mes dés",
   challengesLabel: "Défis",
   tierWhite: "blanc",

@@ -331,6 +331,7 @@ export const el: typeof sv = {
   tierBronze: "χάλκινα",
   tierSilver: "ασημένια",
   tierGold: "χρυσά",
+  tierPlatinum: "πλατίνα",
   myDice: "Τα ζάρια μου",
   challengesLabel: "Προκλήσεις",
   tierWhite: "λευκά",

@@ -330,6 +330,7 @@ export const ca: typeof sv = {
   tierBronze: "bronze",
   tierSilver: "plata",
   tierGold: "or",
+  tierPlatinum: "platí",
   myDice: "Els meus daus",
   challengesLabel: "Reptes",
   tierWhite: "blanc",

@@ -331,6 +331,7 @@ export const ml: typeof sv = {
   tierBronze: "വെങ്കലം",
   tierSilver: "വെള്ളി",
   tierGold: "സ്വർണ്ണം",
+  tierPlatinum: "പ്ലാറ്റിനം",
   myDice: "എന്റെ പകിടകൾ",
   challengesLabel: "വെല്ലുവിളികൾ",
   tierWhite: "വെള്ള",

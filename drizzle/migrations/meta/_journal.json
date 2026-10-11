@@ -169,6 +169,13 @@
       "when": 1791730951739,
       "tag": "0023_friend_requests",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1791730980515,
+      "tag": "0024_friend_request_game_status",
+      "breakpoints": true
     }
   ]
 }

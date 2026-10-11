@@ -750,6 +750,10 @@ export type Database = {
         }
         Returns: Json
       }
+      friend_request_exists: {
+        Args: { p_game_id: string; p_session_id: string; p_to_index: number }
+        Returns: boolean
+      }
       friend_request_status: {
         Args: { p_other_session_ids: string[]; p_session_id: string }
         Returns: Json

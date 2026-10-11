@@ -340,7 +340,10 @@ export function FriendsList() {
   const [card, setCard] = useState<{ id: string; name: string; data: Awaited<ReturnType<typeof fetchPlayerCard>> } | null>(null);
   const openCard = (id: string, name: string) => {
     setCard({ id, name, data: null });
-    fetchPlayerCard(id).then((data) => setCard((c) => (c && c.id === id ? { ...c, data } : c)));
+    fetchPlayerCard(id).then((data) => {
+      if (!data) { setCard(null); navigate('/friend-stats', { state: { selectedId: id } }); return; }
+      setCard((c) => (c && c.id === id ? { ...c, data } : c));
+    });
   };
   const avatars = useAvatarsByIds(opponents.map((o) => o.opponentId));
 

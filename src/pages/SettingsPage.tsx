@@ -1,3 +1,4 @@
+import NotificationsOffBanner from '@/components/NotificationsOffBanner';
 import { Dices } from 'lucide-react';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { useGoldStatus, ownProfile, goldDaysLeft } from '@/lib/gold-dice';

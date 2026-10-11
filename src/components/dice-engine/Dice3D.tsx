@@ -78,12 +78,12 @@ const metal = (color: string, glow: string) => new MeshPhysicalMaterial({
 const silverMetal = (color: string, glow: string) => new MeshPhysicalMaterial({
   color,
   roughness: 0.22,
-  metalness: 0.72,
+  metalness: 0.55,
   clearcoat: 0.8,
   clearcoatRoughness: 0.08,
   envMapIntensity: 1.6,
   emissive: glow,
-  emissiveIntensity: 0.45,
+  emissiveIntensity: 0.5,
 });
 /** Platinum: polished, more mirror-like, with a cool icy-blue sheen so it never reads as silver. */
 const platinumMetal = (color: string, glow: string) => new MeshPhysicalMaterial({
@@ -103,7 +103,7 @@ const platinumMetal = (color: string, glow: string) => new MeshPhysicalMaterial(
 /** Held = slightly deeper tone. */
 const SKIN_MATERIALS = {
   bronze: { body: metal("#e09a63", "#6a3a1c"), held: metal("#c9824d", "#55301a") },
-  silver: { body: silverMetal("#bcc3cc", "#3b424b"), held: silverMetal("#a3abb5", "#2f353d") },
+  silver: { body: silverMetal("#dfe4ea", "#7a828c"), held: silverMetal("#c4cbd3", "#646b74") },
   gold: { body: metal("#f5cc5e", "#7a5a14"), held: metal("#deb144", "#634810") },
   platinum: { body: platinumMetal("#eef4fb", "#5a7fa8"), held: platinumMetal("#cfdceb", "#3f5f86") },
 } as const;

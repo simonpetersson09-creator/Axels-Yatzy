@@ -6,7 +6,7 @@ import type { DiceSkin } from '@/lib/dice-skin';
  * sphere pips. Geometries and materials are created once at module level and
  * shared by every die instance, keeping GPU state changes and memory low.
  */
-import { forwardRef, memo, useMemo, useRef } from "react";
+import { forwardRef, memo, useEffect, useMemo, useRef } from "react";
 import { RoundedBox } from "@react-three/drei";
 import {
   CanvasTexture,

@@ -5,10 +5,12 @@ import { useTranslation } from '@/lib/i18n';
 interface Props {
   onYes: () => void;
   onLater: () => void;
+  context?: 'invite' | 'turn' | 'first_match';
+  name?: string;
 }
 
 /** Our own explanation shown before Apple's notification permission sheet. */
-export default function NotificationAskPrompt({ onYes, onLater }: Props) {
+export default function NotificationAskPrompt({ onYes, onLater, context = 'first_match', name }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -34,7 +36,7 @@ export default function NotificationAskPrompt({ onYes, onLater }: Props) {
           <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center">
             <Bell className="w-6 h-6 text-game-gold" />
           </div>
-          <h2 className="text-lg font-display font-bold text-foreground">{t('notifAskTitle')}</h2>
+          <h2 className="text-lg font-display font-bold text-foreground">{context === 'invite' && name ? t('notifAskInviteTitle', { name }) : context === 'turn' ? t('notifAskTurnTitle') : t('notifAskTitle')}</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">{t('notifAskBody')}</p>
           <div className="w-full flex flex-col gap-2 mt-1">
             <motion.button

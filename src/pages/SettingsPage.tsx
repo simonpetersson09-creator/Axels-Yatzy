@@ -310,6 +310,7 @@ export default function SettingsPage() {
 
         {/* Notifications */}
         <Section title={t('notifications')}>
+          <NotificationsOffBanner className="mb-2" />
           <Card>
             <ToggleRow
               icon={<Bell className="w-4 h-4 text-primary" />}

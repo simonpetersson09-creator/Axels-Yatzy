@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { useAvatarsByIds } from '@/lib/avatar-sync';
 import { fetchPlayerCard } from '@/lib/gold-dice';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
+import { askNotificationsFor } from '@/lib/notif-context';
 
 interface FriendMatchRow {
   id: string;
@@ -133,6 +134,7 @@ export function FriendsList() {
       return;
     }
     setPendingInvite((cur) => (cur ? { ...cur, inviteId: res.inviteId! } : cur));
+    void askNotificationsFor('invite', opponentName);
     setActiveInvites((cur) => ({ ...cur, [opponentId]: { inviteId: res.inviteId! } }));
   };
 

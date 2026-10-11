@@ -91,7 +91,7 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
         className="relative w-full max-w-md rounded-t-2xl bg-card border border-border px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+16px)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={onClose} aria-label="OK" className="absolute top-3 right-3 text-muted-foreground p-1">
+        <button onClick={onClose} aria-label={t('close')} className="absolute top-3 right-3 text-muted-foreground p-1">
           <X className="w-4 h-4" />
         </button>
         <div className="flex items-center gap-3">

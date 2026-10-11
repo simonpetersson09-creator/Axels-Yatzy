@@ -112,7 +112,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
       addBubble({
         key: `${now}-self`,
         text: msg.text,
-        fromName: myName || 'Du',
+        fromName: myName || t('you'),
         fromPlayerIndex: myPlayerIndex,
         isMe: true,
       });
@@ -178,7 +178,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
               }`}
             >
               <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 truncate max-w-[60px]">
-                {b.isMe ? 'Du' : b.fromName}
+                {b.isMe ? t('you') : b.fromName}
               </span>
               <span className="text-[13px] font-medium leading-tight">{b.text}</span>
             </motion.div>

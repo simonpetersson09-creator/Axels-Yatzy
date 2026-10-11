@@ -183,6 +183,13 @@
       "when": 1791732180204,
       "tag": "0025_get_avatars",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1791732673641,
+      "tag": "0026_get_player_card",
+      "breakpoints": true
     }
   ]
 }

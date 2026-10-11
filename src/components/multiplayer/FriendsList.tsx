@@ -47,12 +47,6 @@ interface OpponentSummary {
   sortAt: string;
 }
 
-function formatDate(iso: string, locale = 'sv-SE') {
-  try {
-    return new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short' });
-  } catch { return ''; }
-}
-
 export function FriendsList() {
   const navigate = useNavigate();
   const { t } = useTranslation();

@@ -384,7 +384,7 @@ export function FriendsList() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-display font-bold text-sm text-foreground truncate">{o.opponentName}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">
+                  <p className="text-[10px] text-muted-foreground leading-snug">
                     {o.ongoingMatch ? (
                       <span className="inline-flex items-center gap-1 text-primary font-bold">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />{t('ongoingMatch')}
@@ -394,7 +394,11 @@ export function FriendsList() {
                         {o.matches} {t('friendsMatches')}
                         {diff !== null && (
                           <span className={diff > 0 ? 'text-game-success' : diff < 0 ? 'text-destructive' : ''}>
-                            {' · '}{diff > 0 ? `+${diff}` : diff}%
+                            {' · '}{diff > 0
+                              ? t('friendComparisonAhead', { pct: Math.abs(diff), name: o.opponentName })
+                              : diff < 0
+                              ? t('friendComparisonBehind', { pct: Math.abs(diff), name: o.opponentName })
+                              : t('friendComparisonEven')}
                           </span>
                         )}
                       </>

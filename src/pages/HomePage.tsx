@@ -26,7 +26,7 @@ import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Sett
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { syncCountryRank, syncWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
+import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showAppOpenAd } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
@@ -69,8 +69,8 @@ export default function HomePage() {
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
   const [showQuickMatch, setShowQuickMatch] = useState(false);
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
-  const [rankInfo, setRankInfo] = useState<RankInfo>({ country: null, world: null });
-  const [worldLeaders, setWorldLeaders] = useState<WorldLeaders>([]);
+  const [rankInfo, setRankInfo] = useState<RankInfo>(getCachedRankInfo);
+  const [worldLeaders, setWorldLeaders] = useState<WorldLeaders>(getCachedWorldLeaders);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
@@ -232,10 +232,10 @@ export default function HomePage() {
   useEffect(() => {
     let cancelled = false;
     void syncCountryRank(stats.gamesPlayed).then(res => {
-      if (!cancelled) setRankInfo(res);
+      if (!cancelled) setRankInfo(res.country || res.world ? res : getCachedRankInfo());
     });
     void syncWorldLeaders().then(res => {
-      if (!cancelled) setWorldLeaders(res);
+      if (!cancelled && res.length) setWorldLeaders(res);
     });
     return () => { cancelled = true; };
   }, [stats.gamesPlayed, profileVersion]);

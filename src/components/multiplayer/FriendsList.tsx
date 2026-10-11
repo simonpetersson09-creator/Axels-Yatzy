@@ -15,6 +15,8 @@ import {
 import { getKnownFriends, addKnownFriends, subscribeKnownFriends } from '@/lib/known-friends';
 import { toast } from 'sonner';
 import { useAvatarsByIds } from '@/lib/avatar-sync';
+import { fetchPlayerCard } from '@/lib/gold-dice';
+import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 
 interface FriendMatchRow {
   id: string;
@@ -335,6 +337,11 @@ export function FriendsList() {
       return new Date(bT).getTime() - new Date(aT).getTime();
     });
   }, [rows, myId, hiddenFriends, aliasMap, knownFriends]);
+  const [card, setCard] = useState<{ id: string; name: string; data: Awaited<ReturnType<typeof fetchPlayerCard>> } | null>(null);
+  const openCard = (id: string, name: string) => {
+    setCard({ id, name, data: null });
+    fetchPlayerCard(id).then((data) => setCard((c) => (c && c.id === id ? { ...c, data } : c)));
+  };
   const avatars = useAvatarsByIds(opponents.map((o) => o.opponentId));
 
   if (rows === null) {
@@ -375,7 +382,7 @@ export function FriendsList() {
               }`}
             >
               <button
-                onClick={() => navigate('/friend-stats', { state: { selectedId: o.opponentId } })}
+                onClick={() => openCard(o.opponentId, o.opponentName)}
                 className="flex-1 min-w-0 flex items-center gap-2.5 text-left active:opacity-80 transition"
               >
                 <div className="w-9 h-9 shrink-0 rounded-full overflow-hidden bg-secondary border border-border/60 flex items-center justify-center">
@@ -428,6 +435,23 @@ export function FriendsList() {
           );
         })}
       </div>
+
+      <DiceInfoSheet
+        open={!!card?.data}
+        onClose={() => setCard(null)}
+        name={card?.name ?? ''}
+        profile={card?.data?.profile}
+        stats={card?.data?.stats}
+        avatarUrl={card?.data?.avatar ?? avatars[card?.id ?? '']}
+        footer={card && (
+          <button
+            onClick={() => { const id = card.id; setCard(null); navigate('/friend-stats', { state: { selectedId: id } }); }}
+            className="mt-3 w-full rounded-xl bg-primary/15 border border-primary/30 py-2.5 text-sm font-semibold text-primary active:scale-[0.98] transition"
+          >
+            {t('h2hTitle', { name: card.name })} →
+          </button>
+        )}
+      />
 
       <AnimatePresence>
         {pendingInvite && (

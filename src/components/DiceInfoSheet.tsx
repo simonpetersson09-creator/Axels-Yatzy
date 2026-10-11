@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
 import { Check, X, UserPlus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import { friendRequestExists, sendFriendRequest } from '@/lib/friend-requests';
 import { motion } from 'framer-motion';
@@ -50,10 +50,12 @@ interface Props {
   avatarUrl?: string | null;
   /** Online opponent: show "Add friend" (one request per pair). */
   friendTarget?: { gameId: string; index: number } | null;
+  /** Extra content at the bottom (e.g. link to head-to-head stats). */
+  footer?: ReactNode;
 }
 
 /** Small bottom sheet with a player's dice level. Never pauses the game. */
-export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder, stats, avatarUrl, friendTarget }: Props) {
+export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder, stats, avatarUrl, friendTarget, footer }: Props) {
   const { t } = useTranslation();
   const tierLine = useTierLine();
   useBackHandler(open && !!profile, onClose);
@@ -171,6 +173,7 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
             })}
           </ul>
         )}
+        {footer}
         {showLadder && !profile.isBot && (
           <p className="mt-4 text-[11px] text-muted-foreground">{t('diceVisibleToOthers')}</p>
         )}

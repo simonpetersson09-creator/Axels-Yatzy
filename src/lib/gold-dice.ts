@@ -184,3 +184,20 @@ export function usePlayerStats(gameId: string | null, refreshKey: unknown = 0): 
   }, [gameId, refreshKey]);
   return map;
 }
+
+/** Dice level, stats and picture for one player by session id (friends list). */
+export async function fetchPlayerCard(sessionId: string): Promise<{ profile: DiceProfile; stats: PlayerStats; avatar: string | null } | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_player_card', { p_session_id: sessionId });
+    if (error || !data) return null;
+    const d = data as { tier: string; yatzy_matches: number; invite_gold: boolean; matches: number; online_matches: number; avg_score: number | null; best_score: number | null; online_wins: number; world_rank: number | null; avatar: string | null };
+    return {
+      profile: { isBot: false, tier: asSkin(d.tier), yatzyMatches: Number(d.yatzy_matches ?? 0), inviteGold: !!d.invite_gold },
+      stats: {
+        matches: Number(d.matches ?? 0), onlineMatches: Number(d.online_matches ?? 0), avgScore: d.avg_score ?? null,
+        bestScore: d.best_score ?? null, onlineWins: Number(d.online_wins ?? 0), worldRank: d.world_rank ?? null,
+      },
+      avatar: d.avatar ?? null,
+    };
+  } catch { return null; }
+}

@@ -28,6 +28,7 @@ export const pa: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'ਲਗਾਤਾਰ ਜਿੱਤਾਂ',
   worldRankLabel: 'ਦੁਨੀਆ',
+  worldRanking: "ਵਿਸ਼ਵ ਰੈਂਕਿੰਗ",
   countryRankLabel: 'ਤੁਹਾਡਾ ਦਰਜਾ',
   countryRankLabelFull: '{country} ਵਿੱਚ ਤੁਹਾਡਾ ਦਰਜਾ',
   worldRankLabelFull: 'ਦੁਨੀਆ ਵਿੱਚ ਤੁਹਾਡਾ ਦਰਜਾ',

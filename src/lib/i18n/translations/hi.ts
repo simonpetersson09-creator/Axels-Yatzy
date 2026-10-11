@@ -28,6 +28,7 @@ export const hi: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'जीत का सिलसिला',
   worldRankLabel: 'दुनिया',
+  worldRanking: "विश्व रैंकिंग",
   countryRankLabel: 'तुम्हारी रैंक',
   countryRankLabelFull: '{country} में तुम्हारी रैंक',
   worldRankLabelFull: 'दुनिया में तुम्हारी रैंक',

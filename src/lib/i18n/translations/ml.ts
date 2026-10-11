@@ -28,6 +28,7 @@ export const ml: typeof sv = {
   statYatzy: 'Yatzy-കൾ',
   statStreak: 'ജയത്തുടർച്ച',
   worldRankLabel: 'ലോകം',
+  worldRanking: "ലോക റാങ്കിംഗ്",
   countryRankLabel: 'നിങ്ങളുടെ റാങ്ക്',
   countryRankLabelFull: '{country}: നിങ്ങളുടെ റാങ്ക്',
   worldRankLabelFull: 'നിങ്ങളുടെ ലോക റാങ്ക്',

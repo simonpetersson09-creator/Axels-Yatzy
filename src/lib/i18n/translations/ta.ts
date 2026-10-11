@@ -28,6 +28,7 @@ export const ta: typeof sv = {
   statYatzy: 'Yatzy-கள்',
   statStreak: 'வெற்றித் தொடர்',
   worldRankLabel: 'உலகம்',
+  worldRanking: "உலக தரவரிசை",
   countryRankLabel: 'உங்கள் தரம்',
   countryRankLabelFull: '{country} நாட்டில் உங்கள் தரம்',
   worldRankLabelFull: 'உலகில் உங்கள் தரம்',

@@ -28,6 +28,7 @@ export const hr: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Niz',
   worldRankLabel: 'Svijet',
+  worldRanking: "Svjetska ljestvica",
   countryRankLabel: 'Tvoj rang',
   countryRankLabelFull: 'Tvoj rang: {country}',
   worldRankLabelFull: 'Tvoj rang u svijetu',

@@ -28,6 +28,7 @@ export const bn: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'টানা জয়',
   worldRankLabel: 'বিশ্ব',
+  worldRanking: "বিশ্ব র‍্যাঙ্কিং",
   countryRankLabel: 'তোমার র‍্যাঙ্ক',
   countryRankLabelFull: '{country}-এ তোমার র‍্যাঙ্ক',
   worldRankLabelFull: 'বিশ্বে তোমার র‍্যাঙ্ক',

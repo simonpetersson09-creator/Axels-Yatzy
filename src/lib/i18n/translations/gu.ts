@@ -28,6 +28,7 @@ export const gu: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'જીતનો સિલસિલો',
   worldRankLabel: 'વિશ્વ',
+  worldRanking: "વિશ્વ રેન્કિંગ",
   countryRankLabel: 'તમારો ક્રમ',
   countryRankLabelFull: '{country}માં તમારો ક્રમ',
   worldRankLabelFull: 'વિશ્વમાં તમારો ક્રમ',

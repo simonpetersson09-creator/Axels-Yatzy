@@ -28,6 +28,7 @@ export const ptBR: typeof sv = {
   statYatzy: 'Yatzys',
   statStreak: 'Sequência',
   worldRankLabel: 'Mundo',
+  worldRanking: "Ranking mundial",
   countryRankLabel: 'Sua posição',
   countryRankLabelFull: 'Sua posição em {country}',
   worldRankLabelFull: 'Sua posição no mundo',

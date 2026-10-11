@@ -28,6 +28,7 @@ export const nl: typeof sv = {
   statYatzy: 'Yatzy’s',
   statStreak: 'Reeks',
   worldRankLabel: 'Wereld',
+  worldRanking: "Wereldranglijst",
   countryRankLabel: 'Jouw rang',
   countryRankLabelFull: 'Jouw rang in {country}',
   worldRankLabelFull: 'Jouw wereldrang',

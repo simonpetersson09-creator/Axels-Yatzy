@@ -28,6 +28,7 @@ export const hu: typeof sv = {
   statYatzy: 'Yatzyk',
   statStreak: 'Sorozat',
   worldRankLabel: 'Világ',
+  worldRanking: "Világranglista",
   countryRankLabel: 'Helyezésed',
   countryRankLabelFull: 'Helyezésed itt: {country}',
   worldRankLabelFull: 'Helyezésed a világon',

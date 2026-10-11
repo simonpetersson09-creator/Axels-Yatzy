@@ -28,6 +28,7 @@ export const uk: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Серія',
   worldRankLabel: 'Світ',
+  worldRanking: "Світовий рейтинг",
   countryRankLabel: 'Твій рейтинг',
   countryRankLabelFull: 'Твій рейтинг у країні {country}',
   worldRankLabelFull: 'Твій світовий рейтинг',

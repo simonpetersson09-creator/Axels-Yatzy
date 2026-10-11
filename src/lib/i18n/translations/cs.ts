@@ -28,6 +28,7 @@ export const cs: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Série',
   worldRankLabel: 'Svět',
+  worldRanking: "Světový žebříček",
   countryRankLabel: 'Tvé pořadí',
   countryRankLabelFull: 'Tvé pořadí v zemi {country}',
   worldRankLabelFull: 'Tvé světové pořadí',

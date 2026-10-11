@@ -28,6 +28,7 @@ export const ro: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Serie',
   worldRankLabel: 'Mondial',
+  worldRanking: "Clasament mondial",
   countryRankLabel: 'Locul tău',
   countryRankLabelFull: 'Locul tău în {country}',
   worldRankLabelFull: 'Locul tău în lume',

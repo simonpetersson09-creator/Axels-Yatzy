@@ -28,6 +28,7 @@ export const kn: typeof sv = {
   statYatzy: 'Yatzyಗಳು',
   statStreak: 'ಗೆಲುವಿನ ಸರಣಿ',
   worldRankLabel: 'ವಿಶ್ವ',
+  worldRanking: "ವಿಶ್ವ ಶ್ರೇಯಾಂಕ",
   countryRankLabel: 'ನಿನ್ನ ಸ್ಥಾನ',
   countryRankLabelFull: '{country}ದಲ್ಲಿ ನಿನ್ನ ಸ್ಥಾನ',
   worldRankLabelFull: 'ವಿಶ್ವದಲ್ಲಿ ನಿನ್ನ ಸ್ಥಾನ',

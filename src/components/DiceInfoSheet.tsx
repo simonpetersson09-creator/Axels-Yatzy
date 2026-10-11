@@ -86,7 +86,7 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
 
         {stats && !profile.isBot && stats.worldRank != null && (
           <div className="mt-4 flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
-            <span className="text-xs text-muted-foreground">🌍 {t('worldRankLabel')}</span>
+            <span className="text-xs text-muted-foreground">🌍 {t('worldRanking')}</span>
             <span className="text-base font-bold text-game-gold leading-none">#{stats.worldRank}</span>
           </div>
         )}

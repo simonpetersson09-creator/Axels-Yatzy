@@ -769,7 +769,7 @@ export default function MultiplayerGamePage() {
                 <QuickChat
                   gameId={gameId}
                   myPlayerIndex={myPlayerIndex}
-                  myName={(myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : null) || getProfileName() || 'Du'}
+                  myName={(myPlayerIndex !== null ? gameState.players[myPlayerIndex]?.name : null) || getProfileName() || t('you')}
                   inline
                 />
               </div>

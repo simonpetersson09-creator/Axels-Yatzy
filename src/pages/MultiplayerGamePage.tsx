@@ -362,9 +362,12 @@ export default function MultiplayerGamePage() {
   useEffect(() => {
     if (status === 'finished') return;
     if (!boardComplete) return;
+    // A score still awaiting server confirmation may be rejected and rolled
+    // back — never finish the match on an unconfirmed (optimistic) board.
+    if (pendingCategory) return;
     const timer = setTimeout(() => setFinishFallback(true), 4000);
     return () => clearTimeout(timer);
-  }, [status, boardComplete]);
+  }, [status, boardComplete, pendingCategory]);
 
   const navigatedToResultsRef = useRef(false);
   useEffect(() => {

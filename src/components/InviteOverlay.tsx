@@ -189,8 +189,11 @@ export default function InviteOverlay() {
           // Transient lookup failure: do NOT burn the key — otherwise a single
           // network blip means this accept can never open the match again.
           if (gErr) { seenOutbound.delete(key); continue; }
+          // Row not visible yet (replication/race): retry on the next poll
+          // instead of silently dropping the accept forever.
+          if (!g) { seenOutbound.delete(key); continue; }
           markOutboundHandled(key);
-          if (!g || g.status === 'finished') continue;
+          if (g.status === 'finished') continue;
           // Only skip navigation when we're already inside *this* match —
           // being on another game screen must not swallow the new match.
           const params = new URLSearchParams(window.location.search);
@@ -272,7 +275,7 @@ export default function InviteOverlay() {
       setBusy(false);
       if (!res.ok) {
         // Keep invite in queue so the user can retry after a network hiccup.
-        toast.error(res.error ?? t('errGeneric'));
+        toast.error(res.error === 'max_active_games' ? t('maxActiveGames', { max: 3 }) : (res.error ?? t('errGeneric')));
         return;
       }
       handledRef.current.add(inv.id);

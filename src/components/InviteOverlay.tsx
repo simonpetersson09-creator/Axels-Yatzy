@@ -275,7 +275,7 @@ export default function InviteOverlay() {
       setBusy(false);
       if (!res.ok) {
         // Keep invite in queue so the user can retry after a network hiccup.
-        toast.error(res.error ?? t('errGeneric'));
+        toast.error(res.error === 'max_active_games' ? t('maxActiveGames', { max: 3 }) : (res.error ?? t('errGeneric')));
         return;
       }
       handledRef.current.add(inv.id);

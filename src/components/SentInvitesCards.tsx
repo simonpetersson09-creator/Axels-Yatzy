@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Loader2, Clock } from 'lucide-react';
+import { toast } from 'sonner';
 import { formatTimeRemaining } from '@/lib/active-game';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';

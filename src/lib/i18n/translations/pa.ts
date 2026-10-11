@@ -331,6 +331,7 @@ export const pa: typeof sv = {
   tierBronze: "ਕਾਂਸੀ",
   tierSilver: "ਚਾਂਦੀ",
   tierGold: "ਸੋਨਾ",
+  tierPlatinum: "ਪਲੈਟੀਨਮ",
   myDice: "ਮੇਰੇ ਪਾਸੇ",
   challengesLabel: "ਚੁਣੌਤੀਆਂ",
   tierWhite: "ਚਿੱਟੇ",

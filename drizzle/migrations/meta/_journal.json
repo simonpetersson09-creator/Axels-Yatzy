@@ -190,6 +190,13 @@
       "when": 1791732673641,
       "tag": "0026_get_player_card",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1791735306724,
+      "tag": "0027_platinum_tier",
+      "breakpoints": true
     }
   ]
 }

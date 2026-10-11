@@ -79,6 +79,7 @@ const SKIN_MATERIALS = {
   bronze: { body: metal("#e09a63", "#6a3a1c"), held: metal("#c9824d", "#55301a") },
   silver: { body: metal("#f1f3f6", "#5c6168"), held: metal("#d3d8de", "#4a4f55") },
   gold: { body: metal("#f5cc5e", "#7a5a14"), held: metal("#deb144", "#634810") },
+  platinum: { body: metal("#e6f0fb", "#4d6f96"), held: metal("#c4d6ea", "#3d5a7c") },
 } as const;
 
 /** Deep black pips with a faint, ink-like gloss. */

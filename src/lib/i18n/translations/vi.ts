@@ -331,6 +331,7 @@ export const vi: typeof sv = {
   tierBronze: "đồng",
   tierSilver: "bạc",
   tierGold: "vàng",
+  tierPlatinum: "bạch kim",
   myDice: "Xúc xắc của tôi",
   challengesLabel: "Thử thách",
   tierWhite: "trắng",

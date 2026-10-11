@@ -331,6 +331,7 @@ export const te: typeof sv = {
   tierBronze: "కాంస్యం",
   tierSilver: "వెండి",
   tierGold: "బంగారం",
+  tierPlatinum: "ప్లాటినం",
   myDice: "నా పాచికలు",
   challengesLabel: "సవాళ్లు",
   tierWhite: "తెలుపు",

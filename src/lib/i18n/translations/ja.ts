@@ -331,6 +331,7 @@ export const ja: typeof sv = {
   tierBronze: "ブロンズ",
   tierSilver: "シルバー",
   tierGold: "ゴールド",
+  tierPlatinum: "プラチナ",
   myDice: "マイサイコロ",
   challengesLabel: "チャレンジ",
   tierWhite: "ホワイト",

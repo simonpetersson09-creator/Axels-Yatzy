@@ -331,6 +331,7 @@ export const da: typeof sv = {
   tierBronze: "bronze",
   tierSilver: "sølv",
   tierGold: "guld",
+  tierPlatinum: "platin",
   myDice: "Mine terninger",
   challengesLabel: "Udfordringer",
   tierWhite: "hvid",

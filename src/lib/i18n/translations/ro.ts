@@ -331,6 +331,7 @@ export const ro: typeof sv = {
   tierBronze: "bronz",
   tierSilver: "argint",
   tierGold: "aur",
+  tierPlatinum: "platină",
   myDice: "Zarurile mele",
   challengesLabel: "Provocări",
   tierWhite: "alb",

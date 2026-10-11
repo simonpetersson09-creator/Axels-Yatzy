@@ -331,6 +331,7 @@ export const ta: typeof sv = {
   tierBronze: "வெண்கலம்",
   tierSilver: "வெள்ளி",
   tierGold: "தங்கம்",
+  tierPlatinum: "பிளாட்டினம்",
   myDice: "என் பகடைகள்",
   challengesLabel: "சவால்கள்",
   tierWhite: "வெள்ளை",

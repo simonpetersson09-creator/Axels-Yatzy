@@ -331,6 +331,7 @@ export const kn: typeof sv = {
   tierBronze: "ಕಂಚು",
   tierSilver: "ಬೆಳ್ಳಿ",
   tierGold: "ಚಿನ್ನ",
+  tierPlatinum: "ಪ್ಲಾಟಿನಂ",
   myDice: "ನನ್ನ ದಾಳಗಳು",
   challengesLabel: "ಸವಾಲುಗಳು",
   tierWhite: "ಬಿಳಿ",

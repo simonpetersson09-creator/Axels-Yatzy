@@ -331,6 +331,7 @@ export const uk: typeof sv = {
   tierBronze: "бронза",
   tierSilver: "срібло",
   tierGold: "золото",
+  tierPlatinum: "платина",
   myDice: "Мої кубики",
   challengesLabel: "Виклики",
   tierWhite: "білі",

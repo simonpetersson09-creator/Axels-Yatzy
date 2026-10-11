@@ -331,6 +331,7 @@ export const th: typeof sv = {
   tierBronze: "ทองแดง",
   tierSilver: "เงิน",
   tierGold: "ทอง",
+  tierPlatinum: "แพลทินัม",
   myDice: "ลูกเต๋าของฉัน",
   challengesLabel: "ความท้าทาย",
   tierWhite: "ขาว",

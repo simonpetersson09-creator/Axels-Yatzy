@@ -326,6 +326,7 @@ export const de: typeof sv = {
   tierBronze: "Bronze",
   tierSilver: "Silber",
   tierGold: "Gold",
+  tierPlatinum: "Platin",
   myDice: "Meine Würfel",
   challengesLabel: "Herausforderungen",
   tierWhite: "weiß",

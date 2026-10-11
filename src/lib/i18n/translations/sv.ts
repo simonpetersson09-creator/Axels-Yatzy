@@ -340,6 +340,7 @@ export const sv = {
   tierBronze: "brons",
   tierSilver: "silver",
   tierGold: "guld",
+  tierPlatinum: "platina",
   myDice: "Mina tärningar",
   challengesLabel: "Utmaningar",
   tierWhite: "vit",

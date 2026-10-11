@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { useBackHandler } from '@/lib/back-handler';
 
 export const TIER_NAME: Record<DiceSkin, TranslationKey> = {
-  white: 'tierWhite', bronze: 'tierBronze', silver: 'tierSilver', gold: 'tierGold',
+  white: 'tierWhite', bronze: 'tierBronze', silver: 'tierSilver', gold: 'tierGold', platinum: 'tierPlatinum',
 };
 
 export const SKIN_SWATCH: Record<DiceSkin, string> = {
@@ -19,6 +19,7 @@ export const SKIN_SWATCH: Record<DiceSkin, string> = {
   bronze: 'bg-gradient-to-br from-dice-bronze-light to-dice-bronze-dark border-dice-bronze-dark',
   silver: 'bg-gradient-to-br from-dice-silver-light to-dice-silver-dark border-dice-silver-dark',
   gold: 'bg-gradient-to-br from-game-gold-light via-primary to-game-gold-dark border-game-gold',
+  platinum: 'bg-gradient-to-br from-dice-platinum-light via-dice-platinum-mid to-dice-platinum-dark border-dice-platinum-dark',
 };
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -28,7 +29,7 @@ export function useTierLine() {
   const { t } = useTranslation();
   return (p: DiceProfile) => {
     const next = nextTier(p.yatzyMatches);
-    if (!next) return t('dicePermGold', { n: p.yatzyMatches });
+    if (!next) return `${cap(t('tierPlatinum'))} · ${t('diceLadderGoal', { goal: p.yatzyMatches })}`;
     return t('diceTierLine', {
       tier: cap(t(TIER_NAME[p.tier])), n: p.yatzyMatches, goal: next.goal, next: t(TIER_NAME[next.tier]),
     });
@@ -108,7 +109,7 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
               <p className="text-xs text-muted-foreground">{t('diceComputer')}</p>
             ) : (
               <>
-                {profile.inviteGold && profile.tier !== 'gold' && (
+                {profile.inviteGold && SKIN_RANK[profile.tier] < SKIN_RANK.gold && (
                   <p className="text-xs font-semibold text-game-gold">
                     {inviteDaysLeft ? t('diceInviteGoldDays', { d: inviteDaysLeft }) : t('diceInviteGold')}
                   </p>

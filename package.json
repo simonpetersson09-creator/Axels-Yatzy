@@ -41,6 +41,7 @@
     "@react-three/fiber": "^8.18.0",
     "@supabase/supabase-js": "^2.99.1",
     "@tanstack/react-query": "^5.83.0",
+    "capacitor-native-settings": "8.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.35.2",

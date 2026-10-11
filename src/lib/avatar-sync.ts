@@ -45,3 +45,18 @@ export function useGameAvatars(gameId: string | null, refreshKey: unknown = 0): 
   }, [gameId, refreshKey]);
   return map;
 }
+
+/** Profile pictures by session id (friends list). */
+export function useAvatarsByIds(ids: string[]): Record<string, string> {
+  const [map, setMap] = useState<Record<string, string>>({});
+  const key = [...ids].sort().join(',');
+  useEffect(() => {
+    if (!key) return;
+    let alive = true;
+    supabase.rpc('get_avatars', { p_session_ids: key.split(',') }).then(({ data }) => {
+      if (alive && data && typeof data === 'object') setMap(data as Record<string, string>);
+    }, () => {});
+    return () => { alive = false; };
+  }, [key]);
+  return map;
+}

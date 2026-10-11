@@ -70,6 +70,7 @@ export function setProfileAvatar(dataUrl: string | null): void {
   if (dataUrl) localStorage.setItem(AVATAR_KEY, dataUrl);
   else localStorage.removeItem(AVATAR_KEY);
   window.dispatchEvent(new Event('profile-changed'));
+  import('@/lib/avatar-sync').then((m) => m.syncOwnAvatar()).catch(() => {});
 }
 
 const LANG_SOURCE_KEY = 'yatzy_language_source'; // 'manual' | 'auto'

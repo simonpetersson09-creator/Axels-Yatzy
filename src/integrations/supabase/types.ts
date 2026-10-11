@@ -454,6 +454,24 @@ export type Database = {
         }
         Relationships: []
       }
+      player_avatars: {
+        Row: {
+          image: string
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          image: string
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          image?: string
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       player_country_stats: {
         Row: {
           country: string
@@ -702,6 +720,7 @@ export type Database = {
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
       get_dice_profiles: { Args: { p_game_id: string }; Returns: Json }
       get_dice_skins: { Args: { p_session_ids: string[] }; Returns: Json }
+      get_game_avatars: { Args: { p_game_id: string }; Returns: Json }
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
       get_gold_players: { Args: { p_session_ids: string[] }; Returns: string[] }
       get_player_stats: { Args: { p_game_id: string }; Returns: Json }
@@ -830,6 +849,10 @@ export type Database = {
       set_away: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: undefined
+      }
+      set_player_avatar: {
+        Args: { p_device_id: string; p_image: string; p_session_id: string }
+        Returns: boolean
       }
       skip_inactive_turn: {
         Args: { p_game_id: string; p_timeout_seconds?: number }

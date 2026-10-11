@@ -43,10 +43,12 @@ interface Props {
   showLadder?: boolean;
   /** Online: public match stats for this player. */
   stats?: PlayerStats;
+  /** Profile picture (only known for the own player; stored on the phone). */
+  avatarUrl?: string | null;
 }
 
 /** Small bottom sheet with a player's dice level. Never pauses the game. */
-export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder, stats }: Props) {
+export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, showLadder, stats, avatarUrl }: Props) {
   const { t } = useTranslation();
   const tierLine = useTierLine();
   useBackHandler(open && !!profile, onClose);
@@ -66,7 +68,14 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
           <X className="w-4 h-4" />
         </button>
         <div className="flex items-center gap-3">
-          <div className={cn('w-10 h-10 rounded-xl border shrink-0', SKIN_SWATCH[skin])} aria-hidden />
+          {avatarUrl ? (
+            <div className="relative w-10 h-10 shrink-0">
+              <img src={avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover border border-border" />
+              <div className={cn('absolute -bottom-1 -right-1 w-4 h-4 rounded-md border-2 border-card', SKIN_SWATCH[skin])} aria-hidden />
+            </div>
+          ) : (
+            <div className={cn('w-10 h-10 rounded-xl border shrink-0', SKIN_SWATCH[skin])} aria-hidden />
+          )}
           <div className="min-w-0">
             <p className="text-sm font-bold text-foreground truncate">{name}</p>
             {profile.isBot ? (

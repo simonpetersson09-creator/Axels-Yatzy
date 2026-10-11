@@ -376,6 +376,7 @@ export default function SettingsPage() {
               profile={ownProfile(goldStatus)}
               inviteDaysLeft={goldDaysLeft(goldStatus) || undefined}
               showLadder
+              avatarUrl={avatar}
             />
             <motion.button
               onClick={resetStats}

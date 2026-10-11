@@ -617,6 +617,7 @@ export default function MultiplayerGamePage() {
         name={infoIndex !== null ? (gameState.players[infoIndex]?.name ?? '') : ''}
         profile={infoIndex !== null ? (diceProfiles.get(infoIndex) ?? { isBot: false, tier: 'white', yatzyMatches: 0, inviteGold: false }) : undefined}
         stats={infoIndex !== null ? playerStats.get(infoIndex) : undefined}
+        avatarUrl={infoIndex !== null && infoIndex === myPlayerIndex ? avatarUrl : null}
       />
       <YatzyCelebration
         show={showYatzyCelebration}

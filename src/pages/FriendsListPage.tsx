@@ -26,7 +26,7 @@ export default function FriendsListPage() {
 
   return (
     <div className="app-screen flex flex-col px-5 safe-top safe-bottom overflow-y-auto overscroll-contain">
-      <div className="w-full max-w-md mx-auto py-6 space-y-5">
+      <div className="w-full max-w-md mx-auto py-4 space-y-3">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/')}
@@ -35,12 +35,12 @@ export default function FriendsListPage() {
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </button>
-          <h1 className="text-xl font-display font-black text-foreground">
+          <h1 className="text-lg font-display font-black text-foreground">
             {t('friendsListTitle')}
           </h1>
         </div>
 
-        <p className="text-center text-[10px] text-muted-foreground px-4">
+        <p className="text-center text-[10px] text-muted-foreground px-4 -mt-1">
           {t('friendsListReminder')}
         </p>
 

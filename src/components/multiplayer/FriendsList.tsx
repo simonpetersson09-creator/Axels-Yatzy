@@ -14,6 +14,7 @@ import {
 } from '@/lib/friend-aliases';
 import { getKnownFriends, addKnownFriends, subscribeKnownFriends } from '@/lib/known-friends';
 import { toast } from 'sonner';
+import { useAvatarsByIds } from '@/lib/avatar-sync';
 
 interface FriendMatchRow {
   id: string;
@@ -44,12 +45,6 @@ interface OpponentSummary {
   ongoingMatch: FriendMatchRow | null;
   mergedSourceIds: string[];
   sortAt: string;
-}
-
-function formatDate(iso: string, locale = 'sv-SE') {
-  try {
-    return new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short' });
-  } catch { return ''; }
 }
 
 export function FriendsList() {
@@ -340,6 +335,7 @@ export function FriendsList() {
       return new Date(bT).getTime() - new Date(aT).getTime();
     });
   }, [rows, myId, hiddenFriends, aliasMap, knownFriends]);
+  const avatars = useAvatarsByIds(opponents.map((o) => o.opponentId));
 
   if (rows === null) {
     return (
@@ -364,107 +360,66 @@ export function FriendsList() {
 
   return (
     <>
-      <div className="space-y-2.5">
+      <div className="space-y-1.5">
         {opponents.map((o) => {
           const alreadyInvited = !!activeInvites[o.opponentId];
           const isSending = inviting === o.opponentId;
+          const img = avatars[o.opponentId];
+          const diff = o.matches > 0 && o.oppPoints > 0
+            ? Math.round(((o.myPoints - o.oppPoints) / o.oppPoints) * 100) : null;
           return (
             <div
               key={o.opponentId}
-              className={`w-full p-3 rounded-xl border ${
-                o.ongoingMatch
-                  ? 'bg-primary/10 border-primary/40'
-                  : 'bg-secondary/60 border-border/50'
+              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl border ${
+                o.ongoingMatch ? 'bg-primary/10 border-primary/40' : 'bg-secondary/60 border-border/50'
               }`}
             >
-              <div className="flex items-center justify-center gap-2">
-                <span className="font-display font-bold text-sm text-foreground truncate text-center">
-                  {o.opponentName}
+              <button
+                onClick={() => navigate('/friend-stats', { state: { selectedId: o.opponentId } })}
+                className="flex-1 min-w-0 flex items-center gap-2.5 text-left active:opacity-80 transition"
+              >
+                <div className="w-9 h-9 shrink-0 rounded-full overflow-hidden bg-secondary border border-border/60 flex items-center justify-center">
+                  {img ? <img src={img} alt="" className="w-full h-full object-cover" />
+                    : <span className="text-sm font-display font-black text-muted-foreground">{o.opponentName.charAt(0).toUpperCase()}</span>}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-display font-bold text-sm text-foreground truncate">{o.opponentName}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">
+                    {o.ongoingMatch ? (
+                      <span className="inline-flex items-center gap-1 text-primary font-bold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />{t('ongoingMatch')}
+                      </span>
+                    ) : (
+                      <>
+                        {o.matches} {t('friendsMatches')}
+                        {diff !== null && (
+                          <span className={diff > 0 ? 'text-game-success' : diff < 0 ? 'text-destructive' : ''}>
+                            {' · '}{diff > 0 ? `+${diff}` : diff}%
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </p>
+                </div>
+                <span className={`shrink-0 text-base font-display font-black tabular-nums ${
+                  o.wins > o.losses ? 'text-game-success' : o.losses > o.wins ? 'text-destructive' : 'text-muted-foreground'
+                }`}>
+                  {o.wins}–{o.losses}{o.draws > 0 && <span className="text-[10px] text-muted-foreground"> +{o.draws}</span>}
                 </span>
-              </div>
-
-              <div className="flex items-stretch gap-2 mt-2">
-                <button
-                  onClick={() => navigate('/friend-stats', { state: { selectedId: o.opponentId } })}
-                  className="flex-1 min-w-0 text-left active:opacity-80 transition"
-                >
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex flex-col items-center justify-center rounded-xl bg-secondary/80 border border-border/50 py-2">
-                      <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t('friendsTotalMatches')}</span>
-                      <span className="text-lg font-display font-black text-foreground tabular-nums">{o.matches}</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center rounded-xl bg-secondary/80 border border-border/50 py-2">
-                      <span className={`text-2xl font-display font-black tabular-nums ${
-                        o.wins > o.losses ? 'text-game-success'
-                          : o.losses > o.wins ? 'text-destructive'
-                          : 'text-muted-foreground'
-                      }`}>
-                        {o.wins}–{o.losses}
-                      </span>
-                      {o.draws > 0 && (
-                        <span className="text-[10px] font-bold text-muted-foreground">+{o.draws}</span>
-                      )}
-                    </div>
-                  </div>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (alreadyInvited) {
-                      reopenInvite(o.opponentId, o.opponentName);
-                    } else {
-                      handleInvite(o.opponentId, o.opponentName);
-                    }
-                  }}
-                  disabled={isSending || !!pendingInvite}
-                  className="flex-shrink-0 w-[4.5rem] rounded-lg bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition flex flex-col items-center justify-center disabled:opacity-60"
-                  aria-label={alreadyInvited ? t('inviteSent') : t('inviteFriend')}
-                >
-                  {isSending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <span className="text-xs font-bold leading-tight text-center">
-                      {alreadyInvited ? t('inviteSent') : t('inviteFriend')}
-                    </span>
-                  )}
-                </button>
-              </div>
-              {o.matches > 0 && (o.myPoints > 0 || o.oppPoints > 0) && (
-                <div className="mt-1.5 text-center">
-                  {(() => {
-                    // Retroaktiv jämförelse: summa av alla poäng i alla spelade matcher
-                    const diff = o.oppPoints > 0
-                      ? Math.round(((o.myPoints - o.oppPoints) / o.oppPoints) * 100)
-                      : 100;
-                    return (
-                      <span className={`text-[10px] font-bold ${
-                        diff > 0 ? 'text-game-success'
-                          : diff < 0 ? 'text-destructive'
-                          : 'text-muted-foreground'
-                      }`}>
-                        {diff > 0
-                          ? t('friendComparisonAhead', { pct: Math.abs(diff), name: o.opponentName })
-                          : diff < 0
-                          ? t('friendComparisonBehind', { pct: Math.abs(diff), name: o.opponentName })
-                          : t('friendComparisonEven')}
-                      </span>
-                    );
-                  })()}
-                </div>
-              )}
-
-
-              {o.ongoingMatch ? (
-                <div className="mt-2 pt-2 border-t border-primary/30 flex items-center justify-between text-[10px] uppercase tracking-wider">
-                  <span className="flex items-center gap-1.5 text-primary font-bold">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    {t('ongoingMatch')}
-                  </span>
-                  <span className="text-muted-foreground normal-case tracking-normal">
-                    {formatDate(o.ongoingMatch.created_at)}
-                  </span>
-                </div>
-              ) : null}
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (alreadyInvited) reopenInvite(o.opponentId, o.opponentName);
+                  else handleInvite(o.opponentId, o.opponentName);
+                }}
+                disabled={isSending || !!pendingInvite}
+                className="shrink-0 w-[4.25rem] h-9 rounded-lg bg-primary/15 text-primary border border-primary/30 active:bg-primary/25 transition flex items-center justify-center disabled:opacity-60"
+                aria-label={alreadyInvited ? t('inviteSent') : t('inviteFriend')}
+              >
+                {isSending ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : <span className="text-[11px] font-bold leading-tight text-center">{alreadyInvited ? t('inviteSent') : t('inviteFriend')}</span>}
+              </button>
             </div>
           );
         })}

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { FriendRequestsList } from '@/components/FriendRequestsList';
 import { FriendsList } from '@/components/multiplayer/FriendsList';
 import { useTranslation } from '@/lib/i18n';
 
@@ -43,6 +44,7 @@ export default function FriendsListPage() {
           {t('friendsListReminder')}
         </p>
 
+        <FriendRequestsList />
         <FriendsList />
       </div>
     </div>

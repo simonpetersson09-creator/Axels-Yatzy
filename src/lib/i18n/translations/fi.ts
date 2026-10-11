@@ -28,6 +28,7 @@ export const fi: typeof sv = {
   statYatzy: 'Yatzyt',
   statStreak: 'Putki',
   worldRankLabel: 'Maailma',
+  worldRanking: "Maailmanranking",
   countryRankLabel: 'Sijoituksesi',
   countryRankLabelFull: 'Sijoituksesi maassa {country}',
   worldRankLabelFull: 'Sijoituksesi maailmassa',

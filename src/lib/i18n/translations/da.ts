@@ -28,6 +28,7 @@ export const da: typeof sv = {
   statYatzy: 'Yatzyer',
   statStreak: 'Stime',
   worldRankLabel: 'Verden',
+  worldRanking: "Verdensrangliste",
   countryRankLabel: 'Din placering',
   countryRankLabelFull: 'Din placering i {country}',
   worldRankLabelFull: 'Din placering i verden',

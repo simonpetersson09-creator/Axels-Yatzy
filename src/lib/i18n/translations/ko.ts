@@ -28,6 +28,7 @@ export const ko: typeof sv = {
   statYatzy: 'Yatzy 횟수',
   statStreak: '연승',
   worldRankLabel: '세계',
+  worldRanking: "세계 랭킹",
   countryRankLabel: '내 순위',
   countryRankLabelFull: '{country} 내 순위',
   worldRankLabelFull: '내 세계 순위',

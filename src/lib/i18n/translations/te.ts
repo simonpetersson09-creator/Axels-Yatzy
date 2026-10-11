@@ -28,6 +28,7 @@ export const te: typeof sv = {
   statYatzy: 'Yatzyలు',
   statStreak: 'వరుస గెలుపులు',
   worldRankLabel: 'ప్రపంచం',
+  worldRanking: "ప్రపంచ ర్యాంకింగ్",
   countryRankLabel: 'నీ ర్యాంక్',
   countryRankLabelFull: '{country}లో నీ ర్యాంక్',
   worldRankLabelFull: 'ప్రపంచంలో నీ ర్యాంక్',

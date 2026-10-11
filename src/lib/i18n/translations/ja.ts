@@ -28,6 +28,7 @@ export const ja: typeof sv = {
   statYatzy: 'Yatzy回数',
   statStreak: '連勝',
   worldRankLabel: '世界',
+  worldRanking: "世界ランキング",
   countryRankLabel: '国内順位',
   countryRankLabelFull: '{country}での順位',
   worldRankLabelFull: '世界での順位',

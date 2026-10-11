@@ -28,6 +28,7 @@ export const de: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Serie',
   worldRankLabel: 'Welt',
+  worldRanking: "Weltrangliste",
   countryRankLabel: 'Dein Rang',
   countryRankLabelFull: 'Dein Rang in {country}',
   worldRankLabelFull: 'Dein Rang in der Welt',

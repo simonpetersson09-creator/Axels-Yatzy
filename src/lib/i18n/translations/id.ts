@@ -28,6 +28,7 @@ export const id: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Kemenangan beruntun',
   worldRankLabel: 'Dunia',
+  worldRanking: "Peringkat dunia",
   countryRankLabel: 'Peringkatmu',
   countryRankLabelFull: 'Peringkatmu di {country}',
   worldRankLabelFull: 'Peringkatmu di dunia',

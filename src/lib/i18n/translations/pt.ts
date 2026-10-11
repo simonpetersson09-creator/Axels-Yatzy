@@ -28,6 +28,7 @@ export const pt: typeof sv = {
   statYatzy: 'Yatzys',
   statStreak: 'Série',
   worldRankLabel: 'Mundo',
+  worldRanking: "Ranking mundial",
   countryRankLabel: 'A tua posição',
   countryRankLabelFull: 'A tua posição em {country}',
   worldRankLabelFull: 'A tua posição mundial',

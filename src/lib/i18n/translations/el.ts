@@ -28,6 +28,7 @@ export const el: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Σερί',
   worldRankLabel: 'Κόσμος',
+  worldRanking: "Παγκόσμια κατάταξη",
   countryRankLabel: 'Η θέση σου',
   countryRankLabelFull: 'Η θέση σου στη χώρα: {country}',
   worldRankLabelFull: 'Η θέση σου στον κόσμο',

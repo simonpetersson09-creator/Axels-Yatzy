@@ -28,6 +28,7 @@ export const vi: typeof sv = {
   statYatzy: 'Số Yatzy',
   statStreak: 'Chuỗi thắng',
   worldRankLabel: 'Thế giới',
+  worldRanking: "Bảng xếp hạng thế giới",
   countryRankLabel: 'Hạng của bạn',
   countryRankLabelFull: 'Hạng của bạn tại {country}',
   worldRankLabelFull: 'Hạng của bạn trên thế giới',

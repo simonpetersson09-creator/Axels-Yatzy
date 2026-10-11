@@ -27,6 +27,7 @@ export const ru: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Серия',
   worldRankLabel: 'В мире',
+  worldRanking: "Мировой рейтинг",
   countryRankLabel: 'Твоё место',
   countryRankLabelFull: 'Твоё место в стране: {country}',
   worldRankLabelFull: 'Твоё место в мире',

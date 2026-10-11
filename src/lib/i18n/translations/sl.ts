@@ -28,6 +28,7 @@ export const sl: typeof sv = {
   statYatzy: 'Yatzyji',
   statStreak: 'Niz',
   worldRankLabel: 'Svet',
+  worldRanking: "Svetovna lestvica",
   countryRankLabel: 'Tvoja uvrstitev',
   countryRankLabelFull: 'Tvoja uvrstitev v državi {country}',
   worldRankLabelFull: 'Tvoja svetovna uvrstitev',

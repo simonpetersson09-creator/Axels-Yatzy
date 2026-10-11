@@ -28,6 +28,7 @@ export const no: typeof sv = {
   statYatzy: 'Yatzyer',
   statStreak: 'Rekke',
   worldRankLabel: 'Verden',
+  worldRanking: "Verdensranking",
   countryRankLabel: 'Din rangering',
   countryRankLabelFull: 'Din rangering i {country}',
   worldRankLabelFull: 'Din rangering i verden',

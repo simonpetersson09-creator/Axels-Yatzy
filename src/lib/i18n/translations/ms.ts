@@ -28,6 +28,7 @@ export const ms: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Berturut-turut',
   worldRankLabel: 'Dunia',
+  worldRanking: "Kedudukan dunia",
   countryRankLabel: 'Kedudukan awak',
   countryRankLabelFull: 'Kedudukan awak di {country}',
   worldRankLabelFull: 'Kedudukan awak di dunia',

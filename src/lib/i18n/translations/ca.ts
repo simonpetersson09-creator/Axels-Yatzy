@@ -27,6 +27,7 @@ export const ca: typeof sv = {
   statYatzy: 'Yatzys',
   statStreak: 'Ratxa',
   worldRankLabel: 'Mundial',
+  worldRanking: "Rànquing mundial",
   countryRankLabel: 'Posició',
   countryRankLabelFull: 'La teva posició a {country}',
   worldRankLabelFull: 'La teva posició al món',

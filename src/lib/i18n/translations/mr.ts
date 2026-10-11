@@ -28,6 +28,7 @@ export const mr: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'सलग विजय',
   worldRankLabel: 'जग',
+  worldRanking: "जागतिक क्रमवारी",
   countryRankLabel: 'तुझा क्रमांक',
   countryRankLabelFull: '{country} मधील तुझा क्रमांक',
   worldRankLabelFull: 'जगातील तुझा क्रमांक',

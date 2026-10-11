@@ -28,6 +28,7 @@ export const or: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'ଲଗାତାର ବିଜୟ',
   worldRankLabel: 'ବିଶ୍ୱ',
+  worldRanking: "ବିଶ୍ୱ ର‍୍ୟାଙ୍କିଙ୍ଗ",
   countryRankLabel: 'ତୁମ ସ୍ଥାନ',
   countryRankLabelFull: '{country}ରେ ତୁମ ସ୍ଥାନ',
   worldRankLabelFull: 'ବିଶ୍ୱରେ ତୁମ ସ୍ଥାନ',

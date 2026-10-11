@@ -28,6 +28,7 @@ export const tr: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Seri',
   worldRankLabel: 'Dünya',
+  worldRanking: "Dünya sıralaması",
   countryRankLabel: 'Sıralaman',
   countryRankLabelFull: '{country} sıralaman',
   worldRankLabelFull: 'Dünya sıralaman',

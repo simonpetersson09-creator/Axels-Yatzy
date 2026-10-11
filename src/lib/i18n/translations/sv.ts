@@ -30,6 +30,7 @@ export const sv = {
   statYatzy: 'Yatzy',
   statStreak: 'Svit',
   worldRankLabel: 'Världen',
+  worldRanking: "Världsranking",
   countryRankLabel: 'Din placering',
   countryRankLabelFull: 'Din placering i {country}',
   worldRankLabelFull: 'Din placering i världen',

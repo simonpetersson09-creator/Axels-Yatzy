@@ -28,6 +28,7 @@ export const th: typeof sv = {
   statYatzy: 'Yatzy',
   statStreak: 'ชนะติดกัน',
   worldRankLabel: 'อันดับโลก',
+  worldRanking: "อันดับโลก",
   countryRankLabel: 'อันดับคุณ',
   countryRankLabelFull: 'อันดับคุณใน{country}',
   worldRankLabelFull: 'อันดับคุณในโลก',

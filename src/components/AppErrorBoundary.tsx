@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { trackEvent } from '@/lib/analytics';
 
@@ -50,15 +51,15 @@ export default class AppErrorBoundary extends Component<Props, State> {
         <span className="text-4xl" aria-hidden="true">
           🎲
         </span>
-        <h1 className="font-display text-xl font-bold">Något gick fel</h1>
+        <h1 className="font-display text-xl font-bold">{t('appErrTitle')}</h1>
         <p className="text-sm text-muted-foreground max-w-xs">
-          Appen stötte på ett oväntat fel. Starta om så fortsätter spelet där du var.
+          {t('appErrBody')}
         </p>
         <button
           onClick={this.handleReload}
           className="px-5 py-3 rounded-xl bg-primary text-primary-foreground font-semibold"
         >
-          Starta om
+          {t('appErrRestart')}
         </button>
       </div>
     );

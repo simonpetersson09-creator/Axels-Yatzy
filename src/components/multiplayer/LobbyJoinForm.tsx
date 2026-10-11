@@ -88,7 +88,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           status = await Camera.requestPermissions({ permissions: ['camera'] });
         }
         if (status.camera !== 'granted' && status.camera !== 'limited') {
-          toast.error('Kameran är blockerad. Tillåt kameraåtkomst för Mr.B Yatzy i Inställningar.');
+          toast.error(t('cameraBlocked'));
           return;
         }
       } catch (err) {

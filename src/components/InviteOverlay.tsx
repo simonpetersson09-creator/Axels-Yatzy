@@ -141,11 +141,11 @@ export default function InviteOverlay() {
       const rows = (data ?? []) as InviteRow[];
       const row = rows.find((r) => r.id === inviteId);
       if (!row || row.to_session_id !== sessionId || row.status !== 'pending') {
-        toast.message('Inbjudan är inte längre aktiv');
+        toast.message(t('inviteInactive'));
         return;
       }
       if (row.expires_at && new Date(row.expires_at).getTime() <= Date.now()) {
-        toast.message('Inbjudan har gått ut');
+        toast.message(t('inviteExpiredMsg'));
         return;
       }
       setQueue((cur) => {

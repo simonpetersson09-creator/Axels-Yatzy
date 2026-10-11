@@ -68,7 +68,7 @@ export default function SettingsPage() {
       setAvatar(dataUrl);
       toast.success(t('avatarSaved'));
     } catch {
-      toast.error('Error');
+      toast.error(t('errorGeneric'));
     }
   };
 

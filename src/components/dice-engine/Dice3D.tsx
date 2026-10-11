@@ -20,7 +20,7 @@ import {
   SRGBColorSpace,
 } from "three";
 import type { ThreeEvent } from "@react-three/fiber";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import type { Group } from "three";
 
 import { useDiceAnimation } from "./useDiceAnimation";
@@ -77,13 +77,13 @@ const metal = (color: string, glow: string) => new MeshPhysicalMaterial({
 /** Platinum: polished, more mirror-like, with a cool icy-blue sheen so it never reads as silver. */
 const platinumMetal = (color: string, glow: string) => new MeshPhysicalMaterial({
   color,
-  roughness: 0.16,
-  metalness: 0.75,
+  roughness: 0.1,
+  metalness: 0.85,
   clearcoat: 1,
   clearcoatRoughness: 0.04,
-  envMapIntensity: 1.7,
+  envMapIntensity: 2,
   emissive: glow,
-  emissiveIntensity: 0.5,
+  emissiveIntensity: 0.4,
   sheen: 0.6,
   sheenColor: "#bfe0ff",
   iridescence: 0.35,
@@ -94,7 +94,7 @@ const SKIN_MATERIALS = {
   bronze: { body: metal("#e09a63", "#6a3a1c"), held: metal("#c9824d", "#55301a") },
   silver: { body: metal("#f1f3f6", "#5c6168"), held: metal("#d3d8de", "#4a4f55") },
   gold: { body: metal("#f5cc5e", "#7a5a14"), held: metal("#deb144", "#634810") },
-  platinum: { body: platinumMetal("#d6e8fb", "#3f6fa8"), held: platinumMetal("#b3cde8", "#2f5683") },
+  platinum: { body: platinumMetal("#eef4fb", "#5a7fa8"), held: platinumMetal("#cfdceb", "#3f5f86") },
 } as const;
 
 /** Deep black pips with a faint, ink-like gloss. */
@@ -343,8 +343,34 @@ function Dice3DImpl({
   const pressRef = useRef<Group>(null);
   const pressAmount = useRef(0);
 
+  // Platinum only: a short light glint washes over the die when it lands.
+  const platMat = useMemo(
+    () => (skin === 'platinum' ? { body: SKIN_MATERIALS.platinum.body.clone(), held: SKIN_MATERIALS.platinum.held.clone() } : null),
+    [skin],
+  );
+  const glint = useRef(0);
+  const wasRolling = useRef(rolling);
+  const invalidate = useThree((st) => st.invalidate);
+  useEffect(() => {
+    if (wasRolling.current && !rolling && platMat) {
+      glint.current = 1;
+      invalidate();
+    }
+    wasRolling.current = rolling;
+  }, [rolling, platMat, invalidate]);
+
   useFrame((_, rawDelta) => {
     const delta = Math.min(rawDelta, 1 / 20); // on-demand rendering: clamp idle gaps
+    if (platMat && glint.current > 0) {
+      glint.current = Math.max(0, glint.current - delta * 1.6);
+      const t = 1 - glint.current; // 0→1 over ~0.6 s
+      const pulse = Math.sin(t * Math.PI) ** 2;
+      for (const m of [platMat.body, platMat.held]) {
+        m.emissiveIntensity = 0.4 + 1.1 * pulse;
+        m.iridescence = 0.35 + 0.5 * pulse;
+      }
+      invalidate();
+    }
     const g = pressRef.current;
     if (!g) return;
     if (pressAmount.current > 0.0005) {
@@ -406,7 +432,7 @@ function Dice3DImpl({
                   smoothness={10}
                   bevelSegments={8}
                   creaseAngle={0.5}
-                  material={skin && skin !== 'white' ? (held ? SKIN_MATERIALS[skin].held : SKIN_MATERIALS[skin].body) : held ? heldMaterial : bodyMaterial}
+                  material={platMat ? (held ? platMat.held : platMat.body) : skin && skin !== 'white' ? (held ? SKIN_MATERIALS[skin].held : SKIN_MATERIALS[skin].body) : held ? heldMaterial : bodyMaterial}
                 />
                 {FACES.map((face) => (
                   <group key={face.value} rotation={face.rotation}>

@@ -893,6 +893,10 @@ export type Database = {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json
       }
+      perform_forfeit_authed: {
+        Args: { p_device_id: string; p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
       perform_lock_and_roll_authed: {
         Args: {
           p_device_id: string
@@ -938,8 +942,22 @@ export type Database = {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json
       }
+      perform_start_game_authed: {
+        Args: { p_device_id: string; p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
       perform_submit_score: {
         Args: { p_category_id: string; p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
+      perform_submit_score_authed: {
+        Args: {
+          p_category_id: string
+          p_device_id: string
+          p_expected_dice: number[]
+          p_game_id: string
+          p_session_id: string
+        }
         Returns: Json
       }
       perform_toggle_lock: {

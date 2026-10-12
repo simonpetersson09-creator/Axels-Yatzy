@@ -225,6 +225,13 @@
       "when": 1791803883213,
       "tag": "0031_lock_and_roll",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1791804284039,
+      "tag": "0032_score_start_forfeit_authed",
+      "breakpoints": true
     }
   ]
 }

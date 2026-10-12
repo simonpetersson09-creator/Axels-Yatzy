@@ -1,4 +1,4 @@
-import { verifySessionOwner } from "../_shared/session-auth.ts";
+import { verifySessionOwner, precheckDevice } from "../_shared/session-auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -26,24 +26,29 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const owner = await verifySessionOwner(supabase, session_id, device_id);
-    if (!owner.ok) return json({ error: owner.error }, 403);
-
     // New app versions send the whole lock state in one call (batched taps).
     if (locked_dice !== undefined) {
       if (!game_id || !session_id || !Array.isArray(locked_dice) || locked_dice.length !== 5 || !locked_dice.every((b) => typeof b === "boolean")) {
         return json({ error: "game_id, session_id and locked_dice[5] required" }, 400);
       }
-      const { data, error } = await supabase.rpc("perform_set_locks", {
+      const pre = precheckDevice(session_id, device_id);
+      if (!pre.ok) return json({ error: pre.error }, 403);
+      // Device check runs inside the same database call as the locks.
+      const { data, error } = await supabase.rpc("perform_set_locks_authed", {
         p_game_id: game_id,
         p_session_id: session_id,
+        p_device_id: pre.device,
         p_locked: locked_dice,
       });
       if (error) return json({ error: "Databasfel vid låsning" }, 500);
-      const r = data as { success: boolean; error?: string; locked_dice?: boolean[] };
+      const r = data as { success: boolean; auth_failed?: boolean; error?: string; locked_dice?: boolean[] };
+      if (r.auth_failed) return json({ error: r.error }, 403);
       if (!r.success) return json({ error: r.error }, 400);
       return json({ success: true, locked_dice: r.locked_dice });
     }
+
+    const owner = await verifySessionOwner(supabase, session_id, device_id);
+    if (!owner.ok) return json({ error: owner.error }, 403);
 
     // Older app versions: one toggle per tap.
     if (!game_id || !session_id || dice_index === undefined || dice_index === null) {

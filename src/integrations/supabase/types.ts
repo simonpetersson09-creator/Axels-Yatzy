@@ -903,8 +903,26 @@ export type Database = {
             }
             Returns: Json
           }
+      perform_roll_dice_authed: {
+        Args: {
+          p_client_dice: number[]
+          p_device_id: string
+          p_game_id: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
       perform_set_locks: {
         Args: { p_game_id: string; p_locked: boolean[]; p_session_id: string }
+        Returns: Json
+      }
+      perform_set_locks_authed: {
+        Args: {
+          p_device_id: string
+          p_game_id: string
+          p_locked: boolean[]
+          p_session_id: string
+        }
         Returns: Json
       }
       perform_start_game: {

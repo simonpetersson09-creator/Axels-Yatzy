@@ -253,6 +253,13 @@
       "when": 1791806704443,
       "tag": "0035_speed_rejoin_invite_leaders_cleanup",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1791811160762,
+      "tag": "0036_perf_daily_snapshots",
+      "breakpoints": true
     }
   ]
 }

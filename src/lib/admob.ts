@@ -100,7 +100,7 @@ function reasonOf(err: unknown): string {
 }
 
 /** Silent diagnostics so failing ads (e.g. on iPad) show up in analytics. */
-function reportAd(kind: 'appOpen' | 'optional', result: string, startedAt: number, reason?: string) {
+function reportAd(kind: 'appOpen' | 'optional' | 'banner', result: string, startedAt: number, reason?: string) {
   void import('@/lib/analytics').then(({ trackEvent }) =>
     trackEvent('ad_result', {
       kind,
@@ -296,7 +296,7 @@ export async function showGameBanner(): Promise<void> {
     bannerShown = true;
     if (!bannerWanted) await mod.AdMob.hideBanner();
   } catch (err) {
-    reportAd('banner' as 'optional', 'failed', Date.now(), reasonOf(err));
+    reportAd('banner', 'failed', Date.now(), reasonOf(err));
   }
 }
 

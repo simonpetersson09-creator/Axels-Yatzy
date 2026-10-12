@@ -32,6 +32,7 @@ import { saveFriendMatchResult } from '@/lib/friend-stats';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { QuickMatchTakeover } from '@/components/multiplayer/QuickMatchTakeover';
+import { useGameBanner } from '@/hooks/useGameBanner';
 
 const DEBUG = false;
 
@@ -258,6 +259,7 @@ export default function MultiplayerGamePage() {
   }, []);
 
   // Force full re-layout on orientation/viewport change (iOS Safari/Capacitor fix)
+  useGameBanner();
   const [orientationKey, setOrientationKey] = useState(0);
   useEffect(() => {
     let raf = 0;

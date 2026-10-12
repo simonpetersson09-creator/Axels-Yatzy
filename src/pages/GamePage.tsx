@@ -24,6 +24,7 @@ import { trackEvent } from '@/lib/analytics';
 import { Home } from 'lucide-react';
 import { getPlayerName } from '@/lib/session';
 import { toast } from 'sonner';
+import { useGameBanner } from '@/hooks/useGameBanner';
 
 const newMatchKey = () => `local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 
@@ -167,6 +168,7 @@ export default function GamePage() {
   // iOS Safari/Capacitor doesn't always recompute 100dvh, fixed positions,
   // or safe-area insets after rotating back to portrait. Bumping a key
   // remounts the layout tree so every dimension is measured fresh.
+  useGameBanner();
   const [orientationKey, setOrientationKey] = useState(0);
   useEffect(() => {
     let raf = 0;

@@ -1,5 +1,6 @@
 import { precheckDevice } from "../_shared/session-auth.ts";
 import { logTiming } from "../_shared/timing.ts";
+import { rpcWithRetry } from "../_shared/rpc-retry.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -49,13 +50,24 @@ Deno.serve(async (req) => {
       expected_dice.length === 5 &&
       expected_dice.every((n) => Number.isInteger(n) && n >= 1 && n <= 6);
     const dbStart = performance.now();
-    const { data, error } = await supabase.rpc("perform_submit_score_authed", {
+    let { data, error, retried } = await rpcWithRetry(supabase, "perform_submit_score_authed", {
       p_game_id: game_id,
       p_session_id: session_id,
       p_device_id: pre.device,
       p_category_id: category_id,
       p_expected_dice: wantDiceCheck ? expected_dice : null,
     });
+    // A retried score may fail only because the abandoned first try already
+    // saved it. Confirm from the stored scores and report that as success.
+    if (retried && !error && !(data as { success?: boolean })?.success) {
+      const { data: pl } = await supabase.from("game_players").select("scores")
+        .eq("game_id", game_id).eq("session_id", session_id).maybeSingle();
+      const saved = (pl?.scores as Record<string, unknown> | undefined)?.[category_id];
+      if (saved !== undefined && saved !== null) {
+        const { data: g } = await supabase.from("games").select("status").eq("id", game_id).maybeSingle();
+        data = { success: true, score: Number(saved), category_id, game_over: g?.status === "finished" };
+      }
+    }
     logTiming(supabase, req, "score", game_id, t0, performance.now() - dbStart, !error && !!(data as { success?: boolean })?.success);
 
     if (error) {

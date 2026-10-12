@@ -1,5 +1,6 @@
 import { precheckDevice } from "../_shared/session-auth.ts";
 import { logTiming } from "../_shared/timing.ts";
+import { rpcWithRetry } from "../_shared/rpc-retry.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -46,7 +47,8 @@ Deno.serve(async (req) => {
       if (!pre.ok) return json({ error: pre.error }, 403);
       // Device check runs inside the same database call as the locks.
       const dbStart = performance.now();
-      const { data, error } = await supabase.rpc("perform_set_locks_authed", {
+      // Setting the full lock array is safe to repeat, so a hung call is retried.
+      const { data, error } = await rpcWithRetry(supabase, "perform_set_locks_authed", {
         p_game_id: game_id,
         p_session_id: session_id,
         p_device_id: pre.device,

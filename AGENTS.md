@@ -6,7 +6,6 @@
 - AdMob IDs are per platform in ADMOB_IDS (src/lib/admob.ts); a null ID disables that ad type on that platform so iOS IDs can never be used on Android.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
-- Push routing: push_tokens.platform decides the channel — 'android' goes to FCM (via the Firebase connector, _shared/fcm.ts), everything else to APNs; all notify functions call sendPush so iOS delivery stays untouched.
 - google-services.json lives git-ignored in firebase/ and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.
 - Android minSdk is forced to 26 by scripts/set-android-min-sdk.js (run in cap:sync:android) because the barcode-scanner library requires it; android/ is regenerated so variables.gradle edits would be lost.
 - Android launcher icons are generated from resources/icon.png into committed resources/android/res/ and copied over Capacitor's defaults by scripts/set-android-icons.js (run in cap:sync:android); android/ is regenerated so edits there would be lost.
@@ -16,7 +15,7 @@
 - Online dice locks are batched client-side (LOCK_BATCH_MS) and sent as the full locked_dice array to toggle-lock → perform_set_locks (service-role only); dice_index toggling stays only for old app versions — one call per batch avoids server-side row-lock queues.
 - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the caller's device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old app versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — lets us audit fairness and dispute claims afterwards.
-- APNs provider JWTs are cached per function instance (getCachedApnsJwt in _shared/apns.ts, 40 min) — Apple rejects pushes with 429 TooManyProviderTokenUpdates when a new token is signed per send.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat) — the dice start instantly instead of waiting for a lock call.
 - Online actions (roll, set locks, old per-die toggle, score incl. dice check, start, forfeit) call *_authed RPCs that run claim_session and the action in one database call — saves a round trip per tap; the client recovers slow rolls by reading the games row (ROLL_RECOVER_* in useMultiplayerGame) so late server rolls are shown, never lost.
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit) instead of ending the match — others can finish.
+- Subdirectories have their own AGENTS.md (e.g. supabase/functions/) — read it before changing files there.

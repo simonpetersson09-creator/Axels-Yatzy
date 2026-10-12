@@ -1,4 +1,4 @@
-import { verifySessionOwner, precheckDevice } from "../_shared/session-auth.ts";
+import { precheckDevice } from "../_shared/session-auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -47,8 +47,8 @@ Deno.serve(async (req) => {
       return json({ success: true, locked_dice: r.locked_dice });
     }
 
-    const owner = await verifySessionOwner(supabase, session_id, device_id);
-    if (!owner.ok) return json({ error: owner.error }, 403);
+    const pre = precheckDevice(session_id, device_id);
+    if (!pre.ok) return json({ error: pre.error }, 403);
 
     // Older app versions: one toggle per tap.
     if (!game_id || !session_id || dice_index === undefined || dice_index === null) {
@@ -59,9 +59,10 @@ Deno.serve(async (req) => {
       return json({ error: "dice_index must be an integer between 0 and 4" }, 400);
     }
 
-    const { data, error } = await supabase.rpc("perform_toggle_lock", {
+    const { data, error } = await supabase.rpc("perform_toggle_lock_authed", {
       p_game_id: game_id,
       p_session_id: session_id,
+      p_device_id: pre.device,
       p_dice_index: dice_index,
     });
 
@@ -69,8 +70,9 @@ Deno.serve(async (req) => {
       return json({ error: "Databasfel vid låsning" }, 500);
     }
 
-    const result = data as { success: boolean; error?: string; locked_dice?: boolean[] };
+    const result = data as { success: boolean; auth_failed?: boolean; error?: string; locked_dice?: boolean[] };
 
+    if (result.auth_failed) return json({ error: result.error }, 403);
     if (!result.success) {
       return json({ error: result.error }, 400);
     }

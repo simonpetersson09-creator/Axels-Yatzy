@@ -964,6 +964,15 @@ export type Database = {
         Args: { p_dice_index: number; p_game_id: string; p_session_id: string }
         Returns: Json
       }
+      perform_toggle_lock_authed: {
+        Args: {
+          p_device_id: string
+          p_dice_index: number
+          p_game_id: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
       record_friend_match: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json

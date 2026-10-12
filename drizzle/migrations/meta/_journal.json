@@ -267,6 +267,13 @@
       "when": 1791829094946,
       "tag": "0037_keep_game_functions_warm",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1791830028998,
+      "tag": "0038_client_direct_roll_locks",
+      "breakpoints": true
     }
   ]
 }

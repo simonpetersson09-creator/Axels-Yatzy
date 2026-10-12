@@ -73,6 +73,29 @@ function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T
   });
 }
 
+/**
+ * Roll/lock straight to the database (client_* RPCs check the device id
+ * themselves) — skips the server-function hop that cost 0.5–3 s per tap.
+ * Falls back to the server function when the device id isn't known yet.
+ * Returns the same { data, error } shape as functions.invoke.
+ */
+async function directRpc(
+  rpc: 'client_roll' | 'client_set_locks',
+  fallbackFn: string,
+  args: Record<string, unknown>,
+  fallbackBody: Record<string, unknown>,
+): Promise<{ data: any; error: any }> {
+  const deviceId = getDeviceIdSync();
+  if (!deviceId) {
+    return supabase.functions.invoke(fallbackFn, { body: { ...fallbackBody, device_id: undefined } }) as Promise<{ data: any; error: any }>;
+  }
+  const { data, error } = await (supabase.rpc as any)(rpc, { ...args, p_device_id: deviceId });
+  if (error) return { data: null, error };
+  const r = data as { success?: boolean; error?: string } | null;
+  if (!r?.success) return { data: null, error: new Error(r?.error ?? 'rpc failed') };
+  return { data: r, error: null };
+}
+
 function sameArray<T>(a?: T[] | null, b?: T[] | null) {
   return !!a && !!b && a.length === b.length && a.every((value, index) => value === b[index]);
 }
@@ -884,9 +907,9 @@ export function useMultiplayerGame() {
         let settled = false;
         let invokeFailed: unknown = null;
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
-        withTimeout(supabase.functions.invoke('roll-dice', {
-          body: { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked, device_id: getDeviceIdSync() ?? undefined },
-        })).then(
+        withTimeout(directRpc('client_roll', 'roll-dice', {
+          p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
+        }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked })).then(
           (res) => finish(() => resolve(res as RollRes)),
           (err) => { invokeFailed = err ?? new Error('timeout'); },
         );
@@ -1040,13 +1063,12 @@ export function useMultiplayerGame() {
         const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
         const locks = pending?.gameId === gameId ? pending.lockedDice : null;
         if (!locks) { current.resolve(true); return; }
-        supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId })
-          .then(({ error }) => { if (error) console.warn('[multiplayer] toggleLock heartbeat failed', error); });
         const lockStartedAt = Date.now();
         try {
-          const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
-            body: { game_id: gameId, session_id: sessionId, locked_dice: locks, device_id: getDeviceIdSync() ?? undefined },
-          }));
+          // Straight to the database (client_set_locks also marks us active).
+          const { error } = await withTimeout(directRpc('client_set_locks', 'toggle-lock', {
+            p_game_id: gameId, p_session_id: sessionId, p_locked: locks,
+          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }));
           if (error) {
             console.error('Toggle lock error:', error);
             reportMpIssue('lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error) });

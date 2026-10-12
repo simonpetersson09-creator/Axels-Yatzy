@@ -718,6 +718,24 @@ export type Database = {
         }
         Relationships: []
       }
+      world_leaders_cache: {
+        Row: {
+          data: Json
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          data: Json
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       yatzy_match_log: {
         Row: {
           created_at: string

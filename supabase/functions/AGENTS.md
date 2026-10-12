@@ -1,0 +1,3 @@
+- Push routing: push_tokens.platform decides the channel — 'android' goes to FCM (via the Firebase connector, _shared/fcm.ts), everything else to APNs; all notify functions call sendPush so iOS delivery stays untouched.
+- APNs provider JWTs are cached per function instance (getCachedApnsJwt in _shared/apns.ts, 40 min) — Apple rejects pushes with 429 TooManyProviderTokenUpdates when a new token is signed per send.
+- Score and lock edge functions call the database via _shared/rpc-retry.ts (abandon after 2.5 s, retry once; score confirms a lost first try from stored scores); rolls are never retried server-side because a repeat would use an extra roll.

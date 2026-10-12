@@ -211,6 +211,13 @@
       "when": 1791802685485,
       "tag": "0029_authed_roll_and_locks",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1791803663441,
+      "tag": "0030_throttle_heartbeat",
+      "breakpoints": true
     }
   ]
 }

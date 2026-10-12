@@ -260,6 +260,13 @@
       "when": 1791811160762,
       "tag": "0036_perf_daily_snapshots",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1791829094946,
+      "tag": "0037_keep_game_functions_warm",
+      "breakpoints": true
     }
   ]
 }

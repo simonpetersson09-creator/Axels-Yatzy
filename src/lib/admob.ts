@@ -288,7 +288,7 @@ export async function showGameBanner(): Promise<void> {
     if (bannerShown) { await mod.AdMob.resumeBanner(); return; }
     await mod.AdMob.showBanner({
       adId,
-      adSize: mod.BannerAdSize.ADAPTIVE_BANNER,
+      adSize: mod.BannerAdSize.BANNER, // AdMob standard 320×50
       position: mod.BannerAdPosition.BOTTOM_CENTER,
       margin: 0,
       isTesting: ADMOB_CONFIG.useTestAds,

@@ -133,6 +133,11 @@ Deno.serve(async (req) => {
           .limit(1)
           .maybeSingle(),
       ]);
+      // No push token = nothing can reach the player; skip without logging a
+      // reminder that could never be delivered.
+      if (!token?.token) {
+        return { skipped: { game_id: game.id, reason: "no push token" } };
+      }
       const opponentName = opp?.player_name ?? "Din motståndare";
 
       let lang: string | null = null;

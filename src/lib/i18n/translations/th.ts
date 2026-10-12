@@ -290,6 +290,8 @@ export const th: typeof sv = {
   slowConnection: "การเชื่อมต่อช้า…",
   searchingOpponent: 'กำลังหาคู่แข่ง…',
   searchingOpponentHint: 'ถ้าไม่เจอใคร จะได้เล่นกับคอมพิวเตอร์',
+  matchFoundTitle: 'เจอคู่แข่งแล้ว!',
+  matchFoundVs: 'คู่แข่งของคุณ: {name}',
   onlineNewsTitle: 'ใหม่: เล่นกับคนออนไลน์! 🌐',
   onlineNewsBody: 'โหมดเล่นด่วนเจอผู้เล่นจริงออนไลน์ได้แล้ว ถ้าหาใครไม่เจอ คอมพิวเตอร์จะมาเล่นแทนที่ว่าง',
   onlineNewsOk: 'เล่นเลย',

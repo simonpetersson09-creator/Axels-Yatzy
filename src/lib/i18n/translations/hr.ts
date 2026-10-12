@@ -290,6 +290,8 @@ export const hr: typeof sv = {
   slowConnection: "Spora veza…",
   searchingOpponent: 'Tražimo protivnika…',
   searchingOpponentHint: 'Ako nikoga ne nađemo, igraš protiv računala',
+  matchFoundTitle: 'Protivnik pronađen!',
+  matchFoundVs: 'Igraš protiv: {name}',
   onlineNewsTitle: 'Novo: igraj s ljudima online! 🌐',
   onlineNewsBody: 'U brzoj partiji sada možeš igrati protiv stvarnih igrača online. Ako nikoga ne nađemo, računalo popunjava prazna mjesta.',
   onlineNewsOk: 'Igraj sada',

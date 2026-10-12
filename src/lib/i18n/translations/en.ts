@@ -290,6 +290,8 @@ export const en: typeof sv = {
   slowConnection: "Slow connection…",
   searchingOpponent: 'Searching for opponent…',
   searchingOpponentHint: 'If no one is found, you play the computer',
+  matchFoundTitle: 'Opponent found!',
+  matchFoundVs: 'You are playing {name}',
   onlineNewsTitle: 'New: play people online! 🌐',
   onlineNewsBody: 'In Quick match you can now face real players online. If no one is found, the computer fills the empty seats.',
   onlineNewsOk: 'Play now',

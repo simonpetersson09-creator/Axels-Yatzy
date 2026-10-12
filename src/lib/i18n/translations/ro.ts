@@ -290,6 +290,8 @@ export const ro: typeof sv = {
   slowConnection: "Conexiune lentă…",
   searchingOpponent: 'Căutăm un adversar…',
   searchingOpponentHint: 'Dacă nu găsim pe nimeni, joci cu calculatorul',
+  matchFoundTitle: 'Adversar găsit!',
+  matchFoundVs: 'Joci cu {name}',
   onlineNewsTitle: 'Nou: joacă online cu alții! 🌐',
   onlineNewsBody: 'În Meci rapid poți înfrunta acum jucători reali online. Dacă nu găsim pe nimeni, calculatorul ocupă locurile libere.',
   onlineNewsOk: 'Joacă acum',

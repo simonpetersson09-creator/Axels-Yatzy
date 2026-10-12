@@ -290,6 +290,8 @@ export const bn: typeof sv = {
   slowConnection: "ধীর সংযোগ…",
   searchingOpponent: 'প্রতিপক্ষ খোঁজা হচ্ছে…',
   searchingOpponentHint: 'কাউকে না পেলে কম্পিউটারের সাথে খেলবে',
+  matchFoundTitle: 'প্রতিপক্ষ পাওয়া গেছে!',
+  matchFoundVs: 'তোমার প্রতিপক্ষ: {name}',
   onlineNewsTitle: 'নতুন: অনলাইনে সবার সাথে খেলো! 🌐',
   onlineNewsBody: 'দ্রুত ম্যাচে এখন অনলাইনে আসল খেলোয়াড়দের সাথে খেলতে পারবে। কাউকে না পেলে খালি জায়গায় কম্পিউটার খেলবে।',
   onlineNewsOk: 'এখন খেলো',

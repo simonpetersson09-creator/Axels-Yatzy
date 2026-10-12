@@ -290,6 +290,8 @@ export const ta: typeof sv = {
   slowConnection: "மெதுவான இணைப்பு…",
   searchingOpponent: 'எதிராளியைத் தேடுகிறோம்…',
   searchingOpponentHint: 'யாரும் கிடைக்காவிட்டால் கணினியுடன் ஆடலாம்',
+  matchFoundTitle: 'எதிராளி கிடைத்தார்!',
+  matchFoundVs: 'உங்கள் எதிராளி: {name}',
   onlineNewsTitle: 'புதிது: ஆன்லைனில் மற்றவர்களுடன் ஆடுங்கள்! 🌐',
   onlineNewsBody: 'விரைவு ஆட்டத்தில் இப்போது உண்மையான வீரர்களுடன் ஆன்லைனில் ஆடலாம். யாரும் கிடைக்காவிட்டால் காலி இடங்களில் கணினி ஆடும்.',
   onlineNewsOk: 'இப்போதே ஆடு',

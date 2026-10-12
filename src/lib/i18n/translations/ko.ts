@@ -290,6 +290,8 @@ export const ko: typeof sv = {
   slowConnection: "연결이 느립니다…",
   searchingOpponent: '상대 찾는 중…',
   searchingOpponentHint: '상대가 없으면 컴퓨터와 플레이해',
+  matchFoundTitle: '상대를 찾았어!',
+  matchFoundVs: '상대: {name}',
   onlineNewsTitle: '새 기능: 온라인 대전! 🌐',
   onlineNewsBody: '이제 빠른 대전에서 실제 플레이어와 겨룰 수 있어. 상대가 없으면 컴퓨터가 빈자리를 채워줘.',
   onlineNewsOk: '지금 하기',

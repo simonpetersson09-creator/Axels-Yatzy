@@ -290,6 +290,8 @@ export const sk: typeof sv = {
   slowConnection: "Pomalé pripojenie…",
   searchingOpponent: 'Hľadá sa súper…',
   searchingOpponentHint: 'Ak sa nikto nenájde, zahráš si proti počítaču',
+  matchFoundTitle: 'Súper nájdený!',
+  matchFoundVs: 'Hráš proti: {name}',
   onlineNewsTitle: 'Novinka: hraj s ľuďmi online! 🌐',
   onlineNewsBody: 'V rýchlom zápase teraz môžeš hrať proti skutočným hráčom online. Ak sa nikto nenájde, voľné miesta doplní počítač.',
   onlineNewsOk: 'Hrať teraz',

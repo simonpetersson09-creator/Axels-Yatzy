@@ -290,6 +290,8 @@ export const te: typeof sv = {
   slowConnection: "నెమ్మదిగా కనెక్షన్…",
   searchingOpponent: 'ప్రత్యర్థి కోసం వెతుకుతున్నాం…',
   searchingOpponentHint: 'ఎవరూ దొరక్కపోతే కంప్యూటర్‌తో ఆడతావు',
+  matchFoundTitle: 'ప్రత్యర్థి దొరికారు!',
+  matchFoundVs: 'మీ ప్రత్యర్థి: {name}',
   onlineNewsTitle: 'కొత్తది: ఆన్‌లైన్‌లో ఇతరులతో ఆడు! 🌐',
   onlineNewsBody: 'త్వరిత మ్యాచ్‌లో ఇప్పుడు నిజమైన ఆటగాళ్లతో ఆన్‌లైన్‌లో ఆడొచ్చు. ఎవరూ దొరక్కపోతే ఖాళీ స్థానాల్లో కంప్యూటర్ ఆడుతుంది.',
   onlineNewsOk: 'ఇప్పుడే ఆడు',

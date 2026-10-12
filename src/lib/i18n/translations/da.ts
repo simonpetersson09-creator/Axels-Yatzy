@@ -290,6 +290,8 @@ export const da: typeof sv = {
   slowConnection: "Langsom forbindelse…",
   searchingOpponent: 'Søger modstander…',
   searchingOpponentHint: 'Findes ingen, spiller du mod computeren',
+  matchFoundTitle: 'Modstander fundet!',
+  matchFoundVs: 'Du møder {name}',
   onlineNewsTitle: 'Nyhed: mød spillere online! 🌐',
   onlineNewsBody: 'I Hurtigt spil kan du nu møde rigtige spillere online. Findes ingen, udfylder computeren de tomme pladser.',
   onlineNewsOk: 'Spil nu',

@@ -290,6 +290,8 @@ export const or: typeof sv = {
   slowConnection: "ଧୀର ସଂଯୋଗ…",
   searchingOpponent: 'ପ୍ରତିଦ୍ୱନ୍ଦ୍ୱୀ ଖୋଜୁଛି…',
   searchingOpponentHint: 'କେହି ନ ମିଳିଲେ କମ୍ପ୍ୟୁଟର୍ ସହ ଖେଳିବ',
+  matchFoundTitle: 'ପ୍ରତିଦ୍ୱନ୍ଦ୍ୱୀ ମିଳିଲେ!',
+  matchFoundVs: 'ଆପଣଙ୍କ ପ୍ରତିଦ୍ୱନ୍ଦ୍ୱୀ: {name}',
   onlineNewsTitle: 'ନୂଆ: ଅନଲାଇନ୍‌ରେ ଅନ୍ୟମାନଙ୍କ ସହ ଖେଳ! 🌐',
   onlineNewsBody: 'ଝଟପଟ ମ୍ୟାଚ୍‌ରେ ଏବେ ପ୍ରକୃତ ଖେଳାଳିଙ୍କ ସହ ଅନଲାଇନ୍ ଖେଳିପାରିବ। କେହି ନ ମିଳିଲେ ଖାଲି ସ୍ଥାନରେ କମ୍ପ୍ୟୁଟର୍ ଖେଳିବ।',
   onlineNewsOk: 'ଏବେ ଖେଳ',

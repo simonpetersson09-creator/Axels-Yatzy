@@ -315,7 +315,8 @@ export async function showGameBanner(): Promise<void> {
   try {
     const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
     if (!bannerWanted) return;
-    if (bannerShown) { await mod.AdMob.resumeBanner(); setBannerSpace(bannerWanted); return; }
+    // Ny skärm kan ha annan höjd: visa om med ny marginal i stället för resume.
+    if (bannerShown) { await mod.AdMob.removeBanner().catch(() => {}); bannerShown = false; }
     setBannerSpace(true);
     const margin = await centeredBannerMargin();
     if (!bannerWanted) { setBannerSpace(false); return; }

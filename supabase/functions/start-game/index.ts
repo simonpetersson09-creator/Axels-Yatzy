@@ -43,8 +43,9 @@ Deno.serve(async (req) => {
       return json({ error: "Databasfel vid spelstart" }, 500);
     }
 
-    const result = data as { success: boolean; error?: string };
+    const result = data as { success: boolean; error?: string; auth_failed?: boolean };
 
+    if (result.auth_failed) return json({ error: result.error }, 403);
     if (!result.success) {
       return json({ error: result.error }, 400);
     }

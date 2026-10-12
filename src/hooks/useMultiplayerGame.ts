@@ -56,6 +56,11 @@ const ROLL_LAND_MS = 750;
 const LOCK_CONFIRM_MAX_WAIT_MS = 8_000;
 // Lock taps are batched into one server call this long after the last tap.
 const LOCK_BATCH_MS = 250;
+/** A roll slower than this starts checking the match directly for the result. */
+const ROLL_RECOVER_AFTER_MS = 3_000;
+const ROLL_RECOVER_POLL_MS = 1_500;
+/** Longest a roll waits for a late server result before giving up. */
+const ROLL_RECOVER_DEADLINE_MS = 20_000;
 
 // Wrap a promise with a timeout. Rejects with Error('timeout') after ms.
 function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T> {

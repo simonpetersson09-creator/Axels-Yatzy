@@ -893,6 +893,15 @@ export type Database = {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json
       }
+      perform_lock_and_roll_authed: {
+        Args: {
+          p_device_id: string
+          p_game_id: string
+          p_locked: boolean[]
+          p_session_id: string
+        }
+        Returns: Json
+      }
       perform_roll_dice:
         | { Args: { p_game_id: string; p_session_id: string }; Returns: Json }
         | {

@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id, device_id, client_dice, server_rolls } = await req.json();
+    const { game_id, session_id, device_id, client_dice, server_rolls, locked_dice } = await req.json();
 
     if (!game_id || !session_id) {
       return json({ error: "game_id and session_id required" }, 400);
@@ -48,12 +48,22 @@ Deno.serve(async (req) => {
       clientDice = client_dice as number[];
     }
 
-    const { data, error } = await supabase.rpc("perform_roll_dice_authed", {
-      p_game_id: game_id,
-      p_session_id: session_id,
-      p_device_id: owner.device,
-      p_client_dice: clientDice,
-    });
+    // Newer apps send the locks with the roll: one call, dice start at once.
+    const withLocks = server_rolls === true && Array.isArray(locked_dice) &&
+      locked_dice.length === 5 && locked_dice.every((b) => typeof b === "boolean");
+    const { data, error } = withLocks
+      ? await supabase.rpc("perform_lock_and_roll_authed", {
+          p_game_id: game_id,
+          p_session_id: session_id,
+          p_device_id: owner.device,
+          p_locked: locked_dice,
+        })
+      : await supabase.rpc("perform_roll_dice_authed", {
+          p_game_id: game_id,
+          p_session_id: session_id,
+          p_device_id: owner.device,
+          p_client_dice: clientDice,
+        });
 
     if (error) {
       return json({ error: "Databasfel vid tärningskast" }, 500);

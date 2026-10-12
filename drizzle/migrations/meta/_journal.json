@@ -218,6 +218,13 @@
       "when": 1791803663441,
       "tag": "0030_throttle_heartbeat",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1791803883213,
+      "tag": "0031_lock_and_roll",
+      "breakpoints": true
     }
   ]
 }

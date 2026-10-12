@@ -115,7 +115,7 @@ export default function MultiplayerGamePage() {
       })
       .subscribe();
     return () => { alive = false; window.clearInterval(iv); supabase.removeChannel(chan); };
-  }, [gameId, gameState?.currentPlayerIndex]);
+  }, [gameId]);
   useEffect(() => { void syncOwnAvatar(); }, []);
   // Tapped player's dice level (bottom sheet); closes when the turn moves on.
   const [infoIndex, setInfoIndex] = useState<number | null>(null);

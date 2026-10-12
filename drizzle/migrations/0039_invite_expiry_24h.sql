@@ -1,0 +1,2 @@
+ALTER TABLE public.game_invites ALTER COLUMN expires_at SET DEFAULT (now() + interval '24 hours');
+UPDATE public.game_invites SET expires_at = created_at + interval '24 hours' WHERE status = 'pending' AND expires_at > now();

@@ -274,6 +274,13 @@
       "when": 1791830028998,
       "tag": "0038_client_direct_roll_locks",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1791834976428,
+      "tag": "0039_invite_expiry_24h",
+      "breakpoints": true
     }
   ]
 }

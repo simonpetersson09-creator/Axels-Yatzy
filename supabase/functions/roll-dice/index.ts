@@ -8,6 +8,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// One client per function instance (reused across requests) — avoids
+// rebuilding the database connection on every tap.
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+);
+
 Deno.serve(async (req) => {
   const t0 = performance.now();
   if (req.method === "OPTIONS") {
@@ -21,16 +28,18 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const { game_id, session_id, device_id, client_dice, server_rolls, locked_dice } = await req.json();
+    const body = await req.json();
+    // Keep-warm ping (cron): touch the database so this instance is connected.
+    if (body?.warm === true) {
+      await supabase.from("games").select("id").limit(1);
+      return json({ warm: true });
+    }
+    const { game_id, session_id, device_id, client_dice, server_rolls, locked_dice } = body;
 
     if (!game_id || !session_id) {
       return json({ error: "game_id and session_id required" }, 400);
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
 
     // Device check runs inside the same database call as the roll.
     const owner = precheckDevice(session_id, device_id);

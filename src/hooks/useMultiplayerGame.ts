@@ -884,9 +884,9 @@ export function useMultiplayerGame() {
         let settled = false;
         let invokeFailed: unknown = null;
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
-        withTimeout(supabase.functions.invoke('roll-dice', {
-          body: { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked, device_id: getDeviceIdSync() ?? undefined },
-        })).then(
+        withTimeout(directRpc('client_roll', 'roll-dice', {
+          p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
+        }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked })).then(
           (res) => finish(() => resolve(res as RollRes)),
           (err) => { invokeFailed = err ?? new Error('timeout'); },
         );
@@ -1040,13 +1040,12 @@ export function useMultiplayerGame() {
         const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
         const locks = pending?.gameId === gameId ? pending.lockedDice : null;
         if (!locks) { current.resolve(true); return; }
-        supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId })
-          .then(({ error }) => { if (error) console.warn('[multiplayer] toggleLock heartbeat failed', error); });
         const lockStartedAt = Date.now();
         try {
-          const { error } = await withTimeout(supabase.functions.invoke('toggle-lock', {
-            body: { game_id: gameId, session_id: sessionId, locked_dice: locks, device_id: getDeviceIdSync() ?? undefined },
-          }));
+          // Straight to the database (client_set_locks also marks us active).
+          const { error } = await withTimeout(directRpc('client_set_locks', 'toggle-lock', {
+            p_game_id: gameId, p_session_id: sessionId, p_locked: locks,
+          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }));
           if (error) {
             console.error('Toggle lock error:', error);
             reportMpIssue('lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error) });

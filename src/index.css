@@ -417,3 +417,21 @@ html:not(.admin-route) #root::-webkit-scrollbar,
 html:not(.admin-route) #root *::-webkit-scrollbar {
   display: none;
 }
+
+/* Stående annonsbanner (320×50) under matcher: klassen sätts bara när en
+   banner faktiskt visas, så utan annons används hela skärmen som förut. */
+html.ad-banner-on {
+  --game-top-gap: 12px;
+  --game-top-gap-mp: 8px;
+  --sb-row-h: 32px;
+  --dice-top-gap: 30px;
+}
+/* Stora telefoner (Plus/Pro Max) har plats nog – krymp nästan inget. */
+@media (min-height: 900px) {
+  html.ad-banner-on {
+    --game-top-gap: 30px;
+    --game-top-gap-mp: 22px;
+    --sb-row-h: 34px;
+    --dice-top-gap: 42px;
+  }
+}

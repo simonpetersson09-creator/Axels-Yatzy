@@ -270,6 +270,25 @@ const GOOGLE_TEST_BANNER: Record<'ios' | 'android', string> = {
 let bannerWanted = false;
 let bannerShown = false;
 
+/** Gör plats för bannern i spelets layout (se html.ad-banner-on i index.css). */
+function setBannerSpace(on: boolean) {
+  if (typeof document !== 'undefined') document.documentElement.classList.toggle('ad-banner-on', on);
+}
+
+// Dev: ?bannerPreview=1 visar en låtsasbanner i förhandsvisningen.
+const bannerPreview = typeof window !== 'undefined' && /[?&]bannerPreview=1/.test(window.location.search);
+function previewBanner(on: boolean) {
+  const id = 'ad-banner-preview';
+  document.getElementById(id)?.remove();
+  setBannerSpace(on);
+  if (!on) return;
+  const d = document.createElement('div');
+  d.id = id;
+  d.textContent = 'Annons · 320×50';
+  d.style.cssText = 'position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:320px;height:50px;background:#fff;color:#333;display:flex;align-items:center;justify-content:center;font:12px sans-serif;z-index:2147483646';
+  document.body.appendChild(d);
+}
+
 function bannerUnitId(): string | null {
   const p = adPlatform();
   if (!p || !ADMOB_IDS[p].appId) return null;
@@ -280,12 +299,13 @@ function bannerUnitId(): string | null {
 /** Visar bannern längst ner. Kastar aldrig. */
 export async function showGameBanner(): Promise<void> {
   bannerWanted = true;
+  if (bannerPreview) { previewBanner(true); return; }
   const adId = bannerUnitId();
   if (!isAdMobAvailable() || !adId) return;
   try {
     const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
     if (!bannerWanted) return;
-    if (bannerShown) { await mod.AdMob.resumeBanner(); return; }
+    if (bannerShown) { await mod.AdMob.resumeBanner(); setBannerSpace(bannerWanted); return; }
     await mod.AdMob.showBanner({
       adId,
       adSize: mod.BannerAdSize.BANNER, // AdMob standard 320×50
@@ -294,8 +314,10 @@ export async function showGameBanner(): Promise<void> {
       isTesting: ADMOB_CONFIG.useTestAds,
     });
     bannerShown = true;
+    setBannerSpace(bannerWanted);
     if (!bannerWanted) await mod.AdMob.hideBanner();
   } catch (err) {
+    setBannerSpace(false);
     reportAd('banner', 'failed', Date.now(), reasonOf(err));
   }
 }
@@ -303,6 +325,8 @@ export async function showGameBanner(): Promise<void> {
 /** Döljer bannern (t.ex. när matchen lämnas eller en helskärmsannons visas). */
 export async function hideGameBanner(): Promise<void> {
   bannerWanted = false;
+  setBannerSpace(false);
+  if (bannerPreview) { previewBanner(false); return; }
   if (!bannerShown || !isAdMobAvailable()) return;
   try {
     const mod = await loadModule();

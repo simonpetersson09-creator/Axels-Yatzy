@@ -279,7 +279,8 @@ function setBannerSpace(on: boolean) {
 const bannerPreview = typeof window !== 'undefined' && /[?&]bannerPreview=1/.test(window.location.search);
 /** Bottenmarginal som centrerar bannern i ytan under protokollet. */
 async function centeredBannerMargin(): Promise<number> {
-  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  // Vänta ut spelkortets intro-animation (0,4 s) innan vi mäter.
+  await new Promise((r) => setTimeout(r, 550));
   const zone = document.querySelector('.ios-score-zone');
   if (!zone) return 0;
   const free = window.innerHeight - zone.getBoundingClientRect().bottom;

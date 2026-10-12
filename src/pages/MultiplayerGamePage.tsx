@@ -82,6 +82,29 @@ export default function MultiplayerGamePage() {
   const diceProfiles = useDiceProfiles(gameId, gameState?.players.map(p => p.name).join('|'));
   const playerStats = usePlayerStats(gameId, gameState?.players.map(p => p.name).join('|'));
   const gameAvatars = useGameAvatars(gameId, gameState?.players.map(p => p.name).join('|'));
+  // Who is in the match right now: not marked away and active within ~75 s
+  // (the server writes "still here" at most every 30 s).
+  const [presence, setPresence] = useState<Record<number, boolean>>({});
+  useEffect(() => {
+    if (!gameId) return;
+    let alive = true;
+    const load = async () => {
+      const { data } = await supabase
+        .from('game_players')
+        .select('player_index, away, last_active_at')
+        .eq('game_id', gameId);
+      if (!alive || !data) return;
+      const now = Date.now();
+      const next: Record<number, boolean> = {};
+      for (const p of data) {
+        next[p.player_index] = !p.away && now - new Date(p.last_active_at).getTime() < 75_000;
+      }
+      setPresence(next);
+    };
+    void load();
+    const iv = window.setInterval(load, 20_000);
+    return () => { alive = false; window.clearInterval(iv); };
+  }, [gameId, gameState?.currentPlayerIndex]);
   useEffect(() => { void syncOwnAvatar(); }, []);
   // Tapped player's dice level (bottom sheet); closes when the turn moves on.
   const [infoIndex, setInfoIndex] = useState<number | null>(null);
@@ -728,8 +751,11 @@ export default function MultiplayerGamePage() {
                     }`}>
                       {player.name}
                     </span>
-                    {diceProfiles.get(idx) && !diceProfiles.get(idx)!.isBot && (
-                      <span className={`w-2 h-2 rounded-full border shrink-0 ${SKIN_SWATCH[profileSkin(diceProfiles.get(idx))]}`} aria-hidden />
+                    {!isMe && player.badge !== 'bot' && presence[idx] !== undefined && (
+                      <span
+                        className={`w-2 h-2 rounded-full shrink-0 ${presence[idx] ? 'bg-game-success shadow-[0_0_5px_hsl(var(--game-success)/0.9)]' : 'bg-muted-foreground/40'}`}
+                        aria-label={presence[idx] ? t('onlineNow') : undefined}
+                      />
                     )}
                     {isCurrent && (
                       <motion.span

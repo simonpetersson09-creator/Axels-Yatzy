@@ -73,6 +73,29 @@ function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T
   });
 }
 
+/**
+ * Roll/lock straight to the database (client_* RPCs check the device id
+ * themselves) — skips the server-function hop that cost 0.5–3 s per tap.
+ * Falls back to the server function when the device id isn't known yet.
+ * Returns the same { data, error } shape as functions.invoke.
+ */
+async function directRpc(
+  rpc: 'client_roll' | 'client_set_locks',
+  fallbackFn: string,
+  args: Record<string, unknown>,
+  fallbackBody: Record<string, unknown>,
+): Promise<{ data: any; error: any }> {
+  const deviceId = getDeviceIdSync();
+  if (!deviceId) {
+    return supabase.functions.invoke(fallbackFn, { body: { ...fallbackBody, device_id: undefined } }) as Promise<{ data: any; error: any }>;
+  }
+  const { data, error } = await (supabase.rpc as any)(rpc, { ...args, p_device_id: deviceId });
+  if (error) return { data: null, error };
+  const r = data as { success?: boolean; error?: string } | null;
+  if (!r?.success) return { data: null, error: new Error(r?.error ?? 'rpc failed') };
+  return { data: r, error: null };
+}
+
 function sameArray<T>(a?: T[] | null, b?: T[] | null) {
   return !!a && !!b && a.length === b.length && a.every((value, index) => value === b[index]);
 }

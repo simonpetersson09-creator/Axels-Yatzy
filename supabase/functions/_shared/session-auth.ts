@@ -20,3 +20,16 @@ export async function verifySessionOwner(supabase: any, sessionId: unknown, devi
   if (error) return { ok: false, error: "Databasfel" };
   return data ? { ok: true } : { ok: false, error: "Fel enhet för spelaren" };
 }
+
+// Format-only check for RPCs that run claim_session themselves (*_authed):
+// returns the device id to pass on (null = old app without device id).
+export function precheckDevice(sessionId: unknown, deviceId: unknown): { ok: boolean; error?: string; device: string | null } {
+  if (typeof sessionId !== "string" || !sessionId) return { ok: false, error: "session_id required", device: null };
+  if (deviceId === undefined || deviceId === null || deviceId === "") {
+    return REQUIRE_DEVICE ? { ok: false, error: "device_id required", device: null } : { ok: true, device: null };
+  }
+  if (typeof deviceId !== "string" || deviceId.length < 8 || deviceId.length > 64) {
+    return { ok: false, error: "invalid device_id", device: null };
+  }
+  return { ok: true, device: deviceId };
+}

@@ -1,4 +1,4 @@
-import { verifySessionOwner } from "../_shared/session-auth.ts";
+import { precheckDevice } from "../_shared/session-auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -30,7 +30,8 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const owner = await verifySessionOwner(supabase, session_id, device_id);
+    // Device check runs inside the same database call as the roll.
+    const owner = precheckDevice(session_id, device_id);
     if (!owner.ok) return json({ error: owner.error }, 403);
 
     // New app versions send server_rolls: true and the server rolls (fair
@@ -47,9 +48,10 @@ Deno.serve(async (req) => {
       clientDice = client_dice as number[];
     }
 
-    const { data, error } = await supabase.rpc("perform_roll_dice", {
+    const { data, error } = await supabase.rpc("perform_roll_dice_authed", {
       p_game_id: game_id,
       p_session_id: session_id,
+      p_device_id: owner.device,
       p_client_dice: clientDice,
     });
 
@@ -57,7 +59,8 @@ Deno.serve(async (req) => {
       return json({ error: "Databasfel vid tärningskast" }, 500);
     }
 
-    const result = data as { success: boolean; error?: string; dice?: number[]; rolls_left?: number };
+    const result = data as { success: boolean; auth_failed?: boolean; error?: string; dice?: number[]; rolls_left?: number };
+    if (result.auth_failed) return json({ error: result.error }, 403);
 
     if (!result.success) {
       return json({ error: result.error }, 400);

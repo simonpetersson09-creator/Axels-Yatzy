@@ -520,7 +520,9 @@ export default function HomePage() {
                   <motion.button
                     key={key}
                     onClick={() => resumeGame(game)}
-                    className={`w-full px-3 py-1.5 rounded-xl transition-all flex items-center gap-2.5 text-left border-l-4 ${
+                    className={`w-full rounded-xl transition-all flex items-center text-left border-l-4 ${
+                      myTurn ? 'px-3.5 py-3 gap-3' : 'px-3 py-1.5 gap-2.5'
+                    } ${
                       myTurn
                         ? 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
                         : opponentTurn || waitingForStatus
@@ -529,15 +531,20 @@ export default function HomePage() {
                     }`}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center ${
-                      myTurn ? 'bg-white/15' : 'bg-muted/50'
+                    <div className={`flex-shrink-0 rounded-lg flex items-center justify-center ${
+                      myTurn ? 'w-10 h-10 bg-white/15' : 'w-7 h-7 bg-muted/50'
                     }`}>
-                      <Play className={`w-3.5 h-3.5 ${myTurn ? '' : 'text-muted-foreground'}`} />
+                      <Play className={myTurn ? 'w-5 h-5' : 'w-3.5 h-3.5 text-muted-foreground'} />
                     </div>
                     <div className="flex-1 min-w-0">
+                      {myTurn && (
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-white/80 leading-none mb-1">
+                          {t('yourTurnLabel')}
+                        </p>
+                      )}
                       <div className="flex items-center gap-1.5">
-                        <span className={`font-display font-bold text-sm truncate inline-flex items-center gap-1.5 ${
-                          myTurn ? 'text-white' : 'text-foreground'
+                        <span className={`font-display font-bold truncate inline-flex items-center gap-1.5 ${
+                          myTurn ? 'text-base text-white' : 'text-sm text-foreground'
                         }`}>
                           {!isLocal && status?.opponentOnline && (
                             <span

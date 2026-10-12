@@ -103,7 +103,18 @@ export default function MultiplayerGamePage() {
     };
     void load();
     const iv = window.setInterval(load, 20_000);
-    return () => { alive = false; window.clearInterval(iv); };
+    // Leaving/returning writes `away` at once — use the change as it arrives,
+    // no extra fetch. The poll above only catches phones that went silent.
+    const chan = supabase
+      .channel(`presence-${gameId}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'game_players', filter: `game_id=eq.${gameId}` }, (payload) => {
+        const p = payload.new as { player_index?: number; away?: boolean; last_active_at?: string };
+        if (typeof p.player_index !== 'number' || typeof p.away !== 'boolean' || !p.last_active_at) return;
+        const online = !p.away && Date.now() - new Date(p.last_active_at).getTime() < 75_000;
+        setPresence((cur) => (cur[p.player_index!] === online ? cur : { ...cur, [p.player_index!]: online }));
+      })
+      .subscribe();
+    return () => { alive = false; window.clearInterval(iv); supabase.removeChannel(chan); };
   }, [gameId, gameState?.currentPlayerIndex]);
   useEffect(() => { void syncOwnAvatar(); }, []);
   // Tapped player's dice level (bottom sheet); closes when the turn moves on.

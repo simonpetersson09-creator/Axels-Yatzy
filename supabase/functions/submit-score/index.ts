@@ -1,4 +1,5 @@
 import { precheckDevice } from "../_shared/session-auth.ts";
+import { logTiming } from "../_shared/timing.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -8,6 +9,7 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+  const t0 = performance.now();
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -37,6 +39,7 @@ Deno.serve(async (req) => {
       Array.isArray(expected_dice) &&
       expected_dice.length === 5 &&
       expected_dice.every((n) => Number.isInteger(n) && n >= 1 && n <= 6);
+    const dbStart = performance.now();
     const { data, error } = await supabase.rpc("perform_submit_score_authed", {
       p_game_id: game_id,
       p_session_id: session_id,
@@ -44,6 +47,7 @@ Deno.serve(async (req) => {
       p_category_id: category_id,
       p_expected_dice: wantDiceCheck ? expected_dice : null,
     });
+    logTiming(supabase, req, "score", game_id, t0, performance.now() - dbStart, !error && !!(data as { success?: boolean })?.success);
 
     if (error) {
       return json({ error: "Databasfel vid poängsparning" }, 500);

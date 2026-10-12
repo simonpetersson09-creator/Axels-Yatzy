@@ -487,6 +487,36 @@ export type Database = {
         }
         Relationships: []
       }
+      perf_snapshots: {
+        Row: {
+          calls: number
+          id: number
+          max_ms: number
+          mean_ms: number
+          query: string
+          taken_at: string
+          total_ms: number
+        }
+        Insert: {
+          calls: number
+          id?: number
+          max_ms: number
+          mean_ms: number
+          query: string
+          taken_at?: string
+          total_ms: number
+        }
+        Update: {
+          calls?: number
+          id?: number
+          max_ms?: number
+          mean_ms?: number
+          query?: string
+          taken_at?: string
+          total_ms?: number
+        }
+        Relationships: []
+      }
       player_avatars: {
         Row: {
           image: string
@@ -853,6 +883,7 @@ export type Database = {
         Returns: undefined
       }
       internal_secret_matches: { Args: { p_secret: string }; Returns: boolean }
+      internal_snapshot_perf: { Args: never; Returns: number }
       internal_tier_for: { Args: { p_n: number }; Returns: string }
       internal_tier_rank: { Args: { p_tier: string }; Returns: number }
       join_game: {

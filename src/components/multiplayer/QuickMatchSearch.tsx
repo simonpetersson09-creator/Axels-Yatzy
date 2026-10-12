@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useBackHandler } from '@/lib/back-handler';
 import { motion } from 'framer-motion';
-import { Dices } from 'lucide-react';
+import { Dices, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
 
 const SEARCH_MS = 20_000;
 const POLL_MS = 2_000;
+/** How long the "Opponent found" card shows before the match opens. */
+const FOUND_MS = 2_000;
 
 interface Props {
   playerName: string;
@@ -29,6 +31,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
   const cbRef = useRef({ onMatched, onNoMatch });
   cbRef.current = { onMatched, onNoMatch };
   const [searching, setSearching] = useState(1);
+  const [found, setFound] = useState<string | null>(null);
   // Android back = Avbryt (otherwise the app minimizes while still searching).
   useBackHandler(true, onCancel);
 
@@ -49,6 +52,24 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
       return;
     }
 
+    // Show who you are playing for a moment, so it is clear it's a real person.
+    const announce = async (id: string) => {
+      try {
+        const { data } = await supabase
+          .from('game_players')
+          .select('player_name, session_id, is_bot')
+          .eq('game_id', id);
+        const names = (data ?? [])
+          .filter((p) => !p.is_bot && p.session_id !== sessionId)
+          .map((p) => p.player_name);
+        if (names.length > 0) {
+          setFound(names.join(', '));
+          await new Promise((r) => window.setTimeout(r, FOUND_MS));
+        }
+      } catch { /* open the match anyway */ }
+      cbRef.current.onMatched(id);
+    };
+
     const poll = async () => {
       if (doneRef.current) return;
       try {
@@ -62,7 +83,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
         const res = data as { status?: string; game_id?: string; searching?: number } | null;
         if (res?.status === 'matched' && res.game_id) {
           const id = res.game_id;
-          return finish(() => cbRef.current.onMatched(id));
+          return finish(() => void announce(id));
         }
         if (res?.status === 'error') throw new Error('matchmaking');
         if (typeof res?.searching === 'number') setSearching(res.searching);
@@ -78,7 +99,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
           const r = data as { status?: string; game_id?: string } | null;
           if (r?.status === 'matched' && r.game_id) matchedId = r.game_id;
         } catch { /* ignore */ }
-        return finish(() => (matchedId ? cbRef.current.onMatched(matchedId) : cbRef.current.onNoMatch()));
+        return finish(() => (matchedId ? void announce(matchedId) : cbRef.current.onNoMatch()));
       }
       timer = window.setTimeout(poll, POLL_MS);
     };
@@ -101,6 +122,20 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
       exit={{ opacity: 0 }}
     >
       <div className="glass-card p-8 w-full max-w-sm text-center space-y-5">
+        {found ? (
+          <motion.div
+            className="space-y-3"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center">
+              <Users className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-xl font-display font-bold text-foreground">{t('matchFoundTitle')}</h2>
+            <p className="text-lg font-semibold text-primary">{t('matchFoundVs', { name: found })}</p>
+          </motion.div>
+        ) : (
+        <>
         <motion.div
           className="mx-auto w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center"
           animate={{ rotate: 360 }}
@@ -127,6 +162,8 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
         >
           {t('cancelSearch')}
         </button>
+        </>
+        )}
       </div>
     </motion.div>
   );

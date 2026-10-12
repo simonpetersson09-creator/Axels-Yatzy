@@ -204,6 +204,13 @@
       "when": 1791752053010,
       "tag": "0028_weekly_reminder",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1791802685485,
+      "tag": "0029_authed_roll_and_locks",
+      "breakpoints": true
     }
   ]
 }

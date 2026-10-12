@@ -1,4 +1,5 @@
 import { precheckDevice } from "../_shared/session-auth.ts";
+import { logTiming } from "../_shared/timing.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -8,6 +9,7 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+  const t0 = performance.now();
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -34,12 +36,14 @@ Deno.serve(async (req) => {
       const pre = precheckDevice(session_id, device_id);
       if (!pre.ok) return json({ error: pre.error }, 403);
       // Device check runs inside the same database call as the locks.
+      const dbStart = performance.now();
       const { data, error } = await supabase.rpc("perform_set_locks_authed", {
         p_game_id: game_id,
         p_session_id: session_id,
         p_device_id: pre.device,
         p_locked: locked_dice,
       });
+      logTiming(supabase, req, "locks", game_id, t0, performance.now() - dbStart, !error && !!(data as { success?: boolean })?.success);
       if (error) return json({ error: "Databasfel vid låsning" }, 500);
       const r = data as { success: boolean; auth_failed?: boolean; error?: string; locked_dice?: boolean[] };
       if (r.auth_failed) return json({ error: r.error }, 403);
@@ -59,12 +63,14 @@ Deno.serve(async (req) => {
       return json({ error: "dice_index must be an integer between 0 and 4" }, 400);
     }
 
+    const dbStart = performance.now();
     const { data, error } = await supabase.rpc("perform_toggle_lock_authed", {
       p_game_id: game_id,
       p_session_id: session_id,
       p_device_id: pre.device,
       p_dice_index: dice_index,
     });
+    logTiming(supabase, req, "lock", game_id, t0, performance.now() - dbStart, !error && !!(data as { success?: boolean })?.success);
 
     if (error) {
       return json({ error: "Databasfel vid låsning" }, 500);

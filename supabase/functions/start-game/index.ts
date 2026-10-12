@@ -1,4 +1,4 @@
-import { verifySessionOwner } from "../_shared/session-auth.ts";
+import { precheckDevice } from "../_shared/session-auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -30,12 +30,13 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const owner = await verifySessionOwner(supabase, session_id, device_id);
-    if (!owner.ok) return json({ error: owner.error }, 403);
+    const pre = precheckDevice(session_id, device_id);
+    if (!pre.ok) return json({ error: pre.error }, 403);
 
-    const { data, error } = await supabase.rpc("perform_start_game", {
+    const { data, error } = await supabase.rpc("perform_start_game_authed", {
       p_game_id: game_id,
       p_session_id: session_id,
+      p_device_id: pre.device,
     });
 
     if (error) {

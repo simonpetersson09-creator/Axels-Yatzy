@@ -1,4 +1,4 @@
-import { verifySessionOwner } from "../_shared/session-auth.ts";
+import { precheckDevice } from "../_shared/session-auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -30,44 +30,29 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Device check and dice check are independent: run them at the same time.
+    // Device check, dice check and scoring run in ONE database call.
+    const pre = precheckDevice(session_id, device_id);
+    if (!pre.ok) return json({ error: pre.error }, 403);
     const wantDiceCheck =
       Array.isArray(expected_dice) &&
       expected_dice.length === 5 &&
       expected_dice.every((n) => Number.isInteger(n) && n >= 1 && n <= 6);
-    const [owner, diceRes] = await Promise.all([
-      verifySessionOwner(supabase, session_id, device_id),
-      wantDiceCheck
-        ? supabase.from("games").select("dice").eq("id", game_id).maybeSingle()
-        : Promise.resolve(null),
-    ]);
-    if (!owner.ok) return json({ error: owner.error }, 403);
-
-    // Refuse to score when the server's dice differ from what the player saw
-    // (e.g. a roll that never got saved during a server hiccup). Older app
-    // versions don't send expected_dice and keep the previous behaviour.
-    if (diceRes) {
-      if (diceRes.error) return json({ error: "Databasfel vid poängsparning" }, 500);
-      const serverDice = (diceRes.data?.dice ?? []) as number[];
-      const same = serverDice.length === 5 && serverDice.every((d, i) => d === expected_dice[i]);
-      if (!same) {
-        return json({ error: "dice_mismatch", dice: serverDice }, 409);
-      }
-    }
-
-    // Call atomic RPC — score calc + player update + game state update in one transaction
-    const { data, error } = await supabase.rpc("perform_submit_score", {
+    const { data, error } = await supabase.rpc("perform_submit_score_authed", {
       p_game_id: game_id,
       p_session_id: session_id,
+      p_device_id: pre.device,
       p_category_id: category_id,
+      p_expected_dice: wantDiceCheck ? expected_dice : null,
     });
 
     if (error) {
       return json({ error: "Databasfel vid poängsparning" }, 500);
     }
 
-    const result = data as { success: boolean; error?: string; score?: number; category_id?: string; game_over?: boolean };
+    const result = data as { success: boolean; error?: string; auth_failed?: boolean; dice_mismatch?: boolean; dice?: number[]; score?: number; category_id?: string; game_over?: boolean };
 
+    if (result.auth_failed) return json({ error: result.error }, 403);
+    if (result.dice_mismatch) return json({ error: "dice_mismatch", dice: result.dice ?? [] }, 409);
     if (!result.success) {
       return json({ error: result.error }, 400);
     }

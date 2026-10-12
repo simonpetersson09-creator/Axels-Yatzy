@@ -1,4 +1,5 @@
 import { precheckDevice } from "../_shared/session-auth.ts";
+import { logTiming } from "../_shared/timing.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
@@ -8,6 +9,7 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+  const t0 = performance.now();
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -51,6 +53,7 @@ Deno.serve(async (req) => {
     // Newer apps send the locks with the roll: one call, dice start at once.
     const withLocks = server_rolls === true && Array.isArray(locked_dice) &&
       locked_dice.length === 5 && locked_dice.every((b) => typeof b === "boolean");
+    const dbStart = performance.now();
     const { data, error } = withLocks
       ? await supabase.rpc("perform_lock_and_roll_authed", {
           p_game_id: game_id,
@@ -64,6 +67,7 @@ Deno.serve(async (req) => {
           p_device_id: owner.device,
           p_client_dice: clientDice,
         });
+    logTiming(supabase, req, "roll", game_id, t0, performance.now() - dbStart, !error && !!(data as { success?: boolean })?.success);
 
     if (error) {
       return json({ error: "Databasfel vid tärningskast" }, 500);

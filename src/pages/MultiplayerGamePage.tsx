@@ -691,7 +691,7 @@ export default function MultiplayerGamePage() {
           </p>
         )}
 
-        <div className="flex w-full max-w-full gap-1 items-start mt-[40px] mb-0">
+        <div className="flex w-full max-w-full gap-1 items-start mt-[var(--game-top-gap-mp,40px)] mb-0">
           {/* Left: Scoreboard */}
           <div className="ios-score-zone flex flex-col gap-3 self-start">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">

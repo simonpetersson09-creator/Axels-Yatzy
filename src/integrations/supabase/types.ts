@@ -803,6 +803,24 @@ export type Database = {
       }
       cleanup_abandoned_matches: { Args: never; Returns: number }
       cleanup_unjoined_lobbies: { Args: never; Returns: number }
+      client_roll: {
+        Args: {
+          p_device_id: string
+          p_game_id: string
+          p_locked: boolean[]
+          p_session_id: string
+        }
+        Returns: Json
+      }
+      client_set_locks: {
+        Args: {
+          p_device_id: string
+          p_game_id: string
+          p_locked: boolean[]
+          p_session_id: string
+        }
+        Returns: Json
+      }
       create_game_with_code: {
         Args: { p_player_name: string; p_session_id: string }
         Returns: Json

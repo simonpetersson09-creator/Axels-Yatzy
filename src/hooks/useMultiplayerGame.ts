@@ -776,8 +776,19 @@ export function useMultiplayerGame() {
     rollingGuardRef.current = true;
     pendingRollUpdateRef.current = null;
 
-    // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: initial.gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
+    // No separate heartbeat here: a successful roll marks the player active
+    // on the server (perform_lock_and_roll_authed).
+
+    // Lock taps not yet sent travel WITH the roll (one call, dice start at
+    // once) instead of making the player wait for a separate lock call.
+    const unsent = lockBatchRef.current;
+    if (unsent && unsent.gameId === initial.gameId && unsent.timer) {
+      clearTimeout(unsent.timer);
+      lockBatchRef.current = null;
+      pendingLockPromisesRef.current.delete(unsent.promise);
+      unsent.resolve(true);
+      setLocksPending(pendingLockPromisesRef.current.size > 0);
+    }
 
     // Do NOT await pending lock RPCs here — that added a visible delay between
     // the tap and the dice starting to spin (one server round-trip whenever the
@@ -874,7 +885,7 @@ export function useMultiplayerGame() {
         let invokeFailed: unknown = null;
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
         withTimeout(supabase.functions.invoke('roll-dice', {
-          body: { game_id: gid, session_id: sessionId, server_rolls: true, device_id: getDeviceIdSync() ?? undefined },
+          body: { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked, device_id: getDeviceIdSync() ?? undefined },
         })).then(
           (res) => finish(() => resolve(res as RollRes)),
           (err) => { invokeFailed = err ?? new Error('timeout'); },
@@ -1013,12 +1024,15 @@ export function useMultiplayerGame() {
       batch = { gameId, timer: null, promise, resolve };
       lockBatchRef.current = batch;
       pendingLockPromisesRef.current.add(promise);
-      setLocksPending(true);
+      // The Kasta button stays usable during the batch window; only a call
+      // that is actually on its way blocks it (see setLocksPending below).
     }
     if (batch.timer) clearTimeout(batch.timer);
     const current = batch;
     current.timer = setTimeout(() => {
       if (lockBatchRef.current === current) lockBatchRef.current = null;
+      current.timer = null;
+      if (mountedRef.current) setLocksPending(true);
       const prev = lockChainRef.current;
       const send = (async () => {
         await prev.catch(() => undefined); // keep calls in order

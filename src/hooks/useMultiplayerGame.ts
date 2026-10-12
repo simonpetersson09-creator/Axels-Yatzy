@@ -854,9 +854,51 @@ export function useMultiplayerGame() {
         reportMpIssue('roll_lock_unconfirmed', latest.gameId, { locked: optimisticLocked });
         return { data: null, error: new Error('lock-unconfirmed') } as { data: any; error: any };
       }
-      return withTimeout(supabase.functions.invoke('roll-dice', {
-        body: { game_id: latest.gameId, session_id: sessionId, server_rolls: true, device_id: getDeviceIdSync() ?? undefined },
-      }));
+      // Slow-network recovery: if the server is slow to answer, read the match
+      // itself (from ROLL_RECOVER_AFTER_MS) and land on the server's dice as
+      // soon as the roll shows up there. Keeps waiting up to
+      // ROLL_RECOVER_DEADLINE_MS even after the call itself times out, so a
+      // roll that arrives late is shown instead of silently lost (the player
+      // could otherwise re-roll dice they never saw). The Kasta button stays
+      // blocked meanwhile because the rolling guard is held until this settles.
+      const gid = latest.gameId!;
+      const expect = { round: gs.round, player: gs.currentPlayerIndex, rollsLeft: optimisticRollsLeft };
+      type RollRes = { data: any; error: any };
+      return new Promise<RollRes>((resolve, reject) => {
+        let settled = false;
+        let invokeFailed: unknown = null;
+        const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
+        withTimeout(supabase.functions.invoke('roll-dice', {
+          body: { game_id: gid, session_id: sessionId, server_rolls: true, device_id: getDeviceIdSync() ?? undefined },
+        })).then(
+          (res) => finish(() => resolve(res as RollRes)),
+          (err) => { invokeFailed = err ?? new Error('timeout'); },
+        );
+        const poll = async () => {
+          await new Promise((r) => setTimeout(r, ROLL_RECOVER_AFTER_MS));
+          while (!settled && Date.now() - rollStartedAt < ROLL_RECOVER_DEADLINE_MS) {
+            try {
+              const { data: g } = await supabase.from('games')
+                .select('dice, rolls_left, round, current_player_index')
+                .eq('id', gid).maybeSingle();
+              if (g && g.round === expect.round && g.current_player_index === expect.player && g.rolls_left === expect.rollsLeft) {
+                reportMpIssue('roll_recovered', gid, { ms: Date.now() - rollStartedAt });
+                finish(() => resolve({ data: { success: true, dice: g.dice, rolls_left: g.rolls_left }, error: null }));
+                return;
+              }
+              // Turn moved on or the roll can no longer happen: stop waiting.
+              if (g && (g.round !== expect.round || g.current_player_index !== expect.player || g.rolls_left < expect.rollsLeft)) break;
+            } catch { /* keep trying until the deadline */ }
+            if (invokeFailed && Date.now() - rollStartedAt > ROLL_RECOVER_DEADLINE_MS) break;
+            await new Promise((r) => setTimeout(r, ROLL_RECOVER_POLL_MS));
+          }
+          // Give a still-running call a moment to answer, then give up.
+          const waitInvoke = Date.now();
+          while (!settled && !invokeFailed && Date.now() - waitInvoke < 500) await new Promise((r) => setTimeout(r, 100));
+          finish(() => reject(invokeFailed ?? new Error('timeout')));
+        };
+        void poll();
+      });
     }).then(({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
       const rollMs = Date.now() - rollStartedAt;

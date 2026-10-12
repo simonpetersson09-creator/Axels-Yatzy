@@ -100,7 +100,7 @@ function reasonOf(err: unknown): string {
 }
 
 /** Silent diagnostics so failing ads (e.g. on iPad) show up in analytics. */
-function reportAd(kind: 'appOpen' | 'optional', result: string, startedAt: number, reason?: string) {
+function reportAd(kind: 'appOpen' | 'optional' | 'banner', result: string, startedAt: number, reason?: string) {
   void import('@/lib/analytics').then(({ trackEvent }) =>
     trackEvent('ad_result', {
       kind,
@@ -250,4 +250,62 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   } finally {
     appOpenShowing = false;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Stående banner längst ner under en match                            */
+/* ------------------------------------------------------------------ */
+
+/** Banner-ID per plattform. null = ingen banner i release-bygget än. */
+export const BANNER_IDS: Record<'ios' | 'android', string | null> = {
+  ios: null,
+  android: null,
+};
+
+const GOOGLE_TEST_BANNER: Record<'ios' | 'android', string> = {
+  ios: 'ca-app-pub-3940256099942544/2934735716',
+  android: 'ca-app-pub-3940256099942544/6300978111',
+};
+
+let bannerWanted = false;
+let bannerShown = false;
+
+function bannerUnitId(): string | null {
+  const p = adPlatform();
+  if (!p || !ADMOB_IDS[p].appId) return null;
+  if (ADMOB_CONFIG.useTestAds) return GOOGLE_TEST_BANNER[p];
+  return BANNER_IDS[p];
+}
+
+/** Visar bannern längst ner. Kastar aldrig. */
+export async function showGameBanner(): Promise<void> {
+  bannerWanted = true;
+  const adId = bannerUnitId();
+  if (!isAdMobAvailable() || !adId) return;
+  try {
+    const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
+    if (!bannerWanted) return;
+    if (bannerShown) { await mod.AdMob.resumeBanner(); return; }
+    await mod.AdMob.showBanner({
+      adId,
+      adSize: mod.BannerAdSize.ADAPTIVE_BANNER,
+      position: mod.BannerAdPosition.BOTTOM_CENTER,
+      margin: 0,
+      isTesting: ADMOB_CONFIG.useTestAds,
+    });
+    bannerShown = true;
+    if (!bannerWanted) await mod.AdMob.hideBanner();
+  } catch (err) {
+    reportAd('banner', 'failed', Date.now(), reasonOf(err));
+  }
+}
+
+/** Döljer bannern (t.ex. när matchen lämnas eller en helskärmsannons visas). */
+export async function hideGameBanner(): Promise<void> {
+  bannerWanted = false;
+  if (!bannerShown || !isAdMobAvailable()) return;
+  try {
+    const mod = await loadModule();
+    await mod.AdMob.hideBanner();
+  } catch { /* best effort */ }
 }

@@ -2,7 +2,7 @@ import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
 import { useGameAvatars, syncOwnAvatar } from '@/lib/avatar-sync';
 import { useDiceProfiles, usePlayerStats, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
-import { DiceInfoSheet, SKIN_SWATCH } from '@/components/DiceInfoSheet';
+import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';

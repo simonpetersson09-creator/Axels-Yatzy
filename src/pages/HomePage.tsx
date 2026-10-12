@@ -565,7 +565,7 @@ export default function HomePage() {
                     <div className="flex-shrink-0">
                       {myTurn && (
                         <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-game-gold text-background animate-pulse">
-                          {t('play')}
+                          {t('onlineNewsOk')}
                         </span>
                       )}
                       {(opponentTurn || waitingForStatus) && opponent && (

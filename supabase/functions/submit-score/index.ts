@@ -30,21 +30,25 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const owner = await verifySessionOwner(supabase, session_id, device_id);
+    // Device check and dice check are independent: run them at the same time.
+    const wantDiceCheck =
+      Array.isArray(expected_dice) &&
+      expected_dice.length === 5 &&
+      expected_dice.every((n) => Number.isInteger(n) && n >= 1 && n <= 6);
+    const [owner, diceRes] = await Promise.all([
+      verifySessionOwner(supabase, session_id, device_id),
+      wantDiceCheck
+        ? supabase.from("games").select("dice").eq("id", game_id).maybeSingle()
+        : Promise.resolve(null),
+    ]);
     if (!owner.ok) return json({ error: owner.error }, 403);
 
     // Refuse to score when the server's dice differ from what the player saw
     // (e.g. a roll that never got saved during a server hiccup). Older app
     // versions don't send expected_dice and keep the previous behaviour.
-    if (
-      Array.isArray(expected_dice) &&
-      expected_dice.length === 5 &&
-      expected_dice.every((n) => Number.isInteger(n) && n >= 1 && n <= 6)
-    ) {
-      const { data: g, error: gErr } = await supabase
-        .from("games").select("dice").eq("id", game_id).maybeSingle();
-      if (gErr) return json({ error: "Databasfel vid poängsparning" }, 500);
-      const serverDice = (g?.dice ?? []) as number[];
+    if (diceRes) {
+      if (diceRes.error) return json({ error: "Databasfel vid poängsparning" }, 500);
+      const serverDice = (diceRes.data?.dice ?? []) as number[];
       const same = serverDice.length === 5 && serverDice.every((d, i) => d === expected_dice[i]);
       if (!same) {
         return json({ error: "dice_mismatch", dice: serverDice }, 409);

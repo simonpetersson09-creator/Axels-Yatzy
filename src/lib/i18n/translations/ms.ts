@@ -290,6 +290,8 @@ export const ms: typeof sv = {
   slowConnection: "Sambungan perlahan…",
   searchingOpponent: 'Mencari lawan…',
   searchingOpponentHint: 'Jika tiada pemain ditemui, awak lawan komputer',
+  matchFoundTitle: 'Lawan ditemui!',
+  matchFoundVs: 'Lawan awak: {name}',
   onlineNewsTitle: 'Baharu: lawan pemain dalam talian! 🌐',
   onlineNewsBody: 'Kini awak boleh lawan pemain sebenar dalam Main pantas. Jika tiada pemain ditemui, komputer akan isi tempat kosong.',
   onlineNewsOk: 'Main sekarang',

@@ -290,6 +290,8 @@ export const mr: typeof sv = {
   slowConnection: "मंद कनेक्शन…",
   searchingOpponent: 'प्रतिस्पर्धी शोधतोय…',
   searchingOpponentHint: 'कोणी सापडलं नाही तर संगणकासोबत खेळशील',
+  matchFoundTitle: 'प्रतिस्पर्धी सापडला!',
+  matchFoundVs: 'तुझा प्रतिस्पर्धी: {name}',
   onlineNewsTitle: 'नवीन: इतरांशी ऑनलाइन खेळ! 🌐',
   onlineNewsBody: 'झटपट सामन्यात आता खऱ्या खेळाडूंशी ऑनलाइन खेळता येईल. कोणी सापडलं नाही तर संगणक रिकाम्या जागा भरेल.',
   onlineNewsOk: 'आत्ता खेळ',

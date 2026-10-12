@@ -290,6 +290,8 @@ export const ja: typeof sv = {
   slowConnection: "接続が遅いです…",
   searchingOpponent: '対戦相手を探してるよ…',
   searchingOpponentHint: '見つからない時はコンピューターと対戦するよ',
+  matchFoundTitle: '対戦相手が見つかった!',
+  matchFoundVs: '対戦相手: {name}',
   onlineNewsTitle: '新登場：オンライン対戦！ 🌐',
   onlineNewsBody: 'クイック対戦でオンラインのプレイヤーと遊べるようになったよ。相手が見つからない時はコンピューターが参加するよ。',
   onlineNewsOk: '今すぐ遊ぶ',

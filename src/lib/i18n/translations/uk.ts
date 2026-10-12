@@ -290,6 +290,8 @@ export const uk: typeof sv = {
   slowConnection: "Повільне з’єднання…",
   searchingOpponent: 'Шукаємо суперника…',
   searchingOpponentHint: 'Якщо нікого не знайдемо, зіграєш із комп’ютером',
+  matchFoundTitle: 'Суперника знайдено!',
+  matchFoundVs: 'Твій суперник: {name}',
   onlineNewsTitle: 'Новинка: грай з людьми онлайн! 🌐',
   onlineNewsBody: 'У швидкому матчі тепер можна грати з реальними гравцями онлайн. Якщо нікого не знайдемо, вільні місця займе комп’ютер.',
   onlineNewsOk: 'Грати зараз',

@@ -290,6 +290,8 @@ export const nl: typeof sv = {
   slowConnection: "Trage verbinding…",
   searchingOpponent: 'Tegenstander zoeken…',
   searchingOpponentHint: 'Als we niemand vinden, speel je tegen de computer',
+  matchFoundTitle: 'Tegenstander gevonden!',
+  matchFoundVs: 'Je speelt tegen {name}',
   onlineNewsTitle: 'Nieuw: speel online tegen anderen! 🌐',
   onlineNewsBody: 'Via Snel potje speel je nu online tegen echte spelers. Als we niemand vinden, vult de computer de lege plekken.',
   onlineNewsOk: 'Speel nu',

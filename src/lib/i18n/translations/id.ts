@@ -290,6 +290,8 @@ export const id: typeof sv = {
   slowConnection: "Koneksi lambat…",
   searchingOpponent: 'Mencari lawan…',
   searchingOpponentHint: 'Kalau tak ada lawan, kamu melawan komputer',
+  matchFoundTitle: 'Lawan ditemukan!',
+  matchFoundVs: 'Lawanmu: {name}',
   onlineNewsTitle: 'Baru: main melawan orang online! 🌐',
   onlineNewsBody: 'Di Main cepat, kini kamu bisa melawan pemain sungguhan online. Kalau tak ada pemain, komputer mengisi kursi kosong.',
   onlineNewsOk: 'Main sekarang',

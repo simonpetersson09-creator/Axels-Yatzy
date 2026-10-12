@@ -290,6 +290,8 @@ export const gu: typeof sv = {
   slowConnection: "ધીમું કનેક્શન…",
   searchingOpponent: 'હરીફ શોધાય છે…',
   searchingOpponentHint: 'કોઈ નહીં મળે તો કમ્પ્યુટર સામે રમશો',
+  matchFoundTitle: 'પ્રતિસ્પર્ધી મળ્યો!',
+  matchFoundVs: 'તમારો પ્રતિસ્પર્ધી: {name}',
   onlineNewsTitle: 'નવું: લોકો સાથે ઑનલાઇન રમો! 🌐',
   onlineNewsBody: 'ઝડપી મેચમાં હવે સાચા ખેલાડીઓ સામે ઑનલાઇન રમી શકો છો. કોઈ નહીં મળે તો કમ્પ્યુટર ખાલી જગ્યા ભરશે.',
   onlineNewsOk: 'હમણાં રમો',

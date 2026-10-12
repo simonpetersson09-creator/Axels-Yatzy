@@ -290,6 +290,8 @@ export const fi: typeof sv = {
   slowConnection: "Hidas yhteys…",
   searchingOpponent: 'Etsitään vastustajaa…',
   searchingOpponentHint: 'Jos ketään ei löydy, pelaat tietokonetta vastaan',
+  matchFoundTitle: 'Vastustaja löytyi!',
+  matchFoundVs: 'Vastassasi on {name}',
   onlineNewsTitle: 'Uutta: pelaa verkossa! 🌐',
   onlineNewsBody: 'Pikapelissä voit nyt pelata oikeita pelaajia vastaan verkossa. Jos ketään ei löydy, tietokone täyttää tyhjät paikat.',
   onlineNewsOk: 'Pelaa nyt',

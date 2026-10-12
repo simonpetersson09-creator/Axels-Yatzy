@@ -290,6 +290,8 @@ export const no: typeof sv = {
   slowConnection: "Treg forbindelse…",
   searchingOpponent: 'Søker motstander…',
   searchingOpponentHint: 'Finnes ingen, spiller du mot datamaskinen',
+  matchFoundTitle: 'Motspiller funnet!',
+  matchFoundVs: 'Du møter {name}',
   onlineNewsTitle: 'Nyhet: møt spillere online! 🌐',
   onlineNewsBody: 'I Hurtigspill kan du nå møte ekte spillere online. Finnes ingen, fyller datamaskinen de tomme plassene.',
   onlineNewsOk: 'Spill nå',

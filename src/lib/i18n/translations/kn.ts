@@ -290,6 +290,8 @@ export const kn: typeof sv = {
   slowConnection: "ನಿಧಾನ ಸಂಪರ್ಕ…",
   searchingOpponent: 'ಎದುರಾಳಿಯನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ…',
   searchingOpponentHint: 'ಯಾರೂ ಸಿಗದಿದ್ದರೆ ಕಂಪ್ಯೂಟರ್ ಜೊತೆ ಆಡುವೆ',
+  matchFoundTitle: 'ಎದುರಾಳಿ ಸಿಕ್ಕರು!',
+  matchFoundVs: 'ನಿಮ್ಮ ಎದುರಾಳಿ: {name}',
   onlineNewsTitle: 'ಹೊಸತು: ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಇತರರ ಜೊತೆ ಆಡು! 🌐',
   onlineNewsBody: 'ತ್ವರಿತ ಆಟದಲ್ಲಿ ಈಗ ನಿಜವಾದ ಆಟಗಾರರ ಜೊತೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಆಡಬಹುದು. ಯಾರೂ ಸಿಗದಿದ್ದರೆ ಖಾಲಿ ಸ್ಥಾನಗಳಲ್ಲಿ ಕಂಪ್ಯೂಟರ್ ಆಡುತ್ತದೆ.',
   onlineNewsOk: 'ಈಗ ಆಡು',

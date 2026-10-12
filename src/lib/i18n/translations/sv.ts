@@ -299,6 +299,8 @@ export const sv = {
   slowConnection: "Långsam anslutning…",
   searchingOpponent: 'Söker motståndare…',
   searchingOpponentHint: 'Hittas ingen spelar du mot datorn',
+  matchFoundTitle: 'Motspelare hittad!',
+  matchFoundVs: 'Du möter {name}',
   onlineNewsTitle: 'Nyhet: möt spelare online! 🌐',
   onlineNewsBody: 'I Snabbspel kan du nu möta riktiga spelare online. Hittas ingen fyller datorn de tomma platserna.',
   onlineNewsOk: 'Spela nu',

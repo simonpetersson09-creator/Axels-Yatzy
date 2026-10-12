@@ -290,6 +290,8 @@ export const tr: typeof sv = {
   slowConnection: "Yavaş bağlantı…",
   searchingOpponent: 'Rakip aranıyor…',
   searchingOpponentHint: 'Kimse bulunamazsa bilgisayarla oynarsın',
+  matchFoundTitle: 'Rakip bulundu!',
+  matchFoundVs: 'Rakibin: {name}',
   onlineNewsTitle: 'Yeni: çevrimiçi rakiplerle oyna! 🌐',
   onlineNewsBody: 'Hızlı maçta artık gerçek oyuncularla çevrimiçi oynayabilirsin. Kimse bulunamazsa boş yerleri bilgisayar doldurur.',
   onlineNewsOk: 'Hemen oyna',

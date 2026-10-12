@@ -290,6 +290,8 @@ export const vi: typeof sv = {
   slowConnection: "Kết nối chậm…",
   searchingOpponent: 'Đang tìm đối thủ…',
   searchingOpponentHint: 'Nếu không tìm thấy ai, bạn sẽ chơi với máy',
+  matchFoundTitle: 'Đã tìm thấy đối thủ!',
+  matchFoundVs: 'Đối thủ của bạn: {name}',
   onlineNewsTitle: 'Mới: chơi với người thật online! 🌐',
   onlineNewsBody: 'Giờ bạn có thể đấu với người thật online ở Chơi nhanh. Nếu không tìm thấy ai, máy sẽ lấp chỗ trống.',
   onlineNewsOk: 'Chơi ngay',

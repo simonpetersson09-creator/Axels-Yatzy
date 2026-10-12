@@ -290,6 +290,8 @@ export const pl: typeof sv = {
   slowConnection: "Wolne połączenie…",
   searchingOpponent: 'Szukanie rywala…',
   searchingOpponentHint: 'Jeśli nikt się nie znajdzie, zagrasz z komputerem',
+  matchFoundTitle: 'Znaleziono przeciwnika!',
+  matchFoundVs: 'Grasz z: {name}',
   onlineNewsTitle: 'Nowość: graj z ludźmi online! 🌐',
   onlineNewsBody: 'W Szybkiej grze możesz teraz zmierzyć się z graczami online. Jeśli nikt się nie znajdzie, wolne miejsca zajmie komputer.',
   onlineNewsOk: 'Zagraj teraz',

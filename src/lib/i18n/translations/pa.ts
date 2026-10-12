@@ -290,6 +290,8 @@ export const pa: typeof sv = {
   slowConnection: "ਹੌਲੀ ਕਨੈਕਸ਼ਨ…",
   searchingOpponent: 'ਵਿਰੋਧੀ ਲੱਭ ਰਹੇ…',
   searchingOpponentHint: 'ਕੋਈ ਨਾ ਮਿਲਿਆ ਤਾਂ ਕੰਪਿਊਟਰ ਨਾਲ ਖੇਡੋਗੇ',
+  matchFoundTitle: 'ਵਿਰੋਧੀ ਮਿਲ ਗਿਆ!',
+  matchFoundVs: 'ਤੁਹਾਡਾ ਵਿਰੋਧੀ: {name}',
   onlineNewsTitle: 'ਨਵਾਂ: ਲੋਕਾਂ ਨਾਲ ਆਨਲਾਈਨ ਖੇਡੋ! 🌐',
   onlineNewsBody: 'ਝਟਪਟ ਮੈਚ ਵਿੱਚ ਹੁਣ ਅਸਲੀ ਖਿਡਾਰੀਆਂ ਨਾਲ ਆਨਲਾਈਨ ਖੇਡੋ। ਕੋਈ ਨਾ ਮਿਲਿਆ ਤਾਂ ਖਾਲੀ ਥਾਵਾਂ ਕੰਪਿਊਟਰ ਭਰੇਗਾ।',
   onlineNewsOk: 'ਹੁਣ ਖੇਡੋ',

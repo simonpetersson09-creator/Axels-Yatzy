@@ -289,6 +289,8 @@ export const ru: typeof sv = {
   slowConnection: "Медленное соединение…",
   searchingOpponent: 'Ищем соперника…',
   searchingOpponentHint: 'Если никого не найдём, сыграешь с компьютером',
+  matchFoundTitle: 'Соперник найден!',
+  matchFoundVs: 'Твой соперник: {name}',
   onlineNewsTitle: 'Новинка: играй с людьми онлайн! 🌐',
   onlineNewsBody: 'В быстром матче теперь можно играть с реальными людьми онлайн. Если никого не найдём, свободные места займёт компьютер.',
   onlineNewsOk: 'Играть',

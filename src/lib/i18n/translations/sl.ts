@@ -290,6 +290,8 @@ export const sl: typeof sv = {
   slowConnection: "Počasna povezava…",
   searchingOpponent: 'Iščemo nasprotnika…',
   searchingOpponentHint: 'Če ne najdemo nikogar, igraš proti računalniku',
+  matchFoundTitle: 'Nasprotnik najden!',
+  matchFoundVs: 'Igraš proti: {name}',
   onlineNewsTitle: 'Novo: igraj z ljudmi na spletu! 🌐',
   onlineNewsBody: 'V hitri igri lahko zdaj tekmuješ s pravimi igralci na spletu. Če ne najdemo nikogar, prazna mesta zapolni računalnik.',
   onlineNewsOk: 'Igraj zdaj',

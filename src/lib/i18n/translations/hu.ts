@@ -290,6 +290,8 @@ export const hu: typeof sv = {
   slowConnection: "Lassú kapcsolat…",
   searchingOpponent: 'Ellenfél keresése…',
   searchingOpponentHint: 'Ha nincs ellenfél, a gép ellen játszol',
+  matchFoundTitle: 'Ellenfél megvan!',
+  matchFoundVs: 'Ellenfeled: {name}',
   onlineNewsTitle: 'Új: játssz másokkal online! 🌐',
   onlineNewsBody: 'A Gyors játékban már valódi játékosokkal is játszhatsz online. Ha nincs ellenfél, a gép tölti be az üres helyeket.',
   onlineNewsOk: 'Játssz most',

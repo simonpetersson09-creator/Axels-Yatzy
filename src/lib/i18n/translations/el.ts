@@ -290,6 +290,8 @@ export const el: typeof sv = {
   slowConnection: "Αργή σύνδεση…",
   searchingOpponent: 'Αναζήτηση αντιπάλου…',
   searchingOpponentHint: 'Αν δεν βρεθεί κανείς, παίζεις με τον υπολογιστή',
+  matchFoundTitle: 'Βρέθηκε αντίπαλος!',
+  matchFoundVs: 'Παίζεις με: {name}',
   onlineNewsTitle: 'Νέο: παίξε με άλλους online! 🌐',
   onlineNewsBody: 'Στο Γρήγορο παιχνίδι μπορείς πλέον να παίξεις με πραγματικούς παίκτες online. Αν δεν βρεθεί κανείς, ο υπολογιστής γεμίζει τις κενές θέσεις.',
   onlineNewsOk: 'Παίξε τώρα',

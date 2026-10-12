@@ -232,6 +232,13 @@
       "when": 1791804284039,
       "tag": "0032_score_start_forfeit_authed",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1791804998339,
+      "tag": "0033_quick_match_forfeit_bot_takeover",
+      "breakpoints": true
     }
   ]
 }

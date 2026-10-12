@@ -289,6 +289,8 @@ export const ca: typeof sv = {
   slowConnection: "Connexió lenta…",
   searchingOpponent: 'Buscant rival…',
   searchingOpponentHint: 'Si no trobem ningú, jugaràs contra l’ordinador',
+  matchFoundTitle: 'Rival trobat!',
+  matchFoundVs: 'Jugues contra {name}',
   onlineNewsTitle: 'Novetat: juga amb gent en línia! 🌐',
   onlineNewsBody: 'Ara pots jugar contra jugadors reals en línia a Partida ràpida. Si no trobem ningú, l’ordinador omplirà les places buides.',
   onlineNewsOk: 'Juga ara',

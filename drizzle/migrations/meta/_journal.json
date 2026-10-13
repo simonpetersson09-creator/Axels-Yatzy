@@ -288,6 +288,13 @@
       "when": 1791881715749,
       "tag": "0040_rewarm_game_functions_20s",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1791882139965,
+      "tag": "0041_warm_functions_on_match_start",
+      "breakpoints": true
     }
   ]
 }

@@ -821,6 +821,10 @@ export type Database = {
         }
         Returns: Json
       }
+      client_start_game: {
+        Args: { p_device_id: string; p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
       client_submit_score: {
         Args: {
           p_category_id: string

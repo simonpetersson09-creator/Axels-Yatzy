@@ -337,6 +337,13 @@
       "when": 1791898673709,
       "tag": "0047_accept_invite_crossed_returns_game",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1791899603152,
+      "tag": "0048_dice_prefer_white",
+      "breakpoints": true
     }
   ]
 }

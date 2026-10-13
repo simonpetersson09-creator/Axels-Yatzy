@@ -19,3 +19,4 @@
 - Online actions (roll, set locks, old per-die toggle, score incl. dice check, start, forfeit) call *_authed RPCs that run claim_session and the action in one database call — saves a round trip per tap; the client recovers slow rolls by reading the games row (ROLL_RECOVER_* in useMultiplayerGame) so late server rolls are shown, never lost.
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit) instead of ending the match — others can finish.
 - Subdirectories have their own AGENTS.md (e.g. supabase/functions/) — read it before changing files there.
+- Crossed friend invites (A→B and B→A) are merged in accept_invite (pair advisory lock; reverse pending invite is linked to the same game) — prevents duplicate matches when both players invite each other.

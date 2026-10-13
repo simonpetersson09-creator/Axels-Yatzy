@@ -258,8 +258,8 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
 
 /** Banner-ID per plattform. null = ingen banner i release-bygget än. */
 export const BANNER_IDS: Record<'ios' | 'android', string | null> = {
-  ios: null,
-  android: null,
+  ios: 'ca-app-pub-7448540924654868/7786182090',
+  android: null, // inget eget Android-banner-ID än – banner avstängd i Android-release
 };
 
 const GOOGLE_TEST_BANNER: Record<'ios' | 'android', string> = {
@@ -282,6 +282,16 @@ const bannerPreview = typeof window !== 'undefined' && /[?&]bannerPreview=1/.tes
 const BANNER_GAP_PX = 12;
 
 /** Marginal nerifrån så bannern hamnar strax under protokollet och knapparna. */
+function safeAreaBottom(): number {
+  if (!Capacitor.isNativePlatform()) return 0;
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;visibility:hidden;height:env(safe-area-inset-bottom,0px)';
+  document.body.appendChild(probe);
+  const h = probe.getBoundingClientRect().height;
+  probe.remove();
+  return h;
+}
+
 async function centeredBannerMargin(): Promise<number> {
   // Vänta ut spelkortets intro-animation (0,4 s) innan vi mäter.
   await new Promise((r) => setTimeout(r, 550));
@@ -293,7 +303,8 @@ async function centeredBannerMargin(): Promise<number> {
     const r = b.getBoundingClientRect();
     if (r.height > 0 && r.top < window.innerHeight) bottom = Math.max(bottom, r.bottom);
   });
-  const free = window.innerHeight - bottom;
+  // iOS-pluginet räknar marginalen från safe area-kanten (ovanför hemindikatorn).
+  const free = window.innerHeight - safeAreaBottom() - bottom;
   return Math.max(0, Math.round(free - 50 - BANNER_GAP_PX));
 }
 
@@ -318,19 +329,25 @@ function bannerUnitId(): string | null {
 }
 
 /** Visar bannern längst ner. Kastar aldrig. */
+let bannerGen = 0;
+
 export async function showGameBanner(): Promise<void> {
   bannerWanted = true;
+  // Varje sidbyte får ett eget nummer; ett äldre anrop som fortfarande väntar
+  // avbryts, så att två sidor aldrig visar varsin banner.
+  const gen = ++bannerGen;
+  const stale = () => !bannerWanted || gen !== bannerGen;
   if (bannerPreview) { await previewBanner(true); return; }
   const adId = bannerUnitId();
   if (!isAdMobAvailable() || !adId) return;
   try {
     const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
-    if (!bannerWanted) return;
+    if (stale()) return;
     // Ny skärm kan ha annan höjd: visa om med ny marginal i stället för resume.
     if (bannerShown) { await mod.AdMob.removeBanner().catch(() => {}); bannerShown = false; }
     setBannerSpace(true);
     const margin = await centeredBannerMargin();
-    if (!bannerWanted) { setBannerSpace(false); return; }
+    if (stale()) { if (!bannerWanted) setBannerSpace(false); return; }
     await mod.AdMob.showBanner({
       adId,
       adSize: mod.BannerAdSize.BANNER, // AdMob standard 320×50
@@ -340,7 +357,7 @@ export async function showGameBanner(): Promise<void> {
     });
     bannerShown = true;
     setBannerSpace(bannerWanted);
-    if (!bannerWanted) await mod.AdMob.hideBanner();
+    if (!bannerWanted) { await mod.AdMob.removeBanner().catch(() => {}); bannerShown = false; }
   } catch (err) {
     setBannerSpace(false);
     reportAd('banner', 'failed', Date.now(), reasonOf(err));
@@ -350,11 +367,14 @@ export async function showGameBanner(): Promise<void> {
 /** Döljer bannern (t.ex. när matchen lämnas eller en helskärmsannons visas). */
 export async function hideGameBanner(): Promise<void> {
   bannerWanted = false;
+  bannerGen++;
   setBannerSpace(false);
   if (bannerPreview) { void previewBanner(false); return; }
   if (!bannerShown || !isAdMobAvailable()) return;
   try {
     const mod = await loadModule();
-    await mod.AdMob.hideBanner();
+    // Ta bort helt (inte bara dölj) så att ingen gammal banner ligger kvar.
+    await mod.AdMob.removeBanner();
+    bannerShown = false;
   } catch { /* best effort */ }
 }

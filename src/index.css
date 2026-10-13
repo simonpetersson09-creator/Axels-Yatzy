@@ -437,3 +437,13 @@ html.ad-banner-on {
     --action-top-gap: 44px;
   }
 }
+/* Små telefoner (SE/mini): krymp protokollet så bannern får plats under. */
+@media (max-height: 720px) {
+  html.ad-banner-on {
+    --game-top-gap: 4px;
+    --game-top-gap-mp: 4px;
+    --sb-row-h: 25px;
+    --dice-top-gap: 12px;
+    --action-top-gap: 8px;
+  }
+}

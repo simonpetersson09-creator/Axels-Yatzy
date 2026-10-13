@@ -278,13 +278,23 @@ function setBannerSpace(on: boolean) {
 // Dev: ?bannerPreview=1 visar en låtsasbanner i förhandsvisningen.
 const bannerPreview = typeof window !== 'undefined' && /[?&]bannerPreview=1/.test(window.location.search);
 /** Bottenmarginal som centrerar bannern i ytan under protokollet. */
+/** Avstånd mellan protokollets/knapparnas underkant och bannerns överkant. */
+const BANNER_GAP_PX = 12;
+
+/** Marginal nerifrån så bannern hamnar strax under protokollet och knapparna. */
 async function centeredBannerMargin(): Promise<number> {
   // Vänta ut spelkortets intro-animation (0,4 s) innan vi mäter.
   await new Promise((r) => setTimeout(r, 550));
   const zone = document.querySelector('.ios-score-zone');
   if (!zone) return 0;
-  const free = window.innerHeight - zone.getBoundingClientRect().bottom;
-  return Math.max(0, Math.round((free - 50) / 2));
+  // Lägsta underkanten av protokollet och knapparna bredvid/under det.
+  let bottom = zone.getBoundingClientRect().bottom;
+  zone.parentElement?.querySelectorAll('button').forEach((b) => {
+    const r = b.getBoundingClientRect();
+    if (r.height > 0 && r.top < window.innerHeight) bottom = Math.max(bottom, r.bottom);
+  });
+  const free = window.innerHeight - bottom;
+  return Math.max(0, Math.round(free - 50 - BANNER_GAP_PX));
 }
 
 async function previewBanner(on: boolean) {

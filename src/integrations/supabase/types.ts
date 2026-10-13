@@ -724,6 +724,27 @@ export type Database = {
         }
         Relationships: []
       }
+      turn_push_queue: {
+        Row: {
+          created_at: string
+          game_id: string
+          id: number
+          sender_session_id: string
+        }
+        Insert: {
+          created_at?: string
+          game_id: string
+          id?: never
+          sender_session_id: string
+        }
+        Update: {
+          created_at?: string
+          game_id?: string
+          id?: never
+          sender_session_id?: string
+        }
+        Relationships: []
+      }
       weekly_reminder_log: {
         Row: {
           delivered: boolean

@@ -888,6 +888,7 @@ export type Database = {
         Args: { p_game: string; p_invitee: string; p_inviter: string }
         Returns: boolean
       }
+      internal_cleanup_diagnostics: { Args: never; Returns: undefined }
       internal_create_quick_match: {
         Args: { p_names: string[]; p_sessions: string[]; p_size: number }
         Returns: string

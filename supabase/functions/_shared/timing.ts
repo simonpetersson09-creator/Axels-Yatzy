@@ -7,6 +7,9 @@ let firstRequest = true;
 export function logTiming(supabase: any, req: Request, fn: string, gameId: unknown, startedAt: number, dbMs: number, ok: boolean) {
   const cold = firstRequest;
   firstRequest = false;
+  const totalMs = performance.now() - startedAt;
+  // Only keep slow (>1 s) or failed calls — fast calls aren't worth a database write.
+  if (ok && totalMs < 1000) return;
   const p = supabase.from("analytics_events").insert({
     event_name: "server_timing",
     platform: "server",

@@ -1212,18 +1212,10 @@ export function useMultiplayerGame() {
     const shownDice = [...gs.dice];
     // expected_dice: the server refuses the score if its dice differ from what
     // the player saw, instead of silently scoring the wrong dice (e.g. 0).
-    const scoreDeviceId = getDeviceIdSync();
+    // The "your turn" push is sent by the database itself (client_submit_score).
     withTimeout(directRpc('client_submit_score', 'submit-score', {
       p_game_id: gameId, p_session_id: sessionId, p_category_id: categoryId, p_expected_dice: shownDice,
-    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }).then((res) => {
-      // Direct path skips submit-score, so ask the server to push "your turn".
-      if (!res.error && scoreDeviceId && !res.data?.game_over) {
-        supabase.functions.invoke('notify-after-score', {
-          body: { game_id: gameId, session_id: sessionId, device_id: scoreDeviceId },
-        }).catch(() => {});
-      }
-      return res;
-    }))
+    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }))
       .then(({ data, error }) => {
         const submitMs = Date.now() - submitStartedAt;
         if (!error) {

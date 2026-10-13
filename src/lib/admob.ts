@@ -309,7 +309,7 @@ async function centeredBannerMargin(): Promise<number> {
   return Math.max(0, Math.round(free - 50 - BANNER_GAP_PX));
 }
 
-async function previewBanner(on: boolean) {
+async function previewBanner(on: boolean, isStale: () => boolean = () => false) {
   const id = 'ad-banner-preview';
   document.getElementById(id)?.remove();
   setBannerSpace(on);
@@ -318,7 +318,10 @@ async function previewBanner(on: boolean) {
   d.id = id;
   d.textContent = 'Annons · 320×50';
   d.style.cssText = 'position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:320px;height:50px;background:#fff;color:#333;display:flex;align-items:center;justify-content:center;font:12px sans-serif;z-index:2147483646';
-  d.style.bottom = `${await centeredBannerMargin()}px`;
+  const margin = await centeredBannerMargin();
+  if (isStale()) return; // sidan lämnades medan vi mätte
+  document.getElementById(id)?.remove();
+  d.style.bottom = `${margin}px`;
   document.body.appendChild(d);
 }
 
@@ -338,7 +341,7 @@ export async function showGameBanner(): Promise<void> {
   // avbryts, så att två sidor aldrig visar varsin banner.
   const gen = ++bannerGen;
   const stale = () => !bannerWanted || gen !== bannerGen;
-  if (bannerPreview) { await previewBanner(true); return; }
+  if (bannerPreview) { await previewBanner(true, stale); return; }
   const adId = bannerUnitId();
   if (!isAdMobAvailable() || !adId) return;
   try {

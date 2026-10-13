@@ -97,16 +97,33 @@ const LegalPage = () => {
             </ul>
             <ul className="list-disc pl-5 space-y-1 text-foreground/90 mt-3">
               <li>No data is sold to third parties</li>
-              <li>No advertising networks are used</li>
-              <li>No third-party tracking is used</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Advertising (Google AdMob)</h3>
+            <p className="text-foreground/90 mb-2">
+              The app shows ads (banners and full-screen ads) provided by Google AdMob. To show and measure ads, Google may
+              process device information, IP address, the advertising identifier (on Android), and ad interactions.
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-foreground/90">
+              <li>In the EU/EEA, UK and Switzerland you are asked for consent the first time the app starts. You can accept or decline – the game works the same either way.</li>
+              <li>If you decline, you still see ads, but they are not personalized.</li>
+              <li>You can change your choice at any time under Settings → Ad privacy settings.</li>
+              <li>
+                Read more in{' '}
+                <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" className="underline">
+                  Google's advertising policy
+                </a>.
+              </li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Tracking</h3>
             <ul className="list-disc pl-5 space-y-1 text-foreground/90">
-              <li>No cross-app tracking</li>
-              <li>No tracking across other websites or apps</li>
+              <li>We do not ask for permission to track you across other companies' apps and websites (iOS App Tracking Transparency), so the iOS advertising identifier is not used.</li>
+              <li>Our own analytics only cover usage inside this app.</li>
             </ul>
           </div>
 

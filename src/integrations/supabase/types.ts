@@ -958,6 +958,7 @@ export type Database = {
       internal_snapshot_perf: { Args: never; Returns: number }
       internal_tier_for: { Args: { p_n: number }; Returns: string }
       internal_tier_rank: { Args: { p_tier: string }; Returns: number }
+      internal_warm_ping: { Args: { p_copies?: number }; Returns: undefined }
       join_game: {
         Args: {
           p_game_code: string

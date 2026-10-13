@@ -351,6 +351,13 @@
       "when": 1791905568557,
       "tag": "0049_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1791925531750,
+      "tag": "0050_remove_warm_triggers",
+      "breakpoints": true
     }
   ]
 }

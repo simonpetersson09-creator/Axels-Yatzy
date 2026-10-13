@@ -421,29 +421,36 @@ html:not(.admin-route) #root *::-webkit-scrollbar {
 /* Stående annonsbanner (320×50) under matcher: klassen sätts bara när en
    banner faktiskt visas, så utan annons används hela skärmen som förut. */
 html.ad-banner-on {
-  --game-top-gap: 12px;
-  --game-top-gap-mp: 8px;
-  --sb-row-h: 32px;
+  --game-top-gap: calc(env(safe-area-inset-top, 0px) + 12px);
+  --game-top-gap-mp: calc(env(safe-area-inset-top, 0px) + 8px);
+  --sb-row-h: 29px;
   --dice-top-gap: 30px;
   --action-top-gap: 22px;
+}
+/* Vanliga telefoner: tärningarna 90 % så att plats finns under klockraden. */
+html.ad-banner-on .ios-dice-zone {
+  transform: scale(0.9);
+  transform-origin: top center;
+  margin-bottom: -39px;
 }
 /* Stora telefoner (Plus/Pro Max) har plats nog – krymp nästan inget. */
 @media (min-height: 900px) {
   html.ad-banner-on {
-    --game-top-gap: 30px;
-    --game-top-gap-mp: 22px;
+    --game-top-gap: calc(env(safe-area-inset-top, 0px) + 12px);
+    --game-top-gap-mp: calc(env(safe-area-inset-top, 0px) + 8px);
     --sb-row-h: 34px;
     --dice-top-gap: 42px;
     --action-top-gap: 44px;
   }
+  html.ad-banner-on .ios-dice-zone { transform: none; margin-bottom: 0; }
 }
 /* Små telefoner (SE/mini): krymp protokollet så bannern får plats under. */
 @media (max-height: 720px) {
   html.ad-banner-on {
-    --game-top-gap: 4px;
-    --game-top-gap-mp: 4px;
-    --sb-row-h: 25px;
-    --dice-top-gap: 12px;
+    --game-top-gap: calc(env(safe-area-inset-top, 0px) + 4px);
+    --game-top-gap-mp: calc(env(safe-area-inset-top, 0px) + 4px);
+    --sb-row-h: 24px;
+    --dice-top-gap: 4px;
     --action-top-gap: 0px;
   }
   /* Krymp tärningarna och Kast-knappen till 80 % (bara små telefoner). */
@@ -451,7 +458,7 @@ html.ad-banner-on {
     transform: scale(0.8);
     transform-origin: top center;
     margin-bottom: -100px; /* krympt höjd + extra luft ovanför */
-    margin-top: 26px;
+    margin-top: 6px;
   }
   html.ad-banner-on .ios-action-zone > .relative:first-child {
     transform: scale(0.8);

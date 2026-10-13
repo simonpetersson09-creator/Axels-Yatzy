@@ -281,6 +281,13 @@
       "when": 1791834976428,
       "tag": "0039_invite_expiry_24h",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1791881715749,
+      "tag": "0040_rewarm_game_functions_20s",
+      "breakpoints": true
     }
   ]
 }

@@ -42,9 +42,9 @@ export function DiceArea({
   // --dice-scale (index.css) shrinks the column when the ad banner needs room.
   // Real sizes, not a CSS transform: the 3D canvas measures its scaled box and
   // would shrink twice, and the entry edge would move inside the screen.
-  const diceScale = useDiceScale();
+  const [diceScale, gapScale] = useDiceScale();
   const diceSize = Math.round((compact ? 54 : 60) * diceScale);
-  const gap = Math.round((compact ? 29 : 36) * diceScale);
+  const gap = Math.round((compact ? 29 : 36) * gapScale);
   const spacing = compact ? 0.65 : 0.78;
   const canLock = !isRolling && hasRolled && rollsLeft > 0;
 
@@ -151,17 +151,26 @@ export function DiceArea({
 
 }
 
-function readDiceScale(): number {
-  if (typeof document === 'undefined') return 1;
-  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dice-scale'));
-  return Number.isFinite(v) && v > 0 ? v : 1;
+function readVar(name: string, fallback: number): number {
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+  return Number.isFinite(v) && v > 0 ? v : fallback;
+}
+
+/** [dice size scale, gap scale]; the gap follows the dice unless --dice-gap-scale is set. */
+function readDiceScale(): [number, number] {
+  if (typeof document === 'undefined') return [1, 1];
+  const d = readVar('--dice-scale', 1);
+  return [d, readVar('--dice-gap-scale', d)];
 }
 
 /** Follows --dice-scale; it changes when the banner class or screen size changes. */
-function useDiceScale(): number {
+function useDiceScale(): [number, number] {
   const [scale, setScale] = useState(readDiceScale);
   useEffect(() => {
-    const update = () => setScale(readDiceScale());
+    const update = () => setScale((prev) => {
+      const next = readDiceScale();
+      return prev[0] === next[0] && prev[1] === next[1] ? prev : next;
+    });
     const mo = new MutationObserver(update);
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     window.addEventListener('resize', update);

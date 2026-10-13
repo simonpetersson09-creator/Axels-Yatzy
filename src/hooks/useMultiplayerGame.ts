@@ -96,6 +96,41 @@ async function directRpc(
   return { data: r, error: null };
 }
 
+/** Wait this long for a lock/score answer before checking and sending again. */
+const RETRY_AFTER_MS = 4_000;
+/** Outer limit for a call that may be retried once. */
+const RETRY_TIMEOUT_MS = 12_000;
+
+/**
+ * Runs a safe-to-repeat call; if it hasn't answered after RETRY_AFTER_MS,
+ * first asks `check` whether it already took effect (returns that result),
+ * otherwise sends it once more. Whichever try answers first wins.
+ * Never use for rolls — a repeat would spend an extra roll.
+ */
+function withOneRetry(
+  call: () => Promise<{ data: any; error: any }>,
+  check?: () => Promise<{ data: any; error: any } | null>,
+): Promise<{ data: any; error: any }> {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (r: { data: any; error: any }) => { if (!done) { done = true; clearTimeout(t); resolve(r); } };
+    const first = call();
+    first.then(finish, (e) => finish({ data: null, error: e }));
+    const t = setTimeout(async () => {
+      if (done) return;
+      try {
+        const already = check ? await check() : null;
+        if (already) return finish(already);
+      } catch { /* fall through to resend */ }
+      if (done) return;
+      call().then(
+        (r) => { if (!r.error) finish(r); else first.then(finish, () => finish(r)); },
+        (e) => first.then(finish, () => finish({ data: null, error: e })),
+      );
+    }, RETRY_AFTER_MS);
+  });
+}
+
 function sameArray<T>(a?: T[] | null, b?: T[] | null) {
   return !!a && !!b && a.length === b.length && a.every((value, index) => value === b[index]);
 }

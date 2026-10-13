@@ -312,6 +312,7 @@ export const sv = {
   addStrangerFriend: 'Lägg till {name} som vän',
   strangerFriendAdded: '{name} är nu din vän',
   statsPage: "Statistik",
+  adPrivacy: 'Annonsinställningar',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Dina placeringar",
   topCountriesTitle: "Topp 10 länder",

@@ -303,6 +303,7 @@ export const ro: typeof sv = {
   addStrangerFriend: 'Adaugă pe {name} ca prieten',
   strangerFriendAdded: '{name} este acum prietenul tău',
   statsPage: "Statistici",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Statistici",
   yourRankingsTitle: "Pozițiile tale",
   topCountriesTitle: "Top 10 țări",

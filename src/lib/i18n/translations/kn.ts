@@ -303,6 +303,7 @@ export const kn: typeof sv = {
   addStrangerFriend: '{name}ರನ್ನು ಸ್ನೇಹಿತರಾಗಿ ಸೇರಿಸು',
   strangerFriendAdded: '{name} ಈಗ ನಿನ್ನ ಸ್ನೇಹಿತರು',
   statsPage: "ಅಂಕಿಅಂಶಗಳು",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "ಅಂಕಿಅಂಶಗಳು",
   yourRankingsTitle: "ನಿಮ್ಮ ಶ್ರೇಯಾಂಕಗಳು",
   topCountriesTitle: "ಅಗ್ರ 10 ದೇಶಗಳು",

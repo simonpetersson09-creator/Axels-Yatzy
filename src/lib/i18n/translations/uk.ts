@@ -303,6 +303,7 @@ export const uk: typeof sv = {
   addStrangerFriend: 'Додати {name} у друзі',
   strangerFriendAdded: '{name} тепер у твоїх друзях',
   statsPage: "Статистика",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Статистика",
   yourRankingsTitle: "Ваші рейтинги",
   topCountriesTitle: "Топ-10 країн",

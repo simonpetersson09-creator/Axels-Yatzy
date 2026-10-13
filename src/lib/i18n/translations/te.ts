@@ -303,6 +303,7 @@ export const te: typeof sv = {
   addStrangerFriend: '{name}ని స్నేహితుడిగా చేర్చు',
   strangerFriendAdded: '{name} ఇప్పుడు నీ స్నేహితుడు',
   statsPage: "గణాంకాలు",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "గణాంకాలు",
   yourRankingsTitle: "మీ ర్యాంకులు",
   topCountriesTitle: "టాప్ 10 దేశాలు",

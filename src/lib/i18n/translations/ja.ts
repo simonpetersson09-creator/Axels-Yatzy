@@ -303,6 +303,7 @@ export const ja: typeof sv = {
   addStrangerFriend: '{name}を友達に追加',
   strangerFriendAdded: '{name}と友達になったよ',
   statsPage: "統計",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "統計",
   yourRankingsTitle: "あなたのランキング",
   topCountriesTitle: "国別トップ10",

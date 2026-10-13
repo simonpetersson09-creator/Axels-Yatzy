@@ -303,6 +303,7 @@ export const pa: typeof sv = {
   addStrangerFriend: '{name} ਨੂੰ ਦੋਸਤ ਬਣਾਓ',
   strangerFriendAdded: '{name} ਹੁਣ ਤੁਹਾਡਾ ਦੋਸਤ ਹੈ',
   statsPage: "ਅੰਕੜੇ",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "ਅੰਕੜੇ",
   yourRankingsTitle: "ਤੁਹਾਡੀ ਰੈਂਕਿੰਗ",
   topCountriesTitle: "ਸਿਖਰਲੇ 10 ਦੇਸ਼",

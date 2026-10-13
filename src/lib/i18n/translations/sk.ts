@@ -303,6 +303,7 @@ export const sk: typeof sv = {
   addStrangerFriend: 'Pridať {name} medzi kamarátov',
   strangerFriendAdded: '{name} je teraz medzi tvojimi kamarátmi',
   statsPage: "Štatistiky",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Štatistiky",
   yourRankingsTitle: "Tvoje umiestnenia",
   topCountriesTitle: "Top 10 krajín",

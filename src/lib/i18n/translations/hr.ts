@@ -303,6 +303,7 @@ export const hr: typeof sv = {
   addStrangerFriend: 'Dodaj {name} za prijatelja',
   strangerFriendAdded: '{name} je sada tvoj prijatelj',
   statsPage: "Statistika",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Statistika",
   yourRankingsTitle: "Tvoj poredak",
   topCountriesTitle: "Top 10 zemalja",

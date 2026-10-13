@@ -303,6 +303,7 @@ export const ta: typeof sv = {
   addStrangerFriend: '{name}-ஐ நண்பராகச் சேர்',
   strangerFriendAdded: '{name} இப்போது உங்கள் நண்பர்',
   statsPage: "புள்ளிவிவரங்கள்",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "புள்ளிவிவரங்கள்",
   yourRankingsTitle: "உங்கள் தரவரிசைகள்",
   topCountriesTitle: "முதல் 10 நாடுகள்",

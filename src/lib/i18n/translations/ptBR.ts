@@ -303,6 +303,7 @@ export const ptBR: typeof sv = {
   addStrangerFriend: 'Adicionar {name} como amigo',
   strangerFriendAdded: '{name} agora é seu amigo',
   statsPage: "Estatísticas",
+  adPrivacy: 'Privacidade de anúncios',
   statsPageTitle: "Estatísticas",
   yourRankingsTitle: "Suas posições",
   topCountriesTitle: "Top 10 países",

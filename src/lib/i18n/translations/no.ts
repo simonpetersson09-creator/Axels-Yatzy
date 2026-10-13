@@ -303,6 +303,7 @@ export const no: typeof sv = {
   addStrangerFriend: 'Legg til {name} som venn',
   strangerFriendAdded: '{name} er nå din venn',
   statsPage: "Statistikk",
+  adPrivacy: 'Annonseinnstillinger',
   statsPageTitle: "Statistikk",
   yourRankingsTitle: "Dine plasseringer",
   topCountriesTitle: "Topp 10 land",

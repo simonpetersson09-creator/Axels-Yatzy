@@ -302,6 +302,7 @@ export const ru: typeof sv = {
   addStrangerFriend: 'Добавить {name} в друзья',
   strangerFriendAdded: '{name} теперь в твоих друзьях',
   statsPage: "Статистика",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Статистика",
   yourRankingsTitle: "Ваши места в рейтинге",
   topCountriesTitle: "Топ-10 стран",

@@ -303,6 +303,7 @@ export const cs: typeof sv = {
   addStrangerFriend: 'Přidat {name} do přátel',
   strangerFriendAdded: '{name} je teď mezi tvými přáteli',
   statsPage: "Statistiky",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Statistiky",
   yourRankingsTitle: "Tvoje umístění",
   topCountriesTitle: "Top 10 zemí",

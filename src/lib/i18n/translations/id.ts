@@ -303,6 +303,7 @@ export const id: typeof sv = {
   addStrangerFriend: 'Tambah {name} sebagai teman',
   strangerFriendAdded: '{name} kini jadi temanmu',
   statsPage: "Statistik",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Peringkatmu",
   topCountriesTitle: "10 negara teratas",

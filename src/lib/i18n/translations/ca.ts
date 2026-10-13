@@ -302,6 +302,7 @@ export const ca: typeof sv = {
   addStrangerFriend: 'Afegeix {name} com a amic',
   strangerFriendAdded: '{name} ara és el teu amic',
   statsPage: "Estadístiques",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Estadístiques",
   yourRankingsTitle: "Les teves classificacions",
   topCountriesTitle: "Els 10 millors països",

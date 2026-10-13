@@ -120,8 +120,62 @@ async function loadModule(): Promise<AdMobModule> {
   return modulePromise;
 }
 
+let consentPromise: Promise<boolean> | null = null;
+let privacyOptionsRequired = false;
+
+/**
+ * Googles samtyckesruta (UMP) – visas bara där den krävs (EU/UK) och bara
+ * tills spelaren svarat. Returnerar om annonser får begäras.
+ * Fel i samtyckesflödet blockerar inte spelet; Google avgör då själv.
+ */
+function ensureConsent(mod: AdMobModule): Promise<boolean> {
+  if (!consentPromise) {
+    consentPromise = (async () => {
+      try {
+        let info = await withTimeout(mod.AdMob.requestConsentInfo(), 10_000, 'consent_info');
+        if (info.isConsentFormAvailable && info.status === mod.AdmobConsentStatus.REQUIRED) {
+          info = await mod.AdMob.showConsentForm();
+        }
+        privacyOptionsRequired = info.privacyOptionsRequirementStatus === 'REQUIRED';
+        return info.canRequestAds;
+      } catch (err) {
+        console.warn('[AdMob] consent flow failed', err);
+        consentPromise = null; // försök igen nästa gång
+        return true;
+      }
+    })();
+  }
+  return consentPromise;
+}
+
+/** Om knappen "Annonsinställningar" ska visas (bara där Google kräver det). */
+export async function isAdPrivacyOptionsRequired(): Promise<boolean> {
+  if (!isAdMobAvailable()) return false;
+  try {
+    const mod = await loadModule();
+    await ensureConsent(mod);
+    return privacyOptionsRequired;
+  } catch {
+    return false;
+  }
+}
+
+/** Öppnar Googles ruta så spelaren kan ändra sitt annonsval. */
+export async function showAdPrivacyOptions(): Promise<void> {
+  if (!isAdMobAvailable()) return;
+  try {
+    const mod = await loadModule();
+    await mod.AdMob.showPrivacyOptionsForm();
+  } catch (err) {
+    console.warn('[AdMob] privacy options failed', err);
+  }
+}
+
 async function ensureInitialized(): Promise<AdMobModule> {
   const mod = await loadModule();
+  // Samtycke först: inga annonser begärs innan spelaren svarat i EU.
+  const canRequest = await ensureConsent(mod);
+  if (!canRequest) throw new Error('consent_not_given');
   if (!initialized) {
     // Ingen ATT-popup: vi begär aldrig tracking-authorization automatiskt.
     await mod.AdMob.initialize({

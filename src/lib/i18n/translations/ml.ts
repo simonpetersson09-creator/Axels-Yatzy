@@ -303,6 +303,7 @@ export const ml: typeof sv = {
   addStrangerFriend: '{name}-നെ സുഹൃത്താക്കൂ',
   strangerFriendAdded: '{name} ഇനി നിങ്ങളുടെ സുഹൃത്താണ്',
   statsPage: "സ്ഥിതിവിവരങ്ങൾ",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "സ്ഥിതിവിവരങ്ങൾ",
   yourRankingsTitle: "നിങ്ങളുടെ റാങ്കുകൾ",
   topCountriesTitle: "മികച്ച 10 രാജ്യങ്ങൾ",

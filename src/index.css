@@ -423,8 +423,8 @@ html:not(.admin-route) #root *::-webkit-scrollbar {
 html.ad-banner-on {
   --game-top-gap: calc(env(safe-area-inset-top, 0px) + 12px);
   --game-top-gap-mp: calc(env(safe-area-inset-top, 0px) + 8px);
-  --sb-row-h: 32px;
-  --dice-top-gap: 30px;
+  --sb-row-h: 29px;
+  --dice-top-gap: 22px;
   --action-top-gap: 22px;
 }
 /* Stora telefoner (Plus/Pro Max) har plats nog – krymp nästan inget. */

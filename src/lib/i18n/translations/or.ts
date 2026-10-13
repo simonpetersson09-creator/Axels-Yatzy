@@ -303,6 +303,7 @@ export const or: typeof sv = {
   addStrangerFriend: '{name}ଙ୍କୁ ସାଙ୍ଗ କର',
   strangerFriendAdded: '{name} ଏବେ ତୁମ ସାଙ୍ଗ',
   statsPage: "ପରିସଂଖ୍ୟାନ",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "ପରିସଂଖ୍ୟାନ",
   yourRankingsTitle: "ଆପଣଙ୍କ ର‍୍ୟାଙ୍କିଙ୍ଗ୍",
   topCountriesTitle: "ଶୀର୍ଷ ୧୦ଟି ଦେଶ",

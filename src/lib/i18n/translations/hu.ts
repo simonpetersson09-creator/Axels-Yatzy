@@ -303,6 +303,7 @@ export const hu: typeof sv = {
   addStrangerFriend: '{name} felvétele barátnak',
   strangerFriendAdded: '{name} már a barátod',
   statsPage: "Statisztika",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Statisztika",
   yourRankingsTitle: "Helyezéseid",
   topCountriesTitle: "Top 10 ország",

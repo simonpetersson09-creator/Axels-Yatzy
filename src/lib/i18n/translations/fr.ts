@@ -298,6 +298,7 @@ export const fr: typeof sv = {
   addStrangerFriend: 'Ajouter {name} en ami',
   strangerFriendAdded: '{name} est maintenant ton ami',
   statsPage: "Statistiques",
+  adPrivacy: 'Confidentialité des annonces',
   statsPageTitle: "Statistiques",
   yourRankingsTitle: "Vos classements",
   topCountriesTitle: "Top 10 des pays",

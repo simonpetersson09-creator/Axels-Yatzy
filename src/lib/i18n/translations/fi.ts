@@ -303,6 +303,7 @@ export const fi: typeof sv = {
   addStrangerFriend: 'Lisää {name} kaveriksi',
   strangerFriendAdded: '{name} on nyt kaverisi',
   statsPage: "Tilastot",
+  adPrivacy: 'Mainosasetukset',
   statsPageTitle: "Tilastot",
   yourRankingsTitle: "Sijoituksesi",
   topCountriesTitle: "10 parasta maata",

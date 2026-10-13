@@ -303,6 +303,7 @@ export const gu: typeof sv = {
   addStrangerFriend: '{name}ને મિત્ર બનાવો',
   strangerFriendAdded: '{name} હવે તમારા મિત્ર છે',
   statsPage: "આંકડા",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "આંકડા",
   yourRankingsTitle: "તમારું રેન્કિંગ",
   topCountriesTitle: "ટોચના 10 દેશો",

@@ -303,6 +303,7 @@ export const el: typeof sv = {
   addStrangerFriend: 'Πρόσθεσε τον παίκτη {name} στους φίλους',
   strangerFriendAdded: 'Ο παίκτης {name} είναι πλέον στους φίλους σου',
   statsPage: "Στατιστικά",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Στατιστικά",
   yourRankingsTitle: "Η κατάταξή σου",
   topCountriesTitle: "Οι 10 κορυφαίες χώρες",

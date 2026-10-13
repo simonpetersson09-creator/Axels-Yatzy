@@ -303,6 +303,7 @@ export const ms: typeof sv = {
   addStrangerFriend: 'Tambah {name} sebagai kawan',
   strangerFriendAdded: '{name} kini kawan awak',
   statsPage: "Statistik",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Kedudukan anda",
   topCountriesTitle: "10 negara teratas",

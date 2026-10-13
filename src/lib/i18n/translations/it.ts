@@ -298,6 +298,7 @@ export const it: typeof sv = {
   addStrangerFriend: 'Aggiungi {name} come amico',
   strangerFriendAdded: '{name} ora è tuo amico',
   statsPage: "Statistiche",
+  adPrivacy: 'Privacy annunci',
   statsPageTitle: "Statistiche",
   yourRankingsTitle: "Le tue posizioni",
   topCountriesTitle: "I 10 migliori paesi",

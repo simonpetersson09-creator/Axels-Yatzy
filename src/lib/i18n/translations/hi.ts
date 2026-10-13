@@ -303,6 +303,7 @@ export const hi: typeof sv = {
   addStrangerFriend: '{name} को दोस्त बनाओ',
   strangerFriendAdded: '{name} अब तुम्हारे दोस्त हैं',
   statsPage: "आँकड़े",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "आँकड़े",
   yourRankingsTitle: "आपकी रैंकिंग",
   topCountriesTitle: "शीर्ष 10 देश",

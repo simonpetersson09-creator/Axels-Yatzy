@@ -303,6 +303,7 @@ export const ko: typeof sv = {
   addStrangerFriend: '{name} 친구 추가',
   strangerFriendAdded: '{name} 님과 친구가 됐어',
   statsPage: "통계",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "통계",
   yourRankingsTitle: "내 순위",
   topCountriesTitle: "상위 10개국",

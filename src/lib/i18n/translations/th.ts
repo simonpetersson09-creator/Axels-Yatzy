@@ -303,6 +303,7 @@ export const th: typeof sv = {
   addStrangerFriend: 'เพิ่ม {name} เป็นเพื่อน',
   strangerFriendAdded: '{name} เป็นเพื่อนคุณแล้ว',
   statsPage: "สถิติ",
+  adPrivacy: 'Ad privacy settings',
   statsPageTitle: "สถิติ",
   yourRankingsTitle: "อันดับของคุณ",
   topCountriesTitle: "10 ประเทศอันดับสูงสุด",

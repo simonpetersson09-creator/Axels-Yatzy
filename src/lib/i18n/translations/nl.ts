@@ -303,6 +303,7 @@ export const nl: typeof sv = {
   addStrangerFriend: '{name} als vriend toevoegen',
   strangerFriendAdded: '{name} is nu je vriend',
   statsPage: "Statistieken",
+  adPrivacy: 'Advertentie-privacy',
   statsPageTitle: "Statistieken",
   yourRankingsTitle: "Jouw posities",
   topCountriesTitle: "Top 10 landen",

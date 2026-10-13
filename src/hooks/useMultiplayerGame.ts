@@ -80,7 +80,7 @@ function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T
  * Returns the same { data, error } shape as functions.invoke.
  */
 async function directRpc(
-  rpc: 'client_roll' | 'client_set_locks' | 'client_submit_score',
+  rpc: 'client_roll' | 'client_set_locks' | 'client_submit_score' | 'client_start_game',
   fallbackFn: string,
   args: Record<string, unknown>,
   fallbackBody: Record<string, unknown>,
@@ -764,13 +764,13 @@ export function useMultiplayerGame() {
     const gameId = latest.gameId;
     if (!gameId || latest.myPlayerIndex !== 0) return;
 
-    const { data, error } = await supabase.functions.invoke('start-game', {
-      body: { game_id: gameId, session_id: sessionId, device_id: getDeviceIdSync() ?? undefined },
-    });
+    const { data, error } = await directRpc('client_start_game', 'start-game',
+      { p_game_id: gameId, p_session_id: sessionId },
+      { game_id: gameId, session_id: sessionId });
 
     if (error) {
       console.error('Start game error:', error);
-      const msg = data?.error || 'Kunde inte starta spelet';
+      const msg = data?.error || (error as Error)?.message || 'Kunde inte starta spelet';
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
     } else {
       trackEvent('game_started', undefined, { gameId, gameMode: 'multiplayer' });

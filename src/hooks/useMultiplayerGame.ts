@@ -96,6 +96,41 @@ async function directRpc(
   return { data: r, error: null };
 }
 
+/** Wait this long for a lock/score answer before checking and sending again. */
+const RETRY_AFTER_MS = 4_000;
+/** Outer limit for a call that may be retried once. */
+const RETRY_TIMEOUT_MS = 12_000;
+
+/**
+ * Runs a safe-to-repeat call; if it hasn't answered after RETRY_AFTER_MS,
+ * first asks `check` whether it already took effect (returns that result),
+ * otherwise sends it once more. Whichever try answers first wins.
+ * Never use for rolls — a repeat would spend an extra roll.
+ */
+function withOneRetry(
+  call: () => Promise<{ data: any; error: any }>,
+  check?: () => Promise<{ data: any; error: any } | null>,
+): Promise<{ data: any; error: any }> {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (r: { data: any; error: any }) => { if (!done) { done = true; clearTimeout(t); resolve(r); } };
+    const first = call();
+    first.then(finish, (e) => finish({ data: null, error: e }));
+    const t = setTimeout(async () => {
+      if (done) return;
+      try {
+        const already = check ? await check() : null;
+        if (already) return finish(already);
+      } catch { /* fall through to resend */ }
+      if (done) return;
+      call().then(
+        (r) => { if (!r.error) finish(r); else first.then(finish, () => finish(r)); },
+        (e) => first.then(finish, () => finish({ data: null, error: e })),
+      );
+    }, RETRY_AFTER_MS);
+  });
+}
+
 function sameArray<T>(a?: T[] | null, b?: T[] | null) {
   return !!a && !!b && a.length === b.length && a.every((value, index) => value === b[index]);
 }
@@ -1066,9 +1101,10 @@ export function useMultiplayerGame() {
         const lockStartedAt = Date.now();
         try {
           // Straight to the database (client_set_locks also marks us active).
-          const { error } = await withTimeout(directRpc('client_set_locks', 'toggle-lock', {
+          // Setting the full lock array is safe to repeat → one automatic retry.
+          const { error } = await withTimeout(withOneRetry(() => directRpc('client_set_locks', 'toggle-lock', {
             p_game_id: gameId, p_session_id: sessionId, p_locked: locks,
-          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }));
+          }, { game_id: gameId, session_id: sessionId, locked_dice: locks })), RETRY_TIMEOUT_MS);
           if (error) {
             console.error('Toggle lock error:', error);
             reportMpIssue('lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error) });
@@ -1213,9 +1249,19 @@ export function useMultiplayerGame() {
     // expected_dice: the server refuses the score if its dice differ from what
     // the player saw, instead of silently scoring the wrong dice (e.g. 0).
     // The "your turn" push is sent by the database itself (client_submit_score).
-    withTimeout(directRpc('client_submit_score', 'submit-score', {
+    // One automatic retry; before resending, check whether the first try
+    // already saved the score so it can never be saved twice.
+    const checkSaved = async () => {
+      const { data: pl } = await supabase.from('game_players').select('scores')
+        .eq('game_id', gameId).eq('session_id', sessionId).maybeSingle();
+      const saved = (pl?.scores as Record<string, unknown> | undefined)?.[categoryId];
+      if (saved === undefined || saved === null) return null;
+      const { data: g } = await supabase.from('games').select('status').eq('id', gameId).maybeSingle();
+      return { data: { success: true, score: Number(saved), category_id: categoryId, game_over: g?.status === 'finished' }, error: null };
+    };
+    withTimeout(withOneRetry(() => directRpc('client_submit_score', 'submit-score', {
       p_game_id: gameId, p_session_id: sessionId, p_category_id: categoryId, p_expected_dice: shownDice,
-    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }))
+    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }), checkSaved), RETRY_TIMEOUT_MS)
       .then(({ data, error }) => {
         const submitMs = Date.now() - submitStartedAt;
         if (!error) {

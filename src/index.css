@@ -442,6 +442,7 @@ html.ad-banner-on .ios-dice-zone {
     --dice-top-gap: 42px;
     --action-top-gap: 44px;
   }
+  html.ad-banner-on .ios-dice-zone { transform: none; margin-bottom: 0; }
 }
 /* Små telefoner (SE/mini): krymp protokollet så bannern får plats under. */
 @media (max-height: 720px) {

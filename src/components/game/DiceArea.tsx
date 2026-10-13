@@ -85,7 +85,7 @@ export function DiceArea({
   return (
     <div
       className={cn(
-        'relative mt-[var(--dice-top-gap,42px)] flex flex-col items-center justify-end pb-0 overflow-visible',
+        'ios-dice-zone relative mt-[var(--dice-top-gap,42px)] flex flex-col items-center justify-end pb-0 overflow-visible',
         className,
       )}
     >

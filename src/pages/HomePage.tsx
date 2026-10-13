@@ -195,9 +195,11 @@ export default function HomePage() {
     return () => { cancelled = true; remove?.(); };
   }, []);
 
-  // Preload i bakgrunden – kan aldrig trigga visning.
+  // Preload i bakgrunden – kan aldrig trigga visning. Väntar tills starten är klar.
   useEffect(() => {
-    if (isAdMobAvailable()) void preloadInterstitial();
+    if (!isAdMobAvailable()) return;
+    const timer = setTimeout(() => void preloadInterstitial(), 4000);
+    return () => clearTimeout(timer);
   }, []);
 
   /** Enda vägen till show(): användarens direkta tryck på "Frivillig reklam". */
@@ -231,19 +233,25 @@ export default function HomePage() {
   // (even without a language change) always re-syncs.
   useEffect(() => {
     let cancelled = false;
-    void syncCountryRank(stats.gamesPlayed).then(res => {
-      if (!cancelled) setRankInfo(res.country || res.world ? res : getCachedRankInfo());
-    });
-    void syncWorldLeaders().then(res => {
-      if (!cancelled && res.length) setWorldLeaders(res);
-    });
-    return () => { cancelled = true; };
+    // Not urgent (cached values are shown meanwhile): wait until the start
+    // screen's entrance animation is done so it doesn't compete with it.
+    const timer = setTimeout(() => {
+      void syncCountryRank(stats.gamesPlayed).then(res => {
+        if (!cancelled) setRankInfo(res.country || res.world ? res : getCachedRankInfo());
+      });
+      void syncWorldLeaders().then(res => {
+        if (!cancelled && res.length) setWorldLeaders(res);
+      });
+    }, 1200);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [stats.gamesPlayed, profileVersion]);
 
+  const [statusTick, setStatusTick] = useState(0);
   useEffect(() => {
     const onFocus = () => {
       setStats(getLocalStats());
       setActiveGames(getActiveGames());
+      setStatusTick(n => n + 1);
     };
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
@@ -355,8 +363,15 @@ export default function HomePage() {
   }, [activeGames.length, t]);
 
   // Fetch fresh server status for each multiplayer entry: whose turn, finished, opponent name.
+  const activeGamesRef = useRef(activeGames);
+  activeGamesRef.current = activeGames;
+  const mpKey = activeGames
+    .filter(g => g.type === 'multiplayer' && g.gameId)
+    .map(g => g.gameId!)
+    .sort()
+    .join(',');
   useEffect(() => {
-    const mp = activeGames.filter(g => g.type === 'multiplayer' && g.gameId);
+    const mp = activeGamesRef.current.filter(g => g.type === 'multiplayer' && g.gameId);
     if (mp.length === 0) return;
     let cancelled = false;
     (async () => {
@@ -417,7 +432,9 @@ export default function HomePage() {
 
     })();
     return () => { cancelled = true; };
-  }, [activeGames]);
+    // Keyed on the set of match ids (+ focus), not the array itself: list
+    // updates (time labels, lastRollTime refresh) must not trigger refetches.
+  }, [mpKey, statusTick]);
 
   const resumeGame = (game: ActiveGame) => {
     if (isGameExpired(game)) {

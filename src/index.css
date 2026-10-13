@@ -456,6 +456,6 @@ html.ad-banner-on {
   html.ad-banner-on .ios-action-zone > .relative:first-child {
     transform: scale(0.8);
     transform-origin: top center;
-    margin-bottom: -22px;
+    margin-bottom: -26px;
   }
 }

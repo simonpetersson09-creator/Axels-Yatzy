@@ -277,30 +277,23 @@ export default function HomePage() {
     let cancelled = false;
     const sync = async () => {
       const sessionId = getSessionId();
-      // Enforce the 48h limit server-side before listing: idle matches are
-      // finished and excluded from statistics.
-      await supabase.rpc('expire_stale_matches');
-      if (cancelled) return;
+      // The 48 h idle limit is enforced by a server job every 15 min, so the
+      // home screen no longer waits for a global sweep before listing.
+      // One query: my open games plus every player in them.
       const { data, error } = await supabase
-
         .from('game_players')
-        .select('game_id, player_name, session_id, games!inner(id, status)')
+        .select('game_id, player_name, session_id, games!inner(id, status, game_players(player_name, session_id))')
         .eq('session_id', sessionId)
         .in('games.status', ['waiting', 'playing']);
       if (cancelled || error || !data) return;
       const serverGameIds = new Set<string>();
-      // Fetch player counts/opponent names in one round-trip
-      const gameIds = data.map((r: { game_id: string }) => r.game_id);
       const opponents: Record<string, string> = {};
       const playerCounts: Record<string, number> = {};
-      if (gameIds.length > 0) {
-        const { data: gamePlayers } = await supabase
-          .from('game_players')
-          .select('game_id, player_name, session_id')
-          .in('game_id', gameIds);
-        for (const p of gamePlayers ?? []) {
-          playerCounts[p.game_id] = (playerCounts[p.game_id] ?? 0) + 1;
-          if (p.session_id !== sessionId) opponents[p.game_id] = p.player_name;
+      for (const row of data as any[]) {
+        const g = Array.isArray(row.games) ? row.games[0] : row.games;
+        for (const p of (g?.game_players ?? []) as { player_name: string; session_id: string }[]) {
+          playerCounts[row.game_id] = (playerCounts[row.game_id] ?? 0) + 1;
+          if (p.session_id !== sessionId) opponents[row.game_id] = p.player_name;
         }
       }
       let changed = false;

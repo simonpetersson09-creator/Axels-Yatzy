@@ -323,6 +323,20 @@
       "when": 1791884958209,
       "tag": "0045_turn_push_from_database",
       "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1791898645739,
+      "tag": "0046_accept_invite_dedupe_pair",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1791898673709,
+      "tag": "0047_accept_invite_crossed_returns_game",
+      "breakpoints": true
     }
   ]
 }

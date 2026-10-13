@@ -442,8 +442,8 @@ html.ad-banner-on {
   html.ad-banner-on {
     --game-top-gap: calc(env(safe-area-inset-top, 0px) + 4px);
     --game-top-gap-mp: calc(env(safe-area-inset-top, 0px) + 4px);
-    --sb-row-h: 25px;
-    --dice-top-gap: 12px;
+    --sb-row-h: 24px;
+    --dice-top-gap: 4px;
     --action-top-gap: 0px;
   }
   /* Krymp tärningarna och Kast-knappen till 80 % (bara små telefoner). */

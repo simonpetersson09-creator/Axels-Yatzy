@@ -432,6 +432,7 @@ export async function showGameBanner(): Promise<void> {
       isTesting: ADMOB_CONFIG.useTestAds,
     });
     bannerShown = true;
+    shownMargin = margin;
     setBannerSpace(bannerWanted);
     if (!bannerWanted) { await mod.AdMob.removeBanner().catch(() => {}); bannerShown = false; }
   } catch (err) {

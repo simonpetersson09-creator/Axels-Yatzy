@@ -92,6 +92,24 @@ export type Database = {
         }
         Relationships: []
       }
+      dice_preferences: {
+        Row: {
+          prefer_white: boolean
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          prefer_white?: boolean
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          prefer_white?: boolean
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dice_progress: {
         Row: {
           session_id: string
@@ -1105,6 +1123,14 @@ export type Database = {
       set_away: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: undefined
+      }
+      set_dice_prefer_white: {
+        Args: {
+          p_device_id: string
+          p_prefer_white: boolean
+          p_session_id: string
+        }
+        Returns: boolean
       }
       set_player_avatar: {
         Args: { p_device_id: string; p_image: string; p_session_id: string }

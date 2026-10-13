@@ -304,6 +304,8 @@ export const ja: typeof sv = {
   strangerFriendAdded: '{name}と友達になったよ',
   statsPage: "統計",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "統計",
   yourRankingsTitle: "あなたのランキング",
   topCountriesTitle: "国別トップ10",

@@ -304,6 +304,8 @@ export const te: typeof sv = {
   strangerFriendAdded: '{name} ఇప్పుడు నీ స్నేహితుడు',
   statsPage: "గణాంకాలు",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "గణాంకాలు",
   yourRankingsTitle: "మీ ర్యాంకులు",
   topCountriesTitle: "టాప్ 10 దేశాలు",

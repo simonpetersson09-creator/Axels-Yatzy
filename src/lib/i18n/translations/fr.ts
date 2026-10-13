@@ -299,6 +299,8 @@ export const fr: typeof sv = {
   strangerFriendAdded: '{name} est maintenant ton ami',
   statsPage: "Statistiques",
   adPrivacy: 'Confidentialité des annonces',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Statistiques",
   yourRankingsTitle: "Vos classements",
   topCountriesTitle: "Top 10 des pays",

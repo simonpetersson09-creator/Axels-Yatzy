@@ -304,6 +304,8 @@ export const mr: typeof sv = {
   strangerFriendAdded: '{name} आता तुझा मित्र आहे',
   statsPage: "आकडेवारी",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "आकडेवारी",
   yourRankingsTitle: "तुमचे क्रमांक",
   topCountriesTitle: "अव्वल 10 देश",

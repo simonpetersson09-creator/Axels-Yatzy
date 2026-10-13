@@ -304,6 +304,8 @@ export const ptBR: typeof sv = {
   strangerFriendAdded: '{name} agora é seu amigo',
   statsPage: "Estatísticas",
   adPrivacy: 'Privacidade de anúncios',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Estatísticas",
   yourRankingsTitle: "Suas posições",
   topCountriesTitle: "Top 10 países",

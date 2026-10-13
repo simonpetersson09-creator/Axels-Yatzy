@@ -304,6 +304,8 @@ export const es: typeof sv = {
   strangerFriendAdded: '{name} ya es tu amigo',
   statsPage: "Estadísticas",
   adPrivacy: 'Privacidad de anuncios',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Estadísticas",
   yourRankingsTitle: "Tus posiciones",
   topCountriesTitle: "Los 10 mejores países",

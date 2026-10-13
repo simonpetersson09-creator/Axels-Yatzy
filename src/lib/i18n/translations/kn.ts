@@ -304,6 +304,8 @@ export const kn: typeof sv = {
   strangerFriendAdded: '{name} ಈಗ ನಿನ್ನ ಸ್ನೇಹಿತರು',
   statsPage: "ಅಂಕಿಅಂಶಗಳು",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "ಅಂಕಿಅಂಶಗಳು",
   yourRankingsTitle: "ನಿಮ್ಮ ಶ್ರೇಯಾಂಕಗಳು",
   topCountriesTitle: "ಅಗ್ರ 10 ದೇಶಗಳು",

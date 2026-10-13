@@ -304,6 +304,8 @@ export const fi: typeof sv = {
   strangerFriendAdded: '{name} on nyt kaverisi',
   statsPage: "Tilastot",
   adPrivacy: 'Mainosasetukset',
+  useWhiteDice: 'Käytä valkoisia noppia',
+  useWhiteDiceDesc: 'Pelaa tavallisilla valkoisilla nopilla. Värisi ja edistymisesi säilyvät.',
   statsPageTitle: "Tilastot",
   yourRankingsTitle: "Sijoituksesi",
   topCountriesTitle: "10 parasta maata",

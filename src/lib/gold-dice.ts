@@ -14,6 +14,8 @@ export interface GoldStatus {
   /** Permanent tier earned from matches with a Yatzy. */
   tier: DiceSkin;
   yatzyMatches: number;
+  /** Player chose to roll plain white dice despite an unlocked colour. */
+  preferWhite?: boolean;
 }
 
 const CACHE_KEY = 'mrb_gold_status_v1';
@@ -34,6 +36,7 @@ export function isGoldActive(s: GoldStatus | null | undefined): boolean {
 
 /** Dice colour to show: temporary gold wins, otherwise the permanent tier. */
 export function effectiveSkin(s: GoldStatus): DiceSkin {
+  if (s.preferWhite) return 'white';
   return isGoldActive(s) && s.tier !== 'platinum' ? 'gold' : s.tier;
 }
 
@@ -60,13 +63,14 @@ export async function fetchGoldStatus(): Promise<GoldStatus> {
   try {
     const { data, error } = await supabase.rpc('get_gold_dice', { p_session_id: getSessionId() });
     if (error || !data) return readCache();
-    const d = data as { gold_until?: string | null; friends?: number; progress?: number; tier?: string; yatzy_matches?: number };
+    const d = data as { gold_until?: string | null; friends?: number; progress?: number; tier?: string; yatzy_matches?: number; prefer_white?: boolean };
     const s: GoldStatus = {
       goldUntil: d.gold_until ?? null,
       friends: Number(d.friends ?? 0),
       progress: Number(d.progress ?? 0),
       tier: asSkin(d.tier),
       yatzyMatches: Number(d.yatzy_matches ?? 0),
+      preferWhite: !!d.prefer_white,
     };
     localStorage.setItem(CACHE_KEY, JSON.stringify(s));
     return s;
@@ -110,10 +114,13 @@ export interface DiceProfile {
   yatzyMatches: number;
   /** Temporary gold from inviting friends is active. */
   inviteGold: boolean;
+  /** Player chose plain white dice; badges/tier info stay unchanged. */
+  preferWhite?: boolean;
 }
 
 export function profileSkin(p: DiceProfile | undefined): DiceSkin {
   if (!p) return 'white';
+  if (p.preferWhite) return 'white';
   return p.inviteGold && p.tier !== 'platinum' ? 'gold' : p.tier;
 }
 
@@ -130,9 +137,9 @@ export function useDiceProfiles(gameId: string | null, refreshKey: unknown = 0):
     (async () => {
       try {
         const { data } = await supabase.rpc('get_dice_profiles', { p_game_id: gameId });
-        const rows = (data as Array<{ player_index: number; is_bot: boolean; tier: string; yatzy_matches: number; invite_gold: boolean }> | null) ?? [];
+        const rows = (data as Array<{ player_index: number; is_bot: boolean; tier: string; yatzy_matches: number; invite_gold: boolean; prefer_white?: boolean }> | null) ?? [];
         if (alive) setMap(new Map(rows.map((r) => [r.player_index, {
-          isBot: !!r.is_bot, tier: asSkin(r.tier), yatzyMatches: Number(r.yatzy_matches ?? 0), inviteGold: !!r.invite_gold,
+          isBot: !!r.is_bot, tier: asSkin(r.tier), yatzyMatches: Number(r.yatzy_matches ?? 0), inviteGold: !!r.invite_gold, preferWhite: !!r.prefer_white,
         }])));
       } catch { /* cosmetic; ignore */ }
     })();
@@ -200,4 +207,22 @@ export async function fetchPlayerCard(sessionId: string): Promise<{ profile: Dic
       avatar: d.avatar ?? null,
     };
   } catch { return null; }
+}
+
+/** Save "use white dice" on the server so opponents see the same colour. */
+export async function setPreferWhiteDice(preferWhite: boolean): Promise<boolean> {
+  try {
+    const device = await initDeviceId().catch(() => getDeviceIdSync());
+    if (!device) return false;
+    await claimSession();
+    const { data, error } = await supabase.rpc('set_dice_prefer_white', {
+      p_session_id: getSessionId(), p_device_id: device, p_prefer_white: preferWhite,
+    });
+    if (error || data !== true) return false;
+    const cached = readCache();
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ...cached, preferWhite }));
+    return true;
+  } catch {
+    return false;
+  }
 }

@@ -304,6 +304,8 @@ export const uk: typeof sv = {
   strangerFriendAdded: '{name} тепер у твоїх друзях',
   statsPage: "Статистика",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Статистика",
   yourRankingsTitle: "Ваші рейтинги",
   topCountriesTitle: "Топ-10 країн",

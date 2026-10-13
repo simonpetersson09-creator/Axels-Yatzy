@@ -304,6 +304,8 @@ export const tr: typeof sv = {
   strangerFriendAdded: '{name} artık arkadaşın',
   statsPage: "İstatistikler",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "İstatistikler",
   yourRankingsTitle: "Sıralamaların",
   topCountriesTitle: "İlk 10 ülke",

@@ -304,6 +304,8 @@ export const hr: typeof sv = {
   strangerFriendAdded: '{name} je sada tvoj prijatelj',
   statsPage: "Statistika",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Statistika",
   yourRankingsTitle: "Tvoj poredak",
   topCountriesTitle: "Top 10 zemalja",

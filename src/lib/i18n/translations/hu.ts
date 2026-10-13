@@ -304,6 +304,8 @@ export const hu: typeof sv = {
   strangerFriendAdded: '{name} már a barátod',
   statsPage: "Statisztika",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Statisztika",
   yourRankingsTitle: "Helyezéseid",
   topCountriesTitle: "Top 10 ország",

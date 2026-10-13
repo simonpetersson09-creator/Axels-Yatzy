@@ -304,6 +304,8 @@ export const ro: typeof sv = {
   strangerFriendAdded: '{name} este acum prietenul tău',
   statsPage: "Statistici",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Statistici",
   yourRankingsTitle: "Pozițiile tale",
   topCountriesTitle: "Top 10 țări",

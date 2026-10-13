@@ -304,6 +304,8 @@ export const sl: typeof sv = {
   strangerFriendAdded: '{name} je zdaj med tvojimi prijatelji',
   statsPage: "Statistika",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Statistika",
   yourRankingsTitle: "Tvoje uvrstitve",
   topCountriesTitle: "Najboljših 10 držav",

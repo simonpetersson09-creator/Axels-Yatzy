@@ -304,6 +304,8 @@ export const th: typeof sv = {
   strangerFriendAdded: '{name} เป็นเพื่อนคุณแล้ว',
   statsPage: "สถิติ",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "สถิติ",
   yourRankingsTitle: "อันดับของคุณ",
   topCountriesTitle: "10 ประเทศอันดับสูงสุด",

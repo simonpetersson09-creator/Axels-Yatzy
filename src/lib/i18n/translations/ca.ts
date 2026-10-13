@@ -303,6 +303,8 @@ export const ca: typeof sv = {
   strangerFriendAdded: '{name} ara és el teu amic',
   statsPage: "Estadístiques",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Estadístiques",
   yourRankingsTitle: "Les teves classificacions",
   topCountriesTitle: "Els 10 millors països",

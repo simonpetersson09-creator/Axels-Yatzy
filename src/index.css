@@ -444,18 +444,18 @@ html.ad-banner-on {
     --game-top-gap-mp: 4px;
     --sb-row-h: 25px;
     --dice-top-gap: 12px;
-    --action-top-gap: 8px;
+    --action-top-gap: 0px;
   }
   /* Krymp tärningarna och Kast-knappen till 80 % (bara små telefoner). */
   html.ad-banner-on .ios-dice-zone {
     transform: scale(0.8);
     transform-origin: top center;
-    margin-bottom: -92px; /* krympt höjd + extra luft ovanför */
+    margin-bottom: -100px; /* krympt höjd + extra luft ovanför */
     margin-top: 26px;
   }
   html.ad-banner-on .ios-action-zone > .relative:first-child {
     transform: scale(0.8);
     transform-origin: top center;
-    margin-bottom: -30px;
+    margin-bottom: -38px;
   }
 }

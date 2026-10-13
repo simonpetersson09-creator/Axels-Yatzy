@@ -346,11 +346,9 @@ function safeAreaBottom(): number {
   return h;
 }
 
-async function centeredBannerMargin(): Promise<number> {
-  // Vänta ut spelkortets intro-animation (0,4 s) innan vi mäter.
-  await new Promise((r) => setTimeout(r, 550));
+function measureBannerMargin(): number | null {
   const zone = document.querySelector('.ios-score-zone');
-  if (!zone) return 0;
+  if (!zone) return null;
   // Lägsta underkanten av protokollet och knapparna bredvid/under det.
   let bottom = zone.getBoundingClientRect().bottom;
   zone.parentElement?.querySelectorAll('button').forEach((b) => {
@@ -362,6 +360,24 @@ async function centeredBannerMargin(): Promise<number> {
   const free = window.innerHeight - safeAreaBottom() - bottom;
   return Math.max(0, Math.round(free - 50 - BANNER_GAP_PX));
 }
+
+/** Mäter så fort layouten står still (intro-animationen klar), max 600 ms. */
+async function centeredBannerMargin(): Promise<number> {
+  const started = Date.now();
+  let last: number | null = null;
+  let stable = 0;
+  while (Date.now() - started < 600) {
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
+    const m = measureBannerMargin();
+    if (m !== null && m === last) {
+      if (++stable >= 3) return m; // samma värde 3 bildrutor i rad
+    } else stable = 0;
+    last = m;
+  }
+  return last ?? 0;
+}
+
+let shownMargin = -1;
 
 async function previewBanner(on: boolean, isStale: () => boolean = () => false) {
   const id = 'ad-banner-preview';
@@ -401,11 +417,13 @@ export async function showGameBanner(): Promise<void> {
   try {
     const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
     if (stale()) return;
-    // Ny skärm kan ha annan höjd: visa om med ny marginal i stället för resume.
-    if (bannerShown) { await mod.AdMob.removeBanner().catch(() => {}); bannerShown = false; }
     setBannerSpace(true);
     const margin = await centeredBannerMargin();
     if (stale()) { if (!bannerWanted) setBannerSpace(false); return; }
+    // Samma plats som nu: låt bannern ligga kvar i stället för att ladda om den.
+    if (bannerShown && margin === shownMargin) return;
+    // Ny skärm med annan höjd: visa om med ny marginal.
+    if (bannerShown) { await mod.AdMob.removeBanner().catch(() => {}); bannerShown = false; }
     await mod.AdMob.showBanner({
       adId,
       adSize: mod.BannerAdSize.BANNER, // AdMob standard 320×50
@@ -414,6 +432,7 @@ export async function showGameBanner(): Promise<void> {
       isTesting: ADMOB_CONFIG.useTestAds,
     });
     bannerShown = true;
+    shownMargin = margin;
     setBannerSpace(bannerWanted);
     if (!bannerWanted) { await mod.AdMob.removeBanner().catch(() => {}); bannerShown = false; }
   } catch (err) {

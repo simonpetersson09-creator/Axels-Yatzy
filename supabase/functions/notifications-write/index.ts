@@ -75,6 +75,20 @@ Deno.serve(async (req) => {
       };
       // Old app versions send no lang — keep whatever is stored.
       if (typeof lang === "string" && /^[a-zA-Z-]{2,6}$/.test(lang)) row.lang = lang;
+      // Old app versions re-send unchanged prefs on every start: skip the write then.
+      const { data: cur } = await supabase
+        .from("notification_preferences")
+        .select("turn_notifications, reminder_notifications, lang")
+        .eq("device_id", device_id)
+        .maybeSingle();
+      if (
+        cur &&
+        cur.turn_notifications === row.turn_notifications &&
+        cur.reminder_notifications === row.reminder_notifications &&
+        (row.lang === undefined || cur.lang === row.lang)
+      ) {
+        return json({ ok: true, unchanged: true });
+      }
       const { error } = await supabase.from("notification_preferences").upsert(row);
       if (error) return json({ error: error.message }, 500);
       return json({ ok: true });

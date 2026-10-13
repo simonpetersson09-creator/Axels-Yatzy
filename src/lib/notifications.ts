@@ -46,23 +46,35 @@ export function getNotificationPrefs(): NotificationPrefs {
   }
 }
 
+const PREFS_SYNCED_KEY = 'yatzy_notif_prefs_synced_v1';
+
 export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<void> {
   try {
     localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
   } catch {
     /* ignore */
   }
+  // Only talk to the server when something actually changed since the last
+  // successful sync — avoids a write on every app start.
+  const lang = getLanguage();
+  const sig = JSON.stringify([prefs.turnNotifications, prefs.reminderNotifications, lang]);
+  try {
+    if (localStorage.getItem(PREFS_SYNCED_KEY) === sig) return;
+  } catch { /* ignore */ }
   const deviceId = await initDeviceId();
   try {
-    await supabase.functions.invoke('notifications-write', {
+    const { error } = await supabase.functions.invoke('notifications-write', {
       body: {
         action: 'set_prefs',
         device_id: deviceId,
         turn_notifications: prefs.turnNotifications,
         reminder_notifications: prefs.reminderNotifications,
-        lang: getLanguage(),
+        lang,
       },
     });
+    if (!error) {
+      try { localStorage.setItem(PREFS_SYNCED_KEY, sig); } catch { /* ignore */ }
+    }
   } catch (err) {
     console.warn('[notifications] failed to sync prefs', err);
   }

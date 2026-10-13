@@ -18,6 +18,8 @@ import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank'
 import { resetLocalStats, getLocalStats, saveLocalStats, type LocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { isAdPrivacyOptionsRequired, showAdPrivacyOptions } from '@/lib/admob';
+import { ShieldCheck } from 'lucide-react';
 import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
 import { toast } from 'sonner';
 
@@ -52,6 +54,14 @@ export default function SettingsPage() {
 
   // Track settings opened (once per mount)
   useEffect(() => { trackEvent('settings_opened'); }, []);
+
+  // "Annonsinställningar" visas bara där Google kräver det (EU/UK).
+  const [adPrivacyRequired, setAdPrivacyRequired] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    void isAdPrivacyOptionsRequired().then((r) => { if (alive) setAdPrivacyRequired(r); });
+    return () => { alive = false; };
+  }, []);
 
   const saveName = () => {
     setProfileName(name);
@@ -391,6 +401,19 @@ export default function SettingsPage() {
           </Card>
         </Section>
 
+        {adPrivacyRequired && (
+          <Card>
+            <motion.button
+              onClick={() => { trackEvent('ad_privacy_opened'); void showAdPrivacyOptions(); }}
+              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
+              whileTap={{ scale: 0.985 }}
+            >
+              <ShieldCheck className="w-4 h-4 text-primary" />
+              <span className="flex-1 text-sm font-medium text-foreground">{t('adPrivacy')}</span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </motion.button>
+          </Card>
+        )}
 
         <div className="text-center pt-2 pb-6">
           <p className="text-[11px] text-muted-foreground/60">{t('version')} 1.0</p>

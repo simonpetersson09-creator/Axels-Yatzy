@@ -5,6 +5,7 @@ import { Dices, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
+import { useGameBanner } from '@/hooks/useGameBanner';
 
 const SEARCH_MS = 20_000;
 const POLL_MS = 2_000;
@@ -35,6 +36,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
   // Android back = Avbryt (otherwise the app minimizes while still searching).
   useBackHandler(true, onCancel);
 
+  useGameBanner();
   useEffect(() => {
     const sessionId = getSessionId();
     let timer: number | undefined;

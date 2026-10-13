@@ -1,5 +1,5 @@
 import type { DiceSkin } from '@/lib/dice-skin';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { DiceSet } from '@/components/dice-engine';
 
@@ -39,8 +39,12 @@ export function DiceArea({
   skin = 'white',
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
-  const diceSize = compact ? 54 : 60;
-  const gap = compact ? 29 : 36;
+  // --dice-scale (index.css) shrinks the column when the ad banner needs room.
+  // Real sizes, not a CSS transform: the 3D canvas measures its scaled box and
+  // would shrink twice, and the entry edge would move inside the screen.
+  const diceScale = useDiceScale();
+  const diceSize = Math.round((compact ? 54 : 60) * diceScale);
+  const gap = Math.round((compact ? 29 : 36) * diceScale);
   const spacing = compact ? 0.65 : 0.78;
   const canLock = !isRolling && hasRolled && rollsLeft > 0;
 
@@ -145,4 +149,23 @@ export function DiceArea({
     </div>
   );
 
+}
+
+function readDiceScale(): number {
+  if (typeof document === 'undefined') return 1;
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dice-scale'));
+  return Number.isFinite(v) && v > 0 ? v : 1;
+}
+
+/** Follows --dice-scale; it changes when the banner class or screen size changes. */
+function useDiceScale(): number {
+  const [scale, setScale] = useState(readDiceScale);
+  useEffect(() => {
+    const update = () => setScale(readDiceScale());
+    const mo = new MutationObserver(update);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('resize', update);
+    return () => { mo.disconnect(); window.removeEventListener('resize', update); };
+  }, []);
+  return scale;
 }

@@ -426,14 +426,9 @@ html.ad-banner-on {
   --sb-row-h: 29px;
   --dice-top-gap: 30px;
   --action-top-gap: 1px;
+  --dice-scale: 0.9; /* tärningarna 90 % så att plats finns under klockraden */
 }
-/* Vanliga telefoner: tärningarna 90 % så att plats finns under klockraden. */
-html.ad-banner-on .ios-dice-zone {
-  transform: scale(0.9);
-  /* Krymp mot högerkanten så tärningarna fortfarande flyger in från skärmkanten. */
-  transform-origin: right top;
-  margin-bottom: -39px;
-}
+
 /* Stora telefoner (Plus/Pro Max) har plats nog – krymp nästan inget. */
 @media (min-height: 900px) {
   html.ad-banner-on {
@@ -442,8 +437,8 @@ html.ad-banner-on .ios-dice-zone {
     --sb-row-h: 34px;
     --dice-top-gap: 42px;
     --action-top-gap: 44px;
+    --dice-scale: 1;
   }
-  html.ad-banner-on .ios-dice-zone { transform: none; margin-bottom: 0; }
 }
 /* Små telefoner (SE/mini): krymp protokollet så bannern får plats under. */
 @media (max-height: 720px) {
@@ -453,14 +448,10 @@ html.ad-banner-on .ios-dice-zone {
     --sb-row-h: 24px;
     --dice-top-gap: 4px;
     --action-top-gap: 0px;
+    --dice-scale: 0.8;
   }
   /* Krymp tärningarna och Kast-knappen till 80 % (bara små telefoner). */
-  html.ad-banner-on .ios-dice-zone {
-    transform: scale(0.8);
-    transform-origin: right top;
-    margin-bottom: -124px; /* krympt höjd + extra luft ovanför */
-    margin-top: 16px;
-  }
+  html.ad-banner-on .ios-dice-zone { margin-top: 16px; }
   html.ad-banner-on .ios-action-zone > .relative:first-child {
     transform: scale(0.8);
     transform-origin: top center;

@@ -304,6 +304,8 @@ export const nl: typeof sv = {
   strangerFriendAdded: '{name} is nu je vriend',
   statsPage: "Statistieken",
   adPrivacy: 'Advertentie-privacy',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Statistieken",
   yourRankingsTitle: "Jouw posities",
   topCountriesTitle: "Top 10 landen",

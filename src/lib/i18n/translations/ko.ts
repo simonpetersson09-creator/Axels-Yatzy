@@ -304,6 +304,8 @@ export const ko: typeof sv = {
   strangerFriendAdded: '{name} 님과 친구가 됐어',
   statsPage: "통계",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: '흰색 주사위 사용',
+  useWhiteDiceDesc: '기본 흰색 주사위로 플레이합니다. 색상과 진행 상황은 유지됩니다.',
   statsPageTitle: "통계",
   yourRankingsTitle: "내 순위",
   topCountriesTitle: "상위 10개국",

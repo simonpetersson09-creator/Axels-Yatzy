@@ -304,6 +304,8 @@ export const da: typeof sv = {
   strangerFriendAdded: '{name} er nu din ven',
   statsPage: "Statistik",
   adPrivacy: 'Annonceindstillinger',
+  useWhiteDice: 'Brug hvide terninger',
+  useWhiteDiceDesc: 'Spil med almindelige hvide terninger. Din farve og fremgang bevares.',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Dine placeringer",
   topCountriesTitle: "Top 10 lande",

@@ -304,6 +304,8 @@ export const vi: typeof sv = {
   strangerFriendAdded: '{name} giờ là bạn của bạn',
   statsPage: "Thống kê",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Thống kê",
   yourRankingsTitle: "Thứ hạng của bạn",
   topCountriesTitle: "Top 10 quốc gia",

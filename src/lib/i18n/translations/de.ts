@@ -299,6 +299,8 @@ export const de: typeof sv = {
   strangerFriendAdded: '{name} ist jetzt dein Freund',
   statsPage: "Statistik",
   adPrivacy: 'Werbe-Datenschutz',
+  useWhiteDice: 'Weiße Würfel verwenden',
+  useWhiteDiceDesc: 'Mit normalen weißen Würfeln spielen. Farbe und Fortschritt bleiben erhalten.',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Deine Platzierungen",
   topCountriesTitle: "Top 10 Länder",

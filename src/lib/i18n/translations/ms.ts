@@ -304,6 +304,8 @@ export const ms: typeof sv = {
   strangerFriendAdded: '{name} kini kawan awak',
   statsPage: "Statistik",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Kedudukan anda",
   topCountriesTitle: "10 negara teratas",

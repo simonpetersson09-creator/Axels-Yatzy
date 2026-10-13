@@ -304,6 +304,8 @@ export const ml: typeof sv = {
   strangerFriendAdded: '{name} ഇനി നിങ്ങളുടെ സുഹൃത്താണ്',
   statsPage: "സ്ഥിതിവിവരങ്ങൾ",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "സ്ഥിതിവിവരങ്ങൾ",
   yourRankingsTitle: "നിങ്ങളുടെ റാങ്കുകൾ",
   topCountriesTitle: "മികച്ച 10 രാജ്യങ്ങൾ",

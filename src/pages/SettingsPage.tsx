@@ -1,7 +1,7 @@
 import NotificationsOffBanner from '@/components/NotificationsOffBanner';
 import { Dices } from 'lucide-react';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
-import { useGoldStatus, ownProfile, goldDaysLeft } from '@/lib/gold-dice';
+import { useGoldStatus, ownProfile, goldDaysLeft, isGoldActive, setPreferWhiteDice } from '@/lib/gold-dice';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,6 +26,8 @@ import { toast } from 'sonner';
 export default function SettingsPage() {
   const navigate = useNavigate();
   const goldStatus = useGoldStatus();
+  const [preferWhite, setPreferWhite] = useState(!!goldStatus.preferWhite);
+  useEffect(() => { setPreferWhite(!!goldStatus.preferWhite); }, [goldStatus.preferWhite]);
   const [myDiceOpen, setMyDiceOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -381,6 +383,22 @@ export default function SettingsPage() {
               <span className="flex-1 text-sm font-medium text-foreground">{t('myDice')}</span>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </motion.button>
+            {(goldStatus.tier !== 'white' || isGoldActive(goldStatus)) && (
+              <div className="border-b border-border/40">
+                <ToggleRow
+                  icon={<Dices className="w-4 h-4 text-muted-foreground" />}
+                  label={t('useWhiteDice')}
+                  description={t('useWhiteDiceDesc')}
+                  value={preferWhite}
+                  onChange={async (v) => {
+                    setPreferWhite(v);
+                    trackEvent('white_dice_toggled', { on: v });
+                    const ok = await setPreferWhiteDice(v);
+                    if (!ok) { setPreferWhite(!v); toast.error(t('errorGeneric')); }
+                  }}
+                />
+              </div>
+            )}
             <DiceInfoSheet
               open={myDiceOpen}
               onClose={() => setMyDiceOpen(false)}

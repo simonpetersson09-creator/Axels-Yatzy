@@ -304,6 +304,8 @@ export const el: typeof sv = {
   strangerFriendAdded: 'Ο παίκτης {name} είναι πλέον στους φίλους σου',
   statsPage: "Στατιστικά",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Στατιστικά",
   yourRankingsTitle: "Η κατάταξή σου",
   topCountriesTitle: "Οι 10 κορυφαίες χώρες",

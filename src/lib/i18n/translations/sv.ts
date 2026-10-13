@@ -313,6 +313,8 @@ export const sv = {
   strangerFriendAdded: '{name} är nu din vän',
   statsPage: "Statistik",
   adPrivacy: 'Annonsinställningar',
+  useWhiteDice: 'Använd vita tärningar',
+  useWhiteDiceDesc: 'Spela med vanliga vita tärningar. Din färg och dina framsteg finns kvar.',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Dina placeringar",
   topCountriesTitle: "Topp 10 länder",

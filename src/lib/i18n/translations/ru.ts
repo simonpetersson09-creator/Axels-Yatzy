@@ -303,6 +303,8 @@ export const ru: typeof sv = {
   strangerFriendAdded: '{name} теперь в твоих друзьях',
   statsPage: "Статистика",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Статистика",
   yourRankingsTitle: "Ваши места в рейтинге",
   topCountriesTitle: "Топ-10 стран",

@@ -304,6 +304,8 @@ export const bn: typeof sv = {
   strangerFriendAdded: '{name} এখন তোমার বন্ধু',
   statsPage: "পরিসংখ্যান",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "পরিসংখ্যান",
   yourRankingsTitle: "আপনার র‍্যাঙ্কিং",
   topCountriesTitle: "সেরা ১০টি দেশ",

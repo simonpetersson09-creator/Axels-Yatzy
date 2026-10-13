@@ -304,6 +304,8 @@ export const pa: typeof sv = {
   strangerFriendAdded: '{name} ਹੁਣ ਤੁਹਾਡਾ ਦੋਸਤ ਹੈ',
   statsPage: "ਅੰਕੜੇ",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "ਅੰਕੜੇ",
   yourRankingsTitle: "ਤੁਹਾਡੀ ਰੈਂਕਿੰਗ",
   topCountriesTitle: "ਸਿਖਰਲੇ 10 ਦੇਸ਼",

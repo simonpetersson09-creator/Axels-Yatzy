@@ -304,6 +304,8 @@ export const gu: typeof sv = {
   strangerFriendAdded: '{name} હવે તમારા મિત્ર છે',
   statsPage: "આંકડા",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "આંકડા",
   yourRankingsTitle: "તમારું રેન્કિંગ",
   topCountriesTitle: "ટોચના 10 દેશો",

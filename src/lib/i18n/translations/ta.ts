@@ -304,6 +304,8 @@ export const ta: typeof sv = {
   strangerFriendAdded: '{name} இப்போது உங்கள் நண்பர்',
   statsPage: "புள்ளிவிவரங்கள்",
   adPrivacy: 'Ad privacy settings',
+  useWhiteDice: 'Use white dice',
+  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "புள்ளிவிவரங்கள்",
   yourRankingsTitle: "உங்கள் தரவரிசைகள்",
   topCountriesTitle: "முதல் 10 நாடுகள்",

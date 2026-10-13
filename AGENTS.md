@@ -20,3 +20,4 @@
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit) instead of ending the match — others can finish.
 - Subdirectories have their own AGENTS.md (e.g. supabase/functions/) — read it before changing files there.
 - Crossed friend invites (A→B and B→A) are merged in accept_invite (pair advisory lock; reverse pending invite is linked to the same game) — prevents duplicate matches when both players invite each other.
+- "Use white dice" is a server-side preference (dice_preferences via set_dice_prefer_white, returned by get_gold_dice/get_dice_profiles as prefer_white); it only changes the rolled dice colour, never tiers or progress — opponents on new app versions see the same colour.

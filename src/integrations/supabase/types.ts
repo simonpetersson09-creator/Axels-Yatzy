@@ -821,6 +821,16 @@ export type Database = {
         }
         Returns: Json
       }
+      client_submit_score: {
+        Args: {
+          p_category_id: string
+          p_device_id: string
+          p_expected_dice: number[]
+          p_game_id: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
       create_game_with_code: {
         Args: { p_player_name: string; p_session_id: string }
         Returns: Json

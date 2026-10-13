@@ -302,6 +302,13 @@
       "when": 1791882355448,
       "tag": "0042_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1791884212843,
+      "tag": "0043_client_direct_submit_score",
+      "breakpoints": true
     }
   ]
 }

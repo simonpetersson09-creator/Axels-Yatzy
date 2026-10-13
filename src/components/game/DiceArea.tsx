@@ -52,7 +52,11 @@ export function DiceArea({
   // the camera framing — and therefore the resting dice positions and size —
   // pixel-identical while giving the roll animation room to overshoot.
   const OVERSCAN = 1.5;
-  const overscanWidth = Math.round(columnWidth * OVERSCAN);
+  // Extra width so the dice still enter from beyond the phone's edge when the
+  // column is scaled down (banner mode); framing is height-driven, so the
+  // wider canvas doesn't change the dice size.
+  const OVERSCAN_X = 2.4;
+  const overscanWidth = Math.round(columnWidth * OVERSCAN_X);
   const overscanHeight = Math.round(columnHeight * OVERSCAN);
   const overscanX = Math.round((overscanWidth - columnWidth) / 2);
   const overscanY = Math.round((overscanHeight - columnHeight) / 2);

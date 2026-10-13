@@ -430,7 +430,8 @@ html.ad-banner-on {
 /* Vanliga telefoner: tärningarna 90 % så att plats finns under klockraden. */
 html.ad-banner-on .ios-dice-zone {
   transform: scale(0.9);
-  transform-origin: top center;
+  /* Krymp mot högerkanten så tärningarna fortfarande flyger in från skärmkanten. */
+  transform-origin: calc(50% + 75px) 0;
   margin-bottom: -39px;
 }
 /* Stora telefoner (Plus/Pro Max) har plats nog – krymp nästan inget. */
@@ -456,7 +457,7 @@ html.ad-banner-on .ios-dice-zone {
   /* Krymp tärningarna och Kast-knappen till 80 % (bara små telefoner). */
   html.ad-banner-on .ios-dice-zone {
     transform: scale(0.8);
-    transform-origin: top center;
+    transform-origin: calc(50% + 75px) 0;
     margin-bottom: -124px; /* krympt höjd + extra luft ovanför */
     margin-top: 16px;
   }

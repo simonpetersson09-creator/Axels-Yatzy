@@ -1101,9 +1101,10 @@ export function useMultiplayerGame() {
         const lockStartedAt = Date.now();
         try {
           // Straight to the database (client_set_locks also marks us active).
-          const { error } = await withTimeout(directRpc('client_set_locks', 'toggle-lock', {
+          // Setting the full lock array is safe to repeat → one automatic retry.
+          const { error } = await withTimeout(withOneRetry(() => directRpc('client_set_locks', 'toggle-lock', {
             p_game_id: gameId, p_session_id: sessionId, p_locked: locks,
-          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }));
+          }, { game_id: gameId, session_id: sessionId, locked_dice: locks })), RETRY_TIMEOUT_MS);
           if (error) {
             console.error('Toggle lock error:', error);
             reportMpIssue('lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error) });
@@ -1248,9 +1249,19 @@ export function useMultiplayerGame() {
     // expected_dice: the server refuses the score if its dice differ from what
     // the player saw, instead of silently scoring the wrong dice (e.g. 0).
     // The "your turn" push is sent by the database itself (client_submit_score).
-    withTimeout(directRpc('client_submit_score', 'submit-score', {
+    // One automatic retry; before resending, check whether the first try
+    // already saved the score so it can never be saved twice.
+    const checkSaved = async () => {
+      const { data: pl } = await supabase.from('game_players').select('scores')
+        .eq('game_id', gameId).eq('session_id', sessionId).maybeSingle();
+      const saved = (pl?.scores as Record<string, unknown> | undefined)?.[categoryId];
+      if (saved === undefined || saved === null) return null;
+      const { data: g } = await supabase.from('games').select('status').eq('id', gameId).maybeSingle();
+      return { data: { success: true, score: Number(saved), category_id: categoryId, game_over: g?.status === 'finished' }, error: null };
+    };
+    withTimeout(withOneRetry(() => directRpc('client_submit_score', 'submit-score', {
       p_game_id: gameId, p_session_id: sessionId, p_category_id: categoryId, p_expected_dice: shownDice,
-    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }))
+    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }), checkSaved), RETRY_TIMEOUT_MS)
       .then(({ data, error }) => {
         const submitMs = Date.now() - submitStartedAt;
         if (!error) {

@@ -99,7 +99,7 @@ export function DiceArea({
       >
         {/* Oversized, non-interactive overlay layer for the 3D canvas. */}
         <div
-          className="pointer-events-none absolute overflow-visible"
+          className="pointer-events-none absolute overflow-visible [&_*]:!pointer-events-none"
           style={{
             top: -overscanY,
             left: -overscanX,

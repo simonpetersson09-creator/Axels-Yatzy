@@ -259,7 +259,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
 /** Banner-ID per plattform. null = ingen banner i release-bygget än. */
 export const BANNER_IDS: Record<'ios' | 'android', string | null> = {
   ios: 'ca-app-pub-7448540924654868/7786182090',
-  android: null, // inget eget Android-banner-ID än – banner avstängd i Android-release
+  android: 'ca-app-pub-7448540924654868/2816751438',
 };
 
 const GOOGLE_TEST_BANNER: Record<'ios' | 'android', string> = {
@@ -285,7 +285,7 @@ const BANNER_GAP_PX = 12;
 function safeAreaBottom(): number {
   if (!Capacitor.isNativePlatform()) return 0;
   const probe = document.createElement('div');
-  probe.style.cssText = 'position:fixed;visibility:hidden;height:env(safe-area-inset-bottom,0px)';
+  probe.style.cssText = 'position:fixed;visibility:hidden;height:var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px))';
   document.body.appendChild(probe);
   const h = probe.getBoundingClientRect().height;
   probe.remove();
@@ -303,7 +303,8 @@ async function centeredBannerMargin(): Promise<number> {
     const r = b.getBoundingClientRect();
     if (r.height > 0 && r.top < window.innerHeight) bottom = Math.max(bottom, r.bottom);
   });
-  // iOS-pluginet räknar marginalen från safe area-kanten (ovanför hemindikatorn).
+  // Pluginet räknar marginalen från safe area-kanten: ovanför hemindikatorn på
+  // iOS och ovanför navigationsfältet på Android 15+.
   const free = window.innerHeight - safeAreaBottom() - bottom;
   return Math.max(0, Math.round(free - 50 - BANNER_GAP_PX));
 }

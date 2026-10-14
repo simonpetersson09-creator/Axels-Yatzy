@@ -308,7 +308,7 @@ export const no: typeof sv = {
   useWhiteDiceDesc: 'Spill med vanlige hvite terninger. Fargen og fremgangen din beholdes.',
   statsPageTitle: "Statistikk",
   yourRankingsTitle: "Dine plasseringer",
-  topCountriesTitle: "Topp 10 land",
+  topCountriesTitle: 'Topp 10 land – gjennom tidene',
   hofTitle: 'Ukens Hall of Fame',
   hofSubtitle: 'Beste poeng i én kamp denne uken',
   hofEmpty: 'Ingen har spilt ennå denne uken',

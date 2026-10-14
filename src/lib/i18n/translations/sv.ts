@@ -317,7 +317,7 @@ export const sv = {
   useWhiteDiceDesc: 'Spela med vanliga vita tärningar. Din färg och dina framsteg finns kvar.',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Dina placeringar",
-  topCountriesTitle: "Topp 10 länder",
+  topCountriesTitle: 'Topp 10 länder – genom tiderna',
   hofTitle: 'Veckans Hall of Fame',
   hofSubtitle: 'Bästa poäng i en match den här veckan',
   hofEmpty: 'Ingen har spelat än den här veckan',

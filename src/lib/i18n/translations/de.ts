@@ -303,7 +303,7 @@ export const de: typeof sv = {
   useWhiteDiceDesc: 'Mit normalen weißen Würfeln spielen. Farbe und Fortschritt bleiben erhalten.',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Deine Platzierungen",
-  topCountriesTitle: "Top 10 Länder",
+  topCountriesTitle: 'Top 10 Länder – aller Zeiten',
   hofTitle: 'Hall of Fame der Woche',
   hofSubtitle: 'Beste Punktzahl in einem Spiel diese Woche',
   hofEmpty: 'Diese Woche hat noch niemand gespielt',

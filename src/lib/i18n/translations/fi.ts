@@ -308,7 +308,7 @@ export const fi: typeof sv = {
   useWhiteDiceDesc: 'Pelaa tavallisilla valkoisilla nopilla. Värisi ja edistymisesi säilyvät.',
   statsPageTitle: "Tilastot",
   yourRankingsTitle: "Sijoituksesi",
-  topCountriesTitle: "10 parasta maata",
+  topCountriesTitle: 'Top 10 maat – kaikkien aikojen',
   hofTitle: 'Viikon Hall of Fame',
   hofSubtitle: 'Paras pistemäärä yhdessä pelissä tällä viikolla',
   hofEmpty: 'Kukaan ei ole vielä pelannut tällä viikolla',

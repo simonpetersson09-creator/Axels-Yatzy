@@ -379,6 +379,13 @@
       "when": 1791960125022,
       "tag": "0053_country_rank_trusted_only",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1791985879940,
+      "tag": "0054_weekly_hall_of_fame",
+      "breakpoints": true
     }
   ]
 }

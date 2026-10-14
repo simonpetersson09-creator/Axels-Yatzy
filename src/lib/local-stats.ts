@@ -138,5 +138,7 @@ export function recordGameResult(
   // Update the player's personal country ranking after every finished match.
   // Lazy import to keep this module free of network deps until needed.
   void import('./country-rank').then(m => m.syncCountryRank(stats.gamesPlayed)).catch(() => {});
+  // Weekly Hall of Fame: name, matches this week and best score in one match.
+  void import('./hall-of-fame').then(m => m.reportWeeklyScore(playerScore)).catch(() => {});
   return true;
 }

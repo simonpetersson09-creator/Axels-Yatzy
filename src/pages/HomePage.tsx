@@ -409,6 +409,12 @@ export default function HomePage() {
           continue;
         }
         const me = players?.find(p => p.game_id === id && p.session_id === sessionId);
+        if (players && !me) {
+          // I left (seat taken over by the computer) — no longer my match.
+          removeActiveGame(id);
+          removed = true;
+          continue;
+        }
         const opponent = players?.find(p => p.game_id === id && p.session_id !== sessionId);
         const opponentActiveMs = opponent?.last_active_at ? new Date(opponent.last_active_at).getTime() : 0;
 

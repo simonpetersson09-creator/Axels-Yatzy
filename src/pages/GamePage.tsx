@@ -550,7 +550,7 @@ export default function GamePage() {
                 onPointerDown={(e) => {
                   e.stopPropagation();
                   pressedButtonRef.current = 'kasta';
-                  (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                  try { (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId); } catch { /* pointer already gone */ }
                 }}
                 onPointerUp={(e) => {
                   e.stopPropagation();
@@ -600,7 +600,7 @@ export default function GamePage() {
                   onPointerDown={(e) => {
                     e.stopPropagation();
                     pressedButtonRef.current = 'home';
-                    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+                    try { (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId); } catch { /* pointer already gone */ }
                   }}
                   onPointerUp={(e) => {
                     e.stopPropagation();

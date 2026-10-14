@@ -35,7 +35,7 @@ export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(f
         onPointerDown={(e) => {
           e.stopPropagation();
           if (pressedButtonRef) pressedButtonRef.current = 'forfeit';
-          (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+          try { (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId); } catch { /* pointer already gone */ }
         }}
         onPointerUp={(e) => {
           e.stopPropagation();

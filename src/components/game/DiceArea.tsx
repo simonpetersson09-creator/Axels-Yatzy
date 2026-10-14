@@ -171,10 +171,13 @@ function useDiceScale(): [number, number] {
       const next = readDiceScale();
       return prev[0] === next[0] && prev[1] === next[1] ? prev : next;
     });
+    // Read again after mount: rules like :has(.mp-game) only match once the page is in the DOM.
+    update();
+    const raf = requestAnimationFrame(update);
     const mo = new MutationObserver(update);
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     window.addEventListener('resize', update);
-    return () => { mo.disconnect(); window.removeEventListener('resize', update); };
+    return () => { cancelAnimationFrame(raf); mo.disconnect(); window.removeEventListener('resize', update); };
   }, []);
   return scale;
 }

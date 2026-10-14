@@ -487,3 +487,12 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.74; }
   html.ad-banner-on { --dice-scale: 1; }
   html.ad-banner-on:has(.mp-game) { --dice-scale: 0.86; }
 }
+
+/* Online: pratbubblan sitter lika nära Kasta som Kasta sitter mot Hem/Ge upp. */
+.ios-game-layout .mp-game .mp-chat-zone,
+.mp-game.ios-game-layout .mp-chat-zone { margin-top: auto !important; }
+.ios-game-layout .mp-game .ios-action-zone,
+.mp-game.ios-game-layout .ios-action-zone { margin-top: 0 !important; }
+@media (min-height: 800px) and (max-height: 899px) {
+  html.ad-banner-on:has(.mp-game) { --dice-scale: 0.93; }
+}

@@ -19,6 +19,7 @@ export default function StatsPage() {
   const [weekly, setWeekly] = useState<WeeklyRank | null>(null);
   const [top, setTop] = useState<TopCountry[]>([]);
   const [hof, setHof] = useState<HallOfFameEntry[]>([]);
+  const [most, setMost] = useState<HallOfFameEntry[]>([]);
   const myCountry = getProfileCountry();
   const mySession = getSessionId();
 
@@ -26,10 +27,10 @@ export default function StatsPage() {
     let alive = true;
     (async () => {
       // Same sync as the home screen, so both screens always show the same numbers.
-      const [r, tc, h] = await Promise.all([syncCountryRank(), syncTopCountries(10), fetchWeeklyHallOfFame(10)]);
+      const [r, tc, h, m] = await Promise.all([syncCountryRank(), syncTopCountries(10), fetchWeeklyHallOfFame(10), fetchWeeklyMostGames(10)]);
       const w = r.country ? await syncWeeklyRank() : null;
       if (!alive) return;
-      setRank(r); setTop(tc); setWeekly(w); setHof(h); setLoading(false);
+      setRank(r); setTop(tc); setWeekly(w); setHof(h); setMost(m); setLoading(false);
     })();
     return () => { alive = false; };
   }, []);
@@ -102,31 +103,21 @@ export default function StatsPage() {
           )}
         </section>
 
-        <section className="space-y-2">
-          <div className="px-2 flex items-center gap-1.5">
-            <Trophy className="w-3.5 h-3.5 text-game-gold" />
-            <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em]">{t('hofTitle')}</p>
-          </div>
-          <p className="text-[11px] text-muted-foreground/70 px-2 -mt-1">{t('hofSubtitle')}</p>
-          <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
-            {loading && <div className="p-4 text-sm text-muted-foreground">{t('loading')}</div>}
-            {!loading && hof.length === 0 && <div className="p-4 text-sm text-muted-foreground">{t('hofEmpty')}</div>}
-            {hof.map((p, i) => (
-              <div
-                key={p.session_id}
-                className={`flex items-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${p.session_id === mySession ? 'bg-primary/10' : ''}`}
-              >
-                <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-game-gold' : 'text-muted-foreground'}`}>{i + 1}</span>
-                {p.country && <span className="text-base">{countryToFlag(p.country)}</span>}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate">{p.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{fmt(p.games_played)} {t('hofMatches')}</p>
-                </div>
-                <p className="font-display font-bold text-lg tabular-nums text-primary">{fmt(p.best_score)}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <HofSection
+          icon={<Trophy className="w-3.5 h-3.5 text-game-gold" />}
+          title={t('hofTitle')} subtitle={t('hofSubtitle')}
+          rows={hof} loading={loading} mySession={mySession} empty={t('hofEmpty')} loadingText={t('loading')}
+          sub={(p) => `${fmt(p.games_played)} ${t('hofMatches')}`}
+          value={(p) => fmt(p.best_score)}
+        />
+
+        <HofSection
+          icon={<Flame className="w-3.5 h-3.5 text-game-gold" />}
+          title={t('hofGamesTitle')} subtitle={t('hofGamesSubtitle')}
+          rows={most} loading={loading} mySession={mySession} empty={t('hofEmpty')} loadingText={t('loading')}
+          sub={(p) => `${t('hofBestShort')} ${fmt(p.best_score)}`}
+          value={(p) => fmt(p.games_played)}
+        />
 
         <section className="space-y-2">
           <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em] px-2">{t('topCountriesTitle')}</p>

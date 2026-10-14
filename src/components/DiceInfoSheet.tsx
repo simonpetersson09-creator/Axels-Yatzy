@@ -83,12 +83,13 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
   const skin = profileSkin(profile);
 
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-background/50" onClick={onClose}>
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-background/50" onClick={onClose}>
       <motion.div
-        initial={{ y: 40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={{ y: 16, opacity: 0, scale: 0.98 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
         transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-        className="relative w-full max-w-md rounded-t-2xl bg-card border border-border px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+16px)]"
+        className="relative w-full max-w-md rounded-2xl bg-card border border-border shadow-xl px-4 pt-4 pb-4"
+
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={onClose} aria-label={t('close')} className="absolute top-3 right-3 text-muted-foreground p-1">

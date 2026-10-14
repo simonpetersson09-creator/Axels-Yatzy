@@ -439,6 +439,7 @@ html.ad-banner-on .mp-chat-zone { margin-top: 2px; }
     --sb-row-h: 34px;
     --dice-top-gap: 42px;
     --action-top-gap: 44px;
+    --mp-action-top-gap: 8px;
     --dice-scale: 1;
   }
 }

@@ -941,6 +941,7 @@ export type Database = {
       get_game_avatars: { Args: { p_game_id: string }; Returns: Json }
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
       get_gold_players: { Args: { p_session_ids: string[] }; Returns: string[] }
+      get_my_hof_rank: { Args: { p_session_id: string }; Returns: number }
       get_player_card: { Args: { p_session_id: string }; Returns: Json }
       get_player_stats: { Args: { p_game_id: string }; Returns: Json }
       get_referral_code: {
@@ -984,6 +985,7 @@ export type Database = {
         Args: { p_invitee: string; p_inviter: string }
         Returns: boolean
       }
+      internal_hof_rank: { Args: { p_session_id: string }; Returns: number }
       internal_hof_week: { Args: never; Returns: string }
       internal_record_friend_match: {
         Args: { p_game_id: string }
@@ -1147,6 +1149,16 @@ export type Database = {
           p_session_id: string
         }
         Returns: boolean
+      }
+      report_weekly_score_ranked: {
+        Args: {
+          p_country?: string
+          p_device_id: string
+          p_name: string
+          p_score: number
+          p_session_id: string
+        }
+        Returns: Json
       }
       respond_friend_request: {
         Args: {

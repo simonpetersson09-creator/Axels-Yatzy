@@ -23,6 +23,7 @@ import { getPlayerName, getSessionId } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { supabase } from '@/integrations/supabase/client';
 import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Settings, Users, Heart } from 'lucide-react';
+import { getCachedHofRank, subscribeHofRank, syncMyHofRank } from '@/lib/hall-of-fame';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
@@ -245,6 +246,14 @@ export default function HomePage() {
     }, 1200);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [stats.gamesPlayed, profileVersion]);
+
+  // Hall of Fame badge: cached rank at once, refreshed after the entrance animation.
+  const [hofRank, setHofRank] = useState<number | null>(() => getCachedHofRank());
+  useEffect(() => {
+    const unsub = subscribeHofRank(setHofRank);
+    const timer = setTimeout(() => { void syncMyHofRank(); }, 1500);
+    return () => { unsub(); clearTimeout(timer); };
+  }, [stats.gamesPlayed]);
 
   const [statusTick, setStatusTick] = useState(0);
   useEffect(() => {
@@ -720,6 +729,7 @@ export default function HomePage() {
                 </AnimatePresence>
               </div>
 
+              <div className="relative">
               <motion.button
                 onClick={() => navigate('/settings')}
                 className={`flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}
@@ -731,6 +741,19 @@ export default function HomePage() {
                 </div>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('settings')}</span>
               </motion.button>
+              {hofRank && (
+                <motion.button
+                  onClick={() => navigate('/stats')}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="absolute -top-2 -right-4 flex items-center gap-0.5 rounded-full bg-game-gold text-background px-1.5 py-0.5 text-[10px] font-bold tabular-nums shadow-md"
+                  aria-label={`${t('hofBadgeLabel')} #${hofRank}`}
+                >
+                  <Trophy className="w-3 h-3" />#{hofRank}
+                </motion.button>
+              )}
+              </div>
 
               <motion.button
                 onClick={() => navigate('/friends')}

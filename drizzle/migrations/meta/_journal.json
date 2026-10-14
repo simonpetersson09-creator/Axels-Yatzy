@@ -386,6 +386,13 @@
       "when": 1791985879940,
       "tag": "0054_weekly_hall_of_fame",
       "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1791986207786,
+      "tag": "0055_hall_of_fame_rank",
+      "breakpoints": true
     }
   ]
 }

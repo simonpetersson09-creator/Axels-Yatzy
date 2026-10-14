@@ -494,5 +494,5 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.74; }
 .ios-game-layout .mp-game .ios-action-zone,
 .mp-game.ios-game-layout .ios-action-zone { margin-top: 0 !important; }
 @media (min-height: 800px) and (max-height: 899px) {
-  html.ad-banner-on:has(.mp-game) { --dice-scale: 0.93; }
+  html.ad-banner-on:has(.mp-game) { --dice-scale: 0.9; }
 }

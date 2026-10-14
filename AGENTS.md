@@ -1,7 +1,7 @@
 - iOS native patches (AdMob plist, push token forwarding + aps-environment entitlement) live in scripts/ and run via `npm run cap:sync:ios` — ios/ is regenerated outside the repo, so manual Xcode edits get lost.
 - Screenshot/QA scripts must never seed stats on the live preview without cleanup: seeded stats sync to the shared world leaderboard (player_country_stats) and push real players down.
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
-- Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — keeps unlocks tamper-resistant and in sync across devices.
+- Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — tamper-resistant, synced.
 - Android native patches (AdMob App ID in AndroidManifest) run via `npm run cap:sync:android`; android/ is generated outside the repo like ios/, so manual edits get lost.
 - AdMob IDs are per platform in ADMOB_IDS (src/lib/admob.ts); a null ID disables that ad type on that platform so iOS IDs can never be used on Android.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
@@ -22,3 +22,4 @@
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock — avoids duplicate matches.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Hall of Fame: server-side report_weekly_score (from recordGameResult) trims to first name, caps score.
+- Game banner: fitGameAboveBanner (admob.ts) shrinks rows/dice until all fits above it.

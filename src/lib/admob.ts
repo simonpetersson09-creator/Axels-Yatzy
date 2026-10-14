@@ -327,6 +327,7 @@ let bannerShown = false;
 /** Gör plats för bannern i spelets layout (se html.ad-banner-on i index.css). */
 function setBannerSpace(on: boolean) {
   if (typeof document !== 'undefined') document.documentElement.classList.toggle('ad-banner-on', on);
+  if (!on && typeof document !== 'undefined') resetBannerFit();
 }
 
 // Dev: ?bannerPreview=1 visar en låtsasbanner i förhandsvisningen.
@@ -337,13 +338,67 @@ const BANNER_GAP_PX = 12;
 
 /** Marginal nerifrån så bannern hamnar strax under protokollet och knapparna. */
 function safeAreaBottom(): number {
-  if (!Capacitor.isNativePlatform()) return 0;
   const probe = document.createElement('div');
   probe.style.cssText = 'position:fixed;visibility:hidden;height:var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px))';
   document.body.appendChild(probe);
   const h = probe.getBoundingClientRect().height;
   probe.remove();
   return h;
+}
+
+/** Lägsta underkant av protokollet och knapparna i spelet, eller null. */
+function gameContentBottom(): number | null {
+  const zone = document.querySelector('.ios-score-zone');
+  if (!zone) return null;
+  let bottom = zone.getBoundingClientRect().bottom;
+  zone.parentElement?.querySelectorAll('button').forEach((b) => {
+    const r = b.getBoundingClientRect();
+    if (r.height > 0 && r.top < window.innerHeight) bottom = Math.max(bottom, r.bottom);
+  });
+  return bottom;
+}
+
+const raf2 = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(null))));
+
+/** Tar bort krympningen som fitGameAboveBanner lagt på. */
+function resetBannerFit() {
+  const s = document.documentElement.style;
+  s.removeProperty('--sb-row-h');
+  s.removeProperty('--dice-scale');
+  s.removeProperty('--dice-gap-scale');
+}
+
+/**
+ * Krymper protokollrader och tärningar tills allt får plats ovanför bannern.
+ * Mäts på den riktiga skärmen (inkl. statusfält och hemindikator), så inget
+ * kan hamna under annonsen oavsett telefon.
+ */
+async function fitGameAboveBanner(isStale: () => boolean) {
+  resetBannerFit();
+  await raf2();
+  const root = document.documentElement;
+  const css = getComputedStyle(root);
+  let row = parseFloat(css.getPropertyValue('--sb-row-h')) || 34;
+  let dice = parseFloat(css.getPropertyValue('--dice-scale')) || 1;
+  let gapS = parseFloat(css.getPropertyValue('--dice-gap-scale')) || dice;
+  for (let i = 0; i < 8; i++) {
+    if (isStale()) return;
+    const bottom = gameContentBottom();
+    if (bottom === null) return;
+    const limit = window.innerHeight - safeAreaBottom() - 50 - BANNER_GAP_PX;
+    const over = bottom - limit;
+    if (over <= 0.5) return;
+    // Protokollet har ~20 rader; tärningskolumnen ~5 tärningar + 4 mellanrum.
+    const k = Math.max(0.8, 1 - over / Math.max(1, bottom - 120));
+    row = Math.max(20, Math.floor((row - over / 19 - 0.25) * 2) / 2);
+    dice = Math.max(0.5, +(dice * k).toFixed(3));
+    gapS = Math.max(0.3, +(gapS * k).toFixed(3));
+    root.style.setProperty('--sb-row-h', `${row}px`);
+    root.style.setProperty('--dice-scale', String(dice));
+    root.style.setProperty('--dice-gap-scale', String(gapS));
+    await raf2();
+    await raf2();
+  }
 }
 
 function measureBannerMargin(): number | null {
@@ -385,6 +440,8 @@ async function previewBanner(on: boolean, isStale: () => boolean = () => false) 
   document.getElementById(id)?.remove();
   setBannerSpace(on);
   if (!on) return;
+  await fitGameAboveBanner(isStale);
+  if (isStale()) return;
   const d = document.createElement('div');
   d.id = id;
   d.textContent = 'Annons · 320×50';
@@ -419,6 +476,8 @@ export async function showGameBanner(): Promise<void> {
     const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
     if (stale()) return;
     setBannerSpace(true);
+    await fitGameAboveBanner(stale);
+    if (stale()) return;
     const margin = await centeredBannerMargin();
     // Vänta tills en pågående borttagning är klar, så den inte tar bort nya bannern.
     await bannerRemoving.catch(() => {});

@@ -308,7 +308,7 @@ export const en: typeof sv = {
   useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
   statsPageTitle: "Statistics",
   yourRankingsTitle: "Your rankings",
-  topCountriesTitle: "Top 10 countries",
+  topCountriesTitle: "Top 10 countries – all time",
   hofTitle: 'Hall of Fame this week',
   hofSubtitle: 'Best score in one match this week',
   hofEmpty: 'Nobody has played yet this week',

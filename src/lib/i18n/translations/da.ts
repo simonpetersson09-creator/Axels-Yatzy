@@ -308,7 +308,7 @@ export const da: typeof sv = {
   useWhiteDiceDesc: 'Spil med almindelige hvide terninger. Din farve og fremgang bevares.',
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Dine placeringer",
-  topCountriesTitle: "Top 10 lande",
+  topCountriesTitle: 'Top 10 lande – alle tider',
   hofTitle: 'Ugens Hall of Fame',
   hofSubtitle: 'Bedste point i én kamp denne uge',
   hofEmpty: 'Ingen har spillet endnu i denne uge',

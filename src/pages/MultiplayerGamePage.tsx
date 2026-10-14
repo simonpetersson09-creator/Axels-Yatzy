@@ -680,7 +680,7 @@ export default function MultiplayerGamePage() {
         onDismiss={() => setShowTurnTransition(false)}
       />
       <motion.div
-        className="ios-game-card relative flex flex-col gap-2"
+        className="ios-game-card mp-game relative flex flex-col gap-2"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}

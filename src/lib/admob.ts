@@ -378,6 +378,7 @@ async function centeredBannerMargin(): Promise<number> {
 }
 
 let shownMargin = -1;
+let bannerRemoving: Promise<void> = Promise.resolve();
 
 async function previewBanner(on: boolean, isStale: () => boolean = () => false) {
   const id = 'ad-banner-preview';
@@ -419,6 +420,8 @@ export async function showGameBanner(): Promise<void> {
     if (stale()) return;
     setBannerSpace(true);
     const margin = await centeredBannerMargin();
+    // Vänta tills en pågående borttagning är klar, så den inte tar bort nya bannern.
+    await bannerRemoving.catch(() => {});
     if (stale()) { if (!bannerWanted) setBannerSpace(false); return; }
     // Samma plats som nu: låt bannern ligga kvar i stället för att ladda om den.
     if (bannerShown && margin === shownMargin) return;
@@ -448,10 +451,16 @@ export async function hideGameBanner(): Promise<void> {
   setBannerSpace(false);
   if (bannerPreview) { void previewBanner(false); return; }
   if (!bannerShown || !isAdMobAvailable()) return;
-  try {
-    const mod = await loadModule();
-    // Ta bort helt (inte bara dölj) så att ingen gammal banner ligger kvar.
-    await mod.AdMob.removeBanner();
-    bannerShown = false;
-  } catch { /* best effort */ }
+  // Markera direkt som borta: annars kan en ny match som öppnas medan
+  // borttagningen pågår tro att bannern ligger kvar och hoppa över visningen.
+  bannerShown = false;
+  shownMargin = -1;
+  bannerRemoving = (async () => {
+    try {
+      const mod = await loadModule();
+      // Ta bort helt (inte bara dölj) så att ingen gammal banner ligger kvar.
+      await mod.AdMob.removeBanner();
+    } catch { /* best effort */ }
+  })();
+  await bannerRemoving;
 }

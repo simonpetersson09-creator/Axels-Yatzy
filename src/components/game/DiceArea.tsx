@@ -175,7 +175,7 @@ function useDiceScale(): [number, number] {
     update();
     const raf = requestAnimationFrame(update);
     const mo = new MutationObserver(update);
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
     window.addEventListener('resize', update);
     return () => { cancelAnimationFrame(raf); mo.disconnect(); window.removeEventListener('resize', update); };
   }, []);

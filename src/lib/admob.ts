@@ -327,6 +327,7 @@ let bannerShown = false;
 /** Gör plats för bannern i spelets layout (se html.ad-banner-on i index.css). */
 function setBannerSpace(on: boolean) {
   if (typeof document !== 'undefined') document.documentElement.classList.toggle('ad-banner-on', on);
+  if (!on && typeof document !== 'undefined') resetBannerFit();
 }
 
 // Dev: ?bannerPreview=1 visar en låtsasbanner i förhandsvisningen.
@@ -439,6 +440,8 @@ async function previewBanner(on: boolean, isStale: () => boolean = () => false) 
   document.getElementById(id)?.remove();
   setBannerSpace(on);
   if (!on) return;
+  await fitGameAboveBanner(isStale);
+  if (isStale()) return;
   const d = document.createElement('div');
   d.id = id;
   d.textContent = 'Annons · 320×50';
@@ -473,6 +476,8 @@ export async function showGameBanner(): Promise<void> {
     const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
     if (stale()) return;
     setBannerSpace(true);
+    await fitGameAboveBanner(stale);
+    if (stale()) return;
     const margin = await centeredBannerMargin();
     // Vänta tills en pågående borttagning är klar, så den inte tar bort nya bannern.
     await bannerRemoving.catch(() => {});

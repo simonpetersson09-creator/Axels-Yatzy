@@ -400,6 +400,13 @@
       "when": 1791986502896,
       "tag": "0056_hall_of_fame_most_games",
       "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1791993747845,
+      "tag": "0057_migration",
+      "breakpoints": true
     }
   ]
 }

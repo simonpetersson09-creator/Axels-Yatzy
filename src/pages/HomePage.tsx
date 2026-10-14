@@ -19,7 +19,7 @@ import {
   type ActiveGame,
 } from '@/lib/active-game';
 import { getRandomAiNames } from '@/lib/yatzy-ai';
-import { getPlayerName, getSessionId } from '@/lib/session';
+import { getPlayerName, getSessionId, getAnonNumber } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { supabase } from '@/integrations/supabase/client';
 import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Settings, Users, Heart } from 'lucide-react';
@@ -628,7 +628,7 @@ export default function HomePage() {
                     <motion.button
                       key={opponents}
                       onClick={() => {
-                        const humanName = getPlayerName() || t('you');
+                        const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
                         const aiNames = getRandomAiNames(opponents);
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);

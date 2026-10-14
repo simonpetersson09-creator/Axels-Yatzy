@@ -107,3 +107,13 @@ export async function fetchWeeklyHallOfFame(limit = HOF_SIZE): Promise<HallOfFam
     return [];
   }
 }
+
+export async function fetchWeeklyMostGames(limit = HOF_SIZE): Promise<HallOfFameEntry[]> {
+  try {
+    const { data, error } = await supabase.rpc('get_weekly_most_games', { p_limit: limit });
+    if (error || !Array.isArray(data)) return [];
+    return data as unknown as HallOfFameEntry[];
+  } catch {
+    return [];
+  }
+}

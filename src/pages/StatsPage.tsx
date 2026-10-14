@@ -70,7 +70,7 @@ export default function StatsPage() {
               {t('statsNeedCountry')}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-2">
+            <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden divide-y divide-border/30">
               <RankCard
                 icon={myCountry ? <span className="text-base">{countryToFlag(myCountry)}</span> : <MapPin className="w-4 h-4 text-primary" />}
                 label={myCountry ? t('countryRankLabelFull', { country: countryName(myCountry, lang) }) : t('countryRankLabel')}
@@ -148,14 +148,14 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
   fmt: (n: number) => string; playersWord: string; sub?: string;
 }) {
   return (
-    <div className="rounded-2xl bg-secondary/50 border border-border/40 px-3.5 py-2.5 flex items-center gap-3">
-      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">{icon}</div>
+    <div className="px-3.5 py-1.5 flex items-center gap-2.5">
+      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
-        {sub && <p className="text-[11px] text-muted-foreground/80 mt-0.5">{sub}</p>}
+        {sub && <p className="text-[10px] text-muted-foreground/80 leading-tight">{sub}</p>}
       </div>
       <div className="text-right">
-        <p className="font-display font-bold text-xl tabular-nums text-primary">
+        <p className="font-display font-bold text-base tabular-nums text-primary">
           {loading ? '…' : rank ? `#${fmt(rank)}` : '—'}
         </p>
       </div>

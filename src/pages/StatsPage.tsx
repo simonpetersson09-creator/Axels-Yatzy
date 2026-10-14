@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Globe, CalendarDays, MapPin, Trophy } from 'lucide-react';
+import { ArrowLeft, Globe, CalendarDays, MapPin, Trophy, Flame } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { getProfileCountry } from '@/lib/profile';
 import { getSessionId } from '@/lib/session';
-import { fetchWeeklyHallOfFame, type HallOfFameEntry } from '@/lib/hall-of-fame';
+import { fetchWeeklyHallOfFame, fetchWeeklyMostGames, type HallOfFameEntry } from '@/lib/hall-of-fame';
 import {
   countryName, countryToFlag, syncCountryRank, syncWeeklyRank, syncTopCountries,
   type RankInfo, type WeeklyRank, type TopCountry,
@@ -160,5 +160,39 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
         </p>
       </div>
     </div>
+  );
+}
+
+function HofSection({ icon, title, subtitle, rows, loading, mySession, empty, loadingText, sub, value }: {
+  icon: React.ReactNode; title: string; subtitle: string; rows: HallOfFameEntry[]; loading: boolean;
+  mySession: string; empty: string; loadingText: string;
+  sub: (p: HallOfFameEntry) => string; value: (p: HallOfFameEntry) => string;
+}) {
+  return (
+    <section className="space-y-2">
+      <div className="px-2 flex items-center gap-1.5">
+        {icon}
+        <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em]">{title}</p>
+      </div>
+      <p className="text-[11px] text-muted-foreground/70 px-2 -mt-1">{subtitle}</p>
+      <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
+        {loading && <div className="p-4 text-sm text-muted-foreground">{loadingText}</div>}
+        {!loading && rows.length === 0 && <div className="p-4 text-sm text-muted-foreground">{empty}</div>}
+        {rows.map((p, i) => (
+          <div
+            key={p.session_id}
+            className={`flex items-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${p.session_id === mySession ? 'bg-primary/10' : ''}`}
+          >
+            <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-game-gold' : 'text-muted-foreground'}`}>{i + 1}</span>
+            {p.country && <span className="text-base">{countryToFlag(p.country)}</span>}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate">{p.name}</p>
+              <p className="text-[11px] text-muted-foreground">{sub(p)}</p>
+            </div>
+            <p className="font-display font-bold text-lg tabular-nums text-primary">{value(p)}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

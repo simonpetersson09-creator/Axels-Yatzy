@@ -21,4 +21,4 @@
 - Subdirectories have their own AGENTS.md (e.g. supabase/functions/) — read it before changing files there.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock — avoids duplicate matches.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
-- Weekly Hall of Fame lives server-side (weekly_hall_of_fame via report_weekly_score/get_weekly_hall_of_fame, reported from recordGameResult); the server trims names to first name and caps scores — clients can't publish full names or impossible scores.
+- Hall of Fame is server-side (report_weekly_score from recordGameResult); server trims to first name and caps score — no full names or impossible scores.

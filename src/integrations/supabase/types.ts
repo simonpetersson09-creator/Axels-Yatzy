@@ -763,6 +763,39 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_hall_of_fame: {
+        Row: {
+          best_at: string
+          best_score: number
+          country: string | null
+          first_name: string
+          games_played: number
+          session_id: string
+          updated_at: string
+          week_start: string
+        }
+        Insert: {
+          best_at?: string
+          best_score?: number
+          country?: string | null
+          first_name: string
+          games_played?: number
+          session_id: string
+          updated_at?: string
+          week_start: string
+        }
+        Update: {
+          best_at?: string
+          best_score?: number
+          country?: string | null
+          first_name?: string
+          games_played?: number
+          session_id?: string
+          updated_at?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       weekly_reminder_log: {
         Row: {
           delivered: boolean
@@ -915,6 +948,7 @@ export type Database = {
         Returns: string
       }
       get_top_countries: { Args: { p_limit?: number }; Returns: Json }
+      get_weekly_hall_of_fame: { Args: { p_limit?: number }; Returns: Json }
       get_weekly_rank: { Args: { p_session_id: string }; Returns: Json }
       get_weekly_reminder_targets: {
         Args: never
@@ -950,6 +984,7 @@ export type Database = {
         Args: { p_invitee: string; p_inviter: string }
         Returns: boolean
       }
+      internal_hof_week: { Args: never; Returns: string }
       internal_record_friend_match: {
         Args: { p_game_id: string }
         Returns: undefined
@@ -1102,6 +1137,16 @@ export type Database = {
       record_local_yatzy_match: {
         Args: { p_device_id: string; p_match_key: string; p_session_id: string }
         Returns: Json
+      }
+      report_weekly_score: {
+        Args: {
+          p_country?: string
+          p_device_id: string
+          p_name: string
+          p_score: number
+          p_session_id: string
+        }
+        Returns: boolean
       }
       respond_friend_request: {
         Args: {

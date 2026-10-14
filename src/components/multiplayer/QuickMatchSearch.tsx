@@ -7,7 +7,7 @@ import { getSessionId, claimSession } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
 import { useGameBanner } from '@/hooks/useGameBanner';
 
-const SEARCH_MS = 20_000;
+const SEARCH_MS = 15_000;
 const POLL_MS = 2_000;
 /** How long the "Opponent found" card shows before the match opens. */
 const FOUND_MS = 2_000;

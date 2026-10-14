@@ -950,6 +950,7 @@ export type Database = {
       }
       get_top_countries: { Args: { p_limit?: number }; Returns: Json }
       get_weekly_hall_of_fame: { Args: { p_limit?: number }; Returns: Json }
+      get_weekly_most_games: { Args: { p_limit?: number }; Returns: Json }
       get_weekly_rank: { Args: { p_session_id: string }; Returns: Json }
       get_weekly_reminder_targets: {
         Args: never

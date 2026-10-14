@@ -9,7 +9,7 @@ import { getCurrentSessionId } from '@/lib/analytics-session';
 import { claimSession } from '@/lib/session';
 import { markHappyMoment } from '@/lib/rate-app';
 
-const APP_VERSION = '1.0.0';
+import { getAppVersion } from '@/lib/app-version';
 
 // Resolve the persistent device id as early as possible.
 void initDeviceId();
@@ -129,7 +129,7 @@ export function trackEvent(
       game_mode: options?.gameMode ?? null,
       metadata: metadata ?? null,
       platform: getPlatform(),
-      app_version: APP_VERSION,
+      app_version: getAppVersion(),
     });
     if (queue.length >= MAX_BATCH) {
       void flush();

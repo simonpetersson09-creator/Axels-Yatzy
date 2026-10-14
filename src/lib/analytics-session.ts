@@ -31,7 +31,7 @@ function getPlatform(): string {
   }
 }
 
-const APP_VERSION = '1.0.0';
+import { appVersionReady } from '@/lib/app-version';
 
 let currentSessionId = newId();
 let sessionStartedAt = Date.now();
@@ -54,7 +54,7 @@ async function insertSession(id: string, startedAt: number): Promise<void> {
       p_id: id,
       p_device_id: deviceId,
       p_platform: getPlatform(),
-      p_app_version: APP_VERSION,
+      p_app_version: await appVersionReady,
       p_started_at: new Date(startedAt).toISOString(),
     });
   } catch {

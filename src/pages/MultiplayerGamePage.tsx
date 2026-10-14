@@ -705,7 +705,7 @@ export default function MultiplayerGamePage() {
                 aiChosenPlayerIndex={pendingPlayerIndex}
                 selectionDisabled={!isMyTurn || (rollPending && !localRolling)}
               />
-              {waitingServer && !localRolling && (
+              {waitingServer && showWait && !localRolling && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/35 pointer-events-auto">
                   <div className="flex items-center gap-2 rounded-full bg-card/90 px-3 py-1.5 shadow-lg">
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />

@@ -178,6 +178,7 @@ export function useMultiplayerGame() {
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lockBatchRef = useRef<{ gameId: string; timer: ReturnType<typeof setTimeout> | null; promise: Promise<boolean>; resolve: (ok: boolean) => void } | null>(null);
   const lockChainRef = useRef<Promise<unknown>>(Promise.resolve());
+  const lastSentLocksRef = useRef<{ gameId: string; seq: number } | null>(null);
   const lastSnapshotRef = useRef<{ gameId: string; updatedAt: string } | null>(null);
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
@@ -194,6 +195,24 @@ export function useMultiplayerGame() {
   // True while a lock tap is still unconfirmed by the server — the roll button
   // waits so the server never rolls a die the player believes is held.
   const [locksPending, setLocksPending] = useState(false);
+  // Safety net: never leave the board locked on "slow connection". If lock
+  // confirmation hangs past every timeout, drop the queue and resync.
+  useEffect(() => {
+    if (!locksPending) return;
+    const t = setTimeout(() => {
+      pendingLockPromisesRef.current.clear();
+      lockBatchRef.current = null;
+      lockChainRef.current = Promise.resolve();
+      pendingLockRef.current = null;
+      setLocksPending(false);
+      const id = stateRef.current.gameId;
+      if (id) {
+        reportMpIssue('lock_stuck_reset', id, {});
+        refreshGameStateRef.current?.(id);
+      }
+    }, 15_000);
+    return () => clearTimeout(t);
+  }, [locksPending]);
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);
   const rollConfirmedRef = useRef(true);
@@ -1098,6 +1117,11 @@ export function useMultiplayerGame() {
         const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
         const locks = pending?.gameId === gameId ? pending.lockedDice : null;
         if (!locks) { current.resolve(true); return; }
+        // Queued calls read the latest locks; if the previous call already sent
+        // exactly these, skip — rapid taps no longer pile up identical calls.
+        const last = lastSentLocksRef.current;
+        if (last && last.gameId === gameId && last.seq === sendSeq) { current.resolve(true); return; }
+        lastSentLocksRef.current = { gameId, seq: sendSeq };
         const lockStartedAt = Date.now();
         try {
           // Straight to the database (client_set_locks also marks us active).

@@ -496,3 +496,8 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.74; }
 @media (min-height: 800px) and (max-height: 899px) {
   html.ad-banner-on:has(.mp-game) { --dice-scale: 0.9; }
 }
+
+/* Online: större tärningar där det finns luft i sidokolumnen. */
+@media (max-height: 700px) { html.ad-banner-on:has(.mp-game) { --dice-scale: 0.68; } }
+@media (min-height: 701px) and (max-height: 760px) { html.ad-banner-on:has(.mp-game) { --dice-scale: 0.8; --dice-gap-scale: 0.6; } }
+@media (min-height: 900px) { html.ad-banner-on:has(.mp-game) { --dice-scale: 0.95; } }

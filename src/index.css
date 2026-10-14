@@ -427,9 +427,10 @@ html.ad-banner-on {
   --dice-top-gap: 30px;
   --action-top-gap: -1px;
   --dice-scale: 0.9; /* tärningarna 90 % så att plats finns under klockraden */
-  --mp-action-top-gap: -10px; /* onlinematch har snabbchatten som tar extra höjd */
+  --mp-action-top-gap: 2px; /* onlinematch har snabbchatten som tar extra höjd */
 }
-html.ad-banner-on .mp-chat-zone { margin-top: 2px; }
+html.ad-banner-on .mp-chat-zone { margin-top: 0; }
+html.ad-banner-on:has(.mp-game) { --dice-scale: 0.84; }
 
 /* Stora telefoner (Plus/Pro Max) har plats nog – krymp nästan inget. */
 @media (min-height: 900px) {
@@ -467,9 +468,9 @@ html.ad-banner-on .mp-chat-zone { margin-top: 2px; }
    tärningarna lite mer så att Hem/Ge upp hamnar ovanför bannern. */
 @media (max-height: 720px) {
   html.ad-banner-on:has(.mp-game) {
-    --dice-scale: 0.66;
+    --dice-scale: 0.6;
     --dice-gap-scale: 0.45;
-    --mp-action-top-gap: -14px;
+    --mp-action-top-gap: 2px;
   }
   html.ad-banner-on .mp-game .mp-chat-zone { margin-top: 0; }
 }

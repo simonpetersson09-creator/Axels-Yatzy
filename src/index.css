@@ -430,7 +430,7 @@ html.ad-banner-on {
   --mp-action-top-gap: 2px; /* onlinematch har snabbchatten som tar extra höjd */
 }
 html.ad-banner-on .mp-chat-zone { margin-top: 0; }
-html.ad-banner-on:has(.mp-game) { --dice-scale: 0.84; }
+html.ad-banner-on:has(.mp-game) { --dice-scale: 0.74; }
 
 /* Stora telefoner (Plus/Pro Max) har plats nog – krymp nästan inget. */
 @media (min-height: 900px) {
@@ -474,3 +474,7 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.84; }
   }
   html.ad-banner-on .mp-game .mp-chat-zone { margin-top: 0; }
 }
+
+/* Hem/Ge upp slutar alltid i linje med spelbrickans nederkant. */
+.ios-game-layout .ios-side-zone { align-self: stretch !important; }
+.ios-game-layout .ios-action-zone { margin-top: auto !important; }

@@ -816,7 +816,7 @@ export default function MultiplayerGamePage() {
 
             {/* Quick Chat */}
             {gameId && (
-              <div className="flex justify-center mt-2">
+              <div className="mp-chat-zone flex justify-center mt-2">
                 <QuickChat
                   gameId={gameId}
                   myPlayerIndex={myPlayerIndex}
@@ -829,7 +829,7 @@ export default function MultiplayerGamePage() {
             {/* Bottom: Roll + Home + Forfeit */}
             <div
               className="ios-action-zone flex flex-col items-center gap-2"
-              style={{ isolation: 'isolate', marginTop: '8px' }}
+              style={{ isolation: 'isolate', marginTop: 'var(--mp-action-top-gap, 8px)' }}
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
               <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
@@ -910,7 +910,7 @@ export default function MultiplayerGamePage() {
                   }}
                   onPointerCancel={() => { pressedButtonRef.current = null; }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="inline-flex items-center justify-center px-2 min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
+                  className="inline-flex items-center justify-center px-2 min-w-[3.2rem] min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                   title={t('toMenu')}
                   aria-label={t('home')}

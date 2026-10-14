@@ -49,3 +49,11 @@ export function getPlayerName(): string {
 export function setPlayerName(name: string): void {
   localStorage.setItem(PLAYER_NAME_KEY, name.trim());
 }
+
+/** Stable 4-digit number per session, used as "Spelare 4832" when no name is set. */
+export function getAnonNumber(): number {
+  const id = getSessionId();
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return 1000 + (h % 9000);
+}

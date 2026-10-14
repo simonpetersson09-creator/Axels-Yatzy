@@ -628,7 +628,7 @@ export default function HomePage() {
                     <motion.button
                       key={opponents}
                       onClick={() => {
-                        const humanName = getPlayerName() || t('you');
+                        const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
                         const aiNames = getRandomAiNames(opponents);
                         const playerNames = [humanName, ...aiNames];
                         const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);

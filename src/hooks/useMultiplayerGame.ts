@@ -178,6 +178,7 @@ export function useMultiplayerGame() {
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lockBatchRef = useRef<{ gameId: string; timer: ReturnType<typeof setTimeout> | null; promise: Promise<boolean>; resolve: (ok: boolean) => void } | null>(null);
   const lockChainRef = useRef<Promise<unknown>>(Promise.resolve());
+  const lastSentLocksRef = useRef<{ gameId: string; seq: number } | null>(null);
   const lastSnapshotRef = useRef<{ gameId: string; updatedAt: string } | null>(null);
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
@@ -1098,6 +1099,11 @@ export function useMultiplayerGame() {
         const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
         const locks = pending?.gameId === gameId ? pending.lockedDice : null;
         if (!locks) { current.resolve(true); return; }
+        // Queued calls read the latest locks; if the previous call already sent
+        // exactly these, skip — rapid taps no longer pile up identical calls.
+        const last = lastSentLocksRef.current;
+        if (last && last.gameId === gameId && last.seq === sendSeq) { current.resolve(true); return; }
+        lastSentLocksRef.current = { gameId, seq: sendSeq };
         const lockStartedAt = Date.now();
         try {
           // Straight to the database (client_set_locks also marks us active).

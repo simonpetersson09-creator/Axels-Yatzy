@@ -365,6 +365,13 @@
       "when": 1791925548122,
       "tag": "0051_remove_warm_triggers_2",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1791960046958,
+      "tag": "0052_world_rank_trusted_only",
+      "breakpoints": true
     }
   ]
 }

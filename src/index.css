@@ -427,7 +427,9 @@ html.ad-banner-on {
   --dice-top-gap: 30px;
   --action-top-gap: -1px;
   --dice-scale: 0.9; /* tärningarna 90 % så att plats finns under klockraden */
+  --mp-action-top-gap: -10px; /* onlinematch har snabbchatten som tar extra höjd */
 }
+html.ad-banner-on .mp-chat-zone { margin-top: 2px; }
 
 /* Stora telefoner (Plus/Pro Max) har plats nog – krymp nästan inget. */
 @media (min-height: 900px) {
@@ -437,6 +439,7 @@ html.ad-banner-on {
     --sb-row-h: 34px;
     --dice-top-gap: 42px;
     --action-top-gap: 44px;
+    --mp-action-top-gap: 8px;
     --dice-scale: 1;
   }
 }

@@ -504,3 +504,6 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.74; }
 @media (min-height: 840px) and (max-height: 899px) {
   html.ad-banner-on:has(.mp-game) { --sb-row-h: 33.5px; }
 }
+@media (min-height: 800px) and (max-height: 839px) {
+  html.ad-banner-on:has(.mp-game) { --sb-row-h: 30.5px; }
+}

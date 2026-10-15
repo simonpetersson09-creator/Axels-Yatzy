@@ -12,10 +12,11 @@ const KINDS: DesignKind[] = ['color', 'pattern', 'exclusive'];
 const PIPS_5 = [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]];
 
 function MiniDie({ d, size = 44 }: { d: DiceDesign; size?: number }) {
+  const glow = d.kind === 'exclusive' ? `0 0 ${size * 0.35}px ${d.glow ?? d.body}` : '0 4px 8px rgba(0,0,0,0.35)';
   return (
-    <div className="relative rounded-[22%] shadow-md" style={{ width: size, height: size, background: designSwatchBg(d) }} aria-hidden>
+    <div className="relative rounded-[22%]" style={{ width: size, height: size, background: designSwatchBg(d), boxShadow: `inset 0 -${size * 0.08}px ${size * 0.12}px rgba(0,0,0,0.25), ${glow}` }} aria-hidden>
       {PIPS_5.map(([x, y], i) => (
-        <span key={i} className="absolute rounded-full" style={{ left: `${x}%`, top: `${y}%`, width: size * 0.17, height: size * 0.17, background: d.pip, transform: 'translate(-50%,-50%)' }} />
+        <span key={i} className="absolute rounded-full" style={{ left: `${x}%`, top: `${y}%`, width: size * 0.17, height: size * 0.17, background: d.pip, transform: 'translate(-50%,-50%)', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.45)' }} />
       ))}
     </div>
   );
@@ -83,7 +84,7 @@ export function DiceShop() {
       {KINDS.map((kind) => (
         <div key={kind} className="mt-4">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t(`shopKind_${kind}` as TranslationKey)}</p>
-          <div className="mt-2 grid grid-cols-4 gap-2">
+          <div className="mt-2 grid grid-cols-3 gap-2">
             {DICE_DESIGNS.filter((d) => d.kind === kind).map((d) => {
               const owned = shop.owned.includes(d.id);
               const inUse = shop.selected === d.id;
@@ -91,11 +92,11 @@ export function DiceShop() {
                 <button
                   key={d.id}
                   onClick={() => setPicked(picked === d.id ? null : d.id)}
-                  className={cn('flex flex-col items-center gap-1 rounded-xl border p-2 active:scale-95 transition',
-                    picked === d.id ? 'border-primary bg-primary/10' : 'border-border bg-secondary/40')}
+                  className={cn('relative flex flex-col items-center gap-1.5 rounded-xl border p-2.5 active:scale-95 transition',
+                    picked === d.id || inUse ? 'border-primary bg-primary/10' : owned ? 'border-primary/40 bg-secondary/40' : 'border-border bg-secondary/40')}
                 >
-                  <MiniDie d={d} size={36} />
-                  <span className="text-[10px] font-semibold text-foreground truncate max-w-full">{designName(d, lang)}</span>
+                  <MiniDie d={d} size={52} />
+                  <span className="text-[11px] font-semibold text-foreground truncate max-w-full">{designName(d, lang)}</span>
                   <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                     {inUse ? <Check className="w-3 h-3 text-primary" /> : owned ? t('shopUse') : <><Lock className="w-2.5 h-2.5" />{priceOf(d) || '…'}</>}
                   </span>
@@ -111,7 +112,7 @@ export function DiceShop() {
             const canBuy = price > 0 && shop.xp >= price;
             return (
               <div className="mt-2 flex items-center gap-3 rounded-xl border border-border bg-secondary/40 p-3">
-                <MiniDie d={d} size={56} />
+                <MiniDie d={d} size={72} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-foreground">{designName(d, lang)}</p>
                   {!owned && !canBuy && price > 0 && (

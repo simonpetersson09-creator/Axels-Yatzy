@@ -15,45 +15,54 @@ export interface DiceDesign {
   finish: DesignFinish;
   /** Glow colour for metal/iridescent finishes. */
   glow?: string;
+  /** Second body colour: the face is painted as a gradient body → body2. */
+  body2?: string;
+  /** Motif painted on every face (behind the pips). */
+  motif?: Motif;
+  /** Motif colour. */
+  ink?: string;
 }
 
-const D = (id: string, name: string, kind: DesignKind, body: string, pip: string, finish: DesignFinish, glow?: string): DiceDesign =>
-  ({ id, name, kind, body, pip, finish, glow });
+export type Motif = 'dots' | 'stripes' | 'stars' | 'hearts' | 'spots' | 'sparkle' | 'waves' | 'checks' | 'scales' | 'flames' | 'rainbow' | 'galaxy' | 'facets' | 'marble';
+
+const D = (id: string, name: string, kind: DesignKind, body: string, pip: string, finish: DesignFinish, glow?: string,
+  extra: Partial<Pick<DiceDesign, 'body2' | 'motif' | 'ink'>> = {}): DiceDesign =>
+  ({ id, name, kind, body, pip, finish, glow, ...extra });
 
 export const DICE_DESIGNS: DiceDesign[] = [
   // Glada (5–10 XP)
-  D('ruby', 'Jordgubbe', 'color', '#ff4d6d', '#ffffff', 'gloss'),
-  D('ocean', 'Sommarlov', 'color', '#29a8ff', '#ffffff', 'gloss'),
-  D('mint', 'Mintglass', 'color', '#9ff0d0', '#ff5fa2', 'gloss'),
-  D('sun', 'Solsken', 'color', '#ffd23f', '#ff7a00', 'gloss'),
-  D('rose', 'Bubbelgum', 'color', '#ff8fd0', '#ffffff', 'gloss'),
-  D('lilac', 'Lavendel', 'color', '#c7a6ff', '#ffffff', 'gloss'),
-  D('coal', 'Lakrits', 'color', '#1a1a1e', '#ff4fa0', 'matte'),
-  D('forest', 'Groda', 'color', '#4cc55a', '#1a1a1e', 'gloss'),
-  D('sky', 'Moln', 'color', '#e9f5ff', '#4aa0ff', 'matte'),
-  D('coral', 'Apelsin', 'color', '#ff8a2a', '#ffffff', 'gloss'),
-  D('sand', 'Kanelbulle', 'color', '#d9a066', '#5a2e12', 'matte'),
-  D('night', 'Godnatt', 'color', '#1d2a5a', '#ffd84a', 'gloss'),
+  D('ruby', 'Jordgubbe', 'color', '#ff3d5e', '#ffffff', 'gloss', undefined, { body2: '#c8102e', motif: 'dots', ink: '#ffe066' }),
+  D('ocean', 'Sommarlov', 'color', '#39c0ff', '#ffffff', 'gloss', undefined, { body2: '#0a6fd1', motif: 'waves', ink: '#bdf0ff' }),
+  D('mint', 'Mintglass', 'color', '#a8f5d8', '#ff4f9a', 'gloss', undefined, { body2: '#5fd8b0', motif: 'sparkle', ink: '#ffffff' }),
+  D('sun', 'Solsken', 'color', '#ffe14d', '#ff6a00', 'gloss', undefined, { body2: '#ffab1a', motif: 'stars', ink: '#fff6c2' }),
+  D('rose', 'Bubbelgum', 'color', '#ff9ad6', '#ffffff', 'gloss', undefined, { body2: '#ff5fb8', motif: 'dots', ink: '#ffd6f0' }),
+  D('lilac', 'Lavendel', 'color', '#cdb2ff', '#ffffff', 'pearl', '#f0e6ff', { body2: '#8f6ae6', motif: 'hearts', ink: '#efe4ff' }),
+  D('coal', 'Lakrits', 'color', '#1a1a1e', '#ff4fa0', 'gloss', undefined, { body2: '#33333a', motif: 'stripes', ink: '#2a2a31' }),
+  D('forest', 'Groda', 'color', '#5fd068', '#14140f', 'gloss', undefined, { body2: '#2e9a3e', motif: 'spots', ink: '#9ae86a' }),
+  D('sky', 'Moln', 'color', '#ffffff', '#3b8ef5', 'matte', undefined, { body2: '#bfe2ff', motif: 'marble', ink: '#d9eeff' }),
+  D('coral', 'Apelsin', 'color', '#ffa53a', '#ffffff', 'gloss', undefined, { body2: '#ff6a1a', motif: 'dots', ink: '#ffd08a' }),
+  D('sand', 'Kanelbulle', 'color', '#e8b479', '#4a230c', 'matte', undefined, { body2: '#b9763f', motif: 'marble', ink: '#7a4320' }),
+  D('night', 'Godnatt', 'color', '#1f2b6b', '#ffd84a', 'gloss', undefined, { body2: '#0b1033', motif: 'stars', ink: '#fff1a8' }),
   // Kul & barnsliga (20–40 XP)
-  D('ice', 'Pingvin', 'pattern', '#f8fbff', '#111114', 'pearl', '#9fd0ff'),
-  D('lava', 'Drake', 'pattern', '#2a6b2a', '#ffcf3a', 'metal', '#ff5a1a'),
-  D('candy', 'Polkagris', 'pattern', '#ffffff', '#e0203a', 'pearl', '#ffc4cc'),
-  D('jungle', 'Dinosaurie', 'pattern', '#6fc24a', '#3a1f0a', 'metal', '#2f8a2a'),
-  D('ink', 'Rymdraket', 'pattern', '#121a3a', '#ff5f3a', 'gloss'),
-  D('peach', 'Nalle', 'pattern', '#b07a4a', '#3a2210', 'matte'),
-  D('arctic', 'Regnbåge', 'pattern', '#ff6fb1', '#ffffff', 'iridescent', '#4ad0ff'),
-  D('cherry', 'Nyckelpiga', 'pattern', '#e0202a', '#111114', 'gloss'),
-  D('royal', 'Discokula', 'pattern', '#c0c6d0', '#ff3fd0', 'metal', '#6af0ff'),
-  D('neon', 'Neonfest', 'pattern', '#16181f', '#5dff9e', 'gloss', '#2aff7a'),
+  D('ice', 'Pingvin', 'pattern', '#ffffff', '#111114', 'pearl', '#9fd0ff', { body2: '#cfe9ff', motif: 'checks', ink: '#e3f2ff' }),
+  D('lava', 'Drake', 'pattern', '#3fb34a', '#ffd23a', 'metal', '#ff5a1a', { body2: '#14551f', motif: 'scales', ink: '#7ce06a' }),
+  D('candy', 'Polkagris', 'pattern', '#ffffff', '#e0203a', 'gloss', undefined, { body2: '#ffe6ea', motif: 'stripes', ink: '#ff3550' }),
+  D('jungle', 'Dinosaurie', 'pattern', '#7fd04a', '#2b1607', 'gloss', undefined, { body2: '#3f9a2a', motif: 'spots', ink: '#ff9a3a' }),
+  D('ink', 'Rymdraket', 'pattern', '#16205a', '#ff6a3a', 'gloss', '#3a4aff', { body2: '#05071a', motif: 'galaxy', ink: '#ffffff' }),
+  D('peach', 'Nalle', 'pattern', '#c98a52', '#3a2210', 'matte', undefined, { body2: '#8f5a2e', motif: 'hearts', ink: '#e8b07a' }),
+  D('arctic', 'Regnbåge', 'pattern', '#ff5fa2', '#ffffff', 'iridescent', '#4ad0ff', { motif: 'rainbow' }),
+  D('cherry', 'Nyckelpiga', 'pattern', '#ff2a2a', '#111114', 'gloss', undefined, { body2: '#b8000f', motif: 'spots', ink: '#1a0a0a' }),
+  D('royal', 'Discokula', 'pattern', '#d8dde6', '#ff2fd0', 'metal', '#6af0ff', { body2: '#7a8496', motif: 'checks', ink: '#ffffff' }),
+  D('neon', 'Neonfest', 'pattern', '#121420', '#5dff9e', 'gloss', '#2aff7a', { body2: '#06070c', motif: 'waves', ink: '#ff3fd0' }),
   // Exklusiva (75–100 XP)
-  D('pearl', 'Pärlemor', 'exclusive', '#f7f1ea', '#8a6a4a', 'iridescent', '#ffe9d1'),
-  D('emerald', 'Smaragd', 'exclusive', '#1a9a63', '#f5f5f0', 'metal', '#0f6b42'),
-  D('sapphire', 'Safir', 'exclusive', '#1f4fd1', '#f5f5f0', 'metal', '#173a9e'),
-  D('obsidian', 'Svart guld', 'exclusive', '#0c0c10', '#e8c25a', 'metal', '#6a4a10'),
-  D('aurora', 'Norrsken', 'exclusive', '#3fd1b5', '#0b0b0c', 'iridescent', '#7a5fff'),
-  D('rosegold', 'Roséguld', 'exclusive', '#e8a99a', '#4a2a22', 'metal', '#8a4a3a'),
-  D('galaxy', 'Galax', 'exclusive', '#24104a', '#ffffff', 'iridescent', '#ff5fd1'),
-  D('diamond', 'Diamant', 'exclusive', '#eaf6ff', '#4a7fa8', 'iridescent', '#9fe3ff'),
+  D('pearl', 'Pärlemor', 'exclusive', '#fff8f0', '#8a6a4a', 'iridescent', '#ffd9f0', { body2: '#e6f0ff', motif: 'marble', ink: '#ffe3c4' }),
+  D('emerald', 'Smaragd', 'exclusive', '#1fc27a', '#f8f3d8', 'metal', '#0f6b42', { body2: '#05452a', motif: 'facets', ink: '#7affc4' }),
+  D('sapphire', 'Safir', 'exclusive', '#2f6bff', '#f8f3d8', 'metal', '#173a9e', { body2: '#0a1f6b', motif: 'facets', ink: '#9fc4ff' }),
+  D('obsidian', 'Svart guld', 'exclusive', '#121216', '#f0c75a', 'metal', '#6a4a10', { body2: '#000000', motif: 'marble', ink: '#c99a2e' }),
+  D('aurora', 'Norrsken', 'exclusive', '#0b1a3a', '#ffffff', 'iridescent', '#7a5fff', { body2: '#021018', motif: 'waves', ink: '#3fffb5' }),
+  D('rosegold', 'Roséguld', 'exclusive', '#f2b8a8', '#4a2a22', 'metal', '#8a4a3a', { body2: '#b86a58', motif: 'sparkle', ink: '#fff0e6' }),
+  D('galaxy', 'Galax', 'exclusive', '#3a1272', '#ffffff', 'iridescent', '#ff5fd1', { body2: '#0a0420', motif: 'galaxy', ink: '#ffffff' }),
+  D('diamond', 'Diamant', 'exclusive', '#f2fbff', '#3a6f9a', 'iridescent', '#9fe3ff', { body2: '#b8e6ff', motif: 'facets', ink: '#ffffff' }),
 ];
 
 const BY_ID = new Map(DICE_DESIGNS.map((d) => [d.id, d]));
@@ -69,14 +78,62 @@ export function getDesign(id: string | null | undefined): DiceDesign | null {
   return id ? BY_ID.get(id) ?? null : null;
 }
 
+/** Paints one die face (body gradient + motif, no pips) on a square canvas. */
+export function paintDesignFace(d: DiceDesign, ctx: CanvasRenderingContext2D, n: number) {
+  const g = ctx.createLinearGradient(0, 0, n, n);
+  g.addColorStop(0, d.body); g.addColorStop(1, d.body2 ?? d.body);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, n, n);
+  const ink = d.ink ?? '#ffffff';
+  let seed = [...d.id].reduce((a, c) => a * 31 + c.charCodeAt(0), 7) >>> 0;
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  ctx.fillStyle = ink; ctx.strokeStyle = ink;
+  const star = (x: number, y: number, r: number) => {
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; ctx.lineTo(x + rr * Math.cos(a), y + rr * Math.sin(a)); }
+    ctx.closePath(); ctx.fill();
+  };
+  const heart = (x: number, y: number, r: number) => {
+    ctx.beginPath(); ctx.moveTo(x, y + r * 0.9);
+    ctx.bezierCurveTo(x - r * 1.4, y - r * 0.2, x - r * 0.6, y - r * 1.2, x, y - r * 0.4);
+    ctx.bezierCurveTo(x + r * 0.6, y - r * 1.2, x + r * 1.4, y - r * 0.2, x, y + r * 0.9); ctx.fill();
+  };
+  switch (d.motif) {
+    case 'dots': ctx.globalAlpha = 0.55; for (let y = 0; y < 6; y++) for (let x = 0; x < 6; x++) { ctx.beginPath(); ctx.arc((x + (y % 2) * 0.5) * n / 5.5, y * n / 5.5 + n * 0.05, n * 0.035, 0, 7); ctx.fill(); } break;
+    case 'stripes': ctx.globalAlpha = 0.85; ctx.lineWidth = n * 0.09; for (let i = -n; i < 2 * n; i += n * 0.24) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + n, n); ctx.stroke(); } break;
+    case 'stars': ctx.globalAlpha = 0.8; for (let i = 0; i < 14; i++) star(rnd() * n, rnd() * n, n * (0.025 + rnd() * 0.04)); break;
+    case 'hearts': ctx.globalAlpha = 0.55; for (let i = 0; i < 10; i++) heart(rnd() * n, rnd() * n, n * (0.04 + rnd() * 0.03)); break;
+    case 'spots': ctx.globalAlpha = 0.9; for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.ellipse(rnd() * n, rnd() * n, n * (0.05 + rnd() * 0.05), n * (0.04 + rnd() * 0.04), rnd() * 3, 0, 7); ctx.fill(); } break;
+    case 'sparkle': ctx.globalAlpha = 0.9; for (let i = 0; i < 40; i++) { ctx.beginPath(); ctx.arc(rnd() * n, rnd() * n, n * (0.004 + rnd() * 0.012), 0, 7); ctx.fill(); } for (let i = 0; i < 4; i++) star(rnd() * n, rnd() * n, n * 0.035); break;
+    case 'waves': ctx.globalAlpha = 0.6; ctx.lineWidth = n * 0.035; for (let y = 0; y < n + 20; y += n * 0.16) { ctx.beginPath(); for (let x = 0; x <= n; x += 4) ctx.lineTo(x, y + Math.sin(x / n * Math.PI * 4) * n * 0.03); ctx.stroke(); } break;
+    case 'checks': ctx.globalAlpha = 0.6; { const c = n / 8; for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) if ((x + y) % 2) ctx.fillRect(x * c, y * c, c, c); } break;
+    case 'scales': ctx.globalAlpha = 0.55; ctx.lineWidth = n * 0.018; { const r = n / 10; for (let y = 0; y < 12; y++) for (let x = -1; x < 11; x++) { ctx.beginPath(); ctx.arc(x * r * 2 + (y % 2) * r, y * r * 0.9, r, 0, Math.PI); ctx.stroke(); } } break;
+    case 'flames': break;
+    case 'rainbow': { ctx.globalAlpha = 1; const cs = ['#ff3b3b', '#ff9a2a', '#ffe14d', '#3ad46a', '#2fa8ff', '#8a5aff']; cs.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(0, i * n / 6, n, n / 6 + 1); }); } break;
+    case 'galaxy': { ctx.globalAlpha = 0.45; for (let i = 0; i < 4; i++) { const x = rnd() * n, y = rnd() * n, r = n * (0.2 + rnd() * 0.25); const rg = ctx.createRadialGradient(x, y, 0, x, y, r); rg.addColorStop(0, d.glow ?? '#ff5fd1'); rg.addColorStop(1, 'transparent'); ctx.fillStyle = rg; ctx.fillRect(0, 0, n, n); } ctx.fillStyle = ink; ctx.globalAlpha = 0.95; for (let i = 0; i < 60; i++) { ctx.beginPath(); ctx.arc(rnd() * n, rnd() * n, n * (0.003 + rnd() * 0.008), 0, 7); ctx.fill(); } star(n * 0.2, n * 0.8, n * 0.03); } break;
+    case 'facets': ctx.globalAlpha = 0.28; for (let i = 0; i < 14; i++) { ctx.beginPath(); ctx.moveTo(rnd() * n, rnd() * n); ctx.lineTo(rnd() * n, rnd() * n); ctx.lineTo(rnd() * n, rnd() * n); ctx.closePath(); ctx.fill(); } break;
+    case 'marble': ctx.globalAlpha = 0.5; ctx.lineWidth = n * 0.012; for (let i = 0; i < 7; i++) { ctx.beginPath(); let x = rnd() * n, y = 0; ctx.moveTo(x, y); while (y < n) { x += (rnd() - 0.5) * n * 0.15; y += n * 0.06; ctx.lineTo(x, y); } ctx.stroke(); } break;
+  }
+  ctx.globalAlpha = 1;
+}
+
+const faceUrlCache = new Map<string, string>();
+/** Data URL of the painted face, for flat previews. */
+export function designFaceUrl(d: DiceDesign): string | null {
+  if (typeof document === 'undefined') return null;
+  let u = faceUrlCache.get(d.id);
+  if (!u) {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const ctx = c.getContext('2d'); if (!ctx) return null;
+    paintDesignFace(d, ctx, 128); u = c.toDataURL(); faceUrlCache.set(d.id, u);
+  }
+  return u;
+}
+
 /** CSS background for flat previews (shop grid, swatches). */
 export function designSwatchBg(d: DiceDesign): string {
-  const g = d.glow ?? d.body;
-  if (d.finish === 'iridescent') return `linear-gradient(135deg, ${d.body} 0%, ${g} 55%, ${d.body} 100%)`;
-  if (d.finish === 'metal') return `linear-gradient(145deg, ${d.body} 0%, ${g} 100%)`;
-  if (d.finish === 'pearl') return `radial-gradient(circle at 30% 25%, #ffffff 0%, ${d.body} 55%, ${g} 100%)`;
-  if (d.finish === 'matte') return d.body;
-  return `radial-gradient(circle at 30% 25%, ${d.body} 0%, ${d.body} 60%, color-mix(in srgb, ${d.body} 75%, #000) 100%)`;
+  const shine = 'radial-gradient(circle at 28% 22%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 38%)';
+  const u = designFaceUrl(d);
+  return u ? `${shine}, url(${u}) center/cover` : (d.body2 ? `linear-gradient(135deg, ${d.body}, ${d.body2})` : d.body);
 }
 
 const EN_NAMES: Record<string, string> = {

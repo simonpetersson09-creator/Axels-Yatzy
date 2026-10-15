@@ -397,6 +397,7 @@ export const en: Partial<typeof sv> = {
   shopKind_exclusive: "Exclusive",
   shopBought: "Bought! Your dice are now {name} ✨",
   shopNotEnough: "You don't have enough XP yet",
+  xpEarnedTotal: "XP earned: {n}",
   xpEarned: "+1 XP · You have {n} XP",
   xpCap: "Today's max reached ({cap} XP). Come back tomorrow!",
   shopLevels: "Levels",

@@ -120,6 +120,9 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground">{tierLine(profile)}</p>
+                {profile.xpEarned != null && (
+                  <p className="text-xs font-semibold text-game-gold">{t('xpEarnedTotal', { n: profile.xpEarned })}</p>
+                )}
               </>
             )}
           </div>

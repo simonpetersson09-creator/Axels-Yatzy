@@ -406,6 +406,7 @@ export const sv = {
   shopKind_exclusive: "Exklusiva",
   shopBought: "Köpt! Dina tärningar är nu {name} ✨",
   shopNotEnough: "Du har inte tillräckligt med XP än",
+  xpEarnedTotal: "Intjänad XP: {n}",
   xpEarned: "+1 XP · Du har {n} XP",
   xpCap: "Dagens max är nått ({cap} XP). Kom tillbaka i morgon!",
   shopLevels: "Nivåer",

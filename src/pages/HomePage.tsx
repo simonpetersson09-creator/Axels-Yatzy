@@ -691,7 +691,7 @@ export default function HomePage() {
           {/* Premium round secondary actions */}
           <div className="relative w-full">
             <motion.div
-              className="grid grid-cols-4 place-items-center gap-1 sm:gap-2 w-full mt-2"
+              className="grid grid-cols-4 place-items-center gap-1 sm:gap-2 w-full pt-2"
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}
             >

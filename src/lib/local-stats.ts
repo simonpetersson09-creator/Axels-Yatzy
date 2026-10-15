@@ -105,6 +105,8 @@ export function recordGameResult(
   won: boolean,
   yatzysThisGame = 0,
   matchKey?: string,
+  /** false for forfeited/unfinished matches — they never reach the weekly top lists. */
+  completed = true,
 ): boolean {
   const stored = readStored();
   if (matchKey && stored.recordedKeys.includes(matchKey)) return false;
@@ -139,6 +141,7 @@ export function recordGameResult(
   // Lazy import to keep this module free of network deps until needed.
   void import('./country-rank').then(m => m.syncCountryRank(stats.gamesPlayed)).catch(() => {});
   // Weekly Hall of Fame: name, matches this week and best score in one match.
-  void import('./hall-of-fame').then(m => m.reportWeeklyScore(playerScore)).catch(() => {});
+  // Only fully played matches count (forfeits are excluded).
+  if (completed) void import('./hall-of-fame').then(m => m.reportWeeklyScore(playerScore)).catch(() => {});
   return true;
 }

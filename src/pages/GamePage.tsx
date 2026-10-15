@@ -315,7 +315,7 @@ export default function GamePage() {
     // A forfeit counts as a played, lost game (resets the win streak). Yatzys
     // from a forfeited match never count toward dice tiers.
     if (!gameState.gameOver && !aiPlayers.includes(0)) {
-      recordGameResult(getTotalScore(gameState.players[0].scores), false, 0, localMatchKeyRef.current);
+      recordGameResult(getTotalScore(gameState.players[0].scores), false, 0, localMatchKeyRef.current, false);
       trackEvent('game_forfeited', { score: getTotalScore(gameState.players[0].scores), aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
     const results = gameState.players.map(p => ({

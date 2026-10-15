@@ -75,3 +75,14 @@ export function designSwatchBg(d: DiceDesign): string {
   if (d.finish === 'matte') return d.body;
   return `radial-gradient(circle at 30% 25%, ${d.body} 0%, ${d.body} 60%, color-mix(in srgb, ${d.body} 75%, #000) 100%)`;
 }
+
+const EN_NAMES: Record<string, string> = {
+  ruby: 'Ruby', ocean: 'Ocean', mint: 'Mint', sun: 'Sun', rose: 'Rose', lilac: 'Lilac', coal: 'Coal', forest: 'Forest',
+  sky: 'Sky', coral: 'Coral', sand: 'Sand', night: 'Night', ice: 'Ice', lava: 'Lava', candy: 'Candy', jungle: 'Jungle',
+  ink: 'Ink', peach: 'Peach', arctic: 'Arctic', cherry: 'Cherry', royal: 'Royal', neon: 'Neon', pearl: 'Pearl',
+  emerald: 'Emerald', sapphire: 'Sapphire', obsidian: 'Obsidian', aurora: 'Aurora', rosegold: 'Rose gold', galaxy: 'Galaxy', diamond: 'Diamond',
+};
+
+export function designName(d: DiceDesign, lang: string): string {
+  return lang === 'sv' ? d.name : EN_NAMES[d.id] ?? d.name;
+}

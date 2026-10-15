@@ -421,6 +421,13 @@
       "when": 1792005100520,
       "tag": "0059_join_game_rejoin_started",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1792081520697,
+      "tag": "0060_migration",
+      "breakpoints": true
     }
   ]
 }

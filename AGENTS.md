@@ -2,15 +2,12 @@
 - Screenshot/QA scripts must never seed stats on the live preview without cleanup: seeded stats sync to the shared world leaderboard (player_country_stats) and push real players down.
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — tamper-resistant, synced.
-- Android native patches (AdMob App ID in AndroidManifest) run via `npm run cap:sync:android`; android/ is generated outside the repo like ios/, so manual edits get lost.
+- Android native patches run via `npm run cap:sync:android` (AdMob App ID in manifest, minSdk 26 for barcode scanner, launcher icons from committed resources/android/res/ via scripts/set-android-*.js); android/ is generated outside the repo like ios/, so manual edits get lost.
 - AdMob IDs are per platform in ADMOB_IDS (src/lib/admob.ts); a null ID disables that ad type on that platform so iOS IDs can never be used on Android.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - google-services.json is committed in firebase/ (public identifiers only) and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.
-- Android minSdk is forced to 26 by scripts/set-android-min-sdk.js (run in cap:sync:android) because the barcode-scanner library requires it; android/ is regenerated so variables.gradle edits would be lost.
-- Android launcher icons are generated from resources/icon.png into committed resources/android/res/ and copied over Capacitor's defaults by scripts/set-android-icons.js (run in cap:sync:android); android/ is regenerated so edits there would be lost.
 - Online-game problems (errors, slow calls >3 s, screen/server dice or score mismatches) are reported silently as analytics_events 'mp_issue' from useMultiplayerGame — lets us diagnose desync reports without user effort.
-- The dice canvas renders on demand (frameloop="demand") and DemandDriver in DiceScene keeps frames coming only while something animates; every useFrame must clamp delta, because the first frame after a pause can carry seconds — saves battery/CPU while dice lie still.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
 - Online dice locks are batched client-side (LOCK_BATCH_MS) and sent as the full locked_dice array to toggle-lock → perform_set_locks (service-role only); dice_index toggling stays only for old app versions — one call per batch avoids server-side row-lock queues.
 - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the caller's device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old app versions are gone — session ids are public, so the device id is the real proof of identity.
@@ -18,8 +15,9 @@
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat) — the dice start instantly instead of waiting for a lock call.
 - Online actions (roll, set locks, old per-die toggle, score incl. dice check, start, forfeit) call *_authed RPCs that run claim_session and the action in one database call — saves a round trip per tap; the client recovers slow rolls by reading the games row (ROLL_RECOVER_* in useMultiplayerGame) so late server rolls are shown, never lost.
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit) instead of ending the match — others can finish.
-- Subdirectories have their own AGENTS.md (e.g. supabase/functions/) — read it before changing files there.
+- Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock — avoids duplicate matches.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Hall of Fame: server-side report_weekly_score (from recordGameResult) trims to first name, caps score.
 - Game banner: fitGameAboveBanner (admob.ts) shrinks rows/dice until all fits above it.
+- Dice shop: XP (1 per shown optional ad, server caps/cooldown in award_ad_xp), prices and ownership live server-side (dice_designs, player_xp, player_designs); looks live in src/lib/dice-designs.ts and render via skin=`d:<id>` — new designs need both a catalog entry and a dice_designs row.

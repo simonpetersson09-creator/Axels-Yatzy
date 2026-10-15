@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
-import { useGoldStatus, effectiveSkin, reportLocalYatzyMatch } from '@/lib/gold-dice';
+import { reportLocalYatzyMatch } from '@/lib/gold-dice';
+import { useMyDiceLook } from '@/lib/dice-shop';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -73,7 +74,7 @@ export default function GamePage() {
 
   // Human is always player index 0 in this app
   const HUMAN_INDEX = 0;
-  const mySkin = effectiveSkin(useGoldStatus());
+  const mySkin = useMyDiceLook();
   const [aiInfoOpen, setAiInfoOpen] = useState(false);
   useEffect(() => { setAiInfoOpen(false); }, [gameState?.currentPlayerIndex]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => getProfileAvatar());

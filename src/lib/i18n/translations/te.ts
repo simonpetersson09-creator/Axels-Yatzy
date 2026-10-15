@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const te: typeof sv = {
+export const te: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'కొత్త హంగులతో క్లాసిక్ పాచికల ఆట',
   version: 'వెర్షన్',
@@ -346,7 +346,6 @@ export const te: typeof sv = {
   goldInfoRule2: "మీరిద్దరూ మ్యాచ్‌ను పూర్తి చేయాలి. ఎవరైనా మధ్యలో వదిలేస్తే లెక్కలోకి రాదు.",
   goldInfoRule3: "మీ స్నేహితుడు యాప్‌కు కొత్తవారై ఉండాలి, తమ సొంత ఫోన్‌లో ఆడాలి.",
   goldInfoRule4: "ప్రతి స్నేహితుడు మీకు 10 రోజులు బంగారు పాచికలు ఇస్తారు, రోజులు కలుస్తాయి. మీ స్నేహితుడికి స్వాగత బహుమతిగా 3 రోజులు బంగారు పాచికలు లభిస్తాయి.",
-  diceTierTitle: "మీ పాచికలు",
   diceTierProgress: "Yatzy ఉన్న మ్యాచ్‌లు {n}/{goal} → {tier}",
   diceTierUnlocked: "కొత్త పాచికలు అన్‌లాక్: {tier}! ✨",
   tierBronze: "కాంస్యం",

@@ -1,5 +1,5 @@
 import type { sv } from './sv';
-export const ca: typeof sv = {
+export const ca: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'El joc de daus clàssic amb un toc modern',
   version: 'Versió',
@@ -345,7 +345,6 @@ export const ca: typeof sv = {
   goldInfoRule2: "Heu d'acabar la partida junts. Si algú abandona, no compta.",
   goldInfoRule3: "El teu amic ha de ser nou a l'app i jugar amb el seu propi mòbil.",
   goldInfoRule4: "Cada amic et dona daus daurats durant 10 dies, i els dies se sumen. El teu amic rep daus daurats durant 3 dies com a regal de benvinguda.",
-  diceTierTitle: "Els teus daus",
   diceTierProgress: "{n} de {goal} partides amb Yatzy → {tier}",
   diceTierUnlocked: "Daus nous desbloquejats: {tier}! ✨",
   tierBronze: "bronze",

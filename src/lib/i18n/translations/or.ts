@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const or: typeof sv = {
+export const or: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'ପୁରୁଣା ପଶା ଖେଳ, ନୂଆ ଅନ୍ଦାଜରେ',
   version: 'ସଂସ୍କରଣ',
@@ -346,7 +346,6 @@ export const or: typeof sv = {
   goldInfoRule2: "ଦୁହେଁ ମିଶି ମ୍ୟାଚ୍ ଶେଷ କରିବା ଜରୁରୀ। କେହି ମଝିରେ ଛାଡ଼ିଦେଲେ ଏହା ଗଣାଯିବ ନାହିଁ।",
   goldInfoRule3: "ଆପଣଙ୍କ ବନ୍ଧୁ ଆପ୍‌ରେ ନୂଆ ହୋଇଥିବା ଓ ନିଜ ଫୋନ୍‌ରେ ଖେଳିବା ଜରୁରୀ।",
   goldInfoRule4: "ପ୍ରତ୍ୟେକ ସାଙ୍ଗ ଆପଣଙ୍କୁ 10 ଦିନ ସୁନା ପଶା ଦିଅନ୍ତି, ଦିନଗୁଡ଼ିକ ଯୋଡ଼ି ହୁଏ। ଆପଣଙ୍କ ସାଙ୍ଗ ସ୍ୱାଗତ ଉପହାର ଭାବେ 3 ଦିନ ସୁନା ପଶା ପାଆନ୍ତି।",
-  diceTierTitle: "ଆପଣଙ୍କ ପଶା",
   diceTierProgress: "Yatzy ଥିବା ମ୍ୟାଚ୍ {n}/{goal} → {tier}",
   diceTierUnlocked: "ନୂଆ ପଶା ଅନଲକ୍: {tier}! ✨",
   tierBronze: "କଂସା",

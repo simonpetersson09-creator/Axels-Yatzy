@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
-import { asSkin, type DiceSkin } from '@/lib/dice-skin';
+import { asSkin, type DiceSkin, type DiceLook } from '@/lib/dice-skin';
+import { getDesign, designLook } from '@/lib/dice-designs';
 
 export interface GoldStatus {
   goldUntil: string | null;
@@ -116,10 +117,13 @@ export interface DiceProfile {
   inviteGold: boolean;
   /** Player chose plain white dice; badges/tier info stay unchanged. */
   preferWhite?: boolean;
+  /** Shop design chosen by the player (wins over the tier colour). */
+  design?: string | null;
 }
 
-export function profileSkin(p: DiceProfile | undefined): DiceSkin {
+export function profileSkin(p: DiceProfile | undefined): DiceLook {
   if (!p) return 'white';
+  if (p.design && getDesign(p.design)) return designLook(p.design);
   if (p.preferWhite) return 'white';
   return p.inviteGold && p.tier !== 'platinum' ? 'gold' : p.tier;
 }
@@ -137,9 +141,9 @@ export function useDiceProfiles(gameId: string | null, refreshKey: unknown = 0):
     (async () => {
       try {
         const { data } = await supabase.rpc('get_dice_profiles', { p_game_id: gameId });
-        const rows = (data as Array<{ player_index: number; is_bot: boolean; tier: string; yatzy_matches: number; invite_gold: boolean; prefer_white?: boolean }> | null) ?? [];
+        const rows = (data as Array<{ player_index: number; is_bot: boolean; tier: string; yatzy_matches: number; invite_gold: boolean; prefer_white?: boolean; design?: string | null }> | null) ?? [];
         if (alive) setMap(new Map(rows.map((r) => [r.player_index, {
-          isBot: !!r.is_bot, tier: asSkin(r.tier), yatzyMatches: Number(r.yatzy_matches ?? 0), inviteGold: !!r.invite_gold, preferWhite: !!r.prefer_white,
+          isBot: !!r.is_bot, tier: asSkin(r.tier), yatzyMatches: Number(r.yatzy_matches ?? 0), inviteGold: !!r.invite_gold, preferWhite: !!r.prefer_white, design: r.design ?? null,
         }])));
       } catch { /* cosmetic; ignore */ }
     })();
@@ -221,6 +225,8 @@ export async function setPreferWhiteDice(preferWhite: boolean): Promise<boolean>
     if (error || data !== true) return false;
     const cached = readCache();
     localStorage.setItem(CACHE_KEY, JSON.stringify({ ...cached, preferWhite }));
+    // White dice clear the shop design on the server; mirror that locally.
+    if (preferWhite) void import('@/lib/dice-shop').then((m) => m.patchShopCache({ selected: null })).catch(() => {});
     return true;
   } catch {
     return false;

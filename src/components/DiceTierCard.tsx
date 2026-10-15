@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { useGoldStatus, ownProfile, goldDaysLeft } from '@/lib/gold-dice';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
+import { DiceShop } from '@/components/DiceShop';
+import { useShop } from '@/lib/dice-shop';
 import { nextTier, SKIN_RANK, type DiceSkin } from '@/lib/dice-skin';
 import { fireWinConfetti } from '@/lib/confetti';
 import { trackEvent } from '@/lib/analytics';
@@ -20,6 +22,7 @@ const TIER_LABEL: Record<Exclude<DiceSkin, 'white'>, TranslationKey> = {
 export function DiceTierCard() {
   const { t } = useTranslation();
   const status = useGoldStatus();
+  const shop = useShop();
   const next = nextTier(status.yatzyMatches);
   const [open, setOpen] = useState(false);
 
@@ -45,7 +48,10 @@ export function DiceTierCard() {
     >
       <img src={goldDie} alt="" aria-hidden className="shrink-0 w-10 h-10 object-contain drop-shadow-[0_2px_4px_hsl(var(--background)/0.6)]" />
       <div className="flex-1 min-w-0 text-left">
-        <p className="text-sm font-bold text-foreground truncate">{t('diceTierTitle')}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-bold text-foreground truncate">{t('diceTierTitle')}</p>
+          <span className="shrink-0 rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">⭐ {shop.xp}</span>
+        </div>
         <p className="text-[11px] text-muted-foreground truncate">
           {next
             ? t('diceTierProgress', { n: status.yatzyMatches, goal: next.goal, tier: t(TIER_LABEL[next.tier]) })
@@ -61,9 +67,10 @@ export function DiceTierCard() {
       open={open}
       onClose={() => setOpen(false)}
       name={t('myDice')}
-      profile={ownProfile(status)}
+      profile={{ ...ownProfile(status), preferWhite: status.preferWhite, design: shop.selected }}
       inviteDaysLeft={goldDaysLeft(status) || undefined}
       showLadder
+      footer={<DiceShop />}
     />
     </>
   );

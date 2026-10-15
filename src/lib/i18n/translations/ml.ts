@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const ml: typeof sv = {
+export const ml: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'പഴയ ഡൈസ് കളി, പുതിയ ശൈലിയിൽ',
   version: 'പതിപ്പ്',
@@ -346,7 +346,6 @@ export const ml: typeof sv = {
   goldInfoRule2: "നിങ്ങൾ ഒരുമിച്ച് മാച്ച് പൂർത്തിയാക്കണം. ആരെങ്കിലും പിന്മാറിയാൽ അത് കണക്കാക്കില്ല.",
   goldInfoRule3: "സുഹൃത്ത് ആപ്പിൽ പുതിയ ആളായിരിക്കണം, സ്വന്തം ഫോണിൽ കളിക്കുകയും വേണം.",
   goldInfoRule4: "ഓരോ സുഹൃത്തും നിങ്ങൾക്ക് 10 ദിവസം സ്വർണ്ണ പകിട നൽകുന്നു, ദിവസങ്ങൾ കൂടിച്ചേരും. നിങ്ങളുടെ സുഹൃത്തിന് സ്വാഗത സമ്മാനമായി 3 ദിവസം സ്വർണ്ണ പകിട ലഭിക്കും.",
-  diceTierTitle: "നിങ്ങളുടെ പകിടകൾ",
   diceTierProgress: "Yatzy ഉള്ള മത്സരങ്ങൾ {n}/{goal} → {tier}",
   diceTierUnlocked: "പുതിയ പകിട അൺലോക്ക്: {tier}! ✨",
   tierBronze: "വെങ്കലം",

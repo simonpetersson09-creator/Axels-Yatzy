@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const mr: typeof sv = {
+export const mr: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'जुनाच फाशांचा खेळ, नव्या ढंगात',
   version: 'आवृत्ती',
@@ -346,7 +346,6 @@ export const mr: typeof sv = {
   goldInfoRule2: "तुम्ही दोघांनी सामना पूर्ण केला पाहिजे. कोणी माघार घेतल्यास तो मोजला जात नाही.",
   goldInfoRule3: "तुमचा मित्र ॲपवर नवीन असला पाहिजे आणि त्याने स्वतःच्या फोनवर खेळले पाहिजे.",
   goldInfoRule4: "प्रत्येक मित्रामुळे तुम्हाला 10 दिवस सोनेरी फासे मिळतात, आणि दिवस जोडले जातात. तुमच्या मित्राला स्वागत भेट म्हणून 3 दिवस सोनेरी फासे मिळतात.",
-  diceTierTitle: "तुमचे फासे",
   diceTierProgress: "Yatzy असलेले सामने {n}/{goal} → {tier}",
   diceTierUnlocked: "नवीन फासे अनलॉक: {tier}! ✨",
   tierBronze: "कांस्य",

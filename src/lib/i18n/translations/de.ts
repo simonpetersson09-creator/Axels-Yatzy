@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const de: typeof sv = {
+export const de: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klassisches Würfelspiel im modernen Look',
   version: 'Version',
@@ -341,7 +341,7 @@ export const de: typeof sv = {
   goldInfoRule2: "Ihr müsst das Spiel gemeinsam beenden. Wenn jemand aufgibt, zählt es nicht.",
   goldInfoRule3: "Dein Freund muss neu in der App sein und auf seinem eigenen Handy spielen.",
   goldInfoRule4: "Jeder Freund bringt dir 10 Tage Goldwürfel, die Tage werden addiert. Dein Freund bekommt 3 Tage Goldwürfel als Willkommensgeschenk.",
-  diceTierTitle: "Deine Würfel",
+  diceTierTitle: "Würfelshop",
   diceTierProgress: "{n} von {goal} Spielen mit Yatzy → {tier}",
   diceTierUnlocked: "Neue Würfel freigeschaltet: {tier}! ✨",
   tierBronze: "Bronze",

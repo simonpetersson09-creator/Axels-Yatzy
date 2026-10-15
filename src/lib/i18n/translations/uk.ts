@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const uk: typeof sv = {
+export const uk: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Класична гра в кості на сучасний лад',
   version: 'Версія',
@@ -346,7 +346,6 @@ export const uk: typeof sv = {
   goldInfoRule2: "Ви маєте завершити матч разом. Якщо хтось здасться, матч не зарахується.",
   goldInfoRule3: "Твій друг має бути новачком у застосунку й грати на власному телефоні.",
   goldInfoRule4: "Кожен друг дає тобі золоті кубики на 10 днів, і дні додаються. Твій друг отримує золоті кубики на 3 дні у подарунок.",
-  diceTierTitle: "Твої кубики",
   diceTierProgress: "{n} з {goal} матчів з Yatzy → {tier}",
   diceTierUnlocked: "Нові кубики відкрито: {tier}! ✨",
   tierBronze: "бронза",

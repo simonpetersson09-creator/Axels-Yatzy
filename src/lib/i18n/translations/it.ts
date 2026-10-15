@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const it: typeof sv = {
+export const it: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Il classico gioco di dadi in chiave moderna',
   version: 'Versione',
@@ -341,7 +341,6 @@ export const it: typeof sv = {
   goldInfoRule2: "Dovete finire la partita insieme. Se qualcuno si arrende, non conta.",
   goldInfoRule3: "Il tuo amico deve essere nuovo nell'app e giocare sul proprio telefono.",
   goldInfoRule4: "Ogni amico ti dà dadi d'oro per 10 giorni, e i giorni si sommano. Il tuo amico riceve dadi d'oro per 3 giorni come regalo di benvenuto.",
-  diceTierTitle: "I tuoi dadi",
   diceTierProgress: "{n} su {goal} partite con Yatzy → {tier}",
   diceTierUnlocked: "Nuovi dadi sbloccati: {tier}! ✨",
   tierBronze: "bronzo",

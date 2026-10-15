@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const bn: typeof sv = {
+export const bn: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'চেনা পাশার খেলায় নতুন ছোঁয়া',
   version: 'সংস্করণ',
@@ -346,7 +346,6 @@ export const bn: typeof sv = {
   goldInfoRule2: "দুজনকেই ম্যাচ শেষ করতে হবে। কেউ ছেড়ে দিলে তা গণনা হবে না।",
   goldInfoRule3: "বন্ধুকে এই অ্যাপে নতুন হতে হবে এবং নিজের ফোনে খেলতে হবে।",
   goldInfoRule4: "প্রতিটি বন্ধু আপনাকে ১০ দিন সোনালি ছক্কা দেয়, আর দিনগুলো যোগ হয়। আপনার বন্ধু স্বাগত উপহার হিসেবে ৩ দিন সোনালি ছক্কা পায়।",
-  diceTierTitle: "আপনার ছক্কা",
   diceTierProgress: "Yatzy সহ ম্যাচ {n}/{goal} → {tier}",
   diceTierUnlocked: "নতুন ছক্কা খুলেছে: {tier}! ✨",
   tierBronze: "ব্রোঞ্জ",

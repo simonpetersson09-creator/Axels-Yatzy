@@ -1,4 +1,4 @@
-import type { DiceSkin } from '@/lib/dice-skin';
+import type { DiceLook } from '@/lib/dice-skin';
 /**
  * Shared types for the reusable 3D dice engine.
  *
@@ -43,7 +43,7 @@ export interface DiceSceneProps extends DiceConfig {
   /** Optional hold-ring tint (any CSS colour), e.g. the active player's colour. */
   holdColor?: string | undefined;
   /** Gold dice reward skin. */
-  skin?: DiceSkin | undefined;
+  skin?: DiceLook | undefined;
   /** Fired when a die is tapped/clicked. */
   onToggleHold?: (index: number) => void;
   /** Optional className for the wrapping element (full size by default). */

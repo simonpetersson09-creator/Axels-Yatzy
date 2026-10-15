@@ -1,4 +1,4 @@
-import type { DiceSkin } from '@/lib/dice-skin';
+import type { DiceLook } from '@/lib/dice-skin';
 /**
  * `<DiceScene />` — the public entry point of the dice engine.
  *

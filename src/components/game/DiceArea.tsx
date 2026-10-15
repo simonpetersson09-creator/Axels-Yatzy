@@ -1,4 +1,4 @@
-import type { DiceSkin } from '@/lib/dice-skin';
+import type { DiceLook } from '@/lib/dice-skin';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { DiceSet } from '@/components/dice-engine';
@@ -14,7 +14,7 @@ interface DiceAreaProps {
   /** Drives the hold-ring colour; pips stay black. */
   playerIndex?: number;
   /** Dice colour for the player whose turn it is. */
-  skin?: DiceSkin;
+  skin?: DiceLook;
 }
 
 type Five<T> = [T, T, T, T, T];

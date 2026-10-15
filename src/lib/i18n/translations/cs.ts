@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const cs: typeof sv = {
+export const cs: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klasická hra s kostkami v moderním hávu',
   version: 'Verze',
@@ -346,7 +346,6 @@ export const cs: typeof sv = {
   goldInfoRule2: "Zápas musíte společně dohrát. Pokud někdo vzdá, nepočítá se.",
   goldInfoRule3: "Kamarád musí být v aplikaci nový a hrát na vlastním telefonu.",
   goldInfoRule4: "Každý kamarád ti dá zlaté kostky na 10 dní a dny se sčítají. Tvůj kamarád dostane zlaté kostky na 3 dny jako uvítací dárek.",
-  diceTierTitle: "Tvoje kostky",
   diceTierProgress: "{n} z {goal} her s Yatzy → {tier}",
   diceTierUnlocked: "Nové kostky odemčeny: {tier}! ✨",
   tierBronze: "bronz",

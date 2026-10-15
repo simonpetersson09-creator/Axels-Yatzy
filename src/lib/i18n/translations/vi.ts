@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const vi: typeof sv = {
+export const vi: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Xúc xắc cổ điển, phong cách hiện đại',
   version: 'Phiên bản',
@@ -346,7 +346,6 @@ export const vi: typeof sv = {
   goldInfoRule2: "Cả hai phải chơi hết trận. Nếu có người bỏ cuộc thì không được tính.",
   goldInfoRule3: "Bạn của bạn phải là người mới dùng ứng dụng và chơi trên điện thoại riêng.",
   goldInfoRule4: "Mỗi người bạn mang lại cho bạn xúc xắc vàng trong 10 ngày, và số ngày được cộng dồn. Bạn của bạn nhận xúc xắc vàng trong 3 ngày làm quà chào mừng.",
-  diceTierTitle: "Xúc xắc của bạn",
   diceTierProgress: "{n}/{goal} ván có Yatzy → {tier}",
   diceTierUnlocked: "Đã mở khóa xúc xắc mới: {tier}! ✨",
   tierBronze: "đồng",

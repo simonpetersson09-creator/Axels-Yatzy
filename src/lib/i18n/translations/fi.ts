@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const fi: typeof sv = {
+export const fi: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klassinen noppapeli modernissa muodossa',
   version: 'Versio',
@@ -346,7 +346,6 @@ export const fi: typeof sv = {
   goldInfoRule2: "Teidän on pelattava peli loppuun yhdessä. Jos joku luovuttaa, peli ei kelpaa.",
   goldInfoRule3: "Ystäväsi on oltava uusi käyttäjä ja pelattava omalla puhelimellaan.",
   goldInfoRule4: "Jokainen ystävä antaa sinulle kultanopat 10 päiväksi, ja päivät lasketaan yhteen. Ystäväsi saa kultanopat 3 päiväksi tervetuliaislahjana.",
-  diceTierTitle: "Noppasi",
   diceTierProgress: "{n}/{goal} peliä Yatzylla → {tier}",
   diceTierUnlocked: "Uudet nopat avattu: {tier}! ✨",
   tierBronze: "pronssi",

@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const id: typeof sv = {
+export const id: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Game dadu klasik dengan sentuhan modern',
   version: 'Versi',
@@ -346,7 +346,6 @@ export const id: typeof sv = {
   goldInfoRule2: "Kalian harus menyelesaikan laga bersama. Jika ada yang menyerah, laga tidak dihitung.",
   goldInfoRule3: "Temanmu harus pengguna baru dan bermain di ponselnya sendiri.",
   goldInfoRule4: "Setiap teman memberimu dadu emas selama 10 hari, dan harinya dijumlahkan. Temanmu dapat dadu emas selama 3 hari sebagai hadiah selamat datang.",
-  diceTierTitle: "Dadumu",
   diceTierProgress: "{n} dari {goal} pertandingan dengan Yatzy → {tier}",
   diceTierUnlocked: "Dadu baru terbuka: {tier}! ✨",
   tierBronze: "perunggu",

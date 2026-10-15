@@ -1,4 +1,5 @@
-import type { DiceSkin } from '@/lib/dice-skin';
+import type { DiceLook } from '@/lib/dice-skin';
+import { designFromLook, type DiceDesign } from '@/lib/dice-designs';
 /**
  * A single premium-looking 3D die.
  *
@@ -107,6 +108,27 @@ const SKIN_MATERIALS = {
   gold: { body: metal("#f5cc5e", "#7a5a14"), held: metal("#deb144", "#634810") },
   platinum: { body: platinumMetal("#eef4fb", "#5a7fa8"), held: platinumMetal("#cfdceb", "#3f5f86") },
 } as const;
+
+/** Shop design materials, created once per design and shared. */
+const designMatCache = new Map<string, { body: MeshPhysicalMaterial; held: MeshPhysicalMaterial }>();
+function designMaterial(d: DiceDesign, held: boolean): MeshPhysicalMaterial {
+  let m = designMatCache.get(d.id);
+  if (!m) {
+    const make = (shade: number) => {
+      const mat = new MeshPhysicalMaterial({ color: d.body, envMapIntensity: 1.2, clearcoat: 0.8, clearcoatRoughness: 0.1, roughness: 0.3 });
+      if (d.finish === 'matte') { mat.roughness = 0.7; mat.clearcoat = 0.2; }
+      if (d.finish === 'metal') { mat.metalness = 0.6; mat.roughness = 0.25; }
+      if (d.finish === 'pearl') { mat.sheen = 0.8; mat.sheenColor.set(d.glow ?? '#ffffff'); }
+      if (d.finish === 'iridescent') { mat.metalness = 0.4; mat.roughness = 0.12; mat.iridescence = 0.8; mat.iridescenceIOR = 1.5; }
+      if (d.glow) { mat.emissive.set(d.glow); mat.emissiveIntensity = 0.25; }
+      mat.color.multiplyScalar(shade);
+      return mat;
+    };
+    m = { body: make(1), held: make(0.85) };
+    designMatCache.set(d.id, m);
+  }
+  return held ? m.held : m.body;
+}
 
 /** Deep black pips with a faint, ink-like gloss. */
 const pipMaterial = new MeshStandardMaterial({
@@ -318,7 +340,7 @@ export interface Dice3DProps {
   /** Optional hold-ring tint (any CSS colour). */
   holdColor?: string | undefined;
   /** Gold dice reward skin. */
-  skin?: DiceSkin | undefined;
+  skin?: DiceLook | undefined;
 }
 
 function Dice3DImpl({
@@ -359,6 +381,7 @@ function Dice3DImpl({
     () => (skin === 'platinum' ? { body: SKIN_MATERIALS.platinum.body.clone(), held: SKIN_MATERIALS.platinum.held.clone() } : null),
     [skin],
   );
+  const design = designFromLook(skin);
   const glint = useRef(0);
   const wasRolling = useRef(rolling);
   const invalidate = useThree((st) => st.invalidate);
@@ -443,11 +466,11 @@ function Dice3DImpl({
                   smoothness={10}
                   bevelSegments={8}
                   creaseAngle={0.5}
-                  material={platMat ? (held ? platMat.held : platMat.body) : skin && skin !== 'white' ? (held ? SKIN_MATERIALS[skin].held : SKIN_MATERIALS[skin].body) : held ? heldMaterial : bodyMaterial}
+                  material={design ? designMaterial(design, held) : platMat ? (held ? platMat.held : platMat.body) : skin && skin !== 'white' && skin in SKIN_MATERIALS ? (held ? SKIN_MATERIALS[skin as keyof typeof SKIN_MATERIALS].held : SKIN_MATERIALS[skin as keyof typeof SKIN_MATERIALS].body) : held ? heldMaterial : bodyMaterial}
                 />
                 {FACES.map((face) => (
                   <group key={face.value} rotation={face.rotation}>
-                    <FacePips value={face.value} size={size} pipColor={pipColor} />
+                    <FacePips value={face.value} size={size} pipColor={design ? design.pip : pipColor} />
                   </group>
                 ))}
               </group>

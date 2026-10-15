@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const sl: typeof sv = {
+export const sl: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klasična igra s kockami v sodobni preobleki',
   version: 'Različica',
@@ -346,7 +346,6 @@ export const sl: typeof sv = {
   goldInfoRule2: "Tekmo morata končati skupaj. Če kdo odstopi, ne šteje.",
   goldInfoRule3: "Prijatelj mora biti nov uporabnik aplikacije in igrati na svojem telefonu.",
   goldInfoRule4: "Vsak prijatelj ti prinese zlate kocke za 10 dni, dnevi se seštevajo. Tvoj prijatelj dobi zlate kocke za 3 dni kot darilo dobrodošlice.",
-  diceTierTitle: "Tvoje kocke",
   diceTierProgress: "{n} od {goal} iger z Yatzy → {tier}",
   diceTierUnlocked: "Nove kocke odklenjene: {tier}! ✨",
   tierBronze: "bron",

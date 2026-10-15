@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const es: typeof sv = {
+export const es: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Juego de dados clásico con un toque moderno',
   version: 'Versión',
@@ -346,7 +346,6 @@ export const es: typeof sv = {
   goldInfoRule2: "Debéis terminar la partida juntos. Si alguien abandona, no cuenta.",
   goldInfoRule3: "Tu amigo debe ser nuevo en la app y jugar en su propio teléfono.",
   goldInfoRule4: "Cada amigo te da dados dorados durante 10 días, y los días se suman. Tu amigo recibe dados dorados durante 3 días como regalo de bienvenida.",
-  diceTierTitle: "Tus dados",
   diceTierProgress: "{n} de {goal} partidas con Yatzy → {tier}",
   diceTierUnlocked: "¡Nuevos dados desbloqueados: {tier}! ✨",
   tierBronze: "bronce",

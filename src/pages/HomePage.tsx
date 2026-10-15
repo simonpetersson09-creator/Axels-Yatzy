@@ -691,7 +691,7 @@ export default function HomePage() {
           {/* Premium round secondary actions */}
           <div className="relative w-full">
             <motion.div
-              className="grid grid-cols-4 place-items-center gap-1 sm:gap-2 w-full"
+              className="grid grid-cols-4 place-items-center gap-1 sm:gap-2 w-full mt-2"
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}
             >
@@ -704,7 +704,7 @@ export default function HomePage() {
                 >
                   <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
                 </motion.button>
-                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('language')}</span>
+                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('language')}</span>
 
                 <AnimatePresence>
                   {showLangPicker && (
@@ -745,7 +745,7 @@ export default function HomePage() {
                 <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
                   <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
                 </div>
-                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('settings')}</span>
+                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('settings')}</span>
               </motion.button>
               {hofRank && (
                 <motion.button
@@ -770,7 +770,7 @@ export default function HomePage() {
                 <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
                   <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
                 </div>
-                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('friends')}</span>
+                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('friends')}</span>
               </motion.button>
 
               <div className="relative flex flex-col items-center">
@@ -790,7 +790,7 @@ export default function HomePage() {
                       <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
                     </div>
                   </div>
-                  <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start h-5">{t('adButtonShort')}</span>
+                  <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('adButtonShort')}</span>
                   {AD_BUTTON_LOCKED && (
                     <span className={`text-[7px] font-medium text-destructive text-center leading-none -mt-1 transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adComingSoon')}</span>
                   )}

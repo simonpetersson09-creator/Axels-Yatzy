@@ -1,5 +1,5 @@
 import type { DiceLook } from '@/lib/dice-skin';
-import { designFromLook, type DiceDesign } from '@/lib/dice-designs';
+import { designFromLook, paintDesignFace, type DiceDesign } from '@/lib/dice-designs';
 /**
  * A single premium-looking 3D die.
  *

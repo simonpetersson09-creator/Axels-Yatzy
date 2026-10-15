@@ -1,4 +1,4 @@
-import type { DiceSkin } from '@/lib/dice-skin';
+import type { DiceLook } from '@/lib/dice-skin';
 /**
  * A single premium-looking 3D die.
  *
@@ -318,7 +318,7 @@ export interface Dice3DProps {
   /** Optional hold-ring tint (any CSS colour). */
   holdColor?: string | undefined;
   /** Gold dice reward skin. */
-  skin?: DiceSkin | undefined;
+  skin?: DiceLook | undefined;
 }
 
 function Dice3DImpl({

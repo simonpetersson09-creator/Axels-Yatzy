@@ -1,4 +1,4 @@
-import type { DiceSkin } from '@/lib/dice-skin';
+import type { DiceLook } from '@/lib/dice-skin';
 /**
  * The tray: precision lighting, ground/shadow plane, responsive camera framing
  * and the vertical column of dice. Everything lives inside the R3F canvas.
@@ -26,7 +26,7 @@ export interface DiceTrayProps {
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour). */
   holdColor?: string | undefined;
-  skin?: DiceSkin | undefined;
+  skin?: DiceLook | undefined;
 }
 
 function DiceTrayImpl({

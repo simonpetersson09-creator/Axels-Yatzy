@@ -1,4 +1,4 @@
-import type { DiceSkin } from '@/lib/dice-skin';
+import type { DiceLook } from '@/lib/dice-skin';
 /**
  * `<DiceSet />` — the portable public API of the dice engine.
  *
@@ -31,7 +31,7 @@ export type DiceSetProps = {
   /** Optional hold-ring tint (any CSS colour), e.g. the active player's colour. */
   holdColor?: string | undefined;
   /** Gold dice reward skin. */
-  skin?: DiceSkin | undefined;
+  skin?: DiceLook | undefined;
 } & DiceConfig & {
     /** Optional className for the wrapper (fills its container by default). */
     className?: string;

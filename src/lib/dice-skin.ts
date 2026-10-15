@@ -18,3 +18,6 @@ export function asSkin(v: unknown): DiceSkin {
 export function nextTier(yatzyMatches: number) {
   return TIER_GOALS.find((g) => yatzyMatches < g.goal) ?? null;
 }
+
+/** What the dice engine renders: a tier skin or a shop design (`d:<id>`). */
+export type DiceLook = DiceSkin | `d:${string}`;

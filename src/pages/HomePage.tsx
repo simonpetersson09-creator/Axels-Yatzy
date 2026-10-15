@@ -70,7 +70,9 @@ export default function HomePage() {
   const { t, lang } = useTranslation();
   const [activeGames, setActiveGames] = useState<ActiveGame[]>(() => getActiveGames());
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
-  const [showQuickMatch, setShowQuickMatch] = useState(false);
+  const [showQuickMatch, setShowQuickMatch] = useState(
+    () => !!(window.history.state?.usr as { openQuickMatch?: boolean } | undefined)?.openQuickMatch,
+  );
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>(getCachedRankInfo);
   const [worldLeaders, setWorldLeaders] = useState<WorldLeaders>(getCachedWorldLeaders);

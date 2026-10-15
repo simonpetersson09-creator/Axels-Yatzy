@@ -399,6 +399,8 @@ export const sv = {
   shopInUse: "Används",
   shopNeed: "{n} XP till",
   shopNext: "Nästa tärning: {n} XP kvar",
+  shopKind_flag: "Flaggor",
+  shopYourCountry: "Ditt land",
   shopKind_color: "Glada",
   shopKind_pattern: "Kul & barnsliga",
   shopKind_exclusive: "Exklusiva",

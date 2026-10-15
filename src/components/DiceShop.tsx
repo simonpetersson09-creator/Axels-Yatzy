@@ -5,10 +5,11 @@ import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { DICE_DESIGNS, designName, designSwatchBg, type DiceDesign, type DesignKind } from '@/lib/dice-designs';
 import { buyDesign, selectDesign, useShop } from '@/lib/dice-shop';
 import { trackEvent } from '@/lib/analytics';
+import { getProfileCountry } from '@/lib/profile';
 import { fireWinConfetti } from '@/lib/confetti';
 import { cn } from '@/lib/utils';
 
-const KINDS: DesignKind[] = ['color', 'pattern', 'exclusive'];
+const KINDS: DesignKind[] = ['flag', 'color', 'pattern', 'exclusive'];
 const PIPS_5 = [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]];
 
 function MiniDie({ d, size = 44 }: { d: DiceDesign; size?: number }) {
@@ -28,6 +29,7 @@ export function DiceShop() {
   const shop = useShop();
   const [picked, setPicked] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const myCountry = getProfileCountry()?.toUpperCase() ?? null;
   const left = Math.max(0, shop.dailyCap - shop.earnedToday);
   const priceOf = (d: DiceDesign) => shop.prices[d.id] ?? 0;
   const cheapestLocked = DICE_DESIGNS.filter((d) => !shop.owned.includes(d.id) && priceOf(d) > shop.xp)
@@ -85,7 +87,7 @@ export function DiceShop() {
         <div key={kind} className="mt-4">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t(`shopKind_${kind}` as TranslationKey)}</p>
           <div className="mt-2 grid grid-cols-3 gap-2">
-            {DICE_DESIGNS.filter((d) => d.kind === kind).map((d) => {
+            {DICE_DESIGNS.filter((d) => d.kind === kind).sort((a, b) => kind === 'flag' ? Number(b.flag === myCountry) - Number(a.flag === myCountry) || designName(a, lang).localeCompare(designName(b, lang), lang) : 0).map((d) => {
               const owned = shop.owned.includes(d.id);
               const inUse = shop.selected === d.id;
               return (
@@ -97,6 +99,7 @@ export function DiceShop() {
                 >
                   <MiniDie d={d} size={52} />
                   <span className="text-[11px] font-semibold text-foreground truncate max-w-full">{designName(d, lang)}</span>
+                  {d.flag && d.flag === myCountry && <span className="absolute top-1 right-1 rounded-full bg-primary px-1.5 text-[9px] font-bold text-primary-foreground">{t('shopYourCountry')}</span>}
                   <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                     {inUse ? <Check className="w-3 h-3 text-primary" /> : owned ? t('shopUse') : <><Lock className="w-2.5 h-2.5" />{priceOf(d) || '…'}</>}
                   </span>

@@ -412,3 +412,5 @@ export const sv = {
   shopLevels: "Nivåer",
   lobbyTryQuickHint: "Ingen har anslutit än? Prova Snabbspel – du matchas med en spelare online direkt.",
 };
+
+export type TranslationKey = keyof typeof sv;

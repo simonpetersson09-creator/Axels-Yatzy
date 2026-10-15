@@ -27,7 +27,7 @@ export const DICE_DESIGNS: DiceDesign[] = [
   D('mint', 'Mintglass', 'color', '#9ff0d0', '#ff5fa2', 'gloss'),
   D('sun', 'Solsken', 'color', '#ffd23f', '#ff7a00', 'gloss'),
   D('rose', 'Bubbelgum', 'color', '#ff8fd0', '#ffffff', 'gloss'),
-  D('lilac', 'Syrénhimmel', 'color', '#c7a6ff', '#ffffff', 'gloss'),
+  D('lilac', 'Lavendel', 'color', '#c7a6ff', '#ffffff', 'gloss'),
   D('coal', 'Lakrits', 'color', '#1a1a1e', '#ff4fa0', 'matte'),
   D('forest', 'Groda', 'color', '#4cc55a', '#1a1a1e', 'gloss'),
   D('sky', 'Moln', 'color', '#e9f5ff', '#4aa0ff', 'matte'),
@@ -80,7 +80,7 @@ export function designSwatchBg(d: DiceDesign): string {
 }
 
 const EN_NAMES: Record<string, string> = {
-  ruby: 'Strawberry', ocean: 'Summer break', mint: 'Mint ice cream', sun: 'Sunshine', rose: 'Bubblegum', lilac: 'Lilac sky',
+  ruby: 'Strawberry', ocean: 'Summer break', mint: 'Mint ice cream', sun: 'Sunshine', rose: 'Bubblegum', lilac: 'Lavender',
   coal: 'Liquorice', forest: 'Frog', sky: 'Cloud', coral: 'Orange', sand: 'Cinnamon bun', night: 'Good night',
   ice: 'Penguin', lava: 'Dragon', candy: 'Candy cane', jungle: 'Dinosaur', ink: 'Rocket', peach: 'Teddy bear',
   arctic: 'Rainbow', cherry: 'Ladybug', royal: 'Disco ball', neon: 'Neon party', pearl: 'Mother of pearl',

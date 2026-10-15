@@ -435,6 +435,13 @@
       "when": 1792092779463,
       "tag": "0061_dice_profiles_xp_earned",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1792095359647,
+      "tag": "0062_lobby_open_6h",
+      "breakpoints": true
     }
   ]
 }

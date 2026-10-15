@@ -92,6 +92,24 @@ export type Database = {
         }
         Relationships: []
       }
+      dice_designs: {
+        Row: {
+          id: string
+          price: number
+          sort_order: number
+        }
+        Insert: {
+          id: string
+          price: number
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          price?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
       dice_preferences: {
         Row: {
           prefer_white: boolean
@@ -577,6 +595,35 @@ export type Database = {
         }
         Relationships: []
       }
+      player_designs: {
+        Row: {
+          bought_at: string
+          design_id: string
+          price_paid: number
+          session_id: string
+        }
+        Insert: {
+          bought_at?: string
+          design_id: string
+          price_paid: number
+          session_id: string
+        }
+        Update: {
+          bought_at?: string
+          design_id?: string
+          price_paid?: number
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_designs_design_id_fkey"
+            columns: ["design_id"]
+            isOneToOne: false
+            referencedRelation: "dice_designs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       player_games_history: {
         Row: {
           day: string
@@ -592,6 +639,36 @@ export type Database = {
           day?: string
           games_played?: number
           session_id?: string
+        }
+        Relationships: []
+      }
+      player_xp: {
+        Row: {
+          earned_day: string
+          earned_today: number
+          last_earned_at: string | null
+          selected_design: string | null
+          session_id: string
+          updated_at: string
+          xp: number
+        }
+        Insert: {
+          earned_day?: string
+          earned_today?: number
+          last_earned_at?: string | null
+          selected_design?: string | null
+          session_id: string
+          updated_at?: string
+          xp?: number
+        }
+        Update: {
+          earned_day?: string
+          earned_today?: number
+          last_earned_at?: string | null
+          selected_design?: string | null
+          session_id?: string
+          updated_at?: string
+          xp?: number
         }
         Relationships: []
       }
@@ -865,6 +942,14 @@ export type Database = {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
       }
+      award_ad_xp: {
+        Args: { p_device_id: string; p_session_id: string }
+        Returns: Json
+      }
+      buy_dice_design: {
+        Args: { p_design_id: string; p_device_id: string; p_session_id: string }
+        Returns: Json
+      }
       check_rate_limit: {
         Args: { p_key: string; p_min_interval_seconds: number }
         Returns: boolean
@@ -937,6 +1022,7 @@ export type Database = {
       get_avatars: { Args: { p_session_ids: string[] }; Returns: Json }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
       get_dice_profiles: { Args: { p_game_id: string }; Returns: Json }
+      get_dice_shop: { Args: { p_session_id: string }; Returns: Json }
       get_dice_skins: { Args: { p_session_ids: string[] }; Returns: Json }
       get_game_avatars: { Args: { p_game_id: string }; Returns: Json }
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
@@ -1169,6 +1255,10 @@ export type Database = {
           p_session_id: string
         }
         Returns: Json
+      }
+      select_dice_design: {
+        Args: { p_design_id: string; p_device_id: string; p_session_id: string }
+        Returns: boolean
       }
       send_friend_request: {
         Args: {

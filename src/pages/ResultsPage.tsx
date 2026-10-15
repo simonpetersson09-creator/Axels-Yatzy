@@ -9,8 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { toast } from 'sonner';
 import { HeadToHeadStats } from '@/components/game/HeadToHeadStats';
-import { addKnownFriends, getKnownFriends } from '@/lib/known-friends';
-import { unhideFriend } from '@/lib/friend-stats';
+import { getKnownFriends } from '@/lib/known-friends';
+import { sendFriendRequest } from '@/lib/friend-requests';
 
 interface PlayerResult {
   name: string;
@@ -37,7 +37,8 @@ export default function ResultsPage() {
   const playerNames: string[] = results.map(r => r.name);
   const [inviting, setInviting] = useState(false);
   // Online quick match: human opponents that can be added as friends.
-  const [quickMatch, setQuickMatch] = useState<null | Array<{ id: string; name: string }>>(null);
+  const [quickMatch, setQuickMatch] = useState<null | Array<{ id: string; name: string; index: number }>>(null);
+  const [requested, setRequested] = useState<Set<string>>(() => new Set());
   const [, setFriendsVersion] = useState(0);
 
   useEffect(() => {
@@ -49,23 +50,29 @@ export default function ResultsPage() {
         if (cancelled || !g?.is_quick_match) return;
         const { data: rows } = await supabase
           .from('game_players')
-          .select('session_id, player_name, is_bot')
+          .select('session_id, player_name, is_bot, player_index')
           .eq('game_id', gameId);
         if (cancelled) return;
         const me = getSessionId();
         setQuickMatch((rows ?? [])
           .filter((r) => !r.is_bot && r.session_id !== me)
-          .map((r) => ({ id: r.session_id, name: r.player_name })));
+          .map((r) => ({ id: r.session_id, name: r.player_name, index: r.player_index })));
       } catch { /* ignore — button just won't appear */ }
     })();
     return () => { cancelled = true; };
   }, [isMultiplayer, gameId]);
 
-  const handleAddFriend = (f: { id: string; name: string }) => {
-    addKnownFriends([f]);
-    unhideFriend(f.id);
-    setFriendsVersion((v) => v + 1);
-    toast.success(t('strangerFriendAdded', { name: f.name }));
+  // Strangers become friends only when they accept the request.
+  const handleAddFriend = async (f: { id: string; name: string; index: number }) => {
+    if (!gameId || requested.has(f.id)) return;
+    setRequested((s) => new Set(s).add(f.id));
+    const r = await sendFriendRequest(gameId, f.index);
+    if (r === 'error') {
+      setRequested((s) => { const n = new Set(s); n.delete(f.id); return n; });
+      toast.error(t('errGeneric'));
+      return;
+    }
+    toast.success(t('friendRequestSent'));
   };
 
   // Backfill: ensure friend_match_results row exists for this match.
@@ -205,7 +212,8 @@ export default function ResultsPage() {
 
         <div className="space-y-3">
           {quickMatch?.map((f) => {
-            const already = getKnownFriends().some((k) => k.id === f.id);
+            const isFriend = getKnownFriends().some((k) => k.id === f.id);
+            const already = isFriend || requested.has(f.id);
             return (
               <motion.button
                 key={f.id}
@@ -215,7 +223,7 @@ export default function ResultsPage() {
                 whileTap={{ scale: 0.97 }}
               >
                 {already ? <Check className="w-5 h-5 text-primary" /> : <UserPlus className="w-5 h-5 text-primary" />}
-                {already ? t('strangerFriendAdded', { name: f.name }) : t('addStrangerFriend', { name: f.name })}
+                {isFriend ? t('strangerFriendAdded', { name: f.name }) : already ? t('friendRequestSent') : t('addStrangerFriend', { name: f.name })}
               </motion.button>
             );
           })}

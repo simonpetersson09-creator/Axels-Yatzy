@@ -4,6 +4,7 @@ import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
 import { SentInvitesCards } from '@/components/SentInvitesCards';
 import { cancelLobby } from '@/lib/friend-requests';
+import { FriendRequestNotice } from '@/components/FriendRequestNotice';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -544,6 +545,7 @@ export default function HomePage() {
         </motion.div>
 
         <div className="w-full space-y-2 sm:space-y-3">
+          <FriendRequestNotice />
           <SentInvitesCards />
           {openLobbies.map((lb) => (
             <div

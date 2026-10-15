@@ -29,6 +29,7 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
+import { awardAdXp } from '@/lib/dice-shop';
 import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showAppOpenAd } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
@@ -228,7 +229,12 @@ export default function HomePage() {
       const result = await showOptionalInterstitial();
       toast.dismiss(loadingToast);
       if (result === 'failed' || result === 'unavailable') toast.error(t('adFailed'));
-      // Ingen reward eller spelmässig fördel ges. Användaren stannar i samma vy.
+      // Kosmetisk belöning: 1 XP till tärningsbutiken (servern begränsar till 10/dag).
+      if (result === 'shown') {
+        const r = await awardAdXp();
+        if (r.ok) toast.success(t('xpEarned', { n: r.xp }));
+        else if (r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
+      }
     } finally {
       toast.dismiss(loadingToast);
       setAdLoading(false);

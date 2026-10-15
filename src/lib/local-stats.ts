@@ -27,6 +27,8 @@ interface StoredStats extends LocalStats {
   version: number;
   /** Match keys already counted — the single source of truth against double counting. */
   recordedKeys: string[];
+  /** Fully played matches only (no forfeits) — used for country/world rank. */
+  completedGames: number;
 }
 
 const DEFAULT_STATS: LocalStats = {
@@ -61,34 +63,42 @@ function migrate(parsed: any): StoredStats {
     : [];
 
   void version;
-  return { ...base, version: CURRENT_VERSION, recordedKeys };
+  // Older records: every match counted so far stays counted.
+  const completedGames = typeof parsed?.completedGames === 'number' ? parsed.completedGames : base.gamesPlayed;
+  return { ...base, version: CURRENT_VERSION, recordedKeys, completedGames };
 }
 
 function readStored(): StoredStats {
   try {
     const raw = localStorage.getItem(STATS_KEY);
-    if (!raw) return { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [] };
+    if (!raw) return { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [], completedGames: 0 };
     return migrate(JSON.parse(raw));
   } catch {
-    return { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [] };
+    return { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [], completedGames: 0 };
   }
 }
 
 export function getLocalStats(): LocalStats {
-  const { version, recordedKeys, ...rest } = readStored();
-  void version; void recordedKeys;
+  const { version, recordedKeys, completedGames, ...rest } = readStored();
+  void version; void recordedKeys; void completedGames;
   return rest;
+}
+
+/** Matches played to the end (forfeits excluded) — the number country/world rank uses. */
+export function getRankedGames(): number {
+  return readStored().completedGames;
 }
 
 export function saveLocalStats(stats: LocalStats): void {
   const prev = readStored();
-  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys: prev.recordedKeys };
+  const completedGames = Math.max(0, prev.completedGames + (stats.gamesPlayed - prev.gamesPlayed));
+  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys: prev.recordedKeys, completedGames };
   localStorage.setItem(STATS_KEY, JSON.stringify(toStore));
 }
 
 /** Wipe stats *and* the dedupe ledger (used by "reset statistics"). */
 export function resetLocalStats(): void {
-  const toStore: StoredStats = { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [] };
+  const toStore: StoredStats = { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [], completedGames: 0 };
   localStorage.setItem(STATS_KEY, JSON.stringify(toStore));
 }
 
@@ -134,12 +144,13 @@ export function recordGameResult(
     ? [...stored.recordedKeys, matchKey].slice(-MAX_RECORDED_KEYS)
     : stored.recordedKeys;
 
-  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys };
+  const completedGames = stored.completedGames + (completed ? 1 : 0);
+  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys, completedGames };
   try { localStorage.setItem(STATS_KEY, JSON.stringify(toStore)); } catch { /* noop */ }
 
   // Update the player's personal country ranking after every finished match.
   // Lazy import to keep this module free of network deps until needed.
-  void import('./country-rank').then(m => m.syncCountryRank(stats.gamesPlayed)).catch(() => {});
+  void import('./country-rank').then(m => m.syncCountryRank(completedGames)).catch(() => {});
   // Weekly Hall of Fame: name, matches this week and best score in one match.
   // Only fully played matches count (forfeits are excluded).
   if (completed) void import('./hall-of-fame').then(m => m.reportWeeklyScore(playerScore)).catch(() => {});

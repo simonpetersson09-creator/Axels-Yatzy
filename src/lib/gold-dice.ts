@@ -119,6 +119,8 @@ export interface DiceProfile {
   preferWhite?: boolean;
   /** Shop design chosen by the player (wins over the tier colour). */
   design?: string | null;
+  /** Total XP ever earned (balance + spent); online only. */
+  xpEarned?: number;
 }
 
 export function profileSkin(p: DiceProfile | undefined): DiceLook {
@@ -141,9 +143,9 @@ export function useDiceProfiles(gameId: string | null, refreshKey: unknown = 0):
     (async () => {
       try {
         const { data } = await supabase.rpc('get_dice_profiles', { p_game_id: gameId });
-        const rows = (data as Array<{ player_index: number; is_bot: boolean; tier: string; yatzy_matches: number; invite_gold: boolean; prefer_white?: boolean; design?: string | null }> | null) ?? [];
+        const rows = (data as Array<{ player_index: number; is_bot: boolean; tier: string; yatzy_matches: number; invite_gold: boolean; prefer_white?: boolean; design?: string | null; xp_earned?: number }> | null) ?? [];
         if (alive) setMap(new Map(rows.map((r) => [r.player_index, {
-          isBot: !!r.is_bot, tier: asSkin(r.tier), yatzyMatches: Number(r.yatzy_matches ?? 0), inviteGold: !!r.invite_gold, preferWhite: !!r.prefer_white, design: r.design ?? null,
+          isBot: !!r.is_bot, tier: asSkin(r.tier), yatzyMatches: Number(r.yatzy_matches ?? 0), inviteGold: !!r.invite_gold, preferWhite: !!r.prefer_white, design: r.design ?? null, xpEarned: r.is_bot || r.xp_earned == null ? undefined : Number(r.xp_earned),
         }])));
       } catch { /* cosmetic; ignore */ }
     })();

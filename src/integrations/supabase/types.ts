@@ -950,6 +950,14 @@ export type Database = {
         Args: { p_design_id: string; p_device_id: string; p_session_id: string }
         Returns: Json
       }
+      cancel_friend_request: {
+        Args: { p_device_id: string; p_id: string; p_session_id: string }
+        Returns: Json
+      }
+      cancel_lobby: {
+        Args: { p_device_id: string; p_game_id: string; p_session_id: string }
+        Returns: Json
+      }
       check_rate_limit: {
         Args: { p_key: string; p_min_interval_seconds: number }
         Returns: boolean

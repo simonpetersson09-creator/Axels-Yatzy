@@ -144,7 +144,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
     : 'pointer-events-none fixed left-1/2 -translate-x-1/2 z-[80] flex flex-col items-center gap-1.5';
 
   const buttonPositionClasses = inline
-    ? 'relative z-[50] w-12 h-12 rounded-full bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_20px_-4px_hsl(0_0%_0%/0.5)] flex items-center justify-center active:scale-95 transition-transform'
+    ? 'relative z-[50] w-9 h-9 rounded-full bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_20px_-4px_hsl(0_0%_0%/0.5)] flex items-center justify-center active:scale-95 transition-transform'
     : 'fixed z-[70] w-12 h-12 rounded-full bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_20px_-4px_hsl(0_0%_0%/0.5)] flex items-center justify-center active:scale-95 transition-transform';
 
   const panelBottom = inline
@@ -198,7 +198,7 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
         className={buttonPositionClasses}
         style={buttonStyle}
       >
-        <MessageCircle className="w-5 h-5" strokeWidth={2.5} />
+        <MessageCircle className={inline ? "w-4 h-4" : "w-5 h-5"} strokeWidth={2.5} />
       </button>
 
       {/* Popup */}

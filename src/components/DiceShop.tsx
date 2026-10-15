@@ -13,7 +13,7 @@ const KINDS: DesignKind[] = ['flag', 'color', 'pattern', 'exclusive'];
 const PIPS_5 = [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]];
 
 function MiniDie({ d, size = 44 }: { d: DiceDesign; size?: number }) {
-  const glow = d.kind === 'exclusive' ? `0 0 ${size * 0.35}px ${d.glow ?? d.body}` : '0 4px 8px rgba(0,0,0,0.35)';
+  const glow = d.id === 'legend' ? `0 0 ${size * 0.5}px #ffb300, 0 0 ${size * 0.2}px #ff3fa8` : d.kind === 'exclusive' ? `0 0 ${size * 0.35}px ${d.glow ?? d.body}` : '0 4px 8px rgba(0,0,0,0.35)';
   return (
     <div className="relative rounded-[22%]" style={{ width: size, height: size, background: designSwatchBg(d), boxShadow: `inset 0 -${size * 0.08}px ${size * 0.12}px rgba(0,0,0,0.25), ${glow}` }} aria-hidden>
       {PIPS_5.map(([x, y], i) => (

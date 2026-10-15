@@ -31,62 +31,6 @@ const D = (id: string, name: string, kind: DesignKind, body: string, pip: string
   extra: Partial<Pick<DiceDesign, 'body2' | 'motif' | 'ink' | 'flag'>> = {}): DiceDesign =>
   ({ id, name, kind, body, pip, finish, glow, ...extra });
 
-/** Light flags get dark pips, dark ones white pips. */
-const DARK_PIP_FLAGS = new Set(['FI', 'FO', 'JP', 'KR', 'CA', 'PL', 'IE', 'EE']);
-const FLAG_DESIGNS: DiceDesign[] = FLAG_CODES.map((c) =>
-  D(`flag_${c.toLowerCase()}`, c, 'flag', '#ffffff', DARK_PIP_FLAGS.has(c) ? '#111114' : '#ffffff', 'gloss', undefined, { flag: c }));
-
-export const DICE_DESIGNS: DiceDesign[] = [
-  ...FLAG_DESIGNS,
-  // Glada (5–10 XP)
-  D('ruby', 'Jordgubbe', 'color', '#ff3d5e', '#ffffff', 'gloss', undefined, { body2: '#c8102e', motif: 'dots', ink: '#ffe066' }),
-  D('ocean', 'Sommarlov', 'color', '#39c0ff', '#ffffff', 'gloss', undefined, { body2: '#0a6fd1', motif: 'waves', ink: '#bdf0ff' }),
-  D('mint', 'Mintglass', 'color', '#a8f5d8', '#ff4f9a', 'gloss', undefined, { body2: '#5fd8b0', motif: 'sparkle', ink: '#ffffff' }),
-  D('sun', 'Solsken', 'color', '#ffe14d', '#ff6a00', 'gloss', undefined, { body2: '#ffab1a', motif: 'stars', ink: '#fff6c2' }),
-  D('rose', 'Bubbelgum', 'color', '#ff9ad6', '#ffffff', 'gloss', undefined, { body2: '#ff5fb8', motif: 'dots', ink: '#ffd6f0' }),
-  D('lilac', 'Lavendel', 'color', '#cdb2ff', '#ffffff', 'pearl', '#f0e6ff', { body2: '#8f6ae6', motif: 'hearts', ink: '#efe4ff' }),
-  D('coal', 'Lakrits', 'color', '#1a1a1e', '#ff4fa0', 'gloss', undefined, { body2: '#33333a', motif: 'stripes', ink: '#2a2a31' }),
-  D('forest', 'Groda', 'color', '#5fd068', '#14140f', 'gloss', undefined, { body2: '#2e9a3e', motif: 'spots', ink: '#9ae86a' }),
-  D('sky', 'Moln', 'color', '#ffffff', '#3b8ef5', 'matte', undefined, { body2: '#bfe2ff', motif: 'marble', ink: '#d9eeff' }),
-  D('coral', 'Apelsin', 'color', '#ffa53a', '#ffffff', 'gloss', undefined, { body2: '#ff6a1a', motif: 'dots', ink: '#ffd08a' }),
-  D('sand', 'Kanelbulle', 'color', '#e8b479', '#4a230c', 'matte', undefined, { body2: '#b9763f', motif: 'marble', ink: '#7a4320' }),
-  D('night', 'Godnatt', 'color', '#1f2b6b', '#ffd84a', 'gloss', undefined, { body2: '#0b1033', motif: 'stars', ink: '#fff1a8' }),
-  // Kul & barnsliga (20–40 XP)
-  D('ice', 'Pingvin', 'pattern', '#ffffff', '#111114', 'pearl', '#9fd0ff', { body2: '#cfe9ff', motif: 'checks', ink: '#e3f2ff' }),
-  D('lava', 'Drake', 'pattern', '#3fb34a', '#ffd23a', 'metal', '#ff5a1a', { body2: '#14551f', motif: 'scales', ink: '#7ce06a' }),
-  D('candy', 'Polkagris', 'pattern', '#ffffff', '#e0203a', 'gloss', undefined, { body2: '#ffe6ea', motif: 'stripes', ink: '#ff3550' }),
-  D('jungle', 'Dinosaurie', 'pattern', '#7fd04a', '#2b1607', 'gloss', undefined, { body2: '#3f9a2a', motif: 'spots', ink: '#ff9a3a' }),
-  D('ink', 'Rymdraket', 'pattern', '#16205a', '#ff6a3a', 'gloss', '#3a4aff', { body2: '#05071a', motif: 'galaxy', ink: '#ffffff' }),
-  D('peach', 'Nalle', 'pattern', '#c98a52', '#3a2210', 'matte', undefined, { body2: '#8f5a2e', motif: 'hearts', ink: '#e8b07a' }),
-  D('arctic', 'Regnbåge', 'pattern', '#ff5fa2', '#ffffff', 'iridescent', '#4ad0ff', { motif: 'rainbow' }),
-  D('cherry', 'Nyckelpiga', 'pattern', '#ff2a2a', '#111114', 'gloss', undefined, { body2: '#b8000f', motif: 'spots', ink: '#1a0a0a' }),
-  D('royal', 'Discokula', 'pattern', '#d8dde6', '#ff2fd0', 'metal', '#6af0ff', { body2: '#7a8496', motif: 'checks', ink: '#ffffff' }),
-  D('neon', 'Neonfest', 'pattern', '#121420', '#5dff9e', 'gloss', '#2aff7a', { body2: '#06070c', motif: 'waves', ink: '#ff3fd0' }),
-  // Exklusiva (75–100 XP)
-  D('pearl', 'Pärlemor', 'exclusive', '#fff8f0', '#8a6a4a', 'iridescent', '#ffd9f0', { body2: '#e6f0ff', motif: 'marble', ink: '#ffe3c4' }),
-  D('emerald', 'Smaragd', 'exclusive', '#1fc27a', '#f8f3d8', 'metal', '#0f6b42', { body2: '#05452a', motif: 'facets', ink: '#7affc4' }),
-  D('sapphire', 'Safir', 'exclusive', '#2f6bff', '#f8f3d8', 'metal', '#173a9e', { body2: '#0a1f6b', motif: 'facets', ink: '#9fc4ff' }),
-  D('obsidian', 'Svart guld', 'exclusive', '#121216', '#f0c75a', 'metal', '#6a4a10', { body2: '#000000', motif: 'marble', ink: '#c99a2e' }),
-  D('aurora', 'Norrsken', 'exclusive', '#0b1a3a', '#ffffff', 'iridescent', '#7a5fff', { body2: '#021018', motif: 'waves', ink: '#3fffb5' }),
-  D('rosegold', 'Roséguld', 'exclusive', '#f2b8a8', '#4a2a22', 'metal', '#8a4a3a', { body2: '#b86a58', motif: 'sparkle', ink: '#fff0e6' }),
-  D('galaxy', 'Galax', 'exclusive', '#3a1272', '#ffffff', 'iridescent', '#ff5fd1', { body2: '#0a0420', motif: 'galaxy', ink: '#ffffff' }),
-  D('diamond', 'Diamant', 'exclusive', '#f2fbff', '#3a6f9a', 'iridescent', '#9fe3ff', { body2: '#b8e6ff', motif: 'facets', ink: '#ffffff' }),
-];
-
-const BY_ID = new Map(DICE_DESIGNS.map((d) => [d.id, d]));
-
-/** Dice look passed to the dice engine: a tier skin or `d:<designId>`. */
-export const designLook = (id: string) => `d:${id}` as const;
-
-export function designFromLook(look: unknown): DiceDesign | null {
-  return typeof look === 'string' && look.startsWith('d:') ? BY_ID.get(look.slice(2)) ?? null : null;
-}
-
-export function getDesign(id: string | null | undefined): DiceDesign | null {
-  return id ? BY_ID.get(id) ?? null : null;
-}
-
-
 type FlagSpec =
   | { t: 'cross'; bg: string; c: string; inner?: string }
   | { t: 'v'; s: string[] }
@@ -185,6 +129,61 @@ function paintFlag(code: string, ctx: CanvasRenderingContext2D, n: number) {
       return;
     }
   }
+}
+
+/** Light flags get dark pips, dark ones white pips. */
+const DARK_PIP_FLAGS = new Set(['FI', 'FO', 'JP', 'KR', 'CA', 'PL', 'IE', 'EE']);
+const FLAG_DESIGNS: DiceDesign[] = FLAG_CODES.map((c) =>
+  D(`flag_${c.toLowerCase()}`, c, 'flag', '#ffffff', DARK_PIP_FLAGS.has(c) ? '#111114' : '#ffffff', 'gloss', undefined, { flag: c }));
+
+export const DICE_DESIGNS: DiceDesign[] = [
+  ...FLAG_DESIGNS,
+  // Glada (5–10 XP)
+  D('ruby', 'Jordgubbe', 'color', '#ff3d5e', '#ffffff', 'gloss', undefined, { body2: '#c8102e', motif: 'dots', ink: '#ffe066' }),
+  D('ocean', 'Sommarlov', 'color', '#39c0ff', '#ffffff', 'gloss', undefined, { body2: '#0a6fd1', motif: 'waves', ink: '#bdf0ff' }),
+  D('mint', 'Mintglass', 'color', '#a8f5d8', '#ff4f9a', 'gloss', undefined, { body2: '#5fd8b0', motif: 'sparkle', ink: '#ffffff' }),
+  D('sun', 'Solsken', 'color', '#ffe14d', '#ff6a00', 'gloss', undefined, { body2: '#ffab1a', motif: 'stars', ink: '#fff6c2' }),
+  D('rose', 'Bubbelgum', 'color', '#ff9ad6', '#ffffff', 'gloss', undefined, { body2: '#ff5fb8', motif: 'dots', ink: '#ffd6f0' }),
+  D('lilac', 'Lavendel', 'color', '#cdb2ff', '#ffffff', 'pearl', '#f0e6ff', { body2: '#8f6ae6', motif: 'hearts', ink: '#efe4ff' }),
+  D('coal', 'Lakrits', 'color', '#1a1a1e', '#ff4fa0', 'gloss', undefined, { body2: '#33333a', motif: 'stripes', ink: '#2a2a31' }),
+  D('forest', 'Groda', 'color', '#5fd068', '#14140f', 'gloss', undefined, { body2: '#2e9a3e', motif: 'spots', ink: '#9ae86a' }),
+  D('sky', 'Moln', 'color', '#ffffff', '#3b8ef5', 'matte', undefined, { body2: '#bfe2ff', motif: 'marble', ink: '#d9eeff' }),
+  D('coral', 'Apelsin', 'color', '#ffa53a', '#ffffff', 'gloss', undefined, { body2: '#ff6a1a', motif: 'dots', ink: '#ffd08a' }),
+  D('sand', 'Kanelbulle', 'color', '#e8b479', '#4a230c', 'matte', undefined, { body2: '#b9763f', motif: 'marble', ink: '#7a4320' }),
+  D('night', 'Godnatt', 'color', '#1f2b6b', '#ffd84a', 'gloss', undefined, { body2: '#0b1033', motif: 'stars', ink: '#fff1a8' }),
+  // Kul & barnsliga (20–40 XP)
+  D('ice', 'Pingvin', 'pattern', '#ffffff', '#111114', 'pearl', '#9fd0ff', { body2: '#cfe9ff', motif: 'checks', ink: '#e3f2ff' }),
+  D('lava', 'Drake', 'pattern', '#3fb34a', '#ffd23a', 'metal', '#ff5a1a', { body2: '#14551f', motif: 'scales', ink: '#7ce06a' }),
+  D('candy', 'Polkagris', 'pattern', '#ffffff', '#e0203a', 'gloss', undefined, { body2: '#ffe6ea', motif: 'stripes', ink: '#ff3550' }),
+  D('jungle', 'Dinosaurie', 'pattern', '#7fd04a', '#2b1607', 'gloss', undefined, { body2: '#3f9a2a', motif: 'spots', ink: '#ff9a3a' }),
+  D('ink', 'Rymdraket', 'pattern', '#16205a', '#ff6a3a', 'gloss', '#3a4aff', { body2: '#05071a', motif: 'galaxy', ink: '#ffffff' }),
+  D('peach', 'Nalle', 'pattern', '#c98a52', '#3a2210', 'matte', undefined, { body2: '#8f5a2e', motif: 'hearts', ink: '#e8b07a' }),
+  D('arctic', 'Regnbåge', 'pattern', '#ff5fa2', '#ffffff', 'iridescent', '#4ad0ff', { motif: 'rainbow' }),
+  D('cherry', 'Nyckelpiga', 'pattern', '#ff2a2a', '#111114', 'gloss', undefined, { body2: '#b8000f', motif: 'spots', ink: '#1a0a0a' }),
+  D('royal', 'Discokula', 'pattern', '#d8dde6', '#ff2fd0', 'metal', '#6af0ff', { body2: '#7a8496', motif: 'checks', ink: '#ffffff' }),
+  D('neon', 'Neonfest', 'pattern', '#121420', '#5dff9e', 'gloss', '#2aff7a', { body2: '#06070c', motif: 'waves', ink: '#ff3fd0' }),
+  // Exklusiva (75–100 XP)
+  D('pearl', 'Pärlemor', 'exclusive', '#fff8f0', '#8a6a4a', 'iridescent', '#ffd9f0', { body2: '#e6f0ff', motif: 'marble', ink: '#ffe3c4' }),
+  D('emerald', 'Smaragd', 'exclusive', '#1fc27a', '#f8f3d8', 'metal', '#0f6b42', { body2: '#05452a', motif: 'facets', ink: '#7affc4' }),
+  D('sapphire', 'Safir', 'exclusive', '#2f6bff', '#f8f3d8', 'metal', '#173a9e', { body2: '#0a1f6b', motif: 'facets', ink: '#9fc4ff' }),
+  D('obsidian', 'Svart guld', 'exclusive', '#121216', '#f0c75a', 'metal', '#6a4a10', { body2: '#000000', motif: 'marble', ink: '#c99a2e' }),
+  D('aurora', 'Norrsken', 'exclusive', '#0b1a3a', '#ffffff', 'iridescent', '#7a5fff', { body2: '#021018', motif: 'waves', ink: '#3fffb5' }),
+  D('rosegold', 'Roséguld', 'exclusive', '#f2b8a8', '#4a2a22', 'metal', '#8a4a3a', { body2: '#b86a58', motif: 'sparkle', ink: '#fff0e6' }),
+  D('galaxy', 'Galax', 'exclusive', '#3a1272', '#ffffff', 'iridescent', '#ff5fd1', { body2: '#0a0420', motif: 'galaxy', ink: '#ffffff' }),
+  D('diamond', 'Diamant', 'exclusive', '#f2fbff', '#3a6f9a', 'iridescent', '#9fe3ff', { body2: '#b8e6ff', motif: 'facets', ink: '#ffffff' }),
+];
+
+const BY_ID = new Map(DICE_DESIGNS.map((d) => [d.id, d]));
+
+/** Dice look passed to the dice engine: a tier skin or `d:<designId>`. */
+export const designLook = (id: string) => `d:${id}` as const;
+
+export function designFromLook(look: unknown): DiceDesign | null {
+  return typeof look === 'string' && look.startsWith('d:') ? BY_ID.get(look.slice(2)) ?? null : null;
+}
+
+export function getDesign(id: string | null | undefined): DiceDesign | null {
+  return id ? BY_ID.get(id) ?? null : null;
 }
 
 /** Paints one die face (body gradient + motif, no pips) on a square canvas. */

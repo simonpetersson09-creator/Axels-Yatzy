@@ -6,7 +6,7 @@
 - AdMob IDs are per platform in ADMOB_IDS (src/lib/admob.ts); a null ID disables that ad type on that platform so iOS IDs can never be used on Android.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
-- google-services.json lives git-ignored in firebase/ and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.
+- google-services.json is committed in firebase/ (public identifiers only) and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.
 - Android minSdk is forced to 26 by scripts/set-android-min-sdk.js (run in cap:sync:android) because the barcode-scanner library requires it; android/ is regenerated so variables.gradle edits would be lost.
 - Android launcher icons are generated from resources/icon.png into committed resources/android/res/ and copied over Capacitor's defaults by scripts/set-android-icons.js (run in cap:sync:android); android/ is regenerated so edits there would be lost.
 - Online-game problems (errors, slow calls >3 s, screen/server dice or score mismatches) are reported silently as analytics_events 'mp_issue' from useMultiplayerGame — lets us diagnose desync reports without user effort.

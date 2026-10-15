@@ -402,4 +402,5 @@ export const fi: Partial<typeof sv> = {
   xpEarned: "+1 XP · Sinulla on {n} XP",
   xpEarnedTotal: "Ansaittu XP: {n}",
   lobbyTryQuickHint: "Eikö kukaan ole vielä liittynyt? Kokeile pikaottelua – sinut yhdistetään heti online-pelaajaan.",
+  lobbyOpenCard: "Odotushuone auki · koodi {code}",
 };

@@ -402,4 +402,5 @@ export const vi: Partial<typeof sv> = {
   xpEarned: "+1 XP · Bạn có {n} XP",
   xpEarnedTotal: "XP đã kiếm: {n}",
   lobbyTryQuickHint: "Chưa ai tham gia? Thử đấu Nhanh – bạn sẽ được ghép cặp ngay với người chơi trực tuyến.",
+  lobbyOpenCard: "Phòng chờ đang mở · mã {code}",
 };

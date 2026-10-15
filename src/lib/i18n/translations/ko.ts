@@ -402,4 +402,5 @@ export const ko: Partial<typeof sv> = {
   xpEarned: "+1 XP · {n} XP 보유",
   xpEarnedTotal: "획득한 XP: {n}",
   lobbyTryQuickHint: "아무도 참여하지 않았나요? 빠른 매치를 시도해 보세요 – 온라인 플레이어와 즉시 연결됩니다.",
+  lobbyOpenCard: "대기실 열림 · 코드 {code}",
 };

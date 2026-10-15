@@ -402,4 +402,5 @@ export const hr: Partial<typeof sv> = {
   xpEarned: "+1 XP · Imate {n} XP",
   xpEarnedTotal: "Zasluženi XP: {n}",
   lobbyTryQuickHint: "Nitko se još nije pridružio? Isprobajte Brzu utakmicu – odmah ćete biti spojeni s online igračem.",
+  lobbyOpenCard: "Čekaonica otvorena · kod {code}",
 };

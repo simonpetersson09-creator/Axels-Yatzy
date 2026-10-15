@@ -402,4 +402,5 @@ export const tr: Partial<typeof sv> = {
   xpEarned: "+1 XP · {n} XP'n var",
   xpEarnedTotal: "Kazanılan XP: {n}",
   lobbyTryQuickHint: "Kimse katılmadı mı? Hızlı maçı dene – hemen çevrimiçi bir oyuncuyla eşleşeceksin.",
+  lobbyOpenCard: "Bekleme odası açık · kod {code}",
 };

@@ -402,4 +402,5 @@ export const gu: Partial<typeof sv> = {
   xpEarned: "+1 XP · તમારી પાસે {n} XP છે",
   xpEarnedTotal: "કમાવેલ XP: {n}",
   lobbyTryQuickHint: "કોઈ જોડાયું નથી? ક્વિક મેચ અજમાવો – તમને તરત જ ઑનલાઇન પ્લેયર સાથે મેચ કરવામાં આવશે.",
+  lobbyOpenCard: "પ્રતીક્ષા ખંડ ખુલ્લો · કોડ {code}",
 };

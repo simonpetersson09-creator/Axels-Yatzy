@@ -402,4 +402,5 @@ export const nl: Partial<typeof sv> = {
   xpEarned: "+1 XP · Je hebt {n} XP",
   xpEarnedTotal: "Verdiende XP: {n}",
   lobbyTryQuickHint: "Niemand aangesloten? Probeer Snelle match – je wordt meteen gekoppeld aan een online speler.",
+  lobbyOpenCard: "Wachtkamer open · code {code}",
 };

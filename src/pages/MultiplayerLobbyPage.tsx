@@ -1,16 +1,28 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { LobbyJoinForm } from '@/components/multiplayer/LobbyJoinForm';
 import { LobbyWaitingRoom } from '@/components/multiplayer/LobbyWaitingRoom';
+import { getPlayerName } from '@/lib/session';
 
 export default function MultiplayerLobbyPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     gameId, gameCode, status, myPlayerIndex, gameState,
     loading, error,
     createGame, joinGame, startGame,
   } = useMultiplayerGame();
+
+  // Back to my own open waiting room from the home-screen card.
+  const rejoinedRef = useRef(false);
+  useEffect(() => {
+    const code = (location.state as { rejoinCode?: string } | null)?.rejoinCode;
+    if (!code || rejoinedRef.current) return;
+    rejoinedRef.current = true;
+    if (gameCode === code && status === 'waiting') return;
+    void joinGame(code, getPlayerName() || 'Spelare');
+  }, [location.state, gameCode, status, joinGame]);
 
   useEffect(() => {
     const root = document.getElementById('root');

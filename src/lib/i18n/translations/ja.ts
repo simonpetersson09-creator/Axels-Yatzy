@@ -402,4 +402,5 @@ export const ja: Partial<typeof sv> = {
   xpEarned: "+1 XP · 現在{n} XP",
   xpEarnedTotal: "獲得XP: {n}",
   lobbyTryQuickHint: "誰も参加していませんか？クイックマッチを試してみてください — すぐにオンラインプレイヤーとマッチングされます。",
+  lobbyOpenCard: "待合室オープン · コード {code}",
 };

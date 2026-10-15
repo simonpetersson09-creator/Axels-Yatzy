@@ -402,4 +402,5 @@ export const kn: Partial<typeof sv> = {
   xpEarned: "+1 XP · ನಿಮ್ಮ ಬಳಿ {n} XP ಇದೆ",
   xpEarnedTotal: "ಗಳಿಸಿದ XP: {n}",
   lobbyTryQuickHint: "ಇನ್ನೂ ಯಾರೂ ಸೇರಿಲ್ಲವೇ? ತ್ವರಿತ ಪಂದ್ಯವನ್ನು ಪ್ರಯತ್ನಿಸಿ – ನೀವು ತಕ್ಷಣ ಆನ್‌ಲೈನ್ ಆಟಗಾರನೊಂದಿಗೆ ಹೊಂದಾಣಿಕೆ ಆಗುವಿರಿ.",
+  lobbyOpenCard: "ಕಾಯುವ ಕೊಠಡಿ ತೆರೆದಿದೆ · ಕೋಡ್ {code}",
 };

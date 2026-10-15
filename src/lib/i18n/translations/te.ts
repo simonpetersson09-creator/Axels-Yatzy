@@ -402,4 +402,5 @@ export const te: Partial<typeof sv> = {
   xpEarned: "+1 XP · మీకు {n} XP ఉన్నాయి",
   xpEarnedTotal: "సంపాదించిన XP: {n}",
   lobbyTryQuickHint: "ఇంకా ఎవరూ చేరలేదా? త్వరిత మ్యాచ్‌ను ప్రయత్నించండి – మీరు వెంటనే ఆన్‌లైన్ ప్లేయర్‌తో సరిపోలుతారు.",
+  lobbyOpenCard: "వేచి ఉండే గది తెరిచి ఉంది · కోడ్ {code}",
 };

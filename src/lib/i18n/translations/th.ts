@@ -402,4 +402,5 @@ export const th: Partial<typeof sv> = {
   xpEarned: "+1 XP · คุณมี {n} XP",
   xpEarnedTotal: "XP ที่ได้รับ: {n}",
   lobbyTryQuickHint: "ยังไม่มีใครเข้าร่วม? ลองจับคู่ด่วนสิ – คุณจะถูกจับคู่กับผู้เล่นออนไลน์ทันที",
+  lobbyOpenCard: "ห้องรอเปิดอยู่ · รหัส {code}",
 };

@@ -402,4 +402,5 @@ export const ml: Partial<typeof sv> = {
   xpEarned: "+1 XP · നിങ്ങൾക്ക് {n} XP ഉണ്ട്",
   xpEarnedTotal: "നേടിയ XP: {n}",
   lobbyTryQuickHint: "ആരും ഇതുവരെ ചേർന്നില്ലേ? ക്വിക്ക് മാച്ച് ശ്രമിക്കുക – നിങ്ങൾക്ക് ഉടൻ തന്നെ ഒരു ഓൺലൈൻ കളിക്കാരനെ ലഭിക്കും.",
+  lobbyOpenCard: "കാത്തിരിപ്പ് മുറി തുറന്നിരിക്കുന്നു · കോഡ് {code}",
 };

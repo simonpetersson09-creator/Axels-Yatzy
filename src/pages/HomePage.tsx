@@ -53,6 +53,8 @@ const item = {
   show: { opacity: 1, y: 0 },
 };
 
+interface OpenLobby { gameId: string; code: string; createdAt: string }
+
 interface GameStatus {
   myTurn?: boolean;
   opponentName?: string;
@@ -69,6 +71,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { t, lang } = useTranslation();
   const [activeGames, setActiveGames] = useState<ActiveGame[]>(() => getActiveGames());
+  const [openLobbies, setOpenLobbies] = useState<OpenLobby[]>([]);
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
   const [showQuickMatch, setShowQuickMatch] = useState(
     () => !!(window.history.state?.usr as { openQuickMatch?: boolean } | undefined)?.openQuickMatch,
@@ -315,7 +318,7 @@ export default function HomePage() {
       // One query: my open games plus every player in them.
       const { data, error } = await supabase
         .from('game_players')
-        .select('game_id, player_name, session_id, games!inner(id, status, game_players(player_name, session_id))')
+        .select('game_id, player_name, session_id, games!inner(id, status, game_code, created_at, game_players(player_name, session_id))')
         .eq('session_id', sessionId)
         .in('games.status', ['waiting', 'playing']);
       if (cancelled || error || !data) return;
@@ -330,12 +333,17 @@ export default function HomePage() {
         }
       }
       let changed = false;
+      const lobbies: OpenLobby[] = [];
       const existing = new Set(getActiveGames().filter(g => g.gameId).map(g => g.gameId!));
-      for (const row of data) {
+      for (const row of data as any[]) {
         const gid = row.game_id as string;
-        const gameStatus = Array.isArray(row.games) ? row.games[0]?.status : row.games?.status;
+        const g = Array.isArray(row.games) ? row.games[0] : row.games;
+        const gameStatus = g?.status;
         const isSoloWaitingRoom = gameStatus === 'waiting' && (playerCounts[gid] ?? 0) < 2;
         if (isSoloWaitingRoom) {
+          if (g?.game_code) {
+            lobbies.push({ gameId: gid, code: g.game_code, createdAt: g.created_at });
+          }
           if (existing.has(gid)) {
             removeActiveGame(gid);
             changed = true;
@@ -354,6 +362,7 @@ export default function HomePage() {
         }
       }
       if (changed && !cancelled) setActiveGames(getActiveGames());
+      if (!cancelled) setOpenLobbies(lobbies);
     };
     void sync();
     return () => { cancelled = true; };
@@ -535,6 +544,24 @@ export default function HomePage() {
 
         <div className="w-full space-y-2 sm:space-y-3">
           <SentInvitesCards />
+          {openLobbies.map((lb) => (
+            <button
+              key={lb.gameId}
+              onClick={() => navigate('/multiplayer', { state: { rejoinCode: lb.code } })}
+              className="w-full px-3 py-1.5 rounded-xl flex items-center gap-2.5 text-left bg-secondary/70 text-foreground border border-border/60 border-l-4 border-l-primary/80 active:scale-[0.98] transition"
+            >
+              <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center bg-primary/15">
+                <Users className="w-3.5 h-3.5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold text-sm truncate">{t('lobbyOpenCard', { code: lb.code })}</p>
+                <p className="flex items-center gap-1 mt-px text-[10px] text-muted-foreground/80">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <span className="truncate">{t('waitingShort')}…</span>
+                </p>
+              </div>
+            </button>
+          ))}
           {activeGames.length > 0 && (
             <motion.div className="space-y-1.5" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               {[...activeGames].sort((a, b) => {

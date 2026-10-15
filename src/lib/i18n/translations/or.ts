@@ -402,4 +402,5 @@ export const or: Partial<typeof sv> = {
   xpEarned: "+1 XP · ଆପଣଙ୍କ ପାଖରେ {n} XP ଅଛି",
   xpEarnedTotal: "ଅର୍ଜିତ XP: {n}",
   lobbyTryQuickHint: "କେହି ଯୋଗ ଦେଇ ନାହାଁନ୍ତି କି? ତୁରନ୍ତ ମ୍ୟାଚ୍ ଚେଷ୍ଟା କରନ୍ତୁ – ଆପଣଙ୍କୁ ତୁରନ୍ତ ଜଣେ ଅନଲାଇନ୍ ଖେଳାଳିଙ୍କ ସହ ଯୋଡାଯିବ।",
+  lobbyOpenCard: "ଅପେକ୍ଷା କକ୍ଷ ଖୋଲା · କୋଡ୍ {code}",
 };

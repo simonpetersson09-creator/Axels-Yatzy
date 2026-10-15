@@ -25,7 +25,7 @@ export interface DiceDesign {
   flag?: string;
 }
 
-export type Motif = 'dots' | 'stripes' | 'stars' | 'hearts' | 'spots' | 'sparkle' | 'waves' | 'checks' | 'scales' | 'flames' | 'rainbow' | 'galaxy' | 'facets' | 'marble';
+export type Motif = 'dots' | 'stripes' | 'stars' | 'hearts' | 'spots' | 'sparkle' | 'waves' | 'checks' | 'scales' | 'flames' | 'rainbow' | 'galaxy' | 'facets' | 'marble' | 'legend';
 
 const D = (id: string, name: string, kind: DesignKind, body: string, pip: string, finish: DesignFinish, glow?: string,
   extra: Partial<Pick<DiceDesign, 'body2' | 'motif' | 'ink' | 'flag'>> = {}): DiceDesign =>
@@ -170,6 +170,7 @@ export const DICE_DESIGNS: DiceDesign[] = [
   D('aurora', 'Norrsken', 'exclusive', '#0b1a3a', '#ffffff', 'iridescent', '#7a5fff', { body2: '#021018', motif: 'waves', ink: '#3fffb5' }),
   D('rosegold', 'Roséguld', 'exclusive', '#f2b8a8', '#4a2a22', 'metal', '#8a4a3a', { body2: '#b86a58', motif: 'sparkle', ink: '#fff0e6' }),
   D('galaxy', 'Galax', 'exclusive', '#3a1272', '#ffffff', 'iridescent', '#ff5fd1', { body2: '#0a0420', motif: 'galaxy', ink: '#ffffff' }),
+  D('legend', 'Mr.B. Legend', 'exclusive', '#1a0b2e', '#ffd86b', 'iridescent', '#ffb300', { body2: '#050208', motif: 'legend', ink: '#ffd86b' }),
   D('diamond', 'Diamant', 'exclusive', '#f2fbff', '#3a6f9a', 'iridescent', '#9fe3ff', { body2: '#b8e6ff', motif: 'facets', ink: '#ffffff' }),
 ];
 
@@ -220,6 +221,15 @@ export function paintDesignFace(d: DiceDesign, ctx: CanvasRenderingContext2D, n:
     case 'rainbow': { ctx.globalAlpha = 1; const cs = ['#ff3b3b', '#ff9a2a', '#ffe14d', '#3ad46a', '#2fa8ff', '#8a5aff']; cs.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(0, i * n / 6, n, n / 6 + 1); }); } break;
     case 'galaxy': { ctx.globalAlpha = 0.45; for (let i = 0; i < 4; i++) { const x = rnd() * n, y = rnd() * n, r = n * (0.2 + rnd() * 0.25); const rg = ctx.createRadialGradient(x, y, 0, x, y, r); rg.addColorStop(0, d.glow ?? '#ff5fd1'); rg.addColorStop(1, 'transparent'); ctx.fillStyle = rg; ctx.fillRect(0, 0, n, n); } ctx.fillStyle = ink; ctx.globalAlpha = 0.95; for (let i = 0; i < 60; i++) { ctx.beginPath(); ctx.arc(rnd() * n, rnd() * n, n * (0.003 + rnd() * 0.008), 0, 7); ctx.fill(); } star(n * 0.2, n * 0.8, n * 0.03); } break;
     case 'facets': ctx.globalAlpha = 0.28; for (let i = 0; i < 14; i++) { ctx.beginPath(); ctx.moveTo(rnd() * n, rnd() * n); ctx.lineTo(rnd() * n, rnd() * n); ctx.lineTo(rnd() * n, rnd() * n); ctx.closePath(); ctx.fill(); } break;
+    case 'legend': {
+      for (let i = 0; i < 3; i++) { const x = rnd() * n, y = rnd() * n, r = n * (0.35 + rnd() * 0.2); const rg = ctx.createRadialGradient(x, y, 0, x, y, r); rg.addColorStop(0, i === 1 ? '#7a2cff' : '#ff3fa8'); rg.addColorStop(1, 'transparent'); ctx.globalAlpha = 0.35; ctx.fillStyle = rg; ctx.fillRect(0, 0, n, n); }
+      const gg = ctx.createLinearGradient(0, 0, n, n); gg.addColorStop(0, '#fff3b0'); gg.addColorStop(0.5, '#ffb300'); gg.addColorStop(1, '#fff3b0');
+      ctx.strokeStyle = gg; ctx.globalAlpha = 0.9; ctx.lineWidth = n * 0.014;
+      for (let i = 0; i < 6; i++) { ctx.beginPath(); let x = rnd() * n, y = 0; ctx.moveTo(x, y); while (y < n) { x += (rnd() - 0.5) * n * 0.18; y += n * 0.05; ctx.lineTo(x, y); } ctx.stroke(); }
+      ctx.fillStyle = '#ffffff'; for (let i = 0; i < 50; i++) { ctx.globalAlpha = 0.4 + rnd() * 0.6; ctx.beginPath(); ctx.arc(rnd() * n, rnd() * n, n * (0.003 + rnd() * 0.008), 0, 7); ctx.fill(); }
+      ctx.globalAlpha = 1; for (let i = 0; i < 5; i++) star(rnd() * n, rnd() * n, n * (0.025 + rnd() * 0.03));
+      ctx.strokeStyle = gg; ctx.lineWidth = n * 0.05; ctx.strokeRect(n * 0.025, n * 0.025, n * 0.95, n * 0.95);
+    } break;
     case 'marble': ctx.globalAlpha = 0.5; ctx.lineWidth = n * 0.012; for (let i = 0; i < 7; i++) { ctx.beginPath(); let x = rnd() * n, y = 0; ctx.moveTo(x, y); while (y < n) { x += (rnd() - 0.5) * n * 0.15; y += n * 0.06; ctx.lineTo(x, y); } ctx.stroke(); } break;
   }
   ctx.globalAlpha = 1;
@@ -250,7 +260,7 @@ const EN_NAMES: Record<string, string> = {
   coal: 'Liquorice', forest: 'Frog', sky: 'Cloud', coral: 'Orange', sand: 'Cinnamon bun', night: 'Good night',
   ice: 'Penguin', lava: 'Dragon', candy: 'Candy cane', jungle: 'Dinosaur', ink: 'Rocket', peach: 'Teddy bear',
   arctic: 'Rainbow', cherry: 'Ladybug', royal: 'Disco ball', neon: 'Neon party', pearl: 'Mother of pearl',
-  emerald: 'Emerald', sapphire: 'Sapphire', obsidian: 'Black gold', aurora: 'Aurora', rosegold: 'Rose gold', galaxy: 'Galaxy', diamond: 'Diamond',
+  emerald: 'Emerald', sapphire: 'Sapphire', obsidian: 'Black gold', aurora: 'Aurora', rosegold: 'Rose gold', galaxy: 'Galaxy', diamond: 'Diamond', legend: 'Mr.B. Legend',
 };
 
 export function designName(d: DiceDesign, lang: string): string {

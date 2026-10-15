@@ -30,10 +30,10 @@ Deno.serve(async (req) => {
     );
 
     // Cleanup criteria:
-    //  - waiting games older than 1 hour (lobby never started)
+    //  - waiting games older than 7 hours (lobbies stay open 6 h, see cleanup_unjoined_lobbies)
     //  - finished games older than 24 hours
     //  - playing games inactive (updated_at) older than 14 days (truly abandoned)
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const oneHourAgo = new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString();
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
 

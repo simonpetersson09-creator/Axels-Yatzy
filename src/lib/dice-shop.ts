@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
 import { designLook, getDesign } from '@/lib/dice-designs';
-import { effectiveSkin, useGoldStatus } from '@/lib/gold-dice';
+import { effectiveSkin, useGoldStatus, fetchGoldStatus } from '@/lib/gold-dice';
 import type { DiceLook } from '@/lib/dice-skin';
 
 export interface ShopState {
@@ -103,7 +103,7 @@ export async function buyDesign(id: string): Promise<'ok' | 'xp' | 'error'> {
     const d = data as { ok: boolean; reason?: string } | null;
     if (error || !d) return 'error';
     if (!d.ok) return d.reason === 'xp' ? 'xp' : 'error';
-    await fetchShop();
+    await Promise.all([fetchShop(), fetchGoldStatus()]);
     return 'ok';
   } catch { return 'error'; }
 }
@@ -116,6 +116,7 @@ export async function selectDesign(id: string | null): Promise<boolean> {
     const { data, error } = await supabase.rpc('select_dice_design', { p_session_id: getSessionId(), p_device_id: dev, p_design_id: id as string });
     if (error || data !== true) return false;
     patchShopCache({ selected: id });
+    if (id) void fetchGoldStatus();
     return true;
   } catch { return false; }
 }

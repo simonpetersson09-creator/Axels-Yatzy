@@ -225,6 +225,8 @@ export async function setPreferWhiteDice(preferWhite: boolean): Promise<boolean>
     if (error || data !== true) return false;
     const cached = readCache();
     localStorage.setItem(CACHE_KEY, JSON.stringify({ ...cached, preferWhite }));
+    // White dice clear the shop design on the server; mirror that locally.
+    if (preferWhite) void import('@/lib/dice-shop').then((m) => m.patchShopCache({ selected: null })).catch(() => {});
     return true;
   } catch {
     return false;

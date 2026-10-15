@@ -8,7 +8,7 @@ import {
   getLanguage,
   type Language,
 } from './profile';
-import { getLocalStats } from './local-stats';
+import { getLocalStats, getRankedGames } from './local-stats';
 
 // Rough fallback by UI language when IP geo is unavailable.
 const LANG_TO_COUNTRY: Record<Language, string> = {
@@ -125,7 +125,7 @@ export type WorldLeaders = WorldLeader[];
  */
 export async function syncCountryRank(gamesPlayed?: number): Promise<RankInfo> {
   const country = getProfileCountry();
-  const games = gamesPlayed ?? getLocalStats().gamesPlayed;
+  const games = gamesPlayed ?? getRankedGames();
   const empty: RankInfo = { country: null, world: null };
   if (!country) return empty;
   try {

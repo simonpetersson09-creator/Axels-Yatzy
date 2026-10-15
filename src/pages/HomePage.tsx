@@ -245,7 +245,7 @@ export default function HomePage() {
     // Not urgent (cached values are shown meanwhile): wait until the start
     // screen's entrance animation is done so it doesn't compete with it.
     const timer = setTimeout(() => {
-      void syncCountryRank(stats.gamesPlayed).then(res => {
+      void syncCountryRank().then(res => {
         if (!cancelled) setRankInfo(res.country || res.world ? res : getCachedRankInfo());
       });
       void syncWorldLeaders().then(res => {

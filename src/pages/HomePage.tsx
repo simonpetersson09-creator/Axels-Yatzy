@@ -53,6 +53,8 @@ const item = {
   show: { opacity: 1, y: 0 },
 };
 
+interface OpenLobby { gameId: string; code: string; createdAt: string }
+
 interface GameStatus {
   myTurn?: boolean;
   opponentName?: string;

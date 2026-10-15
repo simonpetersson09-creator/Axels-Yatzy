@@ -47,6 +47,12 @@ export default function MultiplayerGamePage() {
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 
+  // A match that was never started belongs in the waiting room (the server
+  // refuses rolls/scores until the host taps Start).
+  useEffect(() => {
+    if (status === 'waiting' && gameCode && gameState) navigate('/multiplayer', { replace: true });
+  }, [status, gameCode, gameState, navigate]);
+
   // Friend match, waiting for someone else's turn → good moment to offer notifications.
   const isFriendMatch = !!gameState && gameState.players.every((p) => !(p as { badge?: string }).badge);
   useEffect(() => {

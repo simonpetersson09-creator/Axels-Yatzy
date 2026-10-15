@@ -428,6 +428,13 @@
       "when": 1792081520697,
       "tag": "0060_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1792092779463,
+      "tag": "0061_dice_profiles_xp_earned",
+      "breakpoints": true
     }
   ]
 }

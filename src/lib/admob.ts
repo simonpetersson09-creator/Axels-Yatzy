@@ -415,19 +415,23 @@ async function fitGameAboveBanner(isStale: () => boolean) {
     const limit = window.innerHeight - safeAreaBottom() - 50 - BANNER_GAP_PX;
     const over = bottom - limit;
     const mis = e.buttons - e.board; // knapparna under brickans nederkant
-    if (over <= 0.5 && mis <= 1) return;
-    if (over > 0.5) {
-      // Protokollet har ~20 rader; tärningskolumnen ~5 tärningar + 4 mellanrum.
-      const k = Math.max(0.8, 1 - over / Math.max(1, bottom - 120));
-      row = Math.max(20, Math.floor((row - over / 19 - 0.25) * 2) / 2);
-      dice = Math.max(0.5, +(dice * k).toFixed(3));
+    if (over <= 0.5 && Math.abs(mis) <= 1) return;
+    if (over <= 0.5 && mis < -1) return; // knapparna ovanför brickan styrs av CSS (stretch)
+    const sideOver = Math.max(e.buttons - limit, mis); // hur mycket sidokolumnen ska kortas
+    if (e.board - limit > 0.5) {
+      // Själva brickan räcker under annonsen: kortare rader.
+      row = Math.max(20, Math.floor((row - (e.board - limit) / 19 - 0.25) * 2) / 2);
+    }
+    if (sideOver > 1 && dice > 0.45) {
+      // Sidokolumnen (tärningar + Kasta + Hem/Ge upp) är för lång: mindre tärningar.
+      const k = Math.max(0.85, 1 - sideOver / Math.max(1, e.buttons - 250));
+      dice = Math.max(0.45, +(dice * k).toFixed(3));
       gapS = Math.max(0.3, +(gapS * k).toFixed(3));
-    } else {
-      // Bara sidokolumnen är för lång: krymp tärningarna, inte brickan.
-      if (dice <= 0.5) return;
-      const k = Math.max(0.85, 1 - mis / Math.max(1, e.buttons - 200));
-      dice = Math.max(0.5, +(dice * k).toFixed(3));
-      gapS = Math.max(0.3, +(gapS * k).toFixed(3));
+    } else if (mis > 1 && e.buttons <= limit + 0.5) {
+      // Tärningarna kan inte bli mindre: förläng brickan ner till knapparna.
+      row = Math.floor((row + mis / 19) * 2) / 2;
+    } else if (e.board - limit <= 0.5) {
+      return;
     }
     root.style.setProperty('--sb-row-h', `${row}px`);
     root.style.setProperty('--dice-scale', String(dice));

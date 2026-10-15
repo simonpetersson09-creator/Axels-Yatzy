@@ -753,7 +753,7 @@ export default function HomePage() {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="absolute -top-2 -right-4 flex items-center gap-0.5 rounded-full bg-game-gold text-background px-1.5 py-0.5 text-[10px] font-bold tabular-nums shadow-md"
+                  className="absolute -top-1.5 left-[calc(50%+10px)] z-10 flex items-center gap-0.5 rounded-full bg-game-gold text-background px-1.5 py-[1px] text-[9px] leading-none font-bold tabular-nums whitespace-nowrap shadow-md ring-2 ring-background"
                   aria-label={`${t('hofBadgeLabel')} #${hofRank}`}
                 >
                   <Trophy className="w-3 h-3" />#{hofRank}

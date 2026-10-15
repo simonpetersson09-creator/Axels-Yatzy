@@ -233,7 +233,7 @@ export default function HomePage() {
       if (result === 'shown') {
         const r = await awardAdXp();
         if (r.ok) toast.success(t('xpEarned', { n: r.xp }));
-        else if (r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
+        else if (r.ok === false && r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
       }
     } finally {
       toast.dismiss(loadingToast);

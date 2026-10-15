@@ -346,19 +346,42 @@ function safeAreaBottom(): number {
   return h;
 }
 
-/** Lägsta underkant av protokollet och knapparna i spelet, eller null. */
-function gameContentBottom(): number | null {
+/** Underkant av protokollet och av knapparna bredvid/under det, eller null. */
+function gameEdges(): { board: number; buttons: number } | null {
   const zone = document.querySelector('.ios-score-zone');
   if (!zone) return null;
-  let bottom = zone.getBoundingClientRect().bottom;
+  const board = zone.getBoundingClientRect().bottom;
+  let buttons = board;
   zone.parentElement?.querySelectorAll('button').forEach((b) => {
     const r = b.getBoundingClientRect();
-    if (r.height > 0 && r.top < window.innerHeight) bottom = Math.max(bottom, r.bottom);
+    if (r.height > 0 && r.top < window.innerHeight) buttons = Math.max(buttons, r.bottom);
   });
-  return bottom;
+  return { board, buttons };
+}
+
+/** Lägsta underkant av protokollet och knapparna i spelet, eller null. */
+function gameContentBottom(): number | null {
+  const e = gameEdges();
+  return e ? Math.max(e.board, e.buttons) : null;
 }
 
 const raf2 = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(null))));
+
+/** Väntar tills spelbrickan finns och står still (onlinematcher laddas från servern). */
+async function waitForStableGame(isStale: () => boolean, maxMs = 10_000) {
+  const started = Date.now();
+  let last = -1;
+  let stable = 0;
+  while (Date.now() - started < maxMs) {
+    if (isStale()) return;
+    await raf2();
+    const b = gameContentBottom();
+    if (b !== null && Math.abs(b - last) < 0.5) {
+      if (++stable >= 4) return;
+    } else stable = 0;
+    last = b ?? -1;
+  }
+}
 
 /** Tar bort krympningen som fitGameAboveBanner lagt på. */
 function resetBannerFit() {
@@ -369,11 +392,14 @@ function resetBannerFit() {
 }
 
 /**
- * Krymper protokollrader och tärningar tills allt får plats ovanför bannern.
+ * Krymper protokollrader och tärningar tills allt får plats ovanför bannern,
+ * och krymper tärningarna tills Hem/Ge upp slutar i linje med brickan.
  * Mäts på den riktiga skärmen (inkl. statusfält och hemindikator), så inget
  * kan hamna under annonsen oavsett telefon.
  */
 async function fitGameAboveBanner(isStale: () => boolean) {
+  await waitForStableGame(isStale);
+  if (isStale()) return;
   resetBannerFit();
   await raf2();
   const root = document.documentElement;
@@ -381,18 +407,28 @@ async function fitGameAboveBanner(isStale: () => boolean) {
   let row = parseFloat(css.getPropertyValue('--sb-row-h')) || 34;
   let dice = parseFloat(css.getPropertyValue('--dice-scale')) || 1;
   let gapS = parseFloat(css.getPropertyValue('--dice-gap-scale')) || dice;
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 14; i++) {
     if (isStale()) return;
-    const bottom = gameContentBottom();
-    if (bottom === null) return;
+    const e = gameEdges();
+    if (!e) return;
+    const bottom = Math.max(e.board, e.buttons);
     const limit = window.innerHeight - safeAreaBottom() - 50 - BANNER_GAP_PX;
     const over = bottom - limit;
-    if (over <= 0.5) return;
-    // Protokollet har ~20 rader; tärningskolumnen ~5 tärningar + 4 mellanrum.
-    const k = Math.max(0.8, 1 - over / Math.max(1, bottom - 120));
-    row = Math.max(20, Math.floor((row - over / 19 - 0.25) * 2) / 2);
-    dice = Math.max(0.5, +(dice * k).toFixed(3));
-    gapS = Math.max(0.3, +(gapS * k).toFixed(3));
+    const mis = e.buttons - e.board; // knapparna under brickans nederkant
+    if (over <= 0.5 && mis <= 1) return;
+    if (over > 0.5) {
+      // Protokollet har ~20 rader; tärningskolumnen ~5 tärningar + 4 mellanrum.
+      const k = Math.max(0.8, 1 - over / Math.max(1, bottom - 120));
+      row = Math.max(20, Math.floor((row - over / 19 - 0.25) * 2) / 2);
+      dice = Math.max(0.5, +(dice * k).toFixed(3));
+      gapS = Math.max(0.3, +(gapS * k).toFixed(3));
+    } else {
+      // Bara sidokolumnen är för lång: krymp tärningarna, inte brickan.
+      if (dice <= 0.5) return;
+      const k = Math.max(0.85, 1 - mis / Math.max(1, e.buttons - 200));
+      dice = Math.max(0.5, +(dice * k).toFixed(3));
+      gapS = Math.max(0.3, +(gapS * k).toFixed(3));
+    }
     root.style.setProperty('--sb-row-h', `${row}px`);
     root.style.setProperty('--dice-scale', String(dice));
     root.style.setProperty('--dice-gap-scale', String(gapS));

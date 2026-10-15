@@ -110,12 +110,26 @@ const SKIN_MATERIALS = {
 } as const;
 
 /** Shop design materials, created once per design and shared. */
+const designTexCache = new Map<string, CanvasTexture | null>();
+function designTexture(d: DiceDesign): CanvasTexture | null {
+  if (designTexCache.has(d.id)) return designTexCache.get(d.id)!;
+  let tex: CanvasTexture | null = null;
+  if (typeof document !== 'undefined' && (d.motif || d.body2)) {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const ctx = c.getContext('2d');
+    if (ctx) { paintDesignFace(d, ctx, 256); tex = new CanvasTexture(c); tex.colorSpace = SRGBColorSpace; tex.anisotropy = 4; }
+  }
+  designTexCache.set(d.id, tex);
+  return tex;
+}
 const designMatCache = new Map<string, { body: MeshPhysicalMaterial; held: MeshPhysicalMaterial }>();
 function designMaterial(d: DiceDesign, held: boolean): MeshPhysicalMaterial {
   let m = designMatCache.get(d.id);
   if (!m) {
     const make = (shade: number) => {
       const mat = new MeshPhysicalMaterial({ color: d.body, envMapIntensity: 1.2, clearcoat: 0.8, clearcoatRoughness: 0.1, roughness: 0.3 });
+      const tex = designTexture(d);
+      if (tex) { mat.map = tex; mat.color.set('#ffffff'); }
       if (d.finish === 'matte') { mat.roughness = 0.7; mat.clearcoat = 0.2; }
       if (d.finish === 'metal') { mat.metalness = 0.6; mat.roughness = 0.25; }
       if (d.finish === 'pearl') { mat.sheen = 0.8; mat.sheenColor.set(d.glow ?? '#ffffff'); }

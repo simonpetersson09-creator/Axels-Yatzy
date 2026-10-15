@@ -442,6 +442,13 @@
       "when": 1792095359647,
       "tag": "0062_lobby_open_6h",
       "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1792095970413,
+      "tag": "0063_cancel_lobby_and_friend_request",
+      "breakpoints": true
     }
   ]
 }

@@ -66,3 +66,27 @@ export async function respondFriendRequest(req: FriendRequest, accept: boolean):
     return ok;
   } catch { return false; }
 }
+
+/** Withdraw a request I sent that has not been answered yet. */
+export async function cancelFriendRequest(req: FriendRequest): Promise<boolean> {
+  try {
+    const device = await auth();
+    if (!device) return false;
+    const { data } = await supabase.rpc('cancel_friend_request', {
+      p_id: req.id, p_session_id: getSessionId(), p_device_id: device,
+    });
+    return !!(data as { ok?: boolean } | null)?.ok;
+  } catch { return false; }
+}
+
+/** Close my own waiting room while nobody else has joined. */
+export async function cancelLobby(gameId: string): Promise<boolean> {
+  try {
+    const device = await auth();
+    if (!device) return false;
+    const { data } = await supabase.rpc('cancel_lobby', {
+      p_game_id: gameId, p_session_id: getSessionId(), p_device_id: device,
+    });
+    return !!(data as { ok?: boolean } | null)?.ok;
+  } catch { return false; }
+}

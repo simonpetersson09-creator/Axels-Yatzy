@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
-import { listFriendRequests, respondFriendRequest, type FriendRequest } from '@/lib/friend-requests';
+import { listFriendRequests, respondFriendRequest, cancelFriendRequest, type FriendRequest } from '@/lib/friend-requests';
 
 /** Incoming and sent friend requests, shown at the top of the friends list. */
 export function FriendRequestsList() {
@@ -31,6 +31,15 @@ export function FriendRequestsList() {
     setList((l) => l.filter((x) => x.id !== r.id));
   };
 
+  const withdraw = async (r: FriendRequest) => {
+    if (busy) return;
+    setBusy(r.id);
+    const ok = await cancelFriendRequest(r);
+    setBusy(null);
+    if (!ok) { toast.error(t('errGeneric')); return; }
+    setList((l) => l.filter((x) => x.id !== r.id));
+  };
+
   return (
     <div className="space-y-2">
       <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('friendRequestsTitle')}</h2>
@@ -40,6 +49,9 @@ export function FriendRequestsList() {
           <p className="flex-1 min-w-0 text-sm text-foreground truncate">
             {r.incoming ? t('friendRequestFrom', { name: r.otherName }) : `${r.otherName} · ${t('friendRequestPending')}`}
           </p>
+          {!r.incoming && (
+            <button disabled={busy === r.id} onClick={() => withdraw(r)} className="shrink-0 rounded-lg bg-secondary px-2.5 py-1 text-xs font-semibold text-foreground active:scale-95">{t('cancel')}</button>
+          )}
           {r.incoming && (
             <div className="flex gap-1.5 shrink-0">
               <button disabled={busy === r.id} onClick={() => respond(r, false)} className="rounded-lg bg-secondary px-2.5 py-1 text-xs font-semibold text-foreground active:scale-95">{t('decline')}</button>

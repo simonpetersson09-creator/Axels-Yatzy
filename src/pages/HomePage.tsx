@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
 import { SentInvitesCards } from '@/components/SentInvitesCards';
+import { cancelLobby } from '@/lib/friend-requests';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -545,11 +546,14 @@ export default function HomePage() {
         <div className="w-full space-y-2 sm:space-y-3">
           <SentInvitesCards />
           {openLobbies.map((lb) => (
-            <button
+            <div
               key={lb.gameId}
-              onClick={() => navigate('/multiplayer', { state: { rejoinCode: lb.code } })}
-              className="w-full px-3 py-1.5 rounded-xl flex items-center gap-2.5 text-left bg-secondary/70 text-foreground border border-border/60 border-l-4 border-l-primary/80 active:scale-[0.98] transition"
+              className="w-full px-3 py-1.5 rounded-xl flex items-center gap-2.5 text-left bg-secondary/70 text-foreground border border-border/60 border-l-4 border-l-primary/80"
             >
+              <button
+                onClick={() => navigate('/multiplayer', { state: { rejoinCode: lb.code } })}
+                className="flex-1 min-w-0 flex items-center gap-2.5 text-left active:scale-[0.98] transition"
+              >
               <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center bg-primary/15">
                 <Users className="w-3.5 h-3.5 text-primary" />
               </div>
@@ -560,7 +564,18 @@ export default function HomePage() {
                   <span className="truncate">{t('waitingShort')}…</span>
                 </p>
               </div>
-            </button>
+              </button>
+              <button
+                onClick={async () => {
+                  const ok = await cancelLobby(lb.gameId);
+                  if (ok) setOpenLobbies((l) => l.filter((x) => x.gameId !== lb.gameId));
+                  else toast.error(t('errGeneric'));
+                }}
+                className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-muted/70 text-muted-foreground active:scale-95 transition"
+              >
+                {t('close')}
+              </button>
+            </div>
           ))}
           {activeGames.length > 0 && (
             <motion.div className="space-y-1.5" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>

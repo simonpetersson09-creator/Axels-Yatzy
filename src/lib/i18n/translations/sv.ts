@@ -410,6 +410,7 @@ export const sv = {
   xpEarned: "+1 XP · Du har {n} XP",
   xpCap: "Dagens max är nått ({cap} XP). Kom tillbaka i morgon!",
   shopLevels: "Nivåer",
+  lobbyTryQuickHint: "Ingen har anslutit än? Prova Snabbspel – du matchas med en spelare online direkt.",
 };
 
 export type TranslationKey = keyof typeof sv;

@@ -158,6 +158,18 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
           <p className="text-center text-sm text-muted-foreground">{t('waitingMorePlayers')}</p>
         )}
 
+        {isHost && players.length < 2 && (
+          <div className="glass-card p-4 text-center space-y-3">
+            <p className="text-sm text-muted-foreground">{t('lobbyTryQuickHint')}</p>
+            <button
+              onClick={() => { trackEvent('lobby_try_quick_match'); navigate('/', { state: { openQuickMatch: true } }); }}
+              className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold flex items-center justify-center gap-2"
+            >
+              🎲 {t('quickMatch')}
+            </button>
+          </div>
+        )}
+
         {!isHost && (
           <p className="text-center text-sm text-muted-foreground">{t('waitingForHost')}</p>
         )}

@@ -401,4 +401,5 @@ export const en: Partial<typeof sv> = {
   xpEarned: "+1 XP · You have {n} XP",
   xpCap: "Today's max reached ({cap} XP). Come back tomorrow!",
   shopLevels: "Levels",
+  lobbyTryQuickHint: "Nobody joined yet? Try Quick match – you'll be matched with an online player right away.",
 };

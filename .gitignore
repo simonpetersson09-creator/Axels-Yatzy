@@ -33,3 +33,4 @@ ios/
 /android/
 
 google-services.json
+!firebase/google-services.json

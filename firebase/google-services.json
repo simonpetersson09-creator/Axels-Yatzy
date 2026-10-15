@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "565329000936",
+    "project_id": "mr-b-yatzy",
+    "storage_bucket": "mr-b-yatzy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565329000936:android:112ee2df8eef180f5d0c5d",
+        "android_client_info": {
+          "package_name": "com.simonpetersson.axelsyatzy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHM3EFJMGiSYGXbuVLMNicjA10o9JC0RI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

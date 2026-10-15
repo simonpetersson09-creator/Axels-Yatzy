@@ -42,6 +42,9 @@ interface QueuedEvent {
 
 function getPlatform(): string {
   try {
+    const cap = (window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor;
+    const native = cap?.getPlatform?.();
+    if (native === 'ios' || native === 'android') return native;
     const ua = navigator.userAgent || '';
     if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
     if (/Android/i.test(ua)) return 'android';

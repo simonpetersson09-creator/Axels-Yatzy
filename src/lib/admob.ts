@@ -277,6 +277,28 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
 const APP_OPEN_LOAD_TIMEOUT_MS = 8000;
 
 let appOpenShowing = false;
+let appOpenPreload: Promise<boolean> | null = null;
+
+/** Laddar nästa App Open-annons i förväg så den kan visas direkt vid nästa start. */
+export function preloadAppOpenAd(): Promise<boolean> {
+  const adId = adUnitId('appOpen');
+  if (!isAdMobAvailable() || !adId) return Promise.resolve(false);
+  if (appOpenPreload) return appOpenPreload;
+  appOpenPreload = (async () => {
+    try {
+      const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
+      const { value } = await mod.AdMob.isAppOpenLoaded();
+      if (value) return true;
+      await withTimeout(mod.AdMob.loadAppOpen({ adId }), 20_000, 'load');
+      return (await mod.AdMob.isAppOpenLoaded()).value;
+    } catch {
+      return false;
+    } finally {
+      appOpenPreload = null;
+    }
+  })();
+  return appOpenPreload;
+}
 
 /**
  * Laddar och visar en App Open-annons vid appstart. Returnerar true om den
@@ -288,21 +310,35 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   if (appOpenShowing || showing) return false;
   appOpenShowing = true;
   const startedAt = Date.now();
+  let release = true;
   try {
     const mod = await withTimeout(ensureInitialized(), APP_OPEN_LOAD_TIMEOUT_MS, 'init');
-    await withTimeout(mod.AdMob.loadAppOpen({ adId }), APP_OPEN_LOAD_TIMEOUT_MS, 'load');
+    const pre = await mod.AdMob.isAppOpenLoaded();
+    if (!pre.value) await withTimeout(mod.AdMob.loadAppOpen({ adId }), APP_OPEN_LOAD_TIMEOUT_MS, 'load');
     const { value } = await mod.AdMob.isAppOpenLoaded();
     if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
     // Loaded too late (player already left the start screen): never cover a game.
     if (!canShow()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
-    await withTimeout(mod.AdMob.showAppOpen(), SHOW_TIMEOUT_MS, 'show');
-    reportAd('appOpen', 'shown', startedAt);
+    const showP = mod.AdMob.showAppOpen();
+    try {
+      await withTimeout(showP, SHOW_TIMEOUT_MS, 'show');
+      reportAd('appOpen', pre.value ? 'shown_preloaded' : 'shown', startedAt);
+    } catch (err) {
+      if (reasonOf(err) !== 'show_timeout') throw err;
+      // Slow to confirm: the ad may still be on screen — wait for the real outcome.
+      release = false;
+      showP.then(
+        () => reportAd('appOpen', 'shown_late', startedAt),
+        (e) => reportAd('appOpen', 'failed', startedAt, reasonOf(e)),
+      ).finally(() => { appOpenShowing = false; void preloadAppOpenAd(); });
+      return true;
+    }
     return true;
   } catch (err) {
     reportAd('appOpen', 'failed', startedAt, reasonOf(err));
     return false;
   } finally {
-    appOpenShowing = false;
+    if (release) { appOpenShowing = false; void preloadAppOpenAd(); }
   }
 }
 

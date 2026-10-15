@@ -41,7 +41,7 @@ import { pa } from './translations/pa';
 import { ta } from './translations/ta';
 import { te } from './translations/te';
 
-const DICTS: Record<Language, typeof sv> = {
+const DICTS: Record<Language, Partial<typeof sv>> = {
   sv, en, no, da, fi, es, fr, it, de,
   nl, ca, ro, tr, pl, cs, sk, sl, hr, hu, pt, 'pt-BR': ptBR, id, ms, vi, el, ru, uk,
   ja, ko, th, hi, bn, gu, kn, ml, mr, or, pa, ta, te,

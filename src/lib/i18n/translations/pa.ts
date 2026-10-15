@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const pa: typeof sv = {
+export const pa: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'ਪਾਸਿਆਂ ਦੀ ਪੁਰਾਣੀ ਖੇਡ, ਨਵੇਂ ਅੰਦਾਜ਼ ਨਾਲ',
   version: 'ਵਰਜ਼ਨ',
@@ -346,7 +346,6 @@ export const pa: typeof sv = {
   goldInfoRule2: "ਤੁਹਾਨੂੰ ਇਕੱਠੇ ਮੈਚ ਪੂਰਾ ਕਰਨਾ ਪਵੇਗਾ। ਜੇ ਕੋਈ ਵਿਚਾਲੇ ਹਾਰ ਮੰਨ ਲਵੇ, ਤਾਂ ਮੈਚ ਨਹੀਂ ਗਿਣਿਆ ਜਾਵੇਗਾ।",
   goldInfoRule3: "ਤੁਹਾਡਾ ਦੋਸਤ ਐਪ 'ਤੇ ਨਵਾਂ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ ਅਤੇ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਖੇਡਣਾ ਚਾਹੀਦਾ ਹੈ।",
   goldInfoRule4: "ਹਰ ਦੋਸਤ ਤੁਹਾਨੂੰ 10 ਦਿਨ ਸੁਨਹਿਰੀ ਪਾਸੇ ਦਿੰਦਾ ਹੈ, ਅਤੇ ਦਿਨ ਜੁੜਦੇ ਜਾਂਦੇ ਹਨ। ਤੁਹਾਡੇ ਦੋਸਤ ਨੂੰ ਸਵਾਗਤ ਤੋਹਫ਼ੇ ਵਜੋਂ 3 ਦਿਨ ਸੁਨਹਿਰੀ ਪਾਸੇ ਮਿਲਦੇ ਹਨ।",
-  diceTierTitle: "ਤੁਹਾਡੇ ਪਾਸੇ",
   diceTierProgress: "Yatzy ਵਾਲੇ ਮੈਚ {n}/{goal} → {tier}",
   diceTierUnlocked: "ਨਵੇਂ ਪਾਸੇ ਖੁੱਲ੍ਹੇ: {tier}! ✨",
   tierBronze: "ਕਾਂਸੀ",

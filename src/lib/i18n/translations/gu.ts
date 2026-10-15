@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const gu: typeof sv = {
+export const gu: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'નવા અંદાજમાં ક્લાસિક પાસાની રમત',
   version: 'આવૃત્તિ',
@@ -346,7 +346,6 @@ export const gu: typeof sv = {
   goldInfoRule2: "તમારે સાથે મળીને મેચ પૂરી કરવી જરૂરી છે. કોઈ મેચ છોડી દે તો તે ગણાતી નથી.",
   goldInfoRule3: "તમારો મિત્ર ઍપમાં નવો હોવો જોઈએ અને પોતાના ફોન પર રમવો જોઈએ.",
   goldInfoRule4: "દરેક મિત્ર તમને 10 દિવસ સોનેરી પાસા આપે છે, અને દિવસો ઉમેરાય છે. તમારા મિત્રને સ્વાગત ભેટ તરીકે 3 દિવસ સોનેરી પાસા મળે છે.",
-  diceTierTitle: "તમારા પાસા",
   diceTierProgress: "Yatzy વાળી મેચ {n}/{goal} → {tier}",
   diceTierUnlocked: "નવા પાસા અનલૉક: {tier}! ✨",
   tierBronze: "કાંસ્ય",

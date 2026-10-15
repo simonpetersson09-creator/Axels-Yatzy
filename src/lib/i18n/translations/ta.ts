@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const ta: typeof sv = {
+export const ta: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'புது பாணியில் பாரம்பரிய பகடை ஆட்டம்',
   version: 'பதிப்பு',
@@ -346,7 +346,6 @@ export const ta: typeof sv = {
   goldInfoRule2: "இருவரும் சேர்ந்து போட்டியை முடிக்க வேண்டும். யாராவது விலகினால், அது கணக்கில் வராது.",
   goldInfoRule3: "உங்கள் நண்பர் இந்தச் செயலிக்குப் புதியவராக இருக்க வேண்டும்; தனது சொந்த ஃபோனில் விளையாட வேண்டும்.",
   goldInfoRule4: "ஒவ்வொரு நண்பரும் உங்களுக்கு 10 நாள் தங்கப் பகடை தருவார், நாட்கள் கூடும். உங்கள் நண்பருக்கு வரவேற்புப் பரிசாக 3 நாள் தங்கப் பகடை கிடைக்கும்.",
-  diceTierTitle: "உங்கள் பகடைகள்",
   diceTierProgress: "Yatzy உள்ள போட்டிகள் {n}/{goal} → {tier}",
   diceTierUnlocked: "புதிய பகடை திறக்கப்பட்டது: {tier}! ✨",
   tierBronze: "வெண்கலம்",

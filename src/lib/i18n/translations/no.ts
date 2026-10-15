@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const no: typeof sv = {
+export const no: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klassisk terningespill i moderne drakt',
   version: 'Versjon',
@@ -346,7 +346,7 @@ export const no: typeof sv = {
   goldInfoRule2: "Dere må fullføre kampen sammen. Hvis noen gir seg, teller den ikke.",
   goldInfoRule3: "Vennen din må være ny i appen og spille på sin egen telefon.",
   goldInfoRule4: "Hver venn gir deg gullterninger i 10 dager, og dagene legges sammen. Vennen din får gullterninger i 3 dager som velkomstgave.",
-  diceTierTitle: "Terningene dine",
+  diceTierTitle: "Terningbutikk",
   diceTierProgress: "{n} av {goal} kamper med Yatzy → {tier}",
   diceTierUnlocked: "Nye terninger låst opp: {tier}! ✨",
   tierBronze: "bronse",

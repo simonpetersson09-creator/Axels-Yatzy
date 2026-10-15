@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const hi: typeof sv = {
+export const hi: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'क्लासिक पासों का खेल, नए अंदाज़ में',
   version: 'वर्ज़न',
@@ -346,7 +346,6 @@ export const hi: typeof sv = {
   goldInfoRule2: "आप दोनों को मैच पूरा करना होगा। कोई बीच में हार मान ले, तो मैच नहीं गिना जाएगा।",
   goldInfoRule3: "आपका दोस्त ऐप पर नया होना चाहिए और अपने फ़ोन पर खेलना चाहिए।",
   goldInfoRule4: "हर दोस्त पर आपको 10 दिन सुनहरे पासे मिलते हैं, और दिन जुड़ते जाते हैं। आपके दोस्त को स्वागत उपहार में 3 दिन सुनहरे पासे मिलते हैं।",
-  diceTierTitle: "आपके पासे",
   diceTierProgress: "Yatzy वाले मैच {n}/{goal} → {tier}",
   diceTierUnlocked: "नए पासे खुले: {tier}! ✨",
   tierBronze: "कांस्य",

@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const en: typeof sv = {
+export const en: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Classic dice game with a modern twist',
   version: 'Version',

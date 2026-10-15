@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const pl: typeof sv = {
+export const pl: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klasyczna gra w kości w nowej odsłonie',
   version: 'Wersja',
@@ -346,7 +346,6 @@ export const pl: typeof sv = {
   goldInfoRule2: "Musicie razem ukończyć mecz. Jeśli ktoś się podda, mecz się nie liczy.",
   goldInfoRule3: "Znajomy musi być nowym użytkownikiem aplikacji i grać na własnym telefonie.",
   goldInfoRule4: "Każdy znajomy daje ci złote kości na 10 dni, a dni się sumują. Twój znajomy dostaje złote kości na 3 dni w prezencie powitalnym.",
-  diceTierTitle: "Twoje kości",
   diceTierProgress: "{n} z {goal} gier z Yatzy → {tier}",
   diceTierUnlocked: "Nowe kości odblokowane: {tier}! ✨",
   tierBronze: "brąz",

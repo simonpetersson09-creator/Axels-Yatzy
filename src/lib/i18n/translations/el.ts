@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const el: typeof sv = {
+export const el: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Κλασικό παιχνίδι ζαριών με μοντέρνα πινελιά',
   version: 'Έκδοση',
@@ -346,7 +346,6 @@ export const el: typeof sv = {
   goldInfoRule2: "Πρέπει να ολοκληρώσετε τον αγώνα μαζί. Αν κάποιος εγκαταλείψει, δεν μετράει.",
   goldInfoRule3: "Ο φίλος σου πρέπει να είναι νέος στην εφαρμογή και να παίζει από το δικό του κινητό.",
   goldInfoRule4: "Κάθε φίλος σού δίνει χρυσά ζάρια για 10 ημέρες και οι ημέρες προστίθενται. Ο φίλος σου παίρνει χρυσά ζάρια για 3 ημέρες ως δώρο καλωσορίσματος.",
-  diceTierTitle: "Τα ζάρια σου",
   diceTierProgress: "{n} από {goal} παιχνίδια με Yatzy → {tier}",
   diceTierUnlocked: "Νέα ζάρια ξεκλειδώθηκαν: {tier}! ✨",
   tierBronze: "χάλκινα",

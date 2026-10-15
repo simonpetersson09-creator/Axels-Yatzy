@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const th: typeof sv = {
+export const th: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'เกมลูกเต๋าคลาสสิกในสไตล์ใหม่',
   version: 'เวอร์ชัน',
@@ -346,7 +346,6 @@ export const th: typeof sv = {
   goldInfoRule2: "ต้องเล่นด้วยกันจนจบแมตช์ ถ้ามีใครยอมแพ้จะไม่นับ",
   goldInfoRule3: "เพื่อนต้องเป็นผู้ใช้ใหม่และเล่นบนมือถือของตัวเอง",
   goldInfoRule4: "เพื่อนแต่ละคนให้ลูกเต๋าทองแก่คุณ 10 วัน และวันจะรวมกัน เพื่อนของคุณได้ลูกเต๋าทอง 3 วันเป็นของขวัญต้อนรับ",
-  diceTierTitle: "ลูกเต๋าของคุณ",
   diceTierProgress: "แมตช์ที่ได้ Yatzy {n}/{goal} → {tier}",
   diceTierUnlocked: "ปลดล็อกลูกเต๋าใหม่: {tier}! ✨",
   tierBronze: "ทองแดง",

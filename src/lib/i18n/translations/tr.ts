@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const tr: typeof sv = {
+export const tr: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klasik zar oyununa modern bir dokunuş',
   version: 'Sürüm',
@@ -346,7 +346,6 @@ export const tr: typeof sv = {
   goldInfoRule2: "Maçı birlikte bitirmelisiniz. Biri pes ederse sayılmaz.",
   goldInfoRule3: "Arkadaşın uygulamada yeni olmalı ve kendi telefonunda oynamalı.",
   goldInfoRule4: "Her arkadaş sana 10 gün altın zar kazandırır ve günler toplanır. Arkadaşın hoş geldin hediyesi olarak 3 gün altın zar alır.",
-  diceTierTitle: "Zarların",
   diceTierProgress: "Yatzy'li {goal} maçtan {n} → {tier}",
   diceTierUnlocked: "Yeni zar açıldı: {tier}! ✨",
   tierBronze: "bronz",

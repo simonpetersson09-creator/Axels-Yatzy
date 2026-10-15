@@ -1,6 +1,6 @@
 import type { sv } from './sv';
 
-export const kn: typeof sv = {
+export const kn: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'ಹೊಸ ಮೆರುಗಿನ ಸಾಂಪ್ರದಾಯಿಕ ದಾಳದ ಆಟ',
   version: 'ಆವೃತ್ತಿ',
@@ -346,7 +346,6 @@ export const kn: typeof sv = {
   goldInfoRule2: "ನೀವಿಬ್ಬರೂ ಪಂದ್ಯವನ್ನು ಪೂರ್ಣಗೊಳಿಸಬೇಕು. ಯಾರಾದರೂ ಪಂದ್ಯ ಬಿಟ್ಟರೆ, ಅದು ಲೆಕ್ಕಕ್ಕೆ ಬರುವುದಿಲ್ಲ.",
   goldInfoRule3: "ನಿಮ್ಮ ಸ್ನೇಹಿತರು ಆ್ಯಪ್‌ಗೆ ಹೊಸಬರಾಗಿರಬೇಕು ಮತ್ತು ತಮ್ಮದೇ ಫೋನ್‌ನಲ್ಲಿ ಆಡಬೇಕು.",
   goldInfoRule4: "ಪ್ರತಿ ಸ್ನೇಹಿತ ನಿಮಗೆ 10 ದಿನ ಚಿನ್ನದ ದಾಳ ನೀಡುತ್ತಾರೆ, ದಿನಗಳು ಸೇರುತ್ತವೆ. ನಿಮ್ಮ ಸ್ನೇಹಿತನಿಗೆ ಸ್ವಾಗತ ಉಡುಗೊರೆಯಾಗಿ 3 ದಿನ ಚಿನ್ನದ ದಾಳ ಸಿಗುತ್ತದೆ.",
-  diceTierTitle: "ನಿಮ್ಮ ದಾಳಗಳು",
   diceTierProgress: "Yatzy ಇರುವ ಪಂದ್ಯಗಳು {n}/{goal} → {tier}",
   diceTierUnlocked: "ಹೊಸ ದಾಳ ಅನ್‌ಲಾಕ್: {tier}! ✨",
   tierBronze: "ಕಂಚು",

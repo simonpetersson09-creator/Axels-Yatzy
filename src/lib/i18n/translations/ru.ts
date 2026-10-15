@@ -1,5 +1,5 @@
 import type { sv } from './sv';
-export const ru: typeof sv = {
+export const ru: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Классическая игра в кости на новый лад',
   version: 'Версия',
@@ -345,7 +345,6 @@ export const ru: typeof sv = {
   goldInfoRule2: "Вы должны вместе доиграть матч. Если кто-то сдастся, матч не засчитается.",
   goldInfoRule3: "Друг должен быть новичком в приложении и играть со своего телефона.",
   goldInfoRule4: "Каждый друг даёт тебе золотые кости на 10 дней, и дни суммируются. Твой друг получает золотые кости на 3 дня в подарок.",
-  diceTierTitle: "Твои кости",
   diceTierProgress: "{n} из {goal} матчей с Yatzy → {tier}",
   diceTierUnlocked: "Новые кости открыты: {tier}! ✨",
   tierBronze: "бронза",

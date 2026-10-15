@@ -402,4 +402,5 @@ export const pt: Partial<typeof sv> = {
   xpEarned: "+1 XP · Você tem {n} XP",
   xpEarnedTotal: "XP ganhos: {n}",
   lobbyTryQuickHint: "Ninguém se juntou ainda? Experimente Jogo Rápido – será emparelhado com um jogador online imediatamente.",
+  lobbyOpenCard: "Sala de espera aberta · código {code}",
 };

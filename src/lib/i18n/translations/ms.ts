@@ -402,4 +402,5 @@ export const ms: Partial<typeof sv> = {
   xpEarned: "+1 XP · Anda ada {n} XP",
   xpEarnedTotal: "XP diperoleh: {n}",
   lobbyTryQuickHint: "Belum ada yang menyertai? Cuba perlawanan Pantas – anda akan dipadankan dengan pemain dalam talian serta-merta.",
+  lobbyOpenCard: "Bilik menunggu dibuka · kod {code}",
 };

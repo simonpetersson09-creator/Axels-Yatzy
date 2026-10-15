@@ -402,4 +402,5 @@ export const uk: Partial<typeof sv> = {
   xpEarned: "+1 XP · У вас {n} XP",
   xpEarnedTotal: "Отримано XP: {n}",
   lobbyTryQuickHint: "Ніхто ще не приєднався? Спробуйте Швидку гру – ви одразу будете об'єднані з онлайн-гравцем.",
+  lobbyOpenCard: "Кімната очікування відкрита · код {code}",
 };

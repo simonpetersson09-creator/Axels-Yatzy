@@ -402,4 +402,5 @@ export const ro: Partial<typeof sv> = {
   xpEarned: "+1 XP · Ai {n} XP",
   xpEarnedTotal: "XP câștigate: {n}",
   lobbyTryQuickHint: "Nimeni nu s-a alăturat încă? Încearcă \"Meci rapid\" – vei fi conectat imediat cu un jucător online.",
+  lobbyOpenCard: "Sală de așteptare deschisă · cod {code}",
 };

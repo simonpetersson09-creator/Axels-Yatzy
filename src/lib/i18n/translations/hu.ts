@@ -402,4 +402,5 @@ export const hu: Partial<typeof sv> = {
   xpEarned: "+1 XP · Van {n} XP-d",
   xpEarnedTotal: "Szerzett XP: {n}",
   lobbyTryQuickHint: "Még senki sem csatlakozott? Próbáld ki a Gyors meccset – azonnal párosítunk egy online játékossal.",
+  lobbyOpenCard: "Váróterem nyitva · kód {code}",
 };

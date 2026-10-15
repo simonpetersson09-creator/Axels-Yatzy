@@ -170,8 +170,8 @@ export const DICE_DESIGNS: DiceDesign[] = [
   D('aurora', 'Norrsken', 'exclusive', '#0b1a3a', '#ffffff', 'iridescent', '#7a5fff', { body2: '#021018', motif: 'waves', ink: '#3fffb5' }),
   D('rosegold', 'Roséguld', 'exclusive', '#f2b8a8', '#4a2a22', 'metal', '#8a4a3a', { body2: '#b86a58', motif: 'sparkle', ink: '#fff0e6' }),
   D('galaxy', 'Galax', 'exclusive', '#3a1272', '#ffffff', 'iridescent', '#ff5fd1', { body2: '#0a0420', motif: 'galaxy', ink: '#ffffff' }),
-  D('legend', 'Mr.B. Legend', 'exclusive', '#1a0b2e', '#ffd86b', 'iridescent', '#ffb300', { body2: '#050208', motif: 'legend', ink: '#ffd86b' }),
   D('diamond', 'Diamant', 'exclusive', '#f2fbff', '#3a6f9a', 'iridescent', '#9fe3ff', { body2: '#b8e6ff', motif: 'facets', ink: '#ffffff' }),
+  D('legend', 'Mr.B. Legend', 'exclusive', '#1a0b2e', '#ffd86b', 'iridescent', '#ffb300', { body2: '#050208', motif: 'legend', ink: '#ffd86b' }),
 ];
 
 const BY_ID = new Map(DICE_DESIGNS.map((d) => [d.id, d]));

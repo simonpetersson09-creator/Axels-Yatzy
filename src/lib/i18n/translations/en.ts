@@ -390,6 +390,8 @@ export const en: Partial<typeof sv> = {
   shopInUse: "In use",
   shopNeed: "{n} XP to go",
   shopNext: "Next dice: {n} XP to go",
+  shopKind_flag: "Flags",
+  shopYourCountry: "Yours",
   shopKind_color: "Happy",
   shopKind_pattern: "Fun & playful",
   shopKind_exclusive: "Exclusive",

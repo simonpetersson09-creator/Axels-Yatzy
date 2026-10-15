@@ -4,7 +4,7 @@
  * New designs: add here AND insert a row in dice_designs.
  */
 export type DesignFinish = 'gloss' | 'matte' | 'metal' | 'pearl' | 'iridescent';
-export type DesignKind = 'color' | 'pattern' | 'exclusive';
+export type DesignKind = 'flag' | 'color' | 'pattern' | 'exclusive';
 
 export interface DiceDesign {
   id: string;
@@ -21,15 +21,123 @@ export interface DiceDesign {
   motif?: Motif;
   /** Motif colour. */
   ink?: string;
+  /** ISO country code: the face is painted as that country's flag. */
+  flag?: string;
 }
 
 export type Motif = 'dots' | 'stripes' | 'stars' | 'hearts' | 'spots' | 'sparkle' | 'waves' | 'checks' | 'scales' | 'flames' | 'rainbow' | 'galaxy' | 'facets' | 'marble';
 
 const D = (id: string, name: string, kind: DesignKind, body: string, pip: string, finish: DesignFinish, glow?: string,
-  extra: Partial<Pick<DiceDesign, 'body2' | 'motif' | 'ink'>> = {}): DiceDesign =>
+  extra: Partial<Pick<DiceDesign, 'body2' | 'motif' | 'ink' | 'flag'>> = {}): DiceDesign =>
   ({ id, name, kind, body, pip, finish, glow, ...extra });
 
+type FlagSpec =
+  | { t: 'cross'; bg: string; c: string; inner?: string }
+  | { t: 'v'; s: string[] }
+  | { t: 'h'; s: string[] }
+  | { t: 'circle'; bg: string; c: string }
+  | { t: 'special' };
+
+/** Simple flags that read well on a small die face. */
+const FLAGS: Record<string, FlagSpec> = {
+  SE: { t: 'cross', bg: '#006aa7', c: '#fecc00' }, NO: { t: 'cross', bg: '#ba0c2f', c: '#ffffff', inner: '#00205b' },
+  DK: { t: 'cross', bg: '#c8102e', c: '#ffffff' }, FI: { t: 'cross', bg: '#ffffff', c: '#002f6c' },
+  IS: { t: 'cross', bg: '#02529c', c: '#ffffff', inner: '#dc1e35' }, AX: { t: 'cross', bg: '#0064ae', c: '#ffd200', inner: '#da0e15' },
+  FO: { t: 'cross', bg: '#ffffff', c: '#0065bd', inner: '#ef303e' },
+  NL: { t: 'h', s: ['#ae1c28', '#ffffff', '#21468b'] }, DE: { t: 'h', s: ['#000000', '#dd0000', '#ffce00'] },
+  AT: { t: 'h', s: ['#c8102e', '#ffffff', '#c8102e'] }, HU: { t: 'h', s: ['#ce2939', '#ffffff', '#477050'] },
+  PL: { t: 'h', s: ['#ffffff', '#dc143c'] }, UA: { t: 'h', s: ['#0057b7', '#ffd700'] },
+  ES: { t: 'h', s: ['#aa151b', '#f1bf00', '#f1bf00', '#aa151b'] }, EE: { t: 'h', s: ['#0072ce', '#000000', '#ffffff'] },
+  LT: { t: 'h', s: ['#fdb913', '#006a44', '#c1272d'] }, TH: { t: 'h', s: ['#a51931', '#f4f5f8', '#2d2a4a', '#2d2a4a', '#f4f5f8', '#a51931'] },
+  FR: { t: 'v', s: ['#0055a4', '#ffffff', '#ef4135'] }, IT: { t: 'v', s: ['#009246', '#ffffff', '#ce2b37'] },
+  IE: { t: 'v', s: ['#169b62', '#ffffff', '#ff883e'] }, BE: { t: 'v', s: ['#000000', '#fdda24', '#ef3340'] },
+  JP: { t: 'circle', bg: '#ffffff', c: '#bc002d' }, BD: { t: 'circle', bg: '#006a4e', c: '#f42a41' },
+  KR: { t: 'special' }, GB: { t: 'special' }, US: { t: 'special' }, CH: { t: 'special' }, GR: { t: 'special' },
+  TR: { t: 'special' }, BR: { t: 'special' }, CA: { t: 'special' }, AU: { t: 'special' },
+};
+export const FLAG_CODES = Object.keys(FLAGS);
+
+function paintFlag(code: string, ctx: CanvasRenderingContext2D, n: number) {
+  const f = FLAGS[code];
+  if (!f) return;
+  const rect = (c: string, x: number, y: number, w: number, h: number) => { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); };
+  const circle = (c: string, x: number, y: number, r: number) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); };
+  const star = (c: string, x: number, y: number, r: number) => {
+    ctx.fillStyle = c; ctx.beginPath();
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.42 : r; ctx.lineTo(x + rr * Math.cos(a), y + rr * Math.sin(a)); }
+    ctx.closePath(); ctx.fill();
+  };
+  if (f.t === 'cross') {
+    rect(f.bg, 0, 0, n, n);
+    const w = n * 0.22, cx = n * 0.36;
+    rect(f.c, 0, (n - w) / 2, n, w); rect(f.c, cx - w / 2, 0, w, n);
+    if (f.inner) { const iw = w * 0.5; rect(f.inner, 0, (n - iw) / 2, n, iw); rect(f.inner, cx - iw / 2, 0, iw, n); }
+    return;
+  }
+  if (f.t === 'h') { f.s.forEach((c, i) => rect(c, 0, i * n / f.s.length, n, n / f.s.length + 1)); return; }
+  if (f.t === 'v') { f.s.forEach((c, i) => rect(c, i * n / f.s.length, 0, n / f.s.length + 1, n)); return; }
+  if (f.t === 'circle') { rect(f.bg, 0, 0, n, n); circle(f.c, code === 'BD' ? n * 0.45 : n / 2, n / 2, n * 0.28); return; }
+  switch (code) {
+    case 'GB': {
+      rect('#012169', 0, 0, n, n);
+      ctx.lineCap = 'butt';
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = n * 0.2;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(n, n); ctx.moveTo(n, 0); ctx.lineTo(0, n); ctx.stroke();
+      ctx.strokeStyle = '#c8102e'; ctx.lineWidth = n * 0.07;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(n, n); ctx.moveTo(n, 0); ctx.lineTo(0, n); ctx.stroke();
+      rect('#ffffff', 0, n * 0.37, n, n * 0.26); rect('#ffffff', n * 0.37, 0, n * 0.26, n);
+      rect('#c8102e', 0, n * 0.42, n, n * 0.16); rect('#c8102e', n * 0.42, 0, n * 0.16, n);
+      return;
+    }
+    case 'US': {
+      for (let i = 0; i < 13; i++) rect(i % 2 ? '#ffffff' : '#b22234', 0, i * n / 13, n, n / 13 + 1);
+      rect('#3c3b6e', 0, 0, n * 0.48, n * 7 / 13);
+      for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) star('#ffffff', n * (0.07 + x * 0.11), n * (0.07 + y * 0.12), n * 0.03);
+      return;
+    }
+    case 'CH': rect('#da291c', 0, 0, n, n); rect('#ffffff', n * 0.42, n * 0.2, n * 0.16, n * 0.6); rect('#ffffff', n * 0.2, n * 0.42, n * 0.6, n * 0.16); return;
+    case 'GR': {
+      for (let i = 0; i < 9; i++) rect(i % 2 ? '#ffffff' : '#0d5eaf', 0, i * n / 9, n, n / 9 + 1);
+      rect('#0d5eaf', 0, 0, n * 5 / 9, n * 5 / 9);
+      rect('#ffffff', 0, n * 2 / 9, n * 5 / 9, n / 9); rect('#ffffff', n * 2 / 9, 0, n / 9, n * 5 / 9);
+      return;
+    }
+    case 'TR': rect('#e30a17', 0, 0, n, n); circle('#ffffff', n * 0.4, n / 2, n * 0.25); circle('#e30a17', n * 0.46, n / 2, n * 0.2); star('#ffffff', n * 0.7, n / 2, n * 0.11); return;
+    case 'BR': {
+      rect('#009c3b', 0, 0, n, n);
+      ctx.fillStyle = '#ffdf00'; ctx.beginPath(); ctx.moveTo(n / 2, n * 0.1); ctx.lineTo(n * 0.92, n / 2); ctx.lineTo(n / 2, n * 0.9); ctx.lineTo(n * 0.08, n / 2); ctx.closePath(); ctx.fill();
+      circle('#002776', n / 2, n / 2, n * 0.22); return;
+    }
+    case 'CA': {
+      rect('#ffffff', 0, 0, n, n); rect('#d52b1e', 0, 0, n * 0.25, n); rect('#d52b1e', n * 0.75, 0, n * 0.25, n);
+      star('#d52b1e', n / 2, n / 2, n * 0.2); return;
+    }
+    case 'AU': {
+      rect('#012169', 0, 0, n, n);
+      star('#ffffff', n * 0.27, n * 0.72, n * 0.1);
+      [[0.75, 0.25], [0.62, 0.48], [0.88, 0.42], [0.75, 0.8]].forEach(([x, y]) => star('#ffffff', n * x, n * y, n * 0.06));
+      return;
+    }
+    case 'KR': {
+      rect('#ffffff', 0, 0, n, n);
+      const r = n * 0.22, cx = n / 2, cy = n / 2;
+      ctx.fillStyle = '#cd2e3a'; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.fill();
+      ctx.fillStyle = '#0047a0'; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI); ctx.fill();
+      circle('#cd2e3a', cx + r / 2, cy, r / 2); circle('#0047a0', cx - r / 2, cy, r / 2);
+      ctx.fillStyle = '#000000';
+      [[0.15, 0.15], [0.85, 0.15], [0.15, 0.85], [0.85, 0.85]].forEach(([x, y]) => { for (let k = 0; k < 3; k++) ctx.fillRect(n * x - n * 0.07, n * y - n * 0.06 + k * n * 0.045, n * 0.14, n * 0.03); });
+      return;
+    }
+  }
+}
+
+/** Light flags get dark pips, dark ones white pips. */
+const DARK_PIP_FLAGS = new Set(['FI', 'FO', 'JP', 'KR', 'CA', 'PL', 'IE', 'EE']);
+const FLAG_DESIGNS: DiceDesign[] = FLAG_CODES.map((c) =>
+  D(`flag_${c.toLowerCase()}`, c, 'flag', '#ffffff', DARK_PIP_FLAGS.has(c) ? '#111114' : '#ffffff', 'gloss', undefined, { flag: c }));
+
 export const DICE_DESIGNS: DiceDesign[] = [
+  ...FLAG_DESIGNS,
   // Glada (5–10 XP)
   D('ruby', 'Jordgubbe', 'color', '#ff3d5e', '#ffffff', 'gloss', undefined, { body2: '#c8102e', motif: 'dots', ink: '#ffe066' }),
   D('ocean', 'Sommarlov', 'color', '#39c0ff', '#ffffff', 'gloss', undefined, { body2: '#0a6fd1', motif: 'waves', ink: '#bdf0ff' }),
@@ -80,6 +188,7 @@ export function getDesign(id: string | null | undefined): DiceDesign | null {
 
 /** Paints one die face (body gradient + motif, no pips) on a square canvas. */
 export function paintDesignFace(d: DiceDesign, ctx: CanvasRenderingContext2D, n: number) {
+  if (d.flag) { paintFlag(d.flag, ctx, n); return; }
   const g = ctx.createLinearGradient(0, 0, n, n);
   g.addColorStop(0, d.body); g.addColorStop(1, d.body2 ?? d.body);
   ctx.fillStyle = g; ctx.fillRect(0, 0, n, n);
@@ -145,5 +254,8 @@ const EN_NAMES: Record<string, string> = {
 };
 
 export function designName(d: DiceDesign, lang: string): string {
+  if (d.flag) {
+    try { return new Intl.DisplayNames([lang], { type: 'region' }).of(d.flag) ?? d.flag; } catch { return d.flag; }
+  }
   return lang === 'sv' ? d.name : EN_NAMES[d.id] ?? d.name;
 }

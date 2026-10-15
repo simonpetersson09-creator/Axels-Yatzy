@@ -66,7 +66,7 @@ export function DiceTierCard() {
     <DiceInfoSheet
       open={open}
       onClose={() => setOpen(false)}
-      name={t('myDice')}
+      name={t('diceTierTitle')}
       profile={{ ...ownProfile(status), preferWhite: status.preferWhite, design: shop.selected }}
       inviteDaysLeft={goldDaysLeft(status) || undefined}
       showLadder

@@ -36,6 +36,7 @@ import NotificationAskPrompt from '@/components/NotificationAskPrompt';
 import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
+import ServerNewsPrompt, { shouldShowServerNews, markServerNewsSeen } from '@/components/ServerNewsPrompt';
 import AndroidNewsPrompt, { shouldShowAndroidNews, markAndroidNewsSeen } from '@/components/AndroidNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
 
@@ -98,6 +99,13 @@ export default function HomePage() {
     setShowOnlineNews(false);
     trackEvent(play ? 'online_news_play' : 'online_news_dismiss');
     if (play) setShowQuickMatch(true);
+  };
+
+  // One-time box: server upgraded + apology. Shown before other news boxes.
+  const [showServerNews, setShowServerNews] = useState(() => shouldShowServerNews(stats.gamesPlayed));
+  const closeServerNews = () => {
+    markServerNewsSeen();
+    setShowServerNews(false);
   };
 
   // One-time box: the app is now available on Android (Google Play).
@@ -954,16 +962,17 @@ export default function HomePage() {
       </motion.div>
 
       <AnimatePresence>
-        {showOnlineNews && (
+        {showServerNews && <ServerNewsPrompt onClose={closeServerNews} />}
+        {showOnlineNews && !showServerNews && (
           <OnlineNewsPrompt onPlay={() => closeOnlineNews(true)} onClose={() => closeOnlineNews(false)} />
         )}
-        {showAndroidNews && !showOnlineNews && (
+        {showAndroidNews && !showOnlineNews && !showServerNews && (
           <AndroidNewsPrompt onClose={closeAndroidNews} />
         )}
-        {showRatePrompt && !showOnlineNews && !showAndroidNews && (
+        {showRatePrompt && !showOnlineNews && !showAndroidNews && !showServerNews && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
         )}
-        {showNotifAsk && !showOnlineNews && !showRatePrompt && (
+        {showNotifAsk && !showOnlineNews && !showRatePrompt && !showServerNews && (
           <NotificationAskPrompt onYes={() => closeNotifAsk(true)} onLater={() => closeNotifAsk(false)} />
         )}
       </AnimatePresence>

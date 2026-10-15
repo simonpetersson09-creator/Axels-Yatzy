@@ -30,7 +30,7 @@ import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { awardAdXp } from '@/lib/dice-shop';
-import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showAppOpenAd } from '@/lib/admob';
+import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
@@ -191,7 +191,7 @@ export default function HomePage() {
     void (async () => {
       const { App } = await import('@capacitor/app');
       const sub = await App.addListener('appStateChange', async ({ isActive }) => {
-        if (!isActive) { backgroundedAt = Date.now(); return; }
+        if (!isActive) { backgroundedAt = Date.now(); void preloadAppOpenAd(); return; }
         const away = backgroundedAt ? Date.now() - backgroundedAt : 0;
         backgroundedAt = 0;
         if (away < RESUME_AD_MIN_AWAY_MS) return;

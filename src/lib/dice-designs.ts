@@ -65,3 +65,13 @@ export function designFromLook(look: unknown): DiceDesign | null {
 export function getDesign(id: string | null | undefined): DiceDesign | null {
   return id ? BY_ID.get(id) ?? null : null;
 }
+
+/** CSS background for flat previews (shop grid, swatches). */
+export function designSwatchBg(d: DiceDesign): string {
+  const g = d.glow ?? d.body;
+  if (d.finish === 'iridescent') return `linear-gradient(135deg, ${d.body} 0%, ${g} 55%, ${d.body} 100%)`;
+  if (d.finish === 'metal') return `linear-gradient(145deg, ${d.body} 0%, ${g} 100%)`;
+  if (d.finish === 'pearl') return `radial-gradient(circle at 30% 25%, #ffffff 0%, ${d.body} 55%, ${g} 100%)`;
+  if (d.finish === 'matte') return d.body;
+  return `radial-gradient(circle at 30% 25%, ${d.body} 0%, ${d.body} 60%, color-mix(in srgb, ${d.body} 75%, #000) 100%)`;
+}

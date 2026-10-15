@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom';
+import { designFromLook, designSwatchBg } from '@/lib/dice-designs';
 import { Check, X, UserPlus } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
@@ -80,7 +81,10 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
     if (r === 'sent') toast.success(t('friendRequestSent'));
   };
   if (!open || !profile) return null;
-  const skin = profileSkin(profile);
+  const look = profileSkin(profile);
+  const design = designFromLook(look);
+  const skin: DiceSkin = design ? 'white' : (look as DiceSkin);
+  const swatchStyle = design ? { background: designSwatchBg(design), borderColor: design.pip } : undefined;
 
   return createPortal(
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-background/50" onClick={onClose}>
@@ -88,7 +92,7 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
         initial={{ y: 16, opacity: 0, scale: 0.98 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-        className="relative w-full max-w-md rounded-2xl bg-card border border-border shadow-xl px-4 pt-4 pb-4"
+        className="relative w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain rounded-2xl bg-card border border-border shadow-xl px-4 pt-4 pb-4"
 
         onClick={(e) => e.stopPropagation()}
       >
@@ -99,10 +103,10 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
           {avatarUrl ? (
             <div className="relative w-10 h-10 shrink-0">
               <img src={avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover border border-border" />
-              <div className={cn('absolute -bottom-1 -right-1 w-4 h-4 rounded-md border-2 border-card', SKIN_SWATCH[skin])} aria-hidden />
+              <div className={cn('absolute -bottom-1 -right-1 w-4 h-4 rounded-md border-2 border-card', SKIN_SWATCH[skin])} style={swatchStyle} aria-hidden />
             </div>
           ) : (
-            <div className={cn('w-10 h-10 rounded-xl border shrink-0', SKIN_SWATCH[skin])} aria-hidden />
+            <div className={cn('w-10 h-10 rounded-xl border shrink-0', SKIN_SWATCH[skin])} style={swatchStyle} aria-hidden />
           )}
           <div className="min-w-0">
             <p className="text-sm font-bold text-foreground truncate">{name}</p>

@@ -1,0 +1,1 @@
+- Translation dicts are Partial<typeof sv>; missing keys fall back to English (non-Swedish) then Swedish — new keys only need sv + en.

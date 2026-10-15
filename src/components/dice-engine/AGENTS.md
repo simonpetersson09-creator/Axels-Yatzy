@@ -1,0 +1,1 @@
+- The dice canvas renders on demand (frameloop="demand") and DemandDriver in DiceScene keeps frames coming only while something animates; every useFrame must clamp delta, because the first frame after a pause can carry seconds — saves battery/CPU while dice lie still.

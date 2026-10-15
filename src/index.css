@@ -507,3 +507,11 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.74; }
 @media (min-height: 800px) and (max-height: 839px) {
   html.ad-banner-on:has(.mp-game) { --sb-row-h: 30.5px; --dice-scale: 0.8; }
 }
+
+/* Mindre tom yta under klockraden: under ön/klockraden behövs inte hela
+   safe-area-marginalen. max() skyddar telefoner med låg statusrad (SE, Android). */
+html.ad-banner-on,
+html.ad-banner-on body {
+  --game-top-gap: max(calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - 14px), calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) * 0.75)) !important;
+  --game-top-gap-mp: max(calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - 14px), calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) * 0.75)) !important;
+}

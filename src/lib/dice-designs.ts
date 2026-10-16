@@ -4,7 +4,7 @@
  * New designs: add here AND insert a row in dice_designs.
  */
 export type DesignFinish = 'gloss' | 'matte' | 'metal' | 'pearl' | 'iridescent';
-export type DesignKind = 'flag' | 'color' | 'pattern' | 'exclusive';
+export type DesignKind = 'flag' | 'personal' | 'season' | 'color' | 'pattern' | 'exclusive';
 
 export interface DiceDesign {
   id: string;
@@ -23,12 +23,14 @@ export interface DiceDesign {
   ink?: string;
   /** ISO country code: the face is painted as that country's flag. */
   flag?: string;
+  /** Symbol/emoji painted large behind the pips (motif 'symbol'). */
+  sym?: string;
 }
 
-export type Motif = 'dots' | 'stripes' | 'stars' | 'hearts' | 'spots' | 'sparkle' | 'waves' | 'checks' | 'scales' | 'flames' | 'rainbow' | 'galaxy' | 'facets' | 'marble' | 'legend';
+export type Motif = 'dots' | 'stripes' | 'stars' | 'hearts' | 'spots' | 'sparkle' | 'waves' | 'checks' | 'scales' | 'flames' | 'rainbow' | 'galaxy' | 'facets' | 'marble' | 'legend' | 'symbol' | 'team';
 
 const D = (id: string, name: string, kind: DesignKind, body: string, pip: string, finish: DesignFinish, glow?: string,
-  extra: Partial<Pick<DiceDesign, 'body2' | 'motif' | 'ink' | 'flag'>> = {}): DiceDesign =>
+  extra: Partial<Pick<DiceDesign, 'body2' | 'motif' | 'ink' | 'flag' | 'sym'>> = {}): DiceDesign =>
   ({ id, name, kind, body, pip, finish, glow, ...extra });
 
 type FlagSpec =
@@ -136,8 +138,40 @@ const DARK_PIP_FLAGS = new Set(['FI', 'FO', 'JP', 'KR', 'CA', 'PL', 'IE', 'EE'])
 const FLAG_DESIGNS: DiceDesign[] = FLAG_CODES.map((c) =>
   D(`flag_${c.toLowerCase()}`, c, 'flag', '#ffffff', DARK_PIP_FLAGS.has(c) ? '#111114' : '#ffffff', 'gloss', undefined, { flag: c }));
 
+// Ditt eget: stjärntecken, intressen, lagfärger (12–15 XP)
+const ZODIAC: [string, string, string, string, string][] = [
+  ['aries', 'Väduren', '♈', '#ff6a3d', '#b8241a'], ['taurus', 'Oxen', '♉', '#7fbf5a', '#2f6b2a'], ['gemini', 'Tvillingarna', '♊', '#ffd84a', '#d48a00'],
+  ['cancer', 'Kräftan', '♋', '#cfe6ff', '#5f8fd6'], ['leo', 'Lejonet', '♌', '#ffb53a', '#c25a00'], ['virgo', 'Jungfrun', '♍', '#d9c6ff', '#7a5ad0'],
+  ['libra', 'Vågen', '♎', '#ffc6e0', '#d0508f'], ['scorpio', 'Skorpionen', '♏', '#5a1a2e', '#1a0610'], ['sagittarius', 'Skytten', '♐', '#8a4dff', '#3a1a8a'],
+  ['capricorn', 'Stenbocken', '♑', '#8c8c94', '#3a3a42'], ['aquarius', 'Vattumannen', '♒', '#3fd0ff', '#0a6fb0'], ['pisces', 'Fiskarna', '♓', '#5fe0c8', '#1a7a8a'],
+];
+const PERSONAL: DiceDesign[] = [
+  ...ZODIAC.map(([id, name, sym, a, b]) => D(`z_${id}`, name, 'personal', a, '#ffffff', 'pearl', b, { body2: b, motif: 'symbol', sym: sym + '\uFE0E', ink: '#ffffff' })),
+  D('i_cat', 'Katt', 'personal', '#ffd1a8', '#3a2414', 'gloss', undefined, { body2: '#f0a060', motif: 'symbol', sym: '🐱' }),
+  D('i_dog', 'Hund', 'personal', '#e8d2b0', '#3a2414', 'gloss', undefined, { body2: '#b88a52', motif: 'symbol', sym: '🐶' }),
+  D('i_horse', 'Häst', 'personal', '#c9a27a', '#ffffff', 'matte', undefined, { body2: '#7a4f2a', motif: 'symbol', sym: '🐴' }),
+  D('i_football', 'Fotboll', 'personal', '#4fc25a', '#ffffff', 'gloss', undefined, { body2: '#1f7a2a', motif: 'symbol', sym: '⚽' }),
+  D('i_music', 'Musik', 'personal', '#2a1a4a', '#ff5fd1', 'gloss', undefined, { body2: '#0a0620', motif: 'symbol', sym: '🎵' }),
+  D('i_gaming', 'Gaming', 'personal', '#1a1a2e', '#3fffb5', 'gloss', undefined, { body2: '#3a0a5a', motif: 'symbol', sym: '🎮' }),
+  D('i_fishing', 'Fiske', 'personal', '#5fc8ff', '#ffffff', 'gloss', undefined, { body2: '#0a5a9a', motif: 'symbol', sym: '🎣' }),
+  D('t_blueyellow', 'Blågult', 'personal', '#0a5ab0', '#ffffff', 'gloss', undefined, { motif: 'team', ink: '#ffd200' }),
+  D('t_redwhite', 'Rödvitt', 'personal', '#d0102a', '#111114', 'gloss', undefined, { motif: 'team', ink: '#ffffff' }),
+  D('t_greenwhite', 'Grönvitt', 'personal', '#0f8a3a', '#111114', 'gloss', undefined, { motif: 'team', ink: '#ffffff' }),
+  D('t_blackwhite', 'Svartvitt', 'personal', '#141418', '#e0102a', 'gloss', undefined, { motif: 'team', ink: '#ffffff' }),
+  D('t_blackyellow', 'Svartgult', 'personal', '#141418', '#ffffff', 'gloss', undefined, { motif: 'team', ink: '#ffd200' }),
+  D('t_skyblue', 'Himmelsblått', 'personal', '#7ac8ff', '#111114', 'gloss', undefined, { motif: 'team', ink: '#ffffff' }),
+];
+// Säsong: säljs bara en kort tid (slutdatum på servern).
+const SEASON: DiceDesign[] = [
+  D('h_pumpkin', 'Pumpa', 'season', '#ff8a1a', '#2a1404', 'gloss', undefined, { body2: '#c24a00', motif: 'symbol', sym: '🎃' }),
+  D('h_ghost', 'Spöke', 'season', '#2a2a3a', '#ffffff', 'pearl', '#bfc8ff', { body2: '#0a0a14', motif: 'symbol', sym: '👻' }),
+  D('h_bat', 'Fladdermus', 'season', '#3a0a5a', '#ff8a1a', 'iridescent', '#ff6a00', { body2: '#0a0214', motif: 'symbol', sym: '🦇' }),
+];
+
 export const DICE_DESIGNS: DiceDesign[] = [
   ...FLAG_DESIGNS,
+  ...PERSONAL,
+  ...SEASON,
   // Glada (5–10 XP)
   D('ruby', 'Jordgubbe', 'color', '#ff3d5e', '#ffffff', 'gloss', undefined, { body2: '#c8102e', motif: 'dots', ink: '#ffe066' }),
   D('ocean', 'Sommarlov', 'color', '#39c0ff', '#ffffff', 'gloss', undefined, { body2: '#0a6fd1', motif: 'waves', ink: '#bdf0ff' }),
@@ -218,6 +252,8 @@ export function paintDesignFace(d: DiceDesign, ctx: CanvasRenderingContext2D, n:
     case 'checks': ctx.globalAlpha = 0.6; { const c = n / 8; for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) if ((x + y) % 2) ctx.fillRect(x * c, y * c, c, c); } break;
     case 'scales': ctx.globalAlpha = 0.55; ctx.lineWidth = n * 0.018; { const r = n / 10; for (let y = 0; y < 12; y++) for (let x = -1; x < 11; x++) { ctx.beginPath(); ctx.arc(x * r * 2 + (y % 2) * r, y * r * 0.9, r, 0, Math.PI); ctx.stroke(); } } break;
     case 'flames': break;
+    case 'symbol': if (d.sym) { ctx.globalAlpha = 0.6; ctx.font = `${Math.round(n * 0.62)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(d.sym, n / 2, n * 0.54); } break;
+    case 'team': ctx.globalAlpha = 1; ctx.fillRect(n * 0.36, 0, n * 0.28, n); break;
     case 'rainbow': { ctx.globalAlpha = 1; const cs = ['#ff3b3b', '#ff9a2a', '#ffe14d', '#3ad46a', '#2fa8ff', '#8a5aff']; cs.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(0, i * n / 6, n, n / 6 + 1); }); } break;
     case 'galaxy': { ctx.globalAlpha = 0.45; for (let i = 0; i < 4; i++) { const x = rnd() * n, y = rnd() * n, r = n * (0.2 + rnd() * 0.25); const rg = ctx.createRadialGradient(x, y, 0, x, y, r); rg.addColorStop(0, d.glow ?? '#ff5fd1'); rg.addColorStop(1, 'transparent'); ctx.fillStyle = rg; ctx.fillRect(0, 0, n, n); } ctx.fillStyle = ink; ctx.globalAlpha = 0.95; for (let i = 0; i < 60; i++) { ctx.beginPath(); ctx.arc(rnd() * n, rnd() * n, n * (0.003 + rnd() * 0.008), 0, 7); ctx.fill(); } star(n * 0.2, n * 0.8, n * 0.03); } break;
     case 'facets': ctx.globalAlpha = 0.28; for (let i = 0; i < 14; i++) { ctx.beginPath(); ctx.moveTo(rnd() * n, rnd() * n); ctx.lineTo(rnd() * n, rnd() * n); ctx.lineTo(rnd() * n, rnd() * n); ctx.closePath(); ctx.fill(); } break;
@@ -261,6 +297,11 @@ const EN_NAMES: Record<string, string> = {
   ice: 'Penguin', lava: 'Dragon', candy: 'Candy cane', jungle: 'Dinosaur', ink: 'Rocket', peach: 'Teddy bear',
   arctic: 'Rainbow', cherry: 'Ladybug', royal: 'Disco ball', neon: 'Neon party', pearl: 'Mother of pearl',
   emerald: 'Emerald', sapphire: 'Sapphire', obsidian: 'Black gold', aurora: 'Aurora', rosegold: 'Rose gold', galaxy: 'Galaxy', diamond: 'Diamond', legend: 'Mr.B. Legend',
+  z_aries: 'Aries', z_taurus: 'Taurus', z_gemini: 'Gemini', z_cancer: 'Cancer', z_leo: 'Leo', z_virgo: 'Virgo', z_libra: 'Libra',
+  z_scorpio: 'Scorpio', z_sagittarius: 'Sagittarius', z_capricorn: 'Capricorn', z_aquarius: 'Aquarius', z_pisces: 'Pisces',
+  i_cat: 'Cat', i_dog: 'Dog', i_horse: 'Horse', i_football: 'Football', i_music: 'Music', i_gaming: 'Gaming', i_fishing: 'Fishing',
+  t_blueyellow: 'Blue & yellow', t_redwhite: 'Red & white', t_greenwhite: 'Green & white', t_blackwhite: 'Black & white', t_blackyellow: 'Black & yellow', t_skyblue: 'Sky blue',
+  h_pumpkin: 'Pumpkin', h_ghost: 'Ghost', h_bat: 'Bat',
 };
 
 export function designName(d: DiceDesign, lang: string): string {

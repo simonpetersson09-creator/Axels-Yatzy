@@ -41,18 +41,63 @@ export function effectiveSkin(s: GoldStatus): DiceSkin {
   return isGoldActive(s) && s.tier !== 'platinum' ? 'gold' : s.tier;
 }
 
+/** Matches that could not be reported (no network); retried on next app use. */
+const PENDING_KEY = 'mrb_pending_yatzy_v1';
+
+function readPending(): string[] {
+  try {
+    const raw = localStorage.getItem(PENDING_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr.filter((k) => typeof k === 'string') : [];
+  } catch { return []; }
+}
+
+function queuePending(matchKey: string) {
+  const list = readPending();
+  if (!list.includes(matchKey)) {
+    list.push(matchKey);
+    try { localStorage.setItem(PENDING_KEY, JSON.stringify(list.slice(-20))); } catch { /* noop */ }
+  }
+}
+
+async function sendReport(matchKey: string): Promise<boolean> {
+  // Device id and session ownership must be ready, or the server rejects the report.
+  const device = await initDeviceId().catch(() => getDeviceIdSync());
+  if (!device) return false;
+  await claimSession();
+  const { error } = await supabase.rpc('record_local_yatzy_match', {
+    p_session_id: getSessionId(), p_device_id: device, p_match_key: `sp:${matchKey}`,
+  });
+  return !error;
+}
+
 /** Report a finished match vs the computer that had a Yatzy (server dedupes per match). */
 export async function reportLocalYatzyMatch(matchKey: string): Promise<void> {
   try {
-    // Device id and session ownership must be ready, or the server rejects the report.
-    const device = await initDeviceId().catch(() => getDeviceIdSync());
-    if (!device) return;
-    await claimSession();
-    await supabase.rpc('record_local_yatzy_match', {
-      p_session_id: getSessionId(), p_device_id: device, p_match_key: `sp:${matchKey}`,
-    });
-    await fetchGoldStatus(); // refresh cache so Home shows new progress
-  } catch { /* cosmetic; ignore */ }
+    if (await sendReport(matchKey)) {
+      await fetchGoldStatus(); // refresh cache so Home shows new progress
+    } else {
+      queuePending(matchKey); // no network right now: try again later
+    }
+  } catch {
+    queuePending(matchKey);
+  }
+}
+
+/** Retries matches that could not be reported earlier (e.g. offline at game end). */
+async function flushPendingYatzyMatches(): Promise<void> {
+  const list = readPending();
+  if (!list.length) return;
+  const left: string[] = [];
+  for (const key of list) {
+    try {
+      if (!(await sendReport(key))) left.push(key);
+    } catch { left.push(key); }
+  }
+  try {
+    if (left.length) localStorage.setItem(PENDING_KEY, JSON.stringify(left));
+    else localStorage.removeItem(PENDING_KEY);
+  } catch { /* noop */ }
 }
 
 export function goldDaysLeft(s: GoldStatus): number {

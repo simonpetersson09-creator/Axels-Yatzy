@@ -1104,6 +1104,7 @@ export type Database = {
         Args: { p_key: string; p_session: string }
         Returns: boolean
       }
+      internal_anon_number: { Args: { p_session: string }; Returns: number }
       internal_award_referral: {
         Args: { p_game: string; p_invitee: string; p_inviter: string }
         Returns: boolean

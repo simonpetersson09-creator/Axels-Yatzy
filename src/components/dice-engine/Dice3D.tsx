@@ -117,7 +117,7 @@ function designTexture(d: DiceDesign): CanvasTexture | null {
   if (typeof document !== 'undefined' && (d.motif || d.body2 || d.flag)) {
     const c = document.createElement('canvas'); c.width = c.height = 512;
     const ctx = c.getContext('2d');
-    if (ctx) { paintDesignFace(d, ctx, 512); tex = new CanvasTexture(c); tex.colorSpace = SRGBColorSpace; tex.anisotropy = 8; }
+    if (ctx) { paintDesignFace(d, ctx, 512, true); tex = new CanvasTexture(c); tex.colorSpace = SRGBColorSpace; tex.anisotropy = 8; }
   }
   designTexCache.set(d.id, tex);
   return tex;

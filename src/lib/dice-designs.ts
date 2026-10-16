@@ -222,7 +222,7 @@ export function getDesign(id: string | null | undefined): DiceDesign | null {
 }
 
 /** Paints one die face (body gradient + motif, no pips) on a square canvas. */
-export function paintDesignFace(d: DiceDesign, ctx: CanvasRenderingContext2D, n: number) {
+export function paintDesignFace(d: DiceDesign, ctx: CanvasRenderingContext2D, n: number, onDie = false) {
   if (d.flag) { paintFlag(d.flag, ctx, n); return; }
   const g = ctx.createLinearGradient(0, 0, n, n);
   g.addColorStop(0, d.body); g.addColorStop(1, d.body2 ?? d.body);
@@ -264,7 +264,7 @@ export function paintDesignFace(d: DiceDesign, ctx: CanvasRenderingContext2D, n:
       for (let i = 0; i < 3; i++) { ctx.beginPath(); let x = rnd() * n, y = 0; ctx.moveTo(x, y); while (y < n) { x += (rnd() - 0.5) * n * 0.18; y += n * 0.05; ctx.lineTo(x, y); } ctx.stroke(); }
       ctx.fillStyle = '#ffffff'; for (let i = 0; i < 50; i++) { ctx.globalAlpha = 0.4 + rnd() * 0.6; ctx.beginPath(); ctx.arc(rnd() * n, rnd() * n, n * (0.003 + rnd() * 0.008), 0, 7); ctx.fill(); }
       ctx.globalAlpha = 1; for (let i = 0; i < 5; i++) star(rnd() * n, rnd() * n, n * (0.025 + rnd() * 0.03));
-      ctx.strokeStyle = gg; ctx.lineWidth = n * 0.035; ctx.strokeRect(n * 0.018, n * 0.018, n * 0.964, n * 0.964);
+      ctx.strokeStyle = gg; ctx.lineWidth = n * (onDie ? 0.014 : 0.035); ctx.strokeRect(n * 0.018, n * 0.018, n * 0.964, n * 0.964);
     } break;
     case 'marble': ctx.globalAlpha = 0.5; ctx.lineWidth = n * 0.012; for (let i = 0; i < 7; i++) { ctx.beginPath(); let x = rnd() * n, y = 0; ctx.moveTo(x, y); while (y < n) { x += (rnd() - 0.5) * n * 0.15; y += n * 0.06; ctx.lineTo(x, y); } ctx.stroke(); } break;
   }

@@ -417,4 +417,5 @@ export const ms: Partial<typeof sv> = {
   lobbyJoinTitle: "Ada kod?",
   lobbyJoinHint: "Masukkan kod daripada kawan anda, atau imbas kod QR.",
   lobbyScanShort: "Imbas",
+  lobbyFriendsLink: "Pernah bermain bersama? Jemput terus dari skrin Rakan",
 };

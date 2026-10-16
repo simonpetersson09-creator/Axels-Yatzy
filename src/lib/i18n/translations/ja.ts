@@ -417,4 +417,5 @@ export const ja: Partial<typeof sv> = {
   lobbyJoinTitle: "コードを持ってる？",
   lobbyJoinHint: "友だちからのコードを入力するか、QRコードを読み取ってね。",
   lobbyScanShort: "読み取る",
+  lobbyFriendsLink: "プレイしたことがある？「フレンド」画面から直接招待しよう",
 };

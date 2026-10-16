@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2, ScanLine, Send, KeyRound } from 'lucide-react';
+import { ArrowLeft, Loader2, ScanLine, Send, KeyRound, Users, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { QRScanner } from './QRScanner';
 import { Capacitor } from '@capacitor/core';
@@ -160,6 +160,14 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('createGame')}
             </motion.button>
+            <button
+              onClick={() => navigate('/friends')}
+              className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-primary active:opacity-70"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>{t('lobbyFriendsLink')}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
           <div className="flex items-center gap-3">

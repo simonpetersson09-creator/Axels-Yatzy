@@ -417,4 +417,5 @@ export const ta: Partial<typeof sv> = {
   lobbyJoinTitle: "குறியீடு உள்ளதா?",
   lobbyJoinHint: "நண்பர் அனுப்பிய குறியீட்டை உள்ளிடுங்கள் அல்லது QR குறியீட்டை ஸ்கேன் செய்யுங்கள்.",
   lobbyScanShort: "ஸ்கேன்",
+  lobbyFriendsLink: "ஏற்கனவே விளையாடியுள்ளீர்களா? நண்பர்கள் திரையிலிருந்தே நேரடியாக அழைக்கவும்",
 };

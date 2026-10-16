@@ -412,4 +412,5 @@ export const de: Partial<typeof sv> = {
   lobbyJoinTitle: "Hast du einen Code?",
   lobbyJoinHint: "Gib den Code deines Freundes ein oder scanne den QR-Code.",
   lobbyScanShort: "Scannen",
+  lobbyFriendsLink: "Schon mal gespielt? Lade direkt über „Freunde“ ein",
 };

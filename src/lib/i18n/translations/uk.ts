@@ -417,4 +417,5 @@ export const uk: Partial<typeof sv> = {
   lobbyJoinTitle: "Маєш код?",
   lobbyJoinHint: "Введи код від друга або відскануй QR-код.",
   lobbyScanShort: "Сканувати",
+  lobbyFriendsLink: "Уже грали разом? Запрошуйте прямо з екрана «Друзі»",
 };

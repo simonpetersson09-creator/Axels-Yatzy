@@ -417,4 +417,5 @@ export const mr: Partial<typeof sv> = {
   lobbyJoinTitle: "कोड मिळाला का?",
   lobbyJoinHint: "मित्राने पाठवलेला कोड टाका किंवा QR कोड स्कॅन करा.",
   lobbyScanShort: "स्कॅन करा",
+  lobbyFriendsLink: "आधी खेळला आहात? मित्र स्क्रीनवरून थेट आमंत्रित करा",
 };

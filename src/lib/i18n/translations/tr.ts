@@ -417,4 +417,5 @@ export const tr: Partial<typeof sv> = {
   lobbyJoinTitle: "Kodun var mı?",
   lobbyJoinHint: "Arkadaşının gönderdiği kodu gir veya QR kodunu tara.",
   lobbyScanShort: "Tara",
+  lobbyFriendsLink: "Daha önce oynadınız mı? Doğrudan Arkadaşlar ekranından davet edin",
 };

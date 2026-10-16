@@ -417,4 +417,5 @@ export const id: Partial<typeof sv> = {
   lobbyJoinTitle: "Punya kode?",
   lobbyJoinHint: "Masukkan kode dari temanmu, atau pindai kode QR.",
   lobbyScanShort: "Pindai",
+  lobbyFriendsLink: "Pernah bermain bersama? Undang langsung dari Teman",
 };

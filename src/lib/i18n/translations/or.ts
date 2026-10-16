@@ -417,4 +417,5 @@ export const or: Partial<typeof sv> = {
   lobbyJoinTitle: "କୋଡ୍ ଅଛି କି?",
   lobbyJoinHint: "ସାଙ୍ଗ ପଠାଇଥିବା କୋଡ୍ ଲେଖନ୍ତୁ କିମ୍ବା QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ।",
   lobbyScanShort: "ସ୍କାନ୍",
+  lobbyFriendsLink: "ଆଗରୁ ଖେଳିଛନ୍ତି? ‘ବନ୍ଧୁ’ ସ୍କ୍ରିନ୍‌ରୁ ସିଧାସଳଖ ଆମନ୍ତ୍ରଣ କରନ୍ତୁ",
 };

@@ -417,4 +417,5 @@ export const te: Partial<typeof sv> = {
   lobbyJoinTitle: "కోడ్ ఉందా?",
   lobbyJoinHint: "మీ స్నేహితుడు పంపిన కోడ్‌ను టైప్ చేయండి లేదా QR కోడ్‌ను స్కాన్ చేయండి.",
   lobbyScanShort: "స్కాన్",
+  lobbyFriendsLink: "ఇంతకు ముందు ఆడారా? స్నేహితుల స్క్రీన్ నుంచే నేరుగా ఆహ్వానించండి",
 };

@@ -417,4 +417,5 @@ export const vi: Partial<typeof sv> = {
   lobbyJoinTitle: "Bạn có mã chưa?",
   lobbyJoinHint: "Nhập mã bạn bè đã gửi hoặc quét mã QR.",
   lobbyScanShort: "Quét",
+  lobbyFriendsLink: "Đã từng chơi cùng nhau? Mời ngay từ màn hình Bạn bè",
 };

@@ -477,6 +477,13 @@
       "when": 1792133161044,
       "tag": "0067_notify_host_on_lobby_join",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1792179112050,
+      "tag": "0068_migration",
+      "breakpoints": true
     }
   ]
 }

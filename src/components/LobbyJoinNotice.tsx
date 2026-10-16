@@ -8,6 +8,7 @@ import { getSessionId } from '@/lib/session';
 /**
  * Anywhere in the app except the waiting room itself: tells the host once when
  * a friend joins their open waiting room (phone push covers the app being closed).
+ * Polls every 8 s while a waiting room is open, otherwise only once a minute.
  */
 export function LobbyJoinNotice() {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export function LobbyJoinNotice() {
 
   useEffect(() => {
     let alive = true;
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const check = async () => {
       if (document.visibilityState !== 'visible') return;
       const me = getSessionId();
@@ -44,9 +46,15 @@ export function LobbyJoinNotice() {
       }
       counts.current = next;
     };
-    void check();
-    const id = setInterval(check, 8000);
-    return () => { alive = false; clearInterval(id); };
+    const loop = async () => {
+      await check().catch(() => {});
+      if (!alive) return;
+      // Fast polling only while the player actually has an open waiting room.
+      const hasLobby = !!counts.current && Object.keys(counts.current).length > 0;
+      timer = setTimeout(() => void loop(), hasLobby ? 8000 : 60000);
+    };
+    void loop();
+    return () => { alive = false; if (timer) clearTimeout(timer); };
   }, [navigate, t]);
   return null;
 }

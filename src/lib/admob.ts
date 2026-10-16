@@ -141,7 +141,8 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
       } catch (err) {
         console.warn('[AdMob] consent flow failed', err);
         consentPromise = null; // försök igen nästa gång
-        return true;
+        // Inget samtycke inhämtat: visa inga annonser alls denna gång (EU-krav).
+        return false;
       }
     })();
   }

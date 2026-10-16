@@ -470,6 +470,13 @@
       "when": 1792131957048,
       "tag": "0066_award_ad_xp_no_daily_cap",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1792133161044,
+      "tag": "0067_notify_host_on_lobby_join",
+      "breakpoints": true
     }
   ]
 }

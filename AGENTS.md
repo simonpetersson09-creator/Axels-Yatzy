@@ -21,4 +21,4 @@
 - Hall of Fame: server-side report_weekly_score (from recordGameResult) trims to first name, caps score.
 - Game banner: fitGameAboveBanner (admob.ts) shrinks rows/dice until all fits above it.
 - Dice shop: XP (1 per shown optional ad, server caps/cooldown in award_ad_xp), prices and ownership live server-side (dice_designs, player_xp, player_designs); looks live in src/lib/dice-designs.ts and render via skin=`d:<id>` — new designs need both a catalog entry and a dice_designs row.
-- Shop extras use dice_designs rows with prefixes cel_ (Yatzy celebration) and frame_ (avatar frame), chosen via select_cosmetic into player_xp.selected_celebration/selected_frame; seasonal items set dice_designs.available_until, enforced in buy_dice_design — one ownership table and one XP path for everything sold.
+- Shop extras are dice_designs rows (cel_*/frame_*) chosen via select_cosmetic; seasonal items use available_until checked in buy_dice_design — one ownership table and XP path for all items.

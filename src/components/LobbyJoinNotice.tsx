@@ -50,12 +50,20 @@ export function LobbyJoinNotice() {
     const loop = async () => {
       await check().catch(() => {});
       if (!alive) return;
-      // Fast polling only while the player actually has an open waiting room.
+      // Keep polling only while the player actually has an open waiting room.
       const hasLobby = !!counts.current && Object.keys(counts.current).length > 0;
-      timer = setTimeout(() => void loop(), hasLobby ? 8000 : 60000);
+      if (hasLobby) timer = setTimeout(() => void loop(), 8000);
+    };
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && !timer) void loop();
     };
     void loop();
-    return () => { alive = false; if (timer) clearTimeout(timer); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      alive = false;
+      if (timer) clearTimeout(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [navigate, t]);
   return null;
 }

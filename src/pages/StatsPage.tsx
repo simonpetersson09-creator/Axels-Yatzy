@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { AvatarFrame } from '@/components/AvatarFrame';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Globe, CalendarDays, MapPin, Trophy, Flame } from 'lucide-react';
@@ -20,6 +22,7 @@ export default function StatsPage() {
   const [top, setTop] = useState<TopCountry[]>([]);
   const [hof, setHof] = useState<HallOfFameEntry[]>([]);
   const [most, setMost] = useState<HallOfFameEntry[]>([]);
+  const [frames, setFrames] = useState<Record<string, string>>({});
   const myCountry = getProfileCountry();
   const mySession = getSessionId();
 
@@ -31,6 +34,11 @@ export default function StatsPage() {
       const w = r.country ? await syncWeeklyRank() : null;
       if (!alive) return;
       setRank(r); setTop(tc); setWeekly(w); setHof(h); setMost(m); setLoading(false);
+      const ids = [...new Set([...h, ...m].map((p) => p.session_id))];
+      if (ids.length) {
+        const { data } = await supabase.rpc('get_frames_for_sessions', { p_session_ids: ids });
+        if (alive && data) setFrames(Object.fromEntries((data as { session_id: string; frame: string }[]).map((d) => [d.session_id, d.frame])));
+      }
     })();
     return () => { alive = false; };
   }, []);
@@ -106,7 +114,7 @@ export default function StatsPage() {
         <HofSection
           icon={<Trophy className="w-3.5 h-3.5 text-game-gold" />}
           title={t('hofTitle')} subtitle={t('hofSubtitle')}
-          rows={hof} loading={loading} mySession={mySession} empty={t('hofEmpty')} loadingText={t('loading')}
+          rows={hof} loading={loading} mySession={mySession} frames={frames} empty={t('hofEmpty')} loadingText={t('loading')}
           sub={(p) => `${fmt(p.games_played)} ${t('hofMatches')}`}
           value={(p) => fmt(p.best_score)}
         />
@@ -114,7 +122,7 @@ export default function StatsPage() {
         <HofSection
           icon={<Flame className="w-3.5 h-3.5 text-game-gold" />}
           title={t('hofGamesTitle')} subtitle={t('hofGamesSubtitle')}
-          rows={most} loading={loading} mySession={mySession} empty={t('hofEmpty')} loadingText={t('loading')}
+          rows={most} loading={loading} mySession={mySession} frames={frames} empty={t('hofEmpty')} loadingText={t('loading')}
           sub={(p) => `${t('hofBestShort')} ${fmt(p.best_score)}`}
           value={(p) => fmt(p.games_played)}
         />
@@ -163,9 +171,9 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
   );
 }
 
-function HofSection({ icon, title, subtitle, rows, loading, mySession, empty, loadingText, sub, value }: {
+function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, empty, loadingText, sub, value }: {
   icon: React.ReactNode; title: string; subtitle: string; rows: HallOfFameEntry[]; loading: boolean;
-  mySession: string; empty: string; loadingText: string;
+  mySession: string; frames: Record<string, string>; empty: string; loadingText: string;
   sub: (p: HallOfFameEntry) => string; value: (p: HallOfFameEntry) => string;
 }) {
   return (
@@ -184,7 +192,12 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, empty, lo
             className={`flex items-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${p.session_id === mySession ? 'bg-primary/10' : ''}`}
           >
             <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-game-gold' : 'text-muted-foreground'}`}>{i + 1}</span>
-            {p.country && <span className="text-base">{countryToFlag(p.country)}</span>}
+            <span className="relative w-7 h-7 shrink-0 flex items-center justify-center">
+              <AvatarFrame id={frames[p.session_id]} inset={1} />
+              <span className="relative w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-sm font-bold">
+                {p.country ? countryToFlag(p.country) : (p.name?.[0] ?? '?').toUpperCase()}
+              </span>
+            </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{p.name}</p>
               <p className="text-[11px] text-muted-foreground">{sub(p)}</p>

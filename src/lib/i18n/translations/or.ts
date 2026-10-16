@@ -412,4 +412,9 @@ export const or: Partial<typeof sv> = {
   shopStandard: "Qajeelcha",
   shopPreview: "Daawwannaa duraa",
   shopUntil: "Hanga {date} qofa",
+  lobbyCreateTitle: "ସାଙ୍ଗକୁ ଡାକନ୍ତୁ",
+  lobbyCreateHint: "ମ୍ୟାଚ୍ ତିଆରି କରି ଏକ କୋଡ୍ ପାଆନ୍ତୁ। କୋଡ୍‌ଟି ସାଙ୍ଗକୁ ପଠାନ୍ତୁ।",
+  lobbyJoinTitle: "କୋଡ୍ ଅଛି କି?",
+  lobbyJoinHint: "ସାଙ୍ଗ ପଠାଇଥିବା କୋଡ୍ ଲେଖନ୍ତୁ କିମ୍ବା QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ।",
+  lobbyScanShort: "ସ୍କାନ୍",
 };

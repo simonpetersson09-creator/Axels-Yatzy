@@ -412,4 +412,9 @@ export const ptBR: Partial<typeof sv> = {
   shopStandard: "Padrão",
   shopPreview: "Pré-visualizar",
   shopUntil: "Somente até {date}",
+  lobbyCreateTitle: "Convide um amigo",
+  lobbyCreateHint: "Crie a partida e receba um código. Envie o código para seu amigo.",
+  lobbyJoinTitle: "Tem um código?",
+  lobbyJoinHint: "Digite o código que seu amigo enviou ou escaneie o QR code.",
+  lobbyScanShort: "Escanear",
 };

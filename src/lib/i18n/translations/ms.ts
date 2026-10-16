@@ -412,4 +412,9 @@ export const ms: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Pratonton",
   shopUntil: "Hanya sehingga {date}",
+  lobbyCreateTitle: "Ajak kawan",
+  lobbyCreateHint: "Cipta perlawanan untuk dapatkan kod. Hantar kod itu kepada kawan anda.",
+  lobbyJoinTitle: "Ada kod?",
+  lobbyJoinHint: "Masukkan kod daripada kawan anda, atau imbas kod QR.",
+  lobbyScanShort: "Imbas",
 };

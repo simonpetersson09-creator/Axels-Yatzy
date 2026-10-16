@@ -412,4 +412,9 @@ export const uk: Partial<typeof sv> = {
   shopStandard: "Стандартний",
   shopPreview: "Попередній перегляд",
   shopUntil: "Лише до {date}",
+  lobbyCreateTitle: "Запроси друга",
+  lobbyCreateHint: "Створи гру й отримай код. Надішли його другу.",
+  lobbyJoinTitle: "Маєш код?",
+  lobbyJoinHint: "Введи код від друга або відскануй QR-код.",
+  lobbyScanShort: "Сканувати",
 };

@@ -412,4 +412,9 @@ export const hi: Partial<typeof sv> = {
   shopStandard: "मानक",
   shopPreview: "पूर्वावलोकन",
   shopUntil: "{date} तक ही",
+  lobbyCreateTitle: "दोस्त को बुलाएँ",
+  lobbyCreateHint: "मैच बनाएँ और कोड पाएँ। कोड अपने दोस्त को भेजें।",
+  lobbyJoinTitle: "कोड मिला?",
+  lobbyJoinHint: "दोस्त का भेजा कोड डालें या QR कोड स्कैन करें।",
+  lobbyScanShort: "स्कैन करें",
 };

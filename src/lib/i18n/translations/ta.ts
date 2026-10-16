@@ -412,4 +412,9 @@ export const ta: Partial<typeof sv> = {
   shopStandard: "நிலையானது",
   shopPreview: "முன்னோட்டம்",
   shopUntil: "{date} வரை மட்டுமே",
+  lobbyCreateTitle: "நண்பரை அழைக்கவும்",
+  lobbyCreateHint: "போட்டியை உருவாக்கி, குறியீட்டைப் பெறுங்கள். அதை உங்கள் நண்பருக்கு அனுப்புங்கள்.",
+  lobbyJoinTitle: "குறியீடு உள்ளதா?",
+  lobbyJoinHint: "நண்பர் அனுப்பிய குறியீட்டை உள்ளிடுங்கள் அல்லது QR குறியீட்டை ஸ்கேன் செய்யுங்கள்.",
+  lobbyScanShort: "ஸ்கேன்",
 };

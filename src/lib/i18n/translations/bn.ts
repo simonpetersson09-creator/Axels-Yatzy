@@ -412,4 +412,9 @@ export const bn: Partial<typeof sv> = {
   shopStandard: "সাধারণ",
   shopPreview: "পূর্বরূপ",
   shopUntil: "শুধুমাত্র {date} পর্যন্ত",
+  lobbyCreateTitle: "বন্ধুকে আমন্ত্রণ জানান",
+  lobbyCreateHint: "ম্যাচ তৈরি করে একটি কোড পান। কোডটি বন্ধুকে পাঠান।",
+  lobbyJoinTitle: "কোড পেয়েছেন?",
+  lobbyJoinHint: "বন্ধুর পাঠানো কোড লিখুন বা QR কোড স্ক্যান করুন।",
+  lobbyScanShort: "স্ক্যান",
 };

@@ -412,4 +412,9 @@ export const pa: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Preview",
   shopUntil: "Only until {date}",
+  lobbyCreateTitle: "ਦੋਸਤ ਨੂੰ ਸੱਦਾ ਦਿਓ",
+  lobbyCreateHint: "ਮੈਚ ਬਣਾਓ ਤੇ ਕੋਡ ਲਵੋ। ਕੋਡ ਆਪਣੇ ਦੋਸਤ ਨੂੰ ਭੇਜੋ।",
+  lobbyJoinTitle: "ਕੋਡ ਮਿਲਿਆ?",
+  lobbyJoinHint: "ਦੋਸਤ ਦਾ ਭੇਜਿਆ ਕੋਡ ਲਿਖੋ ਜਾਂ QR ਕੋਡ ਸਕੈਨ ਕਰੋ।",
+  lobbyScanShort: "ਸਕੈਨ ਕਰੋ",
 };

@@ -412,4 +412,9 @@ export const fi: Partial<typeof sv> = {
   shopStandard: "Vakio",
   shopPreview: "Esikatselu",
   shopUntil: "Vain {date} asti",
+  lobbyCreateTitle: "Kutsu kaveri",
+  lobbyCreateHint: "Luo peli ja saat koodin. Lähetä koodi kaverillesi.",
+  lobbyJoinTitle: "Saitko koodin?",
+  lobbyJoinHint: "Syötä kaverisi lähettämä koodi tai skannaa QR-koodi.",
+  lobbyScanShort: "Skannaa",
 };

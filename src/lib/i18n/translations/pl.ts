@@ -412,4 +412,9 @@ export const pl: Partial<typeof sv> = {
   shopStandard: "Standardowe",
   shopPreview: "Podgląd",
   shopUntil: "Tylko do {date}",
+  lobbyCreateTitle: "Zaproś znajomego",
+  lobbyCreateHint: "Utwórz mecz i odbierz kod. Wyślij go znajomemu.",
+  lobbyJoinTitle: "Masz kod?",
+  lobbyJoinHint: "Wpisz kod od znajomego lub zeskanuj kod QR.",
+  lobbyScanShort: "Skanuj",
 };

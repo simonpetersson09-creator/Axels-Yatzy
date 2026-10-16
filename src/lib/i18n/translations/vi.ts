@@ -412,4 +412,9 @@ export const vi: Partial<typeof sv> = {
   shopStandard: "Tiêu chuẩn",
   shopPreview: "Xem trước",
   shopUntil: "Chỉ đến {date}",
+  lobbyCreateTitle: "Mời bạn bè",
+  lobbyCreateHint: "Tạo trận đấu để nhận mã, rồi gửi mã cho bạn bè.",
+  lobbyJoinTitle: "Bạn có mã chưa?",
+  lobbyJoinHint: "Nhập mã bạn bè đã gửi hoặc quét mã QR.",
+  lobbyScanShort: "Quét",
 };

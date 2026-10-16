@@ -421,6 +421,11 @@ export const sv = {
   shopLevels: "Nivåer",
   lobbyTryQuickHint: "Ingen har anslutit än? Prova Snabbspel – du matchas med en spelare online direkt.",
   lobbyOpenCard: "Väntrum öppet · kod {code}",
+  lobbyCreateTitle: "Bjud in en vän",
+  lobbyCreateHint: "Du skapar matchen och får en kod. Skicka koden till din vän.",
+  lobbyJoinTitle: "Har du fått en kod?",
+  lobbyJoinHint: "Skriv in koden din vän skickade, eller skanna QR-koden.",
+  lobbyScanShort: "Skanna",
 };
 
 export type TranslationKey = keyof typeof sv;

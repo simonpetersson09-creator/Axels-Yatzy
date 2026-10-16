@@ -412,4 +412,9 @@ export const ko: Partial<typeof sv> = {
   shopStandard: "표준",
   shopPreview: "미리보기",
   shopUntil: "{date}까지만",
+  lobbyCreateTitle: "친구 초대하기",
+  lobbyCreateHint: "대결을 만들면 코드가 나와요. 친구에게 보내 주세요.",
+  lobbyJoinTitle: "코드가 있나요?",
+  lobbyJoinHint: "친구가 보낸 코드를 입력하거나 QR 코드를 스캔하세요.",
+  lobbyScanShort: "스캔",
 };

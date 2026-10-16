@@ -412,4 +412,9 @@ export const da: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Forhåndsvisning",
   shopUntil: "Kun indtil {date}",
+  lobbyCreateTitle: "Inviter en ven",
+  lobbyCreateHint: "Opret en kamp, og få en kode. Send koden til din ven.",
+  lobbyJoinTitle: "Har du en kode?",
+  lobbyJoinHint: "Indtast koden fra din ven, eller scan QR-koden.",
+  lobbyScanShort: "Scan",
 };

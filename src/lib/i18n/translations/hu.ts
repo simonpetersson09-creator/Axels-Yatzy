@@ -412,4 +412,9 @@ export const hu: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Előnézet",
   shopUntil: "Csak {date} dátumig",
+  lobbyCreateTitle: "Hívj meg egy barátot",
+  lobbyCreateHint: "Hozz létre egy meccset, és kapsz egy kódot. Küldd el a barátodnak.",
+  lobbyJoinTitle: "Van kódod?",
+  lobbyJoinHint: "Írd be a barátodtól kapott kódot, vagy olvasd be a QR-kódot.",
+  lobbyScanShort: "Beolvasás",
 };

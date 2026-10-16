@@ -412,4 +412,9 @@ export const el: Partial<typeof sv> = {
   shopStandard: "Βασικό",
   shopPreview: "Προεπισκόπηση",
   shopUntil: "Μόνο έως {date}",
+  lobbyCreateTitle: "Προσκάλεσε έναν φίλο",
+  lobbyCreateHint: "Δημιούργησε ένα παιχνίδι και πάρε έναν κωδικό. Στείλε τον στον φίλο σου.",
+  lobbyJoinTitle: "Έχεις κωδικό;",
+  lobbyJoinHint: "Βάλε τον κωδικό που σου έστειλε ο φίλος σου ή σάρωσε το QR.",
+  lobbyScanShort: "Σάρωση",
 };

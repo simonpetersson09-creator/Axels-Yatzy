@@ -411,4 +411,9 @@ export const ru: Partial<typeof sv> = {
   shopStandard: "Стандартный",
   shopPreview: "Предпросмотр",
   shopUntil: "Только до {date}",
+  lobbyCreateTitle: "Пригласи друга",
+  lobbyCreateHint: "Создай матч и получи код. Отправь его другу.",
+  lobbyJoinTitle: "Есть код?",
+  lobbyJoinHint: "Введи код от друга или отсканируй QR-код.",
+  lobbyScanShort: "Сканировать",
 };

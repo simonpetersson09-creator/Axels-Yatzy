@@ -412,4 +412,9 @@ export const ja: Partial<typeof sv> = {
   shopStandard: "標準",
   shopPreview: "プレビュー",
   shopUntil: "{date}まで",
+  lobbyCreateTitle: "友だちを招待",
+  lobbyCreateHint: "対戦を作るとコードがもらえるよ。友だちに送ってね。",
+  lobbyJoinTitle: "コードを持ってる？",
+  lobbyJoinHint: "友だちからのコードを入力するか、QRコードを読み取ってね。",
+  lobbyScanShort: "読み取る",
 };

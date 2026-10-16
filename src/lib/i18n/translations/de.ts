@@ -407,4 +407,9 @@ export const de: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Vorschau",
   shopUntil: "Nur bis {date}",
+  lobbyCreateTitle: "Lade einen Freund ein",
+  lobbyCreateHint: "Erstelle ein Spiel und erhalte einen Code. Schick ihn deinem Freund.",
+  lobbyJoinTitle: "Hast du einen Code?",
+  lobbyJoinHint: "Gib den Code deines Freundes ein oder scanne den QR-Code.",
+  lobbyScanShort: "Scannen",
 };

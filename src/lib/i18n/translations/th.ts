@@ -417,4 +417,5 @@ export const th: Partial<typeof sv> = {
   lobbyJoinTitle: "มีรหัสแล้วใช่ไหม?",
   lobbyJoinHint: "กรอกรหัสที่เพื่อนส่งมา หรือสแกนคิวอาร์โค้ด",
   lobbyScanShort: "สแกน",
+  lobbyFriendsLink: "เคยเล่นด้วยกันมาก่อนใช่ไหม? เชิญได้โดยตรงจากหน้าเพื่อน",
 };

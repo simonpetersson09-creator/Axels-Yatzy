@@ -417,4 +417,5 @@ export const fi: Partial<typeof sv> = {
   lobbyJoinTitle: "Saitko koodin?",
   lobbyJoinHint: "Syötä kaverisi lähettämä koodi tai skannaa QR-koodi.",
   lobbyScanShort: "Skannaa",
+  lobbyFriendsLink: "Oletteko pelanneet aiemmin? Kutsu suoraan Kaverit-näkymästä",
 };

@@ -417,4 +417,5 @@ export const no: Partial<typeof sv> = {
   lobbyJoinTitle: "Har du en kode?",
   lobbyJoinHint: "Skriv inn koden fra vennen din, eller skann QR-koden.",
   lobbyScanShort: "Skann",
+  lobbyFriendsLink: "Spilt før? Inviter direkte fra Venner",
 };

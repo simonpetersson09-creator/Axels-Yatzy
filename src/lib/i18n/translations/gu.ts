@@ -417,4 +417,5 @@ export const gu: Partial<typeof sv> = {
   lobbyJoinTitle: "કોડ મળ્યો?",
   lobbyJoinHint: "મિત્રએ મોકલેલો કોડ લખો અથવા QR કોડ સ્કેન કરો.",
   lobbyScanShort: "સ્કેન કરો",
+  lobbyFriendsLink: "પહેલાં રમ્યા છો? મિત્રો સ્ક્રીનમાંથી સીધું આમંત્રણ આપો",
 };

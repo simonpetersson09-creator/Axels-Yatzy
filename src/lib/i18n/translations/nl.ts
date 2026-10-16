@@ -417,4 +417,5 @@ export const nl: Partial<typeof sv> = {
   lobbyJoinTitle: "Heb je een code?",
   lobbyJoinHint: "Voer de code van je vriend in of scan de QR-code.",
   lobbyScanShort: "Scan",
+  lobbyFriendsLink: "Al eerder gespeeld? Nodig ze direct uit via Vrienden",
 };

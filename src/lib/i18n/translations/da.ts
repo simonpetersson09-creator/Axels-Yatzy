@@ -417,4 +417,5 @@ export const da: Partial<typeof sv> = {
   lobbyJoinTitle: "Har du en kode?",
   lobbyJoinHint: "Indtast koden fra din ven, eller scan QR-koden.",
   lobbyScanShort: "Scan",
+  lobbyFriendsLink: "Har I spillet før? Invitér direkte fra Venner",
 };

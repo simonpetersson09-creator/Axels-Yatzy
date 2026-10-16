@@ -417,4 +417,5 @@ export const ko: Partial<typeof sv> = {
   lobbyJoinTitle: "코드가 있나요?",
   lobbyJoinHint: "친구가 보낸 코드를 입력하거나 QR 코드를 스캔하세요.",
   lobbyScanShort: "스캔",
+  lobbyFriendsLink: "전에 같이 플레이했나요? 친구 화면에서 바로 초대하세요",
 };

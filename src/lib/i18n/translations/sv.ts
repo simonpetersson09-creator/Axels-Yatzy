@@ -426,6 +426,7 @@ export const sv = {
   lobbyJoinTitle: "Har du fått en kod?",
   lobbyJoinHint: "Skriv in koden din vän skickade, eller skanna QR-koden.",
   lobbyScanShort: "Skanna",
+  lobbyFriendsLink: "Spelat förut? Bjud in direkt från Vänner",
 };
 
 export type TranslationKey = keyof typeof sv;

@@ -417,4 +417,5 @@ export const bn: Partial<typeof sv> = {
   lobbyJoinTitle: "কোড পেয়েছেন?",
   lobbyJoinHint: "বন্ধুর পাঠানো কোড লিখুন বা QR কোড স্ক্যান করুন।",
   lobbyScanShort: "স্ক্যান",
+  lobbyFriendsLink: "আগে খেলেছেন? সরাসরি বন্ধুদের স্ক্রিন থেকে আমন্ত্রণ জানান",
 };

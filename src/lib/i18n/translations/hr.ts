@@ -417,4 +417,5 @@ export const hr: Partial<typeof sv> = {
   lobbyJoinTitle: "Imaš kod?",
   lobbyJoinHint: "Upiši kod koji ti je prijatelj poslao ili skeniraj QR kod.",
   lobbyScanShort: "Skeniraj",
+  lobbyFriendsLink: "Već ste igrali? Pozovite izravno sa zaslona Prijatelji",
 };

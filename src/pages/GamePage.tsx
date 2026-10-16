@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { reportLocalYatzyMatch } from '@/lib/gold-dice';
-import { useMyDiceLook } from '@/lib/dice-shop';
+import { useMyDiceLook, useShop } from '@/lib/dice-shop';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
@@ -10,7 +10,6 @@ import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { AvatarFrame } from '@/components/AvatarFrame';
-import { useShop } from '@/lib/dice-shop';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame, newLocalGameId } from '@/lib/active-game';

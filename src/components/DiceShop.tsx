@@ -40,7 +40,6 @@ export function DiceShop() {
   const untilLabel = (id: string) => shop.until[id] ? new Date(shop.until[id]).toLocaleDateString(lang, { day: 'numeric', month: 'short' }) : '';
   const myCountry = getProfileCountry()?.toUpperCase() ?? null;
   const priceOf = (d: DiceDesign) => shop.prices[d.id] ?? 0;
-    .sort((a, b) => priceOf(a) - priceOf(b))[0];
   const pickedDesign = DICE_DESIGNS.find((d) => d.id === picked) ?? null;
 
   const run = async (fn: () => Promise<void>) => {

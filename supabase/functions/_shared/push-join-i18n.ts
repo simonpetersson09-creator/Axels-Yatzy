@@ -3,7 +3,7 @@ const J: Record<string, [string, string]> = {
   "sv": ["{name} gick med i ditt spel 🎲", "Tryck för att öppna väntrummet och starta matchen."],
   "en": ["{name} joined your game 🎲", "Tap to open the waiting room and start the match."],
   "no": ["{name} ble med i spillet ditt 🎲", "Trykk for å åpne venterommet og starte kampen."],
-  "da": ["{name} sluttede sig til dit spil 🎲", "Tryk for at åbne venterummet og starte kampen."],
+  "da": ["{name} er med i dit spil 🎲", "Tryk for at åbne venterummet og starte kampen."],
   "fi": ["{name} liittyi peliisi 🎲", "Napauta avataksesi odotushuoneen ja aloittaaksesi ottelun."],
   "es": ["{name} se unió a tu partida 🎲", "Toca para abrir la sala de espera y empezar la partida."],
   "fr": ["{name} a rejoint ta partie 🎲", "Appuie pour ouvrir la salle d’attente et lancer la partie."],

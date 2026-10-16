@@ -8,14 +8,16 @@ import { joinPushText } from "../_shared/push-join-i18n.ts";
 const json = (body: object, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 
-Deno.serve(async (req) => {
+Deno.serve(async () => {
   try {
     const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: rows } = await db.from("lobby_join_queue").delete().gte("id", 0).select("game_id, session_id");
     const out = await Promise.all((rows ?? []).map((r) => notify(db, r.game_id, r.session_id).catch((e) => ({ error: String(e) }))));
-    return ({ results: out });
+    return json({ results: out });
+  } catch (e) {
+    return json({ error: (e as Error).message }, 500);
   }
-}
+});
 
 // deno-lint-ignore no-explicit-any
 async function notify(db: any, game_id: string, session_id: string) {
@@ -27,7 +29,7 @@ async function notify(db: any, game_id: string, session_id: string) {
     const { data: players } = await db.from("game_players")
       .select("session_id, player_name, player_index").eq("game_id", game_id).order("player_index");
     const host = players?.[0];
-    const joiner = players?.find((p) => p.session_id === session_id);
+    const joiner = players?.find((p: { session_id: string }) => p.session_id === session_id);
     if (!host || !joiner || host.session_id === session_id) return ({ skipped: "no host" });
 
     const { data: token } = await db.from("push_tokens").select("device_id, token, platform")

@@ -419,4 +419,5 @@ export const en: Partial<typeof sv> = {
   lobbyScanShort: "Scan",
   lobbyFriendsLink: "Played before? Invite straight from Friends",
   shopEarnHintNoCap: "Watch an optional ad to the end: +1 XP.",
+  shopWallet: "Balance: {n} XP",
 };

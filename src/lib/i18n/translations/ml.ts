@@ -419,4 +419,5 @@ export const ml: Partial<typeof sv> = {
   lobbyScanShort: "സ്കാൻ",
   lobbyFriendsLink: "മുമ്പ് കളിച്ചിട്ടുണ്ടോ? സുഹൃത്തുകൾ സ്ക്രീനിൽ നിന്ന് നേരിട്ട് ക്ഷണിക്കൂ",
   shopEarnHintNoCap: "ഐച്ഛികമായ ഒരു പരസ്യം അവസാനം വരെ കാണുക: +1 XP.",
+  shopWallet: "ബാലൻസ്: {n} XP",
 };

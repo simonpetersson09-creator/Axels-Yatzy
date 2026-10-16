@@ -418,4 +418,5 @@ export const ca: Partial<typeof sv> = {
   lobbyScanShort: "Escaneja",
   lobbyFriendsLink: "Ja has jugat abans? Convida directament des d’Amics",
   shopEarnHintNoCap: "Mira un anunci opcional fins al final: +1 XP.",
+  shopWallet: "Saldo: {n} XP",
 };

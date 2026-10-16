@@ -419,4 +419,5 @@ export const te: Partial<typeof sv> = {
   lobbyScanShort: "స్కాన్",
   lobbyFriendsLink: "ఇంతకు ముందు ఆడారా? స్నేహితుల స్క్రీన్ నుంచే నేరుగా ఆహ్వానించండి",
   shopEarnHintNoCap: "ఐచ్ఛిక ప్రకటనను చివరి వరకు చూడండి: +1 XP.",
+  shopWallet: "నిల్వ: {n} XP",
 };

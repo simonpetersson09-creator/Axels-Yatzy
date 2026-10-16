@@ -419,4 +419,5 @@ export const sl: Partial<typeof sv> = {
   lobbyScanShort: "Skeniraj",
   lobbyFriendsLink: "Ste že igrali? Povabite neposredno z zaslona Prijatelji",
   shopEarnHintNoCap: "Oglej si neobvezen oglas do konca: +1 XP.",
+  shopWallet: "Stanje: {n} XP",
 };

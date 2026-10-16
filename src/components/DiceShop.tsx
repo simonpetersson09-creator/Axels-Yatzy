@@ -69,13 +69,10 @@ export function DiceShop() {
       <div className="flex items-center justify-between">
         <p className="text-sm font-bold text-foreground">{t('shopTitle')}</p>
         <span className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary">
-          <Star className="w-3.5 h-3.5 fill-current" aria-hidden />{t('shopXp', { n: shop.xp })}
+          <Star className="w-3.5 h-3.5 fill-current" aria-hidden />{t('shopWallet', { n: shop.xp })}
         </span>
       </div>
       <p className="mt-1 text-[11px] text-muted-foreground">{t('shopEarnHintNoCap')}</p>
-      {cheapestLocked && (
-        <p className="mt-1 text-[11px] font-semibold text-foreground">{t('shopNext', { n: priceOf(cheapestLocked) - shop.xp })}</p>
-      )}
 
       <button
         onClick={() => use(null)}

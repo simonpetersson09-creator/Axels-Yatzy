@@ -3,13 +3,16 @@ import { Check, Lock, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { DICE_DESIGNS, designName, designSwatchBg, type DiceDesign, type DesignKind } from '@/lib/dice-designs';
-import { buyDesign, selectDesign, useShop } from '@/lib/dice-shop';
+import { buyDesign, selectDesign, selectCosmetic, useShop } from '@/lib/dice-shop';
+import { CELEBRATIONS, FRAMES, cosmeticName } from '@/lib/cosmetics';
+import { YatzyCelebration } from '@/components/game/YatzyCelebration';
+import { getProfileAvatar } from '@/lib/profile';
 import { trackEvent } from '@/lib/analytics';
 import { getProfileCountry } from '@/lib/profile';
 import { fireWinConfetti } from '@/lib/confetti';
 import { cn } from '@/lib/utils';
 
-const KINDS: DesignKind[] = ['flag', 'color', 'pattern', 'exclusive'];
+const KINDS: DesignKind[] = ['season', 'personal', 'flag', 'color', 'pattern', 'exclusive'];
 const PIPS_5 = [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]];
 
 function MiniDie({ d, size = 44 }: { d: DiceDesign; size?: number }) {
@@ -29,10 +32,16 @@ export function DiceShop() {
   const shop = useShop();
   const [picked, setPicked] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [previewCel, setPreviewCel] = useState<string | null>(null);
+  const avatar = getProfileAvatar();
+  const now = Date.now();
+  const expired = (id: string) => !!shop.until[id] && new Date(shop.until[id]).getTime() < now;
+  const visible = (d: DiceDesign) => !(d.kind === 'season' && (!shop.until[d.id] || expired(d.id)) && !shop.owned.includes(d.id));
+  const untilLabel = (id: string) => shop.until[id] ? new Date(shop.until[id]).toLocaleDateString(lang, { day: 'numeric', month: 'short' }) : '';
   const myCountry = getProfileCountry()?.toUpperCase() ?? null;
   const left = Math.max(0, shop.dailyCap - shop.earnedToday);
   const priceOf = (d: DiceDesign) => shop.prices[d.id] ?? 0;
-  const cheapestLocked = DICE_DESIGNS.filter((d) => !shop.owned.includes(d.id) && priceOf(d) > shop.xp)
+  const cheapestLocked = DICE_DESIGNS.filter(visible).filter((d) => !shop.owned.includes(d.id) && priceOf(d) > shop.xp)
     .sort((a, b) => priceOf(a) - priceOf(b))[0];
   const pickedDesign = DICE_DESIGNS.find((d) => d.id === picked) ?? null;
 
@@ -42,12 +51,12 @@ export function DiceShop() {
     try { await fn(); } finally { setBusy(false); }
   };
 
-  const buy = (d: DiceDesign) => run(async () => {
-    const r = await buyDesign(d.id);
+  const buyId = (id: string, name: string) => run(async () => {
+    const r = await buyDesign(id);
     if (r === 'ok') {
       fireWinConfetti({ durationMs: 1200 });
-      toast.success(t('shopBought', { name: designName(d, lang) }));
-      trackEvent('dice_design_bought', { id: d.id, price: priceOf(d) });
+      toast.success(t('shopBought', { name }));
+      trackEvent('dice_design_bought', { id, price: shop.prices[id] ?? 0 });
     } else toast.error(r === 'xp' ? t('shopNotEnough') : t('errGeneric'));
   });
 
@@ -83,11 +92,14 @@ export function DiceShop() {
         {shop.selected === null && <Check className="w-4 h-4 text-primary" />}
       </button>
 
-      {KINDS.map((kind) => (
+      {KINDS.filter((kind) => DICE_DESIGNS.some((d) => d.kind === kind && visible(d))).map((kind) => (
         <div key={kind} className="mt-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t(`shopKind_${kind}` as TranslationKey)}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {t(`shopKind_${kind}` as TranslationKey)}
+            {kind === 'season' && shop.until['h_pumpkin'] && <span className="ml-1 normal-case text-primary">· {t('shopUntil', { date: untilLabel('h_pumpkin') })}</span>}
+          </p>
           <div className="mt-2 grid grid-cols-3 gap-2">
-            {DICE_DESIGNS.filter((d) => d.kind === kind).sort((a, b) => kind === 'flag' ? Number(b.flag === myCountry) - Number(a.flag === myCountry) || designName(a, lang).localeCompare(designName(b, lang), lang) : 0).map((d) => {
+            {DICE_DESIGNS.filter((d) => d.kind === kind && visible(d)).sort((a, b) => kind === 'flag' ? Number(b.flag === myCountry) - Number(a.flag === myCountry) || designName(a, lang).localeCompare(designName(b, lang), lang) : 0).map((d) => {
               const owned = shop.owned.includes(d.id);
               const inUse = shop.selected === d.id;
               return (
@@ -127,7 +139,7 @@ export function DiceShop() {
                 ) : owned ? (
                   <button disabled={busy} onClick={() => use(d.id)} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">{t('shopUse')}</button>
                 ) : (
-                  <button disabled={busy || !canBuy} onClick={() => buy(d)}
+                  <button disabled={busy || !canBuy} onClick={() => buyId(d.id, designName(d, lang))}
                     className={cn('rounded-lg px-3 py-2 text-xs font-bold', canBuy ? 'bg-primary text-primary-foreground' : 'bg-muted/40 text-muted-foreground')}>
                     {t('shopBuy', { price })}
                   </button>
@@ -137,6 +149,59 @@ export function DiceShop() {
           })()}
         </div>
       ))}
+      {([
+        { slot: 'celebration' as const, title: t('shopKind_celebration'), hint: t('shopCelebrationHint'), items: CELEBRATIONS, selected: shop.selectedCelebration },
+        { slot: 'frame' as const, title: t('shopKind_frame'), hint: t('shopFrameHint'), items: FRAMES, selected: shop.selectedFrame },
+      ]).map((sec) => (
+        <div key={sec.slot} className="mt-5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{sec.title}</p>
+          <p className="text-[11px] text-muted-foreground">{sec.hint}</p>
+          <div className="mt-2 flex flex-col gap-2">
+            <button disabled={busy} onClick={() => run(async () => { if (!(await selectCosmetic(sec.slot, null))) toast.error(t('errGeneric')); })}
+              className={cn('flex items-center gap-3 rounded-xl border px-3 py-2 text-left', sec.selected === null ? 'border-primary bg-primary/10' : 'border-border bg-secondary/40')}>
+              <span className="flex-1 text-sm font-semibold text-foreground">{t('shopStandard')}</span>
+              {sec.selected === null && <Check className="w-4 h-4 text-primary" />}
+            </button>
+            {sec.items.map((it) => {
+              const owned = shop.owned.includes(it.id);
+              const inUse = sec.selected === it.id;
+              const price = shop.prices[it.id] ?? 0;
+              const canBuy = price > 0 && shop.xp >= price;
+              const frame = 'ring' in it ? it : null;
+              const cel = 'emoji' in it ? it : null;
+              return (
+                <div key={it.id} className={cn('flex items-center gap-3 rounded-xl border px-3 py-2', inUse ? 'border-primary bg-primary/10' : 'border-border bg-secondary/40')}>
+                  {frame ? (
+                    <div className="relative isolate w-9 h-9 shrink-0">
+                      <span className="absolute rounded-full" style={{ inset: -3, background: frame.ring, boxShadow: `0 0 8px ${frame.glow}` }} aria-hidden />
+                      <div className="relative w-9 h-9 rounded-full overflow-hidden bg-secondary flex items-center justify-center">
+                        {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-base">🙂</span>}
+                      </div>
+                    </div>
+                  ) : (
+                    <button onClick={() => setPreviewCel(it.id)} className="w-9 h-9 shrink-0 rounded-full bg-secondary text-xl flex items-center justify-center" aria-label={t('shopPreview')}>{cel!.emoji[0]}</button>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{cosmeticName(it, lang)}</p>
+                    {cel && <button onClick={() => setPreviewCel(it.id)} className="text-[11px] font-semibold text-primary">{t('shopPreview')}</button>}
+                    {!owned && !canBuy && price > 0 && <p className="text-[11px] text-muted-foreground">{t('shopNeed', { n: price - shop.xp })}</p>}
+                  </div>
+                  {inUse ? <Check className="w-4 h-4 text-primary" /> : owned ? (
+                    <button disabled={busy} onClick={() => run(async () => { if (!(await selectCosmetic(sec.slot, it.id))) toast.error(t('errGeneric')); })}
+                      className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">{t('shopUse')}</button>
+                  ) : (
+                    <button disabled={busy || !canBuy} onClick={() => buyId(it.id, cosmeticName(it, lang))}
+                      className={cn('rounded-lg px-3 py-2 text-xs font-bold', canBuy ? 'bg-primary text-primary-foreground' : 'bg-muted/40 text-muted-foreground')}>
+                      {price ? t('shopBuy', { price }) : '…'}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      <YatzyCelebration show={previewCel !== null} celebrationId={previewCel} onComplete={() => setPreviewCel(null)} />
     </div>
   );
 }

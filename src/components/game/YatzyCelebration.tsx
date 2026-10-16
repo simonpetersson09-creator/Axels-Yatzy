@@ -1,17 +1,20 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playYatzySound } from '@/lib/yatzy-celebration-sound';
+import { getCelebration, type Celebration } from '@/lib/cosmetics';
 
 interface YatzyCelebrationProps {
   show: boolean;
   onComplete: () => void;
+  /** Bought celebration (shop id) of the player who got Yatzy. */
+  celebrationId?: string | null;
 }
 
 // Generate confetti particles
-function useConfetti(show: boolean) {
+function useConfetti(show: boolean, cel: Celebration | null) {
   return useMemo(() => {
     if (!show) return [];
-    const colors = [
+    const colors = cel ? cel.colors : [
       'hsl(36 82% 52%)',   // gold
       'hsl(42 90% 65%)',   // light gold
       'hsl(0 75% 55%)',    // red
@@ -29,14 +32,16 @@ function useConfetti(show: boolean) {
       size: 4 + Math.random() * 6,
       delay: Math.random() * 0.3,
       isRect: Math.random() > 0.5,
+      emoji: cel && i % 3 === 0 ? cel.emoji[i % cel.emoji.length] : null,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show]);
 }
 
-export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
+export function YatzyCelebration({ show, onComplete, celebrationId }: YatzyCelebrationProps) {
   const [visible, setVisible] = useState(false);
-  const confetti = useConfetti(show);
+  const cel = getCelebration(celebrationId);
+  const confetti = useConfetti(show, cel);
   // Stash callback in a ref so timer doesn't restart on every parent render.
   const onCompleteRef = useRef(onComplete);
   useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
@@ -83,7 +88,9 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
                 width: p.isRect ? p.size * 0.6 : p.size,
                 height: p.isRect ? p.size * 1.4 : p.size,
                 borderRadius: p.isRect ? 1 : '50%',
-                background: p.color,
+                background: p.emoji ? 'transparent' : p.color,
+                fontSize: p.emoji ? p.size * 3.2 : undefined,
+                lineHeight: 1,
                 left: '50%',
                 top: '45%',
               }}
@@ -101,8 +108,15 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
                 ease: 'easeOut',
                 y: { duration: 1.0, ease: [0.2, 0, 0.8, 1] },
               }}
-            />
+            >{p.emoji}</motion.div>
           ))}
+
+          {cel && (
+            <motion.span className="absolute text-7xl" style={{ top: '22%' }} aria-hidden
+              initial={{ scale: 0, y: 30 }} animate={{ scale: [0, 1.4, 1], y: 0 }} transition={{ duration: 0.4 }}>
+              {cel.emoji[0]}
+            </motion.span>
+          )}
 
           {/* Main text */}
           <motion.div
@@ -115,7 +129,7 @@ export function YatzyCelebration({ show, onComplete }: YatzyCelebrationProps) {
             <span
               className="font-display font-black text-6xl sm:text-7xl tracking-wider"
               style={{
-                background: 'linear-gradient(135deg, hsl(42 90% 65%), hsl(36 82% 52%), hsl(28 80% 45%))',
+                background: cel?.text ?? 'linear-gradient(135deg, hsl(42 90% 65%), hsl(36 82% 52%), hsl(28 80% 45%))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 filter: 'drop-shadow(0 4px 20px rgba(245,185,66,0.5))',

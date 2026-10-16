@@ -94,16 +94,19 @@ export type Database = {
       }
       dice_designs: {
         Row: {
+          available_until: string | null
           id: string
           price: number
           sort_order: number
         }
         Insert: {
+          available_until?: string | null
           id: string
           price: number
           sort_order?: number
         }
         Update: {
+          available_until?: string | null
           id?: string
           price?: number
           sort_order?: number
@@ -647,7 +650,9 @@ export type Database = {
           earned_day: string
           earned_today: number
           last_earned_at: string | null
+          selected_celebration: string | null
           selected_design: string | null
+          selected_frame: string | null
           session_id: string
           updated_at: string
           xp: number
@@ -656,7 +661,9 @@ export type Database = {
           earned_day?: string
           earned_today?: number
           last_earned_at?: string | null
+          selected_celebration?: string | null
           selected_design?: string | null
+          selected_frame?: string | null
           session_id: string
           updated_at?: string
           xp?: number
@@ -665,7 +672,9 @@ export type Database = {
           earned_day?: string
           earned_today?: number
           last_earned_at?: string | null
+          selected_celebration?: string | null
           selected_design?: string | null
+          selected_frame?: string | null
           session_id?: string
           updated_at?: string
           xp?: number
@@ -1263,6 +1272,15 @@ export type Database = {
           p_session_id: string
         }
         Returns: Json
+      }
+      select_cosmetic: {
+        Args: {
+          p_device_id: string
+          p_id: string
+          p_session_id: string
+          p_slot: string
+        }
+        Returns: boolean
       }
       select_dice_design: {
         Args: { p_design_id: string; p_device_id: string; p_session_id: string }

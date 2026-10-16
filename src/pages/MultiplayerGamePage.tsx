@@ -11,6 +11,7 @@ import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
+import { AvatarFrame } from '@/components/AvatarFrame';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
@@ -679,6 +680,7 @@ export default function MultiplayerGamePage() {
       />
       <YatzyCelebration
         show={showYatzyCelebration}
+        celebrationId={gameState ? diceProfiles.get(gameState.currentPlayerIndex)?.celebration : null}
         onComplete={() => setShowYatzyCelebration(false)}
       />
       <TurnTransition
@@ -744,8 +746,9 @@ export default function MultiplayerGamePage() {
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
-                    <div className="relative shrink-0">
-                    <div className={`w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
+                    <div className="relative shrink-0 isolate">
+                    <AvatarFrame id={diceProfiles.get(idx)?.frame} />
+                    <div className={`relative w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
                     } ${isMe && glowActive ? 'animate-pulse-gold' : ''} transition-all flex items-center justify-center`}>
                       {showAvatar ? (

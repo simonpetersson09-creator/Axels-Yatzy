@@ -8,7 +8,8 @@ import { getSessionId } from '@/lib/session';
 /**
  * Anywhere in the app except the waiting room itself: tells the host once when
  * a friend joins their open waiting room (phone push covers the app being closed).
- * Polls every 8 s while a waiting room is open, otherwise only once a minute.
+ * Checks when the app opens or returns to the foreground; only while a waiting
+ * room is actually open does it keep polling every 8 s. No polling otherwise.
  */
 export function LobbyJoinNotice() {
   const { t } = useTranslation();

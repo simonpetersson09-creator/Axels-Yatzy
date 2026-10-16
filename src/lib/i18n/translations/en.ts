@@ -412,4 +412,9 @@ export const en: Partial<typeof sv> = {
   shopLevels: "Levels",
   lobbyTryQuickHint: "Nobody joined yet? Try Quick match – you'll be matched with an online player right away.",
   lobbyOpenCard: "Waiting room open · code {code}",
+  lobbyCreateTitle: "Invite a friend",
+  lobbyCreateHint: "You create the match and get a code. Send the code to your friend.",
+  lobbyJoinTitle: "Got a code?",
+  lobbyJoinHint: "Type the code your friend sent, or scan the QR code.",
+  lobbyScanShort: "Scan",
 };

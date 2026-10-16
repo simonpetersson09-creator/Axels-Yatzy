@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2, ScanLine } from 'lucide-react';
+import { ArrowLeft, Loader2, ScanLine, Send, KeyRound } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { QRScanner } from './QRScanner';
 import { Capacitor } from '@capacitor/core';
@@ -114,7 +114,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
-          <h1 className="text-2xl font-display font-bold">{t('multiplayer')}</h1>
+          <h1 className="text-2xl font-display font-bold">{t('playWithFriends').replace(/^🌐\s*/, '')}</h1>
         </div>
 
         {inviteFriendName && (
@@ -141,15 +141,26 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           </motion.p>
         )}
 
-        <div className="space-y-3">
-          <motion.button
-            onClick={handleCreate}
-            disabled={loading}
-            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow disabled:opacity-50"
-            whileTap={{ scale: 0.97 }}
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('createGame')}
-          </motion.button>
+        <div className="space-y-4">
+          <div className="p-4 rounded-2xl bg-primary/10 border border-primary/30 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                <Send className="w-5 h-5 text-primary" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-display font-bold text-base">{t('lobbyCreateTitle')}</p>
+                <p className="text-xs text-muted-foreground leading-snug">{t('lobbyCreateHint')}</p>
+              </div>
+            </div>
+            <motion.button
+              onClick={handleCreate}
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow disabled:opacity-50"
+              whileTap={{ scale: 0.97 }}
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('createGame')}
+            </motion.button>
+          </div>
 
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-border" />
@@ -157,37 +168,45 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={joinCode}
-              onChange={e => setJoinCode(e.target.value.toUpperCase())}
-              placeholder={t('enterGameCode')}
-              maxLength={6}
-              className="flex-1 px-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all uppercase"
-            />
+          <div className="p-4 rounded-2xl bg-game-info/10 border border-game-info/30 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-game-info/20 flex items-center justify-center shrink-0">
+                <KeyRound className="w-5 h-5 text-game-info" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-display font-bold text-base">{t('lobbyJoinTitle')}</p>
+                <p className="text-xs text-muted-foreground leading-snug">{t('lobbyJoinHint')}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={joinCode}
+                onChange={e => setJoinCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                placeholder="ABC123"
+                maxLength={6}
+                className="flex-1 min-w-0 px-3 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground/40 font-display font-bold text-center text-xl tracking-[0.3em] border border-border/50 focus:border-game-info/60 focus:outline-none focus:ring-1 focus:ring-game-info/40 transition-all uppercase"
+              />
+              <motion.button
+                onClick={handleOpenScanner}
+                disabled={loading}
+                className="px-3 py-2 rounded-xl bg-secondary text-foreground border border-border/50 hover:bg-accent transition-colors disabled:opacity-50 flex flex-col items-center justify-center gap-0.5"
+                whileTap={{ scale: 0.95 }}
+              >
+                <ScanLine className="w-5 h-5 text-game-info" />
+                <span className="text-[10px] font-semibold text-muted-foreground">{t('lobbyScanShort')}</span>
+              </motion.button>
+            </div>
             <motion.button
-              onClick={handleOpenScanner}
-              disabled={loading}
-              className="px-4 py-3 rounded-xl bg-secondary text-foreground border border-border/50 hover:bg-accent transition-colors disabled:opacity-50 flex items-center justify-center"
-              whileTap={{ scale: 0.95 }}
-              title={t('scanQR')}
+              onClick={handleJoin}
+              disabled={loading || joinCode.length < 6}
+              className={`w-full py-3.5 rounded-xl font-display font-bold text-lg transition-colors ${joinCode.length >= 6 ? 'bg-game-info text-white game-shadow' : 'bg-secondary text-muted-foreground border border-border/50'} disabled:opacity-60`}
+              whileTap={{ scale: 0.97 }}
             >
-              <ScanLine className="w-5 h-5 text-muted-foreground" />
+              {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('joinGame')}
             </motion.button>
           </div>
-          <motion.button
-            onClick={handleJoin}
-            disabled={loading || joinCode.length < 6}
-            className="w-full py-4 rounded-2xl bg-secondary text-foreground font-display font-bold text-lg border border-border/50 disabled:opacity-50"
-            whileTap={{ scale: 0.97 }}
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t('joinGame')}
-          </motion.button>
         </div>
-
-
-
 
         <QRScanner
           open={scannerOpen}

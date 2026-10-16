@@ -48,6 +48,7 @@ export function LobbyJoinNotice() {
       counts.current = next;
     };
     const loop = async () => {
+      timer = null;
       await check().catch(() => {});
       if (!alive) return;
       // Keep polling only while the player actually has an open waiting room.

@@ -403,4 +403,13 @@ export const bn: Partial<typeof sv> = {
   xpEarnedTotal: "প্রাপ্ত XP: {n}",
   lobbyTryQuickHint: "কেউ যোগদান করেনি? দ্রুত ম্যাচ চেষ্টা করুন – আপনি অবিলম্বে একটি অনলাইন খেলোয়াড়ের সাথে যুক্ত হবেন।",
   lobbyOpenCard: "অপেক্ষা কক্ষ খোলা · কোড {code}",
+  shopKind_personal: "আপনার নিজের",
+  shopKind_season: "হ্যালোইন 🎃",
+  shopKind_celebration: "ইয়েটজি উদযাপন",
+  shopKind_frame: "প্রোফাইল পিকচার ফ্রেম",
+  shopCelebrationHint: "আপনি ইয়েটজি পেলে দেখানো হবে – অনলাইনে প্রতিপক্ষরাও এটি দেখবে",
+  shopFrameHint: "বোর্ডে আপনার ছবির চারপাশে দেখানো হবে – প্রতিপক্ষরা এটি দেখবে",
+  shopStandard: "সাধারণ",
+  shopPreview: "পূর্বরূপ",
+  shopUntil: "শুধুমাত্র {date} পর্যন্ত",
 };

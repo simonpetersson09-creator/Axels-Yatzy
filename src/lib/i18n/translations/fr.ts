@@ -398,4 +398,13 @@ export const fr: Partial<typeof sv> = {
   xpEarnedTotal: "XP gagnés : {n}",
   lobbyTryQuickHint: "Personne n'a encore rejoint ? Essayez le Match rapide – vous serez mis en relation avec un joueur en ligne immédiatement.",
   lobbyOpenCard: "Salle d'attente ouverte · code {code}",
+  shopKind_personal: "Personnel",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Célébration Yatzy",
+  shopKind_frame: "Cadres de photo de profil",
+  shopCelebrationHint: "Affiché lorsque vous obtenez un Yatzy – vos adversaires en ligne le voient aussi",
+  shopFrameHint: "Affiché autour de votre photo sur le plateau – vos adversaires le voient aussi",
+  shopStandard: "Standard",
+  shopPreview: "Aperçu",
+  shopUntil: "Seulement jusqu'au {date}",
 };

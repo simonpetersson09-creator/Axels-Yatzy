@@ -403,4 +403,13 @@ export const or: Partial<typeof sv> = {
   xpEarnedTotal: "ଅର୍ଜିତ XP: {n}",
   lobbyTryQuickHint: "କେହି ଯୋଗ ଦେଇ ନାହାଁନ୍ତି କି? ତୁରନ୍ତ ମ୍ୟାଚ୍ ଚେଷ୍ଟା କରନ୍ତୁ – ଆପଣଙ୍କୁ ତୁରନ୍ତ ଜଣେ ଅନଲାଇନ୍ ଖେଳାଳିଙ୍କ ସହ ଯୋଡାଯିବ।",
   lobbyOpenCard: "ଅପେକ୍ଷା କକ୍ଷ ଖୋଲା · କୋଡ୍ {code}",
+  shopKind_personal: "Kan kee mataa kee",
+  shopKind_season: "Haalowiin 🎃",
+  shopKind_celebration: "Kabaaja Yaatsii",
+  shopKind_frame: "Faantii suuraa qabaa kee",
+  shopCelebrationHint: "Yeroo Yaatsii argattu agarsiifama – morkattoonni toora intarneetii irraa jiranis ni argu",
+  shopFrameHint: "Suuraa kee naannoo daataa irratti agarsiifama – morkattoonni ni argu",
+  shopStandard: "Qajeelcha",
+  shopPreview: "Daawwannaa duraa",
+  shopUntil: "Hanga {date} qofa",
 };

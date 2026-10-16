@@ -403,4 +403,13 @@ export const tr: Partial<typeof sv> = {
   xpEarnedTotal: "Kazanılan XP: {n}",
   lobbyTryQuickHint: "Kimse katılmadı mı? Hızlı maçı dene – hemen çevrimiçi bir oyuncuyla eşleşeceksin.",
   lobbyOpenCard: "Bekleme odası açık · kod {code}",
+  shopKind_personal: "Size özel",
+  shopKind_season: "Cadılar Bayramı 🎃",
+  shopKind_celebration: "Yatzy kutlaması",
+  shopKind_frame: "Profil resmi çerçeveleri",
+  shopCelebrationHint: "Yatzy yaptığınızda gösterilir – çevrimiçi rakipleriniz de görür",
+  shopFrameHint: "Panodaki resminizin etrafında gösterilir – rakipleriniz de görür",
+  shopStandard: "Standart",
+  shopPreview: "Önizleme",
+  shopUntil: "Sadece {date} tarihine kadar",
 };

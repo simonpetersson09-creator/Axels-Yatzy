@@ -403,4 +403,13 @@ export const nl: Partial<typeof sv> = {
   xpEarnedTotal: "Verdiende XP: {n}",
   lobbyTryQuickHint: "Niemand aangesloten? Probeer Snelle match – je wordt meteen gekoppeld aan een online speler.",
   lobbyOpenCard: "Wachtkamer open · code {code}",
+  shopKind_personal: "Din egen",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Yatzy-feiring",
+  shopKind_frame: "Profilbilderammer",
+  shopCelebrationHint: "Vises når du får Yatzy – motstandere på nett ser det også",
+  shopFrameHint: "Vises rundt bildet ditt på brettet – motstandere ser det også",
+  shopStandard: "Standard",
+  shopPreview: "Forhåndsvisning",
+  shopUntil: "Kun til {date}",
 };

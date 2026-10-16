@@ -403,4 +403,13 @@ export const te: Partial<typeof sv> = {
   xpEarnedTotal: "సంపాదించిన XP: {n}",
   lobbyTryQuickHint: "ఇంకా ఎవరూ చేరలేదా? త్వరిత మ్యాచ్‌ను ప్రయత్నించండి – మీరు వెంటనే ఆన్‌లైన్ ప్లేయర్‌తో సరిపోలుతారు.",
   lobbyOpenCard: "వేచి ఉండే గది తెరిచి ఉంది · కోడ్ {code}",
+  shopKind_personal: "మీ సొంత",
+  shopKind_season: "హలోవీన్ 🎃",
+  shopKind_celebration: "యాట్జీ ఉత్సవం",
+  shopKind_frame: "ప్రొఫైల్ పిక్చర్ ఫ్రేమ్‌లు",
+  shopCelebrationHint: "మీరు యాట్జీ పొందినప్పుడు చూపబడుతుంది – ఆన్‌లైన్‌లోని ప్రత్యర్థులు కూడా చూస్తారు",
+  shopFrameHint: "బోర్డుపై మీ చిత్రం చుట్టూ చూపబడుతుంది – ప్రత్యర్థులు కూడా చూస్తారు",
+  shopStandard: "ప్రామాణిక",
+  shopPreview: "ముందుచూపు",
+  shopUntil: "{date} వరకు మాత్రమే",
 };

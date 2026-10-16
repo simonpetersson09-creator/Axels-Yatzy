@@ -403,4 +403,13 @@ export const uk: Partial<typeof sv> = {
   xpEarnedTotal: "Отримано XP: {n}",
   lobbyTryQuickHint: "Ніхто ще не приєднався? Спробуйте Швидку гру – ви одразу будете об'єднані з онлайн-гравцем.",
   lobbyOpenCard: "Кімната очікування відкрита · код {code}",
+  shopKind_personal: "Ваші власні",
+  shopKind_season: "Геловін 🎃",
+  shopKind_celebration: "Святкування Ятзі",
+  shopKind_frame: "Рамки для зображення профілю",
+  shopCelebrationHint: "Показується, коли ви отримуєте Ятзі – опоненти онлайн також це бачать",
+  shopFrameHint: "Показується навколо вашого зображення на дошці – опоненти також це бачать",
+  shopStandard: "Стандартний",
+  shopPreview: "Попередній перегляд",
+  shopUntil: "Лише до {date}",
 };

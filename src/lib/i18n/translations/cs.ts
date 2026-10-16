@@ -403,4 +403,13 @@ export const cs: Partial<typeof sv> = {
   xpEarnedTotal: "Získané XP: {n}",
   lobbyTryQuickHint: "Nikdo se ještě nepřipojil? Zkuste Rychlou hru – budete okamžitě spárováni s online hráčem.",
   lobbyOpenCard: "Čekárna otevřena · kód {code}",
+  shopKind_personal: "Vlastní",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Oslava Yatzy",
+  shopKind_frame: "Rámečky profilového obrázku",
+  shopCelebrationHint: "Zobrazí se, když získáte Yatzy – vaši online soupeři to také uvidí",
+  shopFrameHint: "Zobrazí se kolem vašeho obrázku na hrací desce – vaši soupeři to také uvidí",
+  shopStandard: "Standardní",
+  shopPreview: "Náhled",
+  shopUntil: "Pouze do {date}",
 };

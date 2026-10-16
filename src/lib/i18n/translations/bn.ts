@@ -418,4 +418,5 @@ export const bn: Partial<typeof sv> = {
   lobbyJoinHint: "বন্ধুর পাঠানো কোড লিখুন বা QR কোড স্ক্যান করুন।",
   lobbyScanShort: "স্ক্যান",
   lobbyFriendsLink: "আগে খেলেছেন? সরাসরি বন্ধুদের স্ক্রিন থেকে আমন্ত্রণ জানান",
+  shopEarnHintNoCap: "একটি ঐচ্ছিক বিজ্ঞাপন শেষ পর্যন্ত দেখুন: +1 XP।",
 };

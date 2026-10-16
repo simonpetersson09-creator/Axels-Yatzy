@@ -418,4 +418,5 @@ export const el: Partial<typeof sv> = {
   lobbyJoinHint: "Βάλε τον κωδικό που σου έστειλε ο φίλος σου ή σάρωσε το QR.",
   lobbyScanShort: "Σάρωση",
   lobbyFriendsLink: "Έχεις ξαναπαίξει; Στείλε πρόσκληση απευθείας από την οθόνη Φίλοι",
+  shopEarnHintNoCap: "Δες μια προαιρετική διαφήμιση μέχρι το τέλος: +1 XP.",
 };

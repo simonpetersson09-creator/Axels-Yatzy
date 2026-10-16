@@ -418,4 +418,5 @@ export const cs: Partial<typeof sv> = {
   lobbyJoinHint: "Zadej kód od kamaráda nebo naskenuj QR kód.",
   lobbyScanShort: "Skenovat",
   lobbyFriendsLink: "Už jste spolu hráli? Pozvi je přímo z obrazovky Přátelé",
+  shopEarnHintNoCap: "Zhlédni dobrovolnou reklamu až do konce: +1 XP.",
 };

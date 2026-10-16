@@ -418,4 +418,5 @@ export const vi: Partial<typeof sv> = {
   lobbyJoinHint: "Nhập mã bạn bè đã gửi hoặc quét mã QR.",
   lobbyScanShort: "Quét",
   lobbyFriendsLink: "Đã từng chơi cùng nhau? Mời ngay từ màn hình Bạn bè",
+  shopEarnHintNoCap: "Xem hết một quảng cáo tùy chọn: +1 XP.",
 };

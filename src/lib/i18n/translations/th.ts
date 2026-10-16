@@ -418,4 +418,5 @@ export const th: Partial<typeof sv> = {
   lobbyJoinHint: "กรอกรหัสที่เพื่อนส่งมา หรือสแกนคิวอาร์โค้ด",
   lobbyScanShort: "สแกน",
   lobbyFriendsLink: "เคยเล่นด้วยกันมาก่อนใช่ไหม? เชิญได้โดยตรงจากหน้าเพื่อน",
+  shopEarnHintNoCap: "เลือกดูโฆษณาจนจบ: +1 XP",
 };

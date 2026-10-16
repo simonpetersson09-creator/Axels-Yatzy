@@ -418,4 +418,5 @@ export const tr: Partial<typeof sv> = {
   lobbyJoinHint: "Arkadaşının gönderdiği kodu gir veya QR kodunu tara.",
   lobbyScanShort: "Tara",
   lobbyFriendsLink: "Daha önce oynadınız mı? Doğrudan Arkadaşlar ekranından davet edin",
+  shopEarnHintNoCap: "İsteğe bağlı bir reklamı sonuna kadar izle: +1 XP.",
 };

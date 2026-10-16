@@ -418,4 +418,5 @@ export const or: Partial<typeof sv> = {
   lobbyJoinHint: "ସାଙ୍ଗ ପଠାଇଥିବା କୋଡ୍ ଲେଖନ୍ତୁ କିମ୍ବା QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ।",
   lobbyScanShort: "ସ୍କାନ୍",
   lobbyFriendsLink: "ଆଗରୁ ଖେଳିଛନ୍ତି? ‘ବନ୍ଧୁ’ ସ୍କ୍ରିନ୍‌ରୁ ସିଧାସଳଖ ଆମନ୍ତ୍ରଣ କରନ୍ତୁ",
+  shopEarnHintNoCap: "ଏକ ଇଚ୍ଛାଧୀନ ବିଜ୍ଞାପନ ଶେଷ ପର୍ଯ୍ୟନ୍ତ ଦେଖନ୍ତୁ: +1 XP।",
 };

@@ -417,4 +417,5 @@ export const ca: Partial<typeof sv> = {
   lobbyJoinHint: "Escriu el codi que t'ha enviat el teu amic o escaneja el codi QR.",
   lobbyScanShort: "Escaneja",
   lobbyFriendsLink: "Ja has jugat abans? Convida directament des d’Amics",
+  shopEarnHintNoCap: "Mira un anunci opcional fins al final: +1 XP.",
 };

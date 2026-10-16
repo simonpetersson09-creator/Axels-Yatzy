@@ -418,4 +418,5 @@ export const kn: Partial<typeof sv> = {
   lobbyJoinHint: "ನಿಮ್ಮ ಸ್ನೇಹಿತರು ಕಳುಹಿಸಿದ ಕೋಡ್ ನಮೂದಿಸಿ ಅಥವಾ QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.",
   lobbyScanShort: "ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
   lobbyFriendsLink: "ಈ ಹಿಂದೆ ಆಡಿದ್ದೀರಾ? ಸ್ನೇಹಿತರು ಪರದೆಯಿಂದ ನೇರವಾಗಿ ಆಹ್ವಾನಿಸಿ",
+  shopEarnHintNoCap: "ಐಚ್ಛಿಕ ಜಾಹೀರಾತನ್ನು ಕೊನೆಯವರೆಗೆ ವೀಕ್ಷಿಸಿ: +1 XP.",
 };

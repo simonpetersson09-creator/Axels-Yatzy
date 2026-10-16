@@ -1,4 +1,4 @@
-// Dice shop: XP from optional ads (server caps 10/day) buys shop designs.
+// Dice shop: XP from optional ads (no daily cap, 15 s server cooldown) buys shop designs.
 // The server owns XP, prices and ownership; this only reads and asks.
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';

@@ -418,4 +418,5 @@ export const sk: Partial<typeof sv> = {
   lobbyJoinHint: "Zadaj kód od kamaráta alebo naskenuj QR kód.",
   lobbyScanShort: "Skenovať",
   lobbyFriendsLink: "Už ste spolu hrali? Pozvi ich priamo z obrazovky Priatelia",
+  shopEarnHintNoCap: "Pozri si dobrovoľnú reklamu až do konca: +1 XP.",
 };

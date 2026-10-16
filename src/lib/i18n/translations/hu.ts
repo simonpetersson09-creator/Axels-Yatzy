@@ -418,4 +418,5 @@ export const hu: Partial<typeof sv> = {
   lobbyJoinHint: "Írd be a barátodtól kapott kódot, vagy olvasd be a QR-kódot.",
   lobbyScanShort: "Beolvasás",
   lobbyFriendsLink: "Játszottatok már együtt? Hívd meg közvetlenül a Barátok képernyőről",
+  shopEarnHintNoCap: "Nézz végig egy opcionális hirdetést: +1 XP.",
 };

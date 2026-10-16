@@ -418,4 +418,5 @@ export const pa: Partial<typeof sv> = {
   lobbyJoinHint: "ਦੋਸਤ ਦਾ ਭੇਜਿਆ ਕੋਡ ਲਿਖੋ ਜਾਂ QR ਕੋਡ ਸਕੈਨ ਕਰੋ।",
   lobbyScanShort: "ਸਕੈਨ ਕਰੋ",
   lobbyFriendsLink: "ਪਹਿਲਾਂ ਖੇਡ ਚੁੱਕੇ ਹੋ? ਦੋਸਤ ਸਕ੍ਰੀਨ ਤੋਂ ਸਿੱਧਾ ਸੱਦਾ ਦਿਓ",
+  shopEarnHintNoCap: "ਇੱਕ ਵਿਕਲਪਿਕ ਇਸ਼ਤਿਹਾਰ ਅੰਤ ਤੱਕ ਦੇਖੋ: +1 XP।",
 };

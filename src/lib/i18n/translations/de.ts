@@ -413,4 +413,5 @@ export const de: Partial<typeof sv> = {
   lobbyJoinHint: "Gib den Code deines Freundes ein oder scanne den QR-Code.",
   lobbyScanShort: "Scannen",
   lobbyFriendsLink: "Schon mal gespielt? Lade direkt über „Freunde“ ein",
+  shopEarnHintNoCap: "Sieh dir freiwillig eine Werbung bis zum Ende an: +1 XP.",
 };

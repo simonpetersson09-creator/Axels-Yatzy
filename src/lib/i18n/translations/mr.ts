@@ -419,4 +419,5 @@ export const mr: Partial<typeof sv> = {
   lobbyScanShort: "स्कॅन करा",
   lobbyFriendsLink: "आधी खेळला आहात? मित्र स्क्रीनवरून थेट आमंत्रित करा",
   shopEarnHintNoCap: "ऐच्छिक जाहिरात शेवटपर्यंत पाहा: +1 XP.",
+  shopWallet: "शिल्लक: {n} XP",
 };

@@ -419,4 +419,5 @@ export const bn: Partial<typeof sv> = {
   lobbyScanShort: "স্ক্যান",
   lobbyFriendsLink: "আগে খেলেছেন? সরাসরি বন্ধুদের স্ক্রিন থেকে আমন্ত্রণ জানান",
   shopEarnHintNoCap: "একটি ঐচ্ছিক বিজ্ঞাপন শেষ পর্যন্ত দেখুন: +1 XP।",
+  shopWallet: "ব্যালেন্স: {n} XP",
 };

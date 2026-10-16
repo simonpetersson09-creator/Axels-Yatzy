@@ -419,4 +419,5 @@ export const pa: Partial<typeof sv> = {
   lobbyScanShort: "ਸਕੈਨ ਕਰੋ",
   lobbyFriendsLink: "ਪਹਿਲਾਂ ਖੇਡ ਚੁੱਕੇ ਹੋ? ਦੋਸਤ ਸਕ੍ਰੀਨ ਤੋਂ ਸਿੱਧਾ ਸੱਦਾ ਦਿਓ",
   shopEarnHintNoCap: "ਇੱਕ ਵਿਕਲਪਿਕ ਇਸ਼ਤਿਹਾਰ ਅੰਤ ਤੱਕ ਦੇਖੋ: +1 XP।",
+  shopWallet: "ਬਕਾਇਆ: {n} XP",
 };

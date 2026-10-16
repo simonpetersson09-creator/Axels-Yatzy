@@ -414,4 +414,5 @@ export const fr: Partial<typeof sv> = {
   lobbyScanShort: "Scanner",
   lobbyFriendsLink: "Déjà joué ensemble ? Invitez directement depuis l’écran Amis",
   shopEarnHintNoCap: "Regardez une publicité facultative jusqu’à la fin : +1 XP.",
+  shopWallet: "Solde : {n} XP",
 };

@@ -419,4 +419,5 @@ export const ja: Partial<typeof sv> = {
   lobbyScanShort: "読み取る",
   lobbyFriendsLink: "プレイしたことがある？「フレンド」画面から直接招待しよう",
   shopEarnHintNoCap: "任意の広告を最後まで視聴：XP +1。",
+  shopWallet: "残高: {n} XP",
 };

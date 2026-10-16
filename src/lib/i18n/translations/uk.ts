@@ -419,4 +419,5 @@ export const uk: Partial<typeof sv> = {
   lobbyScanShort: "Сканувати",
   lobbyFriendsLink: "Уже грали разом? Запрошуйте прямо з екрана «Друзі»",
   shopEarnHintNoCap: "Перегляньте необов’язкову рекламу до кінця: +1 XP.",
+  shopWallet: "Баланс: {n} XP",
 };

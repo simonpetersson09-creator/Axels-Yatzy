@@ -40,8 +40,6 @@ export function DiceShop() {
   const untilLabel = (id: string) => shop.until[id] ? new Date(shop.until[id]).toLocaleDateString(lang, { day: 'numeric', month: 'short' }) : '';
   const myCountry = getProfileCountry()?.toUpperCase() ?? null;
   const priceOf = (d: DiceDesign) => shop.prices[d.id] ?? 0;
-  const cheapestLocked = DICE_DESIGNS.filter(visible).filter((d) => !shop.owned.includes(d.id) && priceOf(d) > shop.xp)
-    .sort((a, b) => priceOf(a) - priceOf(b))[0];
   const pickedDesign = DICE_DESIGNS.find((d) => d.id === picked) ?? null;
 
   const run = async (fn: () => Promise<void>) => {
@@ -69,13 +67,10 @@ export function DiceShop() {
       <div className="flex items-center justify-between">
         <p className="text-sm font-bold text-foreground">{t('shopTitle')}</p>
         <span className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary">
-          <Star className="w-3.5 h-3.5 fill-current" aria-hidden />{t('shopXp', { n: shop.xp })}
+          <Star className="w-3.5 h-3.5 fill-current" aria-hidden />{t('shopWallet', { n: shop.xp })}
         </span>
       </div>
       <p className="mt-1 text-[11px] text-muted-foreground">{t('shopEarnHintNoCap')}</p>
-      {cheapestLocked && (
-        <p className="mt-1 text-[11px] font-semibold text-foreground">{t('shopNext', { n: priceOf(cheapestLocked) - shop.xp })}</p>
-      )}
 
       <button
         onClick={() => use(null)}

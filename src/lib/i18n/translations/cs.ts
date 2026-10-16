@@ -419,4 +419,5 @@ export const cs: Partial<typeof sv> = {
   lobbyScanShort: "Skenovat",
   lobbyFriendsLink: "Už jste spolu hráli? Pozvi je přímo z obrazovky Přátelé",
   shopEarnHintNoCap: "Zhlédni dobrovolnou reklamu až do konce: +1 XP.",
+  shopWallet: "Zůstatek: {n} XP",
 };

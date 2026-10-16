@@ -8,7 +8,8 @@ import { getSessionId } from '@/lib/session';
 /**
  * Anywhere in the app except the waiting room itself: tells the host once when
  * a friend joins their open waiting room (phone push covers the app being closed).
- * Polls every 8 s while a waiting room is open, otherwise only once a minute.
+ * Checks when the app opens or returns to the foreground; only while a waiting
+ * room is actually open does it keep polling every 8 s. No polling otherwise.
  */
 export function LobbyJoinNotice() {
   const { t } = useTranslation();
@@ -47,14 +48,23 @@ export function LobbyJoinNotice() {
       counts.current = next;
     };
     const loop = async () => {
+      timer = null;
       await check().catch(() => {});
       if (!alive) return;
-      // Fast polling only while the player actually has an open waiting room.
+      // Keep polling only while the player actually has an open waiting room.
       const hasLobby = !!counts.current && Object.keys(counts.current).length > 0;
-      timer = setTimeout(() => void loop(), hasLobby ? 8000 : 60000);
+      if (hasLobby) timer = setTimeout(() => void loop(), 8000);
+    };
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && !timer) void loop();
     };
     void loop();
-    return () => { alive = false; if (timer) clearTimeout(timer); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      alive = false;
+      if (timer) clearTimeout(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [navigate, t]);
   return null;
 }

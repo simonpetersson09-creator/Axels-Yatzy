@@ -419,5 +419,6 @@ export const nl: Partial<typeof sv> = {
   lobbyScanShort: "Scan",
   lobbyFriendsLink: "Al eerder gespeeld? Nodig ze direct uit via Vrienden",
   shopEarnHintNoCap: "Bekijk een optionele advertentie tot het einde: +1 XP.",
+  shopKind_owned: "Je gekochte dobbelstenen",
   shopWallet: "Saldo: {n} XP",
 };

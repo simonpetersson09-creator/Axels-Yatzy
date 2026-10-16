@@ -419,5 +419,6 @@ export const el: Partial<typeof sv> = {
   lobbyScanShort: "Σάρωση",
   lobbyFriendsLink: "Έχεις ξαναπαίξει; Στείλε πρόσκληση απευθείας από την οθόνη Φίλοι",
   shopEarnHintNoCap: "Δες μια προαιρετική διαφήμιση μέχρι το τέλος: +1 XP.",
+  shopKind_owned: "Τα ζάρια που αγοράσατε",
   shopWallet: "Υπόλοιπο: {n} XP",
 };

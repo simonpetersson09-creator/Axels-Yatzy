@@ -419,5 +419,6 @@ export const ro: Partial<typeof sv> = {
   lobbyScanShort: "Scanează",
   lobbyFriendsLink: "Ați mai jucat împreună? Invită direct din Prieteni",
   shopEarnHintNoCap: "Vizionează o reclamă opțională până la capăt: +1 XP.",
+  shopKind_owned: "Zarurile cumpărate",
   shopWallet: "Sold: {n} XP",
 };

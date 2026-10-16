@@ -419,5 +419,6 @@ export const kn: Partial<typeof sv> = {
   lobbyScanShort: "ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
   lobbyFriendsLink: "ಈ ಹಿಂದೆ ಆಡಿದ್ದೀರಾ? ಸ್ನೇಹಿತರು ಪರದೆಯಿಂದ ನೇರವಾಗಿ ಆಹ್ವಾನಿಸಿ",
   shopEarnHintNoCap: "ಐಚ್ಛಿಕ ಜಾಹೀರಾತನ್ನು ಕೊನೆಯವರೆಗೆ ವೀಕ್ಷಿಸಿ: +1 XP.",
+  shopKind_owned: "ನೀವು ಖರೀದಿಸಿದ ದಾಳಗಳು",
   shopWallet: "ಬಾಕಿ: {n} XP",
 };

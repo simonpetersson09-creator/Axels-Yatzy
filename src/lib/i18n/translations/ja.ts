@@ -420,5 +420,6 @@ export const ja: Partial<typeof sv> = {
   lobbyFriendsLink: "プレイしたことがある？「フレンド」画面から直接招待しよう",
   shopEarnHintNoCap: "任意の広告を最後まで視聴：XP +1。",
   shopKind_owned: "購入済みのダイス",
+  lobbyFriendJoined: "{name}がゲームに参加しました 🎲",
   shopWallet: "残高: {n} XP",
 };

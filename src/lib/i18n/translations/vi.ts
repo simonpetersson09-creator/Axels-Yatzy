@@ -420,5 +420,6 @@ export const vi: Partial<typeof sv> = {
   lobbyFriendsLink: "Đã từng chơi cùng nhau? Mời ngay từ màn hình Bạn bè",
   shopEarnHintNoCap: "Xem hết một quảng cáo tùy chọn: +1 XP.",
   shopKind_owned: "Xúc xắc đã mua",
+  lobbyFriendJoined: "{name} đã tham gia trò chơi của bạn 🎲",
   shopWallet: "Số dư: {n} XP",
 };

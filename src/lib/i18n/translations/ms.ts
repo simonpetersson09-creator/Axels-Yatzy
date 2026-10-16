@@ -420,5 +420,6 @@ export const ms: Partial<typeof sv> = {
   lobbyFriendsLink: "Pernah bermain bersama? Jemput terus dari skrin Rakan",
   shopEarnHintNoCap: "Tonton iklan pilihan hingga tamat: +1 XP.",
   shopKind_owned: "Dadu yang anda beli",
+  lobbyFriendJoined: "{name} telah menyertai permainan anda 🎲",
   shopWallet: "Baki: {n} XP",
 };

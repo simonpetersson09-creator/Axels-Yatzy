@@ -420,5 +420,6 @@ export const es: Partial<typeof sv> = {
   lobbyFriendsLink: "¿Ya has jugado antes? Invita directamente desde Amigos",
   shopEarnHintNoCap: "Mira un anuncio opcional hasta el final: +1 XP.",
   shopKind_owned: "Tus dados comprados",
+  lobbyFriendJoined: "{name} se ha unido a tu partida 🎲",
   shopWallet: "Saldo: {n} XP",
 };

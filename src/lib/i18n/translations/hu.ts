@@ -420,5 +420,6 @@ export const hu: Partial<typeof sv> = {
   lobbyFriendsLink: "Játszottatok már együtt? Hívd meg közvetlenül a Barátok képernyőről",
   shopEarnHintNoCap: "Nézz végig egy opcionális hirdetést: +1 XP.",
   shopKind_owned: "Megvásárolt kockáid",
+  lobbyFriendJoined: "{name} csatlakozott a játékodhoz 🎲",
   shopWallet: "Egyenleg: {n} XP",
 };

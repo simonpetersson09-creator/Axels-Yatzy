@@ -429,6 +429,7 @@ export const sv = {
   lobbyFriendsLink: "Spelat förut? Bjud in direkt från Vänner",
   shopEarnHintNoCap: "Titta klart på en frivillig annons: +1 XP.",
   shopKind_owned: "Dina köpta tärningar",
+  lobbyFriendJoined: "{name} gick med i ditt spel 🎲",
   shopWallet: "Kassa: {n} XP",
 };
 

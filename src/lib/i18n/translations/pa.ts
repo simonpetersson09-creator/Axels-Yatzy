@@ -420,5 +420,6 @@ export const pa: Partial<typeof sv> = {
   lobbyFriendsLink: "ਪਹਿਲਾਂ ਖੇਡ ਚੁੱਕੇ ਹੋ? ਦੋਸਤ ਸਕ੍ਰੀਨ ਤੋਂ ਸਿੱਧਾ ਸੱਦਾ ਦਿਓ",
   shopEarnHintNoCap: "ਇੱਕ ਵਿਕਲਪਿਕ ਇਸ਼ਤਿਹਾਰ ਅੰਤ ਤੱਕ ਦੇਖੋ: +1 XP।",
   shopKind_owned: "ਤੁਹਾਡੇ ਖਰੀਦੇ ਹੋਏ ਪਾਸੇ",
+  lobbyFriendJoined: "{name} ਤੁਹਾਡੀ ਗੇਮ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਗਿਆ ਹੈ 🎲",
   shopWallet: "ਬਕਾਇਆ: {n} XP",
 };

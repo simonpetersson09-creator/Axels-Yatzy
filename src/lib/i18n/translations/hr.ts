@@ -420,5 +420,6 @@ export const hr: Partial<typeof sv> = {
   lobbyFriendsLink: "Već ste igrali? Pozovite izravno sa zaslona Prijatelji",
   shopEarnHintNoCap: "Pogledaj neobavezni oglas do kraja: +1 XP.",
   shopKind_owned: "Vaše kupljene kockice",
+  lobbyFriendJoined: "{name} se pridružio tvojoj igri 🎲",
   shopWallet: "Stanje: {n} XP",
 };

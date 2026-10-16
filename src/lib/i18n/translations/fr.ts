@@ -415,5 +415,6 @@ export const fr: Partial<typeof sv> = {
   lobbyFriendsLink: "Déjà joué ensemble ? Invitez directement depuis l’écran Amis",
   shopEarnHintNoCap: "Regardez une publicité facultative jusqu’à la fin : +1 XP.",
   shopKind_owned: "Vos dés achetés",
+  lobbyFriendJoined: "{name} a rejoint votre partie 🎲",
   shopWallet: "Solde : {n} XP",
 };

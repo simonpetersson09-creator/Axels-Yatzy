@@ -10,8 +10,8 @@ export default function NotificationNavigator() {
   const navigate = useNavigate();
   useEffect(() => {
     const handler = (e: Event) => {
-      const detail = (e as CustomEvent<{ path: string }>).detail;
-      if (detail?.path) navigate(detail.path);
+      const detail = (e as CustomEvent<{ path: string; state?: unknown }>).detail;
+      if (detail?.path) navigate(detail.path, detail.state ? { state: detail.state } : undefined);
     };
     window.addEventListener("app:navigate", handler);
     return () => window.removeEventListener("app:navigate", handler);

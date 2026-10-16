@@ -418,4 +418,5 @@ export const uk: Partial<typeof sv> = {
   lobbyJoinHint: "Введи код від друга або відскануй QR-код.",
   lobbyScanShort: "Сканувати",
   lobbyFriendsLink: "Уже грали разом? Запрошуйте прямо з екрана «Друзі»",
+  shopEarnHintNoCap: "Перегляньте необов’язкову рекламу до кінця: +1 XP.",
 };

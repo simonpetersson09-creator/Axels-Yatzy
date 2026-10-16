@@ -418,4 +418,5 @@ export const mr: Partial<typeof sv> = {
   lobbyJoinHint: "मित्राने पाठवलेला कोड टाका किंवा QR कोड स्कॅन करा.",
   lobbyScanShort: "स्कॅन करा",
   lobbyFriendsLink: "आधी खेळला आहात? मित्र स्क्रीनवरून थेट आमंत्रित करा",
+  shopEarnHintNoCap: "ऐच्छिक जाहिरात शेवटपर्यंत पाहा: +1 XP.",
 };

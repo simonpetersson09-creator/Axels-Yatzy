@@ -418,4 +418,5 @@ export const ms: Partial<typeof sv> = {
   lobbyJoinHint: "Masukkan kod daripada kawan anda, atau imbas kod QR.",
   lobbyScanShort: "Imbas",
   lobbyFriendsLink: "Pernah bermain bersama? Jemput terus dari skrin Rakan",
+  shopEarnHintNoCap: "Tonton iklan pilihan hingga tamat: +1 XP.",
 };

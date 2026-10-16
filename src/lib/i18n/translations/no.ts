@@ -418,4 +418,5 @@ export const no: Partial<typeof sv> = {
   lobbyJoinHint: "Skriv inn koden fra vennen din, eller skann QR-koden.",
   lobbyScanShort: "Skann",
   lobbyFriendsLink: "Spilt før? Inviter direkte fra Venner",
+  shopEarnHintNoCap: "Se en valgfri annonse til slutten: +1 XP.",
 };

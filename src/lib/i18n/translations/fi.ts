@@ -418,4 +418,5 @@ export const fi: Partial<typeof sv> = {
   lobbyJoinHint: "Syötä kaverisi lähettämä koodi tai skannaa QR-koodi.",
   lobbyScanShort: "Skannaa",
   lobbyFriendsLink: "Oletteko pelanneet aiemmin? Kutsu suoraan Kaverit-näkymästä",
+  shopEarnHintNoCap: "Katso vapaaehtoinen mainos loppuun: +1 XP.",
 };

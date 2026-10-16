@@ -418,4 +418,5 @@ export const hr: Partial<typeof sv> = {
   lobbyJoinHint: "Upiši kod koji ti je prijatelj poslao ili skeniraj QR kod.",
   lobbyScanShort: "Skeniraj",
   lobbyFriendsLink: "Već ste igrali? Pozovite izravno sa zaslona Prijatelji",
+  shopEarnHintNoCap: "Pogledaj neobavezni oglas do kraja: +1 XP.",
 };

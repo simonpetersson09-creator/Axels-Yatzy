@@ -418,4 +418,5 @@ export const nl: Partial<typeof sv> = {
   lobbyJoinHint: "Voer de code van je vriend in of scan de QR-code.",
   lobbyScanShort: "Scan",
   lobbyFriendsLink: "Al eerder gespeeld? Nodig ze direct uit via Vrienden",
+  shopEarnHintNoCap: "Bekijk een optionele advertentie tot het einde: +1 XP.",
 };

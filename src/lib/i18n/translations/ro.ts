@@ -418,4 +418,5 @@ export const ro: Partial<typeof sv> = {
   lobbyJoinHint: "Introdu codul trimis de prietenul tău sau scanează codul QR.",
   lobbyScanShort: "Scanează",
   lobbyFriendsLink: "Ați mai jucat împreună? Invită direct din Prieteni",
+  shopEarnHintNoCap: "Vizionează o reclamă opțională până la capăt: +1 XP.",
 };

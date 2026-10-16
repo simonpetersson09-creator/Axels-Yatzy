@@ -39,7 +39,6 @@ export function DiceShop() {
   const visible = (d: DiceDesign) => !(d.kind === 'season' && (!shop.until[d.id] || expired(d.id)) && !shop.owned.includes(d.id));
   const untilLabel = (id: string) => shop.until[id] ? new Date(shop.until[id]).toLocaleDateString(lang, { day: 'numeric', month: 'short' }) : '';
   const myCountry = getProfileCountry()?.toUpperCase() ?? null;
-  const left = Math.max(0, shop.dailyCap - shop.earnedToday);
   const priceOf = (d: DiceDesign) => shop.prices[d.id] ?? 0;
   const cheapestLocked = DICE_DESIGNS.filter(visible).filter((d) => !shop.owned.includes(d.id) && priceOf(d) > shop.xp)
     .sort((a, b) => priceOf(a) - priceOf(b))[0];

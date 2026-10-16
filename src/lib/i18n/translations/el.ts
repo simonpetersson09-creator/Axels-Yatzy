@@ -403,4 +403,13 @@ export const el: Partial<typeof sv> = {
   xpEarnedTotal: "XP που κερδήθηκαν: {n}",
   lobbyTryQuickHint: "Κανείς δεν συμμετείχε ακόμα; Δοκιμάστε Γρήγορο παιχνίδι – θα αντιστοιχιστείτε αμέσως με έναν online παίκτη.",
   lobbyOpenCard: "Αίθουσα αναμονής ανοιχτή · κωδικός {code}",
+  shopKind_personal: "Δικά σας",
+  shopKind_season: "Απόκριες 🎃",
+  shopKind_celebration: "Γιάτσι γιορτή",
+  shopKind_frame: "Πλαίσια εικόνας προφίλ",
+  shopCelebrationHint: "Εμφανίζεται όταν κάνετε Γιάτσι – το βλέπουν και οι αντίπαλοι online",
+  shopFrameHint: "Εμφανίζεται γύρω από την εικόνα σας στον πίνακα – το βλέπουν και οι αντίπαλοι",
+  shopStandard: "Βασικό",
+  shopPreview: "Προεπισκόπηση",
+  shopUntil: "Μόνο έως {date}",
 };

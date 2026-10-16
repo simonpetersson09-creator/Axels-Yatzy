@@ -403,4 +403,13 @@ export const hu: Partial<typeof sv> = {
   xpEarnedTotal: "Szerzett XP: {n}",
   lobbyTryQuickHint: "Még senki sem csatlakozott? Próbáld ki a Gyors meccset – azonnal párosítunk egy online játékossal.",
   lobbyOpenCard: "Váróterem nyitva · kód {code}",
+  shopKind_personal: "Saját",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Yatzy ünnepség",
+  shopKind_frame: "Profilkép keretek",
+  shopCelebrationHint: "Akkor jelenik meg, ha Yatzy-t érsz el – az online ellenfelek is látják",
+  shopFrameHint: "A képed körül jelenik meg a táblán – az ellenfelek is látják",
+  shopStandard: "Standard",
+  shopPreview: "Előnézet",
+  shopUntil: "Csak {date} dátumig",
 };

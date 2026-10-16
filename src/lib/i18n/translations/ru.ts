@@ -402,4 +402,13 @@ export const ru: Partial<typeof sv> = {
   xpEarnedTotal: "Заработано XP: {n}",
   lobbyTryQuickHint: "Ещё никто не присоединился? Попробуйте Быстрый матч — вас сразу же подберут к онлайн-игроку.",
   lobbyOpenCard: "Комната ожидания открыта · код {code}",
+  shopKind_personal: "Ваш собственный",
+  shopKind_season: "Хэллоуин 🎃",
+  shopKind_celebration: "Празднование Ятзи",
+  shopKind_frame: "Рамки для фото профиля",
+  shopCelebrationHint: "Показывается, когда вы получаете Ятзи – соперники онлайн тоже это видят",
+  shopFrameHint: "Показывается вокруг вашей фотографии на доске – соперники тоже это видят",
+  shopStandard: "Стандартный",
+  shopPreview: "Предпросмотр",
+  shopUntil: "Только до {date}",
 };

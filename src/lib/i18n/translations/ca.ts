@@ -402,4 +402,13 @@ export const ca: Partial<typeof sv> = {
   xpEarnedTotal: "XP guanyats: {n}",
   lobbyTryQuickHint: "Encara no s'ha unit ningú? Prova la partida ràpida: et connectaràs amb un jugador en línia a l'instant.",
   lobbyOpenCard: "Sala d'espera oberta · codi {code}",
+  shopKind_personal: "El teu",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Celebració de Yatzy",
+  shopKind_frame: "Marcs de la foto de perfil",
+  shopCelebrationHint: "Es mostra quan aconsegueixes un Yatzy – els oponents en línia també el veuen",
+  shopFrameHint: "Es mostra al voltant de la teva imatge al tauler – els oponents també la veuen",
+  shopStandard: "Estàndard",
+  shopPreview: "Previsualització",
+  shopUntil: "Només fins al {date}",
 };

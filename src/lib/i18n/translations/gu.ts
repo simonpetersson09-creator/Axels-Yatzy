@@ -403,4 +403,13 @@ export const gu: Partial<typeof sv> = {
   xpEarnedTotal: "કમાવેલ XP: {n}",
   lobbyTryQuickHint: "કોઈ જોડાયું નથી? ક્વિક મેચ અજમાવો – તમને તરત જ ઑનલાઇન પ્લેયર સાથે મેચ કરવામાં આવશે.",
   lobbyOpenCard: "પ્રતીક્ષા ખંડ ખુલ્લો · કોડ {code}",
+  shopKind_personal: "તમારા પોતાના",
+  shopKind_season: "હેલોવીન 🎃",
+  shopKind_celebration: "યાત્ઝી ઉજવણી",
+  shopKind_frame: "પ્રોફાઇલ પિક્ચર ફ્રેમ્સ",
+  shopCelebrationHint: "જ્યારે તમને યાત્ઝી મળે ત્યારે બતાવવામાં આવે છે – ઑનલાઇન વિરોધીઓ પણ તે જુએ છે",
+  shopFrameHint: "બોર્ડ પર તમારા ચિત્રની આસપાસ બતાવવામાં આવે છે – વિરોધીઓ પણ તે જુએ છે",
+  shopStandard: "માનક",
+  shopPreview: "પૂર્વદર્શન",
+  shopUntil: "{date} સુધી જ",
 };

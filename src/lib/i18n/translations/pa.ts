@@ -403,4 +403,13 @@ export const pa: Partial<typeof sv> = {
   xpEarnedTotal: "ਕਮਾਇਆ XP: {n}",
   lobbyTryQuickHint: "ਕਿਸੇ ਨੇ ਅਜੇ ਜੁਆਇਨ ਨਹੀਂ ਕੀਤਾ? ਤੁਰੰਤ ਮੈਚ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ – ਤੁਹਾਨੂੰ ਤੁਰੰਤ ਇੱਕ ਔਨਲਾਈਨ ਖਿਡਾਰੀ ਨਾਲ ਮੈਚ ਕੀਤਾ ਜਾਵੇਗਾ।",
   lobbyOpenCard: "ਉਡੀਕ ਕਮਰਾ ਖੁੱਲ੍ਹਾ · ਕੋਡ {code}",
+  shopKind_personal: "Your own",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Yatzy celebration",
+  shopKind_frame: "Profile picture frames",
+  shopCelebrationHint: "Shown when you get Yatzy – opponents online see it too",
+  shopFrameHint: "Shown around your picture on the board – opponents see it too",
+  shopStandard: "Standard",
+  shopPreview: "Preview",
+  shopUntil: "Only until {date}",
 };

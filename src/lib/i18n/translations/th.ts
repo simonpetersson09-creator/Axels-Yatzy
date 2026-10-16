@@ -403,4 +403,13 @@ export const th: Partial<typeof sv> = {
   xpEarnedTotal: "XP ที่ได้รับ: {n}",
   lobbyTryQuickHint: "ยังไม่มีใครเข้าร่วม? ลองจับคู่ด่วนสิ – คุณจะถูกจับคู่กับผู้เล่นออนไลน์ทันที",
   lobbyOpenCard: "ห้องรอเปิดอยู่ · รหัส {code}",
+  shopKind_personal: "ของคุณเอง",
+  shopKind_season: "ฮาโลวีน 🎃",
+  shopKind_celebration: "ฉลองยัตซี่",
+  shopKind_frame: "กรอบรูปโปรไฟล์",
+  shopCelebrationHint: "จะแสดงเมื่อคุณได้แต้ม Yatzy – คู่ต่อสู้ออนไลน์ของคุณก็จะเห็นด้วย",
+  shopFrameHint: "จะแสดงรอบรูปภาพของคุณบนกระดาน – คู่ต่อสู้ของคุณก็จะเห็นด้วย",
+  shopStandard: "มาตรฐาน",
+  shopPreview: "ดูตัวอย่าง",
+  shopUntil: "มีถึงแค่ {date} นี้เท่านั้น",
 };

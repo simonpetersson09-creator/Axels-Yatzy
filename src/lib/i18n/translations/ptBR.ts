@@ -403,4 +403,13 @@ export const ptBR: Partial<typeof sv> = {
   xpEarnedTotal: "XP ganhos: {n}",
   lobbyTryQuickHint: "Ninguém entrou ainda? Experimente a partida rápida – você será emparelhado com um jogador online imediatamente.",
   lobbyOpenCard: "Sala de espera aberta · código {code}",
+  shopKind_personal: "Seu próprio",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Celebração de Yatzy",
+  shopKind_frame: "Molduras de perfil",
+  shopCelebrationHint: "Exibido quando você consegue um Yatzy – seus oponentes online também verão",
+  shopFrameHint: "Exibido ao redor da sua foto no tabuleiro – seus oponentes também verão",
+  shopStandard: "Padrão",
+  shopPreview: "Pré-visualizar",
+  shopUntil: "Somente até {date}",
 };

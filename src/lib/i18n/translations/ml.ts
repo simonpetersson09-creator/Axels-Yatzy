@@ -403,4 +403,13 @@ export const ml: Partial<typeof sv> = {
   xpEarnedTotal: "നേടിയ XP: {n}",
   lobbyTryQuickHint: "ആരും ഇതുവരെ ചേർന്നില്ലേ? ക്വിക്ക് മാച്ച് ശ്രമിക്കുക – നിങ്ങൾക്ക് ഉടൻ തന്നെ ഒരു ഓൺലൈൻ കളിക്കാരനെ ലഭിക്കും.",
   lobbyOpenCard: "കാത്തിരിപ്പ് മുറി തുറന്നിരിക്കുന്നു · കോഡ് {code}",
+  shopKind_personal: "നിങ്ങളുടേത്",
+  shopKind_season: "ഹാലോവീൻ 🎃",
+  shopKind_celebration: "യാറ്റ്സി ആഘോഷം",
+  shopKind_frame: "പ്രൊഫൈൽ ചിത്ര ഫ്രെയിമുകൾ",
+  shopCelebrationHint: "നിങ്ങൾക്ക് യാറ്റ്സി ലഭിക്കുമ്പോൾ ഇത് ദൃശ്യമാകും – ഓൺലൈനിലുള്ള എതിരാളികളും ഇത് കാണും",
+  shopFrameHint: "ബോർഡിൽ നിങ്ങളുടെ ചിത്രത്തിന് ചുറ്റും ഇത് ദൃശ്യമാകും – എതിരാളികളും ഇത് കാണും",
+  shopStandard: "സാധാരണ",
+  shopPreview: "പ്രിവ്യൂ",
+  shopUntil: "{date} വരെ മാത്രം",
 };

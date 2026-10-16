@@ -403,4 +403,13 @@ export const hr: Partial<typeof sv> = {
   xpEarnedTotal: "Zasluženi XP: {n}",
   lobbyTryQuickHint: "Nitko se još nije pridružio? Isprobajte Brzu utakmicu – odmah ćete biti spojeni s online igračem.",
   lobbyOpenCard: "Čekaonica otvorena · kod {code}",
+  shopKind_personal: "Your own",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Yatzy celebration",
+  shopKind_frame: "Profile picture frames",
+  shopCelebrationHint: "Shown when you get Yatzy – opponents online see it too",
+  shopFrameHint: "Shown around your picture on the board – opponents see it too",
+  shopStandard: "Standard",
+  shopPreview: "Preview",
+  shopUntil: "Only until {date}",
 };

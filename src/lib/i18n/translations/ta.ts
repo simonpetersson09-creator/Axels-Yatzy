@@ -403,4 +403,13 @@ export const ta: Partial<typeof sv> = {
   xpEarnedTotal: "பெறப்பட்ட XP: {n}",
   lobbyTryQuickHint: "இதுவரை யாரும் சேரவில்லையா? விரைவுப் போட்டியை முயற்சிக்கவும் – நீங்கள் உடனடியாக ஒரு ஆன்லைன் வீரருடன் இணைக்கப்படுவீர்கள்.",
   lobbyOpenCard: "காத்திருப்பு அறை திறந்துள்ளது · குறியீடு {code}",
+  shopKind_personal: "உங்கள் சொந்த",
+  shopKind_season: "ஹாலோவீன் 🎃",
+  shopKind_celebration: "யாட்ஸி கொண்டாட்டம்",
+  shopKind_frame: "சுயவிவரப் படச் சட்டங்கள்",
+  shopCelebrationHint: "நீங்கள் யாட்ஸி பெறும் போது காட்டப்படும் – ஆன்லைன் எதிராளிகளும் இதைப் பார்ப்பார்கள்",
+  shopFrameHint: "போர்டில் உங்கள் படத்தைச் சுற்றி காட்டப்படும் – எதிராளிகள் இதைப் பார்ப்பார்கள்",
+  shopStandard: "நிலையானது",
+  shopPreview: "முன்னோட்டம்",
+  shopUntil: "{date} வரை மட்டுமே",
 };

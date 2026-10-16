@@ -398,4 +398,13 @@ export const de: Partial<typeof sv> = {
   xpEarnedTotal: "Verdiente XP: {n}",
   lobbyTryQuickHint: "Niemand ist beigetreten? Probiere Schnellspiel – du wirst sofort mit einem Online-Spieler gematcht.",
   lobbyOpenCard: "Warteraum offen · Code {code}",
+  shopKind_personal: "Dein eigenes",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Yatzy-Feier",
+  shopKind_frame: "Profilbildrahmen",
+  shopCelebrationHint: "Wird angezeigt, wenn du einen Yatzy erzielst – deine Gegner sehen es auch",
+  shopFrameHint: "Wird um dein Bild auf dem Spielbrett angezeigt – Gegner sehen es auch",
+  shopStandard: "Standard",
+  shopPreview: "Vorschau",
+  shopUntil: "Nur bis {date}",
 };

@@ -403,4 +403,13 @@ export const ko: Partial<typeof sv> = {
   xpEarnedTotal: "획득한 XP: {n}",
   lobbyTryQuickHint: "아무도 참여하지 않았나요? 빠른 매치를 시도해 보세요 – 온라인 플레이어와 즉시 연결됩니다.",
   lobbyOpenCard: "대기실 열림 · 코드 {code}",
+  shopKind_personal: "나만의",
+  shopKind_season: "할로윈 🎃",
+  shopKind_celebration: "야찌 축하",
+  shopKind_frame: "프로필 사진 프레임",
+  shopCelebrationHint: "야찌를 얻으면 표시됩니다 – 온라인 상대방도 볼 수 있습니다",
+  shopFrameHint: "보드 위 사진 주변에 표시됩니다 – 상대방도 볼 수 있습니다",
+  shopStandard: "표준",
+  shopPreview: "미리보기",
+  shopUntil: "{date}까지만",
 };

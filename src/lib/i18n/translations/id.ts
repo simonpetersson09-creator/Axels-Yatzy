@@ -403,4 +403,13 @@ export const id: Partial<typeof sv> = {
   xpEarnedTotal: "XP didapat: {n}",
   lobbyTryQuickHint: "Belum ada yang bergabung? Coba Pencocokan Cepat – kamu akan langsung dicocokkan dengan pemain online.",
   lobbyOpenCard: "Ruang tunggu terbuka · kode {code}",
+  shopKind_personal: "Pribadi Anda",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Perayaan Yatzy",
+  shopKind_frame: "Bingkai gambar profil",
+  shopCelebrationHint: "Ditampilkan saat Anda mendapatkan Yatzy – lawan online juga akan melihatnya",
+  shopFrameHint: "Ditampilkan di sekitar gambar Anda di papan – lawan juga akan melihatnya",
+  shopStandard: "Standar",
+  shopPreview: "Pratinjau",
+  shopUntil: "Hanya sampai {date}",
 };

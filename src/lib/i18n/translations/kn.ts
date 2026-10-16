@@ -403,4 +403,13 @@ export const kn: Partial<typeof sv> = {
   xpEarnedTotal: "ಗಳಿಸಿದ XP: {n}",
   lobbyTryQuickHint: "ಇನ್ನೂ ಯಾರೂ ಸೇರಿಲ್ಲವೇ? ತ್ವರಿತ ಪಂದ್ಯವನ್ನು ಪ್ರಯತ್ನಿಸಿ – ನೀವು ತಕ್ಷಣ ಆನ್‌ಲೈನ್ ಆಟಗಾರನೊಂದಿಗೆ ಹೊಂದಾಣಿಕೆ ಆಗುವಿರಿ.",
   lobbyOpenCard: "ಕಾಯುವ ಕೊಠಡಿ ತೆರೆದಿದೆ · ಕೋಡ್ {code}",
+  shopKind_personal: "ನಿಮ್ಮ ಸ್ವಂತ",
+  shopKind_season: "ಹ್ಯಾಲೋವೀನ್ 🎃",
+  shopKind_celebration: "ಯಾಟ್ಜಿ ಸಂಭ್ರಮ",
+  shopKind_frame: "ಪ್ರೊಫೈಲ್ ಚಿತ್ರ ಚೌಕಟ್ಟುಗಳು",
+  shopCelebrationHint: "ನೀವು ಯಾಟ್ಜಿ ಪಡೆದಾಗ ತೋರಿಸಲಾಗುತ್ತದೆ – ಆನ್‌ಲೈನ್ ವಿರೋಧಿಗಳು ಸಹ ಇದನ್ನು ನೋಡುತ್ತಾರೆ",
+  shopFrameHint: "ನಿಮ್ಮ ಚಿತ್ರದ ಸುತ್ತ ಮಂಡಳಿಯಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ – ವಿರೋಧಿಗಳು ಸಹ ಇದನ್ನು ನೋಡುತ್ತಾರೆ",
+  shopStandard: "ಪ್ರಮಾಣಿತ",
+  shopPreview: "ಮುನ್ನೋಟ",
+  shopUntil: "{date} ರವರೆಗೆ ಮಾತ್ರ",
 };

@@ -403,4 +403,13 @@ export const fi: Partial<typeof sv> = {
   xpEarnedTotal: "Ansaittu XP: {n}",
   lobbyTryQuickHint: "Eikö kukaan ole vielä liittynyt? Kokeile pikaottelua – sinut yhdistetään heti online-pelaajaan.",
   lobbyOpenCard: "Odotushuone auki · koodi {code}",
+  shopKind_personal: "Omasi",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Yatzy-juhla",
+  shopKind_frame: "Profiilikuvan kehykset",
+  shopCelebrationHint: "Näytetään, kun saat Yatzyn – myös vastustajat näkevät sen verkossa",
+  shopFrameHint: "Näytetään kuvan ympärillä laudalla – myös vastustajat näkevät sen",
+  shopStandard: "Vakio",
+  shopPreview: "Esikatselu",
+  shopUntil: "Vain {date} asti",
 };

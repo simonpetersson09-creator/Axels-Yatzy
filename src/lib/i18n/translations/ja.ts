@@ -403,4 +403,13 @@ export const ja: Partial<typeof sv> = {
   xpEarnedTotal: "獲得XP: {n}",
   lobbyTryQuickHint: "誰も参加していませんか？クイックマッチを試してみてください — すぐにオンラインプレイヤーとマッチングされます。",
   lobbyOpenCard: "待合室オープン · コード {code}",
+  shopKind_personal: "自分の",
+  shopKind_season: "ハロウィン 🎃",
+  shopKind_celebration: "ヤッツィーの祝祭",
+  shopKind_frame: "プロフィール写真フレーム",
+  shopCelebrationHint: "ヤッツィー獲得時に表示されます — オンラインの対戦相手にも見えます",
+  shopFrameHint: "ボード上のあなたの写真の周りに表示されます — 対戦相手にも見えます",
+  shopStandard: "標準",
+  shopPreview: "プレビュー",
+  shopUntil: "{date}まで",
 };

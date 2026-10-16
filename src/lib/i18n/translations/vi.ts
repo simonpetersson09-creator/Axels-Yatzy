@@ -403,4 +403,13 @@ export const vi: Partial<typeof sv> = {
   xpEarnedTotal: "XP đã kiếm: {n}",
   lobbyTryQuickHint: "Chưa ai tham gia? Thử đấu Nhanh – bạn sẽ được ghép cặp ngay với người chơi trực tuyến.",
   lobbyOpenCard: "Phòng chờ đang mở · mã {code}",
+  shopKind_personal: "Của bạn",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Lễ kỷ niệm Yatzy",
+  shopKind_frame: "Khung ảnh đại diện",
+  shopCelebrationHint: "Hiển thị khi bạn đạt Yatzy – đối thủ trực tuyến cũng nhìn thấy",
+  shopFrameHint: "Hiển thị quanh ảnh của bạn trên bảng – đối thủ cũng nhìn thấy",
+  shopStandard: "Tiêu chuẩn",
+  shopPreview: "Xem trước",
+  shopUntil: "Chỉ đến {date}",
 };

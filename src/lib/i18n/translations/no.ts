@@ -403,4 +403,13 @@ export const no: Partial<typeof sv> = {
   xpEarnedTotal: "XP tjent: {n}",
   lobbyTryQuickHint: "Ingen har blitt med ennå? Prøv Hurtigspill – du blir matchet med en nettspiller med en gang.",
   lobbyOpenCard: "Venterom åpent · kode {code}",
+  shopKind_personal: "Din egen",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Yatzy-feiring",
+  shopKind_frame: "Profilbilderammer",
+  shopCelebrationHint: "Vises når du får Yatzy – motstandere på nett ser den også",
+  shopFrameHint: "Vises rundt bildet ditt på brettet – motstandere ser den også",
+  shopStandard: "Standard",
+  shopPreview: "Forhåndsvisning",
+  shopUntil: "Kun til {date}",
 };

@@ -403,4 +403,13 @@ export const ro: Partial<typeof sv> = {
   xpEarnedTotal: "XP câștigate: {n}",
   lobbyTryQuickHint: "Nimeni nu s-a alăturat încă? Încearcă \"Meci rapid\" – vei fi conectat imediat cu un jucător online.",
   lobbyOpenCard: "Sală de așteptare deschisă · cod {code}",
+  shopKind_personal: "Al tău",
+  shopKind_season: "Halloween 🎃",
+  shopKind_celebration: "Sărbătoare Yatzy",
+  shopKind_frame: "Rame pentru poză de profil",
+  shopCelebrationHint: "Afișat când obții Yatzy – adversarii online îl văd și ei",
+  shopFrameHint: "Afișat în jurul pozei tale pe tablă – adversarii îl văd și ei",
+  shopStandard: "Standard",
+  shopPreview: "Previzualizare",
+  shopUntil: "Doar până la {date}",
 };

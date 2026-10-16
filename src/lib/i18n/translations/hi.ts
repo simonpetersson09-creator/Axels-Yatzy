@@ -403,4 +403,13 @@ export const hi: Partial<typeof sv> = {
   xpEarnedTotal: "XP अर्जित: {n}",
   lobbyTryQuickHint: "कोई अभी तक शामिल नहीं हुआ? त्वरित मैच आज़माएं – आपका तुरंत एक ऑनलाइन खिलाड़ी के साथ मिलान हो जाएगा।",
   lobbyOpenCard: "प्रतीक्षा कक्ष खुला · कोड {code}",
+  shopKind_personal: "आपका अपना",
+  shopKind_season: "हैलोवीन 🎃",
+  shopKind_celebration: "यात्ज़ी उत्सव",
+  shopKind_frame: "प्रोफ़ाइल पिक्चर फ़्रेम",
+  shopCelebrationHint: "तब दिखाया जाता है जब आपको यात्ज़ी मिलता है - ऑनलाइन विरोधी भी इसे देखते हैं",
+  shopFrameHint: "बोर्ड पर आपकी तस्वीर के चारों ओर दिखाया जाता है - विरोधी भी इसे देखते हैं",
+  shopStandard: "मानक",
+  shopPreview: "पूर्वावलोकन",
+  shopUntil: "{date} तक ही",
 };

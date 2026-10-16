@@ -115,9 +115,9 @@ function designTexture(d: DiceDesign): CanvasTexture | null {
   if (designTexCache.has(d.id)) return designTexCache.get(d.id)!;
   let tex: CanvasTexture | null = null;
   if (typeof document !== 'undefined' && (d.motif || d.body2 || d.flag)) {
-    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const c = document.createElement('canvas'); c.width = c.height = 512;
     const ctx = c.getContext('2d');
-    if (ctx) { paintDesignFace(d, ctx, 256); tex = new CanvasTexture(c); tex.colorSpace = SRGBColorSpace; tex.anisotropy = 4; }
+    if (ctx) { paintDesignFace(d, ctx, 512, true); tex = new CanvasTexture(c); tex.colorSpace = SRGBColorSpace; tex.anisotropy = 8; }
   }
   designTexCache.set(d.id, tex);
   return tex;
@@ -127,14 +127,16 @@ function designMaterial(d: DiceDesign, held: boolean): MeshPhysicalMaterial {
   let m = designMatCache.get(d.id);
   if (!m) {
     const make = (shade: number) => {
-      const mat = new MeshPhysicalMaterial({ color: d.body, envMapIntensity: 1.2, clearcoat: 0.8, clearcoatRoughness: 0.1, roughness: 0.3 });
+      // Match the flat shop preview: the painted face carries the colour, so the
+      // material must not tint it (no coloured emissive, little metal/iridescence).
+      const mat = new MeshPhysicalMaterial({ color: d.body, envMapIntensity: 0.9, clearcoat: 0.9, clearcoatRoughness: 0.08, roughness: 0.32 });
       const tex = designTexture(d);
-      if (tex) { mat.map = tex; mat.color.set('#ffffff'); }
-      if (d.finish === 'matte') { mat.roughness = 0.7; mat.clearcoat = 0.2; }
-      if (d.finish === 'metal') { mat.metalness = 0.6; mat.roughness = 0.25; }
-      if (d.finish === 'pearl') { mat.sheen = 0.8; mat.sheenColor.set(d.glow ?? '#ffffff'); }
-      if (d.finish === 'iridescent') { mat.metalness = 0.4; mat.roughness = 0.12; mat.iridescence = 0.8; mat.iridescenceIOR = 1.5; }
-      if (d.glow) { mat.emissive.set(d.glow); mat.emissiveIntensity = 0.25; }
+      if (tex) { mat.map = tex; mat.color.set('#ffffff'); mat.emissiveMap = tex; mat.emissive.set('#ffffff'); mat.emissiveIntensity = 0.12; }
+      if (d.finish === 'matte') { mat.roughness = 0.65; mat.clearcoat = 0.25; }
+      if (d.finish === 'metal') { mat.metalness = 0.22; mat.roughness = 0.2; mat.envMapIntensity = 1.1; }
+      if (d.finish === 'pearl') { mat.sheen = 0.6; mat.sheenColor.set(d.glow ?? '#ffffff'); }
+      if (d.finish === 'iridescent') { mat.roughness = 0.14; mat.iridescence = 0.3; mat.iridescenceIOR = 1.3; mat.envMapIntensity = 1.05; }
+      if (!tex && d.glow) { mat.emissive.set(d.glow); mat.emissiveIntensity = 0.12; }
       mat.color.multiplyScalar(shade);
       return mat;
     };

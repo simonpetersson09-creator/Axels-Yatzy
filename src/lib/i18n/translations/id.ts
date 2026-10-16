@@ -419,5 +419,6 @@ export const id: Partial<typeof sv> = {
   lobbyScanShort: "Pindai",
   lobbyFriendsLink: "Pernah bermain bersama? Undang langsung dari Teman",
   shopEarnHintNoCap: "Tonton iklan opsional sampai selesai: +1 XP.",
+  shopKind_owned: "Dadu yang kamu beli",
   shopWallet: "Saldo: {n} XP",
 };

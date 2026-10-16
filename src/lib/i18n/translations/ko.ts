@@ -419,5 +419,6 @@ export const ko: Partial<typeof sv> = {
   lobbyScanShort: "스캔",
   lobbyFriendsLink: "전에 같이 플레이했나요? 친구 화면에서 바로 초대하세요",
   shopEarnHintNoCap: "선택형 광고를 끝까지 시청하세요: 경험치 +1.",
+  shopKind_owned: "구매한 주사위",
   shopWallet: "잔액: {n} XP",
 };

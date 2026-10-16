@@ -419,5 +419,6 @@ export const da: Partial<typeof sv> = {
   lobbyScanShort: "Scan",
   lobbyFriendsLink: "Har I spillet før? Invitér direkte fra Venner",
   shopEarnHintNoCap: "Se en valgfri reklame til ende: +1 XP.",
+  shopKind_owned: "Dine købte terninger",
   shopWallet: "Saldo: {n} XP",
 };

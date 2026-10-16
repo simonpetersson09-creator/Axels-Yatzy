@@ -419,5 +419,6 @@ export const tr: Partial<typeof sv> = {
   lobbyScanShort: "Tara",
   lobbyFriendsLink: "Daha önce oynadınız mı? Doğrudan Arkadaşlar ekranından davet edin",
   shopEarnHintNoCap: "İsteğe bağlı bir reklamı sonuna kadar izle: +1 XP.",
+  shopKind_owned: "Satın aldığın zarlar",
   shopWallet: "Bakiye: {n} XP",
 };

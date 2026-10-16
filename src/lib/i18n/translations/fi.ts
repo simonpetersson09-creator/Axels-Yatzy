@@ -419,5 +419,6 @@ export const fi: Partial<typeof sv> = {
   lobbyScanShort: "Skannaa",
   lobbyFriendsLink: "Oletteko pelanneet aiemmin? Kutsu suoraan Kaverit-näkymästä",
   shopEarnHintNoCap: "Katso vapaaehtoinen mainos loppuun: +1 XP.",
+  shopKind_owned: "Ostamasi nopat",
   shopWallet: "Saldo: {n} XP",
 };

@@ -15,11 +15,15 @@ export interface ShopState {
   selected: string | null;
   owned: string[];
   prices: Record<string, number>;
+  /** Last day to buy (seasonal items), ISO string. */
+  until: Record<string, string>;
+  selectedCelebration: string | null;
+  selectedFrame: string | null;
 }
 
 const CACHE_KEY = 'mrb_dice_shop_v1';
 const EVENT = 'mrb-shop-changed';
-const EMPTY: ShopState = { xp: 0, earnedToday: 0, dailyCap: 10, selected: null, owned: [], prices: {} };
+const EMPTY: ShopState = { xp: 0, earnedToday: 0, dailyCap: 10, selected: null, owned: [], prices: {}, until: {}, selectedCelebration: null, selectedFrame: null };
 
 function readCache(): ShopState {
   try {
@@ -50,11 +54,13 @@ export async function fetchShop(): Promise<ShopState> {
   try {
     const { data, error } = await supabase.rpc('get_dice_shop', { p_session_id: getSessionId() });
     if (error || !data) return readCache();
-    const d = data as { xp: number; earned_today: number; daily_cap: number; selected: string | null; owned: string[]; designs: { id: string; price: number }[] };
+    const d = data as { xp: number; earned_today: number; daily_cap: number; selected: string | null; owned: string[]; designs: { id: string; price: number; until?: string | null }[]; selected_celebration?: string | null; selected_frame?: string | null };
     const s: ShopState = {
       xp: Number(d.xp ?? 0), earnedToday: Number(d.earned_today ?? 0), dailyCap: Number(d.daily_cap ?? 10),
       selected: d.selected ?? null, owned: d.owned ?? [],
       prices: Object.fromEntries((d.designs ?? []).map((x) => [x.id, Number(x.price)])),
+      until: Object.fromEntries((d.designs ?? []).filter((x) => x.until).map((x) => [x.id, String(x.until)])),
+      selectedCelebration: d.selected_celebration ?? null, selectedFrame: d.selected_frame ?? null,
     };
     writeCache(s);
     return s;
@@ -117,6 +123,18 @@ export async function selectDesign(id: string | null): Promise<boolean> {
     if (error || data !== true) return false;
     patchShopCache({ selected: id });
     if (id) void fetchGoldStatus();
+    return true;
+  } catch { return false; }
+}
+
+/** Choose a Yatzy celebration or avatar frame (null = standard). */
+export async function selectCosmetic(slot: 'celebration' | 'frame', id: string | null): Promise<boolean> {
+  try {
+    const dev = await device();
+    if (!dev) return false;
+    const { data, error } = await supabase.rpc('select_cosmetic', { p_session_id: getSessionId(), p_device_id: dev, p_slot: slot, p_id: id as string });
+    if (error || data !== true) return false;
+    patchShopCache(slot === 'celebration' ? { selectedCelebration: id } : { selectedFrame: id });
     return true;
   } catch { return false; }
 }

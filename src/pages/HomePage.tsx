@@ -724,6 +724,15 @@ export default function HomePage() {
             >
               🌐 <span className="truncate">{t('playWithFriends')}</span>
             </motion.button>
+            <motion.button
+              onClick={() => navigate('/stats')}
+              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-gold to-game-gold/80 text-background font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(42_90%_55%/0.3)] active:shadow-[0_2px_8px_hsl(42_90%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
+              whileTap={{ scale: 0.97 }}
+              variants={item}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+            >
+              <BarChart3 className="w-5 h-5" /> <span className="truncate">{t('statsPage')}</span>
+            </motion.button>
           </div>
 
           <AnimatePresence>
@@ -991,14 +1000,6 @@ export default function HomePage() {
                 );
               })}
             </div>
-            <button
-              onClick={() => navigate('/stats')}
-              className="mt-2 w-full flex items-center justify-center gap-2 py-1.5 rounded-2xl bg-secondary/60 border border-border/50 active:scale-[0.98] transition-transform"
-            >
-              <BarChart3 className="w-3.5 h-3.5 text-primary" />
-              <span className="text-[11px] font-semibold text-foreground">{t('statsPage')}</span>
-              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
             <div className="text-center mt-2 mb-1">
               <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
                 {t('challengesLabel')}

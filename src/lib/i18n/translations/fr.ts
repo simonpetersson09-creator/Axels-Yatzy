@@ -407,4 +407,9 @@ export const fr: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Aperçu",
   shopUntil: "Seulement jusqu'au {date}",
+  lobbyCreateTitle: "Invite un ami",
+  lobbyCreateHint: "Crée une partie et reçois un code. Envoie-le à ton ami.",
+  lobbyJoinTitle: "Tu as un code ?",
+  lobbyJoinHint: "Saisis le code envoyé par ton ami ou scanne le QR code.",
+  lobbyScanShort: "Scanner",
 };

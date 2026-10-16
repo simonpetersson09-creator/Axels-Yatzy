@@ -412,4 +412,9 @@ export const ro: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Previzualizare",
   shopUntil: "Doar până la {date}",
+  lobbyCreateTitle: "Invită un prieten",
+  lobbyCreateHint: "Creezi meciul și primești un cod. Trimite-i codul prietenului tău.",
+  lobbyJoinTitle: "Ai un cod?",
+  lobbyJoinHint: "Introdu codul trimis de prietenul tău sau scanează codul QR.",
+  lobbyScanShort: "Scanează",
 };

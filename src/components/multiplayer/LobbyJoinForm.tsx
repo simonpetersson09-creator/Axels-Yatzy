@@ -114,7 +114,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
           <button onClick={() => navigate('/')} className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors">
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
-          <h1 className="text-2xl font-display font-bold">{t('playWithFriends').replace(/^🌐\s*/, '')}</h1>
+          <h1 className="text-2xl font-display font-bold">{t('playWithFriends')}</h1>
         </div>
 
         {inviteFriendName && (

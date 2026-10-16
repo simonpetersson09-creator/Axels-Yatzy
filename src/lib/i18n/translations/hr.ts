@@ -412,4 +412,9 @@ export const hr: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Preview",
   shopUntil: "Only until {date}",
+  lobbyCreateTitle: "Pozovi prijatelja",
+  lobbyCreateHint: "Pokreni meč i dobit ćeš kod. Pošalji ga prijatelju.",
+  lobbyJoinTitle: "Imaš kod?",
+  lobbyJoinHint: "Upiši kod koji ti je prijatelj poslao ili skeniraj QR kod.",
+  lobbyScanShort: "Skeniraj",
 };

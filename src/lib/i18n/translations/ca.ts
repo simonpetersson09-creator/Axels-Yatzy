@@ -411,4 +411,9 @@ export const ca: Partial<typeof sv> = {
   shopStandard: "Estàndard",
   shopPreview: "Previsualització",
   shopUntil: "Només fins al {date}",
+  lobbyCreateTitle: "Convida un amic",
+  lobbyCreateHint: "Crea la partida i obtén un codi. Envia'l al teu amic.",
+  lobbyJoinTitle: "Tens un codi?",
+  lobbyJoinHint: "Escriu el codi que t'ha enviat el teu amic o escaneja el codi QR.",
+  lobbyScanShort: "Escaneja",
 };

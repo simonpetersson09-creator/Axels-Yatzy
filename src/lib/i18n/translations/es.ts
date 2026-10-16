@@ -412,4 +412,9 @@ export const es: Partial<typeof sv> = {
   shopStandard: "Estándar",
   shopPreview: "Vista previa",
   shopUntil: "Solo hasta el {date}",
+  lobbyCreateTitle: "Invita a un amigo",
+  lobbyCreateHint: "Crea la partida y recibe un código. Envíáselo a tu amigo.",
+  lobbyJoinTitle: "¿Tienes un código?",
+  lobbyJoinHint: "Introduce el código que te envió tu amigo o escanea el QR.",
+  lobbyScanShort: "Escanear",
 };

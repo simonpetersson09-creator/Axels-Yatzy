@@ -412,4 +412,9 @@ export const te: Partial<typeof sv> = {
   shopStandard: "ప్రామాణిక",
   shopPreview: "ముందుచూపు",
   shopUntil: "{date} వరకు మాత్రమే",
+  lobbyCreateTitle: "స్నేహితుడిని ఆహ్వానించండి",
+  lobbyCreateHint: "మ్యాచ్ సృష్టిస్తే కోడ్ వస్తుంది. ఆ కోడ్‌ను మీ స్నేహితుడికి పంపండి.",
+  lobbyJoinTitle: "కోడ్ ఉందా?",
+  lobbyJoinHint: "మీ స్నేహితుడు పంపిన కోడ్‌ను టైప్ చేయండి లేదా QR కోడ్‌ను స్కాన్ చేయండి.",
+  lobbyScanShort: "స్కాన్",
 };

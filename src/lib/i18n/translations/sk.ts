@@ -412,4 +412,9 @@ export const sk: Partial<typeof sv> = {
   shopStandard: "Štandardné",
   shopPreview: "Náhľad",
   shopUntil: "Len do {date}",
+  lobbyCreateTitle: "Pozvi kamaráta",
+  lobbyCreateHint: "Vytvor hru a získaj kód. Pošli ho kamarátovi.",
+  lobbyJoinTitle: "Máš kód?",
+  lobbyJoinHint: "Zadaj kód od kamaráta alebo naskenuj QR kód.",
+  lobbyScanShort: "Skenovať",
 };

@@ -412,4 +412,9 @@ export const nl: Partial<typeof sv> = {
   shopStandard: "Standard",
   shopPreview: "Forhåndsvisning",
   shopUntil: "Kun til {date}",
+  lobbyCreateTitle: "Nodig een vriend uit",
+  lobbyCreateHint: "Maak een potje aan en krijg een code. Stuur die naar je vriend.",
+  lobbyJoinTitle: "Heb je een code?",
+  lobbyJoinHint: "Voer de code van je vriend in of scan de QR-code.",
+  lobbyScanShort: "Scan",
 };

@@ -412,4 +412,9 @@ export const sl: Partial<typeof sv> = {
   shopStandard: "Standardno",
   shopPreview: "Predogled",
   shopUntil: "Samo do {date}",
+  lobbyCreateTitle: "Povabi prijatelja",
+  lobbyCreateHint: "Ustvari igro in prejmi kodo. Pošlji jo prijatelju.",
+  lobbyJoinTitle: "Imaš kodo?",
+  lobbyJoinHint: "Vnesi kodo, ki ti jo je poslal prijatelj, ali skeniraj kodo QR.",
+  lobbyScanShort: "Skeniraj",
 };

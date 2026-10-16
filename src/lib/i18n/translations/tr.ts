@@ -412,4 +412,9 @@ export const tr: Partial<typeof sv> = {
   shopStandard: "Standart",
   shopPreview: "Önizleme",
   shopUntil: "Sadece {date} tarihine kadar",
+  lobbyCreateTitle: "Bir arkadaşını davet et",
+  lobbyCreateHint: "Maçı oluştur, kodunu al. Kodu arkadaşına gönder.",
+  lobbyJoinTitle: "Kodun var mı?",
+  lobbyJoinHint: "Arkadaşının gönderdiği kodu gir veya QR kodunu tara.",
+  lobbyScanShort: "Tara",
 };

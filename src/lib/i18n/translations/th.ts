@@ -412,4 +412,9 @@ export const th: Partial<typeof sv> = {
   shopStandard: "มาตรฐาน",
   shopPreview: "ดูตัวอย่าง",
   shopUntil: "มีถึงแค่ {date} นี้เท่านั้น",
+  lobbyCreateTitle: "ชวนเพื่อนมาเล่น",
+  lobbyCreateHint: "สร้างแมตช์แล้วรับรหัส ส่งรหัสให้เพื่อนได้เลย",
+  lobbyJoinTitle: "มีรหัสแล้วใช่ไหม?",
+  lobbyJoinHint: "กรอกรหัสที่เพื่อนส่งมา หรือสแกนคิวอาร์โค้ด",
+  lobbyScanShort: "สแกน",
 };

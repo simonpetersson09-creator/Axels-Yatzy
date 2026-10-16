@@ -412,4 +412,9 @@ export const id: Partial<typeof sv> = {
   shopStandard: "Standar",
   shopPreview: "Pratinjau",
   shopUntil: "Hanya sampai {date}",
+  lobbyCreateTitle: "Ajak teman",
+  lobbyCreateHint: "Buat pertandingan untuk mendapat kode. Kirim kodenya ke temanmu.",
+  lobbyJoinTitle: "Punya kode?",
+  lobbyJoinHint: "Masukkan kode dari temanmu, atau pindai kode QR.",
+  lobbyScanShort: "Pindai",
 };

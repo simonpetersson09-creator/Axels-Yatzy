@@ -412,4 +412,9 @@ export const gu: Partial<typeof sv> = {
   shopStandard: "માનક",
   shopPreview: "પૂર્વદર્શન",
   shopUntil: "{date} સુધી જ",
+  lobbyCreateTitle: "મિત્રને આમંત્રણ આપો",
+  lobbyCreateHint: "મેચ બનાવો અને કોડ મેળવો. કોડ તમારા મિત્રને મોકલો.",
+  lobbyJoinTitle: "કોડ મળ્યો?",
+  lobbyJoinHint: "મિત્રએ મોકલેલો કોડ લખો અથવા QR કોડ સ્કેન કરો.",
+  lobbyScanShort: "સ્કેન કરો",
 };

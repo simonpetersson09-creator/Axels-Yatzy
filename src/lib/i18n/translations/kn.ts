@@ -412,4 +412,9 @@ export const kn: Partial<typeof sv> = {
   shopStandard: "ಪ್ರಮಾಣಿತ",
   shopPreview: "ಮುನ್ನೋಟ",
   shopUntil: "{date} ರವರೆಗೆ ಮಾತ್ರ",
+  lobbyCreateTitle: "ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ",
+  lobbyCreateHint: "ಪಂದ್ಯ ರಚಿಸಿ, ಕೋಡ್ ಪಡೆಯಿರಿ. ಅದನ್ನು ನಿಮ್ಮ ಸ್ನೇಹಿತರಿಗೆ ಕಳುಹಿಸಿ.",
+  lobbyJoinTitle: "ಕೋಡ್ ಇದೆಯೇ?",
+  lobbyJoinHint: "ನಿಮ್ಮ ಸ್ನೇಹಿತರು ಕಳುಹಿಸಿದ ಕೋಡ್ ನಮೂದಿಸಿ ಅಥವಾ QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.",
+  lobbyScanShort: "ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
 };

@@ -107,6 +107,7 @@ export function goldDaysLeft(s: GoldStatus): number {
 
 export async function fetchGoldStatus(): Promise<GoldStatus> {
   try {
+    void flushPendingYatzyMatches(); // report matches saved while offline
     const { data, error } = await supabase.rpc('get_gold_dice', { p_session_id: getSessionId() });
     if (error || !data) return readCache();
     const d = data as { gold_until?: string | null; friends?: number; progress?: number; tier?: string; yatzy_matches?: number; prefer_white?: boolean };

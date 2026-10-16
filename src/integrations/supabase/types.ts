@@ -1041,6 +1041,13 @@ export type Database = {
       get_dice_profiles: { Args: { p_game_id: string }; Returns: Json }
       get_dice_shop: { Args: { p_session_id: string }; Returns: Json }
       get_dice_skins: { Args: { p_session_ids: string[] }; Returns: Json }
+      get_frames_for_sessions: {
+        Args: { p_session_ids: string[] }
+        Returns: {
+          frame: string
+          session_id: string
+        }[]
+      }
       get_game_avatars: { Args: { p_game_id: string }; Returns: Json }
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
       get_gold_players: { Args: { p_session_ids: string[] }; Returns: string[] }

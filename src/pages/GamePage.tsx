@@ -9,6 +9,8 @@ import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
+import { AvatarFrame } from '@/components/AvatarFrame';
+import { useShop } from '@/lib/dice-shop';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame, newLocalGameId } from '@/lib/active-game';
@@ -304,6 +306,7 @@ export default function GamePage() {
   }, [aiPlayers]);
 
 
+  const shop = useShop();
   const [showYatzyCelebration, setShowYatzyCelebration] = useState(false);
   const { activeCelebration, yatzyTrigger } = useCombinationCelebration(gameState);
   useEffect(() => {
@@ -425,6 +428,7 @@ export default function GamePage() {
       />
       <YatzyCelebration
         show={showYatzyCelebration}
+        celebrationId={gameState && gameState.currentPlayerIndex === HUMAN_INDEX && !aiPlayers.includes(HUMAN_INDEX) ? shop.selectedCelebration : null}
         onComplete={() => setShowYatzyCelebration(false)}
       />
       <motion.div
@@ -468,7 +472,9 @@ export default function GamePage() {
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
-                    <div className={`w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
+                    <div className="relative shrink-0 isolate">
+                    {isHuman && <AvatarFrame id={shop.selectedFrame} />}
+                    <div className={`relative w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
                     } transition-all flex items-center justify-center`}>
                       {showAvatar ? (
@@ -476,6 +482,7 @@ export default function GamePage() {
                       ) : (
                         <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
                       )}
+                    </div>
                     </div>
                     <span className={`text-[10px] font-semibold truncate max-w-[80px] max-[379px]:max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'

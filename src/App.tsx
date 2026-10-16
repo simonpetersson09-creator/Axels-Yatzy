@@ -25,6 +25,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { preloadDiceEngine } from "./components/dice-engine/preload";
 import InviteOverlay from "./components/InviteOverlay";
 import NotificationNavigator from "./components/NotificationNavigator";
+import { LobbyJoinNotice } from "./components/LobbyJoinNotice";
 import NotificationAskHost from "./components/NotificationAskHost";
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
@@ -70,6 +71,7 @@ const App = () => (
         <DiceEnginePreloader />
         <InviteOverlay />
         <NotificationNavigator />
+        <LobbyJoinNotice />
         <NotificationAskHost />
         <AndroidBackButton />
         <SwipeBack />

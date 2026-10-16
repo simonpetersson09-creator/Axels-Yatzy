@@ -419,5 +419,6 @@ export const ru: Partial<typeof sv> = {
   lobbyFriendsLink: "Уже играли? Приглашайте прямо с экрана «Друзья»",
   shopEarnHintNoCap: "Досмотрите необязательную рекламу до конца: +1 к опыту.",
   shopKind_owned: "Ваши купленные кубики",
+  lobbyFriendJoined: "{name} присоединился к вашей игре 🎲",
   shopWallet: "Баланс: {n} XP",
 };

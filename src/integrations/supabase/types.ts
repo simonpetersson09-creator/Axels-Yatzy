@@ -425,6 +425,27 @@ export type Database = {
         }
         Relationships: []
       }
+      lobby_join_queue: {
+        Row: {
+          created_at: string
+          game_id: string
+          id: number
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          game_id: string
+          id?: number
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          game_id?: string
+          id?: number
+          session_id?: string
+        }
+        Relationships: []
+      }
       matchmaking_queue: {
         Row: {
           created_at: string

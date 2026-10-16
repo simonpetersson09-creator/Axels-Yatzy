@@ -415,5 +415,6 @@ export const de: Partial<typeof sv> = {
   lobbyFriendsLink: "Schon mal gespielt? Lade direkt über „Freunde“ ein",
   shopEarnHintNoCap: "Sieh dir freiwillig eine Werbung bis zum Ende an: +1 XP.",
   shopKind_owned: "Deine gekauften Würfel",
+  lobbyFriendJoined: "{name} ist deinem Spiel beigetreten 🎲",
   shopWallet: "Guthaben: {n} XP",
 };

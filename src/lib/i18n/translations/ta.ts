@@ -420,5 +420,6 @@ export const ta: Partial<typeof sv> = {
   lobbyFriendsLink: "ஏற்கனவே விளையாடியுள்ளீர்களா? நண்பர்கள் திரையிலிருந்தே நேரடியாக அழைக்கவும்",
   shopEarnHintNoCap: "விருப்பப்பட்டால் ஒரு விளம்பரத்தை இறுதிவரை பாருங்கள்: +1 XP.",
   shopKind_owned: "நீங்கள் வாங்கிய பகடைகள்",
+  lobbyFriendJoined: "{name} உங்கள் விளையாட்டில் இணைந்தார் 🎲",
   shopWallet: "இருப்பு: {n} XP",
 };

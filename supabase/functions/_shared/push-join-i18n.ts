@@ -1,0 +1,48 @@
+// Push text when a friend joins the host's waiting room. {name} = joiner.
+const J: Record<string, [string, string]> = {
+  "sv": ["{name} gick med i ditt spel 🎲", "Tryck för att öppna väntrummet och starta matchen."],
+  "en": ["{name} joined your game 🎲", "Tap to open the waiting room and start the match."],
+  "no": ["{name} ble med i spillet ditt 🎲", "Trykk for å åpne venterommet og starte kampen."],
+  "da": ["{name} er med i dit spil 🎲", "Tryk for at åbne venterummet og starte kampen."],
+  "fi": ["{name} liittyi peliisi 🎲", "Napauta avataksesi odotushuoneen ja aloittaaksesi ottelun."],
+  "es": ["{name} se unió a tu partida 🎲", "Toca para abrir la sala de espera y empezar la partida."],
+  "fr": ["{name} a rejoint ta partie 🎲", "Appuie pour ouvrir la salle d’attente et lancer la partie."],
+  "it": ["{name} si è unito alla tua partita 🎲", "Tocca per aprire la sala d'attesa e iniziare la partita."],
+  "de": ["{name} ist deinem Spiel beigetreten 🎲", "Tippe, um den Warteraum zu öffnen und die Partie zu starten."],
+  "nl": ["{name} doet mee aan je spel 🎲", "Tik om de wachtkamer te openen en de wedstrijd te starten."],
+  "ca": ["{name} s'ha unit a la teva partida 🎲", "Toca per obrir la sala d'espera i començar la partida."],
+  "ro": ["{name} s-a alăturat jocului tău 🎲", "Atinge pentru a deschide sala de așteptare și a începe meciul."],
+  "tr": ["{name} oyununa katıldı 🎲", "Bekleme odasını açmak ve maçı başlatmak için dokun."],
+  "pl": ["{name} dołącza do twojej gry 🎲", "Dotknij, aby otworzyć poczekalnię i rozpocząć rozgrywkę."],
+  "cs": ["{name} se připojuje ke tvé hře 🎲", "Klepnutím otevři čekárnu a zahaj zápas."],
+  "sk": ["{name} sa pripája k tvojej hre 🎲", "Ťuknutím otvor čakáreň a začni zápas."],
+  "sl": ["{name} je zdaj v tvoji igri 🎲", "Tapni, da odpreš čakalnico in začneš tekmo."],
+  "hr": ["{name} je sada u tvojoj igri 🎲", "Dodirni za otvaranje čekaonice i početak meča."],
+  "hu": ["{name} csatlakozott a játékodhoz 🎲", "Koppints a várószoba megnyitásához és a mérkőzés indításához."],
+  "pt": ["{name} juntou-se ao teu jogo 🎲", "Toca para abrir a sala de espera e começar a partida."],
+  "pt-BR": ["{name} entrou no seu jogo 🎲", "Toque para abrir a sala de espera e começar a partida."],
+  "id": ["{name} bergabung ke permainanmu 🎲", "Ketuk untuk membuka ruang tunggu dan memulai pertandingan."],
+  "ms": ["{name} menyertai permainan anda 🎲", "Ketik untuk membuka ruang menunggu dan memulakan perlawanan."],
+  "vi": ["{name} đã tham gia trò chơi của bạn 🎲", "Nhấn để mở phòng chờ và bắt đầu trận đấu."],
+  "el": ["Ο παίκτης {name} μπήκε στο παιχνίδι σου 🎲", "Πάτησε για να ανοίξεις την αίθουσα αναμονής και να ξεκινήσεις τον αγώνα."],
+  "ru": ["{name} теперь в вашей игре 🎲", "Нажмите, чтобы открыть комнату ожидания и начать матч."],
+  "uk": ["{name} тепер у вашій грі 🎲", "Натисніть, щоб відкрити кімнату очікування та почати матч."],
+  "ja": ["{name}さんがあなたのゲームに参加しました 🎲", "タップして待機ルームを開き、対戦を始めましょう。"],
+  "ko": ["{name}님이 게임에 참가했어요 🎲", "탭하여 대기실을 열고 대결을 시작하세요."],
+  "th": ["{name} เข้าร่วมเกมของคุณแล้ว 🎲", "แตะเพื่อเปิดห้องรอและเริ่มการแข่งขัน"],
+  "hi": ["{name} आपके गेम में शामिल हो गए हैं 🎲", "प्रतीक्षा कक्ष खोलने और मैच शुरू करने के लिए टैप करें।"],
+  "bn": ["{name} আপনার গেমে যোগ দিয়েছেন 🎲", "অপেক্ষার ঘর খুলতে এবং ম্যাচ শুরু করতে ট্যাপ করুন।"],
+  "gu": ["{name} તમારી ગેમમાં જોડાયા છે 🎲", "પ્રતીક્ષા ખંડ ખોલવા અને મેચ શરૂ કરવા માટે ટૅપ કરો."],
+  "kn": ["{name} ನಿಮ್ಮ ಆಟಕ್ಕೆ ಸೇರಿದ್ದಾರೆ 🎲", "ನಿರೀಕ್ಷಣಾ ಕೊಠಡಿಯನ್ನು ತೆರೆಯಲು ಮತ್ತು ಪಂದ್ಯವನ್ನು ಪ್ರಾರಂಭಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ."],
+  "ml": ["{name} നിങ്ങളുടെ ഗെയിമിൽ ചേർന്നു 🎲", "വെയ്റ്റിംഗ് റൂം തുറക്കാനും മത്സരം ആരംഭിക്കാനും ടാപ്പ് ചെയ്യുക."],
+  "mr": ["{name} तुमच्या गेममध्ये सामील झाले आहेत 🎲", "प्रतीक्षा कक्ष उघडण्यासाठी आणि सामना सुरू करण्यासाठी टॅप करा."],
+  "or": ["{name} ଆପଣଙ୍କ ଖେଳରେ ଯୋଗ ଦେଇଛନ୍ତି 🎲", "ପ୍ରତୀକ୍ଷା କକ୍ଷ ଖୋଲିବାକୁ ଏବଂ ମ୍ୟାଚ୍ ଆରମ୍ଭ କରିବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ।"],
+  "pa": ["{name} ਤੁਹਾਡੀ ਗੇਮ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਗਏ ਹਨ 🎲", "ਉਡੀਕ ਕਮਰਾ ਖੋਲ੍ਹਣ ਅਤੇ ਮੈਚ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।"],
+  "ta": ["{name} உங்கள் விளையாட்டில் இணைந்துள்ளார் 🎲", "காத்திருப்பு அறையைத் திறந்து போட்டியைத் தொடங்கத் தட்டவும்."],
+  "te": ["{name} మీ గేమ్‌లో చేరారు 🎲", "వేచి ఉండే గదిని తెరిచి మ్యాచ్ ప్రారంభించడానికి ట్యాప్ చేయండి."],
+};
+
+export function joinPushText(lang: string | null | undefined, name: string) {
+  const [t, b] = J[lang ?? ""] ?? J.sv;
+  return { title: t.replace("{name}", name), body: b.replace("{name}", name) };
+}

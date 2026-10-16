@@ -420,5 +420,6 @@ export const en: Partial<typeof sv> = {
   lobbyFriendsLink: "Played before? Invite straight from Friends",
   shopEarnHintNoCap: "Watch an optional ad to the end: +1 XP.",
   shopKind_owned: "Your dice",
+  lobbyFriendJoined: "{name} joined your game 🎲",
   shopWallet: "Balance: {n} XP",
 };

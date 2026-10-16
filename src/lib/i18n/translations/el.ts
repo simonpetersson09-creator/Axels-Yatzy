@@ -420,5 +420,6 @@ export const el: Partial<typeof sv> = {
   lobbyFriendsLink: "Έχεις ξαναπαίξει; Στείλε πρόσκληση απευθείας από την οθόνη Φίλοι",
   shopEarnHintNoCap: "Δες μια προαιρετική διαφήμιση μέχρι το τέλος: +1 XP.",
   shopKind_owned: "Τα ζάρια που αγοράσατε",
+  lobbyFriendJoined: "Ο παίκτης {name} μπήκε στο παιχνίδι σου 🎲",
   shopWallet: "Υπόλοιπο: {n} XP",
 };

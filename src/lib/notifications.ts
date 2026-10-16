@@ -183,6 +183,8 @@ async function doInitNotifications(): Promise<void> {
       const body = notification.body?.trim() || '';
 
       trackEvent('push_notification_received_foreground', { kind, game_id: gameId, invite_id: inviteId });
+      // Friend joined my waiting room: LobbyJoinNotice already shows it in the app.
+      if (kind === 'lobby_join') return;
 
       const showToast = kind === 'reminder' ? toast.message : toast;
       let action: { label: string; onClick: () => void } | undefined;
@@ -241,6 +243,8 @@ async function doInitNotifications(): Promise<void> {
         setTimeout(() => {
           if (kind === 'invite' && inviteId) {
             window.dispatchEvent(new CustomEvent('app:invite-tap', { detail: { inviteId } }));
+          } else if (kind === 'lobby_join' && data.game_code) {
+            window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: '/multiplayer', state: { rejoinCode: data.game_code } } }));
           } else if (data.game_id) {
             window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: `/multiplayer-game?gameId=${data.game_id}` } }));
           }

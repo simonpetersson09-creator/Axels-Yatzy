@@ -420,5 +420,6 @@ export const uk: Partial<typeof sv> = {
   lobbyFriendsLink: "Уже грали разом? Запрошуйте прямо з екрана «Друзі»",
   shopEarnHintNoCap: "Перегляньте необов’язкову рекламу до кінця: +1 XP.",
   shopKind_owned: "Ваші придбані кубики",
+  lobbyFriendJoined: "{name} приєднався до вашої гри 🎲",
   shopWallet: "Баланс: {n} XP",
 };

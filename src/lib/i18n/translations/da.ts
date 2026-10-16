@@ -406,7 +406,7 @@ export const da: Partial<typeof sv> = {
   shopKind_personal: "Din egen",
   shopKind_season: "Halloween 🎃",
   shopKind_celebration: "Yatzy fejring",
-  shopKind_frame: "Profilbillede rammer",
+  shopKind_frame: "Rammer til profilbilledet",
   shopCelebrationHint: "Vises når du får Yatzy – modstandere online ser det også",
   shopFrameHint: "Vises rundt om dit billede på brættet – modstandere ser det også",
   shopStandard: "Standard",

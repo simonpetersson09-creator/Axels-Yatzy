@@ -38,7 +38,8 @@ Deno.serve(async (req) => {
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
   const [{ data: tokens }, { data: prefs }, { data: countries }] = await Promise.all([
-    supabase.from("push_tokens").select("device_id, session_id, token, platform").eq("enabled", true),
+    // Newest token first so a device with an old leftover token gets the current one.
+    supabase.from("push_tokens").select("device_id, session_id, token, platform").eq("enabled", true).order("updated_at", { ascending: false }),
     supabase.from("notification_preferences").select("device_id, lang"),
     supabase.from("player_country_stats").select("session_id, country"),
   ]);

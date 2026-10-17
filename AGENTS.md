@@ -3,7 +3,7 @@
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — tamper-resistant, synced.
 - Android native patches run via `npm run cap:sync:android` (AdMob App ID in manifest, minSdk 26 for barcode scanner, launcher icons from committed resources/android/res/ via scripts/set-android-*.js); android/ is generated outside the repo like ios/, so manual edits get lost.
-- AdMob IDs are per platform in ADMOB_IDS (src/lib/admob.ts); a null ID disables that ad type on that platform so iOS IDs can never be used on Android.
+- admob.ts: per-platform ADMOB_IDS (null disables; iOS IDs never on Android); fitGameAboveBanner fits the game above the banner; iOS XP ad is Rewarded (XP only on the SDK Rewarded event, start ad suppressed 2 min after), Android interstitial waits for dismissal — no unearned XP.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
@@ -19,10 +19,8 @@
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock — avoids duplicate matches.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Hall of Fame: report_weekly_score (from recordGameResult) trims to first name and caps score server-side.
-- Game banner: fitGameAboveBanner (admob.ts) shrinks rows/dice until all fits above it.
-- Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row. Optional ads wait for native dismissal before XP confirmation, since presentation resolves immediately.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
 - DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.
 - Shop receipts use body-portaled native dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings without buying.
-
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.
+- Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.

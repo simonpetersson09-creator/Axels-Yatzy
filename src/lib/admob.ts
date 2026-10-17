@@ -552,6 +552,8 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   let release = true;
   try {
     const mod = await withTimeout(ensureInitialized(), APP_OPEN_LOAD_TIMEOUT_MS, 'init');
+    // A preload already running (started at cold start) is awaited, not doubled.
+    if (appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});
     const pre = await mod.AdMob.isAppOpenLoaded();
     if (!pre.value) await withTimeout(mod.AdMob.loadAppOpen({ adId }), APP_OPEN_LOAD_TIMEOUT_MS, 'load');
     const { value } = await mod.AdMob.isAppOpenLoaded();
@@ -598,6 +600,19 @@ const GOOGLE_TEST_BANNER: Record<'ios' | 'android', string> = {
 
 let bannerWanted = false;
 let bannerShown = false;
+/** Hidden-but-loaded banner kept between matches (see hideGameBanner). */
+let bannerParked = false;
+let parkedMargin = -1;
+let bannerParkTimer: ReturnType<typeof setTimeout> | undefined;
+const BANNER_PARK_MS = 3 * 60_000;
+function scheduleParkedRemoval() {
+  clearTimeout(bannerParkTimer);
+  bannerParkTimer = setTimeout(() => {
+    if (!bannerParked || bannerWanted) return;
+    bannerParked = false;
+    bannerRemoving = loadModule().then((mod) => mod.AdMob.removeBanner()).catch(() => {});
+  }, BANNER_PARK_MS);
+}
 
 /** Gör plats för bannern i spelets layout (se html.ad-banner-on i index.css). */
 function setBannerSpace(on: boolean) {
@@ -799,6 +814,22 @@ export async function showGameBanner(): Promise<void> {
     if (stale()) { if (!bannerWanted) setBannerSpace(false); return; }
     // Samma plats som nu: låt bannern ligga kvar i stället för att ladda om den.
     if (bannerShown && margin === shownMargin) return;
+    // Parked (hidden, still loaded) banner at the same spot: resume instantly
+    // instead of loading a new one — e.g. between matches.
+    if (bannerParked) {
+      clearTimeout(bannerParkTimer);
+      bannerParked = false;
+      if (margin === parkedMargin) {
+        await mod.AdMob.resumeBanner();
+        if (stale()) { await mod.AdMob.hideBanner().catch(() => {}); bannerParked = true; scheduleParkedRemoval(); return; }
+        bannerShown = true;
+        shownMargin = margin;
+        setBannerSpace(true);
+        reportAd('banner', 'resumed', Date.now());
+        return;
+      }
+      await mod.AdMob.removeBanner().catch(() => {});
+    }
     // Ny skärm med annan höjd: visa om med ny marginal.
     if (bannerShown) { await mod.AdMob.removeBanner().catch(() => {}); bannerShown = false; }
     await mod.AdMob.showBanner({
@@ -827,14 +858,22 @@ export async function hideGameBanner(): Promise<void> {
   if (!bannerShown || !isAdMobAvailable()) return;
   // Markera direkt som borta: annars kan en ny match som öppnas medan
   // borttagningen pågår tro att bannern ligger kvar och hoppa över visningen.
+  const parkAt = shownMargin;
   bannerShown = false;
   shownMargin = -1;
   bannerRemoving = (async () => {
     try {
       const mod = await loadModule();
-      // Ta bort helt (inte bara dölj) så att ingen gammal banner ligger kvar.
-      await mod.AdMob.removeBanner();
-    } catch { /* best effort */ }
+      // Hide (keep loaded) so the next match can resume it instantly; a parked
+      // banner is fully removed after BANNER_PARK_MS so no stale one lingers.
+      await mod.AdMob.hideBanner();
+      bannerParked = true;
+      parkedMargin = parkAt;
+      scheduleParkedRemoval();
+    } catch {
+      try { const mod = await loadModule(); await mod.AdMob.removeBanner(); } catch { /* best effort */ }
+      bannerParked = false;
+    }
   })();
   await bannerRemoving;
 }

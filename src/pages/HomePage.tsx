@@ -176,6 +176,8 @@ export default function HomePage() {
     if (startupAdChecked) return;
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
     if (!shouldShowDailyStartupAd()) return;
+    // Start loading right away so the ad is usually ready when it is shown.
+    void preloadAppOpenAd();
     const timer = setTimeout(async () => {
       if (startupAdChecked) return;
       startupAdChecked = true;

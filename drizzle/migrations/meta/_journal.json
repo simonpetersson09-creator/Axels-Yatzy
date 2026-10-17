@@ -484,6 +484,13 @@
       "when": 1792179112050,
       "tag": "0068_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1792232234779,
+      "tag": "0069_accepted_friend_visibility",
+      "breakpoints": true
     }
   ]
 }

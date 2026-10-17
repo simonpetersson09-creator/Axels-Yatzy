@@ -1057,6 +1057,10 @@ export type Database = {
         Args: { p_other_session_ids: string[]; p_session_id: string }
         Returns: Json
       }
+      get_accepted_friend_matches: {
+        Args: { p_device_id: string; p_session_id: string }
+        Returns: Json
+      }
       get_avatars: { Args: { p_session_ids: string[] }; Returns: Json }
       get_country_rank: { Args: { p_session_id: string }; Returns: Json }
       get_dice_profiles: { Args: { p_game_id: string }; Returns: Json }

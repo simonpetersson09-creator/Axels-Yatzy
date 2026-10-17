@@ -263,3 +263,76 @@ describe('rewarded button status', () => {
     expect(await p).toBe('rewarded');
   });
 });
+
+describe('patched native rewarded (attempt ids)', () => {
+  let resolveShow: (v: unknown) => void = () => {};
+  const emitWith = (event: string, data: unknown) =>
+    native.handlers.get(event)?.forEach((h) => (h as (d: unknown) => void)(data));
+  const attemptOf = (call = 0) => (native.showRewarded.mock.calls[call] as unknown as [{ attemptId: string }])[0].attemptId;
+  beforeEach(() => {
+    vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = 'android';
+    native.showRewarded.mockReset();
+    native.showRewarded.mockImplementation((() => new Promise((r) => { resolveShow = r; })) as never);
+    native.prepareRewarded.mockReset(); native.prepareRewarded.mockResolvedValue({});
+  });
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); native.platform = 'ios'; });
+
+  it('reward + dismissal resolution gives exactly one reward', async () => {
+    const m = await import('./admob');
+    const late = vi.fn(); m.setLateRewardHandler(late);
+    const p = m.showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    const aid = attemptOf();
+    emitWith('r_showed', { attemptId: aid });
+    emitWith('r_reward', { attemptId: aid });
+    emitWith('r_dismissed', { attemptId: aid });
+    resolveShow({ attemptId: aid, rewarded: true, patched: true });
+    expect(await p).toBe('rewarded');
+    emitWith('r_reward', { attemptId: aid });
+    expect(late).not.toHaveBeenCalled();
+    expect(m.getRewardedState()).toBe('idle');
+  });
+
+  it('closed unrewarded, then reward with same id → exactly 1 late XP, no time window', async () => {
+    const m = await import('./admob');
+    const late = vi.fn(); m.setLateRewardHandler(late);
+    const p = m.showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    const aid = attemptOf();
+    emitWith('r_showed', { attemptId: aid });
+    emitWith('r_dismissed', { attemptId: aid });
+    resolveShow({ attemptId: aid, rewarded: false, patched: true });
+    expect(await p).toBe('not_earned');
+    await vi.advanceTimersByTimeAsync(30_000);
+    emitWith('r_reward', { attemptId: aid });
+    emitWith('r_reward', { attemptId: aid });
+    expect(late).toHaveBeenCalledOnce();
+  });
+
+  it('events tagged with an old attempt id never affect the next attempt', async () => {
+    const m = await import('./admob');
+    const late = vi.fn(); m.setLateRewardHandler(late);
+    const first = m.showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    const old = attemptOf(0);
+    resolveShow({ attemptId: old, rewarded: false, patched: true });
+    expect(await first).toBe('not_earned');
+    const second = m.showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    const cur = attemptOf(1);
+    expect(cur).not.toBe(old);
+    emitWith('r_showed', { attemptId: cur });
+    emitWith('r_reward', { attemptId: 'someone-else' });
+    emitWith('r_dismissed', { attemptId: old });
+    resolveShow({ attemptId: cur, rewarded: false, patched: true });
+    expect(await second).toBe('not_earned');
+    expect(late).not.toHaveBeenCalled();
+  });
+
+  it('native presentation failure rejects → no XP and button freed', async () => {
+    native.showRewarded.mockImplementation((() => Promise.reject(new Error('No view controller'))) as never);
+    const m = await import('./admob');
+    expect(await m.showOptionalRewarded()).toBe('failed');
+    expect(m.getRewardedState()).toBe('idle');
+  });
+});

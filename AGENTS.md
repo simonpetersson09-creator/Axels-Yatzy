@@ -18,11 +18,11 @@
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock — avoids duplicate matches.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
-- Hall of Fame: server-side report_weekly_score (from recordGameResult) trims to first name, caps score.
+- Hall of Fame: report_weekly_score (from recordGameResult) trims to first name and caps score server-side.
 - Game banner: fitGameAboveBanner (admob.ts) shrinks rows/dice until all fits above it.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row. Optional ads wait for native dismissal before XP confirmation, since presentation resolves immediately.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
 - DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.
 - Shop receipts use body-portaled native dialogs and useBackHandler to stay visible and close before the shop.
 
-- Friend list/detail require server-accepted IDs; history/aliases never grant consent. Load history via device-validated get_accepted_friend_matches.
+- Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.

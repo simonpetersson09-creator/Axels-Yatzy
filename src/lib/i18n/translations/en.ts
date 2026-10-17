@@ -55,6 +55,8 @@ export const en: Partial<typeof sv> = {
   adButtonHint: 'Watch a short ad — completely optional!',
   adPlaceholderMessage: 'A short ad would appear here (not wired yet).',
   adLoading: 'Loading ad…',
+  adShowingShort: 'Ad playing',
+  adWaitingShort: 'Waiting for the ad',
   adFailed: 'No ad available right now.',
   adOnlyInApp: 'Ads are only shown in the app.',
   adBubbleText: 'Help us keep Mr.B. Yatzy free. If you\'d like, you\'re welcome to watch a short ad.',

@@ -64,7 +64,7 @@ describe('iOS rewarded XP ad', () => {
   beforeEach(() => {
     native.platform = 'ios';
     vi.resetModules(); vi.useFakeTimers(); native.handlers.clear();
-    native.showRewarded.mockClear(); native.prepareRewarded.mockReset(); native.prepareRewarded.mockResolvedValue({});
+    native.showRewarded.mockReset(); native.showRewarded.mockReturnValue(new Promise(() => {})); native.prepareRewarded.mockReset(); native.prepareRewarded.mockResolvedValue({});
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
 
@@ -117,7 +117,7 @@ describe('iOS rewarded XP ad', () => {
 describe('Android rewarded XP ad', () => {
   beforeEach(() => {
     vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = 'android';
-    native.showRewarded.mockReset(); native.showRewarded.mockResolvedValue({});
+    native.showRewarded.mockReset(); native.showRewarded.mockReturnValue(new Promise(() => {}));
     native.prepareRewarded.mockReset(); native.prepareRewarded.mockResolvedValue({});
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); native.platform = 'ios'; });

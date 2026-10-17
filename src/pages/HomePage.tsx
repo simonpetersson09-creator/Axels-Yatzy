@@ -728,12 +728,20 @@ export default function HomePage() {
             </motion.button>
             <motion.button
               onClick={() => navigate('/stats')}
-              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"
+              className="relative w-full py-3 sm:py-4 px-16 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"
               whileTap={{ scale: 0.97 }}
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}
             >
               <BarChart3 className="w-5 h-5" /> <span className="truncate">{t('statsPage')}</span>
+              {hofRank && (
+                <span
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full bg-game-gold text-background px-2 py-1 text-xs leading-none font-bold tabular-nums whitespace-nowrap shadow-md"
+                  aria-label={`${t('hofBadgeLabel')} #${hofRank}`}
+                >
+                  <Trophy className="w-3.5 h-3.5" />#{hofRank}
+                </span>
+              )}
             </motion.button>
           </div>
 
@@ -818,18 +826,6 @@ export default function HomePage() {
                 </div>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('settings')}</span>
               </motion.button>
-              {hofRank && (
-                <motion.button
-                  onClick={() => navigate('/stats')}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="absolute top-0 left-[calc(50%+8px)] z-10 flex items-center gap-0.5 rounded-full bg-game-gold text-background px-1.5 py-[1px] text-[9px] leading-none font-bold tabular-nums whitespace-nowrap shadow-md ring-2 ring-background"
-                  aria-label={`${t('hofBadgeLabel')} #${hofRank}`}
-                >
-                  <Trophy className="w-3 h-3" />#{hofRank}
-                </motion.button>
-              )}
               </div>
 
               <motion.button

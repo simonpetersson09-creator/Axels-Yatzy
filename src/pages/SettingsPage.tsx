@@ -1,6 +1,8 @@
 import NotificationsOffBanner from '@/components/NotificationsOffBanner';
 import { Dices } from 'lucide-react';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
+import { DiceShop } from '@/components/DiceShop';
+import { Button } from '@/components/ui/button';
 import { useGoldStatus, ownProfile, goldDaysLeft, isGoldActive, setPreferWhiteDice } from '@/lib/gold-dice';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -374,15 +376,19 @@ export default function SettingsPage() {
               <span className="flex-1 text-sm font-medium text-foreground">{t('statsPage')}</span>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </motion.button>
-            <motion.button
+          </Card>
+        </Section>
+
+        <Section title={t('myDice')}>
+          <Card>
+            <Button variant="ghost"
               onClick={() => { setMyDiceOpen(true); trackEvent('my_dice_opened', { from: 'settings' }); }}
-              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors border-b border-border/40"
-              whileTap={{ scale: 0.985 }}
+              className="h-auto w-full justify-start px-4 py-3.5 text-left border-b border-border/40"
             >
               <Dices className="w-4 h-4 text-primary" />
               <span className="flex-1 text-sm font-medium text-foreground">{t('myDice')}</span>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </motion.button>
+            </Button>
             {(goldStatus.tier !== 'white' || isGoldActive(goldStatus)) && (
               <div className="border-b border-border/40">
                 <ToggleRow
@@ -407,7 +413,12 @@ export default function SettingsPage() {
               inviteDaysLeft={goldDaysLeft(goldStatus) || undefined}
               showLadder
               avatarUrl={avatar}
+              footer={<DiceShop ownedOnly />}
             />
+          </Card>
+        </Section>
+
+        <Card>
             <motion.button
               onClick={resetStats}
               className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-destructive/10 transition-colors"
@@ -416,8 +427,7 @@ export default function SettingsPage() {
               <Trash2 className="w-4 h-4 text-destructive" />
               <span className="text-sm font-medium text-destructive">{t('resetStats')}</span>
             </motion.button>
-          </Card>
-        </Section>
+        </Card>
 
         {adPrivacyRequired && (
           <Card>

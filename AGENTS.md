@@ -6,7 +6,7 @@
 - AdMob IDs are per platform in ADMOB_IDS (src/lib/admob.ts); a null ID disables that ad type on that platform so iOS IDs can never be used on Android.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
-- google-services.json is committed in firebase/ (public identifiers only) and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.
+- firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online-game problems (errors, slow calls >3 s, screen/server dice or score mismatches) are reported silently as analytics_events 'mp_issue' from useMultiplayerGame — lets us diagnose desync reports without user effort.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
 - Online locks send full locked_dice batches via service-role perform_set_locks; per-die toggles are legacy only, avoiding row-lock queues.
@@ -23,6 +23,6 @@
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row. Optional ads wait for native dismissal before XP confirmation, since presentation resolves immediately.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
 - DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.
-- Shop receipts use body-portaled native dialogs and useBackHandler to stay visible and close before the shop.
+- Shop receipts use body-portaled native dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings without buying.
 
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.

@@ -30,7 +30,7 @@ function MiniDie({ d, size = 44 }: { d: DiceDesign; size?: number }) {
 }
 
 /** Shop part of the "Tärningsbutik" sheet: XP balance, designs, buy/use. */
-export function DiceShop() {
+export function DiceShop({ ownedOnly = false }: { ownedOnly?: boolean }) {
   const { t, lang } = useTranslation();
   const shop = useShop();
   const [picked, setPicked] = useState<string | null>(null);
@@ -70,12 +70,12 @@ export function DiceShop() {
   return (
     <div className="mt-4 border-t border-border pt-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-bold text-foreground">{t('shopTitle')}</p>
-        <span className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary">
+        <p className="text-sm font-bold text-foreground">{t(ownedOnly ? 'shopKind_owned' : 'shopTitle')}</p>
+        {!ownedOnly && <span className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary">
           <Star className="w-3.5 h-3.5 fill-current" aria-hidden />{t('shopWallet', { n: shop.xp })}
-        </span>
+        </span>}
       </div>
-      <p className="mt-1 text-[11px] text-muted-foreground">{t('shopEarnHintNoCap')}</p>
+      {!ownedOnly && <p className="mt-1 text-[11px] text-muted-foreground">{t('shopEarnHintNoCap')}</p>}
 
       <button
         onClick={() => use(null)}
@@ -93,7 +93,7 @@ export function DiceShop() {
 
       {DICE_DESIGNS.some((d) => shop.owned.includes(d.id)) && (
         <div className="mt-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t('shopKind_owned')}</p>
+          {!ownedOnly && <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t('shopKind_owned')}</p>}
           <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
             {DICE_DESIGNS.filter((d) => shop.owned.includes(d.id)).map((d) => (
               <button key={d.id} disabled={busy} onClick={() => use(d.id)} aria-label={designName(d, lang)}
@@ -107,7 +107,7 @@ export function DiceShop() {
         </div>
       )}
 
-      {KINDS.filter((kind) => DICE_DESIGNS.some((d) => d.kind === kind && visible(d))).map((kind) => (
+      {!ownedOnly && KINDS.filter((kind) => DICE_DESIGNS.some((d) => d.kind === kind && visible(d))).map((kind) => (
         <div key={kind} className="mt-4">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             {t(`shopKind_${kind}` as TranslationKey)}
@@ -177,7 +177,7 @@ export function DiceShop() {
               <span className="flex-1 text-sm font-semibold text-foreground">{t('shopStandard')}</span>
               {sec.selected === null && <Check className="w-4 h-4 text-primary" />}
             </button>
-            {sec.items.map((it) => {
+            {sec.items.filter((it) => !ownedOnly || shop.owned.includes(it.id)).map((it) => {
               const owned = shop.owned.includes(it.id);
               const inUse = sec.selected === it.id;
               const price = shop.prices[it.id] ?? 0;

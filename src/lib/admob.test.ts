@@ -344,6 +344,7 @@ describe('patched native rewarded (attempt ids)', () => {
 describe('preloading', () => {
   beforeEach(() => {
     vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = 'ios';
+    vi.stubGlobal('requestAnimationFrame', (cb: () => void) => setTimeout(cb, 16));
     Object.values(native.banner).forEach((f) => f.mockClear()); native.loadAppOpen.mockClear(); native.appOpenLoaded = false;
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });

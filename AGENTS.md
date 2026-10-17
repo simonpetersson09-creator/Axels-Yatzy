@@ -16,10 +16,10 @@
 - Online actions (roll, set locks, old per-die toggle, score incl. dice check, start, forfeit) call *_authed RPCs that run claim_session and the action in one database call — saves a round trip per tap; the client recovers slow rolls by reading the games row (ROLL_RECOVER_* in useMultiplayerGame) so late server rolls are shown, never lost.
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit) instead of ending the match — others can finish.
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
-- accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock — avoids duplicate matches.
+- accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Hall of Fame: report_weekly_score (from recordGameResult) trims to first name and caps score server-side.
-- Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
+- Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
 - DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.
 - Shop receipts use body-portaled native dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings without buying.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.

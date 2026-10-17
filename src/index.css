@@ -359,6 +359,14 @@
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+  /* Keep late-loading shop content and scrolling below the status bar. */
+  .dice-info-overlay {
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 16px;
+    padding-top: calc(16px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
+    padding-bottom: calc(16px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  }
   .text-gold-gradient {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, hsl(var(--game-gold-light)), hsl(var(--game-gold)), hsl(var(--game-gold-dark)));

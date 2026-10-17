@@ -19,6 +19,7 @@ import {
 import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank';
 import { resetLocalStats, getLocalStats, saveLocalStats, type LocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
+import { getAnonNumber } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { isAdPrivacyOptionsRequired, showAdPrivacyOptions } from '@/lib/admob';
 import { ShieldCheck } from 'lucide-react';
@@ -139,7 +140,7 @@ export default function SettingsPage() {
   };
 
 
-  const displayName = name.trim() || t('guest');
+  const displayName = name.trim() || t('playerN', { n: getAnonNumber() });
 
   return (
     <div

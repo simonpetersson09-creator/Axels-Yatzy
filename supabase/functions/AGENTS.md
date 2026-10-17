@@ -1,4 +1,5 @@
 - Push routing: push_tokens.platform decides the channel — 'android' goes to FCM (via the Firebase connector, _shared/fcm.ts), everything else to APNs; all notify functions call sendPush so iOS delivery stays untouched.
+- Broadcasts must read lookup tables with explicit .range() (selects cap at 1000 rows) and send to the newest token per device — otherwise languages fall back wrongly and stale tokens swallow the per-device guard.
 - APNs provider JWTs are cached per function instance (getCachedApnsJwt in _shared/apns.ts, 40 min) — Apple rejects pushes with 429 TooManyProviderTokenUpdates when a new token is signed per send.
 - Score and lock edge functions call the database via _shared/rpc-retry.ts (abandon after 2.5 s, retry once; score confirms a lost first try from stored scores); rolls are never retried server-side because a repeat would use an extra roll.
 - Rolls, locks, scores and game start in new app versions go straight to client_* RPCs (device-checked in the database); client_submit_score queues the turn push in turn_push_queue and pings notify-after-score itself, so the push never depends on the app staying open — skips the slow server-function hop.

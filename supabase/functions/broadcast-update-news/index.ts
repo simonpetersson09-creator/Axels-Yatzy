@@ -38,9 +38,11 @@ Deno.serve(async (req) => {
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
   const [{ data: tokens }, { data: prefs }, { data: countries }] = await Promise.all([
-    supabase.from("push_tokens").select("device_id, session_id, token, platform").eq("enabled", true),
-    supabase.from("notification_preferences").select("device_id, lang"),
-    supabase.from("player_country_stats").select("session_id, country"),
+    // Newest token first so a device with an old leftover token gets the current one.
+    supabase.from("push_tokens").select("device_id, session_id, token, platform").eq("enabled", true).order("updated_at", { ascending: false }),
+    // Big tables: read all rows (default select stops at 1000, which dropped languages).
+    supabase.from("notification_preferences").select("device_id, lang").not("lang", "is", null).range(0, 9999),
+    supabase.from("player_country_stats").select("session_id, country").range(0, 9999),
   ]);
   const lang = new Map((prefs ?? []).map((p) => [p.device_id, p.lang as string | null]));
   const country = new Map((countries ?? []).map((c) => [c.session_id, String(c.country).toUpperCase()]));

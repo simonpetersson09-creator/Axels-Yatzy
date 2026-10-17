@@ -1,6 +1,6 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 
-const native = vi.hoisted(() => ({ platform: 'ios', handlers: new Map<string, Set<() => void>>(), show: vi.fn(async () => {}), showRewarded: vi.fn(async () => ({})), prepareRewarded: vi.fn(async () => ({})) }));
+const native = vi.hoisted(() => ({ platform: 'ios', handlers: new Map<string, Set<() => void>>(), show: vi.fn(async () => {}), showRewarded: vi.fn(async () => ({})), prepareRewarded: vi.fn(async () => ({})), banner: { show: vi.fn(async () => {}), hide: vi.fn(async () => {}), resume: vi.fn(async () => {}), remove: vi.fn(async () => {}) }, loadAppOpen: vi.fn(async () => {}), appOpenLoaded: false }));
 vi.mock('@capacitor/core', () => ({ Capacitor: {
   getPlatform: () => native.platform, isNativePlatform: () => true, isPluginAvailable: () => true,
 } }));
@@ -8,12 +8,16 @@ vi.mock('@/lib/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('@capacitor-community/admob', () => ({
   AdmobConsentStatus: { REQUIRED: 'REQUIRED' },
   InterstitialAdPluginEvents: { Dismissed: 'dismissed', FailedToShow: 'failed' },
+  BannerAdSize: { BANNER: 'BANNER' }, BannerAdPosition: { BOTTOM_CENTER: 'BOTTOM_CENTER' },
   RewardAdPluginEvents: { Showed: 'r_showed', Rewarded: 'r_reward', Dismissed: 'r_dismissed', FailedToShow: 'r_failed' },
   AdMob: {
     requestConsentInfo: async () => ({ canRequestAds: true }),
     initialize: async () => {}, prepareInterstitial: async () => {}, showInterstitial: native.show,
     prepareRewardVideoAd: native.prepareRewarded, showRewardVideoAd: native.showRewarded,
-    isAppOpenLoaded: async () => ({ value: true }), loadAppOpen: async () => {}, showAppOpen: async () => {},
+    isAppOpenLoaded: async () => ({ value: native.appOpenLoaded }),
+    loadAppOpen: async () => { await native.loadAppOpen(); native.appOpenLoaded = true; },
+    showAppOpen: async () => {},
+    showBanner: native.banner.show, hideBanner: native.banner.hide, resumeBanner: native.banner.resume, removeBanner: native.banner.remove,
     addListener: async (event: string, handler: () => void) => {
       const handlers = native.handlers.get(event) ?? new Set();
       handlers.add(handler);
@@ -334,5 +338,45 @@ describe('patched native rewarded (attempt ids)', () => {
     const m = await import('./admob');
     expect(await m.showOptionalRewarded()).toBe('failed');
     expect(m.getRewardedState()).toBe('idle');
+  });
+});
+
+describe('preloading', () => {
+  beforeEach(() => {
+    vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = 'ios';
+    Object.values(native.banner).forEach((f) => f.mockClear()); native.loadAppOpen.mockClear(); native.appOpenLoaded = false;
+  });
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
+
+  it('cold-start preload is reused by the start ad, never loaded twice', async () => {
+    const m = await import('./admob');
+    void m.preloadAppOpenAd();
+    const shown = m.showAppOpenAd();
+    await vi.advanceTimersByTimeAsync(100);
+    expect(await shown).toBe(true);
+    expect(native.loadAppOpen).toHaveBeenCalledOnce();
+  });
+
+  it('banner is parked between matches and resumed, not reloaded', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(2000); await first;
+    expect(native.banner.show).toHaveBeenCalledOnce();
+    await m.hideGameBanner();
+    expect(native.banner.hide).toHaveBeenCalledOnce();
+    expect(native.banner.remove).not.toHaveBeenCalled();
+    const second = m.showGameBanner(); await vi.advanceTimersByTimeAsync(2000); await second;
+    expect(native.banner.resume).toHaveBeenCalledOnce();
+    expect(native.banner.show).toHaveBeenCalledOnce();
+  });
+
+  it('a parked banner is removed after 3 minutes', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(2000); await first;
+    await m.hideGameBanner();
+    await vi.advanceTimersByTimeAsync(3 * 60_000);
+    expect(native.banner.remove).toHaveBeenCalledOnce();
+    const again = m.showGameBanner(); await vi.advanceTimersByTimeAsync(2000); await again;
+    expect(native.banner.resume).not.toHaveBeenCalled();
+    expect(native.banner.show).toHaveBeenCalledTimes(2);
   });
 });

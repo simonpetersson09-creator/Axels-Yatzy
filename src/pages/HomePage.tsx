@@ -1,5 +1,5 @@
 import { BarChart3, ChevronRight } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
 import { SentInvitesCards } from '@/components/SentInvitesCards';
@@ -32,7 +32,7 @@ import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { awardAdXp } from '@/lib/dice-shop';
-import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showOptionalRewarded, preloadRewarded, setLateRewardHandler, usesRewardedOptionalAd, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
+import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showOptionalRewarded, preloadRewarded, subscribeRewardedState, getRewardedState, usesRewardedOptionalAd, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
@@ -227,16 +227,17 @@ export default function HomePage() {
     else if (r.ok === false && r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
     else toast.error(t('errGeneric'));
   };
-  // Reward earned after the open timeout already freed the button (Android).
-  // Kept registered after unmount so a late reward is never lost.
-  const grantAdXpRef = useRef(grantAdXp);
-  grantAdXpRef.current = grantAdXp;
-  useEffect(() => { setLateRewardHandler(() => void grantAdXpRef.current(true)); }, []);
+  // Rewarded-ad status is app-wide, so the button stays locked across page changes.
+  const rewardedState = useSyncExternalStore(subscribeRewardedState, getRewardedState);
+  const adBusy = adLoading || rewardedState !== 'idle';
+  const adStatusText = rewardedState === 'showing' ? t('adShowingShort')
+    : rewardedState === 'waiting' ? t('adWaitingShort')
+    : adBusy ? t('adLoading') : null;
 
   /** Enda vägen till show(): användarens direkta tryck på "Frivillig reklam". */
   const handleOptionalAdClick = async () => {
     if (AD_BUTTON_LOCKED) return;
-    if (adInFlightRef.current) return;
+    if (adInFlightRef.current || getRewardedState() !== 'idle') return;
     adInFlightRef.current = true;
     setShowAdBubble(false);
     if (!isAdMobAvailable()) {
@@ -854,7 +855,7 @@ export default function HomePage() {
 
                 <motion.button
                   onClick={handleOptionalAdClick}
-                  disabled={adLoading || AD_BUTTON_LOCKED}
+                  disabled={adBusy || AD_BUTTON_LOCKED}
                   className="flex flex-col items-center gap-1.5 group disabled:opacity-60"
                   whileTap={{ scale: AD_BUTTON_LOCKED ? 1 : 0.92 }}
                   aria-label={t('adButtonLabel')}
@@ -868,6 +869,9 @@ export default function HomePage() {
                     </div>
                   </div>
                   <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('adButtonShort')}</span>
+                  {adStatusText && !AD_BUTTON_LOCKED && (
+                    <span role="status" className="text-[7px] font-medium text-primary/80 text-center leading-none -mt-1 whitespace-nowrap">{adStatusText}</span>
+                  )}
                   {AD_BUTTON_LOCKED && (
                     <span className={`text-[7px] font-medium text-destructive text-center leading-none -mt-1 transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adComingSoon')}</span>
                   )}

@@ -13,6 +13,7 @@ import { getProfileCountry } from '@/lib/profile';
 import { fireWinConfetti } from '@/lib/confetti';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { ShopPurchaseDialog } from '@/components/ShopPurchaseDialog';
 
 const KINDS: DesignKind[] = ['season', 'personal', 'flag', 'color', 'pattern', 'exclusive'];
 const PIPS_5 = [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]];
@@ -36,6 +37,7 @@ export function DiceShop() {
   const [busy, setBusy] = useState(false);
   const [previewCel, setPreviewCel] = useState<string | null>(null);
   const [previewFrame, setPreviewFrame] = useState<string | null>(null);
+  const [purchase, setPurchase] = useState<{ name: string; price: number } | null>(null);
   const avatar = getProfileAvatar();
   const now = Date.now();
   const expired = (id: string) => !!shop.until[id] && new Date(shop.until[id]).getTime() < now;
@@ -55,7 +57,7 @@ export function DiceShop() {
     const r = await buyDesign(id);
     if (r === 'ok') {
       fireWinConfetti({ durationMs: 1200 });
-      toast.success(t('shopBought', { name }));
+      setPurchase({ name, price: shop.prices[id] ?? 0 });
       trackEvent('dice_design_bought', { id, price: shop.prices[id] ?? 0 });
     } else toast.error(r === 'xp' ? t('shopNotEnough') : t('errGeneric'));
   });
@@ -227,6 +229,7 @@ export function DiceShop() {
         </div>
       ))}
       {createPortal(<YatzyCelebration key={previewCel ?? 'none'} show={previewCel !== null} celebrationId={previewCel} onComplete={() => setPreviewCel(null)} />, document.body)}
+      <ShopPurchaseDialog purchase={purchase} xp={shop.xp} onClose={() => setPurchase(null)} />
     </div>
   );
 }

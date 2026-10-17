@@ -152,11 +152,57 @@ describe('Android rewarded XP ad', () => {
     expect(await pending).toBe('not_earned');
   });
 
-  it('ad that never opens frees the button after 20 s, a running ad is not cut', async () => {
-    const { showOptionalRewarded } = await import('./admob');
-    const stuck = showOptionalRewarded();
+  it('timeout → late open → earned reward gives exactly 1 XP', async () => {
+    const { showOptionalRewarded, setLateRewardHandler } = await import('./admob');
+    const xp = vi.fn();
+    setLateRewardHandler(() => xp(1));
+    const first = showOptionalRewarded();
     await vi.advanceTimersByTimeAsync(20_000);
-    expect(await stuck).toBe('failed');
+    expect(await first).toBe('failed'); // button freed, no XP for the timeout itself
+    expect(xp).not.toHaveBeenCalled();
+    expect(await showOptionalRewarded()).toBe('busy'); // old attempt still owns the SDK
+    emit('r_showed');
+    await vi.advanceTimersByTimeAsync(30_000);
+    emit('r_reward'); emit('r_reward'); emit('r_dismissed');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(xp).toHaveBeenCalledExactlyOnceWith(1);
+    setLateRewardHandler(null);
+  });
+
+  it('timeout and late close without reward give no XP', async () => {
+    const { showOptionalRewarded, setLateRewardHandler } = await import('./admob');
+    const xp = vi.fn();
+    setLateRewardHandler(xp);
+    const first = showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(20_000);
+    expect(await first).toBe('failed');
+    emit('r_showed'); emit('r_dismissed');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(xp).not.toHaveBeenCalled();
+    setLateRewardHandler(null);
+  });
+
+  it('late events from an old attempt never reach the next attempt', async () => {
+    const { showOptionalRewarded, setLateRewardHandler } = await import('./admob');
+    const late = vi.fn();
+    setLateRewardHandler(late);
+    const first = showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(20_000);
+    await first;
+    emit('r_showed'); emit('r_dismissed'); // old attempt ends without reward
+    await vi.advanceTimersByTimeAsync(2000);
+    const second = showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(native.handlers.get('r_reward')?.size).toBe(1); // old listeners removed
+    emit('r_showed'); emit('r_dismissed');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(await second).toBe('not_earned');
+    expect(late).not.toHaveBeenCalled();
+    setLateRewardHandler(null);
+  });
+
+  it('a running ad is never cut by the open timeout', async () => {
+    const { showOptionalRewarded } = await import('./admob');
     const running = showOptionalRewarded();
     await vi.advanceTimersByTimeAsync(0);
     emit('r_showed');

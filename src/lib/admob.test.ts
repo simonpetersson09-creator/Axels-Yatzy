@@ -193,7 +193,7 @@ describe('Android rewarded XP ad', () => {
     await vi.advanceTimersByTimeAsync(2000);
     const second = showOptionalRewarded();
     await vi.advanceTimersByTimeAsync(0);
-    expect(native.handlers.get('r_reward')?.size).toBe(1); // old listeners removed
+    expect(native.handlers.get('r_reward')?.size).toBe(2); // old per-attempt listeners removed (1 permanent + 1 current)
     emit('r_showed'); emit('r_dismissed');
     await vi.advanceTimersByTimeAsync(2000);
     expect(await second).toBe('not_earned');

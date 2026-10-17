@@ -365,12 +365,16 @@ let lateRewardHandler: (() => void) | null = null;
  * event arriving after dismissal pays exactly once, to the right attempt.
  */
 type RewardEvent = { attemptId?: string } | undefined;
+type ListenerHandle = { remove: () => Promise<void> };
+/** addListener for rewarded events with the attemptId payload of the patched plugin. */
+const onReward = (mod: AdMobModule) =>
+  mod.AdMob.addListener as unknown as (event: string, fn: (ev: RewardEvent) => void) => Promise<ListenerHandle>;
 const closedUnrewarded = new Set<string>();
 let lateRewardListenerAttached = false;
 async function ensureLateRewardListener(mod: AdMobModule) {
   if (lateRewardListenerAttached) return;
   lateRewardListenerAttached = true;
-  await mod.AdMob.addListener(mod.RewardAdPluginEvents.Rewarded, (ev: RewardEvent) => {
+  await onReward(mod)(mod.RewardAdPluginEvents.Rewarded, (ev: RewardEvent) => {
     const aid = ev?.attemptId;
     if (aid && closedUnrewarded.delete(aid)) lateRewardHandler?.();
   });
@@ -433,15 +437,15 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
       let done = false;
       finish = (r) => { if (!done) { done = true; resolve(r); } };
     });
-    listeners.push(await mod.AdMob.addListener(E.Rewarded, (ev: RewardEvent) => { if (mine(ev)) earned = true; }));
-    listeners.push(await mod.AdMob.addListener(E.Showed, (ev: RewardEvent) => {
+    listeners.push(await onReward(mod)(E.Rewarded, (ev: RewardEvent) => { if (mine(ev)) earned = true; }));
+    listeners.push(await onReward(mod)(E.Showed, (ev: RewardEvent) => {
       if (!mine(ev)) return;
       opened = true;
       setRewardedState('showing');
       suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     }));
-    listeners.push(await mod.AdMob.addListener(E.FailedToShow, (ev: RewardEvent) => { if (mine(ev)) finish(earned ? 'rewarded' : 'failed'); }));
-    listeners.push(await mod.AdMob.addListener(E.Dismissed, (ev: RewardEvent) => {
+    listeners.push(await onReward(mod)(E.FailedToShow, (ev: RewardEvent) => { if (mine(ev)) finish(earned ? 'rewarded' : 'failed'); }));
+    listeners.push(await onReward(mod)(E.Dismissed, (ev: RewardEvent) => {
       if (!mine(ev)) return;
       if (ev?.attemptId != null) return; // patched native: the show call's resolution decides
       if (earned) { finish('rewarded'); return; }

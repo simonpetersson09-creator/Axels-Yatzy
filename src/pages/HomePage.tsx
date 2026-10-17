@@ -239,7 +239,7 @@ export default function HomePage() {
       // 1 XP after the optional ad closes; no daily cap.
       if (result === 'shown') {
         const r = await awardAdXp();
-        trackEvent('ad_xp_result', { ok: r.ok, reason: r.ok ? undefined : r.reason });
+        trackEvent('ad_xp_result', { ok: r.ok, reason: r.ok === false ? r.reason : undefined });
         if (r.ok) toast.success(t('xpEarned', { n: r.xp }), { duration: 6000 });
         else if (r.ok === false && r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
         else toast.error(t('errGeneric'));

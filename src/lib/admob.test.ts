@@ -1,6 +1,6 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 
-const native = vi.hoisted(() => ({ handlers: new Map<string, Set<() => void>>(), show: vi.fn(async () => {}) }));
+const native = vi.hoisted(() => ({ handlers: new Map<string, Set<() => void>>(), show: vi.fn(async () => {}), showRewarded: vi.fn(async () => ({})), prepareRewarded: vi.fn(async () => ({})) }));
 vi.mock('@capacitor/core', () => ({ Capacitor: {
   getPlatform: () => 'ios', isNativePlatform: () => true, isPluginAvailable: () => true,
 } }));
@@ -8,9 +8,12 @@ vi.mock('@/lib/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('@capacitor-community/admob', () => ({
   AdmobConsentStatus: { REQUIRED: 'REQUIRED' },
   InterstitialAdPluginEvents: { Dismissed: 'dismissed', FailedToShow: 'failed' },
+  RewardAdPluginEvents: { Rewarded: 'r_reward', Dismissed: 'r_dismissed', FailedToShow: 'r_failed' },
   AdMob: {
     requestConsentInfo: async () => ({ canRequestAds: true }),
     initialize: async () => {}, prepareInterstitial: async () => {}, showInterstitial: native.show,
+    prepareRewardVideoAd: native.prepareRewarded, showRewardVideoAd: native.showRewarded,
+    isAppOpenLoaded: async () => ({ value: true }), loadAppOpen: async () => {}, showAppOpen: async () => {},
     addListener: async (event: string, handler: () => void) => {
       const handlers = native.handlers.get(event) ?? new Set();
       handlers.add(handler);
@@ -55,5 +58,57 @@ describe('optional ad completion for XP', () => {
     emit('failed');
     expect(await pending).toBe('failed');
     expect(reward).not.toHaveBeenCalled();
+  });
+});
+describe('iOS rewarded XP ad', () => {
+  beforeEach(() => {
+    vi.resetModules(); vi.useFakeTimers(); native.handlers.clear();
+    native.showRewarded.mockClear(); native.prepareRewarded.mockReset(); native.prepareRewarded.mockResolvedValue({});
+  });
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
+
+  it('gives exactly one reward only after the SDK reward event', async () => {
+    const { showOptionalRewarded } = await import('./admob');
+    const reward = vi.fn();
+    const pending = showOptionalRewarded().then((r) => { if (r === 'rewarded') reward(1); return r; });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(native.showRewarded).toHaveBeenCalledOnce();
+    expect(await showOptionalRewarded()).toBe('busy');
+    emit('r_reward'); emit('r_reward');
+    emit('r_dismissed');
+    expect(await pending).toBe('rewarded');
+    emit('r_reward'); emit('r_dismissed');
+    expect(reward).toHaveBeenCalledExactlyOnceWith(1);
+  });
+
+  it('closing before the reward is earned gives no XP', async () => {
+    const { showOptionalRewarded } = await import('./admob');
+    const pending = showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    emit('r_dismissed');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(await pending).toBe('not_earned');
+  });
+
+  it('load failure returns failed and frees the button', async () => {
+    native.prepareRewarded.mockRejectedValue(new Error('no fill'));
+    const { showOptionalRewarded } = await import('./admob');
+    expect(await showOptionalRewarded()).toBe('failed');
+    expect(native.showRewarded).not.toHaveBeenCalled();
+    native.prepareRewarded.mockResolvedValue({});
+    const again = showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(native.showRewarded).toHaveBeenCalledOnce();
+    emit('r_failed');
+    expect(await again).toBe('failed');
+  });
+
+  it('start ad is suppressed right after returning from the rewarded ad', async () => {
+    const { showOptionalRewarded, showAppOpenAd } = await import('./admob');
+    const pending = showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    emit('r_reward'); emit('r_dismissed');
+    await pending;
+    expect(await showAppOpenAd()).toBe(false);
   });
 });

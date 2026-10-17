@@ -23,3 +23,4 @@
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row. Optional ads wait for native dismissal before XP confirmation, since presentation resolves immediately.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
 - DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.
+- Shop receipts use body-portaled native dialogs and useBackHandler to stay visible and dismiss before the shop.

@@ -257,6 +257,80 @@ export default function SettingsPage() {
 
 
 
+        <Section title={t('myDice')}>
+          <Card>
+            <Button variant="ghost"
+              onClick={() => { setMyDiceOpen(true); trackEvent('my_dice_opened', { from: 'settings' }); }}
+              className="h-auto min-h-11 w-full justify-start px-3 py-2.5 text-left border-b border-border/40"
+            >
+              <Dices className="w-4 h-4 text-primary" />
+              <span className="flex-1 text-sm font-medium text-foreground">{t('myDice')}</span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </Button>
+            {(goldStatus.tier !== 'white' || isGoldActive(goldStatus)) && (
+              <div className="border-b border-border/40">
+                <ToggleRow
+                  icon={<Dices className="w-4 h-4 text-muted-foreground" />}
+                  label={t('useWhiteDice')}
+                  description={t('useWhiteDiceDesc')}
+                  value={preferWhite}
+                  onChange={async (v) => {
+                    setPreferWhite(v);
+                    trackEvent('white_dice_toggled', { on: v });
+                    const ok = await setPreferWhiteDice(v);
+                    if (!ok) { setPreferWhite(!v); toast.error(t('errorGeneric')); }
+                  }}
+                />
+              </div>
+            )}
+            <DiceInfoSheet
+              open={myDiceOpen}
+              onClose={() => setMyDiceOpen(false)}
+              name={t('myDice')}
+              profile={ownProfile(goldStatus)}
+              inviteDaysLeft={goldDaysLeft(goldStatus) || undefined}
+              showLadder
+              avatarUrl={avatar}
+              footer={<DiceShop ownedOnly />}
+            />
+          </Card>
+        </Section>
+
+        <Section title={t('statistics')} onTitleTap={handleStatsTitleTap}>
+          <Card>
+            {adjustOpen && (
+              <>
+                <div className="px-3 py-2.5 space-y-3">
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    Justera statistik
+                  </p>
+                  <AdjustRow
+                    label="Vinster"
+                    value={statsSnapshot.wins}
+                    onChange={(d) => adjustStat('wins', d)}
+                  />
+                  <AdjustRow
+                    label="Spelade"
+                    value={statsSnapshot.gamesPlayed}
+                    onChange={(d) => adjustStat('gamesPlayed', d)}
+                  />
+                </div>
+                <div className="border-t border-border/40" />
+              </>
+            )}
+            <motion.button
+              onClick={() => navigate('/stats')}
+              className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors border-b border-border/40"
+              whileTap={{ scale: 0.985 }}
+            >
+              <BarChart3 className="w-4 h-4 text-primary" />
+              <span className="flex-1 text-sm font-medium text-foreground">{t('statsPage')}</span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </motion.button>
+          </Card>
+        </Section>
+
+
         {/* Country */}
         <Section title={t('countrySection')}>
           <Card>
@@ -346,78 +420,6 @@ export default function SettingsPage() {
           </Card>
         </Section>
 
-        <Section title={t('statistics')} onTitleTap={handleStatsTitleTap}>
-          <Card>
-            {adjustOpen && (
-              <>
-                <div className="px-3 py-2.5 space-y-3">
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                    Justera statistik
-                  </p>
-                  <AdjustRow
-                    label="Vinster"
-                    value={statsSnapshot.wins}
-                    onChange={(d) => adjustStat('wins', d)}
-                  />
-                  <AdjustRow
-                    label="Spelade"
-                    value={statsSnapshot.gamesPlayed}
-                    onChange={(d) => adjustStat('gamesPlayed', d)}
-                  />
-                </div>
-                <div className="border-t border-border/40" />
-              </>
-            )}
-            <motion.button
-              onClick={() => navigate('/stats')}
-              className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors border-b border-border/40"
-              whileTap={{ scale: 0.985 }}
-            >
-              <BarChart3 className="w-4 h-4 text-primary" />
-              <span className="flex-1 text-sm font-medium text-foreground">{t('statsPage')}</span>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </motion.button>
-          </Card>
-        </Section>
-
-        <Section title={t('myDice')}>
-          <Card>
-            <Button variant="ghost"
-              onClick={() => { setMyDiceOpen(true); trackEvent('my_dice_opened', { from: 'settings' }); }}
-              className="h-auto min-h-11 w-full justify-start px-3 py-2.5 text-left border-b border-border/40"
-            >
-              <Dices className="w-4 h-4 text-primary" />
-              <span className="flex-1 text-sm font-medium text-foreground">{t('myDice')}</span>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </Button>
-            {(goldStatus.tier !== 'white' || isGoldActive(goldStatus)) && (
-              <div className="border-b border-border/40">
-                <ToggleRow
-                  icon={<Dices className="w-4 h-4 text-muted-foreground" />}
-                  label={t('useWhiteDice')}
-                  description={t('useWhiteDiceDesc')}
-                  value={preferWhite}
-                  onChange={async (v) => {
-                    setPreferWhite(v);
-                    trackEvent('white_dice_toggled', { on: v });
-                    const ok = await setPreferWhiteDice(v);
-                    if (!ok) { setPreferWhite(!v); toast.error(t('errorGeneric')); }
-                  }}
-                />
-              </div>
-            )}
-            <DiceInfoSheet
-              open={myDiceOpen}
-              onClose={() => setMyDiceOpen(false)}
-              name={t('myDice')}
-              profile={ownProfile(goldStatus)}
-              inviteDaysLeft={goldDaysLeft(goldStatus) || undefined}
-              showLadder
-              avatarUrl={avatar}
-              footer={<DiceShop ownedOnly />}
-            />
-          </Card>
-        </Section>
 
         <Card>
             <motion.button

@@ -360,23 +360,23 @@ describe('preloading', () => {
 
   it('banner is parked between matches and resumed, not reloaded', async () => {
     const m = await import('./admob');
-    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(2000); await first;
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
     expect(native.banner.show).toHaveBeenCalledOnce();
     await m.hideGameBanner();
     expect(native.banner.hide).toHaveBeenCalledOnce();
     expect(native.banner.remove).not.toHaveBeenCalled();
-    const second = m.showGameBanner(); await vi.advanceTimersByTimeAsync(2000); await second;
+    const second = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await second;
     expect(native.banner.resume).toHaveBeenCalledOnce();
     expect(native.banner.show).toHaveBeenCalledOnce();
   });
 
   it('a parked banner is removed after 3 minutes', async () => {
     const m = await import('./admob');
-    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(2000); await first;
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
     await m.hideGameBanner();
     await vi.advanceTimersByTimeAsync(3 * 60_000);
     expect(native.banner.remove).toHaveBeenCalledOnce();
-    const again = m.showGameBanner(); await vi.advanceTimersByTimeAsync(2000); await again;
+    const again = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await again;
     expect(native.banner.resume).not.toHaveBeenCalled();
     expect(native.banner.show).toHaveBeenCalledTimes(2);
   });

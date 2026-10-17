@@ -12,9 +12,9 @@
 - Online locks send full locked_dice batches via service-role perform_set_locks; per-die toggles are legacy only, avoiding row-lock queues.
 - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the caller's device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old app versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — lets us audit fairness and dispute claims afterwards.
-- Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat) — the dice start instantly instead of waiting for a lock call.
+- Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).
 - Online actions (roll, set locks, old per-die toggle, score incl. dice check, start, forfeit) call *_authed RPCs that run claim_session and the action in one database call — saves a round trip per tap; the client recovers slow rolls by reading the games row (ROLL_RECOVER_* in useMultiplayerGame) so late server rolls are shown, never lost.
-- Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit) instead of ending the match — others can finish.
+- Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit) so others can finish.
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.

@@ -281,9 +281,14 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
 /* Rewarded (iOS only): frivillig XP-annons                             */
 /* ------------------------------------------------------------------ */
 
-/** iOS rewarded ad unit. Android keeps the interstitial flow above. */
-const IOS_REWARDED_ID = 'ca-app-pub-7448540924654868/2605382885';
-const IOS_REWARDED_TEST_ID = 'ca-app-pub-3940256099942544/1712485313';
+/** Rewarded ad units for the optional XP button (own IDs per platform). */
+const REWARDED_IDS: Record<'ios' | 'android', { real: string; test: string }> = {
+  ios: { real: 'ca-app-pub-7448540924654868/2605382885', test: 'ca-app-pub-3940256099942544/1712485313' },
+  android: { real: 'ca-app-pub-7448540924654868/7926737182', test: 'ca-app-pub-3940256099942544/5224354917' },
+};
+/** Android: load and "ad actually opened" limits; never cuts a running ad. */
+const ANDROID_REWARDED_LOAD_TIMEOUT_MS = 20_000;
+const ANDROID_REWARDED_OPEN_TIMEOUT_MS = 20_000;
 /** Reward callback may arrive just after dismissal on some SDK versions. */
 const REWARD_GRACE_MS = 1500;
 /** Start ad stays away this long after the rewarded ad closes. */
@@ -295,11 +300,12 @@ let rewardedPreparing: Promise<boolean> | null = null;
 let suppressAppOpenUntil = 0;
 
 function rewardedUnitId(): string | null {
-  if (adPlatform() !== 'ios' || !ADMOB_IDS.ios.appId) return null;
-  return ADMOB_CONFIG.useTestAds ? IOS_REWARDED_TEST_ID : IOS_REWARDED_ID;
+  const p = adPlatform();
+  if (!p || !ADMOB_IDS[p].appId) return null;
+  return ADMOB_CONFIG.useTestAds ? REWARDED_IDS[p].test : REWARDED_IDS[p].real;
 }
 
-/** Uses rewarded on iOS, interstitial elsewhere. */
+/** Rewarded on iOS and Android. */
 export function usesRewardedOptionalAd(): boolean {
   return rewardedUnitId() !== null;
 }
@@ -311,8 +317,9 @@ export async function preloadRewarded(): Promise<boolean> {
   if (rewardedPreparedAt && Date.now() - rewardedPreparedAt < PREPARED_TTL_MS) return true;
   rewardedPreparing = (async () => {
     try {
-      const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
-      await withTimeout(mod.AdMob.prepareRewardVideoAd({ adId, isTesting: ADMOB_CONFIG.useTestAds }), PREPARE_TIMEOUT_MS, 'prepare');
+      const loadMs = adPlatform() === 'android' ? ANDROID_REWARDED_LOAD_TIMEOUT_MS : PREPARE_TIMEOUT_MS;
+      const mod = await withTimeout(ensureInitialized(), loadMs, 'init');
+      await withTimeout(mod.AdMob.prepareRewardVideoAd({ adId, isTesting: ADMOB_CONFIG.useTestAds }), loadMs, 'prepare');
       rewardedPreparedAt = Date.now();
       return true;
     } catch (err) {
@@ -348,7 +355,9 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
     let earned = false;
     let settle: (r: RewardedResult) => void = () => {};
     const done = new Promise<RewardedResult>((resolve) => { settle = resolve; });
+    let opened = false;
     listeners.push(await mod.AdMob.addListener(E.Rewarded, () => { earned = true; }));
+    listeners.push(await mod.AdMob.addListener(E.Showed, () => { opened = true; }));
     listeners.push(await mod.AdMob.addListener(E.FailedToShow, () => settle(earned ? 'rewarded' : 'failed')));
     listeners.push(await mod.AdMob.addListener(E.Dismissed, () => {
       if (earned) { settle('rewarded'); return; }
@@ -358,6 +367,10 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
     suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     // The show promise is not trusted for the reward; only the event counts.
     mod.AdMob.showRewardVideoAd().catch(() => settle(earned ? 'rewarded' : 'failed'));
+    // Android: if the ad never opens, free the button. An opened ad is never cut.
+    if (adPlatform() === 'android') {
+      setTimeout(() => { if (!opened && !earned) settle('failed'); }, ANDROID_REWARDED_OPEN_TIMEOUT_MS);
+    }
     // Safety net: never leave the button stuck if the SDK goes silent.
     const result = await Promise.race([done, new Promise<RewardedResult>((r) => setTimeout(() => r(earned ? 'rewarded' : 'not_earned'), 5 * 60_000))]);
     settle = () => {}; // later events can never produce a second reward

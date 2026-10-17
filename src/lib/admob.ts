@@ -604,7 +604,7 @@ let bannerShown = false;
 let bannerParked = false;
 let parkedMargin = -1;
 let bannerParkTimer: ReturnType<typeof setTimeout> | undefined;
-const BANNER_PARK_MS = 3 * 60_000;
+const BANNER_PARK_MS = 30 * 60_000;
 function scheduleParkedRemoval() {
   clearTimeout(bannerParkTimer);
   bannerParkTimer = setTimeout(() => {

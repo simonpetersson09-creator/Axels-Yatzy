@@ -359,6 +359,32 @@ let activeRewardedAttempt = 0;
 let lateRewardHandler: (() => void) | null = null;
 
 /**
+ * Patched native plugin (scripts/patch-admob-rewarded.js) tags every rewarded
+ * event with our attemptId and resolves the show call once on dismissal with
+ * { rewarded }. Ids of attempts that closed unrewarded are kept so a Rewarded
+ * event arriving after dismissal pays exactly once, to the right attempt.
+ */
+type RewardEvent = { attemptId?: string } | undefined;
+type ListenerHandle = { remove: () => Promise<void> };
+/** addListener for rewarded events with the attemptId payload of the patched plugin. */
+const onReward = (mod: AdMobModule) =>
+  mod.AdMob.addListener as unknown as (event: string, fn: (ev: RewardEvent) => void) => Promise<ListenerHandle>;
+const closedUnrewarded = new Set<string>();
+let lateRewardListenerAttached = false;
+async function ensureLateRewardListener(mod: AdMobModule) {
+  if (lateRewardListenerAttached) return;
+  lateRewardListenerAttached = true;
+  await onReward(mod)(mod.RewardAdPluginEvents.Rewarded, (ev: RewardEvent) => {
+    const aid = ev?.attemptId;
+    if (aid && closedUnrewarded.delete(aid)) lateRewardHandler?.();
+  });
+}
+function rememberUnrewarded(aid: string) {
+  closedUnrewarded.add(aid);
+  if (closedUnrewarded.size > 20) closedUnrewarded.delete(closedUnrewarded.values().next().value as string);
+}
+
+/**
  * Receives a reward that was earned AFTER showOptionalRewarded already
  * returned (Android ad opened after the open timeout). Called at most once
  * per attempt, and never for an attempt that already returned 'rewarded'.
@@ -399,7 +425,11 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
     }
     const mod = await loadModule();
     const E = mod.RewardAdPluginEvents;
-    const mine = () => activeRewardedAttempt === id;
+    const nativeId = `${startedAt.toString(36)}-${id}`;
+    // Tagged events (patched native) must match this attempt; untagged ones
+    // (unpatched native) fall back to "the only active attempt".
+    const mine = (ev?: RewardEvent) => (ev?.attemptId != null ? ev.attemptId === nativeId : activeRewardedAttempt === id);
+    await ensureLateRewardListener(mod);
     let earned = false;
     let opened = false;
     let finish: (r: RewardedResult) => void = () => {};
@@ -407,16 +437,17 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
       let done = false;
       finish = (r) => { if (!done) { done = true; resolve(r); } };
     });
-    listeners.push(await mod.AdMob.addListener(E.Rewarded, () => { if (mine()) earned = true; }));
-    listeners.push(await mod.AdMob.addListener(E.Showed, () => {
-      if (!mine()) return;
+    listeners.push(await onReward(mod)(E.Rewarded, (ev: RewardEvent) => { if (mine(ev)) earned = true; }));
+    listeners.push(await onReward(mod)(E.Showed, (ev: RewardEvent) => {
+      if (!mine(ev)) return;
       opened = true;
       setRewardedState('showing');
       suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     }));
-    listeners.push(await mod.AdMob.addListener(E.FailedToShow, () => { if (mine()) finish(earned ? 'rewarded' : 'failed'); }));
-    listeners.push(await mod.AdMob.addListener(E.Dismissed, () => {
-      if (!mine()) return;
+    listeners.push(await onReward(mod)(E.FailedToShow, (ev: RewardEvent) => { if (mine(ev)) finish(earned ? 'rewarded' : 'failed'); }));
+    listeners.push(await onReward(mod)(E.Dismissed, (ev: RewardEvent) => {
+      if (!mine(ev)) return;
+      if (ev?.attemptId != null) return; // patched native: the show call's resolution decides
       if (earned) { finish('rewarded'); return; }
       setTimeout(() => finish(earned ? 'rewarded' : 'not_earned'), REWARD_GRACE_MS);
     }));
@@ -426,8 +457,17 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
     // earned-reward callback, so resolution is a second reward signal; the
     // attempt still yields at most one reward. A rejection only ends the
     // attempt if the ad has not opened.
-    mod.AdMob.showRewardVideoAd().then(
-      () => { if (mine()) earned = true; },
+    (mod.AdMob.showRewardVideoAd as (o: object) => Promise<unknown>)({ attemptId: nativeId }).then(
+      (res) => {
+        const r = res as { patched?: boolean; rewarded?: boolean; attemptId?: string } | undefined;
+        if (r?.patched) {
+          if (r.rewarded) earned = true;
+          if (!earned) rememberUnrewarded(nativeId);
+          finish(earned ? 'rewarded' : 'not_earned');
+          return;
+        }
+        if (mine()) earned = true; // unpatched native resolves only on reward
+      },
       () => { if (!opened) finish(earned ? 'rewarded' : 'failed'); },
     );
 

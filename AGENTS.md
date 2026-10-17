@@ -26,3 +26,4 @@
 - Shop receipts use body-portaled native dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings without buying.
 
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.
+- iOS optional XP ad is Rewarded (showOptionalRewarded in admob.ts): XP only on the SDK Rewarded event, never on dismissal, and the start ad is suppressed for 2 min after it; Android keeps the interstitial — avoids unearned XP and back-to-back ads.

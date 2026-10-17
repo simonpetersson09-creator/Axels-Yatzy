@@ -154,7 +154,7 @@ export default function SettingsPage() {
       }}
     >
       <motion.div
-        className="max-w-sm mx-auto space-y-7 mt-[30px]"
+        className="max-w-sm mx-auto space-y-4 mt-3"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
@@ -173,17 +173,17 @@ export default function SettingsPage() {
 
         {/* Profile card with big avatar */}
         <Section title={t('profile')}>
-          <div className="rounded-3xl bg-secondary/50 border border-border/40 p-5 flex flex-col items-center gap-4 game-shadow-soft">
+          <div className="rounded-2xl bg-secondary/50 border border-border/40 p-3 flex items-center gap-3 game-shadow-soft">
             <motion.button
               onClick={() => fileInputRef.current?.click()}
-              className="relative w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-primary/30 to-primary/10 ring-2 ring-primary/30 ring-offset-4 ring-offset-background flex items-center justify-center group"
+              className="relative w-14 h-14 shrink-0 rounded-full overflow-hidden bg-gradient-to-br from-primary/30 to-primary/10 ring-2 ring-primary/30 ring-offset-2 ring-offset-background flex items-center justify-center group"
               whileTap={{ scale: 0.94 }}
               whileHover={{ scale: 1.03 }}
             >
               {avatar ? (
                 <img src={avatar} alt="" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-10 h-10 text-primary/70" />
+                <User className="w-6 h-6 text-primary/70" />
               )}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity flex items-center justify-center">
                 <Camera className="w-6 h-6 text-white" />
@@ -197,10 +197,12 @@ export default function SettingsPage() {
               onChange={handleAvatarPick}
             />
 
-            <div className="flex gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-display font-semibold text-foreground break-words">{displayName}</p>
+              <div className="mt-1 flex flex-wrap gap-1.5">
               <motion.button
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 rounded-full bg-primary/15 text-primary text-xs font-semibold active:bg-primary/25 transition-colors"
+                className="min-h-9 px-2.5 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-semibold active:bg-primary/25 transition-colors"
                 whileTap={{ scale: 0.94 }}
               >
                 {t('changeAvatar')}
@@ -208,21 +210,20 @@ export default function SettingsPage() {
               {avatar && (
                 <motion.button
                   onClick={removeAvatar}
-                  className="px-4 py-2 rounded-full bg-destructive/10 text-destructive text-xs font-semibold active:bg-destructive/20 transition-colors"
+                  className="min-h-9 px-2.5 py-1.5 rounded-full bg-destructive/10 text-destructive text-xs font-semibold active:bg-destructive/20 transition-colors"
                   whileTap={{ scale: 0.94 }}
                 >
                   {t('removeAvatar')}
                 </motion.button>
               )}
+              </div>
             </div>
-
-            <p className="text-base font-display font-semibold text-foreground">{displayName}</p>
           </div>
 
           {/* Name row */}
           <Card>
             {editingName ? (
-              <div className="px-4 py-3.5 flex items-center gap-3">
+              <div className="px-3 py-2.5 flex items-center gap-3">
                 <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 <input
                   type="text"
@@ -262,7 +263,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => setCountryPickerOpen(o => !o)}
-              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
+              className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
             >
               <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -349,7 +350,7 @@ export default function SettingsPage() {
           <Card>
             {adjustOpen && (
               <>
-                <div className="px-4 py-3.5 space-y-3">
+                <div className="px-3 py-2.5 space-y-3">
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
                     Justera statistik
                   </p>
@@ -369,7 +370,7 @@ export default function SettingsPage() {
             )}
             <motion.button
               onClick={() => navigate('/stats')}
-              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors border-b border-border/40"
+              className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors border-b border-border/40"
               whileTap={{ scale: 0.985 }}
             >
               <BarChart3 className="w-4 h-4 text-primary" />
@@ -383,7 +384,7 @@ export default function SettingsPage() {
           <Card>
             <Button variant="ghost"
               onClick={() => { setMyDiceOpen(true); trackEvent('my_dice_opened', { from: 'settings' }); }}
-              className="h-auto w-full justify-start px-4 py-3.5 text-left border-b border-border/40"
+              className="h-auto min-h-11 w-full justify-start px-3 py-2.5 text-left border-b border-border/40"
             >
               <Dices className="w-4 h-4 text-primary" />
               <span className="flex-1 text-sm font-medium text-foreground">{t('myDice')}</span>
@@ -421,7 +422,7 @@ export default function SettingsPage() {
         <Card>
             <motion.button
               onClick={resetStats}
-              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-destructive/10 transition-colors"
+              className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-destructive/10 transition-colors"
               whileTap={{ scale: 0.985 }}
             >
               <Trash2 className="w-4 h-4 text-destructive" />
@@ -433,7 +434,7 @@ export default function SettingsPage() {
           <Card>
             <motion.button
               onClick={() => { trackEvent('ad_privacy_opened'); void showAdPrivacyOptions(); }}
-              className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
+              className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
               whileTap={{ scale: 0.985 }}
             >
               <ShieldCheck className="w-4 h-4 text-primary" />
@@ -453,14 +454,14 @@ export default function SettingsPage() {
 
 function Section({ title, children, onTitleTap }: { title: string; children: React.ReactNode; onTitleTap?: () => void }) {
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-1.5">
       <p
         onClick={onTitleTap}
         className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em] px-2 select-none"
       >
         {title}
       </p>
-      <div className="space-y-2.5">{children}</div>
+      <div className="space-y-1.5">{children}</div>
     </div>
   );
 }
@@ -501,7 +502,7 @@ function Row({ icon, label, value, onClick }: { icon: React.ReactNode; label: st
   return (
     <motion.button
       onClick={onClick}
-      className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
+      className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
       whileTap={{ scale: 0.985 }}
     >
       {icon}
@@ -526,7 +527,7 @@ function ToggleRow({
     <button
       type="button"
       onClick={() => onChange(!value)}
-      className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
+      className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
     >
       {icon}
       <div className="flex-1 min-w-0">

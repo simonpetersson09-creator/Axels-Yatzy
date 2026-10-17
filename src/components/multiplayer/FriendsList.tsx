@@ -1,3 +1,5 @@
+import { useAcceptedFriends } from '@/lib/accepted-friends';
+import { getAcceptedFriendMatches } from '@/lib/friend-requests';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -64,6 +66,7 @@ export function FriendsList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const myId = getSessionId();
+  const { ids: acceptedIds } = useAcceptedFriends();
 
   const [rows, setRows] = useState<FriendMatchRow[] | null>(() => {
     const cached = readRowsCache(myId);
@@ -155,12 +158,7 @@ export function FriendsList() {
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const { data, error } = await supabase
-        .from('friend_match_results')
-        .select('*')
-        .or(`player_1_id.eq.${myId},player_2_id.eq.${myId}`)
-        .order('created_at', { ascending: false })
-        .limit(500);
+      const { data, error } = await getAcceptedFriendMatches();
       if (cancelled) return;
       if (error) {
         console.warn('[friends-list] load error', error.message);
@@ -280,6 +278,7 @@ export function FriendsList() {
     for (const r of rows) {
       const iAmP1 = r.player_1_id === myId;
       const rawOppId = iAmP1 ? r.player_2_id : r.player_1_id;
+      if (!acceptedIds.has(rawOppId)) continue;
       const oppId = resolveFriendId(rawOppId, aliasMap);
       if (hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
@@ -332,6 +331,7 @@ export function FriendsList() {
     // row — e.g. the match was cancelled or is still in the lobby. Saved
     // locally by both players, so a friend sticks regardless of who invited.
     for (const kf of knownFriends) {
+      if (!acceptedIds.has(kf.id)) continue;
       const id = resolveFriendId(kf.id, aliasMap);
       if (id === myId || hidden.has(id) || map.has(id)) continue;
       map.set(id, {
@@ -358,7 +358,7 @@ export function FriendsList() {
       const bT = b.ongoingMatch?.created_at ?? b.lastMatch?.created_at ?? b.sortAt;
       return new Date(bT).getTime() - new Date(aT).getTime();
     });
-  }, [rows, myId, hiddenFriends, aliasMap, knownFriends]);
+  }, [rows, myId, hiddenFriends, aliasMap, knownFriends, acceptedIds]);
   const [card, setCard] = useState<{ id: string; name: string; data: Awaited<ReturnType<typeof fetchPlayerCard>> } | null>(null);
   const openCard = (id: string, name: string) => {
     setCard({ id, name, data: null });

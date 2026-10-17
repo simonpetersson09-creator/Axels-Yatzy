@@ -247,6 +247,7 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
   if (showing) return 'busy';
   showing = true;
   const startedAt = Date.now();
+  const listeners: Awaited<ReturnType<AdMobModule['AdMob']['addListener']>>[] = [];
   try {
     const ready = await preloadInterstitial();
     if (!ready) {
@@ -255,16 +256,23 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
       return 'failed';
     }
     const mod = await loadModule();
+    // Native presentation resolves immediately; XP must wait until dismissal.
+    let settle: (result: ShowAdResult) => void = () => {};
+    const closed = new Promise<ShowAdResult>((resolve) => { settle = resolve; });
+    listeners.push(await mod.AdMob.addListener(mod.InterstitialAdPluginEvents.Dismissed, () => settle('shown')));
+    listeners.push(await mod.AdMob.addListener(mod.InterstitialAdPluginEvents.FailedToShow, () => settle('failed')));
     await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
+    const result = await closed;
     preparedAt = 0; // förbrukad – laddas om via Dismissed-lyssnaren
-    reportAd('optional', 'shown', startedAt);
-    void preloadInterstitial();
-    return 'shown';
+    reportAd('optional', result === 'shown' ? 'shown' : 'show_failed', startedAt);
+    if (result === 'shown') void preloadInterstitial();
+    return result;
   } catch (err) {
     preparedAt = 0;
     reportAd('optional', 'show_failed', startedAt, reasonOf(err));
     return 'failed';
   } finally {
+    await Promise.all(listeners.map((listener) => listener.remove().catch(() => {})));
     showing = false;
   }
 }

@@ -335,16 +335,44 @@ export async function preloadRewarded(): Promise<boolean> {
 
 export type RewardedResult = 'rewarded' | 'not_earned' | 'unavailable' | 'failed' | 'busy';
 
+/** Hard cap for one attempt's lifetime (SDK silent forever). */
+const REWARDED_ATTEMPT_MAX_MS = 10 * 60_000;
+let rewardedAttemptSeq = 0;
+let activeRewardedAttempt = 0;
+let lateRewardHandler: (() => void) | null = null;
+
 /**
- * Shows the rewarded ad. ONLY from the player's tap. Resolves 'rewarded' at
- * most once per call, and only if the SDK fired its Rewarded event.
+ * Receives a reward that was earned AFTER showOptionalRewarded already
+ * returned (Android ad opened after the open timeout). Called at most once
+ * per attempt, and never for an attempt that already returned 'rewarded'.
+ */
+export function setLateRewardHandler(fn: (() => void) | null): void {
+  lateRewardHandler = fn;
+}
+
+/**
+ * Shows the rewarded ad. ONLY from the player's tap. Each attempt can yield
+ * at most one reward, and only if the SDK fired its Rewarded event — either
+ * as the 'rewarded' result or, after an open timeout, via the late handler.
+ * The attempt (and its listeners) stays alive until the SDK finishes it, so a
+ * new attempt can never overlap or receive the old attempt's events.
  */
 export async function showOptionalRewarded(): Promise<RewardedResult> {
   if (!isAdMobAvailable() || !rewardedUnitId()) return 'unavailable';
   if (rewardedShowing || showing || appOpenShowing) return 'busy';
   rewardedShowing = true;
+  const id = ++rewardedAttemptSeq;
+  activeRewardedAttempt = id;
   const startedAt = Date.now();
   const listeners: Awaited<ReturnType<AdMobModule['AdMob']['addListener']>>[] = [];
+  const release = () => {
+    void Promise.all(listeners.map((l) => l.remove().catch(() => {})));
+    if (activeRewardedAttempt === id) activeRewardedAttempt = 0;
+    suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
+    rewardedShowing = false;
+    void preloadRewarded();
+  };
+  let lifecycleOwnsRelease = false;
   try {
     if (!(await preloadRewarded())) {
       reportAd('optional', 'load_failed', startedAt, lastPrepareError);
@@ -352,39 +380,61 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
     }
     const mod = await loadModule();
     const E = mod.RewardAdPluginEvents;
+    const mine = () => activeRewardedAttempt === id;
     let earned = false;
-    let settle: (r: RewardedResult) => void = () => {};
-    const done = new Promise<RewardedResult>((resolve) => { settle = resolve; });
     let opened = false;
-    listeners.push(await mod.AdMob.addListener(E.Rewarded, () => { earned = true; }));
-    listeners.push(await mod.AdMob.addListener(E.Showed, () => { opened = true; }));
-    listeners.push(await mod.AdMob.addListener(E.FailedToShow, () => settle(earned ? 'rewarded' : 'failed')));
+    let finish: (r: RewardedResult) => void = () => {};
+    const lifecycle = new Promise<RewardedResult>((resolve) => {
+      let done = false;
+      finish = (r) => { if (!done) { done = true; resolve(r); } };
+    });
+    listeners.push(await mod.AdMob.addListener(E.Rewarded, () => { if (mine()) earned = true; }));
+    listeners.push(await mod.AdMob.addListener(E.Showed, () => {
+      if (!mine()) return;
+      opened = true;
+      suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
+    }));
+    listeners.push(await mod.AdMob.addListener(E.FailedToShow, () => { if (mine()) finish(earned ? 'rewarded' : 'failed'); }));
     listeners.push(await mod.AdMob.addListener(E.Dismissed, () => {
-      if (earned) { settle('rewarded'); return; }
-      setTimeout(() => settle(earned ? 'rewarded' : 'not_earned'), REWARD_GRACE_MS);
+      if (!mine()) return;
+      if (earned) { finish('rewarded'); return; }
+      setTimeout(() => finish(earned ? 'rewarded' : 'not_earned'), REWARD_GRACE_MS);
     }));
     rewardedPreparedAt = 0; // consumed as soon as we try to show it
     suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     // The show promise is not trusted for the reward; only the event counts.
-    mod.AdMob.showRewardVideoAd().catch(() => settle(earned ? 'rewarded' : 'failed'));
-    // Android: if the ad never opens, free the button. An opened ad is never cut.
-    if (adPlatform() === 'android') {
-      setTimeout(() => { if (!opened && !earned) settle('failed'); }, ANDROID_REWARDED_OPEN_TIMEOUT_MS);
+    // A rejection only ends the attempt if the ad has not opened.
+    mod.AdMob.showRewardVideoAd().catch(() => { if (!opened) finish(earned ? 'rewarded' : 'failed'); });
+    const cap = setTimeout(() => finish(earned ? 'rewarded' : 'not_earned'), REWARDED_ATTEMPT_MAX_MS);
+
+    // Android: if the ad has not opened in time, give the button back — but
+    // keep this attempt alive so a late open + reward still pays exactly once.
+    let openTimer: ReturnType<typeof setTimeout> | undefined;
+    const openTimeout = adPlatform() === 'android'
+      ? new Promise<'open_timeout'>((r) => { openTimer = setTimeout(() => { if (!opened && !earned) r('open_timeout'); }, ANDROID_REWARDED_OPEN_TIMEOUT_MS); })
+      : new Promise<never>(() => {});
+    lifecycleOwnsRelease = true;
+    void lifecycle.then(() => { clearTimeout(cap); clearTimeout(openTimer); });
+
+    const first = await Promise.race([lifecycle, openTimeout]);
+    if (first !== 'open_timeout') {
+      release();
+      reportAd('optional', first, startedAt);
+      return first;
     }
-    // Safety net: never leave the button stuck if the SDK goes silent.
-    const result = await Promise.race([done, new Promise<RewardedResult>((r) => setTimeout(() => r(earned ? 'rewarded' : 'not_earned'), 5 * 60_000))]);
-    settle = () => {}; // later events can never produce a second reward
-    suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
-    reportAd('optional', result === 'rewarded' ? 'rewarded' : result, startedAt);
-    return result;
+    reportAd('optional', 'open_timeout', startedAt);
+    void lifecycle.then((late) => {
+      release();
+      reportAd('optional', `late_${late}`, startedAt);
+      if (late === 'rewarded') lateRewardHandler?.();
+    });
+    return 'failed';
   } catch (err) {
     rewardedPreparedAt = 0;
     reportAd('optional', 'show_failed', startedAt, reasonOf(err));
     return 'failed';
   } finally {
-    await Promise.all(listeners.map((l) => l.remove().catch(() => {})));
-    rewardedShowing = false;
-    void preloadRewarded();
+    if (!lifecycleOwnsRelease) release();
   }
 }
 

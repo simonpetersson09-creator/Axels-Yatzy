@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Check, Lock, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
@@ -11,6 +12,7 @@ import { trackEvent } from '@/lib/analytics';
 import { getProfileCountry } from '@/lib/profile';
 import { fireWinConfetti } from '@/lib/confetti';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const KINDS: DesignKind[] = ['season', 'personal', 'flag', 'color', 'pattern', 'exclusive'];
 const PIPS_5 = [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]];
@@ -33,6 +35,7 @@ export function DiceShop() {
   const [picked, setPicked] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [previewCel, setPreviewCel] = useState<string | null>(null);
+  const [previewFrame, setPreviewFrame] = useState<string | null>(null);
   const avatar = getProfileAvatar();
   const now = Date.now();
   const expired = (id: string) => !!shop.until[id] && new Date(shop.until[id]).getTime() < now;
@@ -182,18 +185,30 @@ export function DiceShop() {
               return (
                 <div key={it.id} className={cn('flex items-center gap-3 rounded-xl border px-3 py-2', inUse ? 'border-primary bg-primary/10' : 'border-border bg-secondary/40')}>
                   {frame ? (
-                    <div className="relative isolate w-9 h-9 shrink-0">
-                      <span className="absolute rounded-full" style={{ inset: -3, background: frame.ring, boxShadow: `0 0 8px ${frame.glow}` }} aria-hidden />
+                    <Button variant="ghost" size="icon" onClick={() => setPreviewFrame(previewFrame === it.id ? null : it.id)} aria-label={`${t('shopPreview')} ${cosmeticName(it, lang)}`} className="relative isolate shrink-0 rounded-full p-0">
+                      <span className="pointer-events-none absolute rounded-full" style={{ inset: -3, background: frame.ring, boxShadow: `0 0 8px ${frame.glow}` }} aria-hidden />
                       <div className="relative w-9 h-9 rounded-full overflow-hidden bg-secondary flex items-center justify-center">
                         {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-base">🙂</span>}
                       </div>
-                    </div>
+                    </Button>
                   ) : (
-                    <button onClick={() => setPreviewCel(it.id)} className="w-9 h-9 shrink-0 rounded-full bg-secondary text-xl flex items-center justify-center" aria-label={t('shopPreview')}>{cel!.emoji[0]}</button>
+                    <Button variant="secondary" size="icon" onClick={() => setPreviewCel(it.id)} className="shrink-0 rounded-full text-xl" aria-label={`${t('shopPreview')} ${cosmeticName(it, lang)}`}>{cel?.emoji[0]}</Button>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{cosmeticName(it, lang)}</p>
-                    {cel && <button onClick={() => setPreviewCel(it.id)} className="text-[11px] font-semibold text-primary">{t('shopPreview')}</button>}
+                    <Button variant="ghost" onClick={() => frame ? setPreviewFrame(previewFrame === it.id ? null : it.id) : setPreviewCel(it.id)} className="h-auto w-full min-w-0 flex-col items-start gap-0 whitespace-normal p-0 text-left hover:bg-transparent">
+                      <span className="text-sm font-semibold text-foreground">{cosmeticName(it, lang)}</span>
+                      <span className="min-h-6 flex items-center text-[11px] font-semibold text-primary">{t('shopPreview')}</span>
+                    </Button>
+                    {frame && previewFrame === it.id && (
+                      <div className="py-4 flex justify-center">
+                        <div className="relative isolate w-16 h-16 shrink-0">
+                          <span className="pointer-events-none absolute rounded-full" style={{ inset: -4, background: frame.ring, boxShadow: `0 0 8px ${frame.glow}` }} aria-hidden />
+                          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-secondary flex items-center justify-center">
+                            {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-3xl">🙂</span>}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     {!owned && !canBuy && price > 0 && <p className="text-[11px] text-muted-foreground">{t('shopNeed', { n: price - shop.xp })}</p>}
                   </div>
                   {inUse ? <Check className="w-4 h-4 text-primary" /> : owned ? (
@@ -211,7 +226,7 @@ export function DiceShop() {
           </div>
         </div>
       ))}
-      <YatzyCelebration show={previewCel !== null} celebrationId={previewCel} onComplete={() => setPreviewCel(null)} />
+      {createPortal(<YatzyCelebration key={previewCel ?? 'none'} show={previewCel !== null} celebrationId={previewCel} onComplete={() => setPreviewCel(null)} />, document.body)}
     </div>
   );
 }

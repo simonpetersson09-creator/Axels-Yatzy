@@ -53,3 +53,23 @@ it('allows reverting dice and both cosmetics to standard', async () => {
   fireEvent.click(standard[1]);
   await waitFor(() => expect(mocks.selectCosmetic).toHaveBeenCalledWith('frame', null));
 });
+
+it('selects an already owned catalog die instead of buying it again', async () => {
+  render(<DiceShop />);
+  const ownedDice = screen.getAllByRole('button', { name: /Owned die/ });
+  fireEvent.click(ownedDice[ownedDice.length - 1]);
+  fireEvent.click(screen.getAllByRole('button', { name: 'shopUse' })[0]);
+  await waitFor(() => expect(mocks.selectDesign).toHaveBeenCalledWith('test_owned'));
+  expect(mocks.buyDesign).not.toHaveBeenCalled();
+});
+
+it('selects already owned effects and frames in the shop without a second purchase', async () => {
+  render(<DiceShop />);
+  const useButtons = screen.getAllByRole('button', { name: 'shopUse' });
+  fireEvent.click(useButtons[0]);
+  await waitFor(() => expect(mocks.selectCosmetic).toHaveBeenCalledWith('celebration', 'cel_hearts'));
+  await waitFor(() => expect(useButtons[1]).not.toBeDisabled());
+  fireEvent.click(useButtons[1]);
+  await waitFor(() => expect(mocks.selectCosmetic).toHaveBeenCalledWith('frame', 'frame_gold'));
+  expect(mocks.buyDesign).not.toHaveBeenCalled();
+});

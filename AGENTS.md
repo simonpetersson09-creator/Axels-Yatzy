@@ -22,4 +22,4 @@
 - Game banner: fitGameAboveBanner (admob.ts) shrinks rows/dice until all fits above it.
 - Dice shop: XP (1 per shown optional ad, server caps/cooldown in award_ad_xp), prices and ownership live server-side (dice_designs, player_xp, player_designs); looks live in src/lib/dice-designs.ts and render via skin=`d:<id>` — new designs need both a catalog entry and a dice_designs row.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
-- DiceInfoSheet scrolls inside a safe-area-padded overlay so expanding shop content stays below the status bar.
+- DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.

@@ -374,7 +374,7 @@ describe('preloading', () => {
     const m = await import('./admob');
     const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
     await m.hideGameBanner();
-    await vi.advanceTimersByTimeAsync(3 * 60_000);
+    await vi.advanceTimersByTimeAsync(30 * 60_000);
     expect(native.banner.remove).toHaveBeenCalledOnce();
     const again = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await again;
     expect(native.banner.resume).not.toHaveBeenCalled();

@@ -3,7 +3,7 @@
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — tamper-resistant, synced.
 - Android native patches run via `npm run cap:sync:android` (AdMob App ID in manifest, minSdk 26 for barcode scanner, launcher icons from committed resources/android/res/ via scripts/set-android-*.js); android/ is generated outside the repo like ios/, so manual edits get lost.
-- admob.ts: per-platform ADMOB_IDS (null disables; iOS IDs never on Android); fitGameAboveBanner fits the game above the banner; optional XP ad is Rewarded on iOS+Android (REWARDED_IDS; XP only on the SDK Rewarded event, start ad suppressed 2 min after) — no unearned XP.
+- admob.ts: per-platform ADMOB_IDS (null disables; iOS IDs never on Android); fitGameAboveBanner fits the game above the banner; optional XP ad is Rewarded on iOS+Android (REWARDED_IDS; XP only on the SDK Rewarded event, start ad suppressed 2 min after; attempts never auto-reset since the SDK cannot cancel, status via subscribeRewardedState, late XP via RewardedXpHost) — no unearned XP or overlap.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
@@ -16,10 +16,10 @@
 - Online actions (roll, set locks, old per-die toggle, score incl. dice check, start, forfeit) call *_authed RPCs that run claim_session and the action in one database call — saves a round trip per tap; the client recovers slow rolls by reading the games row (ROLL_RECOVER_* in useMultiplayerGame) so late server rolls are shown, never lost.
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit) instead of ending the match — others can finish.
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
-- accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock — avoids duplicate matches.
+- accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Hall of Fame: report_weekly_score (from recordGameResult) trims to first name and caps score server-side.
-- Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
+- Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
 - DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.
 - Shop receipts use body-portaled native dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings without buying.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.

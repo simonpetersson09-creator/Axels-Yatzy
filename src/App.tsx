@@ -27,6 +27,7 @@ import InviteOverlay from "./components/InviteOverlay";
 import NotificationNavigator from "./components/NotificationNavigator";
 import { LobbyJoinNotice } from "./components/LobbyJoinNotice";
 import NotificationAskHost from "./components/NotificationAskHost";
+import RewardedXpHost from "./components/RewardedXpHost";
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
@@ -73,6 +74,7 @@ const App = () => (
         <NotificationNavigator />
         <LobbyJoinNotice />
         <NotificationAskHost />
+        <RewardedXpHost />
         <AndroidBackButton />
         <SwipeBack />
         {ADMIN_ENABLED && DevFriendBotRunner && (

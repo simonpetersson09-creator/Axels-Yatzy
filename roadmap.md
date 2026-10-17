@@ -10,5 +10,5 @@
 - [x] Kontrollera avbrytande av väntande vänförfrågningar och testa flödet (automatiska tester och simulerat sidflöde; riktig telefon återstår).
 
 ## Mina tärningar i Inställningar
-- [ ] Samla köpta tärningar, firanden och ramar i Mina tärningar; behåll butiken på startsidan.
-- [ ] Kontrollera att bara ägda val visas och kan användas från Inställningar.
+- [x] Samla köpta tärningar, firanden och ramar i Mina tärningar; behåll butiken på startsidan.
+- [x] Kontrollera att bara ägda val visas och kan användas från Inställningar (3 tester och simulerat iPhone-flöde; fysisk telefon återstår).

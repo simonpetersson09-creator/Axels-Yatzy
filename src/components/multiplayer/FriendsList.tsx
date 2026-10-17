@@ -280,7 +280,7 @@ export function FriendsList() {
       const rawOppId = iAmP1 ? r.player_2_id : r.player_1_id;
       if (!acceptedIds.has(rawOppId)) continue;
       const oppId = resolveFriendId(rawOppId, aliasMap);
-      if (hidden.has(oppId)) continue;
+      if (!acceptedIds.has(oppId) || hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
       const isOngoing = r.status === 'ongoing';
       const myScore = (iAmP1 ? r.player_1_score : r.player_2_score) ?? 0;
@@ -333,7 +333,7 @@ export function FriendsList() {
     for (const kf of knownFriends) {
       if (!acceptedIds.has(kf.id)) continue;
       const id = resolveFriendId(kf.id, aliasMap);
-      if (id === myId || hidden.has(id) || map.has(id)) continue;
+      if (!acceptedIds.has(id) || id === myId || hidden.has(id) || map.has(id)) continue;
       map.set(id, {
         opponentId: id,
         opponentName: kf.name,

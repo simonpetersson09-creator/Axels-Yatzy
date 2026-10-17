@@ -127,7 +127,7 @@ export default function FriendStatsPage() {
       const rawOppId = iAmP1 ? r.player_2_id : r.player_1_id;
       if (!acceptedIds.has(rawOppId)) continue;
       const oppId = resolveFriendId(rawOppId, aliasMap);
-      if (hidden.has(oppId)) continue;
+      if (!acceptedIds.has(oppId) || hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
       const isOngoing = r.status === 'ongoing';
       const myScore = (iAmP1 ? r.player_1_score : r.player_2_score) ?? 0;
@@ -177,7 +177,7 @@ export default function FriendStatsPage() {
     if (!selected || !rows) return [];
     return rows.filter((r) => {
       const oppRaw = r.player_1_id === myId ? r.player_2_id : r.player_1_id;
-      return acceptedIds.has(oppRaw) && resolveFriendId(oppRaw, aliasMap) === selected;
+      return acceptedIds.has(oppRaw) && acceptedIds.has(resolveFriendId(oppRaw, aliasMap)) && resolveFriendId(oppRaw, aliasMap) === selected;
     });
   }, [selected, rows, myId, aliasMap, acceptedIds]);
 

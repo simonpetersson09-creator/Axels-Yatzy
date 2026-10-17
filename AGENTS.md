@@ -3,7 +3,7 @@
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — tamper-resistant, synced.
 - Android native patches run via `npm run cap:sync:android` (AdMob App ID in manifest, minSdk 26 for barcode scanner, launcher icons from committed resources/android/res/ via scripts/set-android-*.js); android/ is generated outside the repo like ios/, so manual edits get lost.
-- admob.ts: per-platform ADMOB_IDS (null disables; iOS IDs never on Android); fitGameAboveBanner fits the game above the banner; iOS XP ad is Rewarded (XP only on the SDK Rewarded event, start ad suppressed 2 min after), Android interstitial waits for dismissal — no unearned XP.
+- admob.ts: per-platform ADMOB_IDS (null disables; iOS IDs never on Android); fitGameAboveBanner fits the game above the banner; optional XP ad is Rewarded on iOS+Android (REWARDED_IDS; XP only on the SDK Rewarded event, start ad suppressed 2 min after) — no unearned XP.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.

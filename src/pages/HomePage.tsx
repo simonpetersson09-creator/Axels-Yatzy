@@ -32,7 +32,7 @@ import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { awardAdXp } from '@/lib/dice-shop';
-import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showOptionalRewarded, preloadRewarded, usesRewardedOptionalAd, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
+import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showOptionalRewarded, preloadRewarded, setLateRewardHandler, usesRewardedOptionalAd, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
@@ -219,6 +219,20 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
+  /** Server XP for one earned reward (1 XP, 15 s server cooldown). */
+  const grantAdXp = async (late = false) => {
+    const r = await awardAdXp();
+    trackEvent('ad_xp_result', { ok: r.ok, late, reason: r.ok === false ? r.reason : undefined });
+    if (r.ok) toast.success(t('xpEarned', { n: r.xp }), { duration: 6000 });
+    else if (r.ok === false && r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
+    else toast.error(t('errGeneric'));
+  };
+  // Reward earned after the open timeout already freed the button (Android).
+  // Kept registered after unmount so a late reward is never lost.
+  const grantAdXpRef = useRef(grantAdXp);
+  grantAdXpRef.current = grantAdXp;
+  useEffect(() => { setLateRewardHandler(() => void grantAdXpRef.current(true)); }, []);
+
   /** Enda vägen till show(): användarens direkta tryck på "Frivillig reklam". */
   const handleOptionalAdClick = async () => {
     if (AD_BUTTON_LOCKED) return;
@@ -239,13 +253,7 @@ export default function HomePage() {
         : await showOptionalInterstitial();
       toast.dismiss(loadingToast);
       if (result === 'failed' || result === 'unavailable') toast.error(t('adFailed'));
-      if (result === 'shown' || result === 'rewarded') {
-        const r = await awardAdXp();
-        trackEvent('ad_xp_result', { ok: r.ok, reason: r.ok === false ? r.reason : undefined });
-        if (r.ok) toast.success(t('xpEarned', { n: r.xp }), { duration: 6000 });
-        else if (r.ok === false && r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
-        else toast.error(t('errGeneric'));
-      }
+      if (result === 'shown' || result === 'rewarded') await grantAdXp();
     } finally {
       toast.dismiss(loadingToast);
       setAdLoading(false);

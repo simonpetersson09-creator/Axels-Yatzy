@@ -158,7 +158,7 @@ describe('Android rewarded XP ad', () => {
     setLateRewardHandler(() => xp(1));
     const first = showOptionalRewarded();
     await vi.advanceTimersByTimeAsync(20_000);
-    expect(await first).toBe('failed'); // button freed, no XP for the timeout itself
+    expect(await first).toBe('pending'); // no XP for the timeout itself
     expect(xp).not.toHaveBeenCalled();
     expect(await showOptionalRewarded()).toBe('busy'); // old attempt still owns the SDK
     emit('r_showed');
@@ -175,7 +175,7 @@ describe('Android rewarded XP ad', () => {
     setLateRewardHandler(xp);
     const first = showOptionalRewarded();
     await vi.advanceTimersByTimeAsync(20_000);
-    expect(await first).toBe('failed');
+    expect(await first).toBe('pending');
     emit('r_showed'); emit('r_dismissed');
     await vi.advanceTimersByTimeAsync(2000);
     expect(xp).not.toHaveBeenCalled();
@@ -218,5 +218,48 @@ describe('Android rewarded XP ad', () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(await pending).toBe('failed');
     expect(await showAppOpenAd()).toBe(false);
+  });
+});
+
+describe('rewarded button status', () => {
+  beforeEach(() => {
+    vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = 'android';
+    native.showRewarded.mockReset(); native.showRewarded.mockReturnValue(new Promise(() => {}));
+    native.prepareRewarded.mockReset(); native.prepareRewarded.mockResolvedValue({});
+  });
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); native.platform = 'ios'; });
+
+  it('stays locked through loading, showing and waiting, never auto-resets', async () => {
+    const m = await import('./admob');
+    const seen: string[] = [];
+    m.subscribeRewardedState((s) => seen.push(s));
+    const p = m.showOptionalRewarded();
+    expect(m.getRewardedState()).toBe('loading');
+    await vi.advanceTimersByTimeAsync(20_000);
+    expect(await p).toBe('pending');
+    expect(m.getRewardedState()).toBe('waiting');
+    await vi.advanceTimersByTimeAsync(60 * 60_000); // an hour later: still not reset
+    expect(m.getRewardedState()).toBe('waiting');
+    expect(await m.showOptionalRewarded()).toBe('busy');
+    expect(await m.showAppOpenAd()).toBe(false);
+    emit('r_showed');
+    expect(m.getRewardedState()).toBe('showing');
+    emit('r_dismissed');
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(m.getRewardedState()).toBe('idle');
+    expect(seen).toEqual(['loading', 'waiting', 'showing', 'idle']);
+  });
+
+  it('show call resolving (native reward callback) counts as the single reward', async () => {
+    let resolveShow: (v: unknown) => void = () => {};
+    native.showRewarded.mockReturnValue(new Promise((r) => { resolveShow = r; }));
+    const m = await import('./admob');
+    const p = m.showOptionalRewarded();
+    await vi.advanceTimersByTimeAsync(0);
+    emit('r_showed');
+    resolveShow({ type: 'xp', amount: 1 });
+    await vi.advanceTimersByTimeAsync(0);
+    emit('r_dismissed');
+    expect(await p).toBe('rewarded');
   });
 });

@@ -20,6 +20,6 @@
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Hall of Fame: server-side report_weekly_score (from recordGameResult) trims to first name, caps score.
 - Game banner: fitGameAboveBanner (admob.ts) shrinks rows/dice until all fits above it.
-- Dice shop: XP (1 per shown optional ad, server caps/cooldown in award_ad_xp), prices and ownership live server-side (dice_designs, player_xp, player_designs); looks live in src/lib/dice-designs.ts and render via skin=`d:<id>` — new designs need both a catalog entry and a dice_designs row.
+- Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row. Optional ads wait for native dismissal before XP confirmation, since presentation resolves immediately.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
 - DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.

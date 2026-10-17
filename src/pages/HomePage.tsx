@@ -236,11 +236,13 @@ export default function HomePage() {
       const result = await showOptionalInterstitial();
       toast.dismiss(loadingToast);
       if (result === 'failed' || result === 'unavailable') toast.error(t('adFailed'));
-      // Kosmetisk belöning: 1 XP till tärningsbutiken (servern begränsar till 10/dag).
+      // 1 XP after the optional ad closes; no daily cap.
       if (result === 'shown') {
         const r = await awardAdXp();
-        if (r.ok) toast.success(t('xpEarned', { n: r.xp }));
+        trackEvent('ad_xp_result', { ok: r.ok, reason: r.ok ? undefined : r.reason });
+        if (r.ok) toast.success(t('xpEarned', { n: r.xp }), { duration: 6000 });
         else if (r.ok === false && r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
+        else toast.error(t('errGeneric'));
       }
     } finally {
       toast.dismiss(loadingToast);

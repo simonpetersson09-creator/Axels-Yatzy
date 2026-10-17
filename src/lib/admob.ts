@@ -358,7 +358,9 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
     suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     // The show promise is not trusted for the reward; only the event counts.
     mod.AdMob.showRewardVideoAd().catch(() => settle(earned ? 'rewarded' : 'failed'));
-    const result = await done;
+    // Safety net: never leave the button stuck if the SDK goes silent.
+    const result = await Promise.race([done, new Promise<RewardedResult>((r) => setTimeout(() => r(earned ? 'rewarded' : 'not_earned'), 5 * 60_000))]);
+    settle = () => {}; // later events can never produce a second reward
     suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     reportAd('optional', result === 'rewarded' ? 'rewarded' : result, startedAt);
     return result;

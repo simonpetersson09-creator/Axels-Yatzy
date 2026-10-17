@@ -32,7 +32,7 @@ import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { awardAdXp } from '@/lib/dice-shop';
-import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
+import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showOptionalRewarded, preloadRewarded, usesRewardedOptionalAd, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
@@ -215,7 +215,7 @@ export default function HomePage() {
   // Preload i bakgrunden – kan aldrig trigga visning. Väntar tills starten är klar.
   useEffect(() => {
     if (!isAdMobAvailable()) return;
-    const timer = setTimeout(() => void preloadInterstitial(), 4000);
+    const timer = setTimeout(() => void (usesRewardedOptionalAd() ? preloadRewarded() : preloadInterstitial()), 4000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -233,11 +233,13 @@ export default function HomePage() {
     setAdLoading(true);
     const loadingToast = toast.loading(t('adLoading'));
     try {
-      const result = await showOptionalInterstitial();
+      // iOS: rewarded — XP only on the SDK's reward event. Android: interstitial after close.
+      const result = usesRewardedOptionalAd()
+        ? await showOptionalRewarded()
+        : await showOptionalInterstitial();
       toast.dismiss(loadingToast);
       if (result === 'failed' || result === 'unavailable') toast.error(t('adFailed'));
-      // 1 XP after the optional ad closes; no daily cap.
-      if (result === 'shown') {
+      if (result === 'shown' || result === 'rewarded') {
         const r = await awardAdXp();
         trackEvent('ad_xp_result', { ok: r.ok, reason: r.ok === false ? r.reason : undefined });
         if (r.ok) toast.success(t('xpEarned', { n: r.xp }), { duration: 6000 });

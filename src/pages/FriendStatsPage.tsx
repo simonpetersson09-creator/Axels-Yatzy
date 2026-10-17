@@ -1,3 +1,5 @@
+import { useAcceptedFriends } from '@/lib/accepted-friends';
+import { getAcceptedFriendMatches } from '@/lib/friend-requests';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -54,6 +56,7 @@ export default function FriendStatsPage() {
   const location = useLocation();
   const { t } = useTranslation();
   const myId = getSessionId();
+  const { ids: acceptedIds } = useAcceptedFriends();
 
   const selected = (location.state as { selectedId?: string } | null)?.selectedId ?? null;
 
@@ -85,12 +88,7 @@ export default function FriendStatsPage() {
     if (!selected) return;
     let cancelled = false;
     const load = async () => {
-      const { data, error } = await supabase
-        .from('friend_match_results')
-        .select('*')
-        .or(`player_1_id.eq.${myId},player_2_id.eq.${myId}`)
-        .order('created_at', { ascending: false })
-        .limit(500);
+      const { data, error } = await getAcceptedFriendMatches();
       if (cancelled) return;
       if (error) {
         console.warn('[friend-stats] load error', error.message);
@@ -127,8 +125,9 @@ export default function FriendStatsPage() {
     for (const r of rows) {
       const iAmP1 = r.player_1_id === myId;
       const rawOppId = iAmP1 ? r.player_2_id : r.player_1_id;
+      if (!acceptedIds.has(rawOppId)) continue;
       const oppId = resolveFriendId(rawOppId, aliasMap);
-      if (hidden.has(oppId)) continue;
+      if (!acceptedIds.has(oppId) || hidden.has(oppId)) continue;
       const oppName = iAmP1 ? r.player_2_name : r.player_1_name;
       const isOngoing = r.status === 'ongoing';
       const myScore = (iAmP1 ? r.player_1_score : r.player_2_score) ?? 0;
@@ -172,15 +171,15 @@ export default function FriendStatsPage() {
       if (entry) entry.mergedSourceIds = Array.from(set);
     }
     return Array.from(map.values());
-  }, [rows, myId, hiddenFriends, aliasMap]);
+  }, [rows, myId, hiddenFriends, aliasMap, acceptedIds]);
 
   const detailMatches = useMemo(() => {
     if (!selected || !rows) return [];
     return rows.filter((r) => {
       const oppRaw = r.player_1_id === myId ? r.player_2_id : r.player_1_id;
-      return resolveFriendId(oppRaw, aliasMap) === selected;
+      return acceptedIds.has(oppRaw) && acceptedIds.has(resolveFriendId(oppRaw, aliasMap)) && resolveFriendId(oppRaw, aliasMap) === selected;
     });
-  }, [selected, rows, myId, aliasMap]);
+  }, [selected, rows, myId, aliasMap, acceptedIds]);
 
   const detailSummary = opponents.find(o => o.opponentId === selected) ?? null;
 

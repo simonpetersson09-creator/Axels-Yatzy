@@ -9,7 +9,7 @@
 - google-services.json is committed in firebase/ (public identifiers only) and is copied into android/ by scripts/set-android-firebase.js, which also writes native-push-config.json; the app only registers for push on Android when that flag is true, because register() crashes without Firebase.
 - Online-game problems (errors, slow calls >3 s, screen/server dice or score mismatches) are reported silently as analytics_events 'mp_issue' from useMultiplayerGame — lets us diagnose desync reports without user effort.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
-- Online dice locks are batched client-side (LOCK_BATCH_MS) and sent as the full locked_dice array to toggle-lock → perform_set_locks (service-role only); dice_index toggling stays only for old app versions — one call per batch avoids server-side row-lock queues.
+- Online locks send full locked_dice batches via service-role perform_set_locks; per-die toggles are legacy only, avoiding row-lock queues.
 - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the caller's device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old app versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — lets us audit fairness and dispute claims afterwards.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat) — the dice start instantly instead of waiting for a lock call.
@@ -18,9 +18,11 @@
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock — avoids duplicate matches.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
-- Hall of Fame: server-side report_weekly_score (from recordGameResult) trims to first name, caps score.
+- Hall of Fame: report_weekly_score (from recordGameResult) trims to first name and caps score server-side.
 - Game banner: fitGameAboveBanner (admob.ts) shrinks rows/dice until all fits above it.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row. Optional ads wait for native dismissal before XP confirmation, since presentation resolves immediately.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until — shared ownership/XP.
 - DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body to avoid clipping; frame previews stay inline.
-- Shop receipts use body-portaled native dialogs and useBackHandler to stay visible and dismiss before the shop.
+- Shop receipts use body-portaled native dialogs and useBackHandler to stay visible and close before the shop.
+
+- Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.

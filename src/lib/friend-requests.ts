@@ -48,7 +48,7 @@ export async function listFriendRequests(): Promise<FriendRequest[]> {
     const rows = (data as Array<{ id: string; incoming: boolean; other_id: string; other_name: string; status: FriendRequest['status'] }> | null) ?? [];
     const list = rows.map((r) => ({ id: r.id, incoming: r.incoming, otherId: r.other_id, otherName: r.other_name, status: r.status }));
     // Sender side: an accepted request makes the other player a friend here too.
-    const accepted = list.filter((r) => !r.incoming && r.status === 'accepted').map((r) => ({ id: r.otherId, name: r.otherName }));
+    const accepted = list.filter((r) => r.status === 'accepted').map((r) => ({ id: r.otherId, name: r.otherName }));
     if (accepted.length) addKnownFriends(accepted);
     return list;
   } catch { return []; }
@@ -63,6 +63,7 @@ export async function respondFriendRequest(req: FriendRequest, accept: boolean):
     });
     const ok = !!(data as { ok?: boolean } | null)?.ok;
     if (ok && accept) addKnownFriends([{ id: req.otherId, name: req.otherName }]);
+    if (ok) window.dispatchEvent(new Event('friend-requests-changed'));
     return ok;
   } catch { return false; }
 }
@@ -75,7 +76,9 @@ export async function cancelFriendRequest(req: FriendRequest): Promise<boolean> 
     const { data } = await supabase.rpc('cancel_friend_request', {
       p_id: req.id, p_session_id: getSessionId(), p_device_id: device,
     });
-    return !!(data as { ok?: boolean } | null)?.ok;
+    const ok = !!(data as { ok?: boolean } | null)?.ok;
+    if (ok) window.dispatchEvent(new Event('friend-requests-changed'));
+    return ok;
   } catch { return false; }
 }
 
@@ -89,4 +92,10 @@ export async function cancelLobby(gameId: string): Promise<boolean> {
     });
     return !!(data as { ok?: boolean } | null)?.ok;
   } catch { return false; }
+}
+
+export async function getAcceptedFriendMatches() {
+  const device = await auth();
+  if (!device) return { data: null, error: new Error('auth') };
+  return supabase.rpc('get_accepted_friend_matches', { p_session_id: getSessionId(), p_device_id: device });
 }

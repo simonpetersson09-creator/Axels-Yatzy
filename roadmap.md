@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Samlad annonskontroll
+- [ ] Kontrollera kedjan med två annonser, belöning, avbrott, bannerformat och startannons; rätta bekräftade fel.
+- [ ] Kontrollera informationsrutan och Avbryt i den körande appen utan att ge test-XP eller skapa matcher.
+- [ ] Verifiera riktiga annonser och sparat XP i ny iPhone-/Android-version; blockerad av att native-annonser inte kan visas här.
+
 ## Dubbla frivilliga annonser
 - [x] Två bekräftat slutförda videoannonser ger totalt 1 XP i den nya appen; information före start och skydd mot dubbelbelöning.
 - [x] 37 tester godkända för annonser, avbrott, sena besked och belöning; informationsrutan kontrollerad på mobil i förhandsvisningen.

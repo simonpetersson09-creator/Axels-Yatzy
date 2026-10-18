@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Sökskärmens annons
+- [ ] Flytta sökstatus och Avbryt uppåt; placera native Medium Rectangle 300 × 250 nedanför med samma plattforms-ID:n.
+- [ ] Testa formatbyte och kontrollera små skärmar/safe areas; fysisk annonsvisning kräver nytt native-bygge.
+
 - [x] Utan internet: direkt datormatch (ingen 10 s väntan)
 - [x] Datorikon vid datorspelare i onlinematcher
 - [x] "Lägg till vän" efter onlinematch; främlingar hamnar inte automatiskt i vänlistan

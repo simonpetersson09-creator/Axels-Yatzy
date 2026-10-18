@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Dubbla frivilliga annonser
-- [ ] Två bekräftat slutförda videoannonser ger totalt 1 XP; informera före start och skydda mot dubbelbelöning.
-- [ ] Testa avbrott, sena annonsbesked och båda slutförda annonser; fysisk kontroll kräver ny appversion.
+- [x] Två bekräftat slutförda videoannonser ger totalt 1 XP i den nya appen; information före start och skydd mot dubbelbelöning.
+- [x] 37 tester godkända för annonser, avbrott, sena besked och belöning; informationsrutan kontrollerad på mobil i förhandsvisningen.
+- [ ] Kontrollera båda riktiga annonserna och sparat XP på fysisk iPhone och Android; kräver ny appversion. Äldre appar behåller tidigare belöningsflöde.
 
 ## Sökskärmens annons
 - [x] Flytta sökstatus och Avbryt uppåt; placera native Medium Rectangle 300 × 250 nedanför med samma plattforms-ID:n.

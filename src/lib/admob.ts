@@ -896,18 +896,26 @@ async function showBannerForScreen(stale: () => boolean): Promise<void> {
       bannerParked = false;
       if (margin === parkedMargin && !bannerFailed) {
         reportBanner('resume_requested', undefined, { margin });
-        await mod.AdMob.resumeBanner();
-        if (bannerFailed) return;
-        if (stale()) { await mod.AdMob.hideBanner(); if (bannerFailed) return; bannerParked = true; reportBanner('hidden'); scheduleParkedRemoval(); return; }
-        bannerShown = true;
-        shownMargin = margin;
-        setBannerSpace(true);
-        reportBanner('resumed', undefined, { margin });
-        return;
+        try {
+          await mod.AdMob.resumeBanner();
+          if (!bannerFailed) {
+            if (stale()) { await mod.AdMob.hideBanner(); if (bannerFailed) return; bannerParked = true; reportBanner('hidden'); scheduleParkedRemoval(); return; }
+            bannerShown = true;
+            shownMargin = margin;
+            setBannerSpace(true);
+            reportBanner('resumed', undefined, { margin });
+            return;
+          }
+        } catch (error) {
+          // Reload a lost native view in this match, not after another navigation.
+          bannerFailed = true;
+          reportBanner('resume_failed', reasonOf(error), { margin });
+        }
       }
       await mod.AdMob.removeBanner();
       bannerLoaded = false;
       reportBanner('removed');
+      if (stale()) { if (!bannerWanted) setBannerSpace(false); return; }
     }
     // Ny skärm med annan höjd: visa om med ny marginal.
     if (bannerShown) { await mod.AdMob.removeBanner(); bannerShown = false; bannerLoaded = false; reportBanner('removed'); }

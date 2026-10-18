@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useBackHandler } from '@/lib/back-handler';
 import { motion } from 'framer-motion';
 import { Dices, Users } from 'lucide-react';
@@ -117,7 +118,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
     };
   }, [playerName, players]);
 
-  return (
+  return createPortal(
     <motion.div
       className="quick-search-screen fixed inset-0 z-50 bg-background/95 backdrop-blur-sm"
       initial={{ opacity: 0 }}
@@ -174,6 +175,6 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
         <div data-search-ad-slot className="quick-search-ad-slot" aria-hidden="true" />
       </div>
       </div>
-    </motion.div>
+    </motion.div>, document.body
   );
 }

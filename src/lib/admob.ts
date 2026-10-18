@@ -614,7 +614,7 @@ function queueBannerOperation(action: () => Promise<void>): Promise<void> {
   return next;
 }
 function reportBanner(result: string, reason?: string, extra: Record<string, unknown> = {}) {
-  void import('@/lib/analytics').then(({ trackEvent }) => trackEvent('ad_result', {
+  const metadata = {
     kind: 'banner', result, reason,
     ms: bannerRequestAt ? Date.now() - bannerRequestAt : 0,
     wanted: bannerWanted, commandVisible: bannerShown, loaded: bannerLoaded,
@@ -622,7 +622,8 @@ function reportBanner(result: string, reason?: string, extra: Record<string, unk
     route: typeof window !== 'undefined' ? window.location.pathname : null,
     foreground: typeof document !== 'undefined' ? document.visibilityState === 'visible' : null,
     testAd: ADMOB_CONFIG.useTestAds, ...extra,
-  })).catch(() => {});
+  };
+  void import('@/lib/analytics').then(({ trackEvent }) => trackEvent('ad_result', metadata)).catch(() => {});
 }
 /** One app-global listener set. SDK events have no banner/request ID. */
 function ensureBannerListeners(mod: AdMobModule): Promise<void> {
@@ -897,7 +898,7 @@ async function showBannerForScreen(stale: () => boolean): Promise<void> {
         reportBanner('resume_requested', undefined, { margin });
         await mod.AdMob.resumeBanner();
         if (bannerFailed) return;
-        if (stale()) { await mod.AdMob.hideBanner(); bannerParked = true; reportBanner('hidden'); scheduleParkedRemoval(); return; }
+        if (stale()) { await mod.AdMob.hideBanner(); if (bannerFailed) return; bannerParked = true; reportBanner('hidden'); scheduleParkedRemoval(); return; }
         bannerShown = true;
         shownMargin = margin;
         setBannerSpace(true);
@@ -928,6 +929,7 @@ async function showBannerForScreen(stale: () => boolean): Promise<void> {
     if (stale()) {
       await mod.AdMob.hideBanner();
       bannerShown = false;
+      if (bannerFailed) return;
       bannerParked = true;
       parkedMargin = margin;
       reportBanner('hidden');

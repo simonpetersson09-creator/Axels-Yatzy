@@ -24,4 +24,4 @@
 - Shop receipts use body-portaled native dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings without buying.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
-- Serialize banner commands and use app-global SDK listeners: failed loads invalidate reuse; impressions differ from command completion. SDK events lack request IDs, so route/generation is context, not proven attribution.
+- Serialize banners; use global SDK listeners. Failed loads invalidate reuse; failed resume reloads immediately. Impressions are not command completion; route/generation cannot attribute untagged SDK events.

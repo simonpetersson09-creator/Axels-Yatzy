@@ -14,6 +14,7 @@
 - [x] Kontrollera att bara ägda val visas och kan användas från Inställningar (3 tester och simulerat iPhone-flöde; fysisk telefon återstår).
 
 ## Bannerkontroll
+- [x] Felsök utebliven iPhone-banner: återvisningsfel återskapat och rättat (31 tester); orsaken på telefonen är ännu inte bevisad.
 - [x] Registrera SDK-besked separat från appens visa/dölj-kommandon.
 - [x] Testa återvisning efter laddningsfel och snabba sidbyten automatiskt (31 annonstester godkända).
 - [ ] Testa första/nästa match, bakgrund och snabbsök på fysisk telefon (kräver nytt native-bygge).

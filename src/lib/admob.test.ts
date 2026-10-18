@@ -9,6 +9,7 @@ vi.mock('@capacitor-community/admob', () => ({
   AdmobConsentStatus: { REQUIRED: 'REQUIRED' },
   InterstitialAdPluginEvents: { Dismissed: 'dismissed', FailedToShow: 'failed' },
   BannerAdSize: { BANNER: 'BANNER' }, BannerAdPosition: { BOTTOM_CENTER: 'BOTTOM_CENTER' },
+  BannerAdPluginEvents: { Loaded: 'b_loaded', FailedToLoad: 'b_failed', AdImpression: 'b_impression', SizeChanged: 'b_size', Opened: 'b_opened', Closed: 'b_closed' },
   RewardAdPluginEvents: { Showed: 'r_showed', Rewarded: 'r_reward', Dismissed: 'r_dismissed', FailedToShow: 'r_failed' },
   AdMob: {
     requestConsentInfo: async () => ({ canRequestAds: true }),
@@ -370,7 +371,7 @@ describe('preloading', () => {
     expect(native.banner.show).toHaveBeenCalledOnce();
   });
 
-  it('a parked banner is removed after 3 minutes', async () => {
+  it('a parked banner is removed after 30 minutes', async () => {
     const m = await import('./admob');
     const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
     await m.hideGameBanner();
@@ -378,6 +379,65 @@ describe('preloading', () => {
     expect(native.banner.remove).toHaveBeenCalledOnce();
     const again = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await again;
     expect(native.banner.resume).not.toHaveBeenCalled();
+    expect(native.banner.show).toHaveBeenCalledTimes(2);
+  });
+});
+
+
+describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platform) => {
+  beforeEach(() => {
+    vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = platform;
+    vi.stubGlobal('requestAnimationFrame', (cb: () => void) => setTimeout(cb, 16));
+    Object.values(native.banner).forEach((f) => { f.mockReset(); f.mockResolvedValue(undefined); });
+  });
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); native.platform = 'ios'; });
+
+  it('logs SDK loading and impressions separately, with one listener across matches', async () => {
+    const { trackEvent } = await import('@/lib/analytics');
+    vi.mocked(trackEvent).mockClear();
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    expect(trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'banner', result: 'show_command_completed', loaded: false }));
+    expect(vi.mocked(trackEvent).mock.calls.some(([, data]) => data?.result === 'impression')).toBe(false);
+    emit('b_loaded'); emit('b_impression');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'banner', result: 'loaded', loaded: true }));
+    expect(trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'banner', result: 'impression' }));
+    await m.hideGameBanner();
+    const second = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await second;
+    expect(native.handlers.get('b_loaded')?.size).toBe(1);
+    expect(native.handlers.get('b_impression')?.size).toBe(1);
+    expect(native.banner.resume).toHaveBeenCalledOnce();
+  });
+
+  it('reloads instead of resuming a banner destroyed by an SDK load failure', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    await m.hideGameBanner();
+    native.handlers.get('b_failed')?.forEach((h) => (h as (d: unknown) => void)({ code: 3, message: 'No fill' }));
+    const second = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await second;
+    expect(native.banner.resume).not.toHaveBeenCalled();
+    expect(native.banner.show).toHaveBeenCalledTimes(2);
+  });
+
+  it('serializes a late show, leaving the banner hidden after the screen is left', async () => {
+    let finishShow: () => void = () => {};
+    native.banner.show.mockImplementation(() => new Promise<void>((resolve) => { finishShow = resolve; }));
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000);
+    const hidden = m.hideGameBanner();
+    expect(native.banner.hide).not.toHaveBeenCalled();
+    finishShow(); await first; await hidden;
+    expect(native.banner.hide).toHaveBeenCalledOnce();
+  });
+
+  it('a failed resume is retried as a fresh load on the next screen request', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    await m.hideGameBanner();
+    native.banner.resume.mockRejectedValueOnce(new Error('resume failed'));
+    const second = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await second;
+    const third = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await third;
     expect(native.banner.show).toHaveBeenCalledTimes(2);
   });
 });

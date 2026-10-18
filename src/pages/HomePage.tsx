@@ -31,8 +31,9 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
-import { awardAdXp } from '@/lib/dice-shop';
-import { isAdMobAvailable, preloadInterstitial, showOptionalInterstitial, showOptionalRewarded, preloadRewarded, subscribeRewardedState, getRewardedState, usesRewardedOptionalAd, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
+import { isAdMobAvailable, preloadRewarded, subscribeRewardedState, getRewardedState, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
+import { optionalAdPair } from '@/lib/rewarded-pair';
+import { OptionalAdsDialog } from '@/components/OptionalAdsDialog';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
@@ -84,6 +85,8 @@ export default function HomePage() {
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
+  const [showAdsConsent, setShowAdsConsent] = useState(false);
+  const completedAds = useSyncExternalStore(optionalAdPair.subscribe, optionalAdPair.getCompleted);
   // Bumps whenever any profile field (country, name, avatar) changes, so
   // rank sync re-runs even when the language itself didn't change.
   const [profileVersion, setProfileVersion] = useState(0);
@@ -217,18 +220,10 @@ export default function HomePage() {
   // Preload i bakgrunden – kan aldrig trigga visning. Väntar tills starten är klar.
   useEffect(() => {
     if (!isAdMobAvailable()) return;
-    const timer = setTimeout(() => void (usesRewardedOptionalAd() ? preloadRewarded() : preloadInterstitial()), 4000);
+    const timer = setTimeout(() => void preloadRewarded(), 4000);
     return () => clearTimeout(timer);
   }, []);
 
-  /** Server XP for one earned reward (1 XP, 15 s server cooldown). */
-  const grantAdXp = async (late = false) => {
-    const r = await awardAdXp();
-    trackEvent('ad_xp_result', { ok: r.ok, late, reason: r.ok === false ? r.reason : undefined });
-    if (r.ok) toast.success(t('xpEarned', { n: r.xp }), { duration: 6000 });
-    else if (r.ok === false && r.reason === 'cap') toast.info(t('xpCap', { cap: 10 }));
-    else toast.error(t('errGeneric'));
-  };
   // Rewarded-ad status is app-wide, so the button stays locked across page changes.
   const rewardedState = useSyncExternalStore(subscribeRewardedState, getRewardedState);
   const adBusy = adLoading || rewardedState !== 'idle';
@@ -238,6 +233,7 @@ export default function HomePage() {
 
   /** Enda vägen till show(): användarens direkta tryck på "Frivillig reklam". */
   const handleOptionalAdClick = async () => {
+    setShowAdsConsent(false);
     if (AD_BUTTON_LOCKED) return;
     if (adInFlightRef.current || getRewardedState() !== 'idle') return;
     adInFlightRef.current = true;
@@ -250,13 +246,10 @@ export default function HomePage() {
     setAdLoading(true);
     const loadingToast = toast.loading(t('adLoading'));
     try {
-      // iOS: rewarded — XP only on the SDK's reward event. Android: interstitial after close.
-      const result = usesRewardedOptionalAd()
-        ? await showOptionalRewarded()
-        : await showOptionalInterstitial();
+      const result = await optionalAdPair.run();
       toast.dismiss(loadingToast);
       if (result === 'failed' || result === 'unavailable') toast.error(t('adFailed'));
-      if (result === 'shown' || result === 'rewarded') await grantAdXp();
+      if (result === 'not_earned') toast.info(t('adPairIncomplete'));
     } finally {
       toast.dismiss(loadingToast);
       setAdLoading(false);
@@ -856,7 +849,7 @@ export default function HomePage() {
               <div className="relative flex flex-col items-center">
 
                 <motion.button
-                  onClick={handleOptionalAdClick}
+                  onClick={() => setShowAdsConsent(true)}
                   disabled={adBusy || AD_BUTTON_LOCKED}
                   className="flex flex-col items-center gap-1.5 group disabled:opacity-60"
                   whileTap={{ scale: AD_BUTTON_LOCKED ? 1 : 0.92 }}

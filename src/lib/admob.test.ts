@@ -399,8 +399,9 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
     expect(trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'banner', result: 'show_command_completed', loaded: false }));
     expect(vi.mocked(trackEvent).mock.calls.some(([, data]) => data?.result === 'impression')).toBe(false);
-    console.log('banner listener keys', [...native.handlers.keys()]);
-    emit('b_loaded'); emit('b_impression');
+    emit('b_loaded');
+    await vi.waitFor(() => expect(trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ result: 'loaded' })));
+    emit('b_impression');
     await vi.waitFor(() => expect(trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'banner', result: 'impression' })));
     expect(trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'banner', result: 'loaded', loaded: true }));
     expect(trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'banner', result: 'impression' }));

@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Sökskärmens annons
-- [ ] Flytta sökstatus och Avbryt uppåt; placera native Medium Rectangle 300 × 250 nedanför med samma plattforms-ID:n.
-- [ ] Testa formatbyte och kontrollera små skärmar/safe areas; fysisk annonsvisning kräver nytt native-bygge.
+- [x] Flytta sökstatus och Avbryt uppåt; placera native Medium Rectangle 300 × 250 nedanför med samma plattforms-ID:n.
+- [x] Testa formatbyte (33 annonstester) och små skärmar/safe areas (320 × 568, 375 × 667, 393 × 706); Avbryt kontrollerad utan riktig match.
+- [ ] Kontrollera native-annonsens placering på fysisk iPhone och Android; kräver nytt native-bygge, särskilt Androids navigationsfält.
 
 - [x] Utan internet: direkt datormatch (ingen 10 s väntan)
 - [x] Datorikon vid datorspelare i onlinematcher

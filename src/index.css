@@ -5,6 +5,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fixed native ad footprint, not a scaled web banner. */
+.quick-search-screen {
+  padding: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 10px max(12px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  overflow-y: auto;
+}
+.quick-search-layout {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: minmax(190px, 1fr) minmax(274px, 1fr);
+  justify-items: center;
+}
+.quick-search-status {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 8px;
+  overflow-wrap: anywhere;
+}
+.quick-search-icon { width: 48px; height: 48px; }
+.quick-search-ad-area { display: grid; place-items: center; padding-top: 24px; width: 100%; }
+.quick-search-ad-slot { width: 300px; height: 250px; flex-shrink: 0; }
+.ad-banner-preview {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  font: 12px sans-serif;
+  z-index: 2147483646;
+}
+@media (max-height: 620px) {
+  .quick-search-status { gap: 8px; padding-block: 4px; }
+  .quick-search-icon { width: 32px; height: 32px; }
+  .quick-search-icon svg { width: 24px; height: 24px; }
+}
+
 @layer base {
   :root {
     --app-dvh: 100dvh;

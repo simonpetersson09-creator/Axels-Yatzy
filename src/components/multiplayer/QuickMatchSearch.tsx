@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
 import { useGameBanner } from '@/hooks/useGameBanner';
+import { Button } from '@/components/ui/button';
 
 const SEARCH_MS = 15_000;
 const POLL_MS = 2_000;
@@ -36,7 +37,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
   // Android back = Avbryt (otherwise the app minimizes while still searching).
   useBackHandler(true, onCancel);
 
-  useGameBanner();
+  useGameBanner(true, 'search');
   useEffect(() => {
     const sessionId = getSessionId();
     let timer: number | undefined;
@@ -118,12 +119,13 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm px-6"
+      className="quick-search-screen fixed inset-0 z-50 bg-background/95 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="glass-card p-8 w-full max-w-sm text-center space-y-5">
+      <div className="quick-search-layout">
+      <div className="quick-search-status w-full max-w-sm text-center">
         {found ? (
           <motion.div
             className="space-y-3"
@@ -139,7 +141,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
         ) : (
         <>
         <motion.div
-          className="mx-auto w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center"
+          className="quick-search-icon mx-auto rounded-xl bg-primary/15 flex items-center justify-center"
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
         >
@@ -158,14 +160,19 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
             transition={{ duration: SEARCH_MS / 1000, ease: 'linear' }}
           />
         </motion.div>
-        <button
+        <Button
           onClick={onCancel}
-          className="w-full py-3 rounded-xl bg-secondary text-secondary-foreground font-semibold"
+          variant="secondary"
+          className="w-full h-11 font-semibold"
         >
           {t('cancelSearch')}
-        </button>
+        </Button>
         </>
         )}
+      </div>
+      <div className="quick-search-ad-area">
+        <div data-search-ad-slot className="quick-search-ad-slot" aria-hidden="true" />
+      </div>
       </div>
     </motion.div>
   );

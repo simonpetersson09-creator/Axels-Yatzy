@@ -599,6 +599,9 @@ const GOOGLE_TEST_BANNER: Record<'ios' | 'android', string> = {
 };
 
 let bannerWanted = false;
+type BannerPlacement = 'game' | 'search';
+let shownPlacement: BannerPlacement = 'game';
+let parkedPlacement: BannerPlacement = 'game';
 let bannerShown = false;
 /** Hidden-but-loaded banner kept between matches (see hideGameBanner). */
 let bannerParked = false;
@@ -830,21 +833,31 @@ async function centeredBannerMargin(): Promise<number> {
 let shownMargin = -1;
 let bannerRemoving: Promise<void> = Promise.resolve();
 
-async function previewBanner(on: boolean, isStale: () => boolean = () => false) {
+async function searchBannerMargin(): Promise<number | null> {
+  await raf2();
+  const slot = document.querySelector('[data-search-ad-slot]')?.getBoundingClientRect();
+  if (!slot || slot.width < 300 || slot.top < 0 || slot.bottom > window.innerHeight - safeAreaBottom() + 1) return null;
+  return Math.max(0, Math.round(window.innerHeight - safeAreaBottom() - slot.bottom));
+}
+
+async function previewBanner(on: boolean, isStale: () => boolean = () => false, placement: BannerPlacement = 'game') {
   const id = 'ad-banner-preview';
   document.getElementById(id)?.remove();
-  setBannerSpace(on);
+  setBannerSpace(on && placement === 'game');
   if (!on) return;
-  await fitGameAboveBanner(isStale);
+  if (placement === 'game') await fitGameAboveBanner(isStale);
   if (isStale()) return;
   const d = document.createElement('div');
   d.id = id;
-  d.textContent = 'Annons · 320×50';
-  d.style.cssText = 'position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:320px;height:50px;background:#fff;color:#333;display:flex;align-items:center;justify-content:center;font:12px sans-serif;z-index:2147483646';
-  const margin = await centeredBannerMargin();
+  d.textContent = placement === 'search' ? 'Annons · 300×250' : 'Annons · 320×50';
+  d.className = 'ad-banner-preview';
+  d.style.width = placement === 'search' ? '300px' : '320px';
+  d.style.height = placement === 'search' ? '250px' : '50px';
+  const margin = placement === 'search' ? await searchBannerMargin() : await centeredBannerMargin();
+  if (margin === null) return;
   if (isStale()) return; // sidan lämnades medan vi mätte
   document.getElementById(id)?.remove();
-  d.style.bottom = `${margin}px`;
+  d.style.bottom = `${margin + (placement === 'search' ? safeAreaBottom() : 0)}px`;
   document.body.appendChild(d);
 }
 
@@ -858,18 +871,18 @@ function bannerUnitId(): string | null {
 /** Visar bannern längst ner. Kastar aldrig. */
 let bannerGen = 0;
 
-export async function showGameBanner(): Promise<void> {
+export async function showGameBanner(placement: BannerPlacement = 'game'): Promise<void> {
   bannerWanted = true;
   // Varje sidbyte får ett eget nummer; ett äldre anrop som fortfarande väntar
   // avbryts, så att två sidor aldrig visar varsin banner.
   const gen = ++bannerGen;
   const stale = () => !bannerWanted || gen !== bannerGen;
-  return queueBannerOperation(() => showBannerForScreen(stale));
+  return queueBannerOperation(() => showBannerForScreen(stale, placement));
 }
 
-async function showBannerForScreen(stale: () => boolean): Promise<void> {
+async function showBannerForScreen(stale: () => boolean, placement: BannerPlacement): Promise<void> {
   if (stale()) return;
-  if (bannerPreview) { await previewBanner(true, stale); return; }
+  if (bannerPreview) { await previewBanner(true, stale, placement); return; }
   const adId = bannerUnitId();
   if (!isAdMobAvailable() || !adId) {
     if (Capacitor.isNativePlatform()) reportBanner('unavailable', !adId ? 'missing_unit_id' : 'plugin_unavailable');
@@ -880,21 +893,32 @@ async function showBannerForScreen(stale: () => boolean): Promise<void> {
     if (stale()) return;
     await ensureBannerListeners(mod);
     if (stale()) return;
-    setBannerSpace(true);
-    await fitGameAboveBanner(stale);
+    setBannerSpace(placement === 'game');
+    if (placement === 'game') await fitGameAboveBanner(stale);
     if (stale()) return;
-    const margin = await centeredBannerMargin();
+    const margin = placement === 'search' ? await searchBannerMargin() : await centeredBannerMargin();
+    if (margin === null) {
+      if (bannerShown) {
+        await mod.AdMob.hideBanner();
+        bannerShown = false;
+        bannerParked = true;
+        parkedMargin = shownMargin;
+        parkedPlacement = shownPlacement;
+        scheduleParkedRemoval();
+      }
+      return;
+    }
     // Vänta tills en pågående borttagning är klar, så den inte tar bort nya bannern.
     await bannerRemoving.catch(() => {});
     if (stale()) { if (!bannerWanted) setBannerSpace(false); return; }
     // Samma plats som nu: låt bannern ligga kvar i stället för att ladda om den.
-    if (bannerShown && margin === shownMargin && !bannerFailed) { reportBanner('kept'); return; }
+    if (bannerShown && placement === shownPlacement && margin === shownMargin && !bannerFailed) { reportBanner('kept'); return; }
     // Parked (hidden, still loaded) banner at the same spot: resume instantly
     // instead of loading a new one — e.g. between matches.
     if (bannerParked) {
       clearTimeout(bannerParkTimer);
       bannerParked = false;
-      if (margin === parkedMargin && !bannerFailed) {
+      if (placement === parkedPlacement && margin === parkedMargin && !bannerFailed) {
         reportBanner('resume_requested', undefined, { margin });
         try {
           await mod.AdMob.resumeBanner();
@@ -902,7 +926,8 @@ async function showBannerForScreen(stale: () => boolean): Promise<void> {
             if (stale()) { await mod.AdMob.hideBanner(); if (bannerFailed) return; bannerParked = true; reportBanner('hidden'); scheduleParkedRemoval(); return; }
             bannerShown = true;
             shownMargin = margin;
-            setBannerSpace(true);
+            shownPlacement = placement;
+            setBannerSpace(placement === 'game');
             reportBanner('resumed', undefined, { margin });
             return;
           }
@@ -924,7 +949,7 @@ async function showBannerForScreen(stale: () => boolean): Promise<void> {
     reportBanner('load_requested', undefined, { margin });
     await mod.AdMob.showBanner({
       adId,
-      adSize: mod.BannerAdSize.BANNER, // AdMob standard 320×50
+      adSize: placement === 'search' ? mod.BannerAdSize.MEDIUM_RECTANGLE : mod.BannerAdSize.BANNER,
       position: mod.BannerAdPosition.BOTTOM_CENTER,
       margin,
       isTesting: ADMOB_CONFIG.useTestAds,
@@ -933,13 +958,15 @@ async function showBannerForScreen(stale: () => boolean): Promise<void> {
     if (bannerFailed) return;
     bannerShown = true;
     shownMargin = margin;
-    setBannerSpace(bannerWanted);
+    shownPlacement = placement;
+    setBannerSpace(bannerWanted && placement === 'game');
     if (stale()) {
       await mod.AdMob.hideBanner();
       bannerShown = false;
       if (bannerFailed) return;
       bannerParked = true;
       parkedMargin = margin;
+      parkedPlacement = placement;
       reportBanner('hidden');
       scheduleParkedRemoval();
     }
@@ -979,6 +1006,7 @@ async function hideBannerForScreen(): Promise<void> {
       if (bannerFailed) return;
       bannerParked = true;
       parkedMargin = parkAt;
+      parkedPlacement = shownPlacement;
       reportBanner('hidden');
       scheduleParkedRemoval();
     } catch (error) {

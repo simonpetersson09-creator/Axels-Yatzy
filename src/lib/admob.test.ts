@@ -234,6 +234,21 @@ describe('rewarded button status', () => {
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); native.platform = 'ios'; });
 
+  it('bundle mode waits for a late opening and dismissal instead of returning pending', async () => {
+    const m = await import('./admob');
+    let settled = false;
+    const pending = m.showOptionalRewarded({ waitForCompletion: true }).then(r => { settled = true; return r; });
+    await vi.advanceTimersByTimeAsync(20_000);
+    expect(settled).toBe(false);
+    expect(m.getRewardedState()).toBe('waiting');
+    expect(await m.showOptionalRewarded()).toBe('busy');
+    emit('r_showed'); emit('r_reward');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(settled).toBe(false);
+    emit('r_dismissed');
+    expect(await pending).toBe('rewarded');
+  });
+
   it('stays locked through loading, showing and waiting, never auto-resets', async () => {
     const m = await import('./admob');
     const seen: string[] = [];

@@ -1,8 +1,8 @@
-- iOS native patches (AdMob plist, push token forwarding + aps-environment entitlement) live in scripts/ and run via `npm run cap:sync:ios` — ios/ is regenerated outside the repo, so manual Xcode edits get lost.
+- iOS patches (AdMob plist, push tokens, aps-environment) run via `npm run cap:sync:ios` from scripts/; generated ios/ edits get lost.
 - Screenshot/QA scripts must never seed stats on the live preview without cleanup: seeded stats sync to the shared world leaderboard (player_country_stats) and push real players down.
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — tamper-resistant, synced.
-- Android native patches run via `npm run cap:sync:android` (AdMob App ID in manifest, minSdk 26 for barcode scanner, launcher icons from committed resources/android/res/ via scripts/set-android-*.js); android/ is generated outside the repo like ios/, so manual edits get lost.
+- Android patches run via `npm run cap:sync:android`: AdMob App ID, minSdk 26 (scanner), committed icons via scripts/set-android-*.js; generated android/ edits get lost.
 - admob.ts: per-platform ADMOB_IDS (null disables; iOS IDs never on Android); fitGameAboveBanner fits the game above the banner; optional XP ad is Rewarded on iOS+Android (REWARDED_IDS; XP only on the SDK Rewarded event, start ad suppressed 2 min after; attempts never auto-reset since the SDK cannot cancel, status via subscribeRewardedState, late XP via RewardedXpHost; scripts/patch-admob-rewarded.js tags native rewarded events with attemptId) — no unearned XP or overlap.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Google Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
@@ -24,3 +24,4 @@
 - Shop receipts use body-portaled native dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings without buying.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use device-validated get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
+- Serialize banner commands and use app-global SDK listeners: failed loads invalidate reuse; impressions differ from command completion. SDK events lack request IDs, so route/generation is context, not proven attribution.

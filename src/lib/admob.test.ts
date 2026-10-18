@@ -433,13 +433,12 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     expect(native.banner.hide).toHaveBeenCalledOnce();
   });
 
-  it('a failed resume is retried as a fresh load on the next screen request', async () => {
+  it('a missing native banner is freshly loaded in the same match after resume fails', async () => {
     const m = await import('./admob');
     const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
     await m.hideGameBanner();
     native.banner.resume.mockRejectedValueOnce(new Error('resume failed'));
     const second = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await second;
-    const third = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await third;
     expect(native.banner.show).toHaveBeenCalledTimes(2);
   });
 });

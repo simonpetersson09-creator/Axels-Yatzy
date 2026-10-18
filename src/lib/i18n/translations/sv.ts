@@ -63,6 +63,12 @@ export const sv = {
   adOnlyInApp: 'Annonser visas endast i appen.',
   adBubbleText: 'Hjälp oss hålla Mr.B. Yatzy gratis. Om du vill får du gärna se en kort annons.',
   adComingSoon: '(Kommande)',
+  adPairTitle: 'Två annonser · +1 XP',
+  adPairBody: 'Se två frivilliga annonser för totalt 1 XP. Den andra startar när du stängt den första. Du kan avbryta när som helst; XP ges först när båda är slutförda.',
+  adPairContinueBody: 'Du har slutfört 1 av 2 annonser. Se den återstående annonsen för totalt 1 XP. Du kan avbryta utan att förlora den första visningen.',
+  adPairStart: 'Se två annonser',
+  adPairContinue: 'Se annons 2 av 2',
+  adPairIncomplete: 'Ingen XP ännu. Båda annonserna behöver slutföras.',
 
   // Rate app
   rateTitle: "Gillar du Mr.B. Yatzy?",

@@ -773,6 +773,8 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
+          <OptionalAdsDialog open={showAdsConsent} completed={completedAds}
+            onClose={() => setShowAdsConsent(false)} onStart={() => void handleOptionalAdClick()} />
           {/* Premium round secondary actions */}
           <div className="relative w-full">
             <motion.div

@@ -370,18 +370,27 @@ type ListenerHandle = { remove: () => Promise<void> };
 const onReward = (mod: AdMobModule) =>
   mod.AdMob.addListener as unknown as (event: string, fn: (ev: RewardEvent) => void) => Promise<ListenerHandle>;
 const closedUnrewarded = new Set<string>();
+const closedRewardHandlers = new Map<string, () => void>();
 let lateRewardListenerAttached = false;
 async function ensureLateRewardListener(mod: AdMobModule) {
   if (lateRewardListenerAttached) return;
   lateRewardListenerAttached = true;
   await onReward(mod)(mod.RewardAdPluginEvents.Rewarded, (ev: RewardEvent) => {
     const aid = ev?.attemptId;
-    if (aid && closedUnrewarded.delete(aid)) lateRewardHandler?.();
+    if (aid && closedUnrewarded.delete(aid)) {
+      const handler = closedRewardHandlers.get(aid) ?? lateRewardHandler;
+      closedRewardHandlers.delete(aid);
+      handler?.();
+    }
   });
 }
-function rememberUnrewarded(aid: string) {
+function rememberUnrewarded(aid: string, handler?: () => void) {
   closedUnrewarded.add(aid);
-  if (closedUnrewarded.size > 20) closedUnrewarded.delete(closedUnrewarded.values().next().value as string);
+  if (handler) closedRewardHandlers.set(aid, handler);
+  if (closedUnrewarded.size > 20) {
+    const oldest = closedUnrewarded.values().next().value;
+    if (oldest) { closedUnrewarded.delete(oldest); closedRewardHandlers.delete(oldest); }
+  }
 }
 
 /**
@@ -400,7 +409,7 @@ export function setLateRewardHandler(fn: (() => void) | null): void {
  * The attempt (and its listeners) stays alive until the SDK finishes it, so a
  * new attempt can never overlap or receive the old attempt's events.
  */
-export async function showOptionalRewarded(): Promise<RewardedResult> {
+export async function showOptionalRewarded(options: { waitForCompletion?: boolean; onLateReward?: () => void } = {}): Promise<RewardedResult> {
   if (!isAdMobAvailable() || !rewardedUnitId()) return 'unavailable';
   if (rewardedShowing || showing || appOpenShowing) return 'busy';
   rewardedShowing = true;
@@ -462,7 +471,7 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
         const r = res as { patched?: boolean; rewarded?: boolean; attemptId?: string } | undefined;
         if (r?.patched) {
           if (r.rewarded) earned = true;
-          if (!earned) rememberUnrewarded(nativeId);
+          if (!earned) rememberUnrewarded(nativeId, options.onLateReward);
           finish(earned ? 'rewarded' : 'not_earned');
           return;
         }
@@ -483,7 +492,7 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
     lifecycleOwnsRelease = true;
     void lifecycle.then(() => { clearTimeout(openTimer); });
 
-    const first = await Promise.race([lifecycle, openTimeout]);
+    const first = options.waitForCompletion ? await lifecycle : await Promise.race([lifecycle, openTimeout]);
     if (first !== 'open_timeout') {
       release();
       reportAd('optional', first, startedAt);
@@ -493,7 +502,7 @@ export async function showOptionalRewarded(): Promise<RewardedResult> {
     void lifecycle.then((late) => {
       release();
       reportAd('optional', `late_${late}`, startedAt);
-      if (late === 'rewarded') lateRewardHandler?.();
+      if (late === 'rewarded') (options.onLateReward ?? lateRewardHandler)?.();
     });
     return 'pending';
   } catch (err) {

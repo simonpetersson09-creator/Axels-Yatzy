@@ -1,5 +1,5 @@
 - iOS patches (AdMob plist, push tokens, aps-environment) run via `npm run cap:sync:ios` from scripts/; generated ios/ edits get lost.
-- Screenshot/QA scripts must never seed stats on the live preview without cleanup: seeded stats sync to the shared world leaderboard (player_country_stats) and push real players down.
+- QA must clean up seeded live-preview stats: they sync to player_country_stats and displace real players.
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports matches vs the computer via record_local_yatzy_match — tamper-resistant, synced.
 - Android patches run via `npm run cap:sync:android`: AdMob App ID, minSdk 26 (scanner), committed icons via scripts/set-android-*.js; generated android/ edits get lost.

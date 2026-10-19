@@ -122,6 +122,10 @@ async function loadModule(): Promise<AdMobModule> {
 
 let consentPromise: Promise<boolean> | null = null;
 let privacyOptionsRequired = false;
+let consentState: Awaited<ReturnType<AdMobModule['AdMob']['requestConsentInfo']>> | null = null;
+
+/** Spelarens senast kända annonsval (från Googles samtyckesruta). */
+export type AdsConsentChoice = 'accepted' | 'declined' | 'not_required' | 'unknown';
 
 /**
  * Googles samtyckesruta (UMP) – visas bara där den krävs (EU/UK) och bara
@@ -136,6 +140,7 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
         if (info.isConsentFormAvailable && info.status === mod.AdmobConsentStatus.REQUIRED) {
           info = await mod.AdMob.showConsentForm();
         }
+        consentState = info;
         privacyOptionsRequired = info.privacyOptionsRequirementStatus === 'REQUIRED';
         return info.canRequestAds;
       } catch (err) {
@@ -161,12 +166,28 @@ export async function isAdPrivacyOptionsRequired(): Promise<boolean> {
   }
 }
 
+/** Läser spelarens senast sparade annonsval utan att visa någon ruta. */
+export function getAdsConsentChoice(): AdsConsentChoice {
+  const info = consentState;
+  if (!info) return 'unknown';
+  if ((info.status as string) === 'NOT_REQUIRED') return 'not_required';
+  if ((info.status as string) === 'OBTAINED') return info.canRequestAds ? 'accepted' : 'declined';
+  return 'unknown';
+}
+
 /** Öppnar Googles ruta så spelaren kan ändra sitt annonsval. */
 export async function showAdPrivacyOptions(): Promise<void> {
   if (!isAdMobAvailable()) return;
   try {
     const mod = await loadModule();
     await mod.AdMob.showPrivacyOptionsForm();
+    // Uppdatera det sparade valet när spelaren kommit tillbaka från Googles ruta.
+    try {
+      consentState = await withTimeout(mod.AdMob.requestConsentInfo(), 10_000, 'consent_info');
+      privacyOptionsRequired = consentState.privacyOptionsRequirementStatus === 'REQUIRED';
+    } catch {
+      /* behåll tidigare värde */
+    }
   } catch (err) {
     console.warn('[AdMob] privacy options failed', err);
   }

@@ -660,8 +660,13 @@ function ensureBannerListeners(mod: AdMobModule): Promise<void> {
         clearTimeout(bannerParkTimer);
       }));
       handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.AdImpression, () => reportBanner('impression')));
-      handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.SizeChanged, (size) =>
-        reportBanner('size_changed', undefined, { width: size.width, height: size.height })));
+      handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.SizeChanged, (size) => {
+        // Lets fixed overlays (quick chat) stay above the real native banner height.
+        try {
+          document.documentElement.style.setProperty('--ad-banner-space', `${Math.max(0, shownMargin) + (size.height || 0)}px`);
+        } catch { /* ignore */ }
+        reportBanner('size_changed', undefined, { width: size.width, height: size.height });
+      }));
       handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.Opened, () => reportBanner('opened')));
       handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.Closed, () => reportBanner('closed')));
     } catch (error) {

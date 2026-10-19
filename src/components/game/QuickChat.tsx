@@ -148,15 +148,15 @@ export function QuickChat({ gameId, myPlayerIndex, myName, inline = false }: Qui
     : 'fixed z-[70] w-12 h-12 rounded-full bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_6px_20px_-4px_hsl(0_0%_0%/0.5)] flex items-center justify-center active:scale-95 transition-transform';
 
   const panelBottom = inline
-    ? 'calc(env(safe-area-inset-bottom) + 80px)'
-    : 'calc(env(safe-area-inset-bottom) + 76px)';
+    ? 'calc(env(safe-area-inset-bottom) + max(80px, var(--ad-banner-space, 0px) + 16px))'
+    : 'calc(env(safe-area-inset-bottom) + max(76px, var(--ad-banner-space, 0px) + 16px))';
 
   const bubbleStyle = { top: 'calc(env(safe-area-inset-top) + 48px)' };
   const buttonStyle = inline
     ? { WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }
     : {
         right: 'calc(env(safe-area-inset-right) + 12px)',
-        bottom: 'calc(env(safe-area-inset-bottom) + 16px)',
+        bottom: 'calc(env(safe-area-inset-bottom) + var(--ad-banner-space, 0px) + 16px)',
         WebkitTapHighlightColor: 'transparent',
         touchAction: 'manipulation',
       };

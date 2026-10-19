@@ -85,13 +85,26 @@ export async function reportWeeklyScore(score: number): Promise<void> {
   } catch { /* best effort */ }
 }
 
-/** Refreshes my current rank (others may have passed me). */
+/** Refreshes my current rank (others may have passed me) and tells me if I dropped. */
 export async function syncMyHofRank(): Promise<number | null> {
   try {
+    const before = getCachedHofRank();
     const { data, error } = await supabase.rpc('get_my_hof_rank', { p_session_id: getSessionId() });
     if (error) return getCachedHofRank();
     const rank = inTop(data as number | null) ? (data as number) : null;
     cacheRank(rank);
+    if (before !== null && (rank === null || rank > before)) {
+      const msg = rank === null
+        ? t('hofDroppedOut')
+        : t('hofDropped', { rank });
+      toast(`🏆 ${msg}`, {
+        duration: 6000,
+        action: {
+          label: t('hofShow'),
+          onClick: () => window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: '/stats' } })),
+        },
+      });
+    }
     return rank;
   } catch {
     return getCachedHofRank();

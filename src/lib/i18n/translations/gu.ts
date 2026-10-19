@@ -320,6 +320,8 @@ export const gu: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'તમે આ અઠવાડિયાની ટોપ 10 માં #{rank} પર નીચે આવ્યા',
+  hofDroppedOut: 'તમે આ અઠવાડિયાની ટોપ 10 માંથી બહાર આવ્યા',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "ગયા અઠવાડિયે તમારો ક્રમ",
   weeklyGamesText: "છેલ્લા 7 દિવસમાં {n} મેચ",

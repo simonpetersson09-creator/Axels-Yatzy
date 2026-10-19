@@ -320,6 +320,8 @@ export const da: Partial<typeof sv> = {
   hofEntered: 'Du kom ind på ugens top 10 – plads {rank}!',
   hofClimbed: 'Du klatrede til plads {rank} på ugens top 10!',
   hofShow: 'Vis',
+  hofDropped: 'Du er røget ned på plads {rank} i ugens top 10',
+  hofDroppedOut: 'Du er røget ud af ugens top 10',
   hofBadgeLabel: 'Ugens top 10',
   weeklyRankLabel: "Din placering i sidste uge",
   weeklyGamesText: "{n} kampe de sidste 7 dage",

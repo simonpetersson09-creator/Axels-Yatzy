@@ -320,6 +320,8 @@ export const ptBR: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'Você caiu para o lugar {rank} no top 10 da semana',
+  hofDroppedOut: 'Você saiu do top 10 da semana',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "Sua posição na semana passada",
   weeklyGamesText: "{n} partidas nos últimos 7 dias",

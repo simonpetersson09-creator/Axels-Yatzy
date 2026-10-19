@@ -320,6 +320,8 @@ export const or: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'ଆପଣ ଏହି ସପ୍ତାହର ଟପ୍ 10 ରେ #{rank} କୁ ଓହ୍ଲାଇଛନ୍ତି',
+  hofDroppedOut: 'ଆପଣ ଏହି ସପ୍ତାହର ଟପ୍ 10 ରୁ ବାହାରି ଯାଇଛନ୍ତି',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "ଗତ ସପ୍ତାହରେ ଆପଣଙ୍କ ସ୍ଥାନ",
   weeklyGamesText: "ଗତ ୭ ଦିନରେ {n}ଟି ମ୍ୟାଚ୍",

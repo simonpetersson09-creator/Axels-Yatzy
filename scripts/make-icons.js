@@ -35,7 +35,7 @@ function render(src, out, size, { circle = false, alpha = false } = {}) {
       '-compose', 'DstIn', '-composite',
     );
   }
-  args.push(alpha ? '-alpha', 'set' : '-alpha', 'off');
+  args.push(...(alpha ? ['-alpha', 'set'] : ['-alpha', 'off']));
   args.push(out);
   run(args);
 }

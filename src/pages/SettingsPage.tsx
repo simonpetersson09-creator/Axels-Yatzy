@@ -18,7 +18,7 @@ import {
 } from '@/lib/profile';
 import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank';
 import { resetLocalStats, getLocalStats, saveLocalStats, type LocalStats } from '@/lib/local-stats';
-import { t } from '@/lib/i18n';
+import { t, type TranslationKey } from '@/lib/i18n';
 import { getAnonNumber } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { isAdPrivacyOptionsRequired, showAdPrivacyOptions, getAdsConsentChoice, type AdsConsentChoice } from '@/lib/admob';

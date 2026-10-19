@@ -71,7 +71,7 @@ export default function SettingsPage() {
   const [adPrivacyRequired, setAdPrivacyRequired] = useState(false);
   useEffect(() => {
     let alive = true;
-    void isAdPrivacyOptionsRequired().then((r) => { if (alive) setAdPrivacyRequired(r); });
+    void isAdPrivacyOptionsRequired().then((r) => { if (alive) { setAdPrivacyRequired(r); setAdPrivacyChoice(getAdsConsentChoice()); } });
     return () => { alive = false; };
   }, []);
   const [adPrivacyChoice, setAdPrivacyChoice] = useState<AdsConsentChoice>(() => getAdsConsentChoice());

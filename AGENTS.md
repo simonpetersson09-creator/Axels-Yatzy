@@ -1,8 +1,8 @@
-- iOS patches (AdMob plist, push tokens, aps-environment, icons via scripts/set-ios-icons.js) run via `npm run cap:sync:ios`; generated ios/ edits get lost.
-- QA must clean up seeded live-preview stats: they sync to player_country_stats and displace real players.
+- iOS patches (AdMob, push, icons) run via `npm run cap:sync:ios`; generated ios/ edits get lost.
+- Clean QA stats from player_country_stats; they displace real players.
 - Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports computer matches via record_local_yatzy_match — tamper-resistant.
-- Android patches run via `npm run cap:sync:android`: AdMob App ID, minSdk 26 (scanner), icons via scripts/set-android-icons.js; generated android/ edits get lost.
+- Android patches (AdMob, minSdk 26, icons) run via `npm run cap:sync:android`; generated android/ edits get lost.
 - App icon: resources/icon.png (1024x1024, opaque) is the only source; `npm run icons` (scripts/make-icons.js) regenerates resources/android/res, resources/ios/AppIcon.appiconset and public/ copies — never hand-edit generated icon files.
 - admob.ts: platform-specific ADMOB_IDS/REWARDED_IDS (null disables; never iOS IDs on Android); fitGameAboveBanner reserves banner space. rewarded-pair deduplicates two SDK rewards across pages; RewardedXpHost requests one server XP per bundle. Second ad waits for dismissal; interrupted bundles resume in-session. Suppress App Open 2 min afterward. Never auto-reset uncancellable SDK attempts; subscribeRewardedState tracks status. scripts/patch-admob-rewarded.js tags events with attemptId — prevents overlap/unearned XP.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Play link stays hidden until PLAY_STORE_LIVE is true.
@@ -26,3 +26,5 @@
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
 - Serialize banners with global listeners; failures force reload. SDK events lack request IDs. Search uses a body portal and measured native rectangle slot; reuse must match size and margin.
+
+- Ad privacy: patch-admob-consent.js reads native UMP TCF purpose consents at cap sync; OBTAINED/canRequestAds never imply acceptance. Never log or copy consent into app storage.

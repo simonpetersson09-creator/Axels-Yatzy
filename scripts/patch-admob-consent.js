@@ -1,0 +1,51 @@
+/** Read UMP's existing choices without changing consent or requesting ads. */
+import { readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+const root = resolve('node_modules/@capacitor-community/admob');
+const platform = process.argv[2];
+const marker = 'MRB_READ_CONSENT';
+async function patch(path, anchor, addition, extra) {
+  let source = await readFile(resolve(root, path), 'utf8');
+  if (source.includes(marker)) return;
+  if (!source.includes(anchor)) throw new Error(`Consent patch anchor missing: ${path}`);
+  source = source.replace(anchor, addition + anchor);
+  if (extra) source = extra(source);
+  await writeFile(resolve(root, path), source);
+  console.log(`Patched consent reader: ${path}`);
+}
+if (!platform || platform === 'ios') {
+  await patch('ios/Sources/AdMobPlugin/AdMobPlugin.swift', '    @objc func requestConsentInfo(_ call: CAPPluginCall) {',
+    `    // ${marker}
+    @objc func getStoredConsentChoices(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            let status = ConsentInformation.shared.consentStatus == .obtained ? "OBTAINED" : "UNKNOWN"
+            call.resolve([
+                "status": status,
+                "purposeConsents": UserDefaults.standard.string(forKey: "IABTCF_PurposeConsents") ?? ""
+            ])
+        }
+    }
+
+`, source => {
+      const method = '        CAPPluginMethod(name: "requestConsentInfo", returnType: CAPPluginReturnPromise),';
+      if (!source.includes(method)) throw new Error('Consent method registration anchor missing');
+      return source.replace('import GoogleMobileAds', 'import GoogleMobileAds\nimport UserMessagingPlatform')
+        .replace(method, '        CAPPluginMethod(name: "getStoredConsentChoices", returnType: CAPPluginReturnPromise),\n' + method);
+    });
+}
+if (!platform || platform === 'android') {
+  await patch('android/src/main/java/com/getcapacitor/community/admob/AdMob.java', '    @PluginMethod\n    public void requestConsentInfo(final PluginCall call) {',
+    `    // ${marker}
+    @PluginMethod
+    public void getStoredConsentChoices(final PluginCall call) {
+        android.content.SharedPreferences prefs = getContext().getSharedPreferences(getContext().getPackageName() + "_preferences", android.content.Context.MODE_PRIVATE);
+        int status = com.google.android.ump.UserMessagingPlatform.getConsentInformation(getContext()).getConsentStatus();
+        JSObject result = new JSObject();
+        result.put("status", status == com.google.android.ump.ConsentInformation.ConsentStatus.OBTAINED ? "OBTAINED" : "UNKNOWN");
+        Object bits = prefs.getAll().get("IABTCF_PurposeConsents");
+        result.put("purposeConsents", bits instanceof String ? (String) bits : "");
+        call.resolve(result);
+    }
+
+`);
+}

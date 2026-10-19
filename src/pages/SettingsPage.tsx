@@ -21,7 +21,8 @@ import { resetLocalStats, getLocalStats, saveLocalStats, type LocalStats } from 
 import { t } from '@/lib/i18n';
 import { getAnonNumber } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
-import { isAdPrivacyOptionsRequired, showAdPrivacyOptions } from '@/lib/admob';
+import { getAdConsentChoices, isAdPrivacyOptionsRequired, showAdPrivacyOptions } from '@/lib/admob';
+import { readAdConsentChoices } from '@/lib/ad-consent';
 import { ShieldCheck } from 'lucide-react';
 import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
 import { toast } from 'sonner';
@@ -62,11 +63,27 @@ export default function SettingsPage() {
 
   // "Annonsinställningar" visas bara där Google kräver det (EU/UK).
   const [adPrivacyRequired, setAdPrivacyRequired] = useState(false);
+  const [adChoices, setAdChoices] = useState(() => readAdConsentChoices(undefined, undefined));
+  const [adPrivacyBusy, setAdPrivacyBusy] = useState(false);
   useEffect(() => {
     let alive = true;
-    void isAdPrivacyOptionsRequired().then((r) => { if (alive) setAdPrivacyRequired(r); });
+    void isAdPrivacyOptionsRequired().then(async (r) => {
+      const choices = await getAdConsentChoices();
+      if (alive) { setAdPrivacyRequired(r); setAdChoices(choices); }
+    });
     return () => { alive = false; };
   }, []);
+
+  const changeAdPrivacy = async () => {
+    if (adPrivacyBusy) return;
+    setAdPrivacyBusy(true);
+    try {
+      trackEvent('ad_privacy_opened');
+      const ok = await showAdPrivacyOptions();
+      setAdChoices(await getAdConsentChoices());
+      if (!ok) toast.error(t('errorGeneric'));
+    } finally { setAdPrivacyBusy(false); }
+  };
 
   const saveName = () => {
     setProfileName(name);
@@ -434,17 +451,31 @@ export default function SettingsPage() {
         </Card>
 
         {adPrivacyRequired && (
-          <Card>
-            <motion.button
-              onClick={() => { trackEvent('ad_privacy_opened'); void showAdPrivacyOptions(); }}
-              className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
-              whileTap={{ scale: 0.985 }}
-            >
-              <ShieldCheck className="w-4 h-4 text-primary" />
-              <span className="flex-1 text-sm font-medium text-foreground">{t('adPrivacy')}</span>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </motion.button>
-          </Card>
+          <Section title={t('adPrivacy')}>
+            <Card>
+              <div className="px-3 py-3">
+                <p className="text-xs font-semibold text-muted-foreground mb-3">{t('adPrivacySaved')}</p>
+                <dl className="space-y-3">
+                  {([
+                    ['adPrivacyStorage', adChoices.storage],
+                    ['adPrivacyProfile', adChoices.adProfile],
+                    ['adPrivacyUseProfile', adChoices.useAdProfile],
+                  ] as const).map(([label, choice]) => (
+                    <div key={label}>
+                      <dt className="text-sm text-foreground">{t(label)}</dt>
+                      <dd className="text-xs text-muted-foreground mt-0.5">{t(choice === 'allowed' ? 'adPrivacyAllowed' : choice === 'denied' ? 'adPrivacyDenied' : 'adPrivacyUnknown')}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+              <Button variant="ghost" disabled={adPrivacyBusy} onClick={() => void changeAdPrivacy()}
+                className="h-auto w-full min-h-11 justify-start px-3 py-2.5 text-left border-t border-border/40 rounded-none">
+                <ShieldCheck className="w-4 h-4 text-primary" />
+                <span className="flex-1 whitespace-normal text-sm">{t(adPrivacyBusy ? 'loading' : 'adPrivacyChange')}</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </Button>
+            </Card>
+          </Section>
         )}
 
         <div className="text-center pt-2 pb-6">

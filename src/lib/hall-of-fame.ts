@@ -94,16 +94,7 @@ export async function syncMyHofRank(): Promise<number | null> {
     const rank = inTop(data as number | null) ? (data as number) : null;
     cacheRank(rank);
     if (before !== null && (rank === null || rank > before)) {
-      const msg = rank === null
-        ? t('hofDroppedOut')
-        : t('hofDropped', { rank });
-      toast(`🏆 ${msg}`, {
-        duration: 6000,
-        action: {
-          label: t('hofShow'),
-          onClick: () => window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: '/stats' } })),
-        },
-      });
+      window.dispatchEvent(new CustomEvent('hof:dropped', { detail: { rank } }));
     }
     return rank;
   } catch {

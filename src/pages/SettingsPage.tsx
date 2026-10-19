@@ -21,10 +21,17 @@ import { resetLocalStats, getLocalStats, saveLocalStats, type LocalStats } from 
 import { t } from '@/lib/i18n';
 import { getAnonNumber } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
-import { isAdPrivacyOptionsRequired, showAdPrivacyOptions } from '@/lib/admob';
+import { isAdPrivacyOptionsRequired, showAdPrivacyOptions, getAdsConsentChoice, type AdsConsentChoice } from '@/lib/admob';
 import { ShieldCheck } from 'lucide-react';
 import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
 import { toast } from 'sonner';
+
+const AD_CONSENT_LABEL: Record<AdsConsentChoice, TranslationKey> = {
+  accepted: 'adConsent_accepted',
+  declined: 'adConsent_declined',
+  not_required: 'adConsent_not_required',
+  unknown: 'adConsent_unknown',
+};
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -67,6 +74,7 @@ export default function SettingsPage() {
     void isAdPrivacyOptionsRequired().then((r) => { if (alive) setAdPrivacyRequired(r); });
     return () => { alive = false; };
   }, []);
+  const [adPrivacyChoice, setAdPrivacyChoice] = useState<AdsConsentChoice>(() => getAdsConsentChoice());
 
   const saveName = () => {
     setProfileName(name);
@@ -436,12 +444,18 @@ export default function SettingsPage() {
         {adPrivacyRequired && (
           <Card>
             <motion.button
-              onClick={() => { trackEvent('ad_privacy_opened'); void showAdPrivacyOptions(); }}
+              onClick={() => {
+                trackEvent('ad_privacy_opened');
+                void showAdPrivacyOptions().then(() => setAdPrivacyChoice(getAdsConsentChoice()));
+              }}
               className="w-full min-h-11 px-3 py-2.5 flex items-center gap-3 text-left active:bg-secondary/60 transition-colors"
               whileTap={{ scale: 0.985 }}
             >
               <ShieldCheck className="w-4 h-4 text-primary" />
-              <span className="flex-1 text-sm font-medium text-foreground">{t('adPrivacy')}</span>
+              <span className="flex-1 flex flex-col items-start gap-0.5 text-left">
+                <span className="text-sm font-medium text-foreground">{t('adPrivacy')}</span>
+                <span className="text-xs text-muted-foreground">{t(AD_CONSENT_LABEL[adPrivacyChoice])}</span>
+              </span>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </motion.button>
           </Card>

@@ -5,6 +5,7 @@ import { DiceTierCard } from '@/components/DiceTierCard';
 import { SentInvitesCards } from '@/components/SentInvitesCards';
 import { cancelLobby } from '@/lib/friend-requests';
 import { FriendRequestNotice } from '@/components/FriendRequestNotice';
+import { HofRankNotice } from '@/components/HofRankNotice';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -554,6 +555,7 @@ export default function HomePage() {
 
         <div className="w-full space-y-2 sm:space-y-3">
           <FriendRequestNotice />
+          <HofRankNotice />
           <SentInvitesCards />
           {openLobbies.map((lb) => (
             <div

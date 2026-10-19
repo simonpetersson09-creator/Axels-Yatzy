@@ -1119,14 +1119,21 @@ export function useMultiplayerGame() {
       const prev = lockChainRef.current;
       const send = (async () => {
         await prev.catch(() => undefined); // keep calls in order
+        // Skipped batches must also leave the pending set, otherwise Kasta
+        // stays disabled until the 15 s lock_stuck_reset safety net fires.
+        const skip = () => {
+          pendingLockPromisesRef.current.delete(current.promise);
+          current.resolve(true);
+          if (mountedRef.current) setLocksPending(pendingLockPromisesRef.current.size > 0);
+        };
         const pending = pendingLockRef.current;
         const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
         const locks = pending?.gameId === gameId ? pending.lockedDice : null;
-        if (!locks) { current.resolve(true); return; }
+        if (!locks) { skip(); return; }
         // Queued calls read the latest locks; if the previous call already sent
         // exactly these, skip — rapid taps no longer pile up identical calls.
         const last = lastSentLocksRef.current;
-        if (last && last.gameId === gameId && last.seq === sendSeq) { current.resolve(true); return; }
+        if (last && last.gameId === gameId && last.seq === sendSeq) { skip(); return; }
         lastSentLocksRef.current = { gameId, seq: sendSeq };
         const lockStartedAt = Date.now();
         try {

@@ -1,6 +1,6 @@
 - iOS patches (AdMob, push, icons) run via `npm run cap:sync:ios`; generated ios/ edits get lost.
 - Clean QA stats from player_country_stats; they displace real players.
-- Public web shows an App Store page instead of the game (WebGate in App.tsx); only /join, /legal, /admin stay open, and the Lovable preview/localhost remain playable for development.
+- WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports computer matches via record_local_yatzy_match — tamper-resistant.
 - Android patches (AdMob, minSdk 26, icons) run via `npm run cap:sync:android`; generated android/ edits get lost.
 - App icon: resources/icon.png (1024x1024, opaque) is the only source; `npm run icons` (scripts/make-icons.js) regenerates resources/android/res, resources/ios/AppIcon.appiconset and public/ copies — never hand-edit generated icon files.

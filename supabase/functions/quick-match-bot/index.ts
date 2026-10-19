@@ -82,9 +82,12 @@ async function playTurn(sb: Sb, gameId: string): Promise<boolean> {
     .select("player_index, session_id, player_name, scores, last_active_at, is_bot")
     .eq("game_id", gameId);
   const list = (players ?? []) as PlayerRow[];
-  if (list.length === 0 || !list.every(idle)) return false; // someone is here → client handles it
+  if (list.length === 0) return false;
   const cur = list.find((p) => p.player_index === game.current_player_index);
-  if (!cur) return false;
+  // The server plays whenever the CURRENT player is idle (bot seat or silent
+  // human) — other present players no longer block the takeover, since the
+  // client path cannot act as someone else's session (device auth).
+  if (!cur || !idle(cur)) return false;
 
   await notifyTakeover(sb, gameId, cur);
 
@@ -138,7 +141,7 @@ Deno.serve(async (req) => {
 
   try {
     if (!isCron) {
-      const { game_id } = await req.json().catch(() => ({}));
+      const { game_id, play } = await req.json().catch(() => ({}));
       if (typeof game_id !== "string") return json({ error: "game_id required" }, 400);
       const { data: game } = await sb.from("games").select("status, is_quick_match, current_player_index").eq("id", game_id).maybeSingle();
       if (!game?.is_quick_match || game.status !== "playing") return json({ skipped: true });
@@ -147,6 +150,12 @@ Deno.serve(async (req) => {
         .eq("game_id", game_id).eq("player_index", game.current_player_index).maybeSingle();
       if (!cur || !idle(cur as PlayerRow)) return json({ skipped: true });
       await notifyTakeover(sb, game_id, cur as PlayerRow);
+      // play: true → the server also plays the turn itself (service role), so a
+      // silent player's turn never depends on another player's phone.
+      if (play === true) {
+        const played = await playTurn(sb, game_id).catch(() => false);
+        return json({ ok: true, played });
+      }
       return json({ ok: true });
     }
 

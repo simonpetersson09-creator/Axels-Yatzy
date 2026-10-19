@@ -76,18 +76,19 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
         busyRef.current = true;
         if (!current.is_bot) {
           setBotFor(current.player_name);
-          if (!notifiedRef.current) {
-            notifiedRef.current = true;
-            void supabase.functions.invoke('quick-match-bot', { body: { game_id: gameId } }).then(() => {}, () => {});
-          }
+          if (!notifiedRef.current) notifiedRef.current = true;
+          // A silent human's turn is played by the server (service role). This
+          // client cannot act as their session — device auth would reject it.
+          // Retried every CHECK_MS until the turn moves on.
+          await supabase.functions.invoke('quick-match-bot', { body: { game_id: gameId, play: true } }).then(() => {}, () => {});
         } else {
           setBotFor(null);
+          await playBotTurn(
+            game as any,
+            { player_index: current.player_index, scores: current.scores as Record<string, number | null> },
+            current.session_id,
+          );
         }
-        await playBotTurn(
-          game as any,
-          { player_index: current.player_index, scores: current.scores as Record<string, number | null> },
-          current.session_id,
-        );
       } catch (e) {
         console.warn('[takeover] failed', e);
       } finally {

@@ -368,6 +368,10 @@ export function useMultiplayerGame() {
         setTimeout(() => {
           if (mountedRef.current) void refreshGameStateRef.current?.(gameId, attempt + 1);
         }, 2000 * (attempt + 1));
+      } else if (mountedRef.current) {
+        // Retries exhausted: never leave the match stuck on a spinner — show a
+        // visible error with a way out instead of loading forever.
+        setState(prev => prev.loading ? { ...prev, loading: false, error: t('errGeneric') } : prev);
       }
       return;
     }
@@ -971,9 +975,11 @@ export function useMultiplayerGame() {
           await new Promise((r) => setTimeout(r, ROLL_RECOVER_AFTER_MS));
           while (!settled && Date.now() - rollStartedAt < ROLL_RECOVER_DEADLINE_MS) {
             try {
-              const { data: g } = await supabase.from('games')
+              // Hard timeout on each read: a hanging SELECT must not hold the
+              // roll past the recovery deadline.
+              const { data: g } = await withTimeout(Promise.resolve(supabase.from('games')
                 .select('dice, rolls_left, round, current_player_index')
-                .eq('id', gid).maybeSingle();
+                .eq('id', gid).maybeSingle()), 5_000);
               if (g && g.round === expect.round && g.current_player_index === expect.player && g.rolls_left === expect.rollsLeft) {
                 reportMpIssue('roll_recovered', gid, { ms: Date.now() - rollStartedAt });
                 finish(() => resolve({ data: { success: true, dice: g.dice, rolls_left: g.rolls_left }, error: null }));
@@ -1345,9 +1351,20 @@ export function useMultiplayerGame() {
       trackEvent('game_forfeited', undefined, { gameId, gameMode: 'multiplayer' });
     } catch (err) {
       console.error('Forfeit failed:', err);
-      // Server call failed but the user has already left the board; do not
-      // revert state — that would trap them on a finished-looking screen. The
-      // next polling/realtime update will reconcile if the call retried.
+      reportMpIssue('forfeit_failed', gameId, { err: errText(err) });
+      // The server never got the forfeit: the match is still running there.
+      // Bring the player back to the board with an error instead of leaving
+      // them on a finished-looking screen while the match lives on.
+      if (mountedRef.current) {
+        setState(prev => ({
+          ...prev,
+          status: 'playing',
+          error: t('errGeneric'),
+          gameState: prev.gameState
+            ? { ...prev.gameState, forfeitedBy: null, forfeitedBySessionId: null }
+            : prev.gameState,
+        }));
+      }
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 

@@ -319,6 +319,8 @@ export const ru: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'Вы опустились на {rank} место в топ-10 недели',
+  hofDroppedOut: 'Вы выпали из топ-10 недели',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "Ваше место на прошлой неделе",
   weeklyGamesText: "Матчей за последние 7 дней: {n}",

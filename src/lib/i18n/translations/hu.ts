@@ -320,6 +320,8 @@ export const hu: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'A hét top 10-es listáján a(z) {rank}. helyre csúsztál',
+  hofDroppedOut: 'Kiestél a hét top 10-es listájából',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "Múlt heti helyezésed",
   weeklyGamesText: "{n} meccs az elmúlt 7 napban",

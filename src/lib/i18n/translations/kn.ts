@@ -320,6 +320,8 @@ export const kn: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'ನೀವು ಈ ವಾರದ ಟಾಪ್ 10 ನಲ್ಲಿ #{rank} ಗೆ ಇಳಿದಿದ್ದೀರಿ',
+  hofDroppedOut: 'ನೀವು ಈ ವಾರದ ಟಾಪ್ 10 ರಿಂದ ಹೊರಬಿದ್ದಿದ್ದೀರಿ',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "ಕಳೆದ ವಾರ ನಿಮ್ಮ ಶ್ರೇಯಾಂಕ",
   weeklyGamesText: "ಕಳೆದ 7 ದಿನಗಳಲ್ಲಿ {n} ಪಂದ್ಯಗಳು",

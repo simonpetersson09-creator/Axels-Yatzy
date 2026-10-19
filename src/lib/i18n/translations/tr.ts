@@ -320,6 +320,8 @@ export const tr: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'Bu haftanın ilk 10 listesinde {rank}. sıraya düştün',
+  hofDroppedOut: 'Bu haftanın ilk 10 listesinden düştün',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "Geçen haftaki sıran",
   weeklyGamesText: "Son 7 günde {n} maç",

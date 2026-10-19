@@ -319,6 +319,8 @@ export const ca: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'Has baixat al lloc {rank} del top 10 setmanal',
+  hofDroppedOut: 'Has sortit del top 10 setmanal',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "La teva posició la setmana passada",
   weeklyGamesText: "{n} partides en els últims 7 dies",

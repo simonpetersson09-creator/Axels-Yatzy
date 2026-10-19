@@ -320,6 +320,8 @@ export const ta: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'இந்த வாரத்தின் டாப் 10-ல் நீங்கள் #{rank} க்கு கீழே சென்றுவிட்டீர்கள்',
+  hofDroppedOut: 'நீங்கள் இந்த வாரத்தின் டாப் 10-லிருந்து வெளியேறிவிட்டீர்கள்',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "கடந்த வார உங்கள் தரவரிசை",
   weeklyGamesText: "கடந்த 7 நாட்களில் {n} போட்டிகள்",

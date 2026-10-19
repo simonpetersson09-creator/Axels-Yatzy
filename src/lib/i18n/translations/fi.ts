@@ -320,6 +320,8 @@ export const fi: Partial<typeof sv> = {
   hofEntered: 'Pääsit viikon top 10:een – sija {rank}!',
   hofClimbed: 'Nousit sijalle {rank} viikon top 10:ssä!',
   hofShow: 'Näytä',
+  hofDropped: 'Olet tippunut sijalle {rank} viikon kymmenen parhaan listalla',
+  hofDroppedOut: 'Olet tippunut pois viikon kymmenen parhaan listalta',
   hofBadgeLabel: 'Viikon top 10',
   weeklyRankLabel: "Sijoituksesi viime viikolla",
   weeklyGamesText: "{n} ottelua viimeisten 7 päivän aikana",

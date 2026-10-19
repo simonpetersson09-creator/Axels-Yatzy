@@ -320,6 +320,8 @@ export const hr: Partial<typeof sv> = {
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
+  hofDropped: 'Pao si na {rank}. mjesto u ovotjednoj top 10',
+  hofDroppedOut: 'Ispao si iz ovotjedne top 10',
   hofBadgeLabel: "This week's top 10",
   weeklyRankLabel: "Tvoje mjesto prošli tjedan",
   weeklyGamesText: "Broj mečeva u zadnjih 7 dana: {n}",

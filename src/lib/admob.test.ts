@@ -1,6 +1,6 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 
-const native = vi.hoisted(() => ({ platform: 'ios', handlers: new Map<string, Set<() => void>>(), show: vi.fn(async () => {}), showRewarded: vi.fn(async () => ({})), prepareRewarded: vi.fn(async () => ({})), banner: { show: vi.fn(async () => {}), hide: vi.fn(async () => {}), resume: vi.fn(async () => {}), remove: vi.fn(async () => {}) }, loadAppOpen: vi.fn(async () => {}), appOpenLoaded: false, consentStatus: undefined as string | undefined, consentCanRequest: true }));
+const native = vi.hoisted(() => ({ platform: 'ios', handlers: new Map<string, Set<() => void>>(), show: vi.fn(async () => {}), showRewarded: vi.fn(async () => ({})), prepareRewarded: vi.fn(async () => ({})), banner: { show: vi.fn(async () => {}), hide: vi.fn(async () => {}), resume: vi.fn(async () => {}), remove: vi.fn(async () => {}) }, loadAppOpen: vi.fn(async () => {}), appOpenLoaded: false }));
 vi.mock('@capacitor/core', () => ({ Capacitor: {
   getPlatform: () => native.platform, isNativePlatform: () => true, isPluginAvailable: () => true,
 } }));
@@ -12,7 +12,7 @@ vi.mock('@capacitor-community/admob', () => ({
   BannerAdPluginEvents: { Loaded: 'b_loaded', FailedToLoad: 'b_failed', AdImpression: 'b_impression', SizeChanged: 'b_size', Opened: 'b_opened', Closed: 'b_closed' },
   RewardAdPluginEvents: { Showed: 'r_showed', Rewarded: 'r_reward', Dismissed: 'r_dismissed', FailedToShow: 'r_failed' },
   AdMob: {
-    requestConsentInfo: async () => ({ status: native.consentStatus, canRequestAds: native.consentCanRequest, privacyOptionsRequirementStatus: 'REQUIRED' }),
+    requestConsentInfo: async () => ({ canRequestAds: true }),
     initialize: async () => {}, prepareInterstitial: async () => {}, showInterstitial: native.show,
     prepareRewardVideoAd: native.prepareRewarded, showRewardVideoAd: native.showRewarded,
     isAppOpenLoaded: async () => ({ value: native.appOpenLoaded }),
@@ -473,36 +473,5 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     native.banner.resume.mockRejectedValueOnce(new Error('resume failed'));
     const second = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await second;
     expect(native.banner.show).toHaveBeenCalledTimes(2);
-  });
-});
-
-describe('ads consent choice (settings label)', () => {
-  beforeEach(() => { vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = 'ios'; });
-  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
-
-  const load = async () => {
-    const m = await import('./admob');
-    await m.isAdPrivacyOptionsRequired(); // fills the cached consent answer
-    return m;
-  };
-
-  it('shows accepted after the player consented', async () => {
-    native.consentStatus = 'OBTAINED'; native.consentCanRequest = true;
-    expect((await load()).getAdsConsentChoice()).toBe('accepted');
-  });
-
-  it('shows declined when ads may not be requested after the answer', async () => {
-    native.consentStatus = 'OBTAINED'; native.consentCanRequest = false;
-    expect((await load()).getAdsConsentChoice()).toBe('declined');
-  });
-
-  it('shows not required outside consent countries', async () => {
-    native.consentStatus = 'NOT_REQUIRED'; native.consentCanRequest = true;
-    expect((await load()).getAdsConsentChoice()).toBe('not_required');
-  });
-
-  it('starts unknown before any consent answer', async () => {
-    const m = await import('./admob');
-    expect(m.getAdsConsentChoice()).toBe('unknown');
   });
 });

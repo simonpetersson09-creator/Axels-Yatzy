@@ -9,6 +9,7 @@
  * Undantag: showAppOpenAd() visar en App Open-annons vid start, max 1 gång/dag.
  */
 import { Capacitor } from '@capacitor/core';
+import { readAdConsentChoices, type AdConsentChoices } from './ad-consent';
 
 /* ------------------------------------------------------------------ */
 /* Central konfiguration                                               */
@@ -161,14 +162,32 @@ export async function isAdPrivacyOptionsRequired(): Promise<boolean> {
   }
 }
 
+/** Read existing UMP choices; never opens a form or changes consent. */
+export async function getAdConsentChoices(): Promise<AdConsentChoices> {
+  const unknown = readAdConsentChoices(undefined, undefined);
+  if (!isAdMobAvailable()) return unknown;
+  try {
+    const mod = await loadModule();
+    const reader = mod.AdMob as typeof mod.AdMob & {
+      getStoredConsentChoices(): Promise<{ status: string; purposeConsents: string }>;
+    };
+    const saved = await withTimeout(reader.getStoredConsentChoices(), 5_000, 'stored_consent');
+    return readAdConsentChoices(saved.status, saved.purposeConsents);
+  } catch { return unknown; }
+}
+
 /** Öppnar Googles ruta så spelaren kan ändra sitt annonsval. */
-export async function showAdPrivacyOptions(): Promise<void> {
-  if (!isAdMobAvailable()) return;
+export async function showAdPrivacyOptions(): Promise<boolean> {
+  if (!isAdMobAvailable()) return false;
   try {
     const mod = await loadModule();
     await mod.AdMob.showPrivacyOptionsForm();
+    consentPromise = null;
+    await ensureConsent(mod);
+    return true;
   } catch (err) {
     console.warn('[AdMob] privacy options failed', err);
+    return false;
   }
 }
 

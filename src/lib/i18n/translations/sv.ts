@@ -337,6 +337,8 @@ export const sv = {
   hofEntered: 'Du tog dig in på veckans topp 10 – plats {rank}!',
   hofClimbed: 'Du klättrade till plats {rank} i veckans topp 10!',
   hofShow: 'Visa',
+  hofDropped: 'Du har tappat till plats {rank} i veckans topp 10',
+  hofDroppedOut: 'Du har fallit ur veckans topp 10',
   hofBadgeLabel: 'Veckans topp 10',
   weeklyRankLabel: "Din placering senaste veckan",
   weeklyGamesText: "{n} matcher senaste 7 dagarna",

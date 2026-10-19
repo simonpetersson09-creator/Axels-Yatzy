@@ -320,6 +320,8 @@ export const ko: Partial<typeof sv> = {
   hofEntered: "이번 주 톱 10에 들었어 – #{rank}위!",
   hofClimbed: "이번 주 톱 10에서 #{rank}위로 올랐어!",
   hofShow: '보기',
+  hofDropped: '이번 주 톱 10에서 {rank}위로 내려갔어',
+  hofDroppedOut: '이번 주 톱 10에서 밀려났어',
   hofBadgeLabel: "이번 주 톱 10",
   weeklyRankLabel: "지난주 내 순위",
   weeklyGamesText: "최근 7일간 {n}경기",

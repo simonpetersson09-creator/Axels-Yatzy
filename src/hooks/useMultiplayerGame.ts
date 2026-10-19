@@ -977,9 +977,9 @@ export function useMultiplayerGame() {
             try {
               // Hard timeout on each read: a hanging SELECT must not hold the
               // roll past the recovery deadline.
-              const { data: g } = await withTimeout(supabase.from('games')
+              const { data: g } = await withTimeout(Promise.resolve(supabase.from('games')
                 .select('dice, rolls_left, round, current_player_index')
-                .eq('id', gid).maybeSingle(), 5_000);
+                .eq('id', gid).maybeSingle()), 5_000);
               if (g && g.round === expect.round && g.current_player_index === expect.player && g.rolls_left === expect.rollsLeft) {
                 reportMpIssue('roll_recovered', gid, { ms: Date.now() - rollStartedAt });
                 finish(() => resolve({ data: { success: true, dice: g.dice, rolls_left: g.rolls_left }, error: null }));

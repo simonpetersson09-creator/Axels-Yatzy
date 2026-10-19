@@ -1,8 +1,28 @@
 import { showOptionalRewarded, type RewardedResult } from '@/lib/admob';
 
+const STORAGE_KEY = 'yatzy_ad_pair_v1';
+/** A single ad view may never hang the bundle longer than this. */
+const AD_HARD_TIMEOUT_MS = 120_000;
+
+function loadCompleted(): number {
+  try {
+    const v = Number(localStorage.getItem(STORAGE_KEY));
+    return v === 1 ? 1 : 0;
+  } catch { return 0; }
+}
+
+function saveCompleted(n: number) {
+  try {
+    if (n > 0) localStorage.setItem(STORAGE_KEY, String(n));
+    else localStorage.removeItem(STORAGE_KEY);
+  } catch { /* private mode etc. */ }
+}
+
 /** One opt-in bundle, retained across page changes until two distinct ads earn rewards. */
 export function createRewardedPair(show: (late: () => void) => Promise<RewardedResult>) {
-  let completed = 0;
+  // Persisted so an app restart between the two ads does not lose the first
+  // completed ad.
+  let completed = loadCompleted();
   let busy = false;
   let generation = 0;
   let reward: (() => void) | null = null;
@@ -28,9 +48,15 @@ export function createRewardedPair(show: (late: () => void) => Promise<RewardedR
               generation += 1;
               reward?.();
             }
+            saveCompleted(completed);
             notify();
           };
-          const result = await show(accept);
+          // Hard timeout: if the native ad never reports back (no show, no
+          // dismiss), release the bundle instead of blocking it until restart.
+          const result = await Promise.race<RewardedResult>([
+            show(accept),
+            new Promise<RewardedResult>((r) => setTimeout(() => r('not_earned'), AD_HARD_TIMEOUT_MS)),
+          ]);
           if (result !== 'rewarded') return result;
           accept();
           if (generation !== bundle) return 'rewarded';

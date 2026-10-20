@@ -330,6 +330,7 @@ export const sv = {
   statsPage: "Statistik",
   adPrivacy: 'Annonsinställningar',
   adPrivacySaved: 'Dina sparade samtycken',
+  adPrivacySource: 'Dina val gjordes i Googles annonsruta och följer Googles annonsinställningar.',
   adPrivacyStorage: 'Lagra och läsa information på enheten',
   adPrivacyProfile: 'Skapa en profil för anpassade annonser',
   adPrivacyUseProfile: 'Använda profilen för anpassade annonser',

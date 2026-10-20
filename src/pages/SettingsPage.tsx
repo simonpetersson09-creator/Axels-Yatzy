@@ -480,7 +480,8 @@ export default function SettingsPage() {
               {adPrivacyOpen && <div id="saved-ad-choices" className="border-t border-border/40">
               {webPreview ? <p className="px-3 py-3 text-sm text-muted-foreground">{t('adPrivacyWeb')}</p> : <>
               <div className="px-3 py-3" aria-live="polite">
-                <p className="text-xs font-semibold text-muted-foreground mb-3">{t('adPrivacySaved')}</p>
+                <p className="text-xs font-semibold text-muted-foreground">{t('adPrivacySaved')}</p>
+                <p className="text-xs text-muted-foreground mt-1 mb-3">{t('adPrivacySource')}</p>
                 <dl className="space-y-3">
                   {([
                     ['adPrivacyStorage', adChoices.storage],

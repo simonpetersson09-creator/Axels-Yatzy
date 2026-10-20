@@ -1,8 +1,7 @@
-- iOS patches (AdMob, push, icons) run via `npm run cap:sync:ios`; generated ios/ edits get lost.
+- Native patches run via `npm run cap:sync:ios/android`; generated edits get lost.
 - Clean QA stats from player_country_stats; they displace real players.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports computer matches via record_local_yatzy_match — tamper-resistant.
-- Android patches (AdMob, minSdk 26, icons) run via `npm run cap:sync:android`; generated android/ edits get lost.
 - App icon: resources/icon.png (1024x1024, opaque) is the only source; `npm run icons` (scripts/make-icons.js) regenerates resources/android/res, resources/ios/AppIcon.appiconset and public/ copies — never hand-edit generated icon files.
 - admob.ts: platform-specific ADMOB_IDS/REWARDED_IDS (null disables; never iOS IDs on Android); fitGameAboveBanner reserves banner space. rewarded-pair deduplicates two SDK rewards across pages; RewardedXpHost requests one server XP per bundle. Second ad waits for dismissal; interrupted bundles resume in-session. Suppress App Open 2 min afterward. Never auto-reset uncancellable SDK attempts; subscribeRewardedState tracks status. scripts/patch-admob-rewarded.js tags events with attemptId — prevents overlap/unearned XP.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Play link stays hidden until PLAY_STORE_LIVE is true.
@@ -21,10 +20,11 @@
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Hall of Fame: report_weekly_score (from recordGameResult) trims to first name and caps score server-side.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
-- DiceInfoSheet uses safe-area scroll bounds; celebration previews portal to body; frame previews stay inline.
+- DiceInfoSheet: safe-area scroll; celebrations portal to body; frames inline.
 - Shop receipts use body-portaled dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
 - Serialize banners with global listeners; failures force reload. SDK events lack request IDs. Search uses a body portal and measured native rectangle slot; reuse must match size and margin.
 
 - Ad privacy: patch-admob-consent.js reads native UMP TCF purpose consents at cap sync; OBTAINED/canRequestAds never imply acceptance. Never log or copy consent into app storage.
+- Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.

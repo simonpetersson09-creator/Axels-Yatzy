@@ -59,12 +59,6 @@ export const sl: Partial<typeof sv> = {
   adOnlyInApp: 'Oglasi so prikazani le v aplikaciji.',
   adBubbleText: 'Pomagaj nam ohraniti Mr.B. Yatzy brezplačen. Če želiš, si oglej kratek oglas.',
   adComingSoon: '(Kmalu)',
-  adPairTitle: "En oglas · +1 XP",
-  adPairBody: "Poglejte en prostovoljni oglas za 1 XP. Kadar koli lahko ustavite; XP prejmete šele, ko je oglas zaključen.",
-  adPairContinueBody: "Poglejte en prostovoljni oglas za 1 XP. XP prejmete šele, ko je oglas zaključen.",
-  adPairStart: "Oglej si oglas",
-  adPairContinue: "Oglej si oglas",
-  adPairIncomplete: "Še ni XP. Oglas je treba zaključiti.",
 
   // Rate app
   rateTitle: "Uživaš v Mr.B. Yatzy?",

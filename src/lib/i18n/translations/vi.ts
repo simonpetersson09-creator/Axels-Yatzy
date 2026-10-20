@@ -59,12 +59,6 @@ export const vi: Partial<typeof sv> = {
   adOnlyInApp: 'Quảng cáo chỉ hiện trong ứng dụng.',
   adBubbleText: 'Giúp Mr.B. Yatzy luôn miễn phí. Nếu thích, bạn có thể xem một quảng cáo ngắn nhé.',
   adComingSoon: '(Sắp có)',
-  adPairTitle: "Một quảng cáo · +1 XP",
-  adPairBody: "Xem một quảng cáo tùy chọn để nhận 1 XP. Bạn có thể dừng bất cứ lúc nào; XP chỉ được cộng khi quảng cáo xem hết.",
-  adPairContinueBody: "Xem một quảng cáo tùy chọn để nhận 1 XP. XP chỉ được cộng khi quảng cáo xem hết.",
-  adPairStart: "Xem quảng cáo",
-  adPairContinue: "Xem quảng cáo",
-  adPairIncomplete: "Chưa có XP. Cần xem hết quảng cáo.",
 
   // Rate app
   rateTitle: "Thích Mr.B. Yatzy chứ?",

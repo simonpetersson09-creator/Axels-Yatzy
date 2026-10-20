@@ -59,12 +59,6 @@ export const hu: Partial<typeof sv> = {
   adOnlyInApp: 'Reklámok csak az appban jelennek meg.',
   adBubbleText: 'Segíts, hogy a Mr.B. Yatzy ingyenes maradjon. Ha van kedved, nézz meg egy rövid reklámot.',
   adComingSoon: '(Hamarosan)',
-  adPairTitle: "Egy reklám · +1 XP",
-  adPairBody: "Nézz meg egy opcionális reklámot 1 XP-ért. Bármikor abbahagyhatod; az XP csak a reklám befejezése után jár.",
-  adPairContinueBody: "Nézz meg egy opcionális reklámot 1 XP-ért. Az XP csak a reklám befejezése után jár.",
-  adPairStart: "Reklám megtekintése",
-  adPairContinue: "Reklám megtekintése",
-  adPairIncomplete: "Még nincs XP. A reklámot végig kell nézni.",
 
   // Rate app
   rateTitle: "Tetszik a Mr.B. Yatzy?",

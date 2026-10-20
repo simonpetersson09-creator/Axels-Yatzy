@@ -59,12 +59,6 @@ export const ro: Partial<typeof sv> = {
   adOnlyInApp: 'Reclamele apar doar în aplicație.',
   adBubbleText: 'Ajută-ne să păstrăm Mr.B. Yatzy gratuit. Dacă vrei, poți vedea o reclamă scurtă.',
   adComingSoon: '(În curând)',
-  adPairTitle: "O reclamă · +1 XP",
-  adPairBody: "Urmărește o reclamă opțională pentru 1 XP. Poți opri oricând; XP se acordă doar când reclama este finalizată.",
-  adPairContinueBody: "Urmărește o reclamă opțională pentru 1 XP. XP se acordă doar când reclama este finalizată.",
-  adPairStart: "Vezi reclama",
-  adPairContinue: "Vezi reclama",
-  adPairIncomplete: "Încă nu ai XP. Reclama trebuie finalizată.",
 
   // Rate app
   rateTitle: "Îți place Mr.B. Yatzy?",

@@ -61,12 +61,12 @@ export const en: Partial<typeof sv> = {
   adOnlyInApp: 'Ads are only shown in the app.',
   adBubbleText: 'Help us keep Mr.B. Yatzy free. If you\'d like, you\'re welcome to watch a short ad.',
   adComingSoon: '(Coming soon)',
-  adPairTitle: 'One ad · +1 XP',
-  adPairBody: 'Watch one optional ad for 1 XP. You can stop at any time; XP is awarded only when the ad is completed.',
-  adPairContinueBody: 'Watch one optional ad for 1 XP. XP is awarded only when the ad is completed.',
-  adPairStart: 'Watch ad',
-  adPairContinue: 'Watch ad',
-  adPairIncomplete: 'No XP yet. The ad needs to be completed.',
+  adPairTitle: 'Two ads · +1 XP',
+  adPairBody: 'Watch two optional ads for a total of 1 XP. The second starts after you close the first. You can stop at any time; XP is awarded only after both are completed.',
+  adPairContinueBody: 'You have completed 1 of 2 ads. Watch the remaining ad for a total of 1 XP. You can stop without losing your first completion.',
+  adPairStart: 'Watch two ads',
+  adPairContinue: 'Watch ad 2 of 2',
+  adPairIncomplete: 'No XP yet. Both ads need to be completed.',
 
   // Rate app
   rateTitle: "Enjoying Mr.B. Yatzy?",

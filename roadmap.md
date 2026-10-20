@@ -1,11 +1,5 @@
 # Roadmap – Snabbspel online
 
-## Kortare frivillig annons
-- [x] Byt från två annonser till en färdigsedd premierad annons för 1 XP och uppdatera informationen.
-- [x] Kontrollera avbrott, sena besked och skydd mot dubbelbelöning samt informationsrutan: 45 annonstester godkända, ruta och Avbryt kontrollerade i förhandsvisningen.
-- [x] Översätt den nya annonsrutans text till 27 fler språk (totalt 29); 11 språk med indisk skrift faller tillbaka på engelska enligt språkfilernas regel.
-- [ ] Verifiera riktig annons och sparat XP på telefon; kräver ny appversion.
-
 ## Sparade annonsval i Inställningar
 - [x] Läs befintliga UMP-samtycken på telefonen och visa dem separat; uppdatera efter ändringar utan att gissa utifrån annonsstatus.
 - [ ] Verifiera accepterade, nekade och anpassade val efter omstart på fysisk iPhone/Android; kräver nytt native-bygge.
@@ -25,12 +19,12 @@
 - [x] Kontrollera informationsrutan och Avbryt i den körande appen utan att ge test-XP eller skapa matcher; inga runtimefel.
 - [ ] Verifiera riktiga annonser och sparat XP i ny iPhone-/Android-version; blockerad av att native-annonser inte kan visas här.
 - [ ] Verifiera Android-releasekontrollen efter native-bygge; här saknas genererad Android-app, så installationskontrollen kan inte slutföras.
-- Servern verifierar enhet och cooldown men inte AdMob-kvitton; den nya appen kontrollerar en slutförd visning i klienten. Vid upprepade serverfel kan XP fortfarande utebli.
+- Observerat: första annonsens framsteg sparas bara under pågående appsession; en fullständig appomstart nollställer det. Servern verifierar enhet och cooldown men inte AdMob-kvitton; två visningar kontrolleras i klienten, inte med serververifierade annonskvitton.
 
 ## Dubbla frivilliga annonser
 - [x] Två bekräftat slutförda videoannonser ger totalt 1 XP i den nya appen; information före start och skydd mot dubbelbelöning.
 - [x] 37 tester godkända för annonser, avbrott, sena besked och belöning; informationsrutan kontrollerad på mobil i förhandsvisningen.
-- Ersatt 20 okt av en annons för 1 XP; fysisk kontroll följs under Kortare frivillig annons. Äldre appar behåller sitt tidigare belöningsflöde.
+- [ ] Kontrollera båda riktiga annonserna och sparat XP på fysisk iPhone och Android; kräver ny appversion. Äldre appar behåller tidigare belöningsflöde.
 
 ## Sökskärmens annons
 - [x] Flytta sökstatus och Avbryt uppåt; placera native Medium Rectangle 300 × 250 nedanför med samma plattforms-ID:n.

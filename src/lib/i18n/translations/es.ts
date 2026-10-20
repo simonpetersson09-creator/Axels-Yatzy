@@ -59,12 +59,6 @@ export const es: Partial<typeof sv> = {
   adOnlyInApp: 'Los anuncios solo se muestran en la app.',
   adBubbleText: 'Ayúdanos a mantener Mr.B. Yatzy gratis. Si quieres, puedes ver un anuncio corto.',
   adComingSoon: '(Próximamente)',
-  adPairTitle: "Un anuncio · +1 XP",
-  adPairBody: "Ve un anuncio opcional para ganar 1 XP. Puedes parar cuando quieras; el XP solo se concede cuando el anuncio se completa.",
-  adPairContinueBody: "Ve un anuncio opcional para ganar 1 XP. El XP solo se concede cuando el anuncio se completa.",
-  adPairStart: "Ver anuncio",
-  adPairContinue: "Ver anuncio",
-  adPairIncomplete: "Aún no hay XP. El anuncio debe completarse.",
 
   // Rate app
   rateTitle: "¿Te gusta Mr.B. Yatzy?",

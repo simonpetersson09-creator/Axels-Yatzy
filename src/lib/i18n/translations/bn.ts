@@ -59,6 +59,12 @@ export const bn: Partial<typeof sv> = {
   adOnlyInApp: 'শুধু অ্যাপেই বিজ্ঞাপন দেখানো হয়।',
   adBubbleText: 'Mr.B. Yatzy বিনামূল্যে রাখতে সাহায্য করো। চাইলে ছোট্ট একটা বিজ্ঞাপন দেখতে পারো।',
   adComingSoon: '(শীঘ্রই আসছে)',
+  adPairTitle: "একট ি ব িজ্ঞাপন · +1 XP",
+  adPairBody: "1 XP-এর জ ন্ য একট ি স্বেচ্ছাসাধ েক্ষ ব িজ্ঞাপন দ েখুন। য েকোনো স ম য় থ ামাত ে প ার ব েন; ব িজ্ঞাপন শ েষ হ ল ে ই ক েবল XP প াব েন।",
+  adPairContinueBody: "1 XP-এর জ ন্ য একট ি স্বেচ্ছাসাধ েক্ষ ব িজ্ঞাপন দ েখুন। ব িজ্ঞাপন শ েষ হ ল ে ই ক েবল XP প াব েন।",
+  adPairStart: "ব িজ্ঞাপন দ েখুন",
+  adPairContinue: "ব িজ্ঞাপন দ েখুন",
+  adPairIncomplete: "এখ নো XP ন েই। ব িজ্ঞাপনট ি শ েষ প র্ য ন্ত দ েখত ে হ ব ে।",
 
   // Rate app
   rateTitle: "Mr.B. Yatzy ভালো লাগছে?",

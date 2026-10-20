@@ -59,6 +59,12 @@ export const ja: Partial<typeof sv> = {
   adOnlyInApp: '広告はアプリ内でのみ表示されるよ。',
   adBubbleText: 'Mr.B. Yatzyを無料で続けるために、よかったら短い広告を見て応援してね。',
   adComingSoon: '（近日公開）',
+  adPairTitle: "広告1本 · +1 XP",
+  adPairBody: "任意の広告を1本見て1 XPを獲得できます。いつでも中止できますが、XPは広告を最後まで見た後にのみ付与されます。",
+  adPairContinueBody: "任意の広告を1本見て1 XPを獲得できます。XPは広告を最後まで見た後にのみ付与されます。",
+  adPairStart: "広告を見る",
+  adPairContinue: "広告を見る",
+  adPairIncomplete: "まだXPは加算されていません。広告を最後までご覧ください。",
 
   // Rate app
   rateTitle: "Mr.B. Yatzyを楽しんでる？",

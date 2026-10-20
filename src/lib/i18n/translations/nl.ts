@@ -59,6 +59,12 @@ export const nl: Partial<typeof sv> = {
   adOnlyInApp: 'Advertenties worden alleen in de app getoond.',
   adBubbleText: 'Help ons Mr.B. Yatzy gratis te houden. Als je wilt, kun je een korte advertentie bekijken.',
   adComingSoon: '(Binnenkort)',
+  adPairTitle: "Één advertentie · +1 XP",
+  adPairBody: "Bekijk één optionele advertentie voor 1 XP. Je kunt elk moment stoppen; XP krijg je pas als de advertentie is afgerond.",
+  adPairContinueBody: "Bekijk één optionele advertentie voor 1 XP. XP krijg je pas als de advertentie is afgerond.",
+  adPairStart: "Advertentie bekijken",
+  adPairContinue: "Advertentie bekijken",
+  adPairIncomplete: "Nog geen XP. De advertentie moet worden afgerond.",
 
   // Rate app
   rateTitle: "Vind je Mr.B. Yatzy leuk?",

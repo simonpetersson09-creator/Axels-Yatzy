@@ -59,6 +59,12 @@ export const gu: Partial<typeof sv> = {
   adOnlyInApp: 'જાહેરાતો ફક્ત ઍપમાં દેખાય છે.',
   adBubbleText: 'Mr.B. Yatzy મફત રાખવામાં મદદ કરો. મન થાય તો એક ટૂંકી જાહેરાત જુઓ.',
   adComingSoon: '(ટૂંક સમયમાં)',
+  adPairTitle: "એક જાહ ેરાત · +1 XP",
+  adPairBody: "1 XP મટ ે એક ઐચ્છ ક જાહ ેરાત જ ુઓ. ત મે ક્ય াરેય બં ધ કર ી શ કો; જાહ ેરાત પ ૂર ી થ ાય ત્ય ાર ે જ XP મળ ે.",
+  adPairContinueBody: "1 XP મટ ે એક ઐચ્છ ક જાહ ેરાત જ ુઓ. જાહ ેરાત પ ૂર ી થ ાય ત્ય ાર ે જ XP મળ ે.",
+  adPairStart: "જાહ ેરાત જ ુઓ",
+  adPairContinue: "જાહ ેરાત જ ુઓ",
+  adPairIncomplete: "હજ ી XP નથ ી. જાહ ેરાત પ ૂર ી જ ોવ ી પડ ે.",
 
   // Rate app
   rateTitle: "Mr.B. Yatzy ગમે છે?",

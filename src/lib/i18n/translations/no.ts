@@ -59,6 +59,12 @@ export const no: Partial<typeof sv> = {
   adOnlyInApp: 'Reklamer vises kun i appen.',
   adBubbleText: 'Hjelp oss å holde Mr.B. Yatzy gratis. Hvis du vil, kan du gjerne se en kort reklame.',
   adComingSoon: '(Kommer)',
+  adPairTitle: "Én reklame · +1 XP",
+  adPairBody: "Se én frivillig reklame for 1 XP. Du kan avslutte når som helst; XP gis først når reklamen er sett til slutt.",
+  adPairContinueBody: "Se én frivillig reklame for 1 XP. XP gis først når reklamen er sett til slutt.",
+  adPairStart: "Se reklame",
+  adPairContinue: "Se reklame",
+  adPairIncomplete: "Ingen XP ennå. Reklamen må sees til ende.",
 
   // Rate app
   rateTitle: "Liker du Mr.B. Yatzy?",

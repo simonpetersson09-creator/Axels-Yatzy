@@ -59,6 +59,12 @@ export const th: Partial<typeof sv> = {
   adOnlyInApp: 'โฆษณาแสดงเฉพาะในแอป',
   adBubbleText: 'ช่วยให้ Mr.B. Yatzy เล่นฟรีต่อไปได้ ถ้าสะดวก มาดูโฆษณาสั้น ๆ กันนะ',
   adComingSoon: '(เร็ว ๆ นี้)',
+  adPairTitle: "โฆษณา 1 ตัว · +1 XP",
+  adPairBody: "ดูโฆษณาสมัครใจ 1 ตัวเพื่อรบั 1 XP คุณหยุดได้ทุกเมื่อ XP จะได้รบั เมื่อดูโฆษณาจบเท่านั้น",
+  adPairContinueBody: "ดูโฆษณาสมัครใจ 1 ตัวเพื่อรบั 1 XP XP จะได้รบั เมื่อดูโฆษณาจบเท่านั้น",
+  adPairStart: "ดูโฆษณา",
+  adPairContinue: "ดูโฆษณา",
+  adPairIncomplete: "ยงัไม่มี XP ต้องดูโฆษณาให้จบก่อน",
 
   // Rate app
   rateTitle: "สนุกกับ Mr.B. Yatzy ไหม?",

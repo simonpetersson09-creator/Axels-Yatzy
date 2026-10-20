@@ -1,4 +1,6 @@
 import NotificationsOffBanner from '@/components/NotificationsOffBanner';
+import { Capacitor } from '@capacitor/core';
+import { DeletePlayerDataDialog } from '@/components/DeletePlayerDataDialog';
 import { Dices } from 'lucide-react';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { DiceShop } from '@/components/DiceShop';
@@ -33,6 +35,8 @@ export default function SettingsPage() {
   const [preferWhite, setPreferWhite] = useState(!!goldStatus.preferWhite);
   useEffect(() => { setPreferWhite(!!goldStatus.preferWhite); }, [goldStatus.preferWhite]);
   const [myDiceOpen, setMyDiceOpen] = useState(false);
+  const [deleteDataOpen, setDeleteDataOpen] = useState(false);
+  const webPreview = !Capacitor.isNativePlatform();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(() => getProfileName());
@@ -451,7 +455,16 @@ export default function SettingsPage() {
             </motion.button>
         </Card>
 
-        {adPrivacyRequired && (
+        <Card>
+          <Button variant="ghost" onClick={() => setDeleteDataOpen(true)}
+            className="h-auto w-full min-h-11 justify-start px-3 py-2.5 text-left text-destructive hover:text-destructive hover:bg-destructive/10">
+            <Trash2 className="w-4 h-4 shrink-0" />
+            <span className="text-sm font-medium whitespace-normal">{t('deleteData')}</span>
+          </Button>
+        </Card>
+        <DeletePlayerDataDialog open={deleteDataOpen} onClose={() => setDeleteDataOpen(false)} />
+
+        {(adPrivacyRequired || webPreview) && (
           <Section title={t('adPrivacy')}>
             <Card>
               <Button variant="ghost" aria-expanded={adPrivacyOpen} aria-controls="saved-ad-choices"
@@ -465,6 +478,7 @@ export default function SettingsPage() {
                 <ChevronRight className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform ${adPrivacyOpen ? 'rotate-90' : ''}`} />
               </Button>
               {adPrivacyOpen && <div id="saved-ad-choices" className="border-t border-border/40">
+              {webPreview ? <p className="px-3 py-3 text-sm text-muted-foreground">{t('adPrivacyWeb')}</p> : <>
               <div className="px-3 py-3" aria-live="polite">
                 <p className="text-xs font-semibold text-muted-foreground mb-3">{t('adPrivacySaved')}</p>
                 <dl className="space-y-3">
@@ -486,6 +500,7 @@ export default function SettingsPage() {
                 <span className="flex-1 whitespace-normal text-sm">{t(adPrivacyBusy ? 'loading' : 'adPrivacyChange')}</span>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </Button>
+              </>}
               </div>}
             </Card>
           </Section>

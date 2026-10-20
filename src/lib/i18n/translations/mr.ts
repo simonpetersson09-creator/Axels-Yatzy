@@ -59,12 +59,12 @@ export const mr: Partial<typeof sv> = {
   adOnlyInApp: 'जाहिराती फक्त ॲपमध्ये दिसतात.',
   adBubbleText: 'Mr.B. Yatzy मोफत ठेवायला मदत कर. वाटलं तर एक छोटी जाहिरात बघ.',
   adComingSoon: '(लवकरच)',
-  adPairTitle: "एक ज ाहिर ात · +1 XP",
-  adPairBody: "1 XP स ाठ ी एक ऐच्छ िक ज ाहिर ात प ह ा. त ुम्ह ी क ध ीह ी थ ांबव ू श कत ा; ज ाहिर ात प ूर्ण झ ाल्य ावरच XP म िळत ो.",
-  adPairContinueBody: "1 XP स ाठ ी एक ऐच्छ िक ज ाहिर ात प ह ा. ज ाहिर ात प ूर्ण झ ाल्य ावरच XP म िळत ो.",
-  adPairStart: "ज ाहिर ात प ह ा",
+  adPairTitle: "एक जाहिरात · +1 XP",
+  adPairBody: "1 XP स ाठ ी एक ऐच्छ िक जाहिरात पह ा. त ुम्ह ी क ध ीह ी थ ांबवू श कत ा; जाहिरात प ूर्र्ण झ ाल्य ावरच XP म िळत ो.",
+  adPairContinueBody: "1 XP स ाठ ी एक ऐच्छ िक जाहिरात पह ा. जाहिरात प ूर्र्ण झ ाल्य ावरच XP म िळत ो.",
+  adPairStart: "जाहिरात पह ा",
   adPairContinue: "ज ाहिर ात प ह ा",
-  adPairIncomplete: "अज ून XP न ाह ी. ज ाहिर ात प ूर्ण प ह ाव ी ल ाग ेेल.",
+  adPairIncomplete: "अज ून XP न ाह ी. जाहिरात प ूर्र्ण पह ाव ी ल ाग ेल.",
 
   // Rate app
   rateTitle: "Mr.B. Yatzy आवडतंय?",

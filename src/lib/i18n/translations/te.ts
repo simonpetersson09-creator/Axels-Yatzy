@@ -59,12 +59,6 @@ export const te: Partial<typeof sv> = {
   adOnlyInApp: 'ప్రకటనలు యాప్‌లోనే కనిపిస్తాయి.',
   adBubbleText: 'Mr.B. Yatzy ఉచితంగా ఉండేలా సాయం చెయ్యి. నీకు ఇష్టమైతే చిన్న ప్రకటన చూడు.',
   adComingSoon: '(త్వరలో)',
-  adPairTitle: "ఒక ప్రకటన · +1 XP",
-  adPairBody: "1 XP క ోస ం ఒక ఐచ్ఛ ిక ప్రకటన చ ూడ ండ ి. మ ੀర ు ఎ ప్ప ుడ ిన ాఆపవ చ్చ ు; ప్రకటన ప ూర ్త య ిన ప్ప ుడ ు మ ాత ్రమ ే XP ల భ ిస ్త ుం ద ి.",
-  adPairContinueBody: "1 XP క ోస ం ఒక ఐచ్ఛ ిక ప్రకటన చ ూడ ండ ి. ప్రకటన ప ూర ్త య ిన ప్ప ుడ ు మ ాత ్రమ ే XP ల భ ిస ్త ుం ద ి.",
-  adPairStart: "ప్రకటన చ ూడ ండ ి",
-  adPairContinue: "ప రకట న చ ���డ ండ ి",
-  adPairIncomplete: "ఇన ്క ా XP లే ద ు. ప్రకటనన ు చ ివ ర ి వ రక ు చ ూడ ాల ి.",
 
   // Rate app
   rateTitle: "Mr.B. Yatzy నచ్చిందా?",

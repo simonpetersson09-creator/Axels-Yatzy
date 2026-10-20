@@ -59,12 +59,6 @@ export const ml: Partial<typeof sv> = {
   adOnlyInApp: 'പരസ്യങ്ങൾ ആപ്പിൽ മാത്രം.',
   adBubbleText: 'Mr.B. Yatzy സൗജന്യമായി നിലനിർത്താൻ സഹായിക്കൂ. ഇഷ്ടമെങ്കിൽ ഒരു ചെറിയ പരസ്യം കാണാം.',
   adComingSoon: '(ഉടൻ വരുന്നു)',
-  adPairTitle: "ഒരു പരസ്യം · +1 XP",
-  adPairBody: "1 XP-ന ായ िഒരു ഐച്ഛ ിക പരസ്യം കാണ ാം. എ പ്പോൾ വേണ മെന ്ക ില ുംന ിർത്ത ാം; പരസ്യം പ ൂർത ്തിയാക ുമ്പോൾ മ ാത ്രമ േ XP ലഭ िക ൂ.",
-  adPairContinueBody: "1 XP-ന ായ िഒരു ഐച്ഛ ിക പരസ്യം കാണ ാം. പരസ്യം പ ൂർത ്തിയാക ുമ്പോൾ മ ാത ്രമ േ XP ലഭ िക ൂ.",
-  adPairStart: "പരസ്യം കാണ ുക",
-  adPairContinue: "പരസ ്യം ക ാണ ുക",
-  adPairIncomplete: "ഇत ുവര േ XP ഇل ്ല. പരസ്യം പ ൂർത ്തിയാക ണം.",
 
   // Rate app
   rateTitle: "Mr.B. Yatzy ഇഷ്ടമായോ?",

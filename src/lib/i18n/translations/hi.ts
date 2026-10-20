@@ -59,12 +59,6 @@ export const hi: Partial<typeof sv> = {
   adOnlyInApp: 'विज्ञापन सिर्फ़ ऐप में दिखते हैं।',
   adBubbleText: 'Mr.B. Yatzy को मुफ़्त रखने में मदद करो। चाहो तो छोटा-सा विज्ञापन देख सकते हो।',
   adComingSoon: '(जल्द आ रहा है)',
-  adPairTitle: "एक व िज्ञापन · +1 XP",
-  adPairBody: "1 XP के ल िए एक वैकल् पिक व िज्ञापन देखें । आप क भ ी भ ी रोक सकत े ह ैं; XP के वल व िज्ञापन प ूर ा देखने पर म िलता ह ै।",
-  adPairContinueBody: "1 XP के ल िए एक वैकल् पिक व िज्ञापन देखें । XP के वल व िज्ञापन प ूर ा देखने पर म िलता ह ै।",
-  adPairStart: "व िज्ञापन देखें",
-  adPairContinue: "व िज्ञापन देखें",
-  adPairIncomplete: "अभ ी कोई XP नह ीं । व िज्ञापन प ूर ा देखन ा ज़र ूर ी ह ै।",
 
   // Rate app
   rateTitle: "Mr.B. Yatzy में मज़ा आ रहा है?",

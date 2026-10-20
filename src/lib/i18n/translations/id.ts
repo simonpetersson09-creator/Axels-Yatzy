@@ -59,6 +59,12 @@ export const id: Partial<typeof sv> = {
   adOnlyInApp: 'Iklan hanya tampil di aplikasi.',
   adBubbleText: 'Bantu agar Mr.B. Yatzy tetap gratis. Kalau mau, kamu bisa tonton iklan singkat.',
   adComingSoon: '(Segera hadir)',
+  adPairTitle: "Satu iklan · +1 XP",
+  adPairBody: "Tonton satu iklan opsional untuk 1 XP. Kamu bisa berhenti kapan saja; XP hanya diberikan setelah iklan selesai ditonton.",
+  adPairContinueBody: "Tonton satu iklan opsional untuk 1 XP. XP hanya diberikan setelah iklan selesai ditonton.",
+  adPairStart: "Tonton iklan",
+  adPairContinue: "Tonton iklan",
+  adPairIncomplete: "Belum ada XP. Iklan harus diselesaikan.",
 
   // Rate app
   rateTitle: "Suka Mr.B. Yatzy?",

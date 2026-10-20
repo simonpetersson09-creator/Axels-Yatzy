@@ -59,6 +59,12 @@ export const tr: Partial<typeof sv> = {
   adOnlyInApp: 'Reklamlar yalnızca uygulamada gösterilir.',
   adBubbleText: 'Mr.B. Yatzy ücretsiz kalsın diye bize destek ol. İstersen kısa bir reklam izleyebilirsin.',
   adComingSoon: '(Yakında)',
+  adPairTitle: "Bir reklam · +1 XP",
+  adPairBody: "1 XP için isteğe bağlı bir reklam izle. İstediğin zaman durabilirsin; XP yalnızca reklam tamamlandığında verilir.",
+  adPairContinueBody: "1 XP için isteğe bağlı bir reklam izle. XP yalnızca reklam tamamlandığında verilir.",
+  adPairStart: "Reklamı izle",
+  adPairContinue: "Reklamı izle",
+  adPairIncomplete: "Henüz XP yok. Reklamın tamamlanması gerekir.",
 
   // Rate app
   rateTitle: "Mr.B. Yatzy hoşuna gitti mi?",

@@ -59,6 +59,12 @@ export const cs: Partial<typeof sv> = {
   adOnlyInApp: 'Reklamy se zobrazují jen v aplikaci.',
   adBubbleText: 'Pomoz nám udržet Mr.B. Yatzy zdarma. Pokud chceš, pusť si krátkou reklamu.',
   adComingSoon: '(Již brzy)',
+  adPairTitle: "Jedna reklama · +1 XP",
+  adPairBody: "Zhlédněte jednu dobrovolnou reklamu za 1 XP. Kdykoli můžete přestat; XP získáte až po dokončení reklamy.",
+  adPairContinueBody: "Zhlédněte jednu dobrovolnou reklamu za 1 XP. XP získáte až po dokončení reklamy.",
+  adPairStart: "Zhlédnout reklamu",
+  adPairContinue: "Zhlédnout reklamu",
+  adPairIncomplete: "Zatím žádné XP. Reklamu je třeba dokončit.",
 
   // Rate app
   rateTitle: "Baví tě Mr.B. Yatzy?",

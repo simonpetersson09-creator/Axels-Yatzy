@@ -59,6 +59,12 @@ export const fi: Partial<typeof sv> = {
   adOnlyInApp: 'Mainokset näytetään vain sovelluksessa.',
   adBubbleText: 'Auta meitä pitämään Mr.B. Yatzy ilmaisena. Jos haluat, voit katsella lyhyen mainoksen.',
   adComingSoon: '(Tulossa)',
+  adPairTitle: "Yksi mainos · +1 XP",
+  adPairBody: "Katso yksi vapaaehtoinen mainos 1 XP:tä varten. Voit lopettaa milloin tahansa; XP myönnetään vasta kun mainos on katsottu loppuun.",
+  adPairContinueBody: "Katso yksi vapaaehtoinen mainos 1 XP:tä varten. XP myönnetään vasta kun mainos on katsottu loppuun.",
+  adPairStart: "Katso mainos",
+  adPairContinue: "Katso mainos",
+  adPairIncomplete: "Ei XP:tä vielä. Mainos pitää katsoa loppuun.",
 
   // Rate app
   rateTitle: "Pidätkö Mr.B. Yatzysta?",

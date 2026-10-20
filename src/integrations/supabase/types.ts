@@ -1038,6 +1038,10 @@ export type Database = {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
       }
+      delete_player_data: {
+        Args: { p_device_id: string; p_session_id: string }
+        Returns: Json
+      }
       expire_match: { Args: { p_game_id: string }; Returns: Json }
       expire_stale_matches: { Args: never; Returns: number }
       finalize_matchmaking: { Args: { p_session_id: string }; Returns: Json }

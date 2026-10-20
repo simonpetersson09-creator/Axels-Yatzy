@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Kortare frivillig annons
+- [ ] Byt från två annonser till en färdigsedd premierad annons för 1 XP och uppdatera informationen.
+- [ ] Kontrollera avbrott, sena besked och skydd mot dubbelbelöning samt informationsrutan.
+- [ ] Verifiera riktig annons och sparat XP på telefon; kräver ny appversion.
+
 ## Sparade annonsval i Inställningar
 - [x] Läs befintliga UMP-samtycken på telefonen och visa dem separat; uppdatera efter ändringar utan att gissa utifrån annonsstatus.
 - [ ] Verifiera accepterade, nekade och anpassade val efter omstart på fysisk iPhone/Android; kräver nytt native-bygge.

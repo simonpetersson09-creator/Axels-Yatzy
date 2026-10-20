@@ -63,6 +63,7 @@ export default function SettingsPage() {
 
   // "Annonsinställningar" visas bara där Google kräver det (EU/UK).
   const [adPrivacyRequired, setAdPrivacyRequired] = useState(false);
+  const [adPrivacyOpen, setAdPrivacyOpen] = useState(false);
   const [adChoices, setAdChoices] = useState(() => readAdConsentChoices(undefined, undefined));
   const [adPrivacyBusy, setAdPrivacyBusy] = useState(false);
   useEffect(() => {
@@ -453,7 +454,18 @@ export default function SettingsPage() {
         {adPrivacyRequired && (
           <Section title={t('adPrivacy')}>
             <Card>
-              <div className="px-3 py-3">
+              <Button variant="ghost" aria-expanded={adPrivacyOpen} aria-controls="saved-ad-choices"
+                onClick={() => {
+                  setAdPrivacyOpen(open => !open);
+                  void getAdConsentChoices().then(setAdChoices);
+                }}
+                className="h-auto w-full min-h-11 justify-start px-3 py-3 text-left rounded-none">
+                <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
+                <span className="flex-1 whitespace-normal text-sm">{t('adPrivacy')}</span>
+                <ChevronRight className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform ${adPrivacyOpen ? 'rotate-90' : ''}`} />
+              </Button>
+              {adPrivacyOpen && <div id="saved-ad-choices" className="border-t border-border/40">
+              <div className="px-3 py-3" aria-live="polite">
                 <p className="text-xs font-semibold text-muted-foreground mb-3">{t('adPrivacySaved')}</p>
                 <dl className="space-y-3">
                   {([
@@ -461,9 +473,9 @@ export default function SettingsPage() {
                     ['adPrivacyProfile', adChoices.adProfile],
                     ['adPrivacyUseProfile', adChoices.useAdProfile],
                   ] as const).map(([label, choice]) => (
-                    <div key={label}>
-                      <dt className="text-sm text-foreground">{t(label)}</dt>
-                      <dd className="text-xs text-muted-foreground mt-0.5">{t(choice === 'allowed' ? 'adPrivacyAllowed' : choice === 'denied' ? 'adPrivacyDenied' : 'adPrivacyUnknown')}</dd>
+                    <div key={label} className="flex items-start gap-3">
+                      <dt className="flex-1 min-w-0 text-sm text-foreground">{t(label)}</dt>
+                      <dd className={`max-w-[40%] text-right text-sm font-semibold ${choice === 'allowed' ? 'text-primary' : 'text-muted-foreground'}`}>{t(choice === 'allowed' ? 'adPrivacyAllowed' : choice === 'denied' ? 'adPrivacyDenied' : 'adPrivacyUnknown')}</dd>
                     </div>
                   ))}
                 </dl>
@@ -474,6 +486,7 @@ export default function SettingsPage() {
                 <span className="flex-1 whitespace-normal text-sm">{t(adPrivacyBusy ? 'loading' : 'adPrivacyChange')}</span>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </Button>
+              </div>}
             </Card>
           </Section>
         )}

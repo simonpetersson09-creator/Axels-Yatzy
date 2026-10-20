@@ -35,7 +35,9 @@ Deno.serve(async (req) => {
 
     // Independent checks run in parallel to keep the invite button snappy.
     const [ownsRes, recipientRes, senderGamesRes, activeRes] = await Promise.all([
-      supabase.rpc("claim_session", { p_session_id: from_session_id, p_device_id: device_id }),
+      // Verify an EXISTING ownership only; never claim an unowned session here,
+      // otherwise anyone could adopt a fresh session id and send invites as it.
+      supabase.from("session_owners").select("device_id").eq("session_id", from_session_id).maybeSingle(),
       supabase.from("session_owners").select("session_id").eq("session_id", to_session_id).maybeSingle(),
       supabase
         .from("game_players")
@@ -50,7 +52,9 @@ Deno.serve(async (req) => {
         .in("games.status", ["waiting", "playing"]),
     ]);
 
-    if (ownsRes.data !== true) return json({ error: "Ogiltig avsändare" }, 403);
+    if (ownsRes.error || !ownsRes.data || ownsRes.data.device_id !== device_id) {
+      return json({ error: "Ogiltig avsändare" }, 403);
+    }
     // Recipient must be a real app install (claimed session), not an arbitrary id.
     if (!recipientRes.data) return json({ error: "Mottagaren hittades inte" }, 404);
 

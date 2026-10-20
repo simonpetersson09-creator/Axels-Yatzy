@@ -321,6 +321,7 @@ export const en: Partial<typeof sv> = {
   statsPage: "Statistics",
   adPrivacy: 'Ad privacy settings',
   adPrivacySaved: 'Your saved consents',
+  adPrivacySource: "Your choices were made in Google's consent form and follow Google's ad settings.",
   adPrivacyStorage: 'Store and access information on your device',
   adPrivacyProfile: 'Create a profile for personalised ads',
   adPrivacyUseProfile: 'Use the profile for personalised ads',

@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Radera mina uppgifter
+- [ ] Lägg till knappen under Återställ statistik med samma färg och extra bekräftelse.
+- [ ] Radera egna server- och telefonuppgifter säkert utan att radera andra spelares uppgifter; testa med separat testspelare.
+- [ ] Förklara och visa annonsinställningar i webbförhandsvisningen utan påhittade samtycken.
+
 ## Sparade annonsval i Inställningar
 - [x] Läs befintliga UMP-samtycken på telefonen och visa dem separat; uppdatera efter ändringar utan att gissa utifrån annonsstatus.
 - [ ] Verifiera accepterade, nekade och anpassade val efter omstart på fysisk iPhone/Android; kräver nytt native-bygge.

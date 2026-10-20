@@ -3,6 +3,7 @@
 ## Kortare frivillig annons
 - [x] Byt från två annonser till en färdigsedd premierad annons för 1 XP och uppdatera informationen.
 - [x] Kontrollera avbrott, sena besked och skydd mot dubbelbelöning samt informationsrutan: 45 annonstester godkända, ruta och Avbryt kontrollerade i förhandsvisningen.
+- [x] Översätt den nya annonsrutans text till 27 fler språk (totalt 29); 11 språk med indisk skrift faller tillbaka på engelska enligt språkfilernas regel.
 - [ ] Verifiera riktig annons och sparat XP på telefon; kräver ny appversion.
 
 ## Sparade annonsval i Inställningar

@@ -1,9 +1,10 @@
 # Roadmap – Snabbspel online
 
 ## Radera mina uppgifter
-- [ ] Lägg till knappen under Återställ statistik med samma färg och extra bekräftelse.
-- [ ] Radera egna server- och telefonuppgifter säkert utan att radera andra spelares uppgifter; testa med separat testspelare.
-- [ ] Förklara och visa annonsinställningar i webbförhandsvisningen utan påhittade samtycken.
+- [x] Lägg till knappen under Återställ statistik med samma färg och extra bekräftelse.
+- [x] Radera egna server- och telefonuppgifter säkert utan att radera andra spelares uppgifter; verifierat med separat testspelare och 5 tester.
+- [x] Förklara och visa annonsinställningar i webbförhandsvisningen utan påhittade samtycken; kontrollerat på 393 × 706.
+- [ ] Kontrollera native-lagringsradering på fysisk telefon; kräver ny appversion. Serverradering, motspelarskydd och hela webbflödet verifierade.
 
 ## Sparade annonsval i Inställningar
 - [x] Läs befintliga UMP-samtycken på telefonen och visa dem separat; uppdatera efter ändringar utan att gissa utifrån annonsstatus.

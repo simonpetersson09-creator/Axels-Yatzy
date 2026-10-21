@@ -70,7 +70,8 @@ async function readMostGamesRank(): Promise<number | null | undefined> {
   try {
     const { data, error } = await supabase.rpc('get_weekly_most_games', { p_limit: HOF_SIZE });
     if (error || !Array.isArray(data)) return undefined;
-    const index = data.findIndex((entry: HallOfFameEntry) => entry.session_id === getSessionId());
+    const index = data.findIndex(entry => entry !== null && typeof entry === 'object' &&
+      !Array.isArray(entry) && entry.session_id === getSessionId());
     return index < 0 ? null : index + 1;
   } catch { return undefined; }
 }

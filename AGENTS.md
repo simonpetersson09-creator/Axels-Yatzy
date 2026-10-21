@@ -18,10 +18,9 @@
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
-- Hall of Fame: report_weekly_score (from recordGameResult) trims to first name and caps score server-side.
+- Weekly lists use server ranks; most-games notices compare before/after reporting with a Stockholm-week cache. Score reporting trims names and caps scores server-side.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
-- DiceInfoSheet: safe-area scroll; celebrations portal to body; frames inline.
-- Shop receipts use body-portaled dialogs/useBackHandler to stay above the shop. DiceShop ownedOnly reuses owned selections/previews in Settings.
+- DiceInfoSheet: safe-area scroll, body-portaled celebrations, inline frames. Shop receipts use body portals/useBackHandler; ownedOnly reuses selections/previews in Settings.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
 - Serialize banners with global listeners; failures force reload. SDK events lack request IDs. Search uses a body portal and measured native rectangle slot; reuse must match size and margin.

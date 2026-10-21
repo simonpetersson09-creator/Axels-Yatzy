@@ -10,15 +10,17 @@ import { useBackHandler } from '@/lib/back-handler';
 export function HofRankNotice() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [dropped, setDropped] = useState<number | null | 'out' | null>(null);
+  const [notices, setNotices] = useState<Array<{ rank: number | null; mostGames?: boolean }>>([]);
+  const dropped = notices[0];
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const open = dropped !== null;
-  useBackHandler(open, () => setDropped(null));
+  const open = dropped !== undefined;
+  const close = () => setNotices(queue => queue.slice(1));
+  useBackHandler(open, close);
 
   useEffect(() => {
     const h = (e: Event) => {
-      const rank = (e as CustomEvent<{ rank: number | null }>).detail.rank;
-      setDropped(rank === null ? 'out' : rank);
+      const notice = (e as CustomEvent<{ rank: number | null; mostGames?: boolean }>).detail;
+      setNotices(queue => [...queue, notice]);
     };
     window.addEventListener('hof:dropped', h);
     return () => window.removeEventListener('hof:dropped', h);
@@ -31,9 +33,8 @@ export function HofRankNotice() {
     return () => { dialog.close(); };
   }, [open]);
 
-  if (!open) return null;
-  const close = () => setDropped(null);
-  const show = () => { setDropped(null); navigate('/stats'); };
+  if (!dropped) return null;
+  const show = () => { setNotices([]); navigate('/stats'); };
   return createPortal(
     <dialog ref={dialogRef} aria-labelledby="hof-drop-title"
       data-state="open" onCancel={(event) => { event.preventDefault(); close(); }}
@@ -46,7 +47,8 @@ export function HofRankNotice() {
         <Trophy className="h-7 w-7" aria-hidden />
       </div>
       <h2 id="hof-drop-title" className="break-words text-center font-display text-lg font-bold">
-        {dropped === 'out' ? t('hofDroppedOut') : t('hofDropped', { rank: dropped })}
+        {dropped.mostGames && <span className="mb-2 block">{t('hofGamesTitle')}</span>}
+        {dropped.rank === null ? t('hofDroppedOut') : t('hofDropped', { rank: dropped.rank })}
       </h2>
       <div className="mt-6 flex gap-3">
         <Button variant="outline" onClick={close} className="flex-1">{t('ok')}</Button>

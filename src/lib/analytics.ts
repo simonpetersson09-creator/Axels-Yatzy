@@ -93,7 +93,7 @@ async function flush(): Promise<void> {
         game_mode: e.game_mode,
         metadata: e.metadata,
         platform: e.platform,
-        app_version: e.app_version,
+        app_version: appVersion,
       })),
     });
   } catch {

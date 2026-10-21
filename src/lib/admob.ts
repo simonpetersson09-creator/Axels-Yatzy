@@ -166,14 +166,28 @@ export async function isAdPrivacyOptionsRequired(): Promise<boolean> {
 export async function getAdConsentChoices(): Promise<AdConsentChoices> {
   const unknown = readAdConsentChoices(undefined, undefined);
   if (!isAdMobAvailable()) return unknown;
+  // Only allowlisted technical outcomes: never log consent values, status or errors.
+  const report = (result: 'read_ok' | 'reader_unavailable' | 'read_timeout' | 'read_failed' | 'data_unavailable') => {
+    void import('@/lib/analytics').then(({ trackEvent }) =>
+      trackEvent('ad_consent_read', { result }),
+    ).catch(() => {});
+  };
   try {
     const mod = await loadModule();
     const reader = mod.AdMob as typeof mod.AdMob & {
       getStoredConsentChoices(): Promise<{ status: string; purposeConsents: string }>;
     };
     const saved = await withTimeout(reader.getStoredConsentChoices(), 5_000, 'stored_consent');
-    return readAdConsentChoices(saved.status, saved.purposeConsents);
-  } catch { return unknown; }
+    const choices = readAdConsentChoices(saved?.status, saved?.purposeConsents);
+    report(Object.values(choices).every(choice => choice === 'unknown') ? 'data_unavailable' : 'read_ok');
+    return choices;
+  } catch (err) {
+    const error = err as { code?: unknown; message?: unknown } | undefined;
+    const message = typeof error?.message === 'string' ? error.message : '';
+    const unavailable = error?.code === 'UNIMPLEMENTED' || error?.code === 'UNAVAILABLE' || /not implemented|is not a function/i.test(message);
+    report(unavailable ? 'reader_unavailable' : message === 'stored_consent_timeout' ? 'read_timeout' : 'read_failed');
+    return unknown;
+  }
 }
 
 /** Öppnar Googles ruta så spelaren kan ändra sitt annonsval. */

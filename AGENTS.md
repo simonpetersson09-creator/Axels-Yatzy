@@ -26,5 +26,5 @@
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
 - Serialize banners with global listeners; failures force reload. SDK events lack request IDs. Search uses a body portal and measured native rectangle slot; reuse must match size and margin.
 
-- Ad privacy: patch-admob-consent.js reads native UMP TCF purpose consents at cap sync; OBTAINED/canRequestAds never imply acceptance. Never log or copy consent into app storage.
+- Ad privacy: sync repairs UMP reader registration. OBTAINED/canRequestAds aren't acceptance. Log only read outcomes, never choices/errors; never store consent.
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.

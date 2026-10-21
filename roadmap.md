@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Veckans flitigaste – placeringsnotiser
+- [ ] Samma upplägg som Hall of Fame: inträde/klättring med Visa och popup vid tappad placering; testa båda listorna separat utan live-testmatcher.
+
 ## Radera mina uppgifter
 - [x] Lägg till knappen under Återställ statistik med samma färg och extra bekräftelse.
 - [x] Radera egna server- och telefonuppgifter säkert utan att radera andra spelares uppgifter; verifierat med separat testspelare och 5 tester.

@@ -6,10 +6,14 @@ const platform = process.argv[2];
 const marker = 'MRB_READ_CONSENT';
 async function patch(path, anchor, addition, extra) {
   let source = await readFile(resolve(root, path), 'utf8');
-  if (source.includes(marker)) return;
-  if (!source.includes(anchor)) throw new Error(`Consent patch anchor missing: ${path}`);
-  source = source.replace(anchor, addition + anchor);
+  if (!source.includes(marker)) {
+    if (!source.includes(anchor)) throw new Error(`Consent patch anchor missing: ${path}`);
+    source = source.replace(anchor, addition + anchor);
+  }
   if (extra) source = extra(source);
+  if (!source.includes('getStoredConsentChoices') || !source.includes('IABTCF_PurposeConsents')) {
+    throw new Error(`Consent reader verification failed: ${path}`);
+  }
   await writeFile(resolve(root, path), source);
   console.log(`Patched consent reader: ${path}`);
 }
@@ -29,8 +33,15 @@ if (!platform || platform === 'ios') {
 `, source => {
       const method = '        CAPPluginMethod(name: "requestConsentInfo", returnType: CAPPluginReturnPromise),';
       if (!source.includes(method)) throw new Error('Consent method registration anchor missing');
-      return source.replace('import GoogleMobileAds', 'import GoogleMobileAds\nimport UserMessagingPlatform')
-        .replace(method, '        CAPPluginMethod(name: "getStoredConsentChoices", returnType: CAPPluginReturnPromise),\n' + method);
+      if (!source.includes('import UserMessagingPlatform')) {
+        source = source.replace('import GoogleMobileAds', 'import GoogleMobileAds\nimport UserMessagingPlatform');
+      }
+      const registration = '        CAPPluginMethod(name: "getStoredConsentChoices", returnType: CAPPluginReturnPromise),';
+      if (!source.includes(registration)) source = source.replace(method, registration + '\n' + method);
+      if (!source.includes('import UserMessagingPlatform') || !source.includes(registration)) {
+        throw new Error('Consent reader iOS registration verification failed');
+      }
+      return source;
     });
 }
 if (!platform || platform === 'android') {

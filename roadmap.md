@@ -7,7 +7,8 @@
 - [ ] Kontrollera native-lagringsradering på fysisk telefon; kräver ny appversion. Serverradering, motspelarskydd och hela webbflödet verifierade.
 
 ## Sparade annonsval i Inställningar
-- [ ] Utred saknade annonsval på användarens iPhone och versionsvisning 1.0; installerat native-bygge behöver bekräftas.
+- [x] Utred versionsvisning 1.0: fast text, inte installerad version. Säkra native-läsarens registrering och lägg till felkontroll utan samtyckesvärden.
+- [ ] Bekräfta orsaken på användarens iPhone med nytt native-bygge; installerad metod och sparade värden kan inte kontrolleras här.
 - [x] Läs befintliga UMP-samtycken på telefonen och visa dem separat; uppdatera efter ändringar utan att gissa utifrån annonsstatus.
 - [ ] Verifiera accepterade, nekade och anpassade val efter omstart på fysisk iPhone/Android; kräver nytt native-bygge.
 

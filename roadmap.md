@@ -1,7 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Veckans flitigaste – placeringsnotiser
-- [ ] Samma upplägg som Hall of Fame: inträde/klättring med Visa och popup vid tappad placering; testa båda listorna separat utan live-testmatcher.
+- [x] Samma upplägg som Hall of Fame: inträde/klättring med Visa och popup vid tappad placering; 9 tester godkända, notis/Visa/popup kontrollerade i förhandsvisningen med simulerade svar utan live-testmatcher.
+- [ ] Kontrollera på fysisk telefon; kräver ny appversion.
 
 ## Radera mina uppgifter
 - [x] Lägg till knappen under Återställ statistik med samma färg och extra bekräftelse.

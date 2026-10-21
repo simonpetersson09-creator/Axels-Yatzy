@@ -9,7 +9,7 @@ import { getCurrentSessionId } from '@/lib/analytics-session';
 import { claimSession } from '@/lib/session';
 import { markHappyMoment } from '@/lib/rate-app';
 
-import { getAppVersion } from '@/lib/app-version';
+import { appVersionReady, getAppVersion } from '@/lib/app-version';
 
 // Resolve the persistent device id as early as possible.
 void initDeviceId();
@@ -75,6 +75,11 @@ async function flush(): Promise<void> {
     // ignore
   }
   if (!deviceId) return;
+  // Stamp the real app version at send time: events queued during cold start
+  // would otherwise keep the '1.0.0' fallback from before the native version
+  // finished resolving.
+  await appVersionReady;
+  const appVersion = getAppVersion();
   const batch = queue.splice(0, MAX_BATCH);
   try {
     // Server-side RPC stamps device_id/auth_user_id itself; client-supplied
@@ -88,7 +93,7 @@ async function flush(): Promise<void> {
         game_mode: e.game_mode,
         metadata: e.metadata,
         platform: e.platform,
-        app_version: e.app_version,
+        app_version: appVersion,
       })),
     });
   } catch {

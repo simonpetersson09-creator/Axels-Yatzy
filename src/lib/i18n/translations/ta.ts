@@ -278,6 +278,8 @@ export const ta: Partial<typeof sv> = {
   notifTurnDesc: 'எதிராளி உருட்டியதும் அறிவிப்பைப் பெறுங்கள்',
   notifReminderLabel: 'நிலுவை ஆட்ட நினைவூட்டல்கள்',
   notifReminderDesc: 'ஆட்டம் நின்றுபோனால் நினைவூட்டுவோம்',
+  notifPlayReminderLabel: 'விளையாட்டு நினைவூட்டல்கள்',
+  notifPlayReminderDesc: 'நீங்கள் சிறிது காலமாக விளையாடவில்லை என்றால் நினைவூட்டுவோம்',
 
   // Multiplayer errors
   maxActiveGames: 'ஏற்கெனவே {max} நண்பர் ஆட்டங்கள் நடக்கின்றன. புதிதாகத் தொடங்குமுன் ஒன்றை முடியுங்கள்.',

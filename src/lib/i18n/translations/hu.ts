@@ -278,6 +278,8 @@ export const hu: Partial<typeof sv> = {
   notifTurnDesc: 'Értesítést kapsz, ha az ellenfél dobott',
   notifReminderLabel: 'Emlékeztetők a függő játékokra',
   notifReminderDesc: 'Szólunk, ha megakad a játék',
+  notifPlayReminderLabel: 'Játékemlékeztetők',
+  notifPlayReminderDesc: 'Emlékeztetünk, ha egy ideje nem játszottál',
 
   // Multiplayer errors
   maxActiveGames: 'Már {max} aktív baráti játékod van. Fejezz be egyet, mielőtt újat kezdesz.',

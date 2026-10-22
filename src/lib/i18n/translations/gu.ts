@@ -278,6 +278,8 @@ export const gu: Partial<typeof sv> = {
   notifTurnDesc: 'હરીફ પાસા ફેંકે ત્યારે સૂચના મેળવો',
   notifReminderLabel: 'બાકી મેચની યાદ અપાવો',
   notifReminderDesc: 'મેચ અટકી જાય તો યાદ અપાવીશું',
+  notifPlayReminderLabel: 'રમતના રીમાઇન્ડર',
+  notifPlayReminderDesc: 'તમે થોડા સમયથી ન રમ્યા હો તો અમે યાદ કરાવીશું',
 
   // Multiplayer errors
   maxActiveGames: 'તમારી મિત્રો સાથે {max} રમતો ચાલુ છે. નવી શરૂ કરતાં પહેલાં એક પૂરી કરો.',

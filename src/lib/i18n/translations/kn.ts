@@ -278,6 +278,8 @@ export const kn: Partial<typeof sv> = {
   notifTurnDesc: 'ಎದುರಾಳಿ ದಾಳ ಉರುಳಿಸಿದಾಗ ಅಧಿಸೂಚನೆ ಪಡೆ',
   notifReminderLabel: 'ಬಾಕಿ ಪಂದ್ಯಗಳ ನೆನಪುಗಳು',
   notifReminderDesc: 'ಆಟ ನಿಂತಿದ್ದರೆ ನೆನಪಿಸುತ್ತೇವೆ',
+  notifPlayReminderLabel: 'ಆಟದ ಜ್ಞಾಪನೆಗಳು',
+  notifPlayReminderDesc: 'ನೀವು ಸ್ವಲ್ಪ ದಿನಗಳಿಂದ ಆಡದಿದ್ದರೆ ನಾವು ನೆನಪಿಸುತ್ತೇವೆ',
 
   // Multiplayer errors
   maxActiveGames: 'ಈಗಾಗಲೇ ಸ್ನೇಹಿತರ ಜೊತೆ {max} ಆಟಗಳು ನಡೆಯುತ್ತಿವೆ. ಹೊಸ ಆಟಕ್ಕೆ ಮೊದಲು ಒಂದನ್ನು ಮುಗಿಸು.',

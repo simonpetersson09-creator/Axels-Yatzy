@@ -278,6 +278,8 @@ export const hr: Partial<typeof sv> = {
   notifTurnDesc: 'Primi obavijest kad protivnik baci kockice',
   notifReminderLabel: 'Podsjetnici za aktivne partije',
   notifReminderDesc: 'Podsjetit ćemo te ako partija zastane',
+  notifPlayReminderLabel: 'Podsjetnici za igru',
+  notifPlayReminderDesc: 'Podsjetit ćemo te ako dugo nisi igrao',
 
   // Multiplayer errors
   maxActiveGames: 'Već imaš {max} aktivnih partija s prijateljima. Dovrši jednu prije nove.',

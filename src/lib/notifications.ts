@@ -30,12 +30,23 @@ function markHandled(id: string | undefined): boolean {
 export interface NotificationPrefs {
   turnNotifications: boolean;
   reminderNotifications: boolean;
+  playReminders: boolean;
 }
 
 const DEFAULT_PREFS: NotificationPrefs = {
   turnNotifications: true,
   reminderNotifications: true,
+  playReminders: true,
 };
+
+/** IANA timezone for server-scheduled play reminders; empty if unknown. */
+function deviceTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';
+  } catch {
+    return '';
+  }
+}
 
 export function getNotificationPrefs(): NotificationPrefs {
   try {
@@ -58,7 +69,8 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
   // Only talk to the server when something actually changed since the last
   // successful sync — avoids a write on every app start.
   const lang = getLanguage();
-  const sig = JSON.stringify([prefs.turnNotifications, prefs.reminderNotifications, lang]);
+  const timezone = deviceTimezone();
+  const sig = JSON.stringify([prefs.turnNotifications, prefs.reminderNotifications, prefs.playReminders, lang, timezone]);
   try {
     if (localStorage.getItem(PREFS_SYNCED_KEY) === sig) return;
   } catch { /* ignore */ }
@@ -70,7 +82,9 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
         device_id: deviceId,
         turn_notifications: prefs.turnNotifications,
         reminder_notifications: prefs.reminderNotifications,
+        play_reminders: prefs.playReminders,
         lang,
+        timezone,
       },
     });
     if (!error) {
@@ -188,7 +202,7 @@ async function doInitNotifications(): Promise<void> {
       if (kind === 'lobby_join') return;
       if (kind === 'waiting_room') return;
 
-      const showToast = kind === 'reminder' ? toast.message : toast;
+      const showToast = kind === 'reminder' || kind === 'play_reminder' ? toast.message : toast;
       let action: { label: string; onClick: () => void } | undefined;
       if (kind === 'invite' && inviteId) {
         // Surface the accept/decline dialog immediately — the user should not
@@ -225,6 +239,15 @@ async function doInitNotifications(): Promise<void> {
       const inviteId = data.invite_id as string | undefined;
       if (kind === 'waiting_room' && typeof data.waiting_seat_id === 'string') {
         waitingRoomNotification(data.waiting_seat_id);
+        return;
+      }
+      if (kind === 'play_reminder') {
+        // Play reminder: open the home screen only — never a match or a seat.
+        markHandled(notifId);
+        trackEvent('play_reminder_opened', { source: 'tap' });
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: '/' } }));
+        }, 200);
         return;
       }
       // Mark handled so a racing foreground-receive doesn't also toast.

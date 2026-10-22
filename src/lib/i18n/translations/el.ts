@@ -278,6 +278,8 @@ export const el: Partial<typeof sv> = {
   notifTurnDesc: 'Λάβε ειδοποίηση όταν ο αντίπαλος ρίξει τα ζάρια',
   notifReminderLabel: 'Υπενθυμίσεις για εκκρεμή παιχνίδια',
   notifReminderDesc: 'Θα σου θυμίζουμε αν το παιχνίδι μένει ανενεργό',
+  notifPlayReminderLabel: 'Υπενθυμίσεις παιχνιδιού',
+  notifPlayReminderDesc: 'Θα σου υπενθυμίσουμε αν δεν έχεις παίξει εδώ και καιρό',
 
   // Multiplayer errors
   maxActiveGames: 'Έχεις ήδη {max} ενεργά παιχνίδια με φίλους. Τελείωσε ένα πριν ξεκινήσεις νέο.',

@@ -308,6 +308,8 @@ export const sv = {
   notifTurnDesc: 'Få push när motspelaren har slagit',
   notifReminderLabel: 'Påminnelser om väntande matcher',
   notifReminderDesc: 'Vi knackar dig på axeln om matchen står still',
+  notifPlayReminderLabel: 'Spelpåminnelser',
+  notifPlayReminderDesc: 'Vi påminner dig om du inte spelat på ett tag',
 
   // Multiplayer errors
   maxActiveGames: 'Du har redan {max} aktiva vänspel. Avsluta något innan du startar nytt.',

@@ -297,6 +297,8 @@ export const en: Partial<typeof sv> = {
   notifTurnDesc: 'Get a push when the opponent has rolled',
   notifReminderLabel: 'Reminders for pending matches',
   notifReminderDesc: 'We\u2019ll nudge you if the match goes idle',
+  notifPlayReminderLabel: 'Play reminders',
+  notifPlayReminderDesc: 'We’ll remind you if you haven’t played in a while',
 
   // Multiplayer errors
   maxActiveGames: 'You already have {max} active friend games. Finish one before starting a new.',

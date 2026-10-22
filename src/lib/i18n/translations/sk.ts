@@ -278,6 +278,8 @@ export const sk: Partial<typeof sv> = {
   notifTurnDesc: 'Dostaneš upozornenie, keď súper hodí kockami',
   notifReminderLabel: 'Pripomínať rozhrané zápasy',
   notifReminderDesc: 'Pripomenieme ti zápas, ak sa v ňom nič nedeje',
+  notifPlayReminderLabel: 'Pripomenutia hry',
+  notifPlayReminderDesc: 'Pripomenieme ti, ak si dlhšie nezahráš',
 
   // Multiplayer errors
   maxActiveGames: 'Už máš {max} rozhraných hier s kamarátmi. Pred začatím novej jednu dokonči.',

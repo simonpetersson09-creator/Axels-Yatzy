@@ -1,0 +1,2 @@
+grant execute on function public.claim_play_reminder_targets() to sandbox_exec, sandbox_exec_ixzqnmocplgbsawuufsm;
+grant update on public.push_tokens to sandbox_exec, sandbox_exec_ixzqnmocplgbsawuufsm;

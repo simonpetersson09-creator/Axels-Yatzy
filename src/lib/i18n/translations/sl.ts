@@ -278,6 +278,8 @@ export const sl: Partial<typeof sv> = {
   notifTurnDesc: 'Prejmi obvestilo, ko nasprotnik vrže kocke',
   notifReminderLabel: 'Opomniki za nedokončane igre',
   notifReminderDesc: 'Opomnimo te, če igra zastane',
+  notifPlayReminderLabel: 'Opomniki za igro',
+  notifPlayReminderDesc: 'Opomnimo te, če že nekaj časa nisi igral',
 
   // Multiplayer errors
   maxActiveGames: 'S prijatelji že igraš {max} iger. Končaj eno, preden začneš novo.',

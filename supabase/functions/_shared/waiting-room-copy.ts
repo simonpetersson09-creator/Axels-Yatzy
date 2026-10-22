@@ -1364,7 +1364,7 @@ export const waitingRoomCopy = {
 
 export type WaitingRoomLanguage = keyof typeof waitingRoomCopy;
 export function getWaitingRoomCopy(lang: string | null) {
-  const tag = (lang ?? 'en').replaceAll('_', '-').toLowerCase();
+  const tag = (lang ?? 'en').replace(/_/g, '-').toLowerCase();
   const normalized = tag === 'pt-br' || tag.startsWith('pt-br-') ? 'pt-BR'
     : /^(nb|nn)(-|$)/.test(tag) ? 'no' : tag.split('-')[0];
   const key = Object.keys(waitingRoomCopy).find(candidate => candidate === normalized);

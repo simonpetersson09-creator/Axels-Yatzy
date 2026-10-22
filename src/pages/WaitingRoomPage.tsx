@@ -12,6 +12,7 @@ import { remainingTime } from '@/lib/waiting-room-rules';
 import { getSessionId } from '@/lib/session';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
 import { PUBLIC_WEB_ORIGIN } from '@/lib/app-links';
+import { useBackHandler } from '@/lib/back-handler';
 import table from '@/assets/waiting-table.png';
 
 export default function WaitingRoomPage() {
@@ -32,6 +33,7 @@ export default function WaitingRoomPage() {
   const active = useRef(document.visibilityState === 'visible');
   const lastCountdown = useRef<string | null>(null);
   const entered = useRef(false);
+  useBackHandler(askPush, () => setAskPush(false));
 
   const perform = useCallback((action: RoomAction, options: { ready?: boolean; notify?: boolean } = {}) => {
     // Serialize heartbeat/away/ready, so a slow foreground request cannot undo background state.
@@ -43,6 +45,7 @@ export default function WaitingRoomPage() {
         seatRef.current = response.mine?.id ?? (response.error === 'expired' || action === 'leave' ? null : seatRef.current);
         setSnapshot(response);
         setConnectionLost(false);
+        if (action === 'leave' && !response.error) navigate('/', { replace: true });
         if (lastCountdown.current && !response.countdown_at && !response.mine?.game_id) toast.info(t('wrCancelled'));
         lastCountdown.current = response.countdown_at;
         if (response.mine?.game_id && action !== 'away' && action !== 'leave') {
@@ -121,7 +124,7 @@ export default function WaitingRoomPage() {
   };
   const mine = snapshot?.mine;
   const players = snapshot?.players ?? [];
-  const countdown = snapshot?.countdown_at ? Math.max(1, 3 - Math.floor((clock - Date.parse(snapshot.countdown_at)) / 1000)) : null;
+  const countdown = snapshot?.countdown_at ? Math.max(0, Math.min(3, 3 - Math.floor((clock - Date.parse(snapshot.countdown_at)) / 1000))) : null;
   const errorKey = snapshot?.error === 'full' ? 'wrFull' : snapshot?.error === 'starting' ? 'wrStarting' : snapshot?.error === 'expired' ? 'wrExpired' : null;
 
   return <main className="waiting-room-screen">
@@ -151,18 +154,18 @@ export default function WaitingRoomPage() {
             {p && <div className={`waiting-figure figure-${seat} ${!p.present ? 'opacity-50' : ''}`}><UserRound aria-hidden="true" /></div>}
           </div>;
         })}
-        {countdown && <div className="waiting-countdown" role="timer">{countdown}</div>}
+        {countdown !== null && <div className="waiting-countdown" role="timer">{countdown > 0 ? countdown : <span className="text-sm">{t('wrStarting')}</span>}</div>}
       </section>
       <div className="space-y-3">
         {errorKey && <p role="alert" className="text-center text-primary text-sm">{t(errorKey)}</p>}
         {mine && !mine.game_id ? <>
-          <Button className="w-full h-14 font-display text-lg whitespace-normal" disabled={busy || !!countdown || connectionLost} onClick={() => void command('ready', { ready: !mine.ready })}>
+          <Button className="w-full h-14 font-display text-lg whitespace-normal" disabled={busy || countdown !== null || connectionLost} onClick={() => void command('ready', { ready: !mine.ready })}>
             <Check /> {t(mine.ready ? 'wrUndo' : 'wrBeReady')}
           </Button>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground tabular-nums"><Clock className="w-4 h-4" />{t('wrLeft', { time: remainingTime(mine.expires_at, clock) })}</div>
-          <Button variant="ghost" className="w-full whitespace-normal h-auto min-h-11" disabled={busy || !!countdown} onClick={() => void command('extend')}><Plus />{t('wrExtend')}</Button>
+          <Button variant="ghost" className="w-full whitespace-normal h-auto min-h-11" disabled={busy || countdown !== null} onClick={() => void command('extend')}><Plus />{t('wrExtend')}</Button>
           {players.length === 1 && <Button variant="secondary" className="w-full min-h-12 whitespace-normal" onClick={() => void share()}><Share2 />{t('wrInvite')}</Button>}
-          <Button variant="outline" className="w-full min-h-12 whitespace-normal" disabled={busy || !!countdown} onClick={() => mine.notify_enabled ? void command('notify', { notify: false }) : setAskPush(true)}><Bell />{t(mine.notify_enabled ? 'wrPushOn' : 'wrNotify')}</Button>
+          <Button variant="outline" className="w-full min-h-12 whitespace-normal" disabled={busy || countdown !== null} onClick={() => mine.notify_enabled ? void command('notify', { notify: false }) : setAskPush(true)}><Bell />{t(mine.notify_enabled ? 'wrPushOn' : 'wrNotify')}</Button>
           {(pushUnavailable || (mine.notify_enabled && !snapshot?.push_registered)) && <p className="text-xs text-primary text-center" role="status">{t('wrNoPush')}</p>}
           <Button variant="ghost" className="w-full min-h-12 text-muted-foreground whitespace-normal" disabled={busy} onClick={() => void command('leave')}><LogOut />{t('wrLeave')}</Button>
         </> : <Button className="w-full min-h-12 whitespace-normal" disabled={busy || !snapshot} onClick={() => { seatRef.current = null; void command('join'); }}><Plus />{t('wrJoin')}</Button>}

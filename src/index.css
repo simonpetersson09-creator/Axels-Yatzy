@@ -21,8 +21,8 @@
 .waiting-seat-2 .waiting-person-label { top: 100%; margin-top: calc(var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); }
 /* Sidostolarnas etiketter läses uppifrån och ned, men raderna stackas UTÅT från bordet
    (vertical-lr / vertical-rl) så text aldrig viker in över stolen. */
-.waiting-seat-1 .waiting-person-label { left: calc(54px + var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); top: 31px; width: auto; writing-mode: vertical-lr; transform: translateY(-50%); }
-.waiting-seat-3 .waiting-person-label { right: calc(62px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); top: 31px; width: auto; writing-mode: vertical-rl; transform: translateY(-50%); }
+.waiting-seat-1 .waiting-person-label { left: calc(54px + var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); top: 31px; width: auto; height: max-content; writing-mode: vertical-lr; transform: translateY(-50%); }
+.waiting-seat-3 .waiting-person-label { right: calc(62px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); top: 31px; width: auto; height: max-content; writing-mode: vertical-rl; transform: translateY(-50%); }
 .waiting-seat-1 .waiting-person-label p, .waiting-seat-3 .waiting-person-label p { font-size: 10px; line-height: 14px; }
 .waiting-person-label-empty { color: hsl(var(--muted-foreground)); }
 .waiting-ready-button { width: min(220px, calc(100% - 60px)); min-height: 48px; padding: 12px 16px; border-radius: 16px; }

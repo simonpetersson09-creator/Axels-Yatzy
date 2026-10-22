@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## iOS-annonser – 22 oktober
+- [x] Rätta UMP-presenter före annonsinitiering med beständig sync-patch; alla tre UMP-ingångar binds före anrop utan att starta Mobile Ads.
+- [x] Kassera App Open-annonser vid fyra timmar före återbruk, statuskontroll och visning; 54 tester godkända och båda patcharna körda upprepade gånger på installerad plugin. Visningstider, banner och XP-logik oförändrade.
+- [ ] Kontrollera kallstart, återkomst, samtyckesändring, banner och XP på fysisk iPhone; kräver nytt Mac-bygge och telefon.
+
 ## Rättningar efter samlad granskning
 - [x] Översätt bästa poäng och senaste sju dagarna på alla 40 språk; 427 nycklar per språk, inga luckor eller platshållarfel och inget kvarvarande ”best” utanför engelskan.
 - [x] Svensk tidszon i periodrubriker och stabila placeringar vid exakta lika värden; Stockholm-årsskifte i annan tidszon verifierat, 201 serverplaceringar kontrollerade utan avvikelser.

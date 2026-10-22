@@ -41,6 +41,16 @@ if (!platform || platform === 'ios') {
       if (!source.includes('import UserMessagingPlatform') || !source.includes(registration)) {
         throw new Error('Consent reader iOS registration verification failed');
       }
+      // UMP must work before Mobile Ads initializes. Bind on every entry point
+      // (also privacy options), on the same main queue as the executor call.
+      for (const action of ['requestConsentInfo', 'showConsentForm', 'showPrivacyOptionsForm']) {
+        const callAnchor = `            self.consentExecutor.${action}(`;
+        const binding = `            self.consentExecutor.plugin = self\n${callAnchor}`;
+        if (!source.includes(binding)) {
+          if (!source.includes(callAnchor)) throw new Error(`Consent presenter anchor missing: ${action}`);
+          source = source.replace(callAnchor, binding);
+        }
+      }
       return source;
     });
 }

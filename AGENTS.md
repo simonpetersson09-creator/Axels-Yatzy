@@ -1,4 +1,4 @@
-- Native patches run via `npm run cap:sync:ios/android`; generated edits get lost.
+- Native patches run via `npm run cap:sync:ios/android`; generated edits get lost. iOS patches bind UMP before consent (without starting Ads) and enforce four-hour App Open expiry on reuse/status/show, preserving display scheduling.
 - Clean QA stats from player_country_stats; they displace real players.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (permanent tiers, temporary gold) live server-side in dice_progress/referral_rewards; the client only reads get_gold_dice/get_dice_skins and reports computer matches via record_local_yatzy_match — tamper-resistant.

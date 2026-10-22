@@ -246,6 +246,19 @@ export async function syncWeeklyRank(): Promise<WeeklyRank | null> {
   }
 }
 
+/** Country + world rank by matches this calendar year (Stockholm); resets on 1 Jan server-side. Call after syncCountryRank(). */
+export async function fetchYearRanks(): Promise<RankInfo> {
+  try {
+    const { data, error } = await supabase.rpc('get_year_ranks', { p_session_id: getSessionId() });
+    const d = data as { found: boolean; country: string; games_played: number; world_rank: number; world_total: number; country_rank: number; country_total: number } | null;
+    if (error || !d?.found) return { country: null, world: null };
+    return {
+      country: { country: d.country, rank: d.country_rank, total: d.country_total, games_played: d.games_played },
+      world: { rank: d.world_rank, total: d.world_total, games_played: d.games_played },
+    };
+  } catch { return { country: null, world: null }; }
+}
+
 /** The player's own matches this calendar year (Stockholm time); resets on 1 Jan server-side. */
 export async function fetchMyYearGames(): Promise<number | null> {
   try {

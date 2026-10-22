@@ -9,7 +9,7 @@ import { getProfileCountry } from '@/lib/profile';
 import { getSessionId } from '@/lib/session';
 import { fetchWeeklyHallOfFame, fetchWeeklyMostGames, type HallOfFameEntry } from '@/lib/hall-of-fame';
 import {
-  countryName, countryToFlag, syncCountryRank, syncWeeklyRank, syncTopCountries, fetchMyYearGames,
+  countryName, countryToFlag, syncCountryRank, syncWeeklyRank, syncTopCountries, fetchMyYearGames, fetchYearRanks,
   type RankInfo, type WeeklyRank, type TopCountry,
 } from '@/lib/country-rank';
 
@@ -36,10 +36,10 @@ export default function StatsPage() {
     (async () => {
       // Same sync as the home screen, so both screens always show the same numbers.
       const [r, tc, tm, h, m] = await Promise.all([syncCountryRank(), syncTopCountries(10, 'year'), syncTopCountries(10, 'month'), fetchWeeklyHallOfFame(10), fetchWeeklyMostGames(10)]);
-      const yg = await fetchMyYearGames();
+      const [yg, yr] = await Promise.all([fetchMyYearGames(), fetchYearRanks()]);
       const w = r.country ? await syncWeeklyRank() : null;
       if (!alive) return;
-      setRank(r); setTop(tc); setTopMonth(tm); setYearGames(yg); setWeekly(w); setHof(h); setMost(m); setLoading(false);
+      setRank(yr); setTop(tc); setTopMonth(tm); setYearGames(yg); setWeekly(w); setHof(h); setMost(m); setLoading(false);
       const ids = [...new Set([...h, ...m].map((p) => p.session_id))];
       if (ids.length) {
         const { data } = await supabase.rpc('get_frames_for_sessions', { p_session_ids: ids });
@@ -87,7 +87,7 @@ export default function StatsPage() {
             <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden divide-y divide-border/30">
               <RankCard
                 icon={myCountry ? <span className="text-base">{countryToFlag(myCountry)}</span> : <MapPin className="w-4 h-4 text-primary" />}
-                label={myCountry ? t('countryRankLabelFull', { country: countryName(myCountry, lang) }) : t('countryRankLabel')}
+                label={myCountry ? `${t('countryRankLabelFull', { country: countryName(myCountry, lang) })} ${year}` : t('countryRankLabel')}
                 rank={rank.country?.rank}
                 total={rank.country?.total}
                 loading={loading}
@@ -96,7 +96,7 @@ export default function StatsPage() {
               />
               <RankCard
                 icon={<Globe className="w-4 h-4 text-primary" />}
-                label={t('worldRankLabelFull')}
+                label={`${t('worldRankLabelFull')} ${year}`}
                 rank={rank.world?.rank}
                 total={rank.world?.total}
                 loading={loading}

@@ -10,8 +10,9 @@ import { trackEvent } from '@/lib/analytics';
 const SEEN_KEY = 'mrbyatzy_android_news_seen_v1';
 
 /** One-time news for non-Android players: the app is now on Google Play. */
-export function shouldShowAndroidNews(): boolean {
+export function shouldShowAndroidNews(gamesPlayed: number): boolean {
   try {
+    if (gamesPlayed < 4) return false;
     if (!PLAY_STORE_LIVE || Capacitor.getPlatform() === 'android') return false;
     return !localStorage.getItem(SEEN_KEY);
   } catch {

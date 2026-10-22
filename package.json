@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "cap:sync:ios": "node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && npx cap sync ios && node scripts/set-ios-admob-plist.js && node scripts/set-ios-push.js && node scripts/set-ios-icons.js",
+    "cap:sync:ios": "node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && npx cap sync ios && node scripts/set-ios-admob-plist.js && node scripts/set-ios-push.js && node scripts/set-ios-icons.js",
     "cap:ios:admob": "node scripts/set-ios-admob-plist.js",
     "cap:ios:push": "node scripts/set-ios-push.js",
     "cap:ios:icons": "node scripts/set-ios-icons.js",

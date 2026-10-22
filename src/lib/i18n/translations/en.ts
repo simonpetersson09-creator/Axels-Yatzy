@@ -27,7 +27,7 @@ export const en: Partial<typeof sv> = {
   statWinrate: 'Win rate',
   statYatzy: 'Yatzys',
   statStreak: 'Streak',
-  homeStatsTitle: 'Your numbers',
+  homeStatsTitle: 'Your numbers – all time',
   worldRankLabel: 'World',
   worldRanking: "World ranking",
   addFriendBtn: "Add friend",

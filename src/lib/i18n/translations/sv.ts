@@ -29,7 +29,7 @@ export const sv = {
   statWinrate: 'Vinst-%',
   statYatzy: 'Yatzy',
   statStreak: 'Svit',
-  homeStatsTitle: 'Dina siffror',
+  homeStatsTitle: 'Dina siffror – all time',
   worldRankLabel: 'Världen',
   worldRanking: "Världsranking",
   addFriendBtn: "Lägg till vän",

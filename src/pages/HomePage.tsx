@@ -1,4 +1,6 @@
 import { BarChart3, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useWaitingRoomCount } from '@/hooks/useWaitingRoomCount';
 import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
@@ -74,6 +76,7 @@ const AD_BUTTON_LOCKED = false;
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const waitingCount = useWaitingRoomCount();
   const { t, lang } = useTranslation();
   const [activeGames, setActiveGames] = useState<ActiveGame[]>(() => getActiveGames());
   const [openLobbies, setOpenLobbies] = useState<OpenLobby[]>([]);
@@ -735,6 +738,10 @@ export default function HomePage() {
             >
               🌐 <span className="truncate">{t('playWithFriends')}</span>
             </motion.button>
+            <Button variant="secondary" onClick={() => navigate('/waiting-room')} className="relative w-full min-h-12 rounded-2xl font-display font-bold text-base whitespace-normal">
+              <Users /> {t('wrTitle')}
+              {waitingCount > 0 && <span className="absolute right-4 rounded-full bg-destructive text-destructive-foreground min-w-6 h-6 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
+            </Button>
             <motion.button
               onClick={() => navigate('/stats')}
               className="relative w-full py-3 sm:py-4 px-16 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"

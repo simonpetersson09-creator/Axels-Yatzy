@@ -31,6 +31,7 @@ export async function sendFcm(args: ApnsArgs): Promise<ApnsResult> {
           data: args.data, // string values only (same keys as the iOS payload)
           android: {
             priority: "HIGH",
+            ...(args.expiresAt ? { ttl: `${Math.max(0, Math.floor((Date.parse(args.expiresAt) - Date.now()) / 1000))}s` } : {}),
             notification: { sound: "default" },
           },
         },

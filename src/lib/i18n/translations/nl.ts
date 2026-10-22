@@ -325,7 +325,7 @@ export const nl: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Meeste wedstrijden gespeeld deze week",
 
-  hofBestShort: 'best',
+  hofBestShort: "beste",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -333,7 +333,7 @@ export const nl: Partial<typeof sv> = {
   hofDroppedOut: 'Je bent uit de top 10 van deze week gevallen',
   hofBadgeLabel: "Top 10 van deze week",
 
-  weeklyRankLabel: "Jouw positie vorige week",
+  weeklyRankLabel: "Jouw positie in de afgelopen 7 dagen",
   weeklyGamesText: "{n} wedstrijden in de afgelopen 7 dagen",
   weeklyBuildingHint: "Speel een wedstrijd om deze week op de lijst te komen",
   statsNeedCountry: "Kies je land in Instellingen om je posities te zien.",

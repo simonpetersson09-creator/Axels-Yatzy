@@ -326,7 +326,7 @@ export const tr: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Bu hafta en çok maç oynayanlar",
 
-  hofBestShort: 'best',
+  hofBestShort: "en iyi",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const tr: Partial<typeof sv> = {
   hofDroppedOut: 'Bu haftanın ilk 10 listesinden düştün',
   hofBadgeLabel: "Haftanın ilk 10'u",
 
-  weeklyRankLabel: "Geçen haftaki sıran",
+  weeklyRankLabel: "Son 7 gündeki sıran",
   weeklyGamesText: "Son 7 günde {n} maç",
   weeklyBuildingHint: "Bu haftanın listesine girmek için bir maç oyna",
   statsNeedCountry: "Sıralamalarını görmek için Ayarlar'dan ülkeni seç.",

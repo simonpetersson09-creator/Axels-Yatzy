@@ -326,7 +326,7 @@ export const hu: Partial<typeof sv> = {
 
   hofGamesSubtitle: "A héten játszott legtöbb meccs",
 
-  hofBestShort: 'best',
+  hofBestShort: "legjobb",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const hu: Partial<typeof sv> = {
   hofDroppedOut: 'Kiestél a hét top 10-es listájából',
   hofBadgeLabel: "Heti top 10",
 
-  weeklyRankLabel: "Múlt heti helyezésed",
+  weeklyRankLabel: "Helyezésed az elmúlt 7 napban",
   weeklyGamesText: "{n} meccs az elmúlt 7 napban",
   weeklyBuildingHint: "Játssz egy meccset, hogy felkerülj a heti listára",
   statsNeedCountry: "Válassz országot a Beállításokban, hogy lásd a helyezéseidet.",

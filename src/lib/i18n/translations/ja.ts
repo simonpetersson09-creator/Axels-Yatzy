@@ -326,7 +326,7 @@ export const ja: Partial<typeof sv> = {
 
   hofGamesSubtitle: "今週の対戦数ランキング",
 
-  hofBestShort: 'best',
+  hofBestShort: "最高",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const ja: Partial<typeof sv> = {
   hofDroppedOut: '今週のトップ10から外れました',
   hofBadgeLabel: "今週のトップ10",
 
-  weeklyRankLabel: "先週の順位",
+  weeklyRankLabel: "過去7日間の順位",
   weeklyGamesText: "過去7日間で{n}試合",
   weeklyBuildingHint: "対戦して今週のランキングに参加",
   statsNeedCountry: "ランキングを見るには、設定で国を選んでください。",

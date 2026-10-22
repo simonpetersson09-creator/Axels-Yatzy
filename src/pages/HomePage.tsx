@@ -30,6 +30,7 @@ import { getCachedHofRank, subscribeHofRank, syncMyHofRank } from '@/lib/hall-of
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { getStatsPeriod } from '@/lib/stats-period';
 import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadRewarded, subscribeRewardedState, getRewardedState, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
@@ -984,7 +985,7 @@ export default function HomePage() {
           <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0">
             <div className="text-center mb-1">
               <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('worldLeaderLabel')} {new Date().getFullYear()}
+                {t('worldLeaderLabel')} {getStatsPeriod(lang).year}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">

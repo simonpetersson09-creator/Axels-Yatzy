@@ -326,7 +326,7 @@ export const ms: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Perlawanan terbanyak dimainkan minggu ini",
 
-  hofBestShort: 'best',
+  hofBestShort: "terbaik",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const ms: Partial<typeof sv> = {
   hofDroppedOut: 'Anda tercicir daripada 10 terbaik minggu ini',
   hofBadgeLabel: "10 teratas minggu ini",
 
-  weeklyRankLabel: "Kedudukan anda minggu lepas",
+  weeklyRankLabel: "Kedudukan anda dalam 7 hari terakhir",
   weeklyGamesText: "{n} perlawanan dalam 7 hari terakhir",
   weeklyBuildingHint: "Main satu perlawanan untuk masuk senarai minggu ini",
   statsNeedCountry: "Pilih negara anda dalam Tetapan untuk melihat kedudukan anda.",

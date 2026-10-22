@@ -326,7 +326,7 @@ export const hi: Partial<typeof sv> = {
 
   hofGamesSubtitle: "इस हफ़्ते सबसे ज़्यादा खेले गए मैच",
 
-  hofBestShort: 'best',
+  hofBestShort: "सर्वश्रेष्ठ",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const hi: Partial<typeof sv> = {
   hofDroppedOut: 'आप इस सप्ताह की शीर्ष 10 से बाहर हो गए',
   hofBadgeLabel: "इस हफ़्ते के शीर्ष 10",
 
-  weeklyRankLabel: "पिछले हफ़्ते आपकी रैंक",
+  weeklyRankLabel: "पिछले ७ दिनों में आपकी रैंक",
   weeklyGamesText: "पिछले 7 दिनों में {n} मैच",
   weeklyBuildingHint: "इस हफ़्ते की सूची में आने के लिए एक मैच खेलें",
   statsNeedCountry: "अपनी रैंकिंग देखने के लिए सेटिंग्स में अपना देश चुनें।",

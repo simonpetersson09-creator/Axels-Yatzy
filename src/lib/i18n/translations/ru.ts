@@ -325,7 +325,7 @@ export const ru: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Больше всего сыгранных матчей на этой неделе",
 
-  hofBestShort: 'best',
+  hofBestShort: "лучший",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -333,7 +333,7 @@ export const ru: Partial<typeof sv> = {
   hofDroppedOut: 'Вы выпали из топ-10 недели',
   hofBadgeLabel: "Топ-10 недели",
 
-  weeklyRankLabel: "Ваше место на прошлой неделе",
+  weeklyRankLabel: "Ваше место за последние 7 дней",
   weeklyGamesText: "Матчей за последние 7 дней: {n}",
   weeklyBuildingHint: "Сыграйте матч, чтобы попасть в рейтинг этой недели",
   statsNeedCountry: "Выберите свою страну в настройках, чтобы увидеть свои места в рейтинге.",

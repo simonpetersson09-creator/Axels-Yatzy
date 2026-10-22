@@ -326,7 +326,7 @@ export const el: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Περισσότερα παιχνίδια αυτή την εβδομάδα",
 
-  hofBestShort: 'best',
+  hofBestShort: "καλύτερη",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const el: Partial<typeof sv> = {
   hofDroppedOut: 'Έπεσες εκτός δεκάδας αυτής της εβδομάδας',
   hofBadgeLabel: "Οι 10 κορυφαίοι της εβδομάδας",
 
-  weeklyRankLabel: "Η θέση σου την περασμένη εβδομάδα",
+  weeklyRankLabel: "Η θέση σου τις τελευταίες 7 ημέρες",
   weeklyGamesText: "{n} αγώνες τις τελευταίες 7 ημέρες",
   weeklyBuildingHint: "Παίξε έναν αγώνα για να μπεις στη λίστα της εβδομάδας",
   statsNeedCountry: "Επίλεξε τη χώρα σου στις Ρυθμίσεις για να δεις την κατάταξή σου.",

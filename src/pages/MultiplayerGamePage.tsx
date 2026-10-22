@@ -29,6 +29,7 @@ import { Bot, Globe, Loader2 } from 'lucide-react';
 import { askNotificationsFor } from '@/lib/notif-context';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { trackFinishedEvent } from '@/lib/finished-event';
 import { saveFriendMatchResult } from '@/lib/friend-stats';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
@@ -467,7 +468,7 @@ export default function MultiplayerGamePage() {
         if (isForfeit) {
           // A forfeited match is never counted in the statistics — neither as a
           // loss for the player who left nor as a win for the other one.
-          trackEvent('game_finished', { won: false, draw: false, score: myScore, forfeit: true }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+          if (gameId) trackFinishedEvent(`mp:${gameId}`, { won: false, draw: false, score: myScore, forfeit: true }, { gameId, gameMode: 'multiplayer' });
         } else {
           const topScore = Math.max(...results.map(r => r.score));
           const winnersAtTop = results.filter(r => r.score === topScore && topScore > 0).length;
@@ -480,7 +481,7 @@ export default function MultiplayerGamePage() {
           if (recorded && persistKey) {
             try { localStorage.setItem(persistKey, '1'); } catch { /* ledger still protects it */ }
           }
-          trackEvent('game_finished', { won, draw: isDraw, score: myScore, forfeit: false }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+          if (recorded && gameId) trackFinishedEvent(`mp:${gameId}`, { won, draw: isDraw, score: myScore, forfeit: false }, { gameId, gameMode: 'multiplayer' });
         }
 
 

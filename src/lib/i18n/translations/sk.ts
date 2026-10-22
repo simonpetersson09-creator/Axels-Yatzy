@@ -326,7 +326,7 @@ export const sk: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Najviac odohraných zápasov tento týždeň",
 
-  hofBestShort: 'best',
+  hofBestShort: "najlepší",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const sk: Partial<typeof sv> = {
   hofDroppedOut: 'Vypadol si z desiatky najlepších tento týždeň',
   hofBadgeLabel: "Top 10 tohto týždňa",
 
-  weeklyRankLabel: "Tvoje poradie minulý týždeň",
+  weeklyRankLabel: "Tvoje poradie za posledných 7 dní",
   weeklyGamesText: "Počet zápasov za posledných 7 dní: {n}",
   weeklyBuildingHint: "Zahraj si zápas a zapoj sa do tohtotýždňového rebríčka",
   statsNeedCountry: "Vyber si krajinu v nastaveniach a pozri si svoje umiestnenia.",

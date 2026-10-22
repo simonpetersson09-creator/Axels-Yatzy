@@ -24,6 +24,7 @@ import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { trackFinishedEvent } from '@/lib/finished-event';
 import { Home } from 'lucide-react';
 import { getPlayerName } from '@/lib/session';
 import { toast } from 'sonner';
@@ -139,7 +140,7 @@ export default function GamePage() {
       const yatzys = (gameState.players[0].scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
       const isNewResult = recordGameResult(humanScore, won, yatzys, localMatchKeyRef.current);
       if (isNewResult && yatzys > 0) void reportLocalYatzyMatch(localMatchKeyRef.current);
-      trackEvent('game_finished', { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
+      if (isNewResult) trackFinishedEvent(localMatchKeyRef.current, { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.gameOver, aiPlayers]);

@@ -2,6 +2,16 @@ import type { sv } from './sv';
 
 export const en: Partial<typeof sv> = {
   wrTitle: 'Waiting room',
+  wrChatHello: 'Hi!',
+  wrChatWelcome: 'Welcome!',
+  wrChatReady: 'I am ready!',
+  wrChatLetsGo: 'Let’s play!',
+  wrChatGoodLuck: 'Good luck!',
+  wrChatOneMoment: 'One moment!',
+  wrChatMorePlayers: 'Wait for more players?',
+  wrChatTwoEnough: 'The two of us can start!',
+  wrChatThanks: 'Thanks!',
+  wrChatHaveFun: 'Great to play together!',
   wrJoinSteps: 'Open the app and choose Waiting room on the home screen.',
   wrEmpty: 'Waiting for company …',
   wrReady: 'Ready',

@@ -1,6 +1,16 @@
 // Svenska — fallback-språk
 export const sv = {
   wrTitle: 'Spelväntrum',
+  wrChatHello: 'Hej!',
+  wrChatWelcome: 'Välkommen!',
+  wrChatReady: 'Jag är redo!',
+  wrChatLetsGo: 'Nu kör vi!',
+  wrChatGoodLuck: 'Lycka till!',
+  wrChatOneMoment: 'Ett ögonblick!',
+  wrChatMorePlayers: 'Väntar vi på fler?',
+  wrChatTwoEnough: 'Vi två kan börja!',
+  wrChatThanks: 'Tack!',
+  wrChatHaveFun: 'Kul att spela ihop!',
   wrJoinSteps: 'Öppna appen och välj Spelväntrum på startsidan.',
   wrEmpty: 'Väntar på sällskap …',
   wrReady: 'Redo',

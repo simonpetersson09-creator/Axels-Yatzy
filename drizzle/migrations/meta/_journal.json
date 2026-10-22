@@ -498,6 +498,13 @@
       "when": 1792485080946,
       "tag": "0070_delete_player_data",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1792657843231,
+      "tag": "0071_yearly_monthly_leaders",
+      "breakpoints": true
     }
   ]
 }

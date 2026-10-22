@@ -7,6 +7,7 @@ import { initSessionTracking } from "./lib/analytics-session";
 import { initNotifications } from "./lib/notifications";
 import { initProfileCountry } from "./lib/country-rank";
 import { claimSession } from "./lib/session";
+import { registerLaunch } from "./lib/shop-promo";
 import AppErrorBoundary from "./components/AppErrorBoundary";
 
 // Global safety net: log (and report) errors that escape React so we can see
@@ -31,6 +32,7 @@ window.addEventListener("unhandledrejection", (event) => {
 installNativeViewportSync();
 initSessionTracking();
 trackEvent('app_opened');
+registerLaunch();
 void claimSession();
 void initNotifications();
 void initProfileCountry();

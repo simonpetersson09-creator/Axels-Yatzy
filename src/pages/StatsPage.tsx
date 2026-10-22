@@ -3,13 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { AvatarFrame } from '@/components/AvatarFrame';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Globe, CalendarDays, MapPin, Trophy, Flame } from 'lucide-react';
+import { ArrowLeft, Globe, CalendarDays, MapPin, Trophy, Flame, ChevronDown, Dices } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { getProfileCountry } from '@/lib/profile';
 import { getSessionId } from '@/lib/session';
 import { fetchWeeklyHallOfFame, fetchWeeklyMostGames, type HallOfFameEntry } from '@/lib/hall-of-fame';
 import {
-  countryName, countryToFlag, syncCountryRank, syncWeeklyRank, syncTopCountries,
+  countryName, countryToFlag, syncCountryRank, syncWeeklyRank, syncTopCountries, fetchMyYearGames,
   type RankInfo, type WeeklyRank, type TopCountry,
 } from '@/lib/country-rank';
 
@@ -20,6 +20,11 @@ export default function StatsPage() {
   const [rank, setRank] = useState<RankInfo>({ country: null, world: null });
   const [weekly, setWeekly] = useState<WeeklyRank | null>(null);
   const [top, setTop] = useState<TopCountry[]>([]);
+  const [topMonth, setTopMonth] = useState<TopCountry[]>([]);
+  const [yearGames, setYearGames] = useState<number | null>(null);
+  const now = new Date();
+  const year = now.getFullYear();
+  const monthName = now.toLocaleDateString(lang, { month: 'long' });
   const [hof, setHof] = useState<HallOfFameEntry[]>([]);
   const [most, setMost] = useState<HallOfFameEntry[]>([]);
   const [frames, setFrames] = useState<Record<string, string>>({});
@@ -30,10 +35,11 @@ export default function StatsPage() {
     let alive = true;
     (async () => {
       // Same sync as the home screen, so both screens always show the same numbers.
-      const [r, tc, h, m] = await Promise.all([syncCountryRank(), syncTopCountries(10), fetchWeeklyHallOfFame(10), fetchWeeklyMostGames(10)]);
+      const [r, tc, tm, h, m] = await Promise.all([syncCountryRank(), syncTopCountries(10, 'year'), syncTopCountries(10, 'month'), fetchWeeklyHallOfFame(10), fetchWeeklyMostGames(10)]);
+      const yg = await fetchMyYearGames();
       const w = r.country ? await syncWeeklyRank() : null;
       if (!alive) return;
-      setRank(r); setTop(tc); setWeekly(w); setHof(h); setMost(m); setLoading(false);
+      setRank(r); setTop(tc); setTopMonth(tm); setYearGames(yg); setWeekly(w); setHof(h); setMost(m); setLoading(false);
       const ids = [...new Set([...h, ...m].map((p) => p.session_id))];
       if (ids.length) {
         const { data } = await supabase.rpc('get_frames_for_sessions', { p_session_ids: ids });
@@ -107,6 +113,11 @@ export default function StatsPage() {
                 playersWord={t('countryRankPlayers')}
                 sub={weekly ? t('weeklyGamesText', { n: weekly.games_played }) : t('weeklyBuildingHint')}
               />
+              <div className="px-3.5 py-1.5 flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0"><Dices className="w-4 h-4 text-primary" /></div>
+                <p className="flex-1 text-[11px] uppercase tracking-wider text-muted-foreground">{t('yearGamesLabel', { year })}</p>
+                <p className="font-display font-bold text-base tabular-nums text-primary">{loading ? '…' : yearGames == null ? '—' : fmt(yearGames)}</p>
+              </div>
             </div>
           )}
         </section>
@@ -127,25 +138,8 @@ export default function StatsPage() {
           value={(p) => fmt(p.games_played)}
         />
 
-        <section className="space-y-2">
-          <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em] px-2">{t('topCountriesTitle')}</p>
-          <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
-            {loading && <div className="p-4 text-sm text-muted-foreground">{t('loading')}</div>}
-            {!loading && top.length === 0 && <div className="p-4 text-sm text-muted-foreground">—</div>}
-            {top.map((c, i) => (
-              <div
-                key={c.country}
-                className={`flex items-center justify-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${c.country === myCountry ? 'bg-primary/10' : ''}`}
-              >
-                <div className="w-48 flex items-center gap-3 min-w-0">
-                  <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-primary' : 'text-muted-foreground'}`}>{i + 1}</span>
-                  <span className="text-lg">{countryToFlag(c.country)}</span>
-                  <p className="text-sm font-semibold truncate">{countryName(c.country, lang)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        <CountryList title={t('topCountriesYearTitle', { year })} rows={top} loading={loading} myCountry={myCountry} lang={lang} loadingText={t('loading')} />
+        <CountryList title={t('topCountriesMonthTitle', { month: monthName })} rows={topMonth} loading={loading} myCountry={myCountry} lang={lang} loadingText={t('loading')} />
       </motion.div>
     </div>
   );
@@ -206,6 +200,37 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
           </div>
         ))}
       </div>
+    </section>
+  );
+}
+
+/** Collapsed by default; tap the title to expand. */
+function CountryList({ title, rows, loading, myCountry, lang, loadingText }: {
+  title: string; rows: TopCountry[]; loading: boolean; myCountry: string | null | undefined; lang: Parameters<typeof countryName>[1]; loadingText: string;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section className="space-y-2">
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
+        className="w-full flex items-center justify-between rounded-2xl bg-secondary/50 border border-border/40 px-4 py-3">
+        <span className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em]">{title}</span>
+        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
+          {loading && <div className="p-4 text-sm text-muted-foreground">{loadingText}</div>}
+          {!loading && rows.length === 0 && <div className="p-4 text-sm text-muted-foreground">—</div>}
+          {rows.map((c, i) => (
+            <div key={c.country} className={`flex items-center justify-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${c.country === myCountry ? 'bg-primary/10' : ''}`}>
+              <div className="w-48 flex items-center gap-3 min-w-0">
+                <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-primary' : 'text-muted-foreground'}`}>{i + 1}</span>
+                <span className="text-lg">{countryToFlag(c.country)}</span>
+                <p className="text-sm font-semibold truncate">{countryName(c.country, lang)}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

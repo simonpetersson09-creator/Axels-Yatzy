@@ -246,10 +246,18 @@ export async function syncWeeklyRank(): Promise<WeeklyRank | null> {
   }
 }
 
-/** Top countries by total matches — same source as the home screen leaders. */
-export async function syncTopCountries(limit = 10): Promise<TopCountry[]> {
+/** The player's own matches this calendar year (Stockholm time); resets on 1 Jan server-side. */
+export async function fetchMyYearGames(): Promise<number | null> {
   try {
-    const { data, error } = await supabase.rpc('get_top_countries', { p_limit: limit });
+    const { data, error } = await supabase.rpc('get_my_year_games', { p_session_id: getSessionId() });
+    return error ? null : Number(data ?? 0);
+  } catch { return null; }
+}
+
+/** Top countries by matches; 'year'/'month' restart when the period changes (server-side). */
+export async function syncTopCountries(limit = 10, period: 'all' | 'year' | 'month' = 'all'): Promise<TopCountry[]> {
+  try {
+    const { data, error } = await supabase.rpc('get_top_countries', { p_limit: limit, p_period: period });
     if (error || !Array.isArray(data)) {
       if (error) console.warn('[top-countries] fetch failed', error);
       return [];

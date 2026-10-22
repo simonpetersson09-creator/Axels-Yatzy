@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Översättningskontroll 22 oktober
+- [ ] Översätt väntrummets aktuella texter, tio snabbfraser och återkomstnotis till alla 40 språk; kontrollera språkval och platshållare utan live-spelarplatser.
+
 ## Spelväntrum
 - [x] Fria platstexter, kompakt redo och notistext, närvarosymboler och tio snabbfraser vid figurerna. 18 tester godkända; riktig meddelandeöverföring mellan två webbläsare med simulerade platser och layout på 320/393 px verifierade utan att röra live-bordet.
 - [x] Obegränsad ensam väntan, 120 sekunder att bli redo när sällskap finns; sittande figurer, fria namn och matchande knappar. 15 regel-/klienttester och visuell kontroll godkända.

@@ -19,7 +19,8 @@
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Weekly lists use server ranks; most-games notices compare before/after reporting with a Stockholm-week cache. Score reporting trims names and caps scores server-side.
-- Forfeits never count in stats: online forfeits record nothing, and local recordGameResult(completed=false) must not increment gamesPlayed either.
+- Forfeits affect no statistics: recordGameResult(completed=false) is a no-op; preserve all pre-existing totals rather than recalculating history.
+- Local match identities persist per game slot and rotate only on replay; commit stats and an untrimmed dedupe ledger atomically before marking multiplayer results recorded, so restarts cannot double-count future matches.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
 - DiceInfoSheet: safe-area scroll, body-portaled celebrations, inline frames. Shop receipts use body portals/useBackHandler; ownedOnly reuses selections/previews in Settings.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use get_accepted_friend_matches.

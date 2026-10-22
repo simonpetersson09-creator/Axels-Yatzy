@@ -12,7 +12,6 @@
 
 const STATS_KEY = 'yatzy-player-stats';
 const CURRENT_VERSION = 2;
-const MAX_RECORDED_KEYS = 300;
 
 export interface LocalStats {
   gamesPlayed: number;
@@ -118,13 +117,16 @@ export function recordGameResult(
   /** false for forfeited/unfinished matches — they never reach the weekly top lists. */
   completed = true,
 ): boolean {
+  // Forward-only: never rewrite old totals or let an unfinished match affect
+  // any statistic, the dedupe ledger, or a server leaderboard.
+  if (!completed) return false;
   const stored = readStored();
   if (matchKey && stored.recordedKeys.includes(matchKey)) return false;
 
   const stats: LocalStats = {
     // Forfeits (completed=false) never count as played matches — matching the
     // online path, which records nothing at all for forfeited games.
-    gamesPlayed: stored.gamesPlayed + (completed ? 1 : 0),
+    gamesPlayed: stored.gamesPlayed + 1,
     wins: stored.wins,
     highScore: stored.highScore,
     yatzyCount: stored.yatzyCount,
@@ -140,15 +142,17 @@ export function recordGameResult(
     stats.currentStreak = 0;
   }
   if (playerScore > stats.highScore) stats.highScore = playerScore;
-  if (yatzysThisGame > 0) stats.yatzyCount += yatzysThisGame;
+  if (yatzysThisGame > 0) stats.yatzyCount += 1;
 
   const recordedKeys = matchKey
-    ? [...stored.recordedKeys, matchKey].slice(-MAX_RECORDED_KEYS)
+    ? [...stored.recordedKeys, matchKey]
     : stored.recordedKeys;
 
-  const completedGames = stored.completedGames + (completed ? 1 : 0);
+  const completedGames = stored.completedGames + 1;
   const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys, completedGames };
-  try { localStorage.setItem(STATS_KEY, JSON.stringify(toStore)); } catch { /* noop */ }
+  // Stats and their match key commit in one write. Do not report/reward a
+  // result that failed to persist; a later attempt may retry it safely.
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(toStore)); } catch { return false; }
 
   // Update the player's personal country ranking after every finished match.
   // Lazy import to keep this module free of network deps until needed.

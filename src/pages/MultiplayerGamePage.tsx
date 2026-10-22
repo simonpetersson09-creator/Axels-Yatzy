@@ -431,7 +431,7 @@ export default function MultiplayerGamePage() {
       // M7: persist across remounts so navigating back to a finished match
       // (or hot reloads in dev) doesn't double-record local stats / friend
       // match rows. Server-side UPSERT (UNIQUE game_id) already dedupes
-      // friend_match_results, but local recordGameResult does not.
+      // friend_match_results; recordGameResult also commits its own dedupe key.
       // IMPORTANT: this guard must only skip *stats recording* — navigation to
       // /results has to happen every time, otherwise re-entering a finished
       // match leaves the player stuck on the board.
@@ -445,7 +445,6 @@ export default function MultiplayerGamePage() {
         }
       } catch { /* storage unavailable — fall through */ }
       statsRecordedRef.current = true;
-      try { if (persistKey) localStorage.setItem(persistKey, '1'); } catch { /* noop */ }
 
 
       const results = gameState.players.map(p => ({
@@ -476,7 +475,11 @@ export default function MultiplayerGamePage() {
           // either player (server records winner_id = NULL in the same case).
           const isDraw = winnersAtTop > 1;
           const won = !isDraw && myScore === topScore && myScore > 0;
-          recordGameResult(myScore, won, yatzys, gameId ? `mp:${gameId}` : undefined);
+          const recorded = recordGameResult(myScore, won, yatzys, gameId ? `mp:${gameId}` : undefined);
+          // Never mark a result before the atomic stats/key write succeeds.
+          if (recorded && persistKey) {
+            try { localStorage.setItem(persistKey, '1'); } catch { /* ledger still protects it */ }
+          }
           trackEvent('game_finished', { won, draw: isDraw, score: myScore, forfeit: false }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
         }
 

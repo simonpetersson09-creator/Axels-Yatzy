@@ -49,7 +49,7 @@
 .figure-3 { color: hsl(var(--yatzy-player4)); }
 .waiting-countdown { position: absolute; left: calc(50% - 40px); top: calc(50% - 40px); width: 80px; height: 80px; border-radius: 50%; background: hsl(var(--background) / .9); color: hsl(var(--primary)); display: grid; place-items: center; font-size: 48px; font-weight: 700; }
 .waiting-modal-backdrop { position: fixed; inset: 0; background: hsl(var(--background) / .85); z-index: 100; display: grid; place-items: center; padding: 20px; }
-@media (max-width: 350px) { .waiting-table-stage { height: 370px; } .waiting-person-label { width: 92px; } .waiting-seat-0 .waiting-person-label, .waiting-seat-2 .waiting-person-label { left: 8px; } .waiting-seat-3 .waiting-person-label { right: calc(66px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); } }
+@media (max-width: 350px) { .waiting-table-stage { height: 370px; } .waiting-person-label { width: 92px; } .waiting-seat-0 .waiting-person-label, .waiting-seat-2 .waiting-person-label { left: 8px; } .waiting-seat-3 .waiting-person-label { right: calc(58px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); } }
 
 /* Fixed native ad footprint, not a scaled web banner. */
 .quick-search-screen {

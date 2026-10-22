@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Samlad granskning av 22 oktober
+- [ ] Kontrollera dagens statistikändringar och perioder mot aktuella serverfunktioner.
+- [ ] Kontrollera översättningar, butikspåminnelse och skärmflöden.
+- [ ] Sammanställ verifierade resultat och kvarstående avvikelser utan att ändra tidigare statistik.
+
 ## Dina siffror – framåt från 22 oktober
 - [x] Avhopp påverkar inga rutor; tidigare totalsiffror lämnas orörda.
 - [x] Beständiga matchnycklar och skydd mot dubbelräkning även efter fler än 300 matcher.

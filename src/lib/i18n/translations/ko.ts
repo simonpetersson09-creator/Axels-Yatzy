@@ -278,6 +278,8 @@ export const ko: Partial<typeof sv> = {
   notifTurnDesc: '상대가 주사위를 굴리면 알려줄게',
   notifReminderLabel: '진행 중인 대전 알림',
   notifReminderDesc: '대전이 멈춰 있으면 알려줄게',
+  notifPlayReminderLabel: '게임 알림',
+  notifPlayReminderDesc: '한동안 플레이하지 않으면 알려드려요',
 
   // Multiplayer errors
   maxActiveGames: '친구와 진행 중인 대전이 이미 {max}개야. 하나를 끝내고 새로 시작해줘.',

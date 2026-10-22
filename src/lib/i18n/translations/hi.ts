@@ -278,6 +278,8 @@ export const hi: Partial<typeof sv> = {
   notifTurnDesc: 'प्रतिद्वंद्वी के पासे फेंकने पर सूचना पाओ',
   notifReminderLabel: 'बाकी मैचों की याद दिलाओ',
   notifReminderDesc: 'मैच रुका रहा तो हम याद दिलाएँगे',
+  notifPlayReminderLabel: 'खेलने की याददाश्तें',
+  notifPlayReminderDesc: 'अगर आपने कुछ समय से नहीं खेला है तो हम याद दिलाएंगे',
 
   // Multiplayer errors
   maxActiveGames: 'दोस्तों के साथ तुम्हारे {max} खेल पहले से जारी हैं। नया शुरू करने से पहले एक पूरा करो।',

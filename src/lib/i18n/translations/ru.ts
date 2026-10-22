@@ -277,6 +277,8 @@ export const ru: Partial<typeof sv> = {
   notifTurnDesc: 'Уведомление после броска соперника',
   notifReminderLabel: 'Напоминать о текущих матчах',
   notifReminderDesc: 'Напомним, если игра приостановится',
+  notifPlayReminderLabel: 'Напоминания об игре',
+  notifPlayReminderDesc: 'Мы напомним, если вы давно не играли',
 
   // Multiplayer errors
   maxActiveGames: 'У тебя уже {max} активных игр с друзьями. Заверши одну, чтобы начать новую.',

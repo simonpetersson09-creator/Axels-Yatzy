@@ -278,6 +278,8 @@ export const cs: Partial<typeof sv> = {
   notifTurnDesc: 'Pošleme oznámení, až soupeř hodí',
   notifReminderLabel: 'Připomínky rozehraných zápasů',
   notifReminderDesc: 'Připomeneme se, když se zápas zastaví',
+  notifPlayReminderLabel: 'Připomenutí hry',
+  notifPlayReminderDesc: 'Připomeneme ti, když si delší dobu nezahraješ',
 
   // Multiplayer errors
   maxActiveGames: 'Už máš {max} rozehraných her s přáteli. Než začneš další, jednu dokonči.',

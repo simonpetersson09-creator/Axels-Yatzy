@@ -278,6 +278,8 @@ export const te: Partial<typeof sv> = {
   notifTurnDesc: 'ప్రత్యర్థి పాచికలు వేస్తే నోటిఫికేషన్ వస్తుంది',
   notifReminderLabel: 'పూర్తికాని మ్యాచ్‌ల రిమైండర్లు',
   notifReminderDesc: 'మ్యాచ్ ఆగిపోతే గుర్తుచేస్తాం',
+  notifPlayReminderLabel: 'ఆట రిమైండర్లు',
+  notifPlayReminderDesc: 'మీరు కొంతకాలంగా ఆడకపోతే మేము గుర్తు చేస్తాము',
 
   // Multiplayer errors
   maxActiveGames: 'ఇప్పటికే స్నేహితులతో {max} ఆటలు నడుస్తున్నాయి. కొత్తది మొదలెట్టే ముందు ఒకటి పూర్తి చెయ్యి.',

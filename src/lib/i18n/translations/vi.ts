@@ -278,6 +278,8 @@ export const vi: Partial<typeof sv> = {
   notifTurnDesc: 'Nhận thông báo khi đối thủ đã gieo',
   notifReminderLabel: 'Nhắc về trận đang dở',
   notifReminderDesc: 'Tụi mình sẽ nhắc nếu trận bị bỏ dở',
+  notifPlayReminderLabel: 'Nhắc chơi',
+  notifPlayReminderDesc: 'Chúng tôi sẽ nhắc bạn nếu bạn đã lâu không chơi',
 
   // Multiplayer errors
   maxActiveGames: 'Bạn đang có {max} trận với bạn bè. Hãy kết thúc một trận trước khi tạo trận mới.',

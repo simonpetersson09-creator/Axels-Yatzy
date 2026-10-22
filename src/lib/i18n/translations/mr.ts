@@ -278,6 +278,8 @@ export const mr: Partial<typeof sv> = {
   notifTurnDesc: 'प्रतिस्पर्ध्याने फासे टाकल्यावर सूचना मिळेल',
   notifReminderLabel: 'बाकी सामन्यांची आठवण',
   notifReminderDesc: 'सामना थांबला तर आठवण करून देऊ',
+  notifPlayReminderLabel: 'खेळाची स्मरणपत्रे',
+  notifPlayReminderDesc: 'तुम्ही काही दिवस खेळलेले नाही तर आम्ही आठवण करून देऊ',
 
   // Multiplayer errors
   maxActiveGames: 'मित्रांसोबत तुझे {max} खेळ आधीच सुरू आहेत. नवा सुरू करण्याआधी एक पूर्ण कर.',

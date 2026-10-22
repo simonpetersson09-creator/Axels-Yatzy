@@ -273,6 +273,8 @@ export const de: Partial<typeof sv> = {
   notifTurnDesc: 'Push erhalten, wenn der Gegner gewürfelt hat',
   notifReminderLabel: 'Erinnerungen für offene Spiele',
   notifReminderDesc: 'Wir erinnern dich, wenn das Spiel stockt',
+  notifPlayReminderLabel: 'Spielerinnerungen',
+  notifPlayReminderDesc: 'Wir erinnern dich, wenn du eine Weile nicht gespielt hast',
 
   maxActiveGames: 'Du hast bereits {max} aktive Freundesspiele. Beende eines, bevor du ein neues startest.',
 

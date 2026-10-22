@@ -278,6 +278,8 @@ export const da: Partial<typeof sv> = {
   notifTurnDesc: 'Få push når modspilleren har kastet',
   notifReminderLabel: 'Påmindelser om ventende kampe',
   notifReminderDesc: 'Vi prikker dig på skulderen, hvis kampen står stille',
+  notifPlayReminderLabel: 'Spillepåmindelser',
+  notifPlayReminderDesc: 'Vi minder dig om det, hvis du ikke har spillet i et stykke tid',
 
   // Multiplayer errors
   maxActiveGames: 'Du har allerede {max} aktive venne-spil. Afslut ét, før du starter et nyt.',

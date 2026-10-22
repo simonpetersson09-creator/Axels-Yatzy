@@ -278,6 +278,8 @@ export const es: Partial<typeof sv> = {
   notifTurnDesc: 'Recibe un push cuando el oponente haya tirado',
   notifReminderLabel: 'Recordatorios de partidas pendientes',
   notifReminderDesc: 'Te avisaremos si la partida queda inactiva',
+  notifPlayReminderLabel: 'Recordatorios de juego',
+  notifPlayReminderDesc: 'Te recordaremos si no has jugado en un tiempo',
 
   // Multiplayer errors
   maxActiveGames: 'Ya tienes {max} partidas activas con amigos. Termina una antes de empezar otra.',

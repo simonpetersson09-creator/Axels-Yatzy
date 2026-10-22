@@ -278,6 +278,8 @@ export const or: Partial<typeof sv> = {
   notifTurnDesc: 'ପ୍ରତିଦ୍ୱନ୍ଦ୍ୱୀ ପଶା ପକାଇଲେ ସୂଚନା ପାଅ',
   notifReminderLabel: 'ବାକି ମ୍ୟାଚ୍ ପାଇଁ ସ୍ମାରକ',
   notifReminderDesc: 'ମ୍ୟାଚ୍ ଅଟକି ରହିଲେ ମନେ ପକାଇଦେବୁ',
+  notifPlayReminderLabel: 'ଖେଳ ମନେପକାଇବା',
+  notifPlayReminderDesc: 'ଆପଣ କିଛି ଦିନ ଖେଳି ନାହାଁନ୍ତି ତେବେ ଆମେ ମନେ ପକାଇବୁ',
 
   // Multiplayer errors
   maxActiveGames: 'ସାଙ୍ଗଙ୍କ ସହ ତୁମର {max}ଟି ଖେଳ ଚାଲିଛି। ନୂଆ ଖେଳ ପୂର୍ବରୁ ଗୋଟିଏ ସାର।',

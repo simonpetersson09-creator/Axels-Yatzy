@@ -278,6 +278,8 @@ export const pl: Partial<typeof sv> = {
   notifTurnDesc: 'Dostaniesz powiadomienie, gdy rywal rzuci kośćmi',
   notifReminderLabel: 'Przypomnienia o trwających grach',
   notifReminderDesc: 'Przypomnimy ci, gdy gra stanie w miejscu',
+  notifPlayReminderLabel: 'Przypomnienia o grze',
+  notifPlayReminderDesc: 'Przypomnimy Ci, jeśli dawno nie grałeś',
 
   // Multiplayer errors
   maxActiveGames: 'Masz już {max} aktywnych gier ze znajomymi. Zakończ jedną, zanim zaczniesz nową.',

@@ -278,6 +278,8 @@ export const tr: Partial<typeof sv> = {
   notifTurnDesc: 'Rakip zar attığında bildirim al',
   notifReminderLabel: 'Bekleyen maçları hatırlat',
   notifReminderDesc: 'Maçta hareket olmazsa hatırlatırız',
+  notifPlayReminderLabel: 'Oyun hatırlatmaları',
+  notifPlayReminderDesc: 'Bir süredir oynamadıysan sana hatırlatırız',
 
   // Multiplayer errors
   maxActiveGames: 'Zaten {max} aktif arkadaş oyunun var. Yeni oyun için önce birini bitir.',

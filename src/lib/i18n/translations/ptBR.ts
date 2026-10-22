@@ -278,6 +278,8 @@ export const ptBR: Partial<typeof sv> = {
   notifTurnDesc: 'Receba um aviso quando o adversário rolar os dados',
   notifReminderLabel: 'Lembretes de partidas pendentes',
   notifReminderDesc: 'A gente avisa se a partida ficar parada',
+  notifPlayReminderLabel: 'Lembretes de jogo',
+  notifPlayReminderDesc: 'Vamos te lembrar se você não jogar há algum tempo',
 
   // Multiplayer errors
   maxActiveGames: 'Você já tem {max} partidas com amigos em andamento. Termine uma antes de começar outra.',

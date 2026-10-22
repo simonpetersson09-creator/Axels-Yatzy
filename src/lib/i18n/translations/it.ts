@@ -273,6 +273,8 @@ export const it: Partial<typeof sv> = {
   notifTurnDesc: 'Ricevi una notifica quando l’avversario ha lanciato',
   notifReminderLabel: 'Promemoria partite in sospeso',
   notifReminderDesc: 'Ti avvisiamo se la partita resta ferma',
+  notifPlayReminderLabel: 'Promemoria di gioco',
+  notifPlayReminderDesc: 'Ti ricorderemo di giocare se non giochi da un po’',
 
   maxActiveGames: 'Hai già {max} partite con amici attive. Concludine una prima di iniziarne una nuova.',
 

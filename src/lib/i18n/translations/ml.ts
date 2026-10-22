@@ -278,6 +278,8 @@ export const ml: Partial<typeof sv> = {
   notifTurnDesc: 'എതിരാളി ഉരുട്ടിയാൽ അറിയിപ്പ് ലഭിക്കും',
   notifReminderLabel: 'ബാക്കിയുള്ള മത്സരങ്ങളുടെ ഓർമ്മപ്പെടുത്തൽ',
   notifReminderDesc: 'മത്സരം നിശ്ചലമായാൽ ഓർമ്മിപ്പിക്കാം',
+  notifPlayReminderLabel: 'കളി ഓർമ്മപ്പെടുത്തലുകൾ',
+  notifPlayReminderDesc: 'നിങ്ങൾ കുറച്ച് കാലമായി കളിച്ചിട്ടില്ലെങ്കിൽ ഞങ്ങൾ ഓർമ്മിപ്പിക്കും',
 
   // Multiplayer errors
   maxActiveGames: 'സുഹൃത്തുക്കളുമായി {max} കളികൾ നടക്കുന്നുണ്ട്. പുതിയത് തുടങ്ങുംമുമ്പ് ഒന്ന് തീർക്കൂ.',

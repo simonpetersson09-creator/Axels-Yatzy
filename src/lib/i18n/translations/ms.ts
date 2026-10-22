@@ -278,6 +278,8 @@ export const ms: Partial<typeof sv> = {
   notifTurnDesc: 'Terima pemberitahuan bila lawan dah baling',
   notifReminderLabel: 'Peringatan perlawanan tertunda',
   notifReminderDesc: 'Kami akan ingatkan jika perlawanan tak aktif',
+  notifPlayReminderLabel: 'Peringatan bermain',
+  notifPlayReminderDesc: 'Kami akan mengingatkan anda jika anda sudah lama tidak bermain',
 
   // Multiplayer errors
   maxActiveGames: 'Awak dah ada {max} permainan aktif dengan kawan. Habiskan satu sebelum mula yang baharu.',

@@ -278,6 +278,8 @@ export const th: Partial<typeof sv> = {
   notifTurnDesc: 'รับแจ้งเตือนเมื่อคู่แข่งทอยแล้ว',
   notifReminderLabel: 'เตือนเกมที่ค้างอยู่',
   notifReminderDesc: 'เราจะเตือนเมื่อเกมหยุดนิ่งไปสักพัก',
+  notifPlayReminderLabel: 'การเตือนให้เล่น',
+  notifPlayReminderDesc: 'เราจะเตือนคุณหากคุณไม่ได้เล่นมาสักพัก',
 
   // Multiplayer errors
   maxActiveGames: 'คุณมีเกมกับเพื่อนค้างอยู่ {max} เกมแล้ว เล่นให้จบสักเกมก่อนเริ่มใหม่นะ',

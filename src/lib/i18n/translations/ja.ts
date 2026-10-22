@@ -278,6 +278,8 @@ export const ja: Partial<typeof sv> = {
   notifTurnDesc: '相手がサイコロを振ると通知するよ',
   notifReminderLabel: '対戦のリマインダー',
   notifReminderDesc: '対戦が止まっていたらお知らせするよ',
+  notifPlayReminderLabel: 'プレイのリマインダー',
+  notifPlayReminderDesc: 'しばらくプレイしていない場合にお知らせします',
 
   // Multiplayer errors
   maxActiveGames: '友達と{max}件対戦中だよ。どれかを終えてから新しく始めてね。',

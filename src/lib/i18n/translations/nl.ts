@@ -278,6 +278,8 @@ export const nl: Partial<typeof sv> = {
   notifTurnDesc: 'Krijg een melding als je tegenstander heeft gegooid',
   notifReminderLabel: 'Herinneringen voor lopende potjes',
   notifReminderDesc: 'We herinneren je als het potje stilligt',
+  notifPlayReminderLabel: 'Spelherinneringen',
+  notifPlayReminderDesc: 'We herinneren je eraan als je een tijd niet gespeeld hebt',
 
   // Multiplayer errors
   maxActiveGames: 'Je hebt al {max} actieve potjes met vrienden. Rond er eerst één af.',

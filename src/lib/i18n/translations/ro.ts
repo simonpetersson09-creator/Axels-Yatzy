@@ -278,6 +278,8 @@ export const ro: Partial<typeof sv> = {
   notifTurnDesc: 'Primești o notificare când adversarul aruncă zarurile',
   notifReminderLabel: 'Mementouri pentru meciuri în curs',
   notifReminderDesc: 'Îți amintim dacă meciul rămâne inactiv',
+  notifPlayReminderLabel: 'Mementouri de joc',
+  notifPlayReminderDesc: 'Îți reamintim dacă nu ai mai jucat de o vreme',
 
   // Multiplayer errors
   maxActiveGames: 'Ai deja {max} jocuri active cu prietenii. Termină unul înainte să începi altul.',

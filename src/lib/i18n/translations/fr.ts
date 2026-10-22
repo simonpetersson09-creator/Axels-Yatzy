@@ -273,6 +273,8 @@ export const fr: Partial<typeof sv> = {
   notifTurnDesc: 'Recevez une notification quand l’adversaire a lancé',
   notifReminderLabel: 'Rappels des parties en attente',
   notifReminderDesc: 'Nous vous prévenons si la partie reste inactive',
+  notifPlayReminderLabel: 'Rappels de jeu',
+  notifPlayReminderDesc: 'Nous te rappelons de jouer si tu n’as pas joué depuis un moment',
 
   maxActiveGames: 'Vous avez déjà {max} parties entre amis actives. Terminez-en une avant d’en commencer une nouvelle.',
 

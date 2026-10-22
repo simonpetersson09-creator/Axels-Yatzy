@@ -278,6 +278,8 @@ export const fi: Partial<typeof sv> = {
   notifTurnDesc: 'Saat push-ilmoituksen, kun vastustaja on heittänyt',
   notifReminderLabel: 'Muistutukset odottavista peleistä',
   notifReminderDesc: 'Tönäisemme sinua, jos peli pysähtyy',
+  notifPlayReminderLabel: 'Pelimuistutukset',
+  notifPlayReminderDesc: 'Muistutamme sinua, jos et ole pelannut vähään aikaan',
 
   // Multiplayer errors
   maxActiveGames: 'Sinulla on jo {max} aktiivista kaveripeliä. Päätä yksi ennen uuden aloittamista.',

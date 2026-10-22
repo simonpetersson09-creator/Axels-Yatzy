@@ -278,6 +278,8 @@ export const uk: Partial<typeof sv> = {
   notifTurnDesc: 'Сповіщення після кидка суперника',
   notifReminderLabel: 'Нагадування про поточні матчі',
   notifReminderDesc: 'Нагадаємо, якщо гра призупиниться',
+  notifPlayReminderLabel: 'Нагадування про гру',
+  notifPlayReminderDesc: 'Ми нагадаємо, якщо ви давно не грали',
 
   // Multiplayer errors
   maxActiveGames: 'У тебе вже {max} активних ігор із друзями. Заверши одну, перш ніж починати нову.',

@@ -41,6 +41,7 @@ import { pa } from './translations/pa';
 import { ta } from './translations/ta';
 import { te } from './translations/te';
 import { getWaitingRoomCopy } from '../../../supabase/functions/_shared/waiting-room-copy';
+import { getWaitingRoomWelcomeCopy } from '../../../supabase/functions/_shared/waiting-room-welcome-copy';
 
 const BASE_DICTS: Record<Language, Partial<typeof sv>> = {
   sv, en, no, da, fi, es, fr, it, de,
@@ -48,7 +49,7 @@ const BASE_DICTS: Record<Language, Partial<typeof sv>> = {
   ja, ko, th, hi, bn, gu, kn, ml, mr, or, pa, ta, te,
 };
 const DICTS = Object.fromEntries(
-  Object.entries(BASE_DICTS).map(([lang, dict]) => [lang, { ...dict, ...getWaitingRoomCopy(lang) }]),
+  Object.entries(BASE_DICTS).map(([lang, dict]) => [lang, { ...dict, ...getWaitingRoomCopy(lang), ...getWaitingRoomWelcomeCopy(lang) }]),
 ) as Record<Language, Partial<typeof sv>>;
 
 export type { TranslationKey } from './translations/sv';

@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Slutkontroll 22 oktober
+- [x] 124 tester godkända i 22 filer. 40 språk × 459 nycklar utan luckor eller platshållarfel; språkvisning i körande app godkänd. Pratbubbla, grön Redo efter färgövergång, 3–2–1, matchöppning och datorns kast kontrollerade med isolerade testsvar utan runtimefel. Fyra faktiska serverfunktioner lästa; inga nya fel hittade. Nya live-serverprov blockerade av en väntande spelare; riktiga notiser/annonser och nativekallstart kräver två telefoner. Ingen publicering.
+
 ## Översättningskontroll 22 oktober
 - [x] Väntrummets texter, tio snabbfraser och återkomstnotis översatta till alla 40 språk; 459 nycklar per språk utan luckor eller platshållarfel. 18 befintliga tester godkända, språkvisning kontrollerad i körande app på alla 40 språk utan live-platser. Notisfunktionen driftsatt; riktig leverans kräver tidigare planerat telefonprov.
 

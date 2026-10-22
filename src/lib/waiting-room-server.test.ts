@@ -72,14 +72,13 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     for (let i=0;i<3;i++) expect((await action(i,'ready',seats[i],true)).countdown_at).toBeNull();
     expect((await action(3,'ready',seats[3],true)).countdown_at).toBeTruthy();
   }));
-  it('background preserves 15-minute expiry, removes ready and cancels countdown', () => scenario(async (sql, ids, action) => {
+  it('background retains seat, removes ready and cancels countdown', () => scenario(async (sql, ids, action) => {
     const a=await action(0),b=await action(1);
     await action(0,'ready',a.mine.id,true); await action(1,'ready',b.mine.id,true);
     const away=await action(0,'away',a.mine.id);
     expect(away.mine.expires_at).toBe(a.mine.expires_at); expect(away.mine.ready).toBe(false);
     expect(away.countdown_at).toBeNull(); expect(away.players.every((p:any)=>!p.ready)).toBe(true);
-    const duration=await sql`select extract(epoch from expires_at-joined_at)::int n from waiting_room_seats where id=${a.mine.id}`;
-    expect(duration[0].n).toBe(900);
+    expect(Math.round((Date.parse(away.mine.recall_until)-Date.parse(away.server_now))/1000)).toBe(120);
   }));
   it('missing heartbeats remove presence and ready without releasing seat', () => scenario(async (sql, ids, action) => {
     const a=await action(0); await action(0,'ready',a.mine.id,true);
@@ -94,13 +93,13 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     const c=await action(2);
     expect(c.players.find((p:any)=>p.id===a.mine.id).recall_until).toBe(first.recall_until);
     const counts=await sql`select count(*)::int n, max(extract(epoch from expires_at-now()))::int seconds from waiting_room_push_queue where seat_id=${a.mine.id}`;
-    expect(counts[0].n).toBe(1);expect(counts[0].seconds).toBe(90);
+    expect(counts[0].n).toBe(1);expect(counts[0].seconds).toBe(120);
     await action(1,'leave',b.mine.id);const alone=await action(2,'leave',c.mine.id);
     expect(alone.players[0].recall_until).toBeNull();
     const q=await sql`select count(*)::int n from waiting_room_push_queue where seat_id=${a.mine.id}`;expect(q[0].n).toBe(0);
   }));
   it('expiry and stale notification cannot resurrect old seat', () => scenario(async (sql, ids, action) => {
-    const a=await action(0);await sql`update waiting_room_seats set expires_at=now() where id=${a.mine.id}`;
+    const a=await action(0);await action(1);await sql`update waiting_room_seats set recall_until=now() where id=${a.mine.id}`;
     const old=await action(0,'open',a.mine.id);expect(old.error).toBe('expired');expect(old.mine).toBeNull();
     const fresh=await action(0);expect(fresh.mine.id).not.toBe(a.mine.id);
     expect((await action(0,'open',a.mine.id)).mine).toBeNull();
@@ -109,10 +108,11 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     const a=await action(0);
     await expect(sql`select waiting_room_action(${ids[0]},'wrong-device','ready',${a.mine.id}::uuid,'attacker',true,false)`).rejects.toThrow('room_identity_denied');
   }));
-  it('explicit extension is now plus 15 minutes', () => scenario(async (sql, ids, action) => {
+  it('solo waiting survives the old 15-minute expiry and needs no extension', () => scenario(async (sql, ids, action) => {
     const a=await action(0);await sql`update waiting_room_seats set expires_at=now()+interval '1 minute' where id=${a.mine.id}`;
-    const extended=await action(0,'extend',a.mine.id);
-    expect(Math.round((Date.parse(extended.mine.expires_at)-Date.parse(extended.server_now))/1000)).toBe(900);
+    await sql`update waiting_room_seats set expires_at=now()-interval '30 minutes' where id=${a.mine.id}`;
+    const retained=await action(0,'heartbeat',a.mine.id);
+    expect(retained.mine.id).toBe(a.mine.id);expect(retained.mine.recall_until).toBeNull();
   }));
   it('server indicator excludes own, expired, recalled and matched seats but includes absence', () => scenario(async (sql, ids, action) => {
     const a=await action(0), b=await action(1);
@@ -121,7 +121,7 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     await sql`update waiting_room_seats set recall_until=now() where id=${b.mine.id}`;
     n=await sql`select waiting_room_count(${ids[0]}) n`;expect(n[0].n).toBe(0);
     await action(0,'heartbeat',a.mine.id);
-    const c=await action(2);await sql`update waiting_room_seats set expires_at=now() where id=${c.mine.id}`;
+    const c=await action(2);await sql`update waiting_room_seats set recall_until=now() where id=${c.mine.id}`;
     n=await sql`select waiting_room_count(${ids[0]}) n`;expect(n[0].n).toBe(0);
   }));
   it('three players start only after the third is ready', () => scenario(async (sql,ids,action) => {
@@ -143,5 +143,26 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     const away=await action(0,'away',a.mine.id);
     expect(away.mine.game_id).toBeNull();expect(away.countdown_at).toBeNull();
     expect(away.players.every((p:any)=>!p.ready)).toBe(true);
+  }));
+  it('company starts exactly 120 seconds for every nonready participant', () => scenario(async(sql,ids,action)=>{
+    const a=await action(0);expect(a.mine.recall_until).toBeNull();
+    const b=await action(1);
+    for(const p of b.players)expect((Date.parse(p.recall_until)-Date.parse(b.server_now))/1000).toBe(120);
+    const again=await action(0,'join',a.mine.id);
+    expect(again.mine.recall_until).toBe(b.players.find((p:any)=>p.id===a.mine.id).recall_until);
+  }));
+  it('return and heartbeat do not extend the ready deadline', () => scenario(async(sql,ids,action)=>{
+    const a=await action(0);await action(0,'away',a.mine.id);const b=await action(1);
+    const deadline=b.players.find((p:any)=>p.id===a.mine.id).recall_until;
+    expect((await action(0,'open',a.mine.id)).mine.recall_until).toBe(deadline);
+    expect((await action(0,'heartbeat',a.mine.id)).mine.recall_until).toBe(deadline);
+  }));
+  it('at 120 seconds removes both present and absent nonready seats, retaining ready player', () => scenario(async(sql,ids,action)=>{
+    const a=await action(0),b=await action(1),c=await action(2);
+    await action(0,'ready',a.mine.id,true);await action(2,'away',c.mine.id);
+    await sql`update waiting_room_seats set recall_until=now() where id in (${b.mine.id},${c.mine.id})`;
+    const out=await action(0,'sync',a.mine.id);
+    expect(out.players.map((p:any)=>p.id)).toEqual([a.mine.id]);expect(out.mine.ready).toBe(true);expect(out.mine.recall_until).toBeNull();
+    expect((await action(1,'ready',b.mine.id,true)).error).toBe('expired');
   }));
 });

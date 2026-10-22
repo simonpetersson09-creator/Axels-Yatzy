@@ -19,7 +19,6 @@ export default function WaitingRoomPage() {
   const [snapshot, setSnapshot] = useState<WaitingSnapshot | null>(null);
   const [busy, setBusy] = useState(false);
   const [connectionLost, setConnectionLost] = useState(false);
-  const [pushUnavailable, setPushUnavailable] = useState(false);
   const [clock, setClock] = useState(Date.now());
   const offset = useRef(0);
   const seatRef = useRef<string | null>(params.get('seat') || savedWaitingSeat());
@@ -116,7 +115,6 @@ export default function WaitingRoomPage() {
     const syncPermission = async () => {
       const granted = await getPushPermissionState() === 'granted';
       if (cancelled || !mounted.current || seatRef.current !== mineId) return;
-      setPushUnavailable(!granted);
       // Reuse existing permission only; never open a system prompt automatically.
       void performRef.current('notify', { notify: granted });
     };
@@ -151,9 +149,9 @@ export default function WaitingRoomPage() {
               {p && <p className={`text-[11px] leading-tight ${p.ready ? 'text-game-success' : 'text-muted-foreground'}`}>
                 {p.ready ? <span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />{t('wrReady')}</span> : !p.present ? t('wrAway') : '—'}
               </p>}
-              {p?.recall_until && <p className="text-[10px] text-primary leading-tight">{t('wrRecall', { time: remainingTime(p.recall_until, clock) })}</p>}
+              {p?.recall_until && <p className="text-[10px] text-primary leading-tight">{t('wrReadyLeft', { time: remainingTime(p.recall_until, clock) })}</p>}
             </div>
-            {p && <div aria-hidden="true" className={`waiting-figure figure-${seat} ${!p.present ? 'opacity-50' : ''}`}><span className="waiting-figure-head" /><span className="waiting-figure-body" /><span className="waiting-figure-legs" /></div>}
+            {p && <div aria-hidden="true" className={`waiting-figure figure-${seat} ${!p.present ? 'opacity-50' : ''}`}><span className="waiting-figure-legs" /><span className="waiting-figure-body" /><span className="waiting-figure-arms" /><span className="waiting-figure-head" /></div>}
           </div>;
         })}
         {countdown !== null && <div className="waiting-countdown" role="timer">{countdown > 0 ? countdown : <span className="text-sm">{t('wrStarting')}</span>}</div>}
@@ -161,13 +159,11 @@ export default function WaitingRoomPage() {
       <div className="space-y-3">
         {errorKey && <p role="alert" className="text-center text-primary text-sm">{t(errorKey)}</p>}
         {mine && !mine.game_id ? <>
-          <Button className="w-full h-14 font-display text-lg whitespace-normal" disabled={busy || countdown !== null || connectionLost} onClick={() => void command('ready', { ready: !mine.ready })}>
+          <Button variant={mine.ready ? 'success' : 'default'} className="w-full h-14 font-display text-lg whitespace-normal" disabled={busy || countdown !== null || connectionLost} onClick={() => void command('ready', { ready: !mine.ready })}>
             <Check /> {t(mine.ready ? 'wrUndo' : 'wrBeReady')}
           </Button>
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground tabular-nums"><Clock className="w-4 h-4" />{t('wrLeft', { time: remainingTime(mine.expires_at, clock) })}</div>
-          <Button variant="ghost" className="w-full whitespace-normal h-auto min-h-11" disabled={busy || countdown !== null} onClick={() => void command('extend')}><Plus />{t('wrExtend')}</Button>
+          {mine.recall_until && <div className="flex items-center justify-center gap-2 text-sm text-primary tabular-nums"><Clock className="w-4 h-4" />{t('wrReadyLeft', { time: remainingTime(mine.recall_until, clock) })}</div>}
           <p className="text-sm text-muted-foreground text-center flex items-start justify-center gap-2"><Bell className="w-4 h-4 shrink-0 mt-0.5" />{t('wrNotifyHint')}</p>
-          {(pushUnavailable || (mine.notify_enabled && !snapshot?.push_registered)) && <p className="text-xs text-primary text-center" role="status">{t('wrNoPush')}</p>}
           <Button variant="ghost" className="w-full min-h-12 text-muted-foreground whitespace-normal" disabled={busy} onClick={() => void command('leave')}><LogOut />{t('wrLeave')}</Button>
         </> : <Button className="w-full min-h-12 whitespace-normal" disabled={busy || !snapshot} onClick={() => { seatRef.current = null; void command('join'); }}><Plus />{t('wrJoin')}</Button>}
         {connectionLost && <Button variant="secondary" className="w-full" onClick={() => void command('sync')}>{t('wrRetry')}</Button>}

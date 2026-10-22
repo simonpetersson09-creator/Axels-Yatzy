@@ -9,6 +9,7 @@ export const en: Partial<typeof sv> = {
   wrUndo: 'Undo ready',
   wrAway: 'Waiting – outside the app',
   wrRecall: 'Called back · {time}',
+  wrReadyLeft: 'Press Ready within {time}',
   wrExtend: 'Extend by 15 minutes',
   wrLeft: 'Waiting time left: {time}',
   wrLeave: 'Leave waiting room',

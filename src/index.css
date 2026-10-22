@@ -7,28 +7,38 @@
 
 .waiting-room-screen { height: var(--app-dvh, 100dvh); overflow-y: auto; padding: calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); }
 .waiting-room-content { max-width: 440px; margin: auto; }
-.waiting-table-stage { position: relative; width: 100%; height: 320px; margin: 10px auto 18px; }
-.waiting-table-image { position: absolute; width: 76%; max-width: 274px; height: auto; left: 50%; top: 24px; transform: translateX(-50%); }
-.waiting-seat { position: absolute; width: 112px; text-align: center; z-index: 2; }
-.waiting-seat-0 { top: 0; left: calc(50% - 56px); }
-.waiting-seat-1 { top: 102px; right: 0; }
-.waiting-seat-2 { bottom: 0; left: calc(50% - 56px); display: flex; flex-direction: column-reverse; }
-.waiting-seat-3 { top: 102px; left: 0; }
-.waiting-person-label { background: hsl(var(--background) / .92); border-radius: 6px; padding: 4px; min-height: 48px; overflow-wrap: anywhere; }
-.waiting-person-label-empty { background: none; min-height: 24px; color: hsl(var(--muted-foreground)); }
-.waiting-seat-1 .waiting-person-label-empty, .waiting-seat-3 .waiting-person-label-empty { transform: translateY(-20px); }
-.waiting-figure { position: relative; width: 40px; height: 52px; margin: 4px auto; filter: drop-shadow(0 3px 3px hsl(var(--background) / .7)); }
-.waiting-figure-head { position: absolute; width: 17px; height: 19px; left: 12px; top: 0; border-radius: 50%; background: hsl(var(--game-dice)); border-top: 5px solid hsl(var(--game-dice-dot)); box-shadow: inset -3px -2px 0 hsl(var(--dice-ivory-shade)); }
-.waiting-figure-body { position: absolute; width: 32px; height: 25px; left: 4px; top: 20px; border-radius: 13px 13px 6px 6px; background: currentColor; box-shadow: inset -5px -2px 0 hsl(var(--background) / .25), inset 3px 0 0 hsl(var(--foreground) / .15); }
-.waiting-figure-legs { position: absolute; width: 23px; height: 12px; left: 9px; top: 40px; border-radius: 0 0 5px 5px; background: hsl(var(--game-dice-dot)); }
-.waiting-figure-legs::after { content: ''; position: absolute; left: 10px; top: 3px; width: 3px; height: 9px; background: hsl(var(--background)); }
+.waiting-home-button { background: linear-gradient(to right, hsl(var(--game-info-light)), hsl(var(--game-info))); box-shadow: 0 4px 16px hsl(var(--game-info) / .3); transition: box-shadow .2s; }
+.waiting-home-button:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }
+.waiting-table-stage { position: relative; width: 100%; height: 350px; margin: 10px auto 18px; --waiting-table-size: min(76%, 274px); }
+.waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.waiting-seat { position: absolute; width: 108px; height: 62px; text-align: center; z-index: 2; }
+.waiting-seat-0 { top: calc(50% - min(28vw, 100px)); left: calc(50% - 54px); }
+.waiting-seat-1 { top: calc(50% - 31px); left: calc(50% + min(28vw, 100px) - 54px); }
+.waiting-seat-2 { top: calc(50% + min(28vw, 100px) - 62px); left: calc(50% - 54px); }
+.waiting-seat-3 { top: calc(50% - 31px); left: calc(50% - min(28vw, 100px) - 54px); }
+.waiting-person-label { position: absolute; width: 108px; padding: 0; background: none; overflow-wrap: anywhere; }
+.waiting-seat-0 .waiting-person-label { bottom: 100%; margin-bottom: 4px; }
+.waiting-seat-2 .waiting-person-label { top: 100%; margin-top: 4px; }
+.waiting-seat-1 .waiting-person-label, .waiting-seat-3 .waiting-person-label { bottom: 100%; margin-bottom: 14px; }
+.waiting-person-label-empty { color: hsl(var(--muted-foreground)); }
+.waiting-figure { position: absolute; width: 46px; height: 58px; left: 31px; top: 2px; filter: drop-shadow(0 3px 3px hsl(var(--background) / .7)); }
+.waiting-seat-1 .waiting-figure { transform: rotate(90deg); }
+.waiting-seat-2 .waiting-figure { transform: rotate(180deg); }
+.waiting-seat-3 .waiting-figure { transform: rotate(-90deg); }
+.waiting-figure-head { position: absolute; width: 24px; height: 26px; left: 11px; top: 10px; border-radius: 50%; background: hsl(var(--game-dice-dot)); box-shadow: inset 3px 2px 0 hsl(var(--muted)), 0 2px 3px hsl(var(--background) / .4); z-index: 3; }
+.waiting-figure-head::after { content: ''; position: absolute; width: 10px; height: 5px; border-radius: 0 0 50% 50%; bottom: -2px; left: 7px; background: hsl(var(--game-dice)); }
+.waiting-figure-body { position: absolute; width: 40px; height: 27px; left: 3px; top: 18px; border-radius: 45% 45% 30% 30%; background: currentColor; box-shadow: inset 0 4px 0 hsl(var(--foreground) / .16), inset 0 -5px 0 hsl(var(--background) / .2); }
+.waiting-figure-arms { position: absolute; left: 2px; top: 32px; width: 7px; height: 17px; border-radius: 4px; background: currentColor; border-bottom: 5px solid hsl(var(--game-dice)); }
+.waiting-figure-arms::after { content: ''; position: absolute; left: 35px; top: 0; width: 7px; height: 17px; border-radius: 4px; background: currentColor; border-bottom: 5px solid hsl(var(--game-dice)); }
+.waiting-figure-legs { position: absolute; width: 27px; height: 19px; left: 10px; top: 36px; border-radius: 5px; background: hsl(var(--game-dice-dot)); }
+.waiting-figure-legs::after { content: ''; position: absolute; left: 12px; top: 7px; width: 3px; height: 12px; background: hsl(var(--background)); }
 .figure-0 { color: hsl(var(--yatzy-player1)); }
 .figure-1 { color: hsl(var(--yatzy-player2)); }
 .figure-2 { color: hsl(var(--yatzy-player3)); }
 .figure-3 { color: hsl(var(--yatzy-player4)); }
 .waiting-countdown { position: absolute; left: calc(50% - 40px); top: calc(50% - 40px); width: 80px; height: 80px; border-radius: 50%; background: hsl(var(--background) / .9); color: hsl(var(--primary)); display: grid; place-items: center; font-size: 48px; font-weight: 700; }
 .waiting-modal-backdrop { position: fixed; inset: 0; background: hsl(var(--background) / .85); z-index: 100; display: grid; place-items: center; padding: 20px; }
-@media (max-width: 350px) { .waiting-seat { width: 92px; } .waiting-seat-0, .waiting-seat-2 { left: calc(50% - 46px); } .waiting-table-stage { height: 300px; } .waiting-seat-1, .waiting-seat-3 { top: 90px; } }
+@media (max-width: 350px) { .waiting-table-stage { height: 330px; } .waiting-person-label { width: 92px; left: 8px; } }
 
 /* Fixed native ad footprint, not a scaled web banner. */
 .quick-search-screen {

@@ -38,7 +38,6 @@ export const en: Partial<typeof sv> = {
   countryRankLabelFull: 'Your rank in {country}',
   worldRankLabelFull: 'Your rank in the world',
   worldLeaderLabel: 'World leader',
-  worldLeaderAllTimeLabel: 'World leaders · all time',
   countryRankIn: 'in',
   countryRankPlayers: 'players',
   countrySection: 'Country',

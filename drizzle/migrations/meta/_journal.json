@@ -512,13 +512,6 @@
       "when": 1792658257292,
       "tag": "0072_year_ranks",
       "breakpoints": true
-    },
-    {
-      "idx": 73,
-      "version": "7",
-      "when": 1792658689836,
-      "tag": "0073_world_leaders_all_time",
-      "breakpoints": true
     }
   ]
 }

@@ -61,7 +61,3 @@
 - [x] Registrera SDK-besked separat från appens visa/dölj-kommandon.
 - [x] Testa återvisning efter laddningsfel och snabba sidbyten automatiskt (31 annonstester godkända).
 - [ ] Testa första/nästa match, bakgrund och snabbsök på fysisk telefon (kräver nytt native-bygge).
-
-## Startsidadans världsledare – genom tiderna
-- [x] Serverns get_world_leaders räknar åter all time (topp 3 länder) och startsidan har rubriken "Världsledare · genom tiderna"; statistiksidans år-/månadslistor rör inte.
-- [ ] Kontrollera rubriken och listan på fysisk telefon; kräver ny appversion.

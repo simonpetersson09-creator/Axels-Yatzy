@@ -1,9 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Samlad granskning av 22 oktober
-- [ ] Kontrollera dagens statistikändringar och perioder mot aktuella serverfunktioner.
-- [ ] Kontrollera översättningar, butikspåminnelse och skärmflöden.
-- [ ] Sammanställ verifierade resultat och kvarstående avvikelser utan att ändra tidigare statistik.
+- [x] Kontrollera dagens statistikändringar och perioder mot aktuella serverfunktioner: 97 tester godkända; aktuella års-/månadssummor kontrollerade, 1715 matcher och placering 1 bekräftade.
+- [x] Kontrollera översättningar, butikspåminnelse och skärmflöden: 40 språk × 427 nycklar, inga saknade nycklar eller felaktiga platshållare; landlistorna infällda och avhopp med oförändrade gamla siffror verifierade utan live-teststatistik.
+- [x] Sammanställ verifierade resultat och kvarstående avvikelser utan att ändra tidigare statistik: ”best” oöversatt i 33 språk, flera veckorubriker säger föregående vecka i stället för rullande 7 dagar, lokal tidszon i periodrubriker, instabil placering vid exakta lika värden, möjlig dubbel analytics-rapport vid återöppnat resultat. Världsledare följer år trots äldre sparat all-time-val; periodval behöver hållas konsekvent.
 
 ## Dina siffror – framåt från 22 oktober
 - [x] Avhopp påverkar inga rutor; tidigare totalsiffror lämnas orörda.

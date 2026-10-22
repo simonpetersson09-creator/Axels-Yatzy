@@ -326,7 +326,7 @@ export const gu: Partial<typeof sv> = {
 
   hofGamesSubtitle: "આ અઠવાડિયે સૌથી વધુ રમેલી મેચો",
 
-  hofBestShort: 'best',
+  hofBestShort: "શ્રેષ્ઠ",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const gu: Partial<typeof sv> = {
   hofDroppedOut: 'તમે આ અઠવાડિયાની ટોપ 10 માંથી બહાર આવ્યા',
   hofBadgeLabel: "આ અઠવાડિયાના ટોચના 10",
 
-  weeklyRankLabel: "ગયા અઠવાડિયે તમારો ક્રમ",
+  weeklyRankLabel: "છેલ્લા ૭ દિવસમાં તમારો ક્રમ",
   weeklyGamesText: "છેલ્લા 7 દિવસમાં {n} મેચ",
   weeklyBuildingHint: "આ અઠવાડિયાની યાદીમાં જોડાવા એક મેચ રમો",
   statsNeedCountry: "તમારું રેન્કિંગ જોવા સેટિંગ્સમાં તમારો દેશ પસંદ કરો.",

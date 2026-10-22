@@ -326,7 +326,7 @@ export const ta: Partial<typeof sv> = {
 
   hofGamesSubtitle: "இந்த வாரம் அதிக ஆட்டங்கள் விளையாடியவர்கள்",
 
-  hofBestShort: 'best',
+  hofBestShort: "சிறந்தது",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const ta: Partial<typeof sv> = {
   hofDroppedOut: 'நீங்கள் இந்த வாரத்தின் டாப் 10-லிருந்து வெளியேறிவிட்டீர்கள்',
   hofBadgeLabel: "இந்த வாரத்தின் முதல் 10 பேர்",
 
-  weeklyRankLabel: "கடந்த வார உங்கள் தரவரிசை",
+  weeklyRankLabel: "கடந்த 7 நாட்களில் உங்கள் தரவரிசை",
   weeklyGamesText: "கடந்த 7 நாட்களில் {n} போட்டிகள்",
   weeklyBuildingHint: "இந்த வாரப் பட்டியலில் சேர ஒரு போட்டி விளையாடுங்கள்",
   statsNeedCountry: "உங்கள் தரவரிசைகளைக் காண அமைப்புகளில் உங்கள் நாட்டைத் தேர்ந்தெடுங்கள்.",

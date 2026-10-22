@@ -326,7 +326,7 @@ export const kn: Partial<typeof sv> = {
 
   hofGamesSubtitle: "ಈ ವಾರ ಅತಿ ಹೆಚ್ಚು ಆಟಗಳನ್ನು ಆಡಿದವರು",
 
-  hofBestShort: 'best',
+  hofBestShort: "ಅತ್ಯುತ್ತಮ",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const kn: Partial<typeof sv> = {
   hofDroppedOut: 'ನೀವು ಈ ವಾರದ ಟಾಪ್ 10 ರಿಂದ ಹೊರಬಿದ್ದಿದ್ದೀರಿ',
   hofBadgeLabel: "ಈ ವಾರದ ಅಗ್ರ 10",
 
-  weeklyRankLabel: "ಕಳೆದ ವಾರ ನಿಮ್ಮ ಶ್ರೇಯಾಂಕ",
+  weeklyRankLabel: "ಕಳೆದ ೭ ದಿನಗಳಲ್ಲಿ ನಿಮ್ಮ ಶ್ರೇಯಾಂಕ",
   weeklyGamesText: "ಕಳೆದ 7 ದಿನಗಳಲ್ಲಿ {n} ಪಂದ್ಯಗಳು",
   weeklyBuildingHint: "ಈ ವಾರದ ಪಟ್ಟಿಗೆ ಸೇರಲು ಒಂದು ಪಂದ್ಯ ಆಡಿ",
   statsNeedCountry: "ನಿಮ್ಮ ಶ್ರೇಯಾಂಕಗಳನ್ನು ನೋಡಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",

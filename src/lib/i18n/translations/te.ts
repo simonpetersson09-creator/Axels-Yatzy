@@ -326,7 +326,7 @@ export const te: Partial<typeof sv> = {
 
   hofGamesSubtitle: "ఈ వారం అత్యధిక మ్యాచ్‌లు ఆడినవారు",
 
-  hofBestShort: 'best',
+  hofBestShort: "అత్యుత్తమం",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const te: Partial<typeof sv> = {
   hofDroppedOut: 'మీరు ఈ వారం టాప్ 10 నుండి బయటపడ్డారు',
   hofBadgeLabel: "ఈ వారం టాప్ 10",
 
-  weeklyRankLabel: "గత వారం మీ ర్యాంకు",
+  weeklyRankLabel: "గత 7 రోజుల్లో మీ ర్యాంకు",
   weeklyGamesText: "గత 7 రోజుల్లో {n} మ్యాచ్‌లు",
   weeklyBuildingHint: "ఈ వారం జాబితాలో చేరేందుకు ఒక మ్యాచ్ ఆడండి",
   statsNeedCountry: "మీ ర్యాంకులు చూడటానికి సెట్టింగ్‌లలో మీ దేశాన్ని ఎంచుకోండి.",

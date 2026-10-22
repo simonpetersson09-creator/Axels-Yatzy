@@ -326,7 +326,7 @@ export const vi: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Chơi nhiều trận nhất tuần này",
 
-  hofBestShort: 'best',
+  hofBestShort: "cao nhất",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const vi: Partial<typeof sv> = {
   hofDroppedOut: 'Bạn đã rơi khỏi top 10 tuần này',
   hofBadgeLabel: "Top 10 tuần này",
 
-  weeklyRankLabel: "Thứ hạng tuần trước của bạn",
+  weeklyRankLabel: "Thứ hạng của bạn trong 7 ngày qua",
   weeklyGamesText: "{n} trận trong 7 ngày qua",
   weeklyBuildingHint: "Chơi một trận để vào bảng xếp hạng tuần này",
   statsNeedCountry: "Chọn quốc gia trong Cài đặt để xem thứ hạng của bạn.",

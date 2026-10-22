@@ -326,7 +326,7 @@ export const ro: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Cele mai multe meciuri jucate în această săptămână",
 
-  hofBestShort: 'best',
+  hofBestShort: "cel mai bun",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -334,7 +334,7 @@ export const ro: Partial<typeof sv> = {
   hofDroppedOut: 'Ai ieșit din top 10 al săptămânii',
   hofBadgeLabel: "Top 10 al săptămânii",
 
-  weeklyRankLabel: "Poziția ta săptămâna trecută",
+  weeklyRankLabel: "Poziția ta în ultimele 7 zile",
   weeklyGamesText: "{n} meciuri în ultimele 7 zile",
   weeklyBuildingHint: "Joacă un meci pentru a intra în clasamentul săptămânii",
   statsNeedCountry: "Alege țara în Setări pentru a-ți vedea pozițiile în clasament.",

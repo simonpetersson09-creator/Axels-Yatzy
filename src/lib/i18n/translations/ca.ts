@@ -325,7 +325,7 @@ export const ca: Partial<typeof sv> = {
 
   hofGamesSubtitle: "Més partides jugades aquesta setmana",
 
-  hofBestShort: 'best',
+  hofBestShort: "millor",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
@@ -333,7 +333,7 @@ export const ca: Partial<typeof sv> = {
   hofDroppedOut: 'Has sortit del top 10 setmanal',
   hofBadgeLabel: "Els 10 millors de la setmana",
 
-  weeklyRankLabel: "La teva posició la setmana passada",
+  weeklyRankLabel: "La teva posició dels últims 7 dies",
   weeklyGamesText: "{n} partides en els últims 7 dies",
   weeklyBuildingHint: "Juga una partida per entrar a la llista d'aquesta setmana",
   statsNeedCountry: "Tria el teu país a Configuració per veure les teves classificacions.",

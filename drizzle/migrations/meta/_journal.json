@@ -568,6 +568,13 @@
       "when": 1792696651029,
       "tag": "0080_waiting_room_departure_before_start",
       "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1792697743041,
+      "tag": "0081_waiting_room_unlimited_120s_ready",
+      "breakpoints": true
     }
   ]
 }

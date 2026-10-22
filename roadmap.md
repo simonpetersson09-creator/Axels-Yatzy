@@ -1,11 +1,11 @@
 # Roadmap – Snabbspel online
 
-## Spelpåminnelser (inaktiva spelare)
-- [ ] Migration: play_reminders + timezone i notification_preferences, play_reminder_state, claim_play_reminder_targets (advisory lock, atomisk claim).
-- [ ] Edge-funktion notify-play-reminder + timcron 18:00 lokal tid; ersätter gamla veckopåminnelsen (jobb 12 stängs av).
-- [ ] Klient: ny inställning Spelpåminnelser (40 språk), tidszonssync, notis-tap öppnar startsidan.
-- [ ] Tester: tidsgränser, återställning vid aktivitet, paus efter 3, dubbelutskicksskydd.
-- [ ] Redovisa produktionskrav (telefonprov, cron-verifiering).
+## Spelpåminnelser (inaktiva spelare) — klart 22 okt
+- [x] Migration: play_reminders + timezone i notification_preferences, play_reminder_state, claim_play_reminder_targets (advisory lock, atomisk claim).
+- [x] Edge-funktion notify-play-reminder + timcron (jobb 20, minut 2 varje timme); gamla veckopåminnelsen (jobb 12) avschemalagd.
+- [x] Klient: inställning Spelpåminnelser (40 språk), tidszonssync vid varje appstart, notis-tap öppnar startsidan.
+- [x] Tester: 9 nya (tidsgränser, återställning, paus efter 3, dubbelutskick) + 152 totalt gröna; provanrop med cron-hemlighet gav 200.
+- [ ] Telefonprov efter nästa appversion: tidszon synkas först när spelaren öppnat nya versionen — innan dess skickas inget (avsiktligt).
 
 ## Slutkontroll 22 oktober
 - [x] På uttrycklig begäran testades sista stolen med två samtidiga separata anslutningar till produktionsfunktionen och tre QA-identiteter jämte Simons ej redo-plats: exakt en fick stolen och en fick full, fyra unika platser, ingen nedräkning. QA-platser borttagna och Simons identitet/stol/redo-status jämförda före/efter utan ändring. Samtidiga redo/start-anrop ej testade i detta prov.

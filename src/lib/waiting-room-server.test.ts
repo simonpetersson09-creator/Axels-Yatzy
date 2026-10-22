@@ -1,4 +1,3 @@
-// @vitest-environment node
 // Real database functions; each scenario runs in a transaction and rolls back all QA data.
 import { afterAll, describe, expect, it } from 'vitest';
 import postgres from 'postgres';

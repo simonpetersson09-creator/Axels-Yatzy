@@ -20,7 +20,9 @@ Deno.serve(async () => {
     if (!token) continue;
     const { data: prefs } = await db.from('notification_preferences').select('lang').eq('device_id', token.device_id).maybeSingle();
     // Reuse existing translated join notification across all app languages.
-    const text = joinPushText(prefs?.lang ?? null, 'Yatzy');
+    const { data: company } = await db.from('waiting_room_seats').select('player_name').is('game_id', null)
+      .eq('present', true).neq('id', job.seat_id).order('joined_at', { ascending: false }).limit(1).maybeSingle();
+    const text = joinPushText(prefs?.lang ?? null, company?.player_name ?? 'Yatzy');
     const result = await sendPush({ platform: token.platform, deviceToken: token.token,
       title: text.title, body: text.body, expiresAt: job.expires_at,
       data: { kind: 'waiting_room', waiting_seat_id: job.seat_id, notification_id: job.id, expires_at: job.expires_at },

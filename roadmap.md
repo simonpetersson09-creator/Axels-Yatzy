@@ -1,6 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Slutkontroll 22 oktober
+- [x] På Simons begäran kördes aktuella serverfunktioner med tillfälliga tabeller/funktioner i transaktioner: 16 scenarier godkända (120 s, obegränsad ensam väntan, redo/start, frånvaro, gamla notiser, räknare och enhetskontroll). Ursprunglig väntplats verifierad bevarad och noll QA-platser sparade. Samtidighet över flera anslutningar ej körd eftersom tillfälliga tabeller är anslutningslokala; live-samtidighetsprovet kräver fortsatt tomt bord. Tillfälliga kopior saknar produktionssidans triggers/RLS, vilka granskades separat.
 - [x] Extra serverkontroll: live-RLS och funktionsbehörigheter verifierade; befintligt cleanup-unjoined-lobbies-jobb kör även internal_waiting_room_reconcile var femte minut, senaste fem körningar lyckade. Ingen error-logg hittad för notifications-write; boot/shutdown bevisar inte notisleverans. Alla 17 live-scenarier stoppades av spelarplatsskyddet innan QA-data skapades; bordet har en riktig väntande plats och tom notiskö.
 - [x] 124 tester godkända i 22 filer. 40 språk × 459 nycklar utan luckor eller platshållarfel; språkvisning i körande app godkänd. Pratbubbla, grön Redo efter färgövergång, 3–2–1, matchöppning och datorns kast kontrollerade med isolerade testsvar utan runtimefel. Fyra faktiska serverfunktioner lästa; inga nya fel hittade. Nya live-serverprov blockerade av en väntande spelare; riktiga notiser/annonser och nativekallstart kräver två telefoner. Ingen publicering.
 

@@ -1,9 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Dina siffror – framåt från 22 oktober
-- [ ] Avhopp påverkar inga rutor; tidigare totalsiffror lämnas orörda.
-- [ ] Beständiga matchnycklar och skydd mot dubbelräkning även efter fler än 300 matcher.
-- [ ] Testa alla räkneregler och kontrollera flödet i förhandsvisningen utan live-teststatistik.
+- [x] Avhopp påverkar inga rutor; tidigare totalsiffror lämnas orörda.
+- [x] Beständiga matchnycklar och skydd mot dubbelräkning även efter fler än 300 matcher.
+- [x] 19 tester godkända; avhopp → resultat → startsida verifierat med oförändrade totalsiffror, utan live-teststatistik.
 - [ ] Rättningen når installerade telefoner i nästa appversion.
 
 ## Statistikgranskning 22 okt – åtgärder

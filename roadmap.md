@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Rättningar efter samlad granskning
+- [ ] Översätt bästa poäng och senaste sju dagarna på alla 40 språk.
+- [ ] Svensk tidszon i periodrubriker och stabila placeringar vid exakta lika värden.
+- [ ] Skydda avslutsloggen mot dubbla rapporter och verifiera utan historikändring.
+
 ## Samlad granskning av 22 oktober
 - [x] Kontrollera dagens statistikändringar och perioder mot aktuella serverfunktioner: 97 tester godkända; aktuella års-/månadssummor kontrollerade, 1715 matcher och placering 1 bekräftade.
 - [x] Kontrollera översättningar, butikspåminnelse och skärmflöden: 40 språk × 427 nycklar, inga saknade nycklar eller felaktiga platshållare; landlistorna infällda och avhopp med oförändrade gamla siffror verifierade utan live-teststatistik.

@@ -7,6 +7,7 @@ import { ArrowLeft, Globe, CalendarDays, MapPin, Trophy, Flame, ChevronDown, Dic
 import { useTranslation } from '@/lib/i18n';
 import { getProfileCountry } from '@/lib/profile';
 import { getSessionId } from '@/lib/session';
+import { getStatsPeriod } from '@/lib/stats-period';
 import { fetchWeeklyHallOfFame, fetchWeeklyMostGames, type HallOfFameEntry } from '@/lib/hall-of-fame';
 import {
   countryName, countryToFlag, syncCountryRank, syncWeeklyRank, syncTopCountries, fetchMyYearGames, fetchYearRanks,
@@ -22,9 +23,7 @@ export default function StatsPage() {
   const [top, setTop] = useState<TopCountry[]>([]);
   const [topMonth, setTopMonth] = useState<TopCountry[]>([]);
   const [yearGames, setYearGames] = useState<number | null>(null);
-  const now = new Date();
-  const year = now.getFullYear();
-  const monthName = now.toLocaleDateString(lang, { month: 'long' });
+  const { year, monthName } = getStatsPeriod(lang);
   const [hof, setHof] = useState<HallOfFameEntry[]>([]);
   const [most, setMost] = useState<HallOfFameEntry[]>([]);
   const [frames, setFrames] = useState<Record<string, string>>({});

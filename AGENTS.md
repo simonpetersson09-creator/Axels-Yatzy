@@ -29,3 +29,6 @@
 
 - Ad privacy: sync repairs UMP reader registration. OBTAINED/canRequestAds aren't acceptance. Log only read outcomes, never choices/errors; never store consent.
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.
+- Statistics period labels use the shared Stockholm formatter to match server period boundaries across phone timezones.
+- Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
+- Player rank ordering ends with session_id after match count and creation time, ensuring deterministic exact ties without changing match totals.

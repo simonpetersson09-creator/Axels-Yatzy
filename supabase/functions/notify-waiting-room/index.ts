@@ -1,7 +1,7 @@
 // Public pings can only drain server-owned, single-use recall jobs.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
 import { sendPush, disableTokenIfStale } from '../_shared/apns.ts';
-import { joinPushText } from '../_shared/push-join-i18n.ts';
+import { waitingPushText } from '../_shared/push-waiting-i18n.ts';
 Deno.serve(async () => {
   const url = Deno.env.get('SUPABASE_URL');
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -19,10 +19,7 @@ Deno.serve(async () => {
       .eq('enabled', true).order('updated_at', { ascending: false }).limit(1).maybeSingle();
     if (!token) continue;
     const { data: prefs } = await db.from('notification_preferences').select('lang').eq('device_id', token.device_id).maybeSingle();
-    // Reuse existing translated join notification across all app languages.
-    const { data: company } = await db.from('waiting_room_seats').select('player_name').is('game_id', null)
-      .eq('present', true).neq('id', job.seat_id).order('joined_at', { ascending: false }).limit(1).maybeSingle();
-    const text = joinPushText(prefs?.lang ?? null, company?.player_name ?? 'Yatzy');
+    const text = waitingPushText(prefs?.lang ?? null);
     const result = await sendPush({ platform: token.platform, deviceToken: token.token,
       title: text.title, body: text.body, expiresAt: job.expires_at,
       data: { kind: 'waiting_room', waiting_seat_id: job.seat_id, notification_id: job.id, expires_at: job.expires_at },

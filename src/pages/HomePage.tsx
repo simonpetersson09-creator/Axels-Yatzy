@@ -887,6 +887,9 @@ export default function HomePage() {
           variants={item}
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
+          <p className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em] px-1">
+            {t('homeStatsTitle')}
+          </p>
           <div className="grid grid-cols-3 gap-2">
             {[
               { label: t('statGames'), value: stats.gamesPlayed, icon: Gamepad2 },

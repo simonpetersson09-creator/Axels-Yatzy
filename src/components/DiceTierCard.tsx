@@ -9,6 +9,8 @@ import { useShop } from '@/lib/dice-shop';
 import { nextTier, SKIN_RANK, type DiceSkin } from '@/lib/dice-skin';
 import { fireWinConfetti } from '@/lib/confetti';
 import { trackEvent } from '@/lib/analytics';
+import { ShopPromoDialog } from '@/components/ShopPromoDialog';
+import { takeShopPromo } from '@/lib/shop-promo';
 import goldDie from '@/assets/gold-die.png';
 
 const SEEN_TIER_KEY = 'mrb_dice_tier_seen_v1';
@@ -25,6 +27,11 @@ export function DiceTierCard() {
   const shop = useShop();
   const next = nextTier(status.yatzyMatches);
   const [open, setOpen] = useState(false);
+  const [promo, setPromo] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => { if (takeShopPromo()) { setPromo(true); trackEvent('shop_promo_shown'); } }, 1500);
+    return () => clearTimeout(id);
+  }, []);
 
   // Celebrate once when a new permanent tier is reached.
   useEffect(() => {
@@ -63,6 +70,8 @@ export function DiceTierCard() {
       </div>
       <ChevronRight className="shrink-0 w-4 h-4 text-muted-foreground" aria-hidden />
     </button>
+    <ShopPromoDialog open={promo} onClose={() => setPromo(false)}
+      onShop={() => { setPromo(false); setOpen(true); trackEvent('shop_promo_clicked'); }} />
     <DiceInfoSheet
       open={open}
       onClose={() => setOpen(false)}

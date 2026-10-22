@@ -10,7 +10,7 @@
 - [x] Väntrummets texter, tio snabbfraser och återkomstnotis översatta till alla 40 språk; 459 nycklar per språk utan luckor eller platshållarfel. 18 befintliga tester godkända, språkvisning kontrollerad i körande app på alla 40 språk utan live-platser. Notisfunktionen driftsatt; riktig leverans kräver tidigare planerat telefonprov.
 
 ## Spelväntrum
-- [ ] Lägg till vald utförlig välkomstruta med engångsvisning och alla språk; verifiera första besök och återbesök utan live-platser.
+- [x] Vald utförlig välkomstruta på alla 40 språk, beständig engångsvisning per enhet. 20 tester godkända; första besök, OK, omladdning och återbesök verifierade i körande app på 393 × 706 med simulerade svar utan live-platser och utan runtimefel.
 - [x] Fria platstexter, kompakt redo och notistext, närvarosymboler och tio snabbfraser vid figurerna. 18 tester godkända; riktig meddelandeöverföring mellan två webbläsare med simulerade platser och layout på 320/393 px verifierade utan att röra live-bordet.
 - [x] Obegränsad ensam väntan, 120 sekunder att bli redo när sällskap finns; sittande figurer, fria namn och matchande knappar. 15 regel-/klienttester och visuell kontroll godkända.
 - [x] Platstexter synkade på alla fyra stolar: samma ordning (namn vid stolsryggen, status, nedräkning ytterst), samma 8 px-avstånd och samma textstorlekar; överstolen vänder stapeln och sidostolarna använder appens normala storlekar. Mätt i testkopia på 320 och 393 px, bygget OK.

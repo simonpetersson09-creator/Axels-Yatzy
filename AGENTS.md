@@ -9,11 +9,11 @@
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online-game problems (errors, slow calls >3 s, dice/score mismatches) are logged silently as analytics_events 'mp_issue' from useMultiplayerGame — diagnoses desync reports without user effort.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
-- Online locks send full locked_dice batches via service-role perform_set_locks; per-die toggles are legacy only.
+- Online locks send full locked_dice batches; per-die toggles are legacy only.
 - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — audits fairness and disputes.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).
-- Online actions (roll, set locks, old per-die toggle, score incl. dice check, start, forfeit) call *_authed RPCs that run claim_session and the action in one database call — saves a round trip per tap; the client recovers slow rolls by reading the games row (ROLL_RECOVER_* in useMultiplayerGame) so late rolls are shown, never lost.
+- Online *_authed RPCs combine claim_session with the action; slow rolls recover from the games row (ROLL_RECOVER_*), never lost.
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit).
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
@@ -32,3 +32,4 @@
 - Statistics period labels use the shared Stockholm formatter to match server period boundaries across phone timezones.
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
 - Player rank ordering ends with session_id after match count and creation time, ensuring deterministic exact ties without changing match totals.
+- Shared waiting room has separate device-checked seats, one lock and server countdown; only revision is public/realtime. Reuse maintenance cron, no keep-warm. Push uses immutable seat ID, recall dedupe/expiry, durable tap handoff and App Open guard.

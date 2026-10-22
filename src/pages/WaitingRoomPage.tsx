@@ -40,7 +40,7 @@ export default function WaitingRoomPage() {
         const response = await roomAction(action, { seatId: seatRef.current, ...options });
         if (!mounted.current) return;
         offset.current = Date.parse(response.server_now) - Date.now();
-        seatRef.current = response.mine?.id ?? (response.error === 'expired' ? null : seatRef.current);
+        seatRef.current = response.mine?.id ?? (response.error === 'expired' || action === 'leave' ? null : seatRef.current);
         setSnapshot(response);
         setConnectionLost(false);
         if (lastCountdown.current && !response.countdown_at && !response.mine?.game_id) toast.info(t('wrCancelled'));

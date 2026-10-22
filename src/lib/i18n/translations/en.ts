@@ -2,6 +2,7 @@ import type { sv } from './sv';
 
 export const en: Partial<typeof sv> = {
   wrTitle: 'Waiting room',
+  wrJoinSteps: 'Open the app and choose Waiting room on the home screen.',
   wrEmpty: 'Waiting for company …',
   wrReady: 'Ready',
   wrBeReady: 'I am ready',

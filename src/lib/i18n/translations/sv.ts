@@ -1,6 +1,7 @@
 // Svenska — fallback-språk
 export const sv = {
   wrTitle: 'Spelväntrum',
+  wrJoinSteps: 'Öppna appen och välj Spelväntrum på startsidan.',
   wrEmpty: 'Väntar på sällskap …',
   wrReady: 'Redo',
   wrBeReady: 'Jag är redo',

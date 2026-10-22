@@ -32,4 +32,4 @@
 - Statistics period labels use the shared Stockholm formatter to match server period boundaries across phone timezones.
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
 - Player rank ordering ends with session_id after match count and creation time, ensuring deterministic exact ties without changing match totals.
-- Shared waiting room has separate device-checked seats, one lock and server countdown; only revision is public/realtime. Reuse maintenance cron, no keep-warm. Push uses immutable seat ID, recall dedupe/expiry, durable tap handoff and App Open guard.
+- Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.

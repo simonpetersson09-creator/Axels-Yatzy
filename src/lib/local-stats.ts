@@ -122,7 +122,9 @@ export function recordGameResult(
   if (matchKey && stored.recordedKeys.includes(matchKey)) return false;
 
   const stats: LocalStats = {
-    gamesPlayed: stored.gamesPlayed + 1,
+    // Forfeits (completed=false) never count as played matches — matching the
+    // online path, which records nothing at all for forfeited games.
+    gamesPlayed: stored.gamesPlayed + (completed ? 1 : 0),
     wins: stored.wins,
     highScore: stored.highScore,
     yatzyCount: stored.yatzyCount,

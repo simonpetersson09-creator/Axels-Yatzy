@@ -1,1 +1,1 @@
-- Translation dicts are Partial<typeof sv>; missing keys fall back to English (non-Swedish) then Swedish — new keys only need sv + en.
+- Translation dictionaries fall back to English then Swedish for safety, but new visible copy must cover all 40 supported languages. Waiting-room copy is shared with its server push text in a dependency-free module to prevent divergent translations.

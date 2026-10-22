@@ -1,9 +1,9 @@
-/** Waiting-room recall copy; remaining languages use the app's English fallback. */
+import { getWaitingRoomCopy } from './waiting-room-copy.ts';
+
+/** Use the same language-specific waiting-room copy as the app. */
 export function waitingPushText(lang: string | null) {
   return {
     title: 'Mr.B. Yatzy',
-    body: lang?.split('-')[0] === 'sv'
-      ? 'En spelare har satt sig vid ditt bord. Redo för Yatzy?'
-      : 'A player has joined your table. Ready for Yatzy?',
+    body: getWaitingRoomCopy(lang).wrPushBody,
   };
 }

@@ -512,6 +512,13 @@
       "when": 1792658257292,
       "tag": "0072_year_ranks",
       "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1792663395100,
+      "tag": "0073_fix_period_stats",
+      "breakpoints": true
     }
   ]
 }

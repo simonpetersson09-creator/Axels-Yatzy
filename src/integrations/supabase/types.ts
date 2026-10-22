@@ -1081,13 +1081,17 @@ export type Database = {
       get_gold_dice: { Args: { p_session_id: string }; Returns: Json }
       get_gold_players: { Args: { p_session_ids: string[] }; Returns: string[] }
       get_my_hof_rank: { Args: { p_session_id: string }; Returns: number }
+      get_my_year_games: { Args: { p_session_id: string }; Returns: number }
       get_player_card: { Args: { p_session_id: string }; Returns: Json }
       get_player_stats: { Args: { p_game_id: string }; Returns: Json }
       get_referral_code: {
         Args: { p_device_id: string; p_session_id: string }
         Returns: string
       }
-      get_top_countries: { Args: { p_limit?: number }; Returns: Json }
+      get_top_countries: {
+        Args: { p_limit?: number; p_period?: string }
+        Returns: Json
+      }
       get_weekly_hall_of_fame: { Args: { p_limit?: number }; Returns: Json }
       get_weekly_most_games: { Args: { p_limit?: number }; Returns: Json }
       get_weekly_rank: { Args: { p_session_id: string }; Returns: Json }
@@ -1273,6 +1277,15 @@ export type Database = {
         }
         Returns: Json
       }
+      period_country_games: {
+        Args: { p_since: string }
+        Returns: {
+          country: string
+          games: number
+          session_id: string
+        }[]
+      }
+      period_start: { Args: { p_period: string }; Returns: string }
       record_friend_match: {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json

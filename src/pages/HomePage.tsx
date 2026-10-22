@@ -127,10 +127,10 @@ export default function HomePage() {
   // One-time box: the app is now available on Android (Google Play).
   const [showAndroidNews, setShowAndroidNews] = useState(false);
   useEffect(() => {
-    if (!shouldShowAndroidNews()) return;
+    if (!shouldShowAndroidNews(stats.gamesPlayed)) return;
     const timer = setTimeout(() => setShowAndroidNews(true), 1200);
     return () => clearTimeout(timer);
-  }, []);
+  }, [stats.gamesPlayed]);
   const closeAndroidNews = () => {
     markAndroidNewsSeen();
     setShowAndroidNews(false);

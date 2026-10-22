@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Spelväntrum
+- [ ] Separat knapp och fyrplatsbord, serverstyrda platser, redo och exakt en match.
+- [ ] 15 minuters väntplatser, 90 sekunders återkomstfrist, serverstädning och realtidsindikator.
+- [ ] Återanvänd push med giltighetskontroll, deduplicering och skydd mot returannons.
+- [ ] Automatiska tester, tvåspelarkontroll och bygg-/telefoninstruktioner; ingen publicering.
+
 ## iOS-annonser – 22 oktober
 - [x] Rätta UMP-presenter före annonsinitiering med beständig sync-patch; alla tre UMP-ingångar binds före anrop utan att starta Mobile Ads.
 - [x] Kassera App Open-annonser vid fyra timmar före återbruk, statuskontroll och visning; 54 tester godkända och båda patcharna körda upprepade gånger på installerad plugin. Visningstider, banner och XP-logik oförändrade.

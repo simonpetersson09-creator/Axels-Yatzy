@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
-import { ArrowLeft, Bell, Check, Clock, LogOut, Plus } from 'lucide-react';
+import { ArrowLeft, Bell, Check, Clock, LogOut, MessageCircle, Plus, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
@@ -11,6 +12,9 @@ import { remainingTime } from '@/lib/waiting-room-rules';
 import { getSessionId } from '@/lib/session';
 import { getPushPermissionState } from '@/lib/notifications';
 import table from '@/assets/waiting-table.png';
+import { useWaitingRoomChat } from '@/hooks/useWaitingRoomChat';
+import { WAITING_PHRASES } from '@/lib/waiting-room-chat';
+import { useBackHandler } from '@/lib/back-handler';
 
 export default function WaitingRoomPage() {
   const { t } = useTranslation();
@@ -20,6 +24,8 @@ export default function WaitingRoomPage() {
   const [busy, setBusy] = useState(false);
   const [connectionLost, setConnectionLost] = useState(false);
   const [clock, setClock] = useState(Date.now());
+  const [chatOpen, setChatOpen] = useState(false);
+  useBackHandler(chatOpen, () => setChatOpen(false));
   const offset = useRef(0);
   const seatRef = useRef<string | null>(params.get('seat') || savedWaitingSeat());
   const mutation = useRef(false);
@@ -124,6 +130,7 @@ export default function WaitingRoomPage() {
     return () => { cancelled = true; document.removeEventListener('visibilitychange', onVisible); };
   }, [mineId]);
   const players = snapshot?.players ?? [];
+  const chat = useWaitingRoomChat(players, mineId ?? null);
   const countdown = snapshot?.countdown_at ? Math.max(0, Math.min(3, 3 - Math.floor((clock - Date.parse(snapshot.countdown_at)) / 1000))) : null;
   const errorKey = snapshot?.error === 'full' ? 'wrFull' : snapshot?.error === 'starting' ? 'wrStarting' : snapshot?.error === 'expired' ? 'wrExpired' : null;
 
@@ -145,13 +152,14 @@ export default function WaitingRoomPage() {
           const own = p?.session_id === getSessionId();
           return <div key={seat} className={`waiting-seat waiting-seat-${seat}`}>
             <div className={`waiting-person-label ${p ? '' : 'waiting-person-label-empty'}`}>
-              <p className="font-semibold text-sm break-words">{p?.player_name || t('wrSeat')}{own && <span className="text-primary text-xs block">{t('you')}</span>}</p>
+              <p className="font-semibold text-xs break-words">{p && <span role="img" aria-label={p.present ? t('onlineNow') : t('wrAway')} className={`waiting-presence ${p.present ? 'waiting-presence-online' : 'waiting-presence-away'}`} />}{p?.player_name || t('wrSeat')}{own && <span className="text-primary text-[10px] block">{t('you')}</span>}</p>
               {p && <p className={`text-[11px] leading-tight ${p.ready ? 'text-game-success' : 'text-muted-foreground'}`}>
                 {p.ready ? <span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />{t('wrReady')}</span> : !p.present ? t('wrAway') : '—'}
               </p>}
               {p?.recall_until && <p className="text-[10px] text-primary leading-tight">{t('wrReadyLeft', { time: remainingTime(p.recall_until, clock) })}</p>}
             </div>
             {p && <div aria-hidden="true" className={`waiting-figure figure-${seat} ${!p.present ? 'opacity-50' : ''}`}><span className="waiting-figure-legs" /><span className="waiting-figure-body" /><span className="waiting-figure-arms" /><span className="waiting-figure-head" /></div>}
+            {p && chat.bubbles[p.id] && <div className="waiting-chat-bubble" role="status">{t(chat.bubbles[p.id].phrase)}</div>}
           </div>;
         })}
         {countdown !== null && <div className="waiting-countdown" role="timer">{countdown > 0 ? countdown : <span className="text-sm">{t('wrStarting')}</span>}</div>}
@@ -159,15 +167,24 @@ export default function WaitingRoomPage() {
       <div className="space-y-3">
         {errorKey && <p role="alert" className="text-center text-primary text-sm">{t(errorKey)}</p>}
         {mine && !mine.game_id ? <>
-          <Button variant={mine.ready ? 'success' : 'default'} className="w-full h-14 font-display text-lg whitespace-normal" disabled={busy || countdown !== null || connectionLost} onClick={() => void command('ready', { ready: !mine.ready })}>
+          <div className="flex items-center justify-center gap-3">
+          <Button variant={mine.ready ? 'success' : 'default'} className="waiting-ready-button font-display font-bold text-base whitespace-normal" disabled={busy || countdown !== null || connectionLost} onClick={() => void command('ready', { ready: !mine.ready })}>
             <Check /> {t(mine.ready ? 'wrUndo' : 'wrBeReady')}
           </Button>
+          <Button size="icon" className="h-12 w-12 rounded-full shrink-0" aria-label={t('quickMessages')} title={t('quickMessages')} disabled={!chat.connected || connectionLost || countdown !== null} onClick={() => setChatOpen(true)}><MessageCircle /></Button>
+          </div>
           {mine.recall_until && <div className="flex items-center justify-center gap-2 text-sm text-primary tabular-nums"><Clock className="w-4 h-4" />{t('wrReadyLeft', { time: remainingTime(mine.recall_until, clock) })}</div>}
-          <p className="text-sm text-muted-foreground text-center flex items-start justify-center gap-2"><Bell className="w-4 h-4 shrink-0 mt-0.5" />{t('wrNotifyHint')}</p>
+          <p className="text-[11px] leading-relaxed text-muted-foreground text-center flex items-start justify-center gap-1.5 max-w-72 mx-auto"><Bell className="w-3 h-3 shrink-0 mt-0.5" />{t('wrNotifyHint')}</p>
           <Button variant="ghost" className="w-full min-h-12 text-muted-foreground whitespace-normal" disabled={busy} onClick={() => void command('leave')}><LogOut />{t('wrLeave')}</Button>
         </> : <Button className="w-full min-h-12 whitespace-normal" disabled={busy || !snapshot} onClick={() => { seatRef.current = null; void command('join'); }}><Plus />{t('wrJoin')}</Button>}
         {connectionLost && <Button variant="secondary" className="w-full" onClick={() => void command('sync')}>{t('wrRetry')}</Button>}
       </div>
     </div>
+    {chatOpen && createPortal(<div className="waiting-modal-backdrop" onClick={() => setChatOpen(false)}>
+      <section role="dialog" aria-modal="true" aria-label={t('quickMessages')} className="waiting-chat-panel" onClick={e => e.stopPropagation()}>
+        <header className="flex items-center justify-between border-b border-border px-4 py-2"><h2 className="font-display font-bold text-sm">{t('quickMessages')}</h2><Button variant="ghost" size="icon" aria-label={t('close')} onClick={() => setChatOpen(false)}><X /></Button></header>
+        <div className="grid grid-cols-2 gap-2 p-3">{WAITING_PHRASES.map(phrase => <Button key={phrase} variant="secondary" className="h-auto min-h-12 text-xs whitespace-normal" onClick={() => { setChatOpen(false); void chat.send(phrase).then(ok => { if (!ok) toast.info(t('wrRetry')); }); }}>{t(phrase)}</Button>)}</div>
+      </section>
+    </div>, document.body)}
   </main>;
 }

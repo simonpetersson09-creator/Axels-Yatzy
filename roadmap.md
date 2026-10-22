@@ -1,5 +1,12 @@
 # Roadmap – Snabbspel online
 
+## Spelpåminnelser (inaktiva spelare)
+- [ ] Migration: play_reminders + timezone i notification_preferences, play_reminder_state, claim_play_reminder_targets (advisory lock, atomisk claim).
+- [ ] Edge-funktion notify-play-reminder + timcron 18:00 lokal tid; ersätter gamla veckopåminnelsen (jobb 12 stängs av).
+- [ ] Klient: ny inställning Spelpåminnelser (40 språk), tidszonssync, notis-tap öppnar startsidan.
+- [ ] Tester: tidsgränser, återställning vid aktivitet, paus efter 3, dubbelutskicksskydd.
+- [ ] Redovisa produktionskrav (telefonprov, cron-verifiering).
+
 ## Slutkontroll 22 oktober
 - [x] På uttrycklig begäran testades sista stolen med två samtidiga separata anslutningar till produktionsfunktionen och tre QA-identiteter jämte Simons ej redo-plats: exakt en fick stolen och en fick full, fyra unika platser, ingen nedräkning. QA-platser borttagna och Simons identitet/stol/redo-status jämförda före/efter utan ändring. Samtidiga redo/start-anrop ej testade i detta prov.
 - [x] På Simons begäran kördes aktuella serverfunktioner med tillfälliga tabeller/funktioner i transaktioner: 16 scenarier godkända (120 s, obegränsad ensam väntan, redo/start, frånvaro, gamla notiser, räknare och enhetskontroll). Ursprunglig väntplats verifierad bevarad och noll QA-platser sparade. Samtidighet över flera anslutningar ej körd eftersom tillfälliga tabeller är anslutningslokala; live-samtidighetsprovet kräver fortsatt tomt bord. Tillfälliga kopior saknar produktionssidans triggers/RLS, vilka granskades separat.

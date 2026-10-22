@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Slutkontroll 22 oktober
+- [ ] Kör säkra regressionstester, kontrollera serverregler och språk samt väntrum till match; skilj automatiska kontroller från kvarstående telefonprov.
+
 ## Översättningskontroll 22 oktober
 - [x] Väntrummets texter, tio snabbfraser och återkomstnotis översatta till alla 40 språk; 459 nycklar per språk utan luckor eller platshållarfel. 18 befintliga tester godkända, språkvisning kontrollerad i körande app på alla 40 språk utan live-platser. Notisfunktionen driftsatt; riktig leverans kräver tidigare planerat telefonprov.
 

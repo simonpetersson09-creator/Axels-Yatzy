@@ -136,4 +136,12 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     const late=await action(0,'heartbeat',a.mine.id);expect(late.error).toBe('expired');expect(late.mine).toBeNull();
     expect(late.players.length).toBe(1);
   }));
+  it('a departure cancels countdown even at its deadline before a match exists', () => scenario(async(sql,ids,action)=>{
+    const a=await action(0),b=await action(1);
+    await action(0,'ready',a.mine.id,true);await action(1,'ready',b.mine.id,true);
+    await sql`update waiting_room_state set countdown_at=now()-interval '3 seconds' where id=1`;
+    const away=await action(0,'away',a.mine.id);
+    expect(away.mine.game_id).toBeNull();expect(away.countdown_at).toBeNull();
+    expect(away.players.every((p:any)=>!p.ready)).toBe(true);
+  }));
 });

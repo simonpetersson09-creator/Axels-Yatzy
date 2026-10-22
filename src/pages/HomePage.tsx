@@ -979,7 +979,7 @@ export default function HomePage() {
           <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0">
             <div className="text-center mb-1">
               <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('worldLeaderLabel')}
+                {t('worldLeaderLabel')} {new Date().getFullYear()}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">

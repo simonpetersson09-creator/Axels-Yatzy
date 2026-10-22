@@ -60,6 +60,12 @@ export default function WaitingRoomPage() {
   }, [navigate, t]);
   const performRef = useRef(perform);
   performRef.current = perform;
+  useEffect(() => {
+    const notifiedSeat = params.get('seat');
+    if (!notifiedSeat || notifiedSeat === seatRef.current) return;
+    seatRef.current = notifiedSeat;
+    void performRef.current('open');
+  }, [params]);
 
   useEffect(() => {
     mounted.current = true;
@@ -136,7 +142,7 @@ export default function WaitingRoomPage() {
       </header>
       <div className="text-center min-h-12 pt-3" role="status">
         {connectionLost ? <p className="text-destructive text-sm">{t('wrConnection')}</p> :
-          <p className="text-muted-foreground text-sm">{countdown ? t('wrCountdown') : players.length <= 1 ? t('wrEmpty') : t('wrWaitingReady')}</p>}
+          <p className="text-muted-foreground text-sm">{countdown !== null ? t('wrCountdown') : players.length <= 1 ? t('wrEmpty') : t('wrWaitingReady')}</p>}
       </div>
       <section className="waiting-table-stage" aria-label={t('wrTitle')}>
         <img src={table} width={1024} height={1024} alt="" className="waiting-table-image" />

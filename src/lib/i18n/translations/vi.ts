@@ -303,26 +303,37 @@ export const vi: Partial<typeof sv> = {
   addStrangerFriend: 'Kết bạn với {name}',
   strangerFriendAdded: '{name} giờ là bạn của bạn',
   statsPage: "Thống kê",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Cài đặt quảng cáo",
+
+  useWhiteDice: "Dùng xúc xắc trắng",
+
+  useWhiteDiceDesc: "Chơi với xúc xắc trắng thông thường. Màu xúc xắc và tiến trình của bạn vẫn được giữ nguyên.",
+
   statsPageTitle: "Thống kê",
   yourRankingsTitle: "Thứ hạng của bạn",
   topCountriesTitle: "Top 10 quốc gia",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Bảng vinh danh tuần này",
+
+  hofSubtitle: "Điểm cao nhất trong một trận tuần này",
+
+  hofEmpty: "Chưa có ai chơi trong tuần này",
+
+  hofMatches: "trận",
+
+  hofPoints: "điểm",
+
+  hofGamesTitle: "Chăm chơi nhất tuần này",
+
+  hofGamesSubtitle: "Chơi nhiều trận nhất tuần này",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Bạn đã tụt xuống hạng {rank} trong top 10 tuần này',
   hofDroppedOut: 'Bạn đã rơi khỏi top 10 tuần này',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Top 10 tuần này",
+
   weeklyRankLabel: "Thứ hạng tuần trước của bạn",
   weeklyGamesText: "{n} trận trong 7 ngày qua",
   weeklyBuildingHint: "Chơi một trận để vào bảng xếp hạng tuần này",

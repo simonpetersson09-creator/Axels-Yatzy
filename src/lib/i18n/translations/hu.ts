@@ -303,26 +303,37 @@ export const hu: Partial<typeof sv> = {
   addStrangerFriend: '{name} felvétele barátnak',
   strangerFriendAdded: '{name} már a barátod',
   statsPage: "Statisztika",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Reklámbeállítások",
+
+  useWhiteDice: "Fehér kockák használata",
+
+  useWhiteDiceDesc: "Játssz egyszerű fehér kockákkal. A választott színed és az előrehaladásod megmarad.",
+
   statsPageTitle: "Statisztika",
   yourRankingsTitle: "Helyezéseid",
   topCountriesTitle: "Top 10 ország",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Heti dicsőségcsarnok",
+
+  hofSubtitle: "A héten egy meccsen elért legmagasabb pontszám",
+
+  hofEmpty: "Ezen a héten még senki sem játszott",
+
+  hofMatches: "meccsek",
+
+  hofPoints: "pontok",
+
+  hofGamesTitle: "A hét legaktívabb játékosai",
+
+  hofGamesSubtitle: "A héten játszott legtöbb meccs",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'A hét top 10-es listáján a(z) {rank}. helyre csúsztál',
   hofDroppedOut: 'Kiestél a hét top 10-es listájából',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Heti top 10",
+
   weeklyRankLabel: "Múlt heti helyezésed",
   weeklyGamesText: "{n} meccs az elmúlt 7 napban",
   weeklyBuildingHint: "Játssz egy meccset, hogy felkerülj a heti listára",

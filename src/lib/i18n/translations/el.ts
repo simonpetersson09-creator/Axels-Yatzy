@@ -303,26 +303,37 @@ export const el: Partial<typeof sv> = {
   addStrangerFriend: 'Πρόσθεσε τον παίκτη {name} στους φίλους',
   strangerFriendAdded: 'Ο παίκτης {name} είναι πλέον στους φίλους σου',
   statsPage: "Στατιστικά",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Ρυθμίσεις διαφημίσεων",
+
+  useWhiteDice: "Χρήση λευκών ζαριών",
+
+  useWhiteDiceDesc: "Παίξε με απλά λευκά ζάρια. Το χρώμα και η πρόοδός σου διατηρούνται.",
+
   statsPageTitle: "Στατιστικά",
   yourRankingsTitle: "Η κατάταξή σου",
   topCountriesTitle: "Οι 10 κορυφαίες χώρες",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Οι κορυφαίοι της εβδομάδας",
+
+  hofSubtitle: "Υψηλότερη βαθμολογία σε ένα παιχνίδι αυτή την εβδομάδα",
+
+  hofEmpty: "Κανείς δεν έχει παίξει ακόμα αυτή την εβδομάδα",
+
+  hofMatches: "παιχνίδια",
+
+  hofPoints: "πόντοι",
+
+  hofGamesTitle: "Οι πιο ενεργοί της εβδομάδας",
+
+  hofGamesSubtitle: "Περισσότερα παιχνίδια αυτή την εβδομάδα",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Έπεσες στη θέση {rank} της δεκάδας της εβδομάδας',
   hofDroppedOut: 'Έπεσες εκτός δεκάδας αυτής της εβδομάδας',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Οι 10 κορυφαίοι της εβδομάδας",
+
   weeklyRankLabel: "Η θέση σου την περασμένη εβδομάδα",
   weeklyGamesText: "{n} αγώνες τις τελευταίες 7 ημέρες",
   weeklyBuildingHint: "Παίξε έναν αγώνα για να μπεις στη λίστα της εβδομάδας",

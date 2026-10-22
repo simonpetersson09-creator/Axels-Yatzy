@@ -303,26 +303,37 @@ export const cs: Partial<typeof sv> = {
   addStrangerFriend: 'Přidat {name} do přátel',
   strangerFriendAdded: '{name} je teď mezi tvými přáteli',
   statsPage: "Statistiky",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Nastavení reklam",
+
+  useWhiteDice: "Používat bílé kostky",
+
+  useWhiteDiceDesc: "Hraj s obyčejnými bílými kostkami. Tvoje barva i postup zůstanou zachovány.",
+
   statsPageTitle: "Statistiky",
   yourRankingsTitle: "Tvoje umístění",
   topCountriesTitle: "Top 10 zemí",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Síň slávy tohoto týdne",
+
+  hofSubtitle: "Nejvyšší skóre v jednom zápase tento týden",
+
+  hofEmpty: "Tento týden ještě nikdo nehrál",
+
+  hofMatches: "zápasy",
+
+  hofPoints: "body",
+
+  hofGamesTitle: "Nejaktivnější hráči týdne",
+
+  hofGamesSubtitle: "Nejvíce odehraných zápasů tento týden",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Klesl jsi na {rank}. místo v žebříčku týdne',
   hofDroppedOut: 'Vypadl jsi z desítky nejlepších tento týden',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Top 10 tohoto týdne",
+
   weeklyRankLabel: "Tvoje pořadí minulý týden",
   weeklyGamesText: "Počet zápasů za posledních 7 dní: {n}",
   weeklyBuildingHint: "Zahraj si zápas a zapoj se do žebříčku tohoto týdne",

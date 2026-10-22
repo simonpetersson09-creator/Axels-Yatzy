@@ -303,26 +303,37 @@ export const kn: Partial<typeof sv> = {
   addStrangerFriend: '{name}ರನ್ನು ಸ್ನೇಹಿತರಾಗಿ ಸೇರಿಸು',
   strangerFriendAdded: '{name} ಈಗ ನಿನ್ನ ಸ್ನೇಹಿತರು',
   statsPage: "ಅಂಕಿಅಂಶಗಳು",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "ಜಾಹೀರಾತು ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+
+  useWhiteDice: "ಬಿಳಿ ದಾಳಗಳನ್ನು ಬಳಸಿ",
+
+  useWhiteDiceDesc: "ಸಾಮಾನ್ಯ ಬಿಳಿ ದಾಳಗಳೊಂದಿಗೆ ಆಡಿ. ನಿಮ್ಮ ಬಣ್ಣ ಮತ್ತು ಪ್ರಗತಿ ಹಾಗೆಯೇ ಉಳಿಯುತ್ತವೆ.",
+
   statsPageTitle: "ಅಂಕಿಅಂಶಗಳು",
   yourRankingsTitle: "ನಿಮ್ಮ ಶ್ರೇಯಾಂಕಗಳು",
   topCountriesTitle: "ಅಗ್ರ 10 ದೇಶಗಳು",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "ಈ ವಾರದ ಗೌರವ ಪಟ್ಟಿ",
+
+  hofSubtitle: "ಈ ವಾರ ಒಂದೇ ಆಟದಲ್ಲಿ ಗಳಿಸಿದ ಗರಿಷ್ಠ ಅಂಕಗಳು",
+
+  hofEmpty: "ಈ ವಾರ ಇನ್ನೂ ಯಾರೂ ಆಡಿಲ್ಲ",
+
+  hofMatches: "ಆಟಗಳು",
+
+  hofPoints: "ಅಂಕಗಳು",
+
+  hofGamesTitle: "ಈ ವಾರ ಹೆಚ್ಚು ಆಡಿದವರು",
+
+  hofGamesSubtitle: "ಈ ವಾರ ಅತಿ ಹೆಚ್ಚು ಆಟಗಳನ್ನು ಆಡಿದವರು",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'ನೀವು ಈ ವಾರದ ಟಾಪ್ 10 ನಲ್ಲಿ #{rank} ಗೆ ಇಳಿದಿದ್ದೀರಿ',
   hofDroppedOut: 'ನೀವು ಈ ವಾರದ ಟಾಪ್ 10 ರಿಂದ ಹೊರಬಿದ್ದಿದ್ದೀರಿ',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "ಈ ವಾರದ ಅಗ್ರ 10",
+
   weeklyRankLabel: "ಕಳೆದ ವಾರ ನಿಮ್ಮ ಶ್ರೇಯಾಂಕ",
   weeklyGamesText: "ಕಳೆದ 7 ದಿನಗಳಲ್ಲಿ {n} ಪಂದ್ಯಗಳು",
   weeklyBuildingHint: "ಈ ವಾರದ ಪಟ್ಟಿಗೆ ಸೇರಲು ಒಂದು ಪಂದ್ಯ ಆಡಿ",

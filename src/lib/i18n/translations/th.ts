@@ -303,26 +303,37 @@ export const th: Partial<typeof sv> = {
   addStrangerFriend: 'เพิ่ม {name} เป็นเพื่อน',
   strangerFriendAdded: '{name} เป็นเพื่อนคุณแล้ว',
   statsPage: "สถิติ",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "การตั้งค่าโฆษณา",
+
+  useWhiteDice: "ใช้ลูกเต๋าสีขาว",
+
+  useWhiteDiceDesc: "เล่นด้วยลูกเต๋าสีขาวธรรมดา สีและความคืบหน้าของคุณจะยังอยู่",
+
   statsPageTitle: "สถิติ",
   yourRankingsTitle: "อันดับของคุณ",
   topCountriesTitle: "10 ประเทศอันดับสูงสุด",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "หอเกียรติยศประจำสัปดาห์",
+
+  hofSubtitle: "คะแนนสูงสุดในหนึ่งแมตช์ของสัปดาห์นี้",
+
+  hofEmpty: "สัปดาห์นี้ยังไม่มีใครเล่น",
+
+  hofMatches: "แมตช์",
+
+  hofPoints: "คะแนน",
+
+  hofGamesTitle: "ผู้เล่นที่ขยันที่สุดประจำสัปดาห์",
+
+  hofGamesSubtitle: "เล่นแมตช์มากที่สุดในสัปดาห์นี้",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'คุณตกลงมาอยู่อันดับ {rank} ใน 10 อันดับแรกของสัปดาห์นี้',
   hofDroppedOut: 'คุณหลุดจาก 10 อันดับแรกของสัปดาห์นี้แล้ว',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "10 อันดับแรกประจำสัปดาห์",
+
   weeklyRankLabel: "อันดับของคุณสัปดาห์ที่แล้ว",
   weeklyGamesText: "เล่น {n} แมตช์ใน 7 วันที่ผ่านมา",
   weeklyBuildingHint: "เล่นหนึ่งแมตช์เพื่อติดอันดับสัปดาห์นี้",

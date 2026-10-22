@@ -303,26 +303,37 @@ export const id: Partial<typeof sv> = {
   addStrangerFriend: 'Tambah {name} sebagai teman',
   strangerFriendAdded: '{name} kini jadi temanmu',
   statsPage: "Statistik",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Pengaturan iklan",
+
+  useWhiteDice: "Gunakan dadu putih",
+
+  useWhiteDiceDesc: "Main dengan dadu putih polos. Warna dan progresmu tetap tersimpan.",
+
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Peringkatmu",
   topCountriesTitle: "10 negara teratas",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Papan kehormatan minggu ini",
+
+  hofSubtitle: "Skor tertinggi dalam satu pertandingan minggu ini",
+
+  hofEmpty: "Belum ada yang bermain minggu ini",
+
+  hofMatches: "pertandingan",
+
+  hofPoints: "poin",
+
+  hofGamesTitle: "Paling aktif minggu ini",
+
+  hofGamesSubtitle: "Pertandingan terbanyak minggu ini",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Kamu turun ke peringkat {rank} di 10 besar minggu ini',
   hofDroppedOut: 'Kamu keluar dari 10 besar minggu ini',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "10 besar minggu ini",
+
   weeklyRankLabel: "Peringkatmu minggu lalu",
   weeklyGamesText: "{n} pertandingan dalam 7 hari terakhir",
   weeklyBuildingHint: "Mainkan satu pertandingan untuk masuk daftar minggu ini",
@@ -353,7 +364,7 @@ export const id: Partial<typeof sv> = {
   tierBronze: "perunggu",
   tierSilver: "perak",
   tierGold: "emas",
-  tierPlatinum: "platinum",
+  tierPlatinum: 'platina',
   myDice: "Daduku",
   challengesLabel: "Tantangan",
   tierWhite: "putih",

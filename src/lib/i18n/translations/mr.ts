@@ -303,26 +303,37 @@ export const mr: Partial<typeof sv> = {
   addStrangerFriend: '{name} ला मित्र बनव',
   strangerFriendAdded: '{name} आता तुझा मित्र आहे',
   statsPage: "आकडेवारी",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "जाहिरात सेटिंग्ज",
+
+  useWhiteDice: "पांढरे फासे वापरा",
+
+  useWhiteDiceDesc: "साधे पांढरे फासे वापरून खेळा. तुमचा रंग आणि प्रगती कायम राहतील.",
+
   statsPageTitle: "आकडेवारी",
   yourRankingsTitle: "तुमचे क्रमांक",
   topCountriesTitle: "अव्वल 10 देश",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "या आठवड्याचा गौरवफलक",
+
+  hofSubtitle: "या आठवड्यात एका सामन्यात मिळवलेले सर्वाधिक गुण",
+
+  hofEmpty: "या आठवड्यात अजून कोणीही खेळलेले नाही",
+
+  hofMatches: "सामने",
+
+  hofPoints: "गुण",
+
+  hofGamesTitle: "या आठवड्यातील सर्वात सक्रिय खेळाडू",
+
+  hofGamesSubtitle: "या आठवड्यात सर्वाधिक सामने खेळलेले खेळाडू",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'तुम्ही या आठवड्याच्या टॉप 10 मध्ये #{rank} वर खाली आला',
   hofDroppedOut: 'तुम्ही या आठवड्याच्या टॉप 10 मधून बाहर पडला',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "या आठवड्यातील अव्वल 10",
+
   weeklyRankLabel: "मागील आठवड्यातील तुमचा क्रमांक",
   weeklyGamesText: "गेल्या 7 दिवसांत {n} सामने",
   weeklyBuildingHint: "या आठवड्याच्या यादीत येण्यासाठी एक सामना खेळा",

@@ -303,26 +303,37 @@ export const ja: Partial<typeof sv> = {
   addStrangerFriend: '{name}を友達に追加',
   strangerFriendAdded: '{name}と友達になったよ',
   statsPage: "統計",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "広告設定",
+
+  useWhiteDice: "白いダイスを使う",
+
+  useWhiteDiceDesc: "シンプルな白いダイスでプレイ。設定した色と進行状況はそのまま保存されるよ。",
+
   statsPageTitle: "統計",
   yourRankingsTitle: "あなたのランキング",
   topCountriesTitle: "国別トップ10",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "今週の殿堂入り",
+
+  hofSubtitle: "今週の1対戦での最高得点",
+
+  hofEmpty: "今週はまだ誰もプレイしていないよ",
+
+  hofMatches: "対戦数",
+
+  hofPoints: "得点",
+
+  hofGamesTitle: "今週の最多プレイヤー",
+
+  hofGamesSubtitle: "今週の対戦数ランキング",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: '今週のトップ10で{rank}位に下がりました',
   hofDroppedOut: '今週のトップ10から外れました',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "今週のトップ10",
+
   weeklyRankLabel: "先週の順位",
   weeklyGamesText: "過去7日間で{n}試合",
   weeklyBuildingHint: "対戦して今週のランキングに参加",

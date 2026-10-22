@@ -303,26 +303,37 @@ export const hr: Partial<typeof sv> = {
   addStrangerFriend: 'Dodaj {name} za prijatelja',
   strangerFriendAdded: '{name} je sada tvoj prijatelj',
   statsPage: "Statistika",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Postavke oglasa",
+
+  useWhiteDice: "Koristi bijele kockice",
+
+  useWhiteDiceDesc: "Igraj s običnim bijelim kockicama. Tvoja boja i napredak ostaju sačuvani.",
+
   statsPageTitle: "Statistika",
   yourRankingsTitle: "Tvoj poredak",
   topCountriesTitle: "Top 10 zemalja",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Kuća slavnih ovog tjedna",
+
+  hofSubtitle: "Najbolji rezultat u jednoj partiji ovog tjedna",
+
+  hofEmpty: "Još nitko nije igrao ovog tjedna",
+
+  hofMatches: "partije",
+
+  hofPoints: "bodovi",
+
+  hofGamesTitle: "Najaktivniji ovog tjedna",
+
+  hofGamesSubtitle: "Najviše odigranih partija ovog tjedna",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Pao si na {rank}. mjesto u ovotjednoj top 10',
   hofDroppedOut: 'Ispao si iz ovotjedne top 10',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Top 10 ovog tjedna",
+
   weeklyRankLabel: "Tvoje mjesto prošli tjedan",
   weeklyGamesText: "Broj mečeva u zadnjih 7 dana: {n}",
   weeklyBuildingHint: "Odigraj meč za ulazak na ovotjednu ljestvicu",
@@ -405,14 +416,18 @@ export const hr: Partial<typeof sv> = {
   xpEarnedTotal: "Zasluženi XP: {n}",
   lobbyTryQuickHint: "Nitko se još nije pridružio? Isprobajte Brzu utakmicu – odmah ćete biti spojeni s online igračem.",
   lobbyOpenCard: "Čekaonica otvorena · kod {code}",
-  shopKind_personal: "Your own",
+  shopKind_personal: "Tvoje",
+
   shopKind_season: "Halloween 🎃",
   shopKind_celebration: "Yatzy celebration",
-  shopKind_frame: "Profile picture frames",
+  shopKind_frame: "Okviri za profilnu sliku",
+
   shopCelebrationHint: "Shown when you get Yatzy – opponents online see it too",
-  shopFrameHint: "Shown around your picture on the board – opponents see it too",
+  shopFrameHint: "Prikazuje se oko tvoje slike na ploči – vidi ga i protivnik",
+
   shopStandard: "Standard",
-  shopPreview: "Preview",
+  shopPreview: "Pretpregled",
+
   shopUntil: "Only until {date}",
   lobbyCreateTitle: "Pozovi prijatelja",
   lobbyCreateHint: "Pokreni meč i dobit ćeš kod. Pošalji ga prijatelju.",

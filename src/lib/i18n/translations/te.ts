@@ -303,26 +303,37 @@ export const te: Partial<typeof sv> = {
   addStrangerFriend: '{name}ని స్నేహితుడిగా చేర్చు',
   strangerFriendAdded: '{name} ఇప్పుడు నీ స్నేహితుడు',
   statsPage: "గణాంకాలు",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "ప్రకటన సెట్టింగ్‌లు",
+
+  useWhiteDice: "తెల్ల పాచికలను వాడండి",
+
+  useWhiteDiceDesc: "సాదా తెల్ల పాచికలతో ఆడండి. మీ రంగు, పురోగతి అలాగే ఉంటాయి.",
+
   statsPageTitle: "గణాంకాలు",
   yourRankingsTitle: "మీ ర్యాంకులు",
   topCountriesTitle: "టాప్ 10 దేశాలు",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "ఈ వారం అగ్రగాములు",
+
+  hofSubtitle: "ఈ వారం ఒక మ్యాచ్‌లో అత్యధిక స్కోరు",
+
+  hofEmpty: "ఈ వారం ఇంకా ఎవరూ ఆడలేదు",
+
+  hofMatches: "మ్యాచ్‌లు",
+
+  hofPoints: "పాయింట్లు",
+
+  hofGamesTitle: "ఈ వారం అత్యంత చురుకైన ఆటగాళ్లు",
+
+  hofGamesSubtitle: "ఈ వారం అత్యధిక మ్యాచ్‌లు ఆడినవారు",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'మీరు ఈ వారం టాప్ 10లో #{rank}కు పడిపోయారు',
   hofDroppedOut: 'మీరు ఈ వారం టాప్ 10 నుండి బయటపడ్డారు',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "ఈ వారం టాప్ 10",
+
   weeklyRankLabel: "గత వారం మీ ర్యాంకు",
   weeklyGamesText: "గత 7 రోజుల్లో {n} మ్యాచ్‌లు",
   weeklyBuildingHint: "ఈ వారం జాబితాలో చేరేందుకు ఒక మ్యాచ్ ఆడండి",

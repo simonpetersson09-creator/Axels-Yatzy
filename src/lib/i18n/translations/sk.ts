@@ -303,26 +303,37 @@ export const sk: Partial<typeof sv> = {
   addStrangerFriend: 'Pridať {name} medzi kamarátov',
   strangerFriendAdded: '{name} je teraz medzi tvojimi kamarátmi',
   statsPage: "Štatistiky",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Nastavenia reklám",
+
+  useWhiteDice: "Používať biele kocky",
+
+  useWhiteDiceDesc: "Hraj s obyčajnými bielymi kockami. Tvoja farba aj pokrok zostanú zachované.",
+
   statsPageTitle: "Štatistiky",
   yourRankingsTitle: "Tvoje umiestnenia",
   topCountriesTitle: "Top 10 krajín",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Sieň slávy tohto týždňa",
+
+  hofSubtitle: "Najvyššie skóre v jednom zápase tento týždeň",
+
+  hofEmpty: "Tento týždeň ešte nikto nehral",
+
+  hofMatches: "zápasy",
+
+  hofPoints: "body",
+
+  hofGamesTitle: "Najaktívnejší tento týždeň",
+
+  hofGamesSubtitle: "Najviac odohraných zápasov tento týždeň",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Klesol si na {rank}. miesto v rebríčku týždňa',
   hofDroppedOut: 'Vypadol si z desiatky najlepších tento týždeň',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Top 10 tohto týždňa",
+
   weeklyRankLabel: "Tvoje poradie minulý týždeň",
   weeklyGamesText: "Počet zápasov za posledných 7 dní: {n}",
   weeklyBuildingHint: "Zahraj si zápas a zapoj sa do tohtotýždňového rebríčka",

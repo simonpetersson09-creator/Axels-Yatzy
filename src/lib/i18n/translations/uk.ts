@@ -303,26 +303,37 @@ export const uk: Partial<typeof sv> = {
   addStrangerFriend: 'Додати {name} у друзі',
   strangerFriendAdded: '{name} тепер у твоїх друзях',
   statsPage: "Статистика",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Налаштування реклами",
+
+  useWhiteDice: "Використовувати білі кубики",
+
+  useWhiteDiceDesc: "Грайте зі звичайними білими кубиками. Ваш колір і прогрес зберігаються.",
+
   statsPageTitle: "Статистика",
   yourRankingsTitle: "Ваші рейтинги",
   topCountriesTitle: "Топ-10 країн",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Зала слави тижня",
+
+  hofSubtitle: "Найбільше очок за один матч цього тижня",
+
+  hofEmpty: "Цього тижня ще ніхто не грав",
+
+  hofMatches: "матчі",
+
+  hofPoints: "очки",
+
+  hofGamesTitle: "Найактивніші цього тижня",
+
+  hofGamesSubtitle: "Найбільше зіграних матчів цього тижня",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Ви опустилися на {rank} місце в топ-10 тижня',
   hofDroppedOut: 'Ви випали з топ-10 тижня',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Топ-10 цього тижня",
+
   weeklyRankLabel: "Ваше місце минулого тижня",
   weeklyGamesText: "Матчів за останні 7 днів: {n}",
   weeklyBuildingHint: "Зіграйте матч, щоб потрапити до рейтингу цього тижня",

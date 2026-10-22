@@ -303,26 +303,37 @@ export const sl: Partial<typeof sv> = {
   addStrangerFriend: 'Dodaj {name} med prijatelje',
   strangerFriendAdded: '{name} je zdaj med tvojimi prijatelji',
   statsPage: "Statistika",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Nastavitve oglasov",
+
+  useWhiteDice: "Uporabi bele kocke",
+
+  useWhiteDiceDesc: "Igraj z običajnimi belimi kockami. Tvoja barva in napredek se ohranita.",
+
   statsPageTitle: "Statistika",
   yourRankingsTitle: "Tvoje uvrstitve",
   topCountriesTitle: "Najboljših 10 držav",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Dvorana slavnih tega tedna",
+
+  hofSubtitle: "Največ točk v eni tekmi ta teden",
+
+  hofEmpty: "Ta teden še ni nihče igral",
+
+  hofMatches: "tekme",
+
+  hofPoints: "točke",
+
+  hofGamesTitle: "Najbolj aktivni ta teden",
+
+  hofGamesSubtitle: "Največ odigranih tekem ta teden",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Padel si na {rank}. mesto v tedenski top 10',
   hofDroppedOut: 'Izpadel si iz tedenske top 10',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Najboljših 10 tega tedna",
+
   weeklyRankLabel: "Tvoja uvrstitev prejšnji teden",
   weeklyGamesText: "Število tekem v zadnjih 7 dneh: {n}",
   weeklyBuildingHint: "Od igraj tekmo za uvrstitev na seznam tega tedna",

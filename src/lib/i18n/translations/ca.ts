@@ -302,26 +302,37 @@ export const ca: Partial<typeof sv> = {
   addStrangerFriend: 'Afegeix {name} com a amic',
   strangerFriendAdded: '{name} ara és el teu amic',
   statsPage: "Estadístiques",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Configuració dels anuncis",
+
+  useWhiteDice: "Utilitza daus blancs",
+
+  useWhiteDiceDesc: "Juga amb daus blancs normals. Es conserven el teu color i el teu progrés.",
+
   statsPageTitle: "Estadístiques",
   yourRankingsTitle: "Les teves classificacions",
   topCountriesTitle: "Els 10 millors països",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Saló de la fama de la setmana",
+
+  hofSubtitle: "Millor puntuació en una partida aquesta setmana",
+
+  hofEmpty: "Encara no ha jugat ningú aquesta setmana",
+
+  hofMatches: "partides",
+
+  hofPoints: "punts",
+
+  hofGamesTitle: "Els més actius de la setmana",
+
+  hofGamesSubtitle: "Més partides jugades aquesta setmana",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Has baixat al lloc {rank} del top 10 setmanal',
   hofDroppedOut: 'Has sortit del top 10 setmanal',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Els 10 millors de la setmana",
+
   weeklyRankLabel: "La teva posició la setmana passada",
   weeklyGamesText: "{n} partides en els últims 7 dies",
   weeklyBuildingHint: "Juga una partida per entrar a la llista d'aquesta setmana",

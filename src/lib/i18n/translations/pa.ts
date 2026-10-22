@@ -303,26 +303,37 @@ export const pa: Partial<typeof sv> = {
   addStrangerFriend: '{name} ਨੂੰ ਦੋਸਤ ਬਣਾਓ',
   strangerFriendAdded: '{name} ਹੁਣ ਤੁਹਾਡਾ ਦੋਸਤ ਹੈ',
   statsPage: "ਅੰਕੜੇ",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "ਇਸ਼ਤਿਹਾਰ ਸੈਟਿੰਗਾਂ",
+
+  useWhiteDice: "ਚਿੱਟੇ ਪਾਸੇ ਵਰਤੋ",
+
+  useWhiteDiceDesc: "ਸਾਦੇ ਚਿੱਟੇ ਪਾਸਿਆਂ ਨਾਲ ਖੇਡੋ। ਤੁਹਾਡਾ ਰੰਗ ਅਤੇ ਤਰੱਕੀ ਬਰਕਰਾਰ ਰਹਿਣਗੇ।",
+
   statsPageTitle: "ਅੰਕੜੇ",
   yourRankingsTitle: "ਤੁਹਾਡੀ ਰੈਂਕਿੰਗ",
   topCountriesTitle: "ਸਿਖਰਲੇ 10 ਦੇਸ਼",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "ਇਸ ਹਫ਼ਤੇ ਦਾ ਹਾਲ ਆਫ਼ ਫੇਮ",
+
+  hofSubtitle: "ਇਸ ਹਫ਼ਤੇ ਇੱਕ ਮੈਚ ਵਿੱਚ ਸਭ ਤੋਂ ਵੱਧ ਅੰਕ",
+
+  hofEmpty: "ਇਸ ਹਫ਼ਤੇ ਅਜੇ ਕਿਸੇ ਨੇ ਨਹੀਂ ਖੇਡਿਆ",
+
+  hofMatches: "ਮੈਚ",
+
+  hofPoints: "ਅੰਕ",
+
+  hofGamesTitle: "ਇਸ ਹਫ਼ਤੇ ਦੇ ਸਭ ਤੋਂ ਸਰਗਰਮ ਖਿਡਾਰੀ",
+
+  hofGamesSubtitle: "ਇਸ ਹਫ਼ਤੇ ਸਭ ਤੋਂ ਵੱਧ ਖੇਡੇ ਗਏ ਮੈਚ",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'ਤੁਸੀਂ ਇਸ ਹਫ਼ਤੇ ਦੀ ਟਾਪ 10 ਵਿੱਚ #{rank} \'ਤੇ ਹੇਠਾਂ ਆ ਗਏ',
   hofDroppedOut: 'ਤੁਸੀਂ ਇਸ ਹਫ਼ਤੇ ਦੀ ਟਾਪ 10 ਤੋਂ ਬਾਹਰ ਹੋ ਗਏ',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "ਇਸ ਹਫ਼ਤੇ ਦੇ ਸਿਖਰਲੇ 10",
+
   weeklyRankLabel: "ਪਿਛਲੇ ਹਫ਼ਤੇ ਤੁਹਾਡਾ ਰੈਂਕ",
   weeklyGamesText: "ਪਿਛਲੇ 7 ਦਿਨਾਂ ਵਿੱਚ {n} ਮੈਚ",
   weeklyBuildingHint: "ਇਸ ਹਫ਼ਤੇ ਦੀ ਸੂਚੀ ਵਿੱਚ ਆਉਣ ਲਈ ਇੱਕ ਮੈਚ ਖੇਡੋ",
@@ -405,14 +416,18 @@ export const pa: Partial<typeof sv> = {
   xpEarnedTotal: "ਕਮਾਇਆ XP: {n}",
   lobbyTryQuickHint: "ਕਿਸੇ ਨੇ ਅਜੇ ਜੁਆਇਨ ਨਹੀਂ ਕੀਤਾ? ਤੁਰੰਤ ਮੈਚ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ – ਤੁਹਾਨੂੰ ਤੁਰੰਤ ਇੱਕ ਔਨਲਾਈਨ ਖਿਡਾਰੀ ਨਾਲ ਮੈਚ ਕੀਤਾ ਜਾਵੇਗਾ।",
   lobbyOpenCard: "ਉਡੀਕ ਕਮਰਾ ਖੁੱਲ੍ਹਾ · ਕੋਡ {code}",
-  shopKind_personal: "Your own",
+  shopKind_personal: "ਤੁਹਾਡੇ ਆਪਣੇ",
+
   shopKind_season: "Halloween 🎃",
   shopKind_celebration: "Yatzy celebration",
-  shopKind_frame: "Profile picture frames",
+  shopKind_frame: "ਪ੍ਰੋਫ਼ਾਈਲ ਤਸਵੀਰ ਦੇ ਫਰੇਮ",
+
   shopCelebrationHint: "Shown when you get Yatzy – opponents online see it too",
-  shopFrameHint: "Shown around your picture on the board – opponents see it too",
+  shopFrameHint: "ਬੋਰਡ 'ਤੇ ਤੁਹਾਡੀ ਤਸਵੀਰ ਦੇ ਆਲੇ-ਦੁਆਲੇ ਦਿਸਦਾ ਹੈ – ਵਿਰੋਧੀ ਨੂੰ ਵੀ",
+
   shopStandard: "Standard",
-  shopPreview: "Preview",
+  shopPreview: "ਝਲਕ ਦੇਖੋ",
+
   shopUntil: "Only until {date}",
   lobbyCreateTitle: "ਦੋਸਤ ਨੂੰ ਸੱਦਾ ਦਿਓ",
   lobbyCreateHint: "ਮੈਚ ਬਣਾਓ ਤੇ ਕੋਡ ਲਵੋ। ਕੋਡ ਆਪਣੇ ਦੋਸਤ ਨੂੰ ਭੇਜੋ।",

@@ -303,26 +303,37 @@ export const tr: Partial<typeof sv> = {
   addStrangerFriend: '{name} adlı kişiyi arkadaş ekle',
   strangerFriendAdded: '{name} artık arkadaşın',
   statsPage: "İstatistikler",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Reklam ayarları",
+
+  useWhiteDice: "Beyaz zar kullan",
+
+  useWhiteDiceDesc: "Sade beyaz zarlarla oyna. Rengin ve ilerlemen korunur.",
+
   statsPageTitle: "İstatistikler",
   yourRankingsTitle: "Sıralamaların",
   topCountriesTitle: "İlk 10 ülke",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Haftanın onur listesi",
+
+  hofSubtitle: "Bu hafta tek maçta alınan en yüksek puan",
+
+  hofEmpty: "Bu hafta henüz kimse oynamadı",
+
+  hofMatches: "maç",
+
+  hofPoints: "puan",
+
+  hofGamesTitle: "Haftanın en aktifleri",
+
+  hofGamesSubtitle: "Bu hafta en çok maç oynayanlar",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Bu haftanın ilk 10 listesinde {rank}. sıraya düştün',
   hofDroppedOut: 'Bu haftanın ilk 10 listesinden düştün',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Haftanın ilk 10'u",
+
   weeklyRankLabel: "Geçen haftaki sıran",
   weeklyGamesText: "Son 7 günde {n} maç",
   weeklyBuildingHint: "Bu haftanın listesine girmek için bir maç oyna",

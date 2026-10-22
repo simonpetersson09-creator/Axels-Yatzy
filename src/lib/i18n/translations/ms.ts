@@ -303,26 +303,37 @@ export const ms: Partial<typeof sv> = {
   addStrangerFriend: 'Tambah {name} sebagai kawan',
   strangerFriendAdded: '{name} kini kawan awak',
   statsPage: "Statistik",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Tetapan iklan",
+
+  useWhiteDice: "Gunakan dadu putih",
+
+  useWhiteDiceDesc: "Main dengan dadu putih biasa. Warna dan kemajuan anda dikekalkan.",
+
   statsPageTitle: "Statistik",
   yourRankingsTitle: "Kedudukan anda",
   topCountriesTitle: "10 negara teratas",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Dewan Kemasyhuran minggu ini",
+
+  hofSubtitle: "Mata tertinggi dalam satu perlawanan minggu ini",
+
+  hofEmpty: "Belum ada yang bermain minggu ini",
+
+  hofMatches: "perlawanan",
+
+  hofPoints: "mata",
+
+  hofGamesTitle: "Paling aktif minggu ini",
+
+  hofGamesSubtitle: "Perlawanan terbanyak dimainkan minggu ini",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Anda turun ke kedudukan {rank} dalam 10 terbaik minggu ini',
   hofDroppedOut: 'Anda tercicir daripada 10 terbaik minggu ini',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "10 teratas minggu ini",
+
   weeklyRankLabel: "Kedudukan anda minggu lepas",
   weeklyGamesText: "{n} perlawanan dalam 7 hari terakhir",
   weeklyBuildingHint: "Main satu perlawanan untuk masuk senarai minggu ini",

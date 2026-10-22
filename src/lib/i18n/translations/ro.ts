@@ -303,26 +303,37 @@ export const ro: Partial<typeof sv> = {
   addStrangerFriend: 'Adaugă pe {name} ca prieten',
   strangerFriendAdded: '{name} este acum prietenul tău',
   statsPage: "Statistici",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "Setări pentru reclame",
+
+  useWhiteDice: "Folosește zaruri albe",
+
+  useWhiteDiceDesc: "Joacă cu zaruri albe simple. Culoarea și progresul tău se păstrează.",
+
   statsPageTitle: "Statistici",
   yourRankingsTitle: "Pozițiile tale",
   topCountriesTitle: "Top 10 țări",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Clasamentul de onoare al săptămânii",
+
+  hofSubtitle: "Cel mai bun scor într-un meci din această săptămână",
+
+  hofEmpty: "Nimeni nu a jucat încă în această săptămână",
+
+  hofMatches: "meciuri",
+
+  hofPoints: "puncte",
+
+  hofGamesTitle: "Cei mai activi din această săptămână",
+
+  hofGamesSubtitle: "Cele mai multe meciuri jucate în această săptămână",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Ai coborât pe locul {rank} în top 10 al săptămânii',
   hofDroppedOut: 'Ai ieșit din top 10 al săptămânii',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Top 10 al săptămânii",
+
   weeklyRankLabel: "Poziția ta săptămâna trecută",
   weeklyGamesText: "{n} meciuri în ultimele 7 zile",
   weeklyBuildingHint: "Joacă un meci pentru a intra în clasamentul săptămânii",

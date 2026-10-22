@@ -303,26 +303,37 @@ export const ta: Partial<typeof sv> = {
   addStrangerFriend: '{name}-ஐ நண்பராகச் சேர்',
   strangerFriendAdded: '{name} இப்போது உங்கள் நண்பர்',
   statsPage: "புள்ளிவிவரங்கள்",
-  adPrivacy: 'Ad privacy settings',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  adPrivacy: "விளம்பர அமைப்புகள்",
+
+  useWhiteDice: "வெள்ளைப் பகடைகளைப் பயன்படுத்தவும்",
+
+  useWhiteDiceDesc: "சாதாரண வெள்ளைப் பகடைகளுடன் விளையாடுங்கள். உங்கள் நிறமும் முன்னேற்றமும் அப்படியே இருக்கும்.",
+
   statsPageTitle: "புள்ளிவிவரங்கள்",
   yourRankingsTitle: "உங்கள் தரவரிசைகள்",
   topCountriesTitle: "முதல் 10 நாடுகள்",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "இந்த வாரப் புகழ்ப் பட்டியல்",
+
+  hofSubtitle: "இந்த வாரம் ஒரே ஆட்டத்தில் பெற்ற அதிகபட்ச புள்ளிகள்",
+
+  hofEmpty: "இந்த வாரம் இதுவரை யாரும் விளையாடவில்லை",
+
+  hofMatches: "ஆட்டங்கள்",
+
+  hofPoints: "புள்ளிகள்",
+
+  hofGamesTitle: "இந்த வாரம் அதிகம் விளையாடியவர்கள்",
+
+  hofGamesSubtitle: "இந்த வாரம் அதிக ஆட்டங்கள் விளையாடியவர்கள்",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'இந்த வாரத்தின் டாப் 10-ல் நீங்கள் #{rank} க்கு கீழே சென்றுவிட்டீர்கள்',
   hofDroppedOut: 'நீங்கள் இந்த வாரத்தின் டாப் 10-லிருந்து வெளியேறிவிட்டீர்கள்',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "இந்த வாரத்தின் முதல் 10 பேர்",
+
   weeklyRankLabel: "கடந்த வார உங்கள் தரவரிசை",
   weeklyGamesText: "கடந்த 7 நாட்களில் {n} போட்டிகள்",
   weeklyBuildingHint: "இந்த வாரப் பட்டியலில் சேர ஒரு போட்டி விளையாடுங்கள்",

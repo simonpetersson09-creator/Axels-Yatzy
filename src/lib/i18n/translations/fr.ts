@@ -299,25 +299,35 @@ export const fr: Partial<typeof sv> = {
   strangerFriendAdded: '{name} est maintenant ton ami',
   statsPage: "Statistiques",
   adPrivacy: 'Confidentialité des annonces',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  useWhiteDice: "Utiliser des dés blancs",
+
+  useWhiteDiceDesc: "Jouez avec des dés blancs classiques. Votre couleur et votre progression sont conservées.",
+
   statsPageTitle: "Statistiques",
   yourRankingsTitle: "Vos classements",
   topCountriesTitle: "Top 10 des pays",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Palmarès de la semaine",
+
+  hofSubtitle: "Meilleur score en une partie cette semaine",
+
+  hofEmpty: "Personne n’a encore joué cette semaine",
+
+  hofMatches: "parties",
+
+  hofPoints: "points",
+
+  hofGamesTitle: "Les plus actifs de la semaine",
+
+  hofGamesSubtitle: "Le plus de parties jouées cette semaine",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Tu es descendu à la place {rank} du top 10 de la semaine',
   hofDroppedOut: 'Tu es sorti du top 10 de la semaine',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Top 10 de la semaine",
+
   weeklyRankLabel: "Votre rang la semaine dernière",
   weeklyGamesText: "{n} parties ces 7 derniers jours",
   weeklyBuildingHint: "Jouez une partie pour rejoindre le classement de la semaine",

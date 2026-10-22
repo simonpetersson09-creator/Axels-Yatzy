@@ -304,25 +304,35 @@ export const nl: Partial<typeof sv> = {
   strangerFriendAdded: '{name} is nu je vriend',
   statsPage: "Statistieken",
   adPrivacy: 'Advertentie-privacy',
-  useWhiteDice: 'Use white dice',
-  useWhiteDiceDesc: 'Play with plain white dice. Your colour and progress are kept.',
+  useWhiteDice: "Gebruik witte dobbelstenen",
+
+  useWhiteDiceDesc: "Speel met gewone witte dobbelstenen. Je kleur en voortgang blijven behouden.",
+
   statsPageTitle: "Statistieken",
   yourRankingsTitle: "Jouw posities",
   topCountriesTitle: "Top 10 landen",
-  hofTitle: 'Hall of Fame this week',
-  hofSubtitle: 'Best score in one match this week',
-  hofEmpty: 'Nobody has played yet this week',
-  hofMatches: 'matches',
-  hofPoints: 'points',
-  hofGamesTitle: 'Most active this week',
-  hofGamesSubtitle: 'Most matches played this week',
+  hofTitle: "Hall of Fame van deze week",
+
+  hofSubtitle: "Hoogste score in één wedstrijd deze week",
+
+  hofEmpty: "Er heeft deze week nog niemand gespeeld",
+
+  hofMatches: "wedstrijden",
+
+  hofPoints: "punten",
+
+  hofGamesTitle: "Meest actief deze week",
+
+  hofGamesSubtitle: "Meeste wedstrijden gespeeld deze week",
+
   hofBestShort: 'best',
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
   hofShow: 'Show',
   hofDropped: 'Je bent gezakt naar plek {rank} in de top 10 van deze week',
   hofDroppedOut: 'Je bent uit de top 10 van deze week gevallen',
-  hofBadgeLabel: "This week's top 10",
+  hofBadgeLabel: "Top 10 van deze week",
+
   weeklyRankLabel: "Jouw positie vorige week",
   weeklyGamesText: "{n} wedstrijden in de afgelopen 7 dagen",
   weeklyBuildingHint: "Speel een wedstrijd om deze week op de lijst te komen",

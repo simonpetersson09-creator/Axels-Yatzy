@@ -3,6 +3,7 @@
 ## Spelväntrum
 - [x] Fria platstexter, kompakt redo och notistext, närvarosymboler och tio snabbfraser vid figurerna. 18 tester godkända; riktig meddelandeöverföring mellan två webbläsare med simulerade platser och layout på 320/393 px verifierade utan att röra live-bordet.
 - [x] Obegränsad ensam väntan, 120 sekunder att bli redo när sällskap finns; sittande figurer, fria namn och matchande knappar. 15 regel-/klienttester och visuell kontroll godkända.
+- [x] Platstexter vid sidostolarna: vertikala kolumner med namnet närmast stolsryggen och nedräkningstexten ytterst, aldrig över stol eller bord; mätt på 320 och 393 px, bygget OK.
 - [ ] Kör de 17 uppdaterade servertesterna när bordet är tomt; skyddet stoppade körningen eftersom en riktig spelare väntar. Ingen spelarplats rördes.
 - [x] Mindre bord/stolar, förbättrade figurer och fri stol bakom ledig-plats-text; ersätt notisknapp med påminnelse och ta bort väninbjudan.
 - [x] Separat knapp och fyrplatsbord, serverstyrda platser, redo och gemensam onlinematch.

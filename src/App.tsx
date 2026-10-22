@@ -28,6 +28,7 @@ import NotificationNavigator from "./components/NotificationNavigator";
 import { LobbyJoinNotice } from "./components/LobbyJoinNotice";
 import NotificationAskHost from "./components/NotificationAskHost";
 import RewardedXpHost from "./components/RewardedXpHost";
+import WaitingRoomPage from './pages/WaitingRoomPage';
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
@@ -87,6 +88,7 @@ const App = () => (
           <Route path="/" element={<HomePage />} />
           <Route path="/index" element={<Navigate to="/" replace />} />
           <Route path="/setup" element={<GameSetupPage />} />
+          <Route path="/waiting-room" element={<WaitingRoomPage />} />
           <Route path="/join" element={<JoinPage />} />
           <Route path="/game" element={<GamePage />} />
           <Route path="/results" element={<ResultsPage />} />

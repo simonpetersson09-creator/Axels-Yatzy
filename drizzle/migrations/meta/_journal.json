@@ -533,6 +533,13 @@
       "when": 1792695759952,
       "tag": "0075_shared_waiting_room",
       "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1792696074361,
+      "tag": "0076_waiting_room_test_execution",
+      "breakpoints": true
     }
   ]
 }

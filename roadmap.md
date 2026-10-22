@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Dina siffror – framåt från 22 oktober
+- [x] Avhopp påverkar inga rutor; tidigare totalsiffror lämnas orörda.
+- [x] Beständiga matchnycklar och skydd mot dubbelräkning även efter fler än 300 matcher.
+- [x] 19 tester godkända; avhopp → resultat → startsida verifierat med oförändrade totalsiffror, utan live-teststatistik.
+- [ ] Rättningen når installerade telefoner i nästa appversion.
+
 ## Statistikgranskning 22 okt – åtgärder
 - [x] 1000-matchers taket bort i års-/månadsstatistik (verifierat: spelare med 1715 matcher visar 1715 för 2026).
 - [x] Veckans placering: svensk midnatt + nya spelares första matcher räknas (verifierat live på servern).

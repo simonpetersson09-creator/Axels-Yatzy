@@ -14,6 +14,7 @@ import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame, newLocalGameId } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
+import { getLocalMatchKey, startNextLocalMatch } from '@/lib/local-match-key';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
@@ -27,8 +28,6 @@ import { Home } from 'lucide-react';
 import { getPlayerName } from '@/lib/session';
 import { toast } from 'sonner';
 import { useGameBanner } from '@/hooks/useGameBanner';
-
-const newMatchKey = () => `local:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 
 export default function GamePage() {
 
@@ -102,7 +101,7 @@ export default function GamePage() {
 
   // Stable per-match key so a finished local game can never be counted twice
   // (remount, hot reload or re-entry after an app restart).
-  const localMatchKeyRef = useRef<string>(newMatchKey());
+  const localMatchKeyRef = useRef<string>(getLocalMatchKey(localGameId));
 
 
   const hasStartedRef = useRef(false);
@@ -315,8 +314,7 @@ export default function GamePage() {
   const handleForfeit = useCallback(() => {
     if (!gameState) return;
     clearLocalActiveGame(localGameId);
-    // A forfeit counts as a played, lost game (resets the win streak). Yatzys
-    // from a forfeited match never count toward dice tiers.
+    // A forfeit affects no statistics, records, streaks or dice tiers.
     if (!gameState.gameOver && !aiPlayers.includes(0)) {
       recordGameResult(getTotalScore(gameState.players[0].scores), false, 0, localMatchKeyRef.current, false);
       trackEvent('game_forfeited', { score: getTotalScore(gameState.players[0].scores), aiCount: aiPlayers.length }, { gameMode: 'single_player' });
@@ -369,9 +367,9 @@ export default function GamePage() {
   const handlePlayAgain = useCallback(() => {
     // Every new match needs a fresh dedupe key, otherwise the second and all
     // following games in a row are silently skipped by the stats ledger.
-    localMatchKeyRef.current = newMatchKey();
+    localMatchKeyRef.current = startNextLocalMatch(localGameId);
     startGame(playerNames);
-  }, [startGame, playerNames]);
+  }, [startGame, playerNames, localGameId]);
 
 
   const handleBackToMenu = useCallback(() => {

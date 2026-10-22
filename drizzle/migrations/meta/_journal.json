@@ -505,6 +505,13 @@
       "when": 1792657843231,
       "tag": "0071_yearly_monthly_leaders",
       "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1792658257292,
+      "tag": "0072_year_ranks",
+      "breakpoints": true
     }
   ]
 }

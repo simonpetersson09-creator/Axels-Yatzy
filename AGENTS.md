@@ -33,3 +33,4 @@
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
 - Player rank ordering ends with session_id after match count and creation time, ensuring deterministic exact ties without changing match totals.
 - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
+- Waiting-room quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.

@@ -3,7 +3,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import postgres from 'postgres';
 import { randomUUID } from 'node:crypto';
 const url = process.env.SUPABASE_DB_URL;
-const db = url ? postgres(url, { max: 1, prepare: false }) : null;
+const db = url ? postgres(url, { max: 5, prepare: false }) : null;
 afterAll(async () => { if (db) await db.end(); });
 async function scenario(check: (sql: postgres.TransactionSql, ids: string[], action: (i: number, action?: string, seat?: string | null, ready?: boolean, notify?: boolean) => Promise<any>) => Promise<void>) {
   if (!db) throw new Error('Database test connection missing');
@@ -24,6 +24,30 @@ async function scenario(check: (sql: postgres.TransactionSql, ids: string[], act
   } catch (error) { if (error !== rollback) throw error; }
 }
 describe.skipIf(!url)('authoritative waiting room database', () => {
+  it('simultaneous joins compete for the last seat and simultaneous ready are serialized', async () => {
+    if (!db) throw new Error('Database test connection missing');
+    const occupied=await db`select count(*)::int n from waiting_room_seats where game_id is null`;
+    if(occupied[0].n!==0) throw new Error('Real waiting players present: refusing QA interference');
+    const ids=Array.from({length:5},()=>`qa-room-${randomUUID()}`);
+    const seats=new Map<number,string>();
+    const act=async(i:number,action='join',ready=false)=> {
+      const rows=await db`select waiting_room_action(${ids[i]},${ids[i]+'-device'},${action},${seats.get(i)??null}::uuid,'QA concurrency',${ready},false) result`;
+      if(rows[0].result.mine) seats.set(i,rows[0].result.mine.id);
+      return rows[0].result;
+    };
+    try {
+      for(let i=0;i<3;i++)await act(i);
+      const joins=await Promise.all([act(3),act(4)]);
+      expect(joins.filter(r=>r.error==='full').length).toBe(1);
+      expect(seats.size).toBe(4);
+      const ready=await Promise.all(Array.from(seats.keys()).map(i=>act(i,'ready',true)));
+      expect(ready.filter(r=>r.countdown_at).length).toBe(1);
+      expect(new Set(ready.flatMap(r=>r.players.map((p:any)=>p.id))).size).toBe(4);
+    } finally {
+      // Leave before the three-second deadline. No game or leaderboard data is produced.
+      await Promise.all(Array.from(seats.keys()).map(i=>act(i,'leave')));
+    }
+  });
   it('gives unique seats, rejects fifth, prevents duplicate membership', () => scenario(async (sql, ids, action) => {
     for (let i = 0; i < 4; i++) expect((await action(i)).mine.seat).toBe(i);
     expect((await action(4)).error).toBe('full');

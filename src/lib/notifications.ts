@@ -30,12 +30,23 @@ function markHandled(id: string | undefined): boolean {
 export interface NotificationPrefs {
   turnNotifications: boolean;
   reminderNotifications: boolean;
+  playReminders: boolean;
 }
 
 const DEFAULT_PREFS: NotificationPrefs = {
   turnNotifications: true,
   reminderNotifications: true,
+  playReminders: true,
 };
+
+/** IANA timezone for server-scheduled play reminders; empty if unknown. */
+function deviceTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';
+  } catch {
+    return '';
+  }
+}
 
 export function getNotificationPrefs(): NotificationPrefs {
   try {
@@ -58,7 +69,8 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
   // Only talk to the server when something actually changed since the last
   // successful sync — avoids a write on every app start.
   const lang = getLanguage();
-  const sig = JSON.stringify([prefs.turnNotifications, prefs.reminderNotifications, lang]);
+  const timezone = deviceTimezone();
+  const sig = JSON.stringify([prefs.turnNotifications, prefs.reminderNotifications, prefs.playReminders, lang, timezone]);
   try {
     if (localStorage.getItem(PREFS_SYNCED_KEY) === sig) return;
   } catch { /* ignore */ }
@@ -70,7 +82,9 @@ export async function setNotificationPrefs(prefs: NotificationPrefs): Promise<vo
         device_id: deviceId,
         turn_notifications: prefs.turnNotifications,
         reminder_notifications: prefs.reminderNotifications,
+        play_reminders: prefs.playReminders,
         lang,
+        timezone,
       },
     });
     if (!error) {

@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "set_prefs") {
-      const { device_id, turn_notifications, reminder_notifications, lang } = body;
+      const { device_id, turn_notifications, reminder_notifications, play_reminders, lang, timezone } = body;
       if (!device_id) return json({ error: "device_id required" }, 400);
       const row: Record<string, unknown> = {
         device_id,
@@ -73,19 +73,23 @@ Deno.serve(async (req) => {
         reminder_notifications: !!reminder_notifications,
         updated_at: new Date().toISOString(),
       };
-      // Old app versions send no lang — keep whatever is stored.
+      // Old app versions send no lang / play_reminders / timezone — keep whatever is stored.
       if (typeof lang === "string" && /^[a-zA-Z-]{2,6}$/.test(lang)) row.lang = lang;
+      if (typeof play_reminders === "boolean") row.play_reminders = play_reminders;
+      if (typeof timezone === "string" && /^[A-Za-z0-9_+\-/]{2,50}$/.test(timezone)) row.timezone = timezone;
       // Old app versions re-send unchanged prefs on every start: skip the write then.
       const { data: cur } = await supabase
         .from("notification_preferences")
-        .select("turn_notifications, reminder_notifications, lang")
+        .select("turn_notifications, reminder_notifications, play_reminders, lang, timezone")
         .eq("device_id", device_id)
         .maybeSingle();
       if (
         cur &&
         cur.turn_notifications === row.turn_notifications &&
         cur.reminder_notifications === row.reminder_notifications &&
-        (row.lang === undefined || cur.lang === row.lang)
+        (row.play_reminders === undefined || cur.play_reminders === row.play_reminders) &&
+        (row.lang === undefined || cur.lang === row.lang) &&
+        (row.timezone === undefined || cur.timezone === row.timezone)
       ) {
         return json({ ok: true, unchanged: true });
       }

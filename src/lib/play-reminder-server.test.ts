@@ -51,11 +51,11 @@ async function setupDevice(
             values (${device}, true, true, ${opts.playReminders ?? true}, 'en', ${opts.timezone === undefined ? tzAt18() : opts.timezone})`;
   if (opts.activityDaysAgo !== null && opts.activityDaysAgo !== undefined) {
     await sql`insert into analytics_sessions (id, device_id, platform, app_version, last_seen_at)
-              values (${'qa-sess-' + device}, ${device}, 'ios', 'qa', now() - (${opts.activityDaysAgo} || '0')::text::int * interval '1 day')`;
+              values (${'qa-sess-' + device}, ${device}, 'ios', 'qa', now() - make_interval(days => ${opts.activityDaysAgo}))`;
   }
   if (opts.state) {
     await sql`insert into play_reminder_state (device_id, reminders_sent, last_sent_at)
-              values (${device}, ${opts.state.remindersSent}, now() - ${opts.state.lastSentDaysAgo}::text::int * interval '1 day')`;
+              values (${device}, ${opts.state.remindersSent}, now() - make_interval(days => ${opts.state.lastSentDaysAgo}))`;
   }
   return device;
 }

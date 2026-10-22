@@ -35,3 +35,4 @@
 - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
 - Waiting-room quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
 - Waiting-room UI and push translations share a dependency-free copy module under functions/_shared; merge it with each app dictionary so language coverage stays consistent across client and server.
+- Waiting-room welcome visibility uses a separate persistent device-local flag, marked on display rather than dismissal, so reopening cannot repeat it or change seat/game state.

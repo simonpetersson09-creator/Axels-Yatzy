@@ -15,6 +15,8 @@ import table from '@/assets/waiting-table.png';
 import { useWaitingRoomChat } from '@/hooks/useWaitingRoomChat';
 import { WAITING_PHRASES } from '@/lib/waiting-room-chat';
 import { useBackHandler } from '@/lib/back-handler';
+import { WaitingRoomWelcomeDialog } from '@/components/WaitingRoomWelcomeDialog';
+import { takeWaitingRoomWelcome } from '@/lib/waiting-room-welcome';
 
 export default function WaitingRoomPage() {
   const { t } = useTranslation();
@@ -25,6 +27,13 @@ export default function WaitingRoomPage() {
   const [connectionLost, setConnectionLost] = useState(false);
   const [clock, setClock] = useState(Date.now());
   const [chatOpen, setChatOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const welcomeChecked = useRef(false);
+  useEffect(() => {
+    if (welcomeChecked.current) return;
+    welcomeChecked.current = true;
+    setWelcomeOpen(takeWaitingRoomWelcome());
+  }, []);
   useBackHandler(chatOpen, () => setChatOpen(false));
   const offset = useRef(0);
   const seatRef = useRef<string | null>(params.get('seat') || savedWaitingSeat());
@@ -135,6 +144,7 @@ export default function WaitingRoomPage() {
   const errorKey = snapshot?.error === 'full' ? 'wrFull' : snapshot?.error === 'starting' ? 'wrStarting' : snapshot?.error === 'expired' ? 'wrExpired' : null;
 
   return <main className="waiting-room-screen">
+    <WaitingRoomWelcomeDialog open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
     <div className="waiting-room-content">
       <header className="flex items-center gap-3">
         <Button variant="ghost" size="icon" aria-label={t('back')} onClick={() => navigate('/')}><ArrowLeft /></Button>

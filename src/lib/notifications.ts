@@ -202,7 +202,7 @@ async function doInitNotifications(): Promise<void> {
       if (kind === 'lobby_join') return;
       if (kind === 'waiting_room') return;
 
-      const showToast = kind === 'reminder' ? toast.message : toast;
+      const showToast = kind === 'reminder' || kind === 'play_reminder' ? toast.message : toast;
       let action: { label: string; onClick: () => void } | undefined;
       if (kind === 'invite' && inviteId) {
         // Surface the accept/decline dialog immediately — the user should not
@@ -239,6 +239,15 @@ async function doInitNotifications(): Promise<void> {
       const inviteId = data.invite_id as string | undefined;
       if (kind === 'waiting_room' && typeof data.waiting_seat_id === 'string') {
         waitingRoomNotification(data.waiting_seat_id);
+        return;
+      }
+      if (kind === 'play_reminder') {
+        // Play reminder: open the home screen only — never a match or a seat.
+        markHandled(notifId);
+        trackEvent('play_reminder_opened', { source: 'tap' });
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('app:navigate', { detail: { path: '/' } }));
+        }, 200);
         return;
       }
       // Mark handled so a racing foreground-receive doesn't also toast.

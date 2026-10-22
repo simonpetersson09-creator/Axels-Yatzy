@@ -53,7 +53,7 @@ export default function SettingsPage() {
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
-  const updateNotifPref = (key: 'turnNotifications' | 'reminderNotifications', value: boolean) => {
+  const updateNotifPref = (key: 'turnNotifications' | 'reminderNotifications' | 'playReminders', value: boolean) => {
     const next = { ...notifPrefs, [key]: value };
     setNotifPrefsState(next);
     void setNotificationPrefs(next);
@@ -439,6 +439,14 @@ export default function SettingsPage() {
               description={t('notifReminderDesc')}
               value={notifPrefs.reminderNotifications}
               onChange={(v) => updateNotifPref('reminderNotifications', v)}
+            />
+            <div className="border-t border-border/40" />
+            <ToggleRow
+              icon={<Dices className="w-4 h-4 text-primary" />}
+              label={t('notifPlayReminderLabel')}
+              description={t('notifPlayReminderDesc')}
+              value={notifPrefs.playReminders}
+              onChange={(v) => updateNotifPref('playReminders', v)}
             />
           </Card>
         </Section>

@@ -9,6 +9,7 @@ export interface ApnsArgs {
   body: string;
   data: Record<string, string>;
   category?: string;
+  expiresAt?: string;
 }
 
 export interface ApnsResult {
@@ -46,6 +47,7 @@ export async function sendApns(args: ApnsArgs): Promise<ApnsResult> {
         "apns-push-type": "alert",
         "apns-priority": "10",
         "content-type": "application/json",
+        ...(args.expiresAt ? { 'apns-expiration': String(Math.floor(Date.parse(args.expiresAt) / 1000)) } : {}),
       },
       body: JSON.stringify(payload),
     });

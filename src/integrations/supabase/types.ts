@@ -870,6 +870,115 @@ export type Database = {
         }
         Relationships: []
       }
+      waiting_room_push_queue: {
+        Row: {
+          delivered: boolean | null
+          dispatched_at: string | null
+          expires_at: string
+          id: string
+          seat_id: string
+        }
+        Insert: {
+          delivered?: boolean | null
+          dispatched_at?: string | null
+          expires_at: string
+          id: string
+          seat_id: string
+        }
+        Update: {
+          delivered?: boolean | null
+          dispatched_at?: string | null
+          expires_at?: string
+          id?: string
+          seat_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waiting_room_push_queue_seat_id_fkey"
+            columns: ["seat_id"]
+            isOneToOne: false
+            referencedRelation: "waiting_room_seats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      waiting_room_seats: {
+        Row: {
+          expires_at: string
+          game_id: string | null
+          id: string
+          joined_at: string
+          last_seen_at: string
+          matched_at: string | null
+          notify_enabled: boolean
+          player_name: string
+          present: boolean
+          ready: boolean
+          recall_id: string | null
+          recall_until: string | null
+          seat: number
+          session_id: string
+        }
+        Insert: {
+          expires_at?: string
+          game_id?: string | null
+          id?: string
+          joined_at?: string
+          last_seen_at?: string
+          matched_at?: string | null
+          notify_enabled?: boolean
+          player_name: string
+          present?: boolean
+          ready?: boolean
+          recall_id?: string | null
+          recall_until?: string | null
+          seat: number
+          session_id: string
+        }
+        Update: {
+          expires_at?: string
+          game_id?: string | null
+          id?: string
+          joined_at?: string
+          last_seen_at?: string
+          matched_at?: string | null
+          notify_enabled?: boolean
+          player_name?: string
+          present?: boolean
+          ready?: boolean
+          recall_id?: string | null
+          recall_until?: string | null
+          seat?: number
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waiting_room_seats_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      waiting_room_state: {
+        Row: {
+          countdown_at: string | null
+          id: number
+          revision: number
+        }
+        Insert: {
+          countdown_at?: string | null
+          id?: number
+          revision?: number
+        }
+        Update: {
+          countdown_at?: string | null
+          id?: number
+          revision?: number
+        }
+        Relationships: []
+      }
       weekly_hall_of_fame: {
         Row: {
           best_at: string
@@ -1141,6 +1250,8 @@ export type Database = {
       internal_snapshot_perf: { Args: never; Returns: number }
       internal_tier_for: { Args: { p_n: number }; Returns: string }
       internal_tier_rank: { Args: { p_tier: string }; Returns: number }
+      internal_waiting_room_reconcile: { Args: never; Returns: undefined }
+      internal_waiting_room_take_push: { Args: never; Returns: Json }
       internal_warm_ping: { Args: { p_copies?: number }; Returns: undefined }
       join_game: {
         Args: {
@@ -1401,6 +1512,19 @@ export type Database = {
         Args: { p_game_id: string; p_session_id: string }
         Returns: Json
       }
+      waiting_room_action: {
+        Args: {
+          p_action?: string
+          p_device_id: string
+          p_name?: string
+          p_notify?: boolean
+          p_ready?: boolean
+          p_seat_id?: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
+      waiting_room_count: { Args: { p_session_id: string }; Returns: number }
     }
     Enums: {
       game_status: "waiting" | "playing" | "finished"

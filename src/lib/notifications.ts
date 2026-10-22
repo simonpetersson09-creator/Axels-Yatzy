@@ -8,6 +8,7 @@ import { getDeviceIdSync, initDeviceId } from '@/lib/device';
 import { getSessionId } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { getLanguage, subscribeProfileChanges } from '@/lib/profile';
+import { waitingRoomNotification } from '@/lib/waiting-room';
 
 const PREFS_KEY = 'yatzy_notif_prefs_v1';
 
@@ -185,6 +186,7 @@ async function doInitNotifications(): Promise<void> {
       trackEvent('push_notification_received_foreground', { kind, game_id: gameId, invite_id: inviteId });
       // Friend joined my waiting room: LobbyJoinNotice already shows it in the app.
       if (kind === 'lobby_join') return;
+      if (kind === 'waiting_room') return;
 
       const showToast = kind === 'reminder' ? toast.message : toast;
       let action: { label: string; onClick: () => void } | undefined;
@@ -221,6 +223,10 @@ async function doInitNotifications(): Promise<void> {
       const kind = (data.kind as string | undefined) ?? 'turn';
       const notifId = data.notification_id as string | undefined;
       const inviteId = data.invite_id as string | undefined;
+      if (kind === 'waiting_room' && typeof data.waiting_seat_id === 'string') {
+        waitingRoomNotification(data.waiting_seat_id);
+        return;
+      }
       // Mark handled so a racing foreground-receive doesn't also toast.
       markHandled(notifId);
       const openedEvent =

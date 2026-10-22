@@ -526,6 +526,48 @@
       "when": 1792666922460,
       "tag": "0074_stable_player_rank_ties",
       "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1792695759952,
+      "tag": "0075_shared_waiting_room",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1792696074361,
+      "tag": "0076_waiting_room_test_execution",
+      "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1792696096774,
+      "tag": "0077_waiting_room_qa_time_control",
+      "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1792696180291,
+      "tag": "0078_waiting_room_match_code",
+      "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1792696537182,
+      "tag": "0079_waiting_room_qa_count",
+      "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1792696651029,
+      "tag": "0080_waiting_room_departure_before_start",
+      "breakpoints": true
     }
   ]
 }

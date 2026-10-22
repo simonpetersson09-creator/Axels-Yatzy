@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
-import { Share } from '@capacitor/share';
-import { ArrowLeft, Bell, Check, Clock, LogOut, Plus, Share2, UserRound } from 'lucide-react';
+import { ArrowLeft, Bell, Check, Clock, LogOut, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
@@ -10,9 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { roomAction, savedWaitingSeat, type RoomAction, type WaitingSnapshot } from '@/lib/waiting-room';
 import { remainingTime } from '@/lib/waiting-room-rules';
 import { getSessionId } from '@/lib/session';
-import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
-import { PUBLIC_WEB_ORIGIN } from '@/lib/app-links';
-import { useBackHandler } from '@/lib/back-handler';
+import { getPushPermissionState } from '@/lib/notifications';
 import table from '@/assets/waiting-table.png';
 
 export default function WaitingRoomPage() {
@@ -22,7 +19,6 @@ export default function WaitingRoomPage() {
   const [snapshot, setSnapshot] = useState<WaitingSnapshot | null>(null);
   const [busy, setBusy] = useState(false);
   const [connectionLost, setConnectionLost] = useState(false);
-  const [askPush, setAskPush] = useState(false);
   const [pushUnavailable, setPushUnavailable] = useState(false);
   const [clock, setClock] = useState(Date.now());
   const offset = useRef(0);
@@ -33,7 +29,6 @@ export default function WaitingRoomPage() {
   const active = useRef(document.visibilityState === 'visible');
   const lastCountdown = useRef<string | null>(null);
   const entered = useRef(false);
-  useBackHandler(askPush, () => setAskPush(false));
 
   const perform = useCallback((action: RoomAction, options: { ready?: boolean; notify?: boolean } = {}) => {
     // Serialize heartbeat/away/ready, so a slow foreground request cannot undo background state.
@@ -113,22 +108,23 @@ export default function WaitingRoomPage() {
     await perform(action, options);
     mutation.current = false; if (mounted.current) setBusy(false);
   };
-  const enablePush = async () => {
-    setAskPush(false);
-    const permission = await getPushPermissionState();
-    const granted = permission === 'granted' || (permission === 'prompt' && await requestPushPermission());
-    setPushUnavailable(!granted);
-    await command('notify', { notify: granted });
-  };
-  const share = async () => {
-    const url = `${PUBLIC_WEB_ORIGIN}/join?waitingRoom=1`;
-    try {
-      if (Capacitor.isNativePlatform()) await Share.share({ title: 'Mr.B. Yatzy', text: t('wrShare'), url });
-      else if (navigator.share) await navigator.share({ title: 'Mr.B. Yatzy', text: t('wrShare'), url });
-      else { await navigator.clipboard.writeText(`${t('wrShare')} ${url}`); toast.success(t('inviteCopiedMsg')); }
-    } catch { /* cancelled shares do not change the waiting seat */ }
-  };
   const mine = snapshot?.mine;
+  const mineId = mine?.game_id ? null : mine?.id;
+  useEffect(() => {
+    if (!mineId) return;
+    let cancelled = false;
+    const syncPermission = async () => {
+      const granted = await getPushPermissionState() === 'granted';
+      if (cancelled || !mounted.current || seatRef.current !== mineId) return;
+      setPushUnavailable(!granted);
+      // Reuse existing permission only; never open a system prompt automatically.
+      void performRef.current('notify', { notify: granted });
+    };
+    void syncPermission();
+    const onVisible = () => { if (document.visibilityState === 'visible') void syncPermission(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => { cancelled = true; document.removeEventListener('visibilitychange', onVisible); };
+  }, [mineId]);
   const players = snapshot?.players ?? [];
   const countdown = snapshot?.countdown_at ? Math.max(0, Math.min(3, 3 - Math.floor((clock - Date.parse(snapshot.countdown_at)) / 1000))) : null;
   const errorKey = snapshot?.error === 'full' ? 'wrFull' : snapshot?.error === 'starting' ? 'wrStarting' : snapshot?.error === 'expired' ? 'wrExpired' : null;
@@ -150,14 +146,14 @@ export default function WaitingRoomPage() {
           const p = players.find(player => player.seat === seat);
           const own = p?.session_id === getSessionId();
           return <div key={seat} className={`waiting-seat waiting-seat-${seat}`}>
-            <div className="waiting-person-label">
+            <div className={`waiting-person-label ${p ? '' : 'waiting-person-label-empty'}`}>
               <p className="font-semibold text-sm break-words">{p?.player_name || t('wrSeat')}{own && <span className="text-primary text-xs block">{t('you')}</span>}</p>
               {p && <p className={`text-[11px] leading-tight ${p.ready ? 'text-game-success' : 'text-muted-foreground'}`}>
                 {p.ready ? <span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />{t('wrReady')}</span> : !p.present ? t('wrAway') : '—'}
               </p>}
               {p?.recall_until && <p className="text-[10px] text-primary leading-tight">{t('wrRecall', { time: remainingTime(p.recall_until, clock) })}</p>}
             </div>
-            {p && <div className={`waiting-figure figure-${seat} ${!p.present ? 'opacity-50' : ''}`}><UserRound aria-hidden="true" /></div>}
+            {p && <div aria-hidden="true" className={`waiting-figure figure-${seat} ${!p.present ? 'opacity-50' : ''}`}><span className="waiting-figure-head" /><span className="waiting-figure-body" /><span className="waiting-figure-legs" /></div>}
           </div>;
         })}
         {countdown !== null && <div className="waiting-countdown" role="timer">{countdown > 0 ? countdown : <span className="text-sm">{t('wrStarting')}</span>}</div>}
@@ -170,20 +166,12 @@ export default function WaitingRoomPage() {
           </Button>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground tabular-nums"><Clock className="w-4 h-4" />{t('wrLeft', { time: remainingTime(mine.expires_at, clock) })}</div>
           <Button variant="ghost" className="w-full whitespace-normal h-auto min-h-11" disabled={busy || countdown !== null} onClick={() => void command('extend')}><Plus />{t('wrExtend')}</Button>
-          {players.length === 1 && <Button variant="secondary" className="w-full min-h-12 whitespace-normal" onClick={() => void share()}><Share2 />{t('wrInvite')}</Button>}
-          <Button variant="outline" className="w-full min-h-12 whitespace-normal" disabled={busy || countdown !== null} onClick={() => mine.notify_enabled ? void command('notify', { notify: false }) : setAskPush(true)}><Bell />{t(mine.notify_enabled ? 'wrPushOn' : 'wrNotify')}</Button>
+          <p className="text-sm text-muted-foreground text-center flex items-start justify-center gap-2"><Bell className="w-4 h-4 shrink-0 mt-0.5" />{t('wrNotifyHint')}</p>
           {(pushUnavailable || (mine.notify_enabled && !snapshot?.push_registered)) && <p className="text-xs text-primary text-center" role="status">{t('wrNoPush')}</p>}
           <Button variant="ghost" className="w-full min-h-12 text-muted-foreground whitespace-normal" disabled={busy} onClick={() => void command('leave')}><LogOut />{t('wrLeave')}</Button>
         </> : <Button className="w-full min-h-12 whitespace-normal" disabled={busy || !snapshot} onClick={() => { seatRef.current = null; void command('join'); }}><Plus />{t('wrJoin')}</Button>}
         {connectionLost && <Button variant="secondary" className="w-full" onClick={() => void command('sync')}>{t('wrRetry')}</Button>}
       </div>
     </div>
-    {askPush && <div className="waiting-modal-backdrop" role="dialog" aria-modal="true" aria-label={t('wrNotify')}>
-      <div className="bg-popover text-popover-foreground border border-border rounded-lg p-6 max-w-sm w-full space-y-5">
-        <Bell className="w-8 h-8 text-primary mx-auto" /><p className="text-center font-semibold">{t('wrNotifyAsk')}</p>
-        <Button className="w-full" onClick={() => void enablePush()}>{t('notifAskYes')}</Button>
-        <Button variant="ghost" className="w-full" onClick={() => setAskPush(false)}>{t('notifAskLater')}</Button>
-      </div>
-    </div>}
   </main>;
 }

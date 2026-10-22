@@ -17,6 +17,7 @@ export const en: Partial<typeof sv> = {
   wrStarting: 'The match is starting. The table is locked.',
   wrExpired: 'Your waiting seat has expired or ended. You can join again.',
   wrNotify: 'Wait with notification',
+  wrNotifyHint: 'Keep notifications on – you’ll be notified when a player joins.',
   wrNotifyAsk: 'Would you like a notification when someone joins your table?',
   wrNoPush: 'Notifications cannot be sent: permission or working registration is missing. You can play while the app is open.',
   wrPushOn: 'Notify when someone joins',

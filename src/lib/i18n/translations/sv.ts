@@ -16,6 +16,7 @@ export const sv = {
   wrStarting: 'Matchen håller på att starta. Bordet är låst.',
   wrExpired: 'Din väntplats har löpt ut eller avslutats. Du kan ansluta igen.',
   wrNotify: 'Vänta med notis',
+  wrNotifyHint: 'Se till att notiser är på – du får en notis när en spelare går med.',
   wrNotifyAsk: 'Vill du få en notis när någon ansluter till ditt bord?',
   wrNoPush: 'Notiser kan inte skickas: tillstånd eller fungerande registrering saknas. Du kan spela medan appen är öppen.',
   wrPushOn: 'Notis vid sällskap är på',

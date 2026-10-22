@@ -527,21 +527,27 @@ export type Database = {
         Row: {
           device_id: string
           lang: string | null
+          play_reminders: boolean
           reminder_notifications: boolean
+          timezone: string | null
           turn_notifications: boolean
           updated_at: string
         }
         Insert: {
           device_id: string
           lang?: string | null
+          play_reminders?: boolean
           reminder_notifications?: boolean
+          timezone?: string | null
           turn_notifications?: boolean
           updated_at?: string
         }
         Update: {
           device_id?: string
           lang?: string | null
+          play_reminders?: boolean
           reminder_notifications?: boolean
+          timezone?: string | null
           turn_notifications?: boolean
           updated_at?: string
         }
@@ -574,6 +580,27 @@ export type Database = {
           query?: string
           taken_at?: string
           total_ms?: number
+        }
+        Relationships: []
+      }
+      play_reminder_state: {
+        Row: {
+          device_id: string
+          last_sent_at: string | null
+          reminders_sent: number
+          updated_at: string
+        }
+        Insert: {
+          device_id: string
+          last_sent_at?: string | null
+          reminders_sent?: number
+          updated_at?: string
+        }
+        Update: {
+          device_id?: string
+          last_sent_at?: string | null
+          reminders_sent?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1100,6 +1127,16 @@ export type Database = {
       check_rate_limit: {
         Args: { p_key: string; p_min_interval_seconds: number }
         Returns: boolean
+      }
+      claim_play_reminder_targets: {
+        Args: never
+        Returns: {
+          device_id: string
+          lang: string
+          platform: string
+          session_id: string
+          token: string
+        }[]
       }
       claim_session: {
         Args: { p_device_id: string; p_session_id: string }

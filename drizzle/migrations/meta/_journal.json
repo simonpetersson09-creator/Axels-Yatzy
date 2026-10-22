@@ -575,6 +575,13 @@
       "when": 1792697743041,
       "tag": "0081_waiting_room_unlimited_120s_ready",
       "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1792704173717,
+      "tag": "0082_play_reminders",
+      "breakpoints": true
     }
   ]
 }

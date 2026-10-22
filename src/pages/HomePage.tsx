@@ -738,9 +738,11 @@ export default function HomePage() {
             >
               🌐 <span className="truncate">{t('playWithFriends')}</span>
             </motion.button>
-            <Button variant="secondary" onClick={() => navigate('/waiting-room')} className="relative w-full min-h-12 rounded-2xl font-display font-bold text-base whitespace-normal">
+            <Button asChild variant="waitingRoom" className="relative w-full h-auto py-3 sm:py-4 px-12 rounded-2xl font-display font-bold text-base sm:text-lg whitespace-normal">
+             <motion.button onClick={() => navigate('/waiting-room')} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               <Users /> {t('wrTitle')}
               {waitingCount > 0 && <span className="absolute right-4 rounded-full bg-destructive text-destructive-foreground min-w-6 h-6 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
+             </motion.button>
             </Button>
             <motion.button
               onClick={() => navigate('/stats')}

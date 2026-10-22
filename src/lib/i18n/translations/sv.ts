@@ -8,6 +8,7 @@ export const sv = {
   wrUndo: 'Ångra redo',
   wrAway: 'Väntar – utanför appen',
   wrRecall: 'Kallad tillbaka · {time}',
+  wrReadyLeft: 'Tryck Redo inom {time}',
   wrExtend: 'Förläng med 15 minuter',
   wrLeft: 'Väntetid kvar: {time}',
   wrLeave: 'Lämna väntrummet',

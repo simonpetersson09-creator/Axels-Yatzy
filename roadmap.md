@@ -1,6 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Spelväntrum
+- [ ] Obegränsad ensam väntan, 120 sekunder att bli redo när sällskap finns; nya servertester och sittande figurer, fria namn och matchande knappar.
 - [x] Mindre bord/stolar, förbättrade figurer och fri stol bakom ledig-plats-text; ersätt notisknapp med påminnelse och ta bort väninbjudan.
 - [x] Separat knapp och fyrplatsbord, serverstyrda platser, redo och gemensam onlinematch.
 - [x] 15 minuters väntplatser, 90 sekunders återkomstfrist, befintlig femminuters serverstädning och realtidsindikator.

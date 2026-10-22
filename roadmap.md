@@ -1,5 +1,13 @@
 # Roadmap – Snabbspel online
 
+## Statistikgranskning 22 okt – åtgärder
+- [x] 1000-matchers taket bort i års-/månadsstatistik (verifierat: spelare med 1715 matcher visar 1715 för 2026).
+- [x] Veckans placering: svensk midnatt + nya spelares första matcher räknas (verifierat live på servern).
+- [x] Avhopp mot datorn räknas inte längre i "Spelade" (samma som online); 3 tester godkända.
+- [x] Världsledarna räknas per år på servern, matchar rubriken "Världsledare 2026".
+- [ ] Avhoppsfixen är klientkod – når telefonerna först i nästa appversion.
+
+
 ## Veckans flitigaste – placeringsnotiser
 - [x] Samma upplägg som Hall of Fame: inträde/klättring med Visa och popup vid tappad placering; 9 tester godkända, notis/Visa/popup kontrollerade i förhandsvisningen med simulerade svar utan live-testmatcher.
 - [ ] Kontrollera på fysisk telefon; kräver ny appversion.

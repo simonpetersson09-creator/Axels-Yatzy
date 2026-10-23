@@ -266,25 +266,25 @@ export default function MultiplayerGamePage() {
     };
   }, []);
 
-  // Force full re-layout on orientation/viewport change (iOS Safari/Capacitor fix)
+  // Only a real rotation needs the iOS layout reset; ordinary resize must
+  // preserve the live dice canvas and its animation state.
   useGameBanner();
   const [orientationKey, setOrientationKey] = useState(0);
   useEffect(() => {
     let raf = 0;
+    let settleRaf = 0;
     const bump = () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(settleRaf);
       raf = requestAnimationFrame(() => {
-        requestAnimationFrame(() => setOrientationKey((k) => k + 1));
+        settleRaf = requestAnimationFrame(() => setOrientationKey((k) => k + 1));
       });
     };
     window.addEventListener('orientationchange', bump);
-    window.addEventListener('resize', bump);
-    window.visualViewport?.addEventListener('resize', bump);
     return () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(settleRaf);
       window.removeEventListener('orientationchange', bump);
-      window.removeEventListener('resize', bump);
-      window.visualViewport?.removeEventListener('resize', bump);
     };
   }, []);
 

@@ -17,6 +17,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 import { DiceTray } from "./DiceTray";
 import type { DiceSceneProps } from "./types";
+import { subscribeDiceResume } from './resume';
 
 const EMPTY_HELD: boolean[] = [];
 
@@ -60,7 +61,8 @@ function DemandDriver({ wakeKey, rolling }: { wakeKey: string; rolling: boolean 
   useEffect(() => {
     const el = gl.domElement;
     el.addEventListener("pointerdown", wake);
-    return () => el.removeEventListener("pointerdown", wake);
+    const unsubscribe = subscribeDiceResume(wake);
+    return () => { el.removeEventListener("pointerdown", wake); unsubscribe(); };
   }, [gl, wake]);
   useFrame(() => {
     if (rolling || performance.now() < activeUntil.current) invalidate();
@@ -84,6 +86,7 @@ function DiceSceneImpl({
   fill = 1,
   duration = 1.1,
   resetKey = 0,
+  cleared = false,
   pipColor,
   holdColor,
   skin,
@@ -111,14 +114,7 @@ function DiceSceneImpl({
       // `isContextLost` exists on both WebGL1 and WebGL2 contexts.
       if (!ctx || ctx.isContextLost?.()) remount();
     };
-    document.addEventListener("visibilitychange", check);
-    window.addEventListener("focus", check);
-    window.addEventListener("pageshow", check);
-    return () => {
-      document.removeEventListener("visibilitychange", check);
-      window.removeEventListener("focus", check);
-      window.removeEventListener("pageshow", check);
-    };
+    return subscribeDiceResume(check);
   }, [remount]);
 
   return (
@@ -169,6 +165,7 @@ function DiceSceneImpl({
           fill={fill}
           duration={duration}
           resetKey={resetKey}
+          cleared={cleared}
           pipColor={pipColor}
           holdColor={holdColor}
           skin={skin}
@@ -177,7 +174,7 @@ function DiceSceneImpl({
         <Warmup />
         <DemandDriver
           rolling={rolling}
-          wakeKey={`${values.join(",")}|${heldSafe.join(",")}|${resetKey}|${size}|${fill}|${spacing}|${pipColor ?? ""}|${holdColor ?? ""}|${typeof skin === "object" ? JSON.stringify(skin) : String(skin ?? "")}`}
+          wakeKey={`${values.join(",")}|${heldSafe.join(",")}|${resetKey}|${cleared}|${size}|${fill}|${spacing}|${pipColor ?? ""}|${holdColor ?? ""}|${typeof skin === "object" ? JSON.stringify(skin) : String(skin ?? "")}`}
         />
       </Canvas>
     </div>

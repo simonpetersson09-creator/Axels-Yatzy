@@ -113,6 +113,7 @@ export function DiceArea({
             held={toFive(lockedDice, false)}
             rolling={isRolling}
             resetKey={resetKey}
+            cleared={!hasRolled && !isRolling && resetKey > 0}
             onRollComplete={() => {
               /* The game state owns roll timing; nothing to do here. */
             }}

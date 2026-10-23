@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Tärningar vid appbyte – 23 oktober
+- [x] Förhindra upprepning av gamla turanimationer och återställ avbrutna kast med explicit cleared-state; serverkast, turregler och annonser oförändrade.
+- [x] Väcka befintlig tärningsbild vid DOM/native-återkomst och undvika omstart vid vanlig storleksändring; verklig rotation behåller layoutskyddet.
+- [x] 9 nya regressionstester och 53 befintliga tester godkända. Körande lokalt provspel: låst tärning, bevarad canvas vid resize, WebGL-återställning före/efter turbyte och fem synliga korrekta tärningar utan runtimefel. Bygge OK. Ingen live-onlinematch skapad.
+- [ ] Tvåtelefonprov av onlinematch och native-appbyte mitt i kast, med låst tärning och vid turbyte; kräver nästa appbygge. Närvarons nätuppdateringar har lämnats oförändrade för att begränsa risken.
+
 ## Spelpåminnelser (inaktiva spelare) — klart 22 okt
 - [x] Migration: play_reminders + timezone i notification_preferences, play_reminder_state, claim_play_reminder_targets (advisory lock, atomisk claim).
 - [x] Edge-funktion notify-play-reminder + timcron (jobb 20, minut 2 varje timme); gamla veckopåminnelsen (jobb 12) avschemalagd.

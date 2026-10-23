@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Frivillig annons: en visning för 1 XP – 23 oktober
-- [ ] Ändra belöningsflödet till en bekräftad annons, behåll skydd mot dubbelbelöning och avbrutna visningar.
-- [ ] Uppdatera dialogen och samtliga 40 språk; verifiera tester och visning. Riktig SDK-visning kräver nytt telefonbygge.
+- [x] En SDK-bekräftad annons ger ett XP-anrop, aldrig automatisk andra annons. Avbrott/fel ger inget XP, sena/dubbla besked dedupliceras, gammal tvåannonsprogress rensas utan automatisk belöning. Servern verifierad: +1 XP, 15 s spärr, inget dagstak; ingen serverändring behövdes.
+- [x] Dialogen och sex berörda texter på alla 40 språk uppdaterade. 48 tester och bygge godkända; dialog/Avbryt och en visning/en belöning verifierade i körande app utan riktiga XP-utdelningar.
+- [ ] Riktig frivillig SDK-annons och XP-leverans på telefon kräver nästa appbygge. Övriga annonsvisningstider oförändrade.
 
 ## Väntrummets landsflaggor – 23 oktober
 - [x] Visa befintligt offentligt spelarland vid namnet, eget land från profilen; okänt land gissas inte. Platser, redo, matchstart och annonser oförändrade. 17 tester och bygge godkända.

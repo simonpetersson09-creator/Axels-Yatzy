@@ -157,7 +157,7 @@ export default function GamePage() {
     };
   }, []);
 
-  // Force full re-layout on orientation change / viewport resize.
+  // Force full re-layout only on an actual orientation change.
   // iOS Safari/Capacitor doesn't always recompute 100dvh, fixed positions,
   // or safe-area insets after rotating back to portrait. Bumping a key
   // remounts the layout tree so every dimension is measured fresh.
@@ -165,22 +165,20 @@ export default function GamePage() {
   const [orientationKey, setOrientationKey] = useState(0);
   useEffect(() => {
     let raf = 0;
+    let settleRaf = 0;
     const bump = () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(settleRaf);
       // Wait two frames so Safari has finished recomputing dvh / safe-area
       raf = requestAnimationFrame(() => {
-        requestAnimationFrame(() => setOrientationKey((k) => k + 1));
+        settleRaf = requestAnimationFrame(() => setOrientationKey((k) => k + 1));
       });
     };
     window.addEventListener('orientationchange', bump);
-    window.addEventListener('resize', bump);
-    // visualViewport fires more reliably on iOS than resize/orientationchange
-    window.visualViewport?.addEventListener('resize', bump);
     return () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(settleRaf);
       window.removeEventListener('orientationchange', bump);
-      window.removeEventListener('resize', bump);
-      window.visualViewport?.removeEventListener('resize', bump);
     };
   }, []);
 

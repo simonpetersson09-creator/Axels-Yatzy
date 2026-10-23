@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Begränsa väntrumsnotiser – 23 oktober
+- [x] Serverstyrd atomisk spärr: högst en väntrumsnotis per enhet var 15:e minut, oavsett väntplats/session. Undertryckta återkomstnotiser konsumeras och skickas aldrig senare. Matchnotiser, spelpåminnelser, platser och spelregler oförändrade. Migrering verifierad live och notify-waiting-room driftsatt med samma enhetsbindning.
+- [x] 23 tester godkända, varav 5 isolerade prov av den driftsatta SQL-funktionen: dubbelt uttag, ny plats/session, 14:59/15:00, separata enheter/notistyper och ogiltiga mottagare. Inga riktiga platser ändrade eller push skickade. Bygge OK; riktig telefonleverans inte testad här.
+
 ## Välkomstrutans text – 23 oktober
 - [x] "Matchen startar när alla är här och redo" kunde uppfattas som att fyra krävs. Rutan säger nu att minst två krävs: "Matchen startar när ni är minst två och alla har tryckt Redo." Uppdaterad på alla 40 språk.
 - [x] 3 nya tester (minst två i alla 40 språk, förbjuden formulering, engelsk reserv) och 23 väntrumstester godkända; bygge OK. Rutan verifierad i körande app.

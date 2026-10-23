@@ -16,7 +16,7 @@ Deno.serve(async () => {
       .eq('id', job.seat_id).maybeSingle();
     if (!seat || seat.present || seat.game_id || !seat.notify_enabled || seat.recall_id !== job.id || Date.parse(seat.recall_until) <= Date.now()) continue;
     const { data: token } = await db.from('push_tokens').select('token,device_id,platform').eq('session_id', job.session_id)
-      .eq('enabled', true).order('updated_at', { ascending: false }).limit(1).maybeSingle();
+      .eq('device_id', job.device_id).eq('enabled', true).order('updated_at', { ascending: false }).limit(1).maybeSingle();
     if (!token) continue;
     const { data: prefs } = await db.from('notification_preferences').select('lang').eq('device_id', token.device_id).maybeSingle();
     const text = waitingPushText(prefs?.lang ?? null);

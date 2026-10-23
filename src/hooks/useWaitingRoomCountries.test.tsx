@@ -5,7 +5,7 @@ vi.mock('@/integrations/supabase/client', () => ({ supabase: { rpc } }));
 import { useWaitingRoomCountries } from './useWaitingRoomCountries';
 
 describe('waiting room public countries', () => {
-  beforeEach(() => rpc.mockReset());
+  beforeEach(() => { rpc.mockReset(); });
   it('reads the existing country for each distinct player without repeated heartbeat reads', async () => {
     rpc.mockImplementation(async (_name, args) => ({ data: { country: args.p_session_id === 'swedish' ? 'SE' : 'KR' }, error: null }));
     const { result, rerender } = renderHook(({ ids }) => useWaitingRoomCountries(ids), { initialProps: { ids: ['swedish', 'korean', 'swedish'] } });

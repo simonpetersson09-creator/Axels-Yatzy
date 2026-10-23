@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Väntrummets landsflaggor – 23 oktober
+- [x] Visa befintligt offentligt spelarland vid namnet, eget land från profilen; okänt land gissas inte. Platser, redo, matchstart och annonser oförändrade. 17 tester och bygge godkända.
+- [x] Riktig frasöverföring mellan svenska och koreanska vyer verifierad med simulerade platser utan live-bordsändringar: ”환영해요!” hos avsändaren och ”Välkommen!” hos mottagaren. Flaggor synliga i båda vyerna, inga runtimefel.
+
 ## Tärningar vid appbyte – 23 oktober
 - [x] Förhindra upprepning av gamla turanimationer och återställ avbrutna kast med explicit cleared-state; serverkast, turregler och annonser oförändrade.
 - [x] Väcka befintlig tärningsbild vid DOM/native-återkomst och undvika omstart vid vanlig storleksändring; verklig rotation behåller layoutskyddet.

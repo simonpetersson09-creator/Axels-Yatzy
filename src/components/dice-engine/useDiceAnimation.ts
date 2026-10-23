@@ -59,6 +59,7 @@ interface Options {
    * neutral orientation. Used when a turn ends.
    */
   resetKey?: number;
+  cleared?: boolean;
 }
 
 
@@ -84,12 +85,15 @@ export function useDiceAnimation({
   screenRight = DEFAULT_RIGHT,
   screenUp = DEFAULT_UP,
   resetKey = 0,
+  cleared = false,
 }: Options) {
 
   const groupRef = useRef<Group>(null);
   /** Non-rotated outer group: carries the fly-in/bounce translation. */
   const travelRef = useRef<Group>(null);
   const reducedMotion = usePrefersReducedMotion();
+  const previousResetKey = useRef(resetKey);
+  const initiallyCleared = useRef(cleared);
 
   // Per-die scratch objects — allocated once, mutated in place every frame.
   const state = useMemo(
@@ -183,7 +187,11 @@ export function useDiceAnimation({
    * new number while it is still on screen.
    */
   useEffect(() => {
-    if (!resetKey) return;
+    const changed = previousResetKey.current !== resetKey;
+    previousResetKey.current = resetKey;
+    const restoreCleared = initiallyCleared.current;
+    initiallyCleared.current = false;
+    if (!changed && !restoreCleared) return;
     const group = groupRef.current;
     if (!group) return;
 
@@ -191,7 +199,7 @@ export function useDiceAnimation({
     // Land straight, without the random yaw variation used after a roll.
     getFaceQuaternion(value, 0, state.target);
     randomAxis(state.sweepAxis);
-    state.sweepT = 0;
+    state.sweepT = changed ? 0 : 0.8;
     // All five dice must leave on the same clock. A per-die delay here made
     // some dice still visible while others had already started the next roll.
     state.sweepDelay = 0;
@@ -213,6 +221,16 @@ export function useDiceAnimation({
     if (!group) return;
 
     if (!rolling || held) {
+      // If a queued first roll ended while frames were suspended, the game
+      // now owns valid dice. Restore them, but keep a genuinely cleared table
+      // hidden until its next roll. A held die must never wait for a new flight.
+      if (state.sweeping && !cleared && (state.pendingRoll || held)) {
+        state.sweeping = false;
+        state.pendingRoll = false;
+        state.settling = false;
+        settle();
+        setDieFlying(index, false);
+      }
       if (state.animating) {
         // Interrupted mid-roll (rolling window ended early, or the die was
         // held while tumbling): glide to the exact target orientation over a
@@ -254,7 +272,7 @@ export function useDiceAnimation({
       // jumping to the new target (seen as a twitch near the end).
       if (state.animating) {
         const tNow = Math.min(Math.max((state.elapsed - state.delay) / state.duration, 0), 1);
-        rebase(groupRef.current!.quaternion, tNow);
+        rebase(group.quaternion, tNow);
       }
       return;
     }
@@ -297,7 +315,7 @@ export function useDiceAnimation({
     state.rollValue = value;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rolling, held, value, duration, reducedMotion, index, size]);
+  }, [rolling, held, value, duration, reducedMotion, index, size, cleared]);
 
   // A die unmounted mid-flight must not block the next landing signal.
   useEffect(() => () => setDieFlying(index, false), [index]);

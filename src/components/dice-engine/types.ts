@@ -38,6 +38,8 @@ export interface DiceSceneProps extends DiceConfig {
   rolling?: boolean;
   /** Bump this number to play the end-of-turn reset sweep. */
   resetKey?: number;
+  /** The table is intentionally cleared between turns, independent of reset history. */
+  cleared?: boolean;
   /** Optional pip tint (any CSS colour), e.g. the active player's colour. */
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour), e.g. the active player's colour. */

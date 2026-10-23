@@ -26,6 +26,7 @@ export type DiceSetProps = {
   onRollComplete?: () => void;
   /** Bump to play the end-of-turn reset sweep (dice sweep out and back in). */
   resetKey?: number;
+  cleared?: boolean;
   /** Optional pip tint (any CSS colour), e.g. the active player's colour. */
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour), e.g. the active player's colour. */
@@ -51,6 +52,7 @@ function DiceSetImpl({
   fill = 1,
   duration = 1.1,
   resetKey = 0,
+  cleared = false,
   pipColor,
   holdColor,
   skin,
@@ -79,6 +81,7 @@ function DiceSetImpl({
       fill={fill}
       duration={duration}
       resetKey={resetKey}
+      cleared={cleared}
       pipColor={pipColor}
       holdColor={holdColor}
       skin={skin}

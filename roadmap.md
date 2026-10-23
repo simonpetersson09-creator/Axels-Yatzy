@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Tärningar vid appbyte – 23 oktober
+- [ ] Förhindra upprepning av gamla turanimationer och återställ avbrutna kast utan att visa undanplockade tärningar.
+- [ ] Väcka tärningsbilden vid återkomst och undvika omstart vid vanlig storleksändring.
+- [ ] Regressionstester och kontroll i körande app; fysisk iPhone krävs för native-appbyte.
+
 ## Spelpåminnelser (inaktiva spelare) — klart 22 okt
 - [x] Migration: play_reminders + timezone i notification_preferences, play_reminder_state, claim_play_reminder_targets (advisory lock, atomisk claim).
 - [x] Edge-funktion notify-play-reminder + timcron (jobb 20, minut 2 varje timme); gamla veckopåminnelsen (jobb 12) avschemalagd.

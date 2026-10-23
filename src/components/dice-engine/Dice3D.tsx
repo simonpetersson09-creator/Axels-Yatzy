@@ -351,6 +351,7 @@ export interface Dice3DProps {
   onTap?: ((index: number) => void) | undefined;
   /** Bump to play the end-of-turn sweep-out/sweep-in reset. */
   resetKey?: number;
+  cleared?: boolean;
   /** Optional pip tint (any CSS colour). Defaults to near-black ink. */
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour). */
@@ -371,6 +372,7 @@ function Dice3DImpl({
   screenUp,
   onTap,
   resetKey,
+  cleared = false,
   pipColor,
   holdColor,
   skin,
@@ -385,6 +387,7 @@ function Dice3DImpl({
     screenRight,
     screenUp,
     resetKey: resetKey ?? 0,
+    cleared,
   });
 
   // Tactile press feedback: tapping a die dips it to ~0.96 and springs back,

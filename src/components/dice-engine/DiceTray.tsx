@@ -22,6 +22,7 @@ export interface DiceTrayProps {
   onToggleHold?: ((index: number) => void) | undefined;
   /** Bump to play the end-of-turn reset sweep on every die. */
   resetKey?: number;
+  cleared?: boolean;
   /** Optional pip tint (any CSS colour). */
   pipColor?: string | undefined;
   /** Optional hold-ring tint (any CSS colour). */
@@ -39,6 +40,7 @@ function DiceTrayImpl({
   duration,
   onToggleHold,
   resetKey = 0,
+  cleared = false,
   pipColor,
   holdColor,
   skin,
@@ -164,6 +166,7 @@ function DiceTrayImpl({
           screenRight={screenRight}
           screenUp={screenUp}
           resetKey={resetKey}
+          cleared={cleared}
           pipColor={pipColor}
           holdColor={holdColor}
           skin={skin}

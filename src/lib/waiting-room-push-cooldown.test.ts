@@ -15,7 +15,8 @@ async function isolated(check: (sql: postgres.TransactionSql) => Promise<void>) 
     await sql.unsafe('CREATE OR REPLACE FUNCTION pg_temp.internal_waiting_room_reconcile() RETURNS void LANGUAGE plpgsql AS $$ BEGIN RETURN; END $$');
     const [row] = await sql`SELECT pg_get_functiondef('public.internal_waiting_room_take_push()'::regprocedure) AS definition`;
     const definition = row.definition.replace('public.internal_waiting_room_take_push()', 'pg_temp.internal_waiting_room_take_push()')
-      .replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp', 'public'");
+      .replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp', 'public'")
+      .replace('PERFORM internal_waiting_room_reconcile();', 'PERFORM pg_temp.internal_waiting_room_reconcile();');
     await sql.unsafe(definition);
     await sql`INSERT INTO session_owners(session_id,device_id) VALUES('qa-cooldown-a','qa-cooldown-device'),('qa-cooldown-b','qa-cooldown-device'),('qa-cooldown-c','qa-other-device')`;
     await sql`INSERT INTO push_tokens(session_id,device_id,token,platform,enabled) VALUES('qa-cooldown-a','qa-cooldown-device','fake-a','ios',true),('qa-cooldown-b','qa-cooldown-device','fake-b','ios',true),('qa-cooldown-c','qa-other-device','fake-c','ios',true)`;

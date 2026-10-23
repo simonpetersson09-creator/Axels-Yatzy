@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Väntrummets in- och utgång – 23 oktober
+- [ ] Bekräftelse före ny väntplats, tillbaka-fråga med sitta kvar/lämna och serverkontrollerad platsindikator på startsidan; alla språk.
+- [ ] Verifiera in/avbryt, kvar/återkomst, lämna och utgången plats utan att röra riktiga spelare.
+
 ## Frivillig annons: en visning för 1 XP – 23 oktober
 - [x] En SDK-bekräftad annons ger ett XP-anrop, aldrig automatisk andra annons. Avbrott/fel ger inget XP, sena/dubbla besked dedupliceras, gammal tvåannonsprogress rensas utan automatisk belöning. Servern verifierad: +1 XP, 15 s spärr, inget dagstak; ingen serverändring behövdes.
 - [x] Dialogen och sex berörda texter på alla 40 språk uppdaterade. 48 tester och bygge godkända; dialog/Avbryt och en visning/en belöning verifierade i körande app utan riktiga XP-utdelningar.

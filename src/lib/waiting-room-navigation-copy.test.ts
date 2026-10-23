@@ -3,7 +3,7 @@ import { getWaitingRoomNavigationCopy } from './waiting-room-navigation-copy';
 
 const LANGS = [
   'bn', 'ca', 'cs', 'da', 'de', 'el', 'en', 'es', 'fi', 'fr', 'gu', 'hi', 'hr', 'hu',
-  'id', 'it', 'ja', 'kn', 'ko', 'ml', 'mr', 'ms', 'nl', 'no', 'or', 'pa', 'pl', 'ptBR',
+  'id', 'it', 'ja', 'kn', 'ko', 'ml', 'mr', 'ms', 'nl', 'no', 'or', 'pa', 'pl', 'pt-BR',
   'pt', 'ro', 'ru', 'sk', 'sl', 'sv', 'ta', 'te', 'th', 'tr', 'uk', 'vi',
 ];
 

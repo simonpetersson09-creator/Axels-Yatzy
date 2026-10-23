@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Välkomstrutans text – 23 oktober
+- [x] "Matchen startar när alla är här och redo" kunde uppfattas som att fyra krävs. Rutan säger nu att minst två krävs: "Matchen startar när ni är minst två och alla har tryckt Redo." Uppdaterad på alla 40 språk.
+- [x] 3 nya tester (minst två i alla 40 språk, förbjuden formulering, engelsk reserv) och 23 väntrumstester godkända; bygge OK. Rutan verifierad i körande app.
+
 ## Väntrummets in- och utgång – 23 oktober
 - [x] Bekräftelse före ny väntplats, tillbaka-fråga med sitta kvar/lämna och serverkontrollerad platsindikator på startsidan; alla 40 språk. Sitta kvar återgår hem med behållen frånvarande plats; befintliga tidsregler och annonser oförändrade.
 - [x] 20 tester och rent bygge. In/avbryt, kvar/återkomst, misslyckat och lyckat lämna verifierade i körande app med isolerade svar; utgången och matchstartad plats kontrollerade i tester utan riktiga spelarändringar.

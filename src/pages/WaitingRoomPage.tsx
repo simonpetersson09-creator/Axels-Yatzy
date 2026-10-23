@@ -33,13 +33,14 @@ export default function WaitingRoomPage() {
   const [chatOpen, setChatOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [exitOpen, setExitOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
   const requestBack = () => {
     if (mutation.current) return;
     if (snapshot?.mine && !snapshot.mine.game_id) setExitOpen(true);
     else navigate('/');
   };
   // Child dialog effects may mount first; suspend the page handler for every overlay.
-  useBackHandler(!chatOpen && !welcomeOpen && !exitOpen, requestBack);
+  useBackHandler(!chatOpen && !welcomeOpen && !exitOpen && !leaveOpen, requestBack);
   const welcomeChecked = useRef(false);
   useEffect(() => {
     if (welcomeChecked.current) return;
@@ -161,6 +162,9 @@ export default function WaitingRoomPage() {
     <WaitingRoomChoiceDialog open={exitOpen} mode="exit" busy={busy}
       onClose={() => setExitOpen(false)} onSecondary={() => void command('leave')}
       onConfirm={() => { if (!mutation.current) navigate('/'); }} />
+    <WaitingRoomChoiceDialog open={leaveOpen} mode="leave" busy={busy}
+      onClose={() => setLeaveOpen(false)} onSecondary={() => setLeaveOpen(false)}
+      onConfirm={() => void command('leave')} />
     <div className="waiting-room-content">
       <header className="flex items-center gap-3">
         <Button variant="ghost" size="icon" aria-label={t('back')} onClick={requestBack}><ArrowLeft /></Button>
@@ -202,7 +206,7 @@ export default function WaitingRoomPage() {
           </div>
           {mine.recall_until && <div className="flex items-center justify-center gap-2 text-sm text-primary tabular-nums"><Clock className="w-4 h-4" />{t('wrReadyLeft', { time: remainingTime(mine.recall_until, clock) })}</div>}
           <p className="text-[11px] leading-relaxed text-muted-foreground text-center flex items-start justify-center gap-1.5 max-w-72 mx-auto"><Bell className="w-3 h-3 shrink-0 mt-0.5" />{t('wrNotifyHint')}</p>
-          <Button variant="ghost" className="w-full min-h-12 text-muted-foreground whitespace-normal" disabled={busy} onClick={() => void command('leave')}><LogOut />{t('wrLeave')}</Button>
+          <Button variant="ghost" className="w-full min-h-12 text-muted-foreground whitespace-normal" disabled={busy} onClick={() => setLeaveOpen(true)}><LogOut />{t('wrLeave')}</Button>
         </> : <Button className="w-full min-h-12 whitespace-normal" disabled={busy || !snapshot} onClick={() => { seatRef.current = null; void command('join'); }}><Plus />{t('wrJoin')}</Button>}
         {connectionLost && <Button variant="secondary" className="w-full" onClick={() => void command('sync')}>{t('wrRetry')}</Button>}
       </div>

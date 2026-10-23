@@ -3,6 +3,8 @@
 ## Väntrummets in- och utgång – 23 oktober
 - [x] Bekräftelse före ny väntplats, tillbaka-fråga med sitta kvar/lämna och serverkontrollerad platsindikator på startsidan; alla 40 språk. Sitta kvar återgår hem med behållen frånvarande plats; befintliga tidsregler och annonser oförändrade.
 - [x] 20 tester och rent bygge. In/avbryt, kvar/återkomst, misslyckat och lyckat lämna verifierade i körande app med isolerade svar; utgången och matchstartad plats kontrollerade i tester utan riktiga spelarändringar.
+- [x] "Lämna väntrummet" i väntrummet frågar först: "Vill du lämna väntrummet?" med "Ja, lämna väntrummet" och "Sitta kvar"; avbryten knapp rör platsen inte. Texterna på alla 40 språk i navigationstextmodulen.
+- [x] 21 väntrumstester godkända och bygge OK. Bekräftelsen, "Sitta kvar" (kvar i rummet med redo-knappen) och bekräftat lämna (hem utan platsindikator) verifierade i körande app; en kvarvarande testplats från ett avbrutet prov togs bort ur databasen.
 - [ ] Telefonprov av tillbaka/svep och sparad plats kräver nästa appbygge.
 
 ## Frivillig annons: en visning för 1 XP – 23 oktober

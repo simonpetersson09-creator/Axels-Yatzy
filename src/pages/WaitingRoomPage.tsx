@@ -20,6 +20,7 @@ import { takeWaitingRoomWelcome } from '@/lib/waiting-room-welcome';
 import { useWaitingRoomCountries } from '@/hooks/useWaitingRoomCountries';
 import { countryName, countryToFlag } from '@/lib/country-rank';
 import { getProfileCountry } from '@/lib/profile';
+import { WaitingRoomChoiceDialog } from '@/components/WaitingRoomChoiceDialog';
 
 export default function WaitingRoomPage() {
   const { t, lang } = useTranslation();
@@ -31,6 +32,14 @@ export default function WaitingRoomPage() {
   const [clock, setClock] = useState(Date.now());
   const [chatOpen, setChatOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [exitOpen, setExitOpen] = useState(false);
+  const requestBack = () => {
+    if (mutation.current) return;
+    if (snapshot?.mine && !snapshot.mine.game_id) setExitOpen(true);
+    else navigate('/');
+  };
+  // Register the page first so chat/welcome/choice overlays consume back before it.
+  useBackHandler(true, requestBack);
   const welcomeChecked = useRef(false);
   useEffect(() => {
     if (welcomeChecked.current) return;
@@ -57,7 +66,7 @@ export default function WaitingRoomPage() {
         seatRef.current = response.mine?.id ?? (response.error === 'expired' || action === 'leave' ? null : seatRef.current);
         setSnapshot(response);
         setConnectionLost(false);
-        if (action === 'leave' && !response.error) navigate('/', { replace: true });
+        if (action === 'leave' && !response.error) { seatRef.current = null; navigate('/', { replace: true }); }
         if (lastCountdown.current && !response.countdown_at && !response.mine?.game_id) toast.info(t('wrCancelled'));
         lastCountdown.current = response.countdown_at;
         if (response.mine?.game_id && action !== 'away' && action !== 'leave') {
@@ -115,7 +124,7 @@ export default function WaitingRoomPage() {
       document.removeEventListener('visibilitychange', visibility); nativeRemove?.();
       void supabase.removeChannel(channel);
       // Navigating home also retains the seat, but marks it absent from this table.
-      void serial.current.then(() => roomAction('away', { seatId: seatRef.current })).catch(() => {});
+      void serial.current.then(() => { if (seatRef.current) return roomAction('away', { seatId: seatRef.current }); }).catch(() => {});
     };
   }, []);
 
@@ -149,9 +158,12 @@ export default function WaitingRoomPage() {
 
   return <main className="waiting-room-screen">
     <WaitingRoomWelcomeDialog open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
+    <WaitingRoomChoiceDialog open={exitOpen} mode="exit" busy={busy}
+      onClose={() => setExitOpen(false)} onSecondary={() => void command('leave')}
+      onConfirm={() => { if (!mutation.current) navigate('/'); }} />
     <div className="waiting-room-content">
       <header className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" aria-label={t('back')} onClick={() => navigate('/')}><ArrowLeft /></Button>
+        <Button variant="ghost" size="icon" aria-label={t('back')} onClick={requestBack}><ArrowLeft /></Button>
         <h1 className="font-display text-2xl font-bold">{t('wrTitle')}</h1>
         <span className="ml-auto text-muted-foreground tabular-nums text-sm">{players.length}/4</span>
       </header>

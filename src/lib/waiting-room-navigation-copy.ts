@@ -1,0 +1,48 @@
+/** Frontend-only waiting-room entry and return choices, in every app language. */
+const rows = {
+  sv: ['Vill du sätta dig och vänta?', 'Vill du sitta kvar eller lämna väntrummet?', 'Sitta kvar', 'Du sitter i väntrummet'],
+  en: ['Would you like to take a seat and wait?', 'Would you like to keep your seat or leave the waiting room?', 'Keep my seat', 'You have a seat'],
+  no: ['Vil du sette deg og vente?', 'Vil du beholde plassen eller forlate venterommet?', 'Behold plassen', 'Du sitter i venterommet'],
+  da: ['Vil du sætte dig og vente?', 'Vil du beholde din plads eller forlade venterummet?', 'Behold pladsen', 'Du sidder i venterummet'],
+  fi: ['Haluatko istua odottamaan?', 'Haluatko pitää paikkasi vai poistua odotushuoneesta?', 'Pidä paikka', 'Sinulla on paikka'],
+  es: ['¿Quieres sentarte a esperar?', '¿Quieres conservar tu asiento o salir de la sala de espera?', 'Conservar asiento', 'Tienes un asiento'],
+  fr: ['Voulez-vous vous asseoir et attendre ?', 'Voulez-vous garder votre place ou quitter la salle d’attente ?', 'Garder ma place', 'Vous avez une place'],
+  it: ['Vuoi sederti e aspettare?', 'Vuoi tenere il tuo posto o lasciare la sala d’attesa?', 'Tieni il posto', 'Hai un posto'],
+  de: ['Möchtest du Platz nehmen und warten?', 'Möchtest du deinen Platz behalten oder den Warteraum verlassen?', 'Platz behalten', 'Du hast einen Platz'],
+  nl: ['Wil je gaan zitten en wachten?', 'Wil je je stoel behouden of de wachtkamer verlaten?', 'Stoel behouden', 'Je hebt een stoel'],
+  ca: ['Vols seure i esperar?', 'Vols conservar el seient o sortir de la sala d’espera?', 'Conservar seient', 'Tens un seient'],
+  ro: ['Vrei să iei loc și să aștepți?', 'Vrei să păstrezi locul sau să părăsești sala de așteptare?', 'Păstrează locul', 'Ai un loc'],
+  tr: ['Oturup beklemek ister misin?', 'Yerini korumak mı yoksa bekleme odasından ayrılmak mı istersin?', 'Yerimi koru', 'Bir yerin var'],
+  pl: ['Chcesz usiąść i poczekać?', 'Chcesz zachować miejsce czy opuścić poczekalnię?', 'Zachowaj miejsce', 'Masz miejsce'],
+  cs: ['Chceš si sednout a počkat?', 'Chceš si ponechat místo, nebo opustit čekárnu?', 'Ponechat místo', 'Máš místo'],
+  sk: ['Chceš si sadnúť a počkať?', 'Chceš si ponechať miesto alebo opustiť čakáreň?', 'Ponechať miesto', 'Máš miesto'],
+  sl: ['Želiš sesti in počakati?', 'Želiš obdržati sedež ali zapustiti čakalnico?', 'Obdrži sedež', 'Imaš sedež'],
+  hr: ['Želiš li sjesti i pričekati?', 'Želiš li zadržati mjesto ili napustiti čekaonicu?', 'Zadrži mjesto', 'Imaš mjesto'],
+  hu: ['Szeretnél leülni és várni?', 'Megtartod a helyed, vagy elhagyod a várószobát?', 'Hely megtartása', 'Van helyed'],
+  pt: ['Queres sentar-te e esperar?', 'Queres manter o teu lugar ou sair da sala de espera?', 'Manter lugar', 'Tens um lugar'],
+  'pt-BR': ['Quer se sentar e esperar?', 'Quer manter seu lugar ou sair da sala de espera?', 'Manter lugar', 'Você tem um lugar'],
+  id: ['Mau duduk dan menunggu?', 'Mau mempertahankan kursi atau keluar dari ruang tunggu?', 'Pertahankan kursi', 'Kamu punya kursi'],
+  ms: ['Mahu duduk dan menunggu?', 'Mahu kekalkan tempat atau keluar dari ruang menunggu?', 'Kekalkan tempat', 'Anda mempunyai tempat'],
+  vi: ['Bạn muốn ngồi chờ không?', 'Bạn muốn giữ chỗ hay rời phòng chờ?', 'Giữ chỗ', 'Bạn có chỗ ngồi'],
+  el: ['Θέλεις να καθίσεις και να περιμένεις;', 'Θέλεις να κρατήσεις τη θέση σου ή να φύγεις από την αίθουσα αναμονής;', 'Κράτησε τη θέση', 'Έχεις θέση'],
+  ru: ['Хотите занять место и подождать?', 'Хотите сохранить место или покинуть комнату ожидания?', 'Сохранить место', 'У вас есть место'],
+  uk: ['Хочете сісти й зачекати?', 'Хочете зберегти місце чи вийти з кімнати очікування?', 'Зберегти місце', 'У вас є місце'],
+  ja: ['席について待ちますか？', '席を残しますか、それとも待合室を退出しますか？', '席を残す', '席を確保しています'],
+  ko: ['자리에 앉아 기다릴까요?', '자리를 유지할까요, 아니면 대기실을 나갈까요?', '자리 유지', '자리가 있어요'],
+  th: ['ต้องการนั่งรอไหม?', 'ต้องการเก็บที่นั่งไว้หรือออกจากห้องรอ?', 'เก็บที่นั่งไว้', 'คุณมีที่นั่งอยู่'],
+  hi: ['क्या आप बैठकर इंतज़ार करना चाहते हैं?', 'क्या आप अपनी सीट रखना चाहते हैं या प्रतीक्षा कक्ष छोड़ना चाहते हैं?', 'सीट रखें', 'आपकी सीट है'],
+  bn: ['আপনি কি বসে অপেক্ষা করতে চান?', 'আপনি কি আসন রাখতে চান নাকি অপেক্ষার ঘর ছাড়তে চান?', 'আসন রাখুন', 'আপনার আসন আছে'],
+  gu: ['શું તમે બેસીને રાહ જોવા માંગો છો?', 'શું તમે બેઠક રાખવા માંગો છો કે પ્રતીક્ષા રૂમ છોડવા માંગો છો?', 'બેઠક રાખો', 'તમારી બેઠક છે'],
+  kn: ['ನೀವು ಕುಳಿತು ಕಾಯಲು ಬಯಸುವಿರಾ?', 'ನಿಮ್ಮ ಆಸನ ಉಳಿಸಿಕೊಳ್ಳುವಿರಾ ಅಥವಾ ಕಾಯುವ ಕೋಣೆ ಬಿಡುವಿರಾ?', 'ಆಸನ ಉಳಿಸಿ', 'ನಿಮಗೆ ಆಸನವಿದೆ'],
+  ml: ['ഇരുന്ന് കാത്തിരിക്കണോ?', 'സീറ്റ് നിലനിർത്തണോ അതോ കാത്തിരിപ്പ് മുറി വിടണോ?', 'സീറ്റ് നിലനിർത്തുക', 'നിങ്ങൾക്ക് സീറ്റുണ്ട്'],
+  mr: ['तुम्हाला बसून थांबायचे आहे का?', 'तुम्हाला जागा ठेवायची आहे की प्रतीक्षा कक्ष सोडायचा आहे?', 'जागा ठेवा', 'तुमची जागा आहे'],
+  or: ['ଆପଣ ବସି ଅପେକ୍ଷା କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?', 'ଆପଣ ଆସନ ରଖିବେ ନା ଅପେକ୍ଷା କକ୍ଷ ଛାଡ଼ିବେ?', 'ଆସନ ରଖନ୍ତୁ', 'ଆପଣଙ୍କ ଆସନ ଅଛି'],
+  pa: ['ਕੀ ਤੁਸੀਂ ਬੈਠ ਕੇ ਉਡੀਕ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?', 'ਕੀ ਤੁਸੀਂ ਆਪਣੀ ਜਗ੍ਹਾ ਰੱਖਣੀ ਹੈ ਜਾਂ ਉਡੀਕ ਕਮਰਾ ਛੱਡਣਾ ਹੈ?', 'ਜਗ੍ਹਾ ਰੱਖੋ', 'ਤੁਹਾਡੀ ਜਗ੍ਹਾ ਹੈ'],
+  ta: ['அமர்ந்து காத்திருக்க விரும்புகிறீர்களா?', 'இருக்கையை வைத்திருக்க வேண்டுமா அல்லது காத்திருப்பு அறையை விட்டு வெளியேற வேண்டுமா?', 'இருக்கையை வைத்திரு', 'உங்களுக்கு இருக்கை உள்ளது'],
+  te: ['కూర్చుని వేచి ఉండాలనుకుంటున్నారా?', 'మీ సీటు ఉంచుకోవాలా లేదా వేచి ఉండే గది వదిలివెళ్లాలా?', 'సీటు ఉంచుకోండి', 'మీకు సీటు ఉంది'],
+} satisfies Record<string, [string, string, string, string]>;
+
+export function getWaitingRoomNavigationCopy(lang: string) {
+  const row = rows[lang as keyof typeof rows] ?? rows.en;
+  return { wrEnterQuestion: row[0], wrExitQuestion: row[1], wrKeepSeat: row[2], wrSeated: row[3] };
+}

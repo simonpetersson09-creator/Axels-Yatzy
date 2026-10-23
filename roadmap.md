@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Frivillig annons: en visning för 1 XP – 23 oktober
+- [ ] Ändra belöningsflödet till en bekräftad annons, behåll skydd mot dubbelbelöning och avbrutna visningar.
+- [ ] Uppdatera dialogen och samtliga 40 språk; verifiera tester och visning. Riktig SDK-visning kräver nytt telefonbygge.
+
 ## Väntrummets landsflaggor – 23 oktober
 - [x] Visa befintligt offentligt spelarland vid namnet, eget land från profilen; okänt land gissas inte. Platser, redo, matchstart och annonser oförändrade. 17 tester och bygge godkända.
 - [x] Riktig frasöverföring mellan svenska och koreanska vyer verifierad med simulerade platser utan live-bordsändringar: ”환영해요!” hos avsändaren och ”Välkommen!” hos mottagaren. Flaggor synliga i båda vyerna, inga runtimefel.

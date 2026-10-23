@@ -8,9 +8,9 @@ import { useTranslation } from '@/lib/i18n';
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 /**
- * App-wide receiver: only a completed two-ad bundle requests one server XP.
+ * App-wide receiver: one SDK-confirmed completed ad requests one server XP.
  * The XP request is retried a few times — a transient server error must not
- * cost the player the XP they already watched two ads for.
+ * cost the player the XP they already watched an ad for.
  */
 export default function RewardedXpHost() {
   const { t } = useTranslation();

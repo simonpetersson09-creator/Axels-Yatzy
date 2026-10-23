@@ -1,6 +1,7 @@
 import { BarChart3, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWaitingRoomCount } from '@/hooks/useWaitingRoomCount';
+import { WaitingRoomChoiceDialog } from '@/components/WaitingRoomChoiceDialog';
 import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
@@ -76,7 +77,8 @@ const AD_BUTTON_LOCKED = false;
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const waitingCount = useWaitingRoomCount();
+  const { count: waitingCount, seated: waitingSeated, checking: waitingChecking } = useWaitingRoomCount();
+  const [waitingEntryOpen, setWaitingEntryOpen] = useState(false);
   const { t, lang } = useTranslation();
   const [activeGames, setActiveGames] = useState<ActiveGame[]>(() => getActiveGames());
   const [openLobbies, setOpenLobbies] = useState<OpenLobby[]>([]);
@@ -738,8 +740,8 @@ export default function HomePage() {
               🌐 <span className="truncate">{t('playWithFriends')}</span>
             </motion.button>
             <Button asChild variant="waitingRoom" className="relative w-full h-auto py-3 sm:py-4 px-12 rounded-2xl font-display font-bold text-base sm:text-lg whitespace-normal">
-             <motion.button onClick={() => navigate('/waiting-room')} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
-              <Users /> {t('wrTitle')}
+             <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
+              <Users /> <span className="flex flex-col items-center min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-xs font-medium inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
               {waitingCount > 0 && <span className="absolute right-4 rounded-full bg-destructive text-destructive-foreground min-w-6 h-6 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
              </motion.button>
             </Button>
@@ -786,6 +788,9 @@ export default function HomePage() {
 
           <OptionalAdsDialog open={showAdsConsent}
             onClose={() => setShowAdsConsent(false)} onStart={() => void handleOptionalAdClick()} />
+          <WaitingRoomChoiceDialog open={waitingEntryOpen} mode="enter"
+            onClose={() => setWaitingEntryOpen(false)} onSecondary={() => setWaitingEntryOpen(false)}
+            onConfirm={() => { setWaitingEntryOpen(false); navigate('/waiting-room'); }} />
           {/* Premium round secondary actions */}
           <div className="relative w-full">
             <motion.div

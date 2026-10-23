@@ -1,9 +1,11 @@
 import { waitingRoomCopy } from '../../../../supabase/functions/_shared/waiting-room-copy';
 import { getWaitingRoomWelcomeCopy } from '../../../../supabase/functions/_shared/waiting-room-welcome-copy';
+import { getWaitingRoomNavigationCopy } from '../../waiting-room-navigation-copy';
 // Svenska — fallback-språk
 export const sv = {
   ...waitingRoomCopy.sv,
   ...getWaitingRoomWelcomeCopy('sv'),
+  ...getWaitingRoomNavigationCopy('sv'),
   // App
   appName: 'Mr.B. Yatzy',
   tagline: 'Klassiskt tärningsspel i modern tappning',

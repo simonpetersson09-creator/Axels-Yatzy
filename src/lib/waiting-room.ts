@@ -21,7 +21,7 @@ export async function roomAction(action: RoomAction, opts: { seatId?: string | n
   if (error) throw new Error(error.message);
   const snapshot = data as unknown as WaitingSnapshot;
   if (snapshot.mine) localStorage.setItem(SEAT_KEY, snapshot.mine.id);
-  else if (action === 'leave' || snapshot.error === 'expired') localStorage.removeItem(SEAT_KEY);
+  else if (action === 'leave' || snapshot.error === 'expired' || (action === 'sync' && !snapshot.error)) localStorage.removeItem(SEAT_KEY);
   return snapshot;
 }
 

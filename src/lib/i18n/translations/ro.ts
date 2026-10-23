@@ -331,7 +331,7 @@ export const ro: Partial<typeof sv> = {
   hofBestShort: "cel mai bun",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Arată',
   hofDropped: 'Ai coborât pe locul {rank} în top 10 al săptămânii',
   hofDroppedOut: 'Ai ieșit din top 10 al săptămânii',
   hofBadgeLabel: "Top 10 al săptămânii",

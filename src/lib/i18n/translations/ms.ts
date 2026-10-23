@@ -331,7 +331,7 @@ export const ms: Partial<typeof sv> = {
   hofBestShort: "terbaik",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Lihat',
   hofDropped: 'Anda turun ke kedudukan {rank} dalam 10 terbaik minggu ini',
   hofDroppedOut: 'Anda tercicir daripada 10 terbaik minggu ini',
   hofBadgeLabel: "10 teratas minggu ini",

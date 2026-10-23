@@ -331,7 +331,7 @@ export const sl: Partial<typeof sv> = {
   hofBestShort: "najboljše",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Prikaži',
   hofDropped: 'Padel si na {rank}. mesto v tedenski top 10',
   hofDroppedOut: 'Izpadel si iz tedenske top 10',
   hofBadgeLabel: "Najboljših 10 tega tedna",

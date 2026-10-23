@@ -325,7 +325,7 @@ export const fr: Partial<typeof sv> = {
   hofBestShort: "meilleur",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Afficher',
   hofDropped: 'Tu es descendu à la place {rank} du top 10 de la semaine',
   hofDroppedOut: 'Tu es sorti du top 10 de la semaine',
   hofBadgeLabel: "Top 10 de la semaine",

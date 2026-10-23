@@ -331,7 +331,7 @@ export const hr: Partial<typeof sv> = {
   hofBestShort: "najbolji",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Prikaži',
   hofDropped: 'Pao si na {rank}. mjesto u ovotjednoj top 10',
   hofDroppedOut: 'Ispao si iz ovotjedne top 10',
   hofBadgeLabel: "Top 10 ovog tjedna",
@@ -421,16 +421,16 @@ export const hr: Partial<typeof sv> = {
   shopKind_personal: "Tvoje",
 
   shopKind_season: "Halloween 🎃",
-  shopKind_celebration: "Yatzy celebration",
+  shopKind_celebration: "Yatzy proslava",
   shopKind_frame: "Okviri za profilnu sliku",
 
-  shopCelebrationHint: "Shown when you get Yatzy – opponents online see it too",
+  shopCelebrationHint: "Prikazuje se kad dobiješ Yatzy – vide je i online protivnici",
   shopFrameHint: "Prikazuje se oko tvoje slike na ploči – vidi ga i protivnik",
 
   shopStandard: "Standard",
   shopPreview: "Pretpregled",
 
-  shopUntil: "Only until {date}",
+  shopUntil: "Samo do {date}",
   lobbyCreateTitle: "Pozovi prijatelja",
   lobbyCreateHint: "Pokreni meč i dobit ćeš kod. Pošalji ga prijatelju.",
   lobbyJoinTitle: "Imaš kod?",

@@ -331,7 +331,7 @@ export const vi: Partial<typeof sv> = {
   hofBestShort: "cao nhất",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Xem',
   hofDropped: 'Bạn đã tụt xuống hạng {rank} trong top 10 tuần này',
   hofDroppedOut: 'Bạn đã rơi khỏi top 10 tuần này',
   hofBadgeLabel: "Top 10 tuần này",

@@ -17,9 +17,12 @@ import { WAITING_PHRASES } from '@/lib/waiting-room-chat';
 import { useBackHandler } from '@/lib/back-handler';
 import { WaitingRoomWelcomeDialog } from '@/components/WaitingRoomWelcomeDialog';
 import { takeWaitingRoomWelcome } from '@/lib/waiting-room-welcome';
+import { useWaitingRoomCountries } from '@/hooks/useWaitingRoomCountries';
+import { countryName, countryToFlag } from '@/lib/country-rank';
+import { getProfileCountry } from '@/lib/profile';
 
 export default function WaitingRoomPage() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [snapshot, setSnapshot] = useState<WaitingSnapshot | null>(null);
@@ -139,6 +142,7 @@ export default function WaitingRoomPage() {
     return () => { cancelled = true; document.removeEventListener('visibilitychange', onVisible); };
   }, [mineId]);
   const players = snapshot?.players ?? [];
+  const countries = useWaitingRoomCountries(players.map(player => player.session_id));
   const chat = useWaitingRoomChat(players, mineId ?? null);
   const countdown = snapshot?.countdown_at ? Math.max(0, Math.min(3, 3 - Math.floor((clock - Date.parse(snapshot.countdown_at)) / 1000))) : null;
   const errorKey = snapshot?.error === 'full' ? 'wrFull' : snapshot?.error === 'starting' ? 'wrStarting' : snapshot?.error === 'expired' ? 'wrExpired' : null;
@@ -160,9 +164,10 @@ export default function WaitingRoomPage() {
         {[0, 1, 2, 3].map(seat => {
           const p = players.find(player => player.seat === seat);
           const own = p?.session_id === getSessionId();
+          const country = p ? (own ? getProfileCountry() || countries[p.session_id] : countries[p.session_id]) : null;
           return <div key={seat} className={`waiting-seat waiting-seat-${seat}`}>
             <div className={`waiting-person-label ${p ? '' : 'waiting-person-label-empty'}`}>
-              <p className="font-semibold text-xs break-words">{p && <span role="img" aria-label={p.present ? t('onlineNow') : t('wrAway')} className={`waiting-presence ${p.present ? 'waiting-presence-online' : 'waiting-presence-away'}`} />}{p?.player_name || t('wrSeat')}{own && <span className="text-primary text-[10px] block">{t('you')}</span>}</p>
+              <p className="font-semibold text-xs break-words">{p && <span role="img" aria-label={p.present ? t('onlineNow') : t('wrAway')} className={`waiting-presence ${p.present ? 'waiting-presence-online' : 'waiting-presence-away'}`} />}{country && <span role="img" aria-label={countryName(country, lang)} className="text-sm leading-none">{countryToFlag(country)}{' '}</span>}{p?.player_name || t('wrSeat')}{own && <span className="text-primary text-[10px] block">{t('you')}</span>}</p>
               {p && <p className={`text-[11px] leading-tight ${p.ready ? 'text-game-success' : 'text-muted-foreground'}`}>
                 {p.ready ? <span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />{t('wrReady')}</span> : !p.present ? t('wrAway') : '—'}
               </p>}

@@ -91,7 +91,6 @@ export default function HomePage() {
   const [showAdBubble, setShowAdBubble] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
   const [showAdsConsent, setShowAdsConsent] = useState(false);
-  const completedAds = useSyncExternalStore(optionalAdPair.subscribe, optionalAdPair.getCompleted);
   // Bumps whenever any profile field (country, name, avatar) changes, so
   // rank sync re-runs even when the language itself didn't change.
   const [profileVersion, setProfileVersion] = useState(0);
@@ -785,7 +784,7 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
-          <OptionalAdsDialog open={showAdsConsent} completed={completedAds}
+          <OptionalAdsDialog open={showAdsConsent}
             onClose={() => setShowAdsConsent(false)} onStart={() => void handleOptionalAdClick()} />
           {/* Premium round secondary actions */}
           <div className="relative w-full">

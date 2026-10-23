@@ -331,7 +331,7 @@ export const el: Partial<typeof sv> = {
   hofBestShort: "καλύτερη",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Προβολή',
   hofDropped: 'Έπεσες στη θέση {rank} της δεκάδας της εβδομάδας',
   hofDroppedOut: 'Έπεσες εκτός δεκάδας αυτής της εβδομάδας',
   hofBadgeLabel: "Οι 10 κορυφαίοι της εβδομάδας",

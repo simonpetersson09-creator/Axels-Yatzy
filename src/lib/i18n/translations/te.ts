@@ -331,7 +331,7 @@ export const te: Partial<typeof sv> = {
   hofBestShort: "అత్యుత్తమం",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'చూపించు',
   hofDropped: 'మీరు ఈ వారం టాప్ 10లో #{rank}కు పడిపోయారు',
   hofDroppedOut: 'మీరు ఈ వారం టాప్ 10 నుండి బయటపడ్డారు',
   hofBadgeLabel: "ఈ వారం టాప్ 10",

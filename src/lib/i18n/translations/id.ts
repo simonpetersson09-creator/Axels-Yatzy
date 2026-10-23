@@ -331,7 +331,7 @@ export const id: Partial<typeof sv> = {
   hofBestShort: "terbaik",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Lihat',
   hofDropped: 'Kamu turun ke peringkat {rank} di 10 besar minggu ini',
   hofDroppedOut: 'Kamu keluar dari 10 besar minggu ini',
   hofBadgeLabel: "10 besar minggu ini",

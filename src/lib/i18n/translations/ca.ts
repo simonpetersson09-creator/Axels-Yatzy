@@ -330,7 +330,7 @@ export const ca: Partial<typeof sv> = {
   hofBestShort: "millor",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Mostra',
   hofDropped: 'Has baixat al lloc {rank} del top 10 setmanal',
   hofDroppedOut: 'Has sortit del top 10 setmanal',
   hofBadgeLabel: "Els 10 millors de la setmana",

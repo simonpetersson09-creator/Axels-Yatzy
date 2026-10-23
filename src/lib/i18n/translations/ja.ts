@@ -331,7 +331,7 @@ export const ja: Partial<typeof sv> = {
   hofBestShort: "最高",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: '表示',
   hofDropped: '今週のトップ10で{rank}位に下がりました',
   hofDroppedOut: '今週のトップ10から外れました',
   hofBadgeLabel: "今週のトップ10",

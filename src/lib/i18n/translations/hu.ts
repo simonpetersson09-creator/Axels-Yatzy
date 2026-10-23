@@ -331,7 +331,7 @@ export const hu: Partial<typeof sv> = {
   hofBestShort: "legjobb",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Megtekintés',
   hofDropped: 'A hét top 10-es listáján a(z) {rank}. helyre csúsztál',
   hofDroppedOut: 'Kiestél a hét top 10-es listájából',
   hofBadgeLabel: "Heti top 10",

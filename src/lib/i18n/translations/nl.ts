@@ -330,7 +330,7 @@ export const nl: Partial<typeof sv> = {
   hofBestShort: "beste",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'Tonen',
   hofDropped: 'Je bent gezakt naar plek {rank} in de top 10 van deze week',
   hofDroppedOut: 'Je bent uit de top 10 van deze week gevallen',
   hofBadgeLabel: "Top 10 van deze week",

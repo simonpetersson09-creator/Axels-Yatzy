@@ -331,7 +331,7 @@ export const pa: Partial<typeof sv> = {
   hofBestShort: "ਸਭ ਤੋਂ ਵਧੀਆ",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'ਦੇਖੋ',
   hofDropped: 'ਤੁਸੀਂ ਇਸ ਹਫ਼ਤੇ ਦੀ ਟਾਪ 10 ਵਿੱਚ #{rank} \'ਤੇ ਹੇਠਾਂ ਆ ਗਏ',
   hofDroppedOut: 'ਤੁਸੀਂ ਇਸ ਹਫ਼ਤੇ ਦੀ ਟਾਪ 10 ਤੋਂ ਬਾਹਰ ਹੋ ਗਏ',
   hofBadgeLabel: "ਇਸ ਹਫ਼ਤੇ ਦੇ ਸਿਖਰਲੇ 10",
@@ -421,16 +421,16 @@ export const pa: Partial<typeof sv> = {
   shopKind_personal: "ਤੁਹਾਡੇ ਆਪਣੇ",
 
   shopKind_season: "Halloween 🎃",
-  shopKind_celebration: "Yatzy celebration",
+  shopKind_celebration: "Yatzy ਦਾ ਜਸ਼ਨ",
   shopKind_frame: "ਪ੍ਰੋਫ਼ਾਈਲ ਤਸਵੀਰ ਦੇ ਫਰੇਮ",
 
-  shopCelebrationHint: "Shown when you get Yatzy – opponents online see it too",
+  shopCelebrationHint: "ਜਦੋਂ ਤੁਹਾਨੂੰ Yatzy ਮਿਲਦਾ ਹੈ ਤਾਂ ਦਿਖਾਈ ਦਿੰਦਾ ਹੈ – ਔਨਲਾਈਨ ਵਿਰੋਧੀ ਵੀ ਇਸਨੂੰ ਦੇਖਦੇ ਹਨ",
   shopFrameHint: "ਬੋਰਡ 'ਤੇ ਤੁਹਾਡੀ ਤਸਵੀਰ ਦੇ ਆਲੇ-ਦੁਆਲੇ ਦਿਸਦਾ ਹੈ – ਵਿਰੋਧੀ ਨੂੰ ਵੀ",
 
   shopStandard: "Standard",
   shopPreview: "ਝਲਕ ਦੇਖੋ",
 
-  shopUntil: "Only until {date}",
+  shopUntil: "ਸਿਰਫ਼ {date} ਤੱਕ",
   lobbyCreateTitle: "ਦੋਸਤ ਨੂੰ ਸੱਦਾ ਦਿਓ",
   lobbyCreateHint: "ਮੈਚ ਬਣਾਓ ਤੇ ਕੋਡ ਲਵੋ। ਕੋਡ ਆਪਣੇ ਦੋਸਤ ਨੂੰ ਭੇਜੋ।",
   lobbyJoinTitle: "ਕੋਡ ਮਿਲਿਆ?",

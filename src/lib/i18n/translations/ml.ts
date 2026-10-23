@@ -331,7 +331,7 @@ export const ml: Partial<typeof sv> = {
   hofBestShort: "മികച്ചത്",
   hofEntered: "You made this week's top 10 – #{rank}!",
   hofClimbed: "You climbed to #{rank} in this week's top 10!",
-  hofShow: 'Show',
+  hofShow: 'കാണുക',
   hofDropped: 'ഈ ആഴ്ചത്തെ ടോപ്പ് 10-ൽ നിങ്ങൾ #{rank}-ലേക്ക് താഴ്ന്നു',
   hofDroppedOut: 'നിങ്ങൾ ഈ ആഴ്ചത്തെ ടോപ്പ് 10-ൽ നിന്ന് പുറത്തായി',
   hofBadgeLabel: "ഈ ആഴ്ചയിലെ മികച്ച 10 പേർ",

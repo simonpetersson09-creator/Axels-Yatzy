@@ -38,8 +38,8 @@ export default function WaitingRoomPage() {
     if (snapshot?.mine && !snapshot.mine.game_id) setExitOpen(true);
     else navigate('/');
   };
-  // Register the page first so chat/welcome/choice overlays consume back before it.
-  useBackHandler(true, requestBack);
+  // Child dialog effects may mount first; suspend the page handler for every overlay.
+  useBackHandler(!chatOpen && !welcomeOpen && !exitOpen, requestBack);
   const welcomeChecked = useRef(false);
   useEffect(() => {
     if (welcomeChecked.current) return;

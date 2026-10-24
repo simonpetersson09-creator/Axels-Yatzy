@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Hela telefonbilder och linjerad nederkant – 24 oktober
-- [ ] Anpassa onlinevyn så hela brickan och Hem/Ge upp syns ovanför telefonens nederkant med samma baslinje.
-- [ ] Ta och granska tolv nya bilder i ursprungliga telefonmått för iPhone och Android, utan beskärning eller efterhandsförändring.
+- [x] Onlinevyn anpassad endast i CSS: tolv telefonmått med simulerade safe areas ger identiska nederkanter för bricka och Hem/Ge upp, helt ovanför nederkant. Inga runtimefel; tre annonstester godkända, bygge OK. Telefonkontroll kräver nästa appbygge.
+- [x] Tolv nya oskalade PNG-bilder granskade individuellt, pixelmått verifierade och sparade i spelskarmar_v2 med isolerade fyrspelarsvar; inga riktiga matcher eller spelaruppgifter ändrade.
 
 ## Onlinematcher utan banner – 24 oktober
 - [x] Bannern och annonskrympningen avstängda i alla onlinematcher; spelet mot datorn behåller bannern. Små skärmar får egna mått utan annonsutrymme.

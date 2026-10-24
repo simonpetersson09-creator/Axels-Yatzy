@@ -187,3 +187,7 @@
 - [x] Registrera SDK-besked separat från appens visa/dölj-kommandon.
 - [x] Testa återvisning efter laddningsfel och snabba sidbyten automatiskt (31 annonstester godkända).
 - [ ] Testa första/nästa match, bakgrund och snabbsök på fysisk telefon (kräver nytt native-bygge).
+
+## Mindre luft ovanför onlinespelet – 24 oktober
+- [x] Placera matchkoden utan extra flödesmarginal, behåll säker zon och minska avståndet till brickan.
+- [x] Alla 18 simulerade telefonmått kontrollerade: fria namn/tärningar/chatt och synlig nederkant; iPhone 15 överkant minskad från 94,5 till 79 px. Bygge OK; fysisk telefon kräver nytt appbygge.

@@ -183,7 +183,7 @@ export default function WaitingRoomPage() {
           const country = p ? (own ? getProfileCountry() || countries[p.session_id] : countries[p.session_id]) : null;
           return <div key={seat} className={`waiting-seat waiting-seat-${seat}`}>
             <div className={`waiting-person-label ${p ? '' : 'waiting-person-label-empty'}`}>
-              <p className="font-semibold text-xs break-words">{p && <span role="img" aria-label={p.present ? t('onlineNow') : t('wrAway')} className={`waiting-presence ${p.present ? 'waiting-presence-online' : 'waiting-presence-away'}`} />}{country && <span role="img" aria-label={countryName(country, lang)} className="text-sm leading-none">{countryToFlag(country)}{' '}</span>}{p?.player_name || t('wrSeat')}{own && <span className="text-primary text-[10px] block">{t('you')}</span>}</p>
+              <p className="font-semibold text-xs break-words">{p && <span role="img" aria-label={p.present ? t('onlineNow') : t('wrAway')} className={`waiting-presence ${p.present ? 'waiting-presence-online' : 'waiting-presence-away'}`} />}{country && <span role="img" aria-label={countryName(country, lang)} className="waiting-country-flag">{countryToFlag(country)}</span>}<span className="waiting-player-name" title={p?.player_name || undefined}>{p?.player_name || t('wrSeat')}</span>{own && <span className="text-primary text-[10px] block">{t('you')}</span>}</p>
               {p && <p className={`text-[11px] leading-tight ${p.ready ? 'text-game-success' : 'text-muted-foreground'}`}>
                 {p.ready ? <span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />{t('wrReady')}</span> : !p.present ? t('wrAway') : '—'}
               </p>}

@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Högra platsens text – 24 oktober
+- [ ] Håll sidoplatsernas namn/status inom skärmen och flaggans bokstavspar sammanhängande; kontrollera fyra upptagna platser på små skärmar utan live-ändringar.
+
 ## Felsök väntrummet – 24 oktober
 - [x] Återskapat: sparad väntplats returnerade en avslutad match och kunde fånga återinträdet. Serverrättningen 0087 släpper endast avslutade matchkopplingar; aktiva matchövergångar, andra väntplatser, spel och statistik bevaras. Gäller utan ny appversion.
 - [x] 26 tester godkända, inklusive tre isolerade prov mot driftsatt SQL (avslutad koppling, ny plats, aktiv match). Körande app verifierad med isolerade svar: utgången plats → Sätt dig vid bordet → Redo, inga runtimefel; inga live-testplatser eller push skapades. Telefonens återinträde behöver bekräftas av användaren.

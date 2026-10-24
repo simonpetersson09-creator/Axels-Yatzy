@@ -79,7 +79,7 @@ describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {
 });
 
 describe('optional ad completion for XP', () => {
-  beforeEach(() => { native.platform = 'ios'; vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.show.mockClear(); });
+  beforeEach(() => { native.platform = 'ios'; vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.show.mockReset(); native.show.mockResolvedValue(undefined); });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
 
   it('waits for dismissal, then permits exactly one 1 XP reward', async () => {

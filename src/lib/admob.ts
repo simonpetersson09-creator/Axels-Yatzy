@@ -202,13 +202,35 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
   }
 }
 
+let trackingAsked: Promise<void> | null = null;
+/**
+ * Visar Apples "Tillåt spårning?" en gång (iOS bestämmer själv att den bara
+ * visas när status är notDetermined). Fel blockerar aldrig annonser.
+ */
+export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
+  if (adPlatform() !== 'ios') return Promise.resolve();
+  if (!trackingAsked) {
+    trackingAsked = (async () => {
+      try {
+        const { status } = await withTimeout(mod.AdMob.trackingAuthorizationStatus(), 5_000, 'att_status');
+        if (status !== 'notDetermined') return;
+        await withTimeout(mod.AdMob.requestTrackingAuthorization(), 120_000, 'att_request');
+      } catch {
+        /* spårningsfrågan är best effort */
+      }
+    })();
+  }
+  return trackingAsked;
+}
+
 async function ensureInitialized(): Promise<AdMobModule> {
   const mod = await loadModule();
   // Samtycke först: inga annonser begärs innan spelaren svarat i EU.
   const canRequest = await ensureConsent(mod);
   if (!canRequest) throw new Error('consent_not_given');
   if (!initialized) {
-    // Ingen ATT-popup: vi begär aldrig tracking-authorization automatiskt.
+    // iOS: Apples spårningsfråga (ATT) efter Googles samtycke, bara en gång.
+    await ensureTrackingAuthorization(mod);
     await mod.AdMob.initialize({
       initializeForTesting: ADMOB_CONFIG.useTestAds,
     });

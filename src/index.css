@@ -41,7 +41,7 @@
 .home-quick-circle:active { box-shadow: 0 2px 8px hsl(var(--primary) / .2); }
 .home-quick-circle-label { font-size: 13px; overflow-wrap: anywhere; }
 .home-actions-side { display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: var(--home-gap); min-width: 0; }
-.home-actions-side > * { min-height: 0; }
+.home-actions-side > * { min-height: 0; min-width: 0; }
 @media (max-width: 359px) {
   .home-actions { --home-circle: 104px; --home-gap: 8px; }
   .home-quick-circle { padding: 0 12px; }

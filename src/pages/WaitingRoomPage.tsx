@@ -217,7 +217,7 @@ export default function WaitingRoomPage() {
         })}
         {countdown !== null && <div className="waiting-countdown" role="timer">{countdown > 0 ? countdown : <span className="waiting-countdown-text">{t('wrStarting')}</span>}</div>}
       </section>
-      <div className="space-y-3">
+      <div className="space-y-3 waiting-room-actions">
         {errorKey && <p role="alert" className="text-center text-primary text-sm">{t(errorKey)}</p>}
         {mine && !mine.game_id ? <>
           <div className="flex items-center justify-center gap-3">

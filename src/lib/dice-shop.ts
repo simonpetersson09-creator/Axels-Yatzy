@@ -6,7 +6,7 @@ import { getSessionId, claimSession } from '@/lib/session';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
 import { designLook, getDesign } from '@/lib/dice-designs';
 import { effectiveSkin, useGoldStatus, fetchGoldStatus } from '@/lib/gold-dice';
-import type { DiceLook } from '@/lib/dice-skin';
+import { isTierSkin, type DiceLook } from '@/lib/dice-skin';
 
 export interface ShopState {
   xp: number;

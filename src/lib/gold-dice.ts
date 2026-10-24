@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
-import { asSkin, type DiceSkin, type DiceLook } from '@/lib/dice-skin';
+import { asSkin, isTierSkin, type DiceSkin, type DiceLook } from '@/lib/dice-skin';
 import { getDesign, designLook } from '@/lib/dice-designs';
 
 export interface GoldStatus {

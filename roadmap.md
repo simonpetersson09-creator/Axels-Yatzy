@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Onlinematcher utan banner – 24 oktober
-- [ ] Ta bort bannern och annonsens krympning i alla onlinematcher; behåll mot datorn.
-- [ ] Testa annonsregeln och visa bilder av online med 2, 3 och 4 spelare samt mot datorn.
+- [x] Bannern och annonskrympningen avstängda i alla onlinematcher; spelet mot datorn behåller bannern. Små skärmar får egna mått utan annonsutrymme.
+- [x] Tre annonstester godkända; bilder av 2/3/4 spelare, Snabbspel online och datorn tagna med isolerade testsvar. 320×706, 393×706 och 440×956 kontrollerade utan klippning; inga runtimefel. Native annonsdöljning och telefonprov återstår efter ny appversion.
 
 ## Högra platsens text – 24 oktober
 - [x] Sidoplatserna får reserverat utrymme och långa namn förkortas; flaggor hålls samman i horisontell emoji-text. Fyra simulerade platser kontrollerade på 320/393/440 px: alla etiketter inom skärmen, inga runtimefel, 20 tester godkända och bygge OK. Ingen server-/annonsändring; telefonvisningen behöver nästa appbygge.

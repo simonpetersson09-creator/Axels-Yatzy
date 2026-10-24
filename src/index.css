@@ -804,3 +804,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   html:not(.preview-frame) .mp-game .mp-roll-button { width: 80px; height: 80px; font-size: 16px; }
   html:not(.preview-frame) .waiting-table-stage { height: 420px; --waiting-table-size: min(60cqw, 300px, calc(100cqw - 160px)); }
 }
+@media (min-width: 700px) and (min-height: 600px) and (max-height: 780px) {
+  html:not(.preview-frame):has(.mp-game) { --dice-scale: .95; --dice-gap-scale: .35; }
+  html:not(.preview-frame) .mp-game .ios-side-zone { gap: 8px; }
+}

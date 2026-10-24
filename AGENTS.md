@@ -7,14 +7,14 @@
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
-- useMultiplayerGame silently logs errors, calls >3 s and dice/score mismatches as analytics_events 'mp_issue'.
+- Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile authoritatively; score/forfeit guards await server acceptance. Expected dice validate under the scoring lock.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
-- Online locks send full locked_dice batches; per-die toggles are legacy only.
+- Online locks send full batches; per-die toggles are legacy.
 - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — audits fairness and disputes.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).
 - *_authed combines claim/action; ROLL_RECOVER_* reads games. Client multiplayer-actions await requireClaimedDevice; failed claims retry.
-- Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit).
+- Quick-match round 1–2 forfeits become bots if humans remain; bot/idle turns use server quick-match-bot, never another seat's device.
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - Game layout resets on orientationchange, never resize; visual recovery preserves rolls, turns and ads.
 - Online layout: 20 rows + safe clearance; names in column, turn in roll button, centred dice; preserve game state.
@@ -24,11 +24,11 @@
 - Forfeits affect no statistics: recordGameResult(completed=false) is a no-op; preserve all pre-existing totals rather than recalculating history.
 - Local match identities persist per game slot and rotate only on replay; commit stats and an untrimmed dedupe ledger atomically before marking multiplayer results recorded, so restarts cannot double-count future matches.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
-- DiceInfoSheet: safe scroll, body-portaled celebrations, inline frames. Receipts use portals/useBackHandler; Settings ownedOnly reuses selections/previews.
+- DiceInfoSheet: safe scroll, portaled celebrations, inline frames; receipts use portals/useBackHandler; ownedOnly reuses previews.
 - Completed-match home exits use usePostMatchExit and existing interstitial units: preload results, skip unready ads, await dismissal, no XP, match-key dedupe and App Open suppression prevent duplicate ads.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
-- Banners serialize/reload on failure. Search uses a portal/measured slot; only local matches keep useGameBanner.
+- Banners serialize/reload; search uses a measured portal; only local games keep useGameBanner.
 
 - Ad privacy: sync repairs UMP reader registration. OBTAINED/canRequestAds aren't acceptance. Log only read outcomes, never choices/errors; never store consent.
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.
@@ -38,9 +38,9 @@
 - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
 - Waiting-room pushes atomically reserve a device-scoped rate_limits key in internal_waiting_room_take_push; suppressed recalls are consumed, and delivery must use that same bound device so seat/session churn cannot bypass the cooldown. Other notification categories never share this key.
 - Waiting-room quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
-- Waiting-room flags read existing public country-rank RPCs once per table membership change, with the local profile for self; missing countries are never guessed and seat/game state is untouched.
-- Waiting-room side labels reserve horizontal space beside the table; flag emoji use an atomic horizontal writing context so vertical text cannot split their regional-indicator pair.
+- Waiting-room flags read public ranks once per membership change, self from profile; never guess missing countries or mutate seats.
+- Waiting-room labels reserve side space; flags use atomic horizontal writing to preserve regional-indicator pairs.
 - Waiting-room UI and push translations share a dependency-free copy module under functions/_shared; merge it with each app dictionary so language coverage stays consistent across client and server.
-- Waiting-room welcome uses a separate persistent device-local flag marked on display, never changing seat/game state.
+- Waiting-room welcome is device-local, never game state. Queued reads coalesce/expire on unmount; retry repeats failed commands before cleanup-away.
 - Waiting-room entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
 - Waiting-room reconciliation removes handoff seats as soon as their game is finished, while retaining active-game handoffs; stale saved seats must not redirect later room entry into completed games. Seats fill in fixed order: bottom (2), top (0), right (1), left (3).

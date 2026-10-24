@@ -669,10 +669,16 @@ html:not(.ad-banner-on):has(.mp-game) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .54; --dice-gap-scale: .25; }
 }
 @media (min-height: 681px) and (max-height: 800px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .86; --dice-gap-scale: .5; }
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .82; --dice-gap-scale: .48; }
 }
 @media (min-height: 881px) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1.08; --dice-gap-scale: .8; }
+}
+/* Keep the hint out of the dice budget, without hiding it or moving names/chat. */
+.mp-game .mp-dice-column { margin-top: 12px; flex-shrink: 0; }
+.mp-game .mp-dice-hint { position: absolute; inset-inline: 0; top: -25px; }
+@media (max-height: 800px) {
+  .mp-game .mp-dice-hint { top: -12px; }
 }
 .waiting-table-stage { --waiting-sit-dist: calc(var(--waiting-table-size) * .3); }
 .waiting-seat-0 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset) - 31px)); }

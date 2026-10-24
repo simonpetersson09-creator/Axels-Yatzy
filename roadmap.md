@@ -2,7 +2,7 @@
 
 ## Rätta trånga tärningar – 24 oktober
 - [x] Öka endast onlinetärningarnas faktiska 3D-mellanrum inom samma höjdbudget; namn, chatt, spelregler och annonser oförändrade.
-- [ ] Kontrollera fem synliga tärningar och fria mellanrum på små och stora telefonvyer.
+- [x] Sex simulerade iPhone-/Android-vyer (320×568 till 440×956) bildgranskade: fem separerade tärningar, fria namn/chatt och linjerad nederkant; 12 regressionstester och bygge OK. Fysisk telefonkontroll kräver nästa appversion.
 
 ## Större onlinetärningar – 24 oktober
 - [x] Större onlinetärningar med luftigare faktisk 3D-delning och reserverad namnyta/chatt; lokala spel och annonser oförändrade.

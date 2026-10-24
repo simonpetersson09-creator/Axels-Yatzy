@@ -14,6 +14,7 @@ export function getSessionId(): string {
 }
 
 let claimPromise: Promise<boolean> | null = null;
+let claimedSessionId: string | null = null;
 
 /**
  * Bind this session id to this device server-side (first claim wins).
@@ -21,12 +22,17 @@ let claimPromise: Promise<boolean> | null = null;
  * push notifications or leaderboard stats.
  */
 export function claimSession(): Promise<boolean> {
+  const sessionId = getSessionId();
+  if (claimedSessionId !== sessionId) {
+    claimPromise = null;
+    claimedSessionId = sessionId;
+  }
   if (!claimPromise) {
-    claimPromise = (async () => {
+    const attempt = (async () => {
       try {
         const deviceId = await initDeviceId();
         const { data, error } = await supabase.rpc('claim_session', {
-          p_session_id: getSessionId(),
+          p_session_id: sessionId,
           p_device_id: deviceId,
         });
         if (error) return false;
@@ -35,8 +41,29 @@ export function claimSession(): Promise<boolean> {
         return false;
       }
     })();
+    claimPromise = attempt;
+    // Share pending/successful claims, but allow the next action to retry
+    // after offline startup or a refused/failed registration.
+    void attempt.then((ok) => {
+      if (!ok && claimPromise === attempt) claimPromise = null;
+    });
   }
   return claimPromise;
+}
+
+/** Never dispatch an online action without a confirmed device binding. */
+export async function requireClaimedDevice(): Promise<string> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const ok = await Promise.race([
+      claimSession(),
+      new Promise<boolean>((resolve) => { timer = setTimeout(() => resolve(false), 5_000); }),
+    ]);
+    if (!ok) throw new Error('session not ready');
+    return await initDeviceId();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 

@@ -1,7 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Högra platsens text – 24 oktober
-- [ ] Håll sidoplatsernas namn/status inom skärmen och flaggans bokstavspar sammanhängande; kontrollera fyra upptagna platser på små skärmar utan live-ändringar.
+- [x] Sidoplatserna får reserverat utrymme och långa namn förkortas; flaggor hålls samman i horisontell emoji-text. Fyra simulerade platser kontrollerade på 320/393/440 px: alla etiketter inom skärmen, inga runtimefel, 20 tester godkända och bygge OK. Ingen server-/annonsändring; telefonvisningen behöver nästa appbygge.
 
 ## Felsök väntrummet – 24 oktober
 - [x] Återskapat: sparad väntplats returnerade en avslutad match och kunde fånga återinträdet. Serverrättningen 0087 släpper endast avslutade matchkopplingar; aktiva matchövergångar, andra väntplatser, spel och statistik bevaras. Gäller utan ny appversion.

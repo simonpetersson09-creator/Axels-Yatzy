@@ -1,8 +1,8 @@
 import { isStaleSnapshot } from '@/lib/snapshot-order';
-import { getDeviceIdSync } from '@/lib/device';
+import { directRpc, invokeDeviceAction } from '@/lib/multiplayer-actions';
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId } from '@/lib/session';
+import { getSessionId, requireClaimedDevice } from '@/lib/session';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 const SUBMIT_ANIM_MS = 700;
 import { calculateScore } from '@/lib/yatzy-scoring';
@@ -71,29 +71,6 @@ function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T
       (e) => { clearTimeout(t); reject(e); },
     );
   });
-}
-
-/**
- * Roll/lock straight to the database (client_* RPCs check the device id
- * themselves) — skips the server-function hop that cost 0.5–3 s per tap.
- * Falls back to the server function when the device id isn't known yet.
- * Returns the same { data, error } shape as functions.invoke.
- */
-async function directRpc(
-  rpc: 'client_roll' | 'client_set_locks' | 'client_submit_score' | 'client_start_game',
-  fallbackFn: string,
-  args: Record<string, unknown>,
-  fallbackBody: Record<string, unknown>,
-): Promise<{ data: any; error: any }> {
-  const deviceId = getDeviceIdSync();
-  if (!deviceId) {
-    return supabase.functions.invoke(fallbackFn, { body: { ...fallbackBody, device_id: undefined } }) as Promise<{ data: any; error: any }>;
-  }
-  const { data, error } = await (supabase.rpc as any)(rpc, { ...args, p_device_id: deviceId });
-  if (error) return { data: null, error };
-  const r = data as { success?: boolean; error?: string } | null;
-  if (!r?.success) return { data: null, error: new Error(r?.error ?? 'rpc failed') };
-  return { data: r, error: null };
 }
 
 /** Wait this long for a lock/score answer before checking and sending again. */
@@ -729,8 +706,11 @@ export function useMultiplayerGame() {
       return null;
     }
     setState(prev => ({ ...prev, loading: true, error: null }));
-
-
+    try { await requireClaimedDevice(); }
+    catch {
+      setState(prev => ({ ...prev, loading: false, error: t('errCreateGame') }));
+      return null;
+    }
     const { data, error: rpcErr } = await supabase.rpc('create_game_with_code', {
       p_player_name: playerName,
       p_session_id: sessionId,
@@ -778,8 +758,11 @@ export function useMultiplayerGame() {
       }
     }
     setState(prev => ({ ...prev, loading: true, error: null }));
-
-
+    try { await requireClaimedDevice(); }
+    catch {
+      setState(prev => ({ ...prev, loading: false, error: t('errJoinGame') }));
+      return false;
+    }
     const { data, error: rpcErr } = await supabase.rpc('join_game', {
       p_game_code: code.toUpperCase(),
       p_player_name: playerName,
@@ -1351,8 +1334,8 @@ export function useMultiplayerGame() {
     }));
 
     try {
-      const { error } = await withTimeout(supabase.functions.invoke('forfeit-game', {
-        body: { game_id: gameId, session_id: sessionId, device_id: getDeviceIdSync() ?? undefined },
+      const { error } = await withTimeout(invokeDeviceAction('forfeit-game', {
+        game_id: gameId, session_id: sessionId,
       }));
       if (error) throw error;
       trackEvent('game_forfeited', undefined, { gameId, gameMode: 'multiplayer' });

@@ -1,8 +1,7 @@
 // Friend requests between online players. The server allows one request per pair
 // and verifies the device; accepted friends are added to the local friends list.
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId, claimSession } from '@/lib/session';
-import { getDeviceIdSync, initDeviceId } from '@/lib/device';
+import { getSessionId, requireClaimedDevice } from '@/lib/session';
 import { addKnownFriends } from '@/lib/known-friends';
 
 export interface FriendRequest {
@@ -14,10 +13,7 @@ export interface FriendRequest {
 }
 
 async function auth(): Promise<string | null> {
-  const device = await initDeviceId().catch(() => getDeviceIdSync());
-  if (!device) return null;
-  await claimSession();
-  return device;
+  return requireClaimedDevice().catch(() => null);
 }
 
 export async function friendRequestExists(gameId: string, toIndex: number): Promise<boolean> {

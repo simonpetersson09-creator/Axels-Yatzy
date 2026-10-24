@@ -644,7 +644,7 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.8; }
 /* Online: twenty score rows plus fixed chrome, with safe-area clearance. */
 html:not(.ad-banner-on):has(.mp-game) {
   --game-top-gap-mp: calc(max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) + 10px);
-  --sb-row-h: clamp(18px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 140px) / 20), 44px);
+  --sb-row-h: clamp(18px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 120px) / 20), 44px);
 }
 .mp-game .mp-play-layout { gap: 0; }
 /* Keep the match code below native chrome without adding a second flow gap. */

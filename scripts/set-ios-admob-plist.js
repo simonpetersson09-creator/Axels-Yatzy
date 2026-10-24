@@ -23,6 +23,8 @@ const REQUIRED_STRING_KEYS = {
     'Kameran används endast för att skanna QR-koder när du ansluter till en väns spel.',
   NSPhotoLibraryUsageDescription:
     'Bildbiblioteket används endast om du vill välja en egen profilbild.',
+  NSUserTrackingUsageDescription:
+    'Ditt svar används bara för att visa annonser som passar dig bättre. Spelet är gratis tack vare annonserna.',
 };
 
 /**

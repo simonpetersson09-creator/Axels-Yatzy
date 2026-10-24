@@ -2,7 +2,8 @@
 
 ## Försiktig förstoring på stora skärmar – 24 oktober
 - [x] Endast onlinetärningar över 880 px skärmhöjd förstoras cirka 5 %; mindre skärmar och tärningsmellanrum oförändrade.
-- [ ] Kontrollera namn, tärningar, pratbubbla och nederkant i simulerade telefonvyer.
+- [x] Åtta simulerade telefonstorlekar med fyra långa namn och låsta tärningar: fria namn/chatt; på de stora skärmarna minst 27 px mellanrum och linjerad nederkant. Två stora bilder granskade; fem regressionstester och bygge OK. Isolerade matchsvar, inga riktiga matcher ändrade.
+- [ ] Fysisk telefonkontroll kräver nästa appbygge. Befintlig 9 px-skillnad mellan brickans och knapparnas nederkant på 320×568 observerad; båda synliga, liten skärm oförändrad av denna förstoring.
 
 ## Rätta överlappning och klippning – 24 oktober
 - [x] Återskapat: aktiv namnrads skalning gick över brickan och höjdbudgeten klippte nederkant. Rättad höjdbudget, krympbara namn utan radskalning och turtext inuti kastknappen; spel/annonser oförändrade.

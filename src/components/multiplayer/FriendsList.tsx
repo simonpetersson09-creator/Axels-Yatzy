@@ -1,6 +1,7 @@
 import { useAcceptedFriends } from '@/lib/accepted-friends';
 import { getAcceptedFriendMatches } from '@/lib/friend-requests';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useBackHandler } from '@/lib/back-handler';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Loader2, Minimize } from 'lucide-react';
@@ -76,6 +77,13 @@ export function FriendsList() {
   });
   const [inviting, setInviting] = useState<string | null>(null);
   const [pendingInvite, setPendingInvite] = useState<{ inviteId: string | null; opponentName: string } | null>(null);
+  const cancellingRef = useRef(false);
+  const invitingRef = useRef(false);
+  const [cancelling, setCancelling] = useState(false);
+  const mountedRef = useRef(true);
+  const cardRequest = useRef(0);
+  useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; cardRequest.current += 1; }; }, []);
+  useBackHandler(!!pendingInvite, () => { if (!cancellingRef.current) setPendingInvite(null); });
   const [activeInvites, setActiveInvites] = useState<Record<string, { inviteId: string; gameId?: string }>>({});
   const [hiddenFriends] = useState<string[]>(() => getHiddenFriends());
   const [aliasVersion, setAliasVersion] = useState(0);
@@ -125,29 +133,45 @@ export function FriendsList() {
   }, [myId]);
 
   const handleInvite = async (opponentId: string, opponentName: string) => {
-    if (inviting) return;
+    if (invitingRef.current) return;
+    invitingRef.current = true;
     setInviting(opponentId);
     // Show the waiting dialog immediately; the invite id arrives with the reply.
     setPendingInvite({ inviteId: null, opponentName });
     const res = await sendInvite({ toSessionId: opponentId, toName: opponentName });
+    invitingRef.current = false;
+    if (!mountedRef.current) return;
     setInviting(null);
-    if (!res.ok) {
+    if (!res.ok || !res.inviteId) {
       setPendingInvite(null);
       toast.error(res.error ?? t('errSendInvite'));
       return;
     }
-    setPendingInvite((cur) => (cur ? { ...cur, inviteId: res.inviteId! } : cur));
+    const inviteId = res.inviteId;
+    setPendingInvite((cur) => (cur ? { ...cur, inviteId } : cur));
     void askNotificationsFor('invite', opponentName);
-    setActiveInvites((cur) => ({ ...cur, [opponentId]: { inviteId: res.inviteId! } }));
+    setActiveInvites((cur) => ({ ...cur, [opponentId]: { inviteId } }));
   };
 
   const cancelInvite = async () => {
-    if (!pendingInvite?.inviteId) return;
-    await respondInvite({ inviteId: pendingInvite.inviteId, action: 'decline' });
-    setPendingInvite(null);
+    const inviteId = pendingInvite?.inviteId;
+    if (!inviteId || cancellingRef.current) return;
+    cancellingRef.current = true; setCancelling(true);
+    try {
+      const result = await respondInvite({ inviteId, action: 'decline' });
+      if (!mountedRef.current) return;
+      if (!result.ok) { toast.error(result.error ?? t('errGeneric')); return; }
+      setPendingInvite(cur => cur?.inviteId === inviteId ? null : cur);
+      setActiveInvites(cur => Object.fromEntries(Object.entries(cur).filter(([, value]) => value.inviteId !== inviteId)));
+    } catch {
+      if (mountedRef.current) toast.error(t('errGeneric'));
+    } finally {
+      cancellingRef.current = false;
+      if (mountedRef.current) setCancelling(false);
+    }
   };
 
-  const minimizeInvite = () => setPendingInvite(null);
+  const minimizeInvite = () => { if (!cancellingRef.current) setPendingInvite(null); };
 
   const reopenInvite = (opponentId: string, opponentName: string) => {
     const inv = activeInvites[opponentId];
@@ -360,12 +384,15 @@ export function FriendsList() {
     });
   }, [rows, myId, hiddenFriends, aliasMap, knownFriends, acceptedIds]);
   const [card, setCard] = useState<{ id: string; name: string; data: Awaited<ReturnType<typeof fetchPlayerCard>> } | null>(null);
+  const closeCard = () => { cardRequest.current += 1; setCard(null); };
   const openCard = (id: string, name: string) => {
+    const request = ++cardRequest.current;
     setCard({ id, name, data: null });
     fetchPlayerCard(id).then((data) => {
+      if (!mountedRef.current || cardRequest.current !== request) return;
       if (!data) { setCard(null); navigate('/friend-stats', { state: { selectedId: id } }); return; }
       setCard((c) => (c && c.id === id ? { ...c, data } : c));
-    });
+    }).catch(() => { if (mountedRef.current && cardRequest.current === request) { closeCard(); toast.error(t('errGeneric')); } });
   };
   const avatars = useAvatarsByIds(opponents.map((o) => o.opponentId));
 
@@ -463,14 +490,14 @@ export function FriendsList() {
 
       <DiceInfoSheet
         open={!!card?.data}
-        onClose={() => setCard(null)}
+        onClose={closeCard}
         name={card?.name ?? ''}
         profile={card?.data?.profile}
         stats={card?.data?.stats}
         avatarUrl={card?.data?.avatar ?? avatars[card?.id ?? '']}
         footer={card && (
           <button
-            onClick={() => { const id = card.id; setCard(null); navigate('/friend-stats', { state: { selectedId: id } }); }}
+            onClick={() => { const id = card.id; closeCard(); navigate('/friend-stats', { state: { selectedId: id } }); }}
             className="mt-3 w-full rounded-xl bg-primary/15 border border-primary/30 py-2.5 text-sm font-semibold text-primary active:scale-[0.98] transition"
           >
             {t('h2hTitle', { name: card.name })} →
@@ -506,6 +533,7 @@ export function FriendsList() {
               <div className="w-full flex gap-2.5">
                 <button
                   onClick={minimizeInvite}
+                  disabled={cancelling}
                   className="flex-1 py-3.5 rounded-2xl bg-primary text-primary-foreground font-display font-bold active:scale-95 transition inline-flex items-center justify-center gap-2"
                 >
                   <Minimize className="w-4 h-4" />
@@ -513,7 +541,7 @@ export function FriendsList() {
                 </button>
                 <button
                   onClick={cancelInvite}
-                  disabled={!pendingInvite.inviteId}
+                  disabled={!pendingInvite.inviteId || cancelling}
                   className="disabled:opacity-50 flex-1 py-3.5 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold active:scale-95 transition"
                 >
                   {t('cancel')}

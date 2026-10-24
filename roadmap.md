@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Kontroll inför ny version – 24 oktober
+- [ ] Granska knappar, online- och lokala matcher, nätfel, väntrum, vänner och alla språk; rätta bekräftade fel med regressionstester.
+- [ ] Kör hela testsamlingen och kontrollera centrala flöden i körande app utan att påverka riktiga spelare.
+- [ ] Sammanställ kvarvarande telefonprov och versionshinder; native-annonser, push och tvåtelefonprov kräver nya signerade appbyggen.
+
 ## Helskärmsannons efter färdig match – 24 oktober
 - [x] Vid hemknappen från färdiga online- och lokala matchresultat används befintliga interstitial-ID:n, utan XP eller extra App Open. Enbart förladdade annonser visas; avhopp/laddningsfel går direkt hem, dubbeltryck spärras.
 - [x] 57 tester godkända: stängning, långsam native-visning, fel, dubbeltryck, matchdedupe och XP-regressioner. Resultatknappar för lokal match, färdigt resultat och avhopp går hem i körande app med isolerade testsvar, inga runtimefel; bygge OK.

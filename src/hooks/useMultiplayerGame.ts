@@ -1254,11 +1254,7 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
 
-    // Release the optimistic hold on the animation clock, NOT on the network.
-    // Previously we awaited submit-score (up to NETWORK_TIMEOUT_MS) before the
-    // cell-fill timer even started, so a slow function froze the turn for
-    // seconds. Now the UI always frees after SUBMIT_ANIM_MS; the RPC result
-    // only triggers an error + rollback if it actually failed.
+    // Keep optimistic results guarded until the bounded request completes.
     const releaseOptimistic = () => {
       if (submitTimerRef.current) { clearTimeout(submitTimerRef.current); submitTimerRef.current = null; }
       pendingSubmitRef.current = null;
@@ -1278,6 +1274,15 @@ export function useMultiplayerGame() {
 
     const submitStartedAt = Date.now();
     const shownDice = [...gs.dice];
+    const rollbackSubmit = () => {
+      // A failed read must never leave the optimistic last cell looking final.
+      if (mountedRef.current) setState(prev => prev.gameId === gameId ? { ...prev, gameState: gs } : prev);
+      failedRollReconcileRef.current = gameId;
+      rollConfirmedRef.current = false;
+      if (mountedRef.current) setRollPending(true);
+      releaseOptimistic();
+      void refreshGameStateRef.current?.(gameId);
+    };
     // expected_dice: the server refuses the score if its dice differ from what
     // the player saw, instead of silently scoring the wrong dice (e.g. 0).
     // The "your turn" push is sent by the database itself (client_submit_score).
@@ -1308,16 +1313,14 @@ export function useMultiplayerGame() {
         console.error('Submit score error:', error);
         reportMpIssue('submit_error', gameId, { ms: submitMs, category: categoryId, err: errText(error) });
         if (mountedRef.current) setState(prev => ({ ...prev, error: t('errSubmitScore') }));
-        releaseOptimistic();
-        refreshGameStateRef.current?.(gameId);
+        rollbackSubmit();
       })
       .catch((err) => {
         console.error('Submit score failed:', err);
         reportMpIssue('submit_failed', gameId, { ms: Date.now() - submitStartedAt, category: categoryId, err: errText(err) });
         const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
         if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
-        releaseOptimistic();
-        refreshGameStateRef.current?.(gameId);
+        rollbackSubmit();
       });
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 

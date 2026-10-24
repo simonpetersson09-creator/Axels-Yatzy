@@ -624,6 +624,13 @@
       "when": 1792823453351,
       "tag": "0088_selectable_tier_dice",
       "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1792848164421,
+      "tag": "0089_atomic_score_dice_validation",
+      "breakpoints": true
     }
   ]
 }

@@ -693,7 +693,7 @@ export default function MultiplayerGamePage() {
         onDismiss={() => setShowTurnTransition(false)}
       />
       <motion.div
-        className="ios-game-card mp-game relative flex flex-col gap-2"
+        className="ios-game-card mp-game relative flex w-full flex-col gap-2"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -704,7 +704,7 @@ export default function MultiplayerGamePage() {
           </p>
         )}
 
-        <div className="flex w-full max-w-full gap-1 items-start mt-[var(--game-top-gap-mp,40px)] mb-0">
+        <div className="mp-play-layout flex w-full max-w-full gap-1 items-start mt-[var(--game-top-gap-mp,40px)] mb-0">
           {/* Left: Scoreboard */}
           <div className="ios-score-zone flex flex-col gap-3 self-start">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
@@ -732,7 +732,7 @@ export default function MultiplayerGamePage() {
 
           <div className="ios-side-zone flex w-[124px] max-[379px]:w-[108px] flex-shrink-0 flex-col gap-2 self-start">
             {/* Player indicators */}
-            <div className="flex flex-col gap-1 h-[124px]">
+            <div className="mp-player-names flex flex-col gap-1">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const isMe = idx === myPlayerIndex;
@@ -877,7 +877,7 @@ export default function MultiplayerGamePage() {
                   onPointerCancel={() => { pressedButtonRef.current = null; }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   disabled={!canRoll || localRolling}
-                  className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
+                  className={`mp-roll-button relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
                     (canRoll || locksPending) && !localRolling
                       ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
                       : 'bg-secondary text-muted-foreground shadow-none'

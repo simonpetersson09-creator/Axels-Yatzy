@@ -645,7 +645,7 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.8; }
    Nineteen score rows plus the fixed header/section chrome determine height. */
 html:not(.ad-banner-on):has(.mp-game) {
   --game-top-gap-mp: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
-  --sb-row-h: clamp(20px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 140px) / 19), 34px);
+  --sb-row-h: clamp(20px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 148px) / 19), 34px);
 }
 .mp-game .ios-side-zone {
   min-height: 0;
@@ -669,7 +669,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .54; --dice-gap-scale: .25; }
 }
 @media (min-height: 681px) and (max-height: 800px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .82; --dice-gap-scale: .48; }
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .8; --dice-gap-scale: .45; }
 }
 @media (min-height: 881px) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1.08; --dice-gap-scale: .8; }

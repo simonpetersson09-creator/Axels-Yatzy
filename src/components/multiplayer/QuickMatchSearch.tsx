@@ -4,7 +4,7 @@ import { useBackHandler } from '@/lib/back-handler';
 import { motion } from 'framer-motion';
 import { Dices, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId, claimSession } from '@/lib/session';
+import { getSessionId, requireClaimedDevice } from '@/lib/session';
 import { useTranslation } from '@/lib/i18n';
 import { useGameBanner } from '@/hooks/useGameBanner';
 import { Button } from '@/components/ui/button';
@@ -77,7 +77,8 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
     const poll = async () => {
       if (doneRef.current) return;
       try {
-        await claimSession();
+        await requireClaimedDevice();
+        if (doneRef.current) return;
         const { data, error } = await supabase.rpc('find_or_join_match', {
           p_session_id: sessionId,
           p_player_name: playerName,

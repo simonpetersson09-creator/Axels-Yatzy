@@ -2,7 +2,7 @@ import { isStaleSnapshot } from '@/lib/snapshot-order';
 import { directRpc, invokeDeviceAction } from '@/lib/multiplayer-actions';
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId } from '@/lib/session';
+import { getSessionId, requireClaimedDevice } from '@/lib/session';
 import { CategoryId, CATEGORIES, Player, GameState } from '@/types/yatzy';
 const SUBMIT_ANIM_MS = 700;
 import { calculateScore } from '@/lib/yatzy-scoring';
@@ -706,8 +706,11 @@ export function useMultiplayerGame() {
       return null;
     }
     setState(prev => ({ ...prev, loading: true, error: null }));
-
-
+    try { await requireClaimedDevice(); }
+    catch {
+      setState(prev => ({ ...prev, loading: false, error: t('errCreateGame') }));
+      return null;
+    }
     const { data, error: rpcErr } = await supabase.rpc('create_game_with_code', {
       p_player_name: playerName,
       p_session_id: sessionId,
@@ -755,8 +758,11 @@ export function useMultiplayerGame() {
       }
     }
     setState(prev => ({ ...prev, loading: true, error: null }));
-
-
+    try { await requireClaimedDevice(); }
+    catch {
+      setState(prev => ({ ...prev, loading: false, error: t('errJoinGame') }));
+      return false;
+    }
     const { data, error: rpcErr } = await supabase.rpc('join_game', {
       p_game_code: code.toUpperCase(),
       p_player_name: playerName,

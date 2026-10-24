@@ -1,8 +1,8 @@
 // Friend invite helpers (client-side).
 import { supabase } from '@/integrations/supabase/client';
-import { getSessionId, claimSession } from '@/lib/session';
+import { getSessionId, requireClaimedDevice } from '@/lib/session';
 import { getPlayerName } from '@/lib/session';
-import { initDeviceId } from '@/lib/device';
+import { t } from '@/lib/i18n';
 
 export interface InviteRow {
   id: string;
@@ -22,8 +22,9 @@ export async function sendInvite(opts: {
   toName: string;
 }): Promise<{ ok: boolean; inviteId?: string; error?: string; pushDelivered?: boolean }> {
   const fromName = getPlayerName() || 'Spelare';
-  await claimSession();
-  const deviceId = await initDeviceId();
+  let deviceId: string;
+  try { deviceId = await requireClaimedDevice(); }
+  catch { return { ok: false, error: t('errGeneric') }; }
   const { data, error } = await supabase.functions.invoke('send-invite', {
     body: {
       from_session_id: getSessionId(),
@@ -44,12 +45,15 @@ export async function respondInvite(opts: {
   inviteId: string;
   action: 'accept' | 'decline';
 }): Promise<{ ok: boolean; gameId?: string; error?: string }> {
+  let deviceId: string;
+  try { deviceId = await requireClaimedDevice(); }
+  catch { return { ok: false, error: t('errGeneric') }; }
   const { data, error } = await supabase.functions.invoke('respond-invite', {
     body: {
       invite_id: opts.inviteId,
       session_id: getSessionId(),
       action: opts.action,
-      device_id: await initDeviceId(),
+      device_id: deviceId,
     },
   });
   if (error) return { ok: false, error: error.message };

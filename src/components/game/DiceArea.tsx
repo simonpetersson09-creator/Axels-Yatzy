@@ -10,6 +10,8 @@ interface DiceAreaProps {
   isRolling: boolean;
   onToggleLock: (index: number) => void;
   compact?: boolean;
+  /** Match 3D gaps to compressed banner-free online metrics. */
+  fitGaps?: boolean;
   className?: string;
   /** Drives the hold-ring colour; pips stay black. */
   playerIndex?: number;
@@ -34,6 +36,7 @@ export function DiceArea({
   isRolling,
   onToggleLock,
   compact = false,
+  fitGaps = false,
   className,
   playerIndex = 0,
   skin = 'white',
@@ -47,7 +50,7 @@ export function DiceArea({
   const gap = Math.round((compact ? 29 : 36) * gapScale);
   // Keep the 3D gaps in step with the DOM gaps. Otherwise tighter CSS gaps
   // only shrink the canvas while the camera still reserves the old spacing.
-  const spacing = (compact ? 0.65 : 0.78) * gapScale / diceScale;
+  const spacing = (compact ? 0.65 : 0.78) * (fitGaps ? gapScale / diceScale : 1);
   const canLock = !isRolling && hasRolled && rollsLeft > 0;
 
   const columnHeight = diceSize * 5 + gap * 4;

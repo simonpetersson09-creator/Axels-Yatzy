@@ -670,6 +670,9 @@ html:not(.ad-banner-on):has(.mp-game) {
 @media (max-height: 600px) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .58; --dice-gap-scale: .03; }
 }
+@media (min-height: 601px) and (max-height: 640px) {
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .7; --dice-gap-scale: .08; }
+}
 @media (min-height: 681px) and (max-height: 800px) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1; --dice-gap-scale: .3; }
 }

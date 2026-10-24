@@ -8,11 +8,12 @@ import { useBackHandler } from '@/lib/back-handler';
 interface ForfeitDialogProps {
   onConfirm: () => void;
   playerName?: string;
+  disabled?: boolean;
   pressedButtonRef?: MutableRefObject<'kasta' | 'home' | 'forfeit' | null>;
 }
 
 export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(function ForfeitButton(
-  { onConfirm, playerName, pressedButtonRef },
+  { onConfirm, playerName, pressedButtonRef, disabled = false },
   ref,
 ) {
   const { t } = useTranslation();
@@ -32,6 +33,7 @@ export const ForfeitButton = forwardRef<HTMLButtonElement, ForfeitDialogProps>(f
       <button
         type="button"
         ref={ref}
+        disabled={disabled}
         onPointerDown={(e) => {
           e.stopPropagation();
           if (pressedButtonRef) pressedButtonRef.current = 'forfeit';

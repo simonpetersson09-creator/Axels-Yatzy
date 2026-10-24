@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { useGameAvatars, syncOwnAvatar } from '@/lib/avatar-sync';
 import { useDiceProfiles, usePlayerStats, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
@@ -45,7 +46,7 @@ export default function MultiplayerGamePage() {
   const [searchParams] = useSearchParams();
   const {
     gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
-    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex, locksPending, rollPending,
+    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex, locksPending, rollPending, forfeiting, retryConnection,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
 
@@ -577,6 +578,7 @@ export default function MultiplayerGamePage() {
       <div className="app-screen flex items-center justify-center px-6 safe-top safe-bottom">
         <div className="text-center space-y-4 max-w-sm">
           <p className="text-destructive font-semibold">{error}</p>
+          {gameState && <Button onClick={() => void retryConnection()}>{t('wrRetry')}</Button>}
           <button
             onClick={() => navigate('/')}
             className="px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-display font-bold"
@@ -609,7 +611,7 @@ export default function MultiplayerGamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
-  const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending;
+  const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending && !pendingCategory && !forfeiting;
   const showRollFirstHint = rollFirstHintDue && gameState.rollsLeft === 3 && isMyTurn && !localRolling && !remoteRolling && status === 'playing';
 
   const PLAYER_COLORS_HSL = [
@@ -927,6 +929,7 @@ export default function MultiplayerGamePage() {
                 </button>
                 <ForfeitButton
                   onConfirm={handleForfeit}
+                  disabled={forfeiting || !!pendingCategory || localRolling || rollPending}
                   playerName={opponentName}
                   pressedButtonRef={pressedButtonRef}
                 />

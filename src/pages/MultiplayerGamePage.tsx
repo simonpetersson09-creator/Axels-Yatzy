@@ -12,6 +12,7 @@ import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { AvatarFrame } from '@/components/AvatarFrame';
+import { getFrame } from '@/lib/cosmetics';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
 import { useCombinationCelebration } from '@/hooks/useCombinationCelebration';
 import { getTotalScore } from '@/lib/yatzy-scoring';
@@ -739,6 +740,7 @@ export default function MultiplayerGamePage() {
                 const label = `P${idx + 1}`;
                 const playerAvatar = isMe ? avatarUrl : gameAvatars.get(idx) ?? null;
                 const showAvatar = !!playerAvatar;
+                const hasFrame = !!getFrame(diceProfiles.get(idx)?.frame);
                 return (
                   <motion.div
                     key={player.id}
@@ -752,11 +754,11 @@ export default function MultiplayerGamePage() {
                   >
                     <div className="relative shrink-0 isolate">
                     <AvatarFrame id={diceProfiles.get(idx)?.frame} />
-                    <div className={`relative w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
+                    <div className={`relative w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ${hasFrame ? '' : `ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
-                    } ${isMe && glowActive ? 'animate-pulse-gold' : ''} transition-all flex items-center justify-center`}>
+                    }`} ${!hasFrame && isMe && glowActive ? 'animate-pulse-gold' : ''} transition-all flex items-center justify-center`}>
                       {showAvatar ? (
-                        <img src={playerAvatar!} alt="" className="w-full h-full object-cover" />
+                        <img src={playerAvatar ?? undefined} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
                       )}

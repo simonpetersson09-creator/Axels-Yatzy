@@ -33,9 +33,10 @@ it('Android back minimizes an invite without cancelling it', async () => {
 });
 it('failed cancellation retains invite and successful retry closes it', async () => {
   m.respond.mockResolvedValueOnce({ ok: false, error: 'offline' }).mockResolvedValueOnce({ ok: true });
-  await openInvite(); fireEvent.click(screen.getByRole('button', { name: 'cancel', exact: true })); await act(async () => {});
+  await openInvite(); fireEvent.click(screen.getByRole('button', { name: /^cancel$/ })); await act(async () => {});
   expect(screen.getByText('inviteWaitingTitle')).toBeInTheDocument(); expect(m.error).toHaveBeenCalledWith('offline');
-  fireEvent.click(screen.getByRole('button', { name: 'cancel', exact: true })); await act(async () => { await vi.advanceTimersByTimeAsync(500); });
+  fireEvent.click(screen.getByRole('button', { name: /^cancel$/ })); await act(async () => {});
+  await act(async () => { await vi.advanceTimersByTimeAsync(500); });
   expect(screen.queryByText('inviteWaitingTitle')).not.toBeInTheDocument(); expect(m.respond).toHaveBeenCalledTimes(2);
 });
 it('late empty card result never redirects away from a newer card', async () => {

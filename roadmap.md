@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Försiktig förstoring på stora skärmar – 24 oktober
+- [x] Endast onlinetärningar över 880 px skärmhöjd förstoras cirka 5 %; mindre skärmar och tärningsmellanrum oförändrade.
+- [ ] Kontrollera namn, tärningar, pratbubbla och nederkant i simulerade telefonvyer.
+
 ## Rätta överlappning och klippning – 24 oktober
 - [x] Återskapat: aktiv namnrads skalning gick över brickan och höjdbudgeten klippte nederkant. Rättad höjdbudget, krympbara namn utan radskalning och turtext inuti kastknappen; spel/annonser oförändrade.
 - [x] 39 simulerade telefonvyer (13 mått × 2–4 spelare) med långa namn och markerade tärningar: namn inom sidokolumnen, fria tärningar/chatt, linjerade nederkanter ovanför säker zon. Åtta regressionstester och bygge OK.

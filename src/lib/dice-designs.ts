@@ -3,6 +3,7 @@
  * server (dice_designs); this file only holds the look of each design.
  * New designs: add here AND insert a row in dice_designs.
  */
+import { catalogName } from './i18n/catalog';
 export type DesignFinish = 'gloss' | 'matte' | 'metal' | 'pearl' | 'iridescent';
 export type DesignKind = 'flag' | 'personal' | 'season' | 'color' | 'pattern' | 'exclusive';
 
@@ -308,5 +309,5 @@ export function designName(d: DiceDesign, lang: string): string {
   if (d.flag) {
     try { return new Intl.DisplayNames([lang], { type: 'region' }).of(d.flag) ?? d.flag; } catch { return d.flag; }
   }
-  return lang === 'sv' ? d.name : EN_NAMES[d.id] ?? d.name;
+  return lang === 'sv' ? d.name : catalogName(d.id, lang) ?? EN_NAMES[d.id] ?? d.name;
 }

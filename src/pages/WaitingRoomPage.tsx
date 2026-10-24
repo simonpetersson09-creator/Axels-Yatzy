@@ -56,17 +56,31 @@ export default function WaitingRoomPage() {
   const active = useRef(document.visibilityState === 'visible');
   const lastCountdown = useRef<string | null>(null);
   const entered = useRef(false);
+  const generation = useRef(0);
+  const queuedReads = useRef(new Set<string>());
+  const failedAction = useRef<{ action: RoomAction; options: { ready?: boolean; notify?: boolean } } | null>(null);
 
   const perform = useCallback((action: RoomAction, options: { ready?: boolean; notify?: boolean } = {}) => {
+    const life = generation.current;
+    const readKey = action === 'heartbeat' || action === 'sync' ? `${life}:${action}` : null;
+    if (readKey && queuedReads.current.has(readKey)) return serial.current;
+    if (readKey) queuedReads.current.add(readKey);
     // Serialize heartbeat/away/ready, so a slow foreground request cannot undo background state.
     const run = serial.current.then(async () => {
+      if (!mounted.current || life !== generation.current) return;
       try {
         const response = await roomAction(action, { seatId: seatRef.current, ...options });
-        if (!mounted.current) return;
+        if (!mounted.current || life !== generation.current) {
+          // A join already sent may create a seat after navigation. Retain its
+          // identity for cleanup-away without applying UI or navigation.
+          if (!mounted.current && generation.current === life + 1 && response.mine?.id) seatRef.current = response.mine.id;
+          return;
+        }
+        if (failedAction.current?.action === action || !failedAction.current) failedAction.current = null;
         offset.current = Date.parse(response.server_now) - Date.now();
         seatRef.current = response.mine?.id ?? (response.error === 'expired' || action === 'leave' ? null : seatRef.current);
         setSnapshot(response);
-        setConnectionLost(false);
+        setConnectionLost(!!failedAction.current);
         if (action === 'leave' && !response.error) { seatRef.current = null; navigate('/', { replace: true }); }
         if (lastCountdown.current && !response.countdown_at && !response.mine?.game_id) toast.info(t('wrCancelled'));
         lastCountdown.current = response.countdown_at;
@@ -74,7 +88,13 @@ export default function WaitingRoomPage() {
           navigate(`/multiplayer-game?gameId=${response.mine.game_id}`, { replace: true });
         }
       } catch {
-        if (mounted.current) setConnectionLost(true);
+        if (mounted.current && life === generation.current) {
+          // Background polls must not replace a failed explicit entry/command.
+          if (!failedAction.current || (action !== 'sync' && action !== 'heartbeat')) failedAction.current = { action, options };
+          setConnectionLost(true);
+        }
+      } finally {
+        if (readKey) queuedReads.current.delete(readKey);
       }
     });
     serial.current = run;
@@ -91,6 +111,7 @@ export default function WaitingRoomPage() {
 
   useEffect(() => {
     mounted.current = true;
+    generation.current += 1;
     if (!entered.current) {
       entered.current = true;
       void performRef.current(seatRef.current ? 'open' : 'join');
@@ -120,12 +141,13 @@ export default function WaitingRoomPage() {
         if (active.current) void performRef.current('sync');
       }).subscribe();
     return () => {
-      mounted.current = false; disposed = true;
+      mounted.current = false; disposed = true; generation.current += 1; entered.current = false;
       clearInterval(time); clearInterval(heartbeat); clearInterval(tick);
       document.removeEventListener('visibilitychange', visibility); nativeRemove?.();
       void supabase.removeChannel(channel);
       // Navigating home also retains the seat, but marks it absent from this table.
-      void serial.current.then(() => { if (seatRef.current) return roomAction('away', { seatId: seatRef.current }); }).catch(() => {});
+      const cleanupLife = generation.current;
+      void serial.current.then(() => { if (!mounted.current && generation.current === cleanupLife && seatRef.current) return roomAction('away', { seatId: seatRef.current }); }).catch(() => {});
     };
   }, []);
 
@@ -208,7 +230,7 @@ export default function WaitingRoomPage() {
           <p className="text-[11px] leading-relaxed text-muted-foreground text-center flex items-start justify-center gap-1.5 max-w-72 mx-auto"><Bell className="w-3 h-3 shrink-0 mt-0.5" />{t('wrNotifyHint')}</p>
           <Button variant="ghost" className="w-full min-h-12 text-muted-foreground whitespace-normal" disabled={busy} onClick={() => setLeaveOpen(true)}><LogOut />{t('wrLeave')}</Button>
         </> : <Button className="w-full min-h-12 whitespace-normal" disabled={busy || !snapshot} onClick={() => { seatRef.current = null; void command('join'); }}><Plus />{t('wrJoin')}</Button>}
-        {connectionLost && <Button variant="secondary" className="w-full" onClick={() => void command('sync')}>{t('wrRetry')}</Button>}
+        {connectionLost && <Button variant="secondary" className="w-full" disabled={busy} onClick={() => { const failed = failedAction.current; void command(failed?.action ?? 'sync', failed?.options); }}>{t('wrRetry')}</Button>}
       </div>
     </div>
     {chatOpen && createPortal(<div className="waiting-modal-backdrop" onClick={() => setChatOpen(false)}>

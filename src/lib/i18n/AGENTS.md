@@ -1,1 +1,2 @@
 - Translation dictionaries fall back to English then Swedish for safety, but new visible copy must cover all 40 supported languages. Waiting-room copy is shared with its server push text in a dependency-free module to prevent divergent translations.
+- Shop item labels use catalog-names.json by stable item ID, independent of UI dictionaries and server prices; Swedish/English retain catalog defaults.

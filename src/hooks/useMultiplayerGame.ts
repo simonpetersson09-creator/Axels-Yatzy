@@ -193,7 +193,10 @@ export function useMultiplayerGame() {
   const [remoteRolling, setRemoteRolling] = useState(false);
   const rollingGuardRef = useRef(false);
   const rollConfirmedRef = useRef(true);
+  const failedRollReconcileRef = useRef<string | null>(null);
   const [rollPending, setRollPending] = useState(false);
+  const forfeitingRef = useRef(false);
+  const [forfeiting, setForfeiting] = useState(false);
   const remoteRollingGuardRef = useRef(false);
   /** When the opponent's numbers arrived (0 = still waiting). */
   const remoteResultAtRef = useRef(0);
@@ -336,9 +339,7 @@ export function useMultiplayerGame() {
         gameError: gameRes.error?.message,
         playersError: playersRes.error?.message,
       });
-      // Clear any pending submit guard so the next realtime payload isn't
-      // permanently ignored if the DB blip leaves the ref stuck.
-      pendingSubmitRef.current = null;
+      // An unrelated read failure must not unlock an in-flight score.
       // Retry a few times so a server hiccup heals itself instead of leaving
       // the match showing stale dice/scores.
       if (attempt < 3) {
@@ -355,6 +356,7 @@ export function useMultiplayerGame() {
 
     const game = gameRes.data;
     const dbPlayers = playersRes.data;
+    if (!game || !dbPlayers || !mountedRef.current) return;
 
     // Several refreshes can be in flight at once; never let an older server
     // snapshot (lower updated_at) overwrite a newer one already applied.
@@ -424,7 +426,8 @@ export function useMultiplayerGame() {
     // If a local roll animation is in flight, buffer the new dice/roll fields.
     // They will be flushed at the end of ROLL_ANIM_MS so the spin animation
     // never sees its target value change mid-flight.
-    if (!opponentTurnEnded && (rollingGuardRef.current || remoteRollingGuardRef.current)) {
+    const reconcilingFailedRoll = failedRollReconcileRef.current === gameId;
+    if (!reconcilingFailedRoll && !opponentTurnEnded && (rollingGuardRef.current || remoteRollingGuardRef.current)) {
       // Do NOT overwrite the buffer with a snapshot that predates the roll we
       // are currently animating. A refresh that fires while our own roll RPC is
       // still in flight returns the PREVIOUS dice (higher rolls_left); flushing
@@ -451,7 +454,7 @@ export function useMultiplayerGame() {
 
     // While a score submit is in flight we keep the optimistic state intact.
     // The RPC resolution path will trigger a fresh refresh once it completes.
-    if (pendingSubmitRef.current) {
+    if (!reconcilingFailedRoll && pendingSubmitRef.current) {
       setState(prev => ({
         ...prev,
         gameId: game.id,
@@ -501,6 +504,7 @@ export function useMultiplayerGame() {
       // show locally). Applying it would briefly display the previous roll's
       // faces before the next payload corrects them.
       const staleMyTurn =
+        !reconcilingFailedRoll &&
         prevGS &&
         isMyTurnNow &&
         restPart.currentPlayerIndex === prevGS.currentPlayerIndex &&
@@ -525,6 +529,12 @@ export function useMultiplayerGame() {
       };
 
     });
+    if (reconcilingFailedRoll) {
+      failedRollReconcileRef.current = null;
+      pendingRollUpdateRef.current = null;
+      rollConfirmedRef.current = true;
+      if (mountedRef.current) setRollPending(false);
+    }
   }, [startRemoteRolling, getPendingLockForTurn]);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
@@ -823,7 +833,7 @@ export function useMultiplayerGame() {
   // pulse is clean and dice values never change after landing.
   // (ROLL_ANIM_MS / localRolling / rollingGuardRef are declared near the top.)
   const roll = useCallback(async () => {
-    if (rollingGuardRef.current) return false;
+    if (rollingGuardRef.current || failedRollReconcileRef.current || submittingRef.current || forfeitingRef.current) return false;
     // M9: read latest state from ref so stale closures (after rapid renders)
     // don't gate the roll against an outdated snapshot.
     const initial = stateRef.current;
@@ -875,7 +885,7 @@ export function useMultiplayerGame() {
     const locksPromise = Promise.resolve(true);
 
     const latest = stateRef.current;
-    if (!latest.gameId || !latest.gameState) {
+    if (!latest.gameId || !latest.gameState || latest.gameId !== initial.gameId || latest.status !== 'playing' || latest.myPlayerIndex !== latest.gameState.currentPlayerIndex || latest.gameState.round !== initialGs.round || latest.gameState.rollsLeft <= 0) {
       rollingGuardRef.current = false;
       return false;
     }
@@ -923,10 +933,10 @@ export function useMultiplayerGame() {
     rollConfirmedRef.current = false;
     if (mountedRef.current) setRollPending(true);
     const settleRoll = (gid: string) => {
-      Promise.resolve(refreshGameStateRef.current?.(gid)).catch(() => {}).finally(() => {
-        rollConfirmedRef.current = true;
-        if (mountedRef.current) setRollPending(false);
-      });
+      failedRollReconcileRef.current = gid;
+      // Only an applied server snapshot can confirm recovery. Failed reads
+      // must not make optimistic dice selectable.
+      void Promise.resolve(refreshGameStateRef.current?.(gid)).catch(() => {});
     };
     let serverDoneAt = 0;
     const rpcPromise = locksPromise.then(async (locksConfirmed) => {
@@ -941,7 +951,8 @@ export function useMultiplayerGame() {
       // roll that arrives late is shown instead of silently lost (the player
       // could otherwise re-roll dice they never saw). The Kasta button stays
       // blocked meanwhile because the rolling guard is held until this settles.
-      const gid = latest.gameId!;
+      const gid = latest.gameId;
+      if (!gid) return { data: null, error: new Error('missing game') };
       const expect = { round: gs.round, player: gs.currentPlayerIndex, rollsLeft: optimisticRollsLeft };
       type RollRes = { data: any; error: any };
       return new Promise<RollRes>((resolve, reject) => {
@@ -1014,7 +1025,7 @@ export function useMultiplayerGame() {
       // The roll never reached the server: land on the old dice and reload.
       setDiceAwait(false);
       if (mountedRef.current) setState(prev => ({ ...prev, error: t('errRollDice') }));
-      settleRoll(latest.gameId!);
+      if (latest.gameId) settleRoll(latest.gameId);
       return { ok: false } as const;
     }).catch((err) => {
       console.error('Roll dice failed:', err);
@@ -1026,7 +1037,7 @@ export function useMultiplayerGame() {
         : t('errRollDice');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
       // Reload the real match state so the screen never stays on guessed dice.
-      settleRoll(latest.gameId!);
+      if (latest.gameId) settleRoll(latest.gameId);
       return { ok: false } as const;
     });
 
@@ -1060,7 +1071,7 @@ export function useMultiplayerGame() {
   // Reads latest state via ref so stale closures from rapid renders can't
   // turn this into a silent no-op.
   const toggleLock = useCallback(async (index: number) => {
-    if (rollingGuardRef.current) return;
+    if (rollingGuardRef.current || !rollConfirmedRef.current || submittingRef.current || forfeitingRef.current) return;
     const latest = stateRef.current;
     const gs = latest.gameState;
     if (!latest.gameId || !gs) return;
@@ -1158,7 +1169,7 @@ export function useMultiplayerGame() {
 
   // Get possible scores
   const getPossibleScores = useCallback((): Record<CategoryId, number> | null => {
-    if (!state.gameState || state.gameState.rollsLeft === 3) return null;
+    if (!state.gameState || state.gameState.rollsLeft === 3 || !rollConfirmedRef.current || submittingRef.current || forfeitingRef.current) return null;
     const gs = state.gameState;
     const result: Record<string, number> = {};
     const currentPlayer = gs.players[gs.currentPlayerIndex];
@@ -1172,7 +1183,7 @@ export function useMultiplayerGame() {
 
   // Select category — calls server-side Edge Function
   const selectCategory = useCallback(async (categoryId: CategoryId, debug?: { rowText?: string; clickedCategoryId?: CategoryId; renderedRowIndex?: number | null; score?: number | null }) => {
-    if (submittingRef.current) return;
+    if (submittingRef.current || forfeitingRef.current) return;
     // M-NEW-2: read latest state via ref to avoid stale closure guards
     const latest = stateRef.current;
     if (!latest.gameId || !latest.gameState || rollingGuardRef.current) return;
@@ -1242,11 +1253,7 @@ export function useMultiplayerGame() {
     // Send heartbeat on action
     supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
 
-    // Release the optimistic hold on the animation clock, NOT on the network.
-    // Previously we awaited submit-score (up to NETWORK_TIMEOUT_MS) before the
-    // cell-fill timer even started, so a slow function froze the turn for
-    // seconds. Now the UI always frees after SUBMIT_ANIM_MS; the RPC result
-    // only triggers an error + rollback if it actually failed.
+    // Keep optimistic results guarded until the bounded request completes.
     const releaseOptimistic = () => {
       if (submitTimerRef.current) { clearTimeout(submitTimerRef.current); submitTimerRef.current = null; }
       pendingSubmitRef.current = null;
@@ -1260,12 +1267,21 @@ export function useMultiplayerGame() {
     if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
     submitTimerRef.current = setTimeout(() => {
       submitTimerRef.current = null;
-      releaseOptimistic();
-      refreshGameStateRef.current?.(gameId);
+      // The cell animation may finish, but the score remains unconfirmed.
+      // Keep the action/finish guards until the server answers.
     }, SUBMIT_ANIM_MS);
 
     const submitStartedAt = Date.now();
     const shownDice = [...gs.dice];
+    const rollbackSubmit = () => {
+      // A failed read must never leave the optimistic last cell looking final.
+      if (mountedRef.current) setState(prev => prev.gameId === gameId ? { ...prev, gameState: gs } : prev);
+      failedRollReconcileRef.current = gameId;
+      rollConfirmedRef.current = false;
+      if (mountedRef.current) setRollPending(true);
+      releaseOptimistic();
+      void refreshGameStateRef.current?.(gameId);
+    };
     // expected_dice: the server refuses the score if its dice differ from what
     // the player saw, instead of silently scoring the wrong dice (e.g. 0).
     // The "your turn" push is sent by the database itself (client_submit_score).
@@ -1289,28 +1305,27 @@ export function useMultiplayerGame() {
           if (typeof data?.score === 'number' && data.score !== optimisticScore) {
             reportMpIssue('score_mismatch', gameId, { category: categoryId, shown: shownDice, shownScore: optimisticScore, serverScore: data.score, ms: submitMs });
           }
+          releaseOptimistic();
+          refreshGameStateRef.current?.(gameId);
           return;
         }
         console.error('Submit score error:', error);
         reportMpIssue('submit_error', gameId, { ms: submitMs, category: categoryId, err: errText(error) });
         if (mountedRef.current) setState(prev => ({ ...prev, error: t('errSubmitScore') }));
-        releaseOptimistic();
-        refreshGameStateRef.current?.(gameId);
+        rollbackSubmit();
       })
       .catch((err) => {
         console.error('Submit score failed:', err);
         reportMpIssue('submit_failed', gameId, { ms: Date.now() - submitStartedAt, category: categoryId, err: errText(err) });
         const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
         if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
-        releaseOptimistic();
-        refreshGameStateRef.current?.(gameId);
+        rollbackSubmit();
       });
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
-  // Forfeit — optimistic local finish so the UI leaves immediately; the server
-  // call is fire-and-forget in the background and only used to sync the opponent.
+  // Never leave the board until the server has accepted the forfeit.
   const forfeitGame = useCallback(async () => {
-    if (!state.gameId) return;
+    if (!state.gameId || forfeitingRef.current || submittingRef.current || rollingGuardRef.current) return;
 
     const gameId = state.gameId;
     const myPlayerIndex = state.myPlayerIndex;
@@ -1318,26 +1333,18 @@ export function useMultiplayerGame() {
       ? state.gameState.players[myPlayerIndex]?.name ?? null
       : null;
 
-    // Immediately mark the match as finished locally. This triggers the
-    // MultiplayerGamePage effect that navigates to /results without waiting
-    // for the edge-function round-trip + realtime propagation.
-    setState(prev => ({
-      ...prev,
-      status: 'finished',
-      gameState: prev.gameState
-        ? {
-            ...prev.gameState,
-            forfeitedBy: myName,
-            forfeitedBySessionId: sessionId,
-          }
-        : null,
-    }));
+    forfeitingRef.current = true;
+    setForfeiting(true);
 
     try {
-      const { error } = await withTimeout(invokeDeviceAction('forfeit-game', {
+      const { data, error } = await withTimeout(invokeDeviceAction('forfeit-game', {
         game_id: gameId, session_id: sessionId,
       }));
-      if (error) throw error;
+      if (error || !data?.success) throw error ?? new Error('forfeit not accepted');
+      if (mountedRef.current) setState(prev => prev.gameId === gameId ? {
+        ...prev, status: 'finished', error: null,
+        gameState: prev.gameState ? { ...prev.gameState, forfeitedBy: myName, forfeitedBySessionId: sessionId } : null,
+      } : prev);
       trackEvent('game_forfeited', undefined, { gameId, gameMode: 'multiplayer' });
     } catch (err) {
       console.error('Forfeit failed:', err);
@@ -1355,8 +1362,16 @@ export function useMultiplayerGame() {
             : prev.gameState,
         }));
       }
+    } finally {
+      forfeitingRef.current = false;
+      if (mountedRef.current) setForfeiting(false);
     }
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
+
+  const retryConnection = useCallback(async () => {
+    const id = stateRef.current.gameId;
+    if (id) await refreshGameState(id);
+  }, [refreshGameState]);
 
   // Rejoin existing game — validates membership server-side first
   const rejoinGame = useCallback(async (gameId: string) => {
@@ -1497,6 +1512,8 @@ export function useMultiplayerGame() {
     localRolling,
     locksPending,
     rollPending,
+    forfeiting,
+    retryConnection,
     remoteRolling,
     pendingCategory,
     pendingPlayerIndex,

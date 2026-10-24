@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Kontroll inför ny version – 24 oktober
+- [x] Granskat knappar, matcher, nätfel, väntrum, vänner och 40 språk. Rättat obekräftade kast/poäng, avhopp före godkännande, botars klientväg, lokalt slots aktivitetsdatum, köade väntrumsanrop/återförsök och väninbjudans tillbaka/avbokning/kort-race. 68 butiksnamn täcker nu alla språk; språklig expertgranskning inte gjord.
+- [x] Poängens expected-dice-kontroll använder samma serverlås som poängregistreringen (0089), verifierat med lästest och behållna service-behörigheter. Väntrumsplatsordningen verifierad korrekt i driftsatt funktion, ingen ny ordningsändring behövdes.
+- [x] Slutlig säker testsamling: 226 godkända, inklusive sen väntrumsjoin → cleanup-away. Väntrummets gemensamma DB-scenarier undantagna för att inte röra riktiga väntplatser; det skrivande konkurrenstestet kräver uttryckligen disponibel testdatabas. Körande isolerad provmatch: misslyckat kast → återhämtning → fem serversexor → Yatzy 50 sparat → tur P2; misslyckat avhopp stannar på matchvägen med Försök igen. Väntrumsåterförsök upprepar join; lokalt spel, inställningar och vänsidor öppnas utan runtimefel. Bygge OK.
+- [ ] Fysiska telefonprov: signerade iPhone-/Android-byggen behövs för annonser/samtycke, push/kallstart, bakgrund/återkomst, Android tillbaka och tvåtelefonmatch. Gamla klienttärningsvägen hålls öppen tills kompatibel version och telefonprov är klara; ingen stängning gjord här.
+
 ## Helskärmsannons efter färdig match – 24 oktober
 - [x] Vid hemknappen från färdiga online- och lokala matchresultat används befintliga interstitial-ID:n, utan XP eller extra App Open. Enbart förladdade annonser visas; avhopp/laddningsfel går direkt hem, dubbeltryck spärras.
 - [x] 57 tester godkända: stängning, långsam native-visning, fel, dubbeltryck, matchdedupe och XP-regressioner. Resultatknappar för lokal match, färdigt resultat och avhopp går hem i körande app med isolerade testsvar, inga runtimefel; bygge OK.

@@ -1,4 +1,5 @@
-// Real database functions; each scenario runs in a transaction and rolls back all QA data.
+// Transaction scenarios roll back all QA data. Committed concurrency testing
+// requires an explicitly disposable database, never the shared player table.
 import { afterAll, describe, expect, it } from 'vitest';
 import postgres from 'postgres';
 import { randomUUID } from 'node:crypto';
@@ -24,7 +25,7 @@ async function scenario(check: (sql: postgres.TransactionSql, ids: string[], act
   } catch (error) { if (error !== rollback) throw error; }
 }
 describe.skipIf(!url)('authoritative waiting room database', () => {
-  it('simultaneous joins compete for the last seat and simultaneous ready are serialized', async () => {
+  it.skipIf(process.env.WAITING_ROOM_DISPOSABLE_DB !== 'true')('simultaneous joins compete for the last seat and simultaneous ready are serialized', async () => {
     if (!db) throw new Error('Database test connection missing');
     const occupied=await db`select count(*)::int n from waiting_room_seats where game_id is null`;
     if(occupied[0].n!==0) throw new Error('Real waiting players present: refusing QA interference');

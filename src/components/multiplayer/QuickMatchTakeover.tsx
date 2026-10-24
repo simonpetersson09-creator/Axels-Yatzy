@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Bot } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
-import { playBotTurn } from '@/lib/dev-bot-turn';
 import { useTranslation } from '@/lib/i18n';
 
 /** Opponent must have been silent this long on their turn before the computer plays. */
@@ -74,21 +73,11 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
         }
 
         busyRef.current = true;
-        if (!current.is_bot) {
-          setBotFor(current.player_name);
-          if (!notifiedRef.current) notifiedRef.current = true;
-          // A silent human's turn is played by the server (service role). This
-          // client cannot act as their session — device auth would reject it.
-          // Retried every CHECK_MS until the turn moves on.
-          await supabase.functions.invoke('quick-match-bot', { body: { game_id: gameId, play: true } }).then(() => {}, () => {});
-        } else {
-          setBotFor(null);
-          await playBotTurn(
-            game as any,
-            { player_index: current.player_index, scores: current.scores as Record<string, number | null> },
-            current.session_id,
-          );
-        }
+        setBotFor(current.is_bot ? null : current.player_name);
+        if (!current.is_bot && !notifiedRef.current) notifiedRef.current = true;
+        // Bot seats and idle humans both use server-owned rolls/actions.
+        // Never bind another seat's session to the controller's device.
+        await supabase.functions.invoke('quick-match-bot', { body: { game_id: gameId, play: true } }).then(() => {}, () => {});
       } catch (e) {
         console.warn('[takeover] failed', e);
       } finally {

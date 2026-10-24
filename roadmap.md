@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Hela telefonbilder och linjerad nederkant – 24 oktober
+- [x] Onlinevyn anpassad endast i CSS: tolv telefonmått med simulerade safe areas ger identiska nederkanter för bricka och Hem/Ge upp, helt ovanför nederkant. Inga runtimefel; tre annonstester godkända, bygge OK. Telefonkontroll kräver nästa appbygge.
+- [x] Tolv nya oskalade PNG-bilder granskade individuellt, pixelmått verifierade och sparade i spelskarmar_v2 med isolerade fyrspelarsvar; inga riktiga matcher eller spelaruppgifter ändrade.
+
 ## Onlinematcher utan banner – 24 oktober
 - [x] Bannern och annonskrympningen avstängda i alla onlinematcher; spelet mot datorn behåller bannern. Små skärmar får egna mått utan annonsutrymme.
 - [x] Tre annonstester godkända; bilder av 2/3/4 spelare, Snabbspel online och datorn tagna med isolerade testsvar. 320×706, 393×706 och 440×956 kontrollerade utan klippning; inga runtimefel. Native annonsdöljning och telefonprov återstår efter ny appversion.

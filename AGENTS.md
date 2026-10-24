@@ -17,6 +17,7 @@
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit).
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - Game layout keys reset only on actual orientationchange, never ordinary viewport resize; dice recovery is presentation-only and preserves server-owned rolls, turns and ad scheduling.
+- Online CSS aligns score/action bottoms above safe areas; preserve game state and ads.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Weekly lists use server ranks; most-games notices compare before/after reporting with a Stockholm-week cache. Score reporting trims names and caps scores server-side.
@@ -39,6 +40,6 @@
 - Waiting-room flags read existing public country-rank RPCs once per table membership change, with the local profile for self; missing countries are never guessed and seat/game state is untouched.
 - Waiting-room side labels reserve horizontal space beside the table; flag emoji use an atomic horizontal writing context so vertical text cannot split their regional-indicator pair.
 - Waiting-room UI and push translations share a dependency-free copy module under functions/_shared; merge it with each app dictionary so language coverage stays consistent across client and server.
-- Waiting-room welcome visibility uses a separate persistent device-local flag, marked on display rather than dismissal, so reopening cannot repeat it or change seat/game state.
+- Waiting-room welcome uses a separate persistent device-local flag marked on display, never changing seat/game state.
 - Waiting-room entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
 - Waiting-room reconciliation removes handoff seats as soon as their game is finished, while retaining active-game handoffs; stale saved seats must not redirect later room entry into completed games. Seats fill in fixed order: bottom (2), top (0), right (1), left (3).

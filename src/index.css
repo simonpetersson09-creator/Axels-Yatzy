@@ -645,16 +645,28 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.8; }
    Nineteen score rows plus the fixed header/section chrome determine height. */
 html:not(.ad-banner-on):has(.mp-game) {
   --game-top-gap-mp: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
-  --sb-row-h: clamp(20px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 120px) / 19), 44px);
+  --sb-row-h: clamp(20px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 128px) / 19), 44px);
 }
+.mp-game .mp-play-layout { gap: 0; }
 .mp-game .ios-side-zone {
   min-height: 0;
+  min-width: 0;
+  width: auto;
+  flex: 1;
+  gap: 8px;
 }
+.mp-game .mp-player-names { flex-shrink: 0; }
 .mp-game .mp-chat-zone {
   flex-shrink: 0;
+  margin-top: 0 !important;
 }
 .mp-game .ios-action-zone {
   flex-shrink: 0;
+}
+.mp-game .mp-roll-button {
+  width: clamp(60px, calc(72px * var(--dice-scale, 1)), 84px);
+  height: clamp(60px, calc(72px * var(--dice-scale, 1)), 84px);
+  font-size: 14px;
 }
 @media (min-width: 380px) {
   .mp-game { --sb-col-w: clamp(29px, calc((var(--app-vw, 100vw) - 234px) / 4), 42px); }
@@ -675,14 +687,8 @@ html:not(.ad-banner-on):has(.mp-game) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1.24; --dice-gap-scale: .92; }
 }
 /* Keep the hint out of the dice budget, without hiding it or moving names/chat. */
-.mp-game .mp-dice-column { margin-top: 12px; flex-shrink: 0; }
-.mp-game .mp-dice-hint { position: absolute; inset-inline: 0; top: -25px; }
-@media (max-height: 800px) {
-  .mp-game .mp-dice-hint { top: -12px; }
-}
-@media (max-height: 760px) {
-  .mp-game .mp-dice-column { margin-top: 4px; }
-}
+.mp-game .mp-dice-column { margin-top: 0; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.mp-game .mp-dice-hint { position: absolute; inset-inline: 0; top: 0; }
 .waiting-table-stage { --waiting-sit-dist: calc(var(--waiting-table-size) * .3); }
 .waiting-seat-0 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset) - 31px)); }
 .waiting-seat-2 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) - var(--waiting-seat-offset) + 31px)) rotate(180deg); }

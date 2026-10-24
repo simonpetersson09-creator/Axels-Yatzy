@@ -10,6 +10,7 @@ import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { AvatarFrame } from '@/components/AvatarFrame';
+import { getFrame } from '@/lib/cosmetics';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame, newLocalGameId } from '@/lib/active-game';
@@ -459,6 +460,7 @@ export default function GamePage() {
                 const label = `P${idx + 1}`;
                 const isHuman = idx === HUMAN_INDEX && !aiPlayers.includes(idx);
                 const showAvatar = isHuman && !!avatarUrl;
+                const hasFrame = isHuman && !!getFrame(shop.selectedFrame);
                 return (
                   <motion.div
                     key={player.id}
@@ -470,11 +472,11 @@ export default function GamePage() {
                   >
                     <div className="relative shrink-0 isolate">
                     {isHuman && <AvatarFrame id={shop.selectedFrame} />}
-                    <div className={`relative w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ring-2 ring-offset-2 ring-offset-background ${
+                    <div className={`relative w-5 h-5 rounded-full overflow-hidden ${showAvatar ? 'bg-secondary' : color.bg} ${hasFrame ? '' : `ring-2 ring-offset-2 ring-offset-background ${
                       isCurrent ? `${color.ring} ${color.glow}` : 'ring-transparent'
-                    } transition-all flex items-center justify-center`}>
+                    }`} transition-all flex items-center justify-center`}>
                       {showAvatar ? (
-                        <img src={avatarUrl!} alt="" className="w-full h-full object-cover" />
+                        <img src={avatarUrl ?? undefined} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-[8px] font-black text-white/90 leading-none">{label}</span>
                       )}

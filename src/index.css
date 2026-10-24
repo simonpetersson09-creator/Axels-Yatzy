@@ -5,7 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
-.waiting-room-screen { height: var(--app-dvh, 100dvh); overflow-y: auto; display: flex; padding: calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); }
+.waiting-room-screen { height: min(var(--app-dvh, 100dvh), 100dvh); overflow-y: auto; display: flex; padding: calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); }
 .waiting-room-content { width: 100%; max-width: 440px; margin-inline: auto; display: flex; flex-direction: column; }
 .waiting-home-button { background: linear-gradient(to right, hsl(var(--game-info-light)), hsl(var(--game-info))); box-shadow: 0 4px 16px hsl(var(--game-info) / .3); transition: box-shadow .2s; }
 .waiting-home-button:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }

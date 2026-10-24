@@ -646,8 +646,6 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.8; }
 html:not(.ad-banner-on):has(.mp-game) {
   --game-top-gap-mp: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
   --sb-row-h: clamp(20px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 140px) / 19), 34px);
-  --dice-scale: 1.2;
-  --dice-gap-scale: .55;
 }
 .mp-game .ios-side-zone {
   min-height: 0;
@@ -662,19 +660,16 @@ html:not(.ad-banner-on):has(.mp-game) {
   .mp-game { --sb-col-w: clamp(29px, calc((var(--app-vw, 100vw) - 234px) / 4), 42px); }
 }
 @media (min-height: 801px) and (max-height: 880px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1.12; --dice-gap-scale: .4; }
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .86; --dice-gap-scale: .65; }
 }
 @media (max-height: 680px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .8; --dice-gap-scale: .1; }
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .6; --dice-gap-scale: .3; }
 }
 @media (max-height: 600px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .58; --dice-gap-scale: .03; }
-}
-@media (min-height: 601px) and (max-height: 640px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .7; --dice-gap-scale: .08; }
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .48; --dice-gap-scale: .2; }
 }
 @media (min-height: 681px) and (max-height: 800px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1; --dice-gap-scale: .3; }
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .76; --dice-gap-scale: .5; }
 }
 .waiting-table-stage { --waiting-sit-dist: calc(var(--waiting-table-size) * .3); }
 .waiting-seat-0 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset) - 31px)); }

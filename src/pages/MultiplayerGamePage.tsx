@@ -6,7 +6,6 @@ import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
-import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';

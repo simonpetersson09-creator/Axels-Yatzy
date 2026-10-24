@@ -17,7 +17,7 @@
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit).
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - Game layout keys reset on orientationchange, never resize; presentation-only dice recovery preserves server rolls, turns and ads.
-- Online CSS uses 20 score rows and safe clearance; flex centres dice between names/chat and board/right edge; roll sizing follows dice, never state/ads.
+- Online: 20 rows plus fixed chrome/safe clearance; names stay in column, turn label in roll button; dice centred; no state/ad changes.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Weekly lists use server ranks; most-games notices compare before/after reporting with a Stockholm-week cache. Score reporting trims names and caps scores server-side.

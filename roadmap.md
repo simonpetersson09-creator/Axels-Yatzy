@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Rätta överlappning och klippning – 24 oktober
+- [ ] Rätta höjdbudget med verkliga brickmått och säker nederkant; håll namn och turmarkering inom sidokolumnen utan att ändra spel eller annonser.
+- [ ] Kontrollera långa namn, markerade tärningar och 2–4 spelare på små/stora iPhone- och Androidmått. Fysisk telefonkontroll kräver nästa appbygge.
+
 ## Centrera onlinetärningar och balansera knappar – 24 oktober
 - [x] Flexcentrerad tärningsgrupp mellan sista namnet/chatten och brickans högerkant/skärmens säkerhetsmarginal; proportionell kastknapp, spel och annonser oförändrade.
 - [x] Tretton simulerade telefonmått med fyra spelare och markerade tärningar: centrum inom 0,01 px, bricka/Hem/Ge upp linjerade och inom säker nederkant. Tolv regressionstester godkända, bygge OK. Fysiskt iPhone-/Android-prov kräver nästa appbygge.

@@ -30,6 +30,7 @@ import { Home } from 'lucide-react';
 import { getPlayerName } from '@/lib/session';
 import { toast } from 'sonner';
 import { useGameBanner } from '@/hooks/useGameBanner';
+import { usePostMatchExit } from '@/hooks/usePostMatchExit';
 
 export default function GamePage() {
 
@@ -375,6 +376,9 @@ export default function GamePage() {
   const handleBackToMenu = useCallback(() => {
     navigate('/');
   }, [navigate]);
+  const { leaving, leave } = usePostMatchExit(
+    `local:${localMatchKeyRef.current}`, gameState?.gameOver === true, handleBackToMenu,
+  );
 
   if (!gameState) return null;
 
@@ -415,7 +419,8 @@ export default function GamePage() {
         players={gameOverResults}
         aiPlayers={aiPlayers}
         onPlayAgain={handlePlayAgain}
-        onBackToMenu={handleBackToMenu}
+        onBackToMenu={leave}
+        leaving={leaving}
       />
       <DiceInfoSheet
         open={aiInfoOpen && isCurrentAi}

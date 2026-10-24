@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Helskärmsannons efter färdig match – 24 oktober
+- [x] Vid hemknappen från färdiga online- och lokala matchresultat används befintliga interstitial-ID:n, utan XP eller extra App Open. Enbart förladdade annonser visas; avhopp/laddningsfel går direkt hem, dubbeltryck spärras.
+- [x] 57 tester godkända: stängning, långsam native-visning, fel, dubbeltryck, matchdedupe och XP-regressioner. Resultatknappar för lokal match, färdigt resultat och avhopp går hem i körande app med isolerade testsvar, inga runtimefel; bygge OK.
+- [ ] Riktig iPhone-/Android-annonsvisning kräver nästa appbygge och telefonprov.
+
 ## Vänta på telefonens identitetskontroll – 24 oktober
 - [x] Kast, låsning, poäng, matchstart och avhopp väntar på lyckad registrering; misslyckad registrering får återförsök utan att skicka spelhandlingen. Även skapa/ansluta, snabbsök, inbjudningar och resultatbackfill inväntar kontrollen.
 - [x] 26 tester godkända och bygge OK. Körande provmatch med isolerade svar: fyra sekunders kontroll → exakt ett serverkast; nekad kontroll → inget kast; nytt försök → lyckad kontroll före kastet, fem serversexor och Kast 2 synliga, inga runtimefel. Ingen riktig match ändrad; äldre appstöd och serverns spärrar oförändrade.

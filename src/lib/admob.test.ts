@@ -29,8 +29,57 @@ vi.mock('@capacitor-community/admob', () => ({
 }));
 const emit = (event: string) => native.handlers.get(event)?.forEach((handler) => handler());
 
+describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {
+  beforeEach(() => {
+    vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = platform;
+    native.show.mockReset(); native.show.mockResolvedValue(undefined);
+  });
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); native.platform = 'ios'; });
+
+  it('skips an unprepared ad immediately', async () => {
+    const m = await import('./admob');
+    expect(await m.showPostMatchInterstitial()).toBe('unavailable');
+    expect(native.show).not.toHaveBeenCalled();
+  });
+
+  it('holds navigation until dismissal and suppresses a second start ad', async () => {
+    const m = await import('./admob');
+    await m.preloadInterstitial();
+    let settled = false;
+    const pending = m.showPostMatchInterstitial().then(r => { settled = true; return r; });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(native.show).toHaveBeenCalledOnce();
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(settled).toBe(false);
+    expect(await m.showOptionalRewarded()).toBe('busy');
+    expect(await m.showPostMatchInterstitial()).toBe('busy');
+    emit('dismissed');
+    expect(await pending).toBe('shown');
+    expect(await m.showAppOpenAd()).toBe(false);
+  });
+
+  it('retains ownership of a slow native show until it closes', async () => {
+    native.show.mockReturnValue(new Promise(() => {}));
+    const m = await import('./admob');
+    await m.preloadInterstitial();
+    const pending = m.showPostMatchInterstitial();
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(await m.showPostMatchInterstitial()).toBe('busy');
+    emit('dismissed');
+    expect(await pending).toBe('shown');
+  });
+
+  it('native show failure returns failed, without any XP event', async () => {
+    native.show.mockRejectedValue(new Error('no fill'));
+    const m = await import('./admob');
+    await m.preloadInterstitial();
+    expect(await m.showPostMatchInterstitial()).toBe('failed');
+    expect(await m.showAppOpenAd()).toBe(false);
+  });
+});
+
 describe('optional ad completion for XP', () => {
-  beforeEach(() => { native.platform = 'ios'; vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.show.mockClear(); });
+  beforeEach(() => { native.platform = 'ios'; vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.show.mockReset(); native.show.mockResolvedValue(undefined); });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
 
   it('waits for dismissal, then permits exactly one 1 XP reward', async () => {

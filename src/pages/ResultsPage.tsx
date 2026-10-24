@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { HeadToHeadStats } from '@/components/game/HeadToHeadStats';
 import { getKnownFriends } from '@/lib/known-friends';
 import { sendFriendRequest } from '@/lib/friend-requests';
+import { usePostMatchExit } from '@/hooks/usePostMatchExit';
 
 interface PlayerResult {
   name: string;
@@ -36,6 +37,9 @@ export default function ResultsPage() {
   const gameId: string | undefined = location.state?.gameId;
   const playerNames: string[] = results.map(r => r.name);
   const [inviting, setInviting] = useState(false);
+  const { leaving, leave } = usePostMatchExit(
+    `online:${gameId ?? location.key}`, !forfeit && !timedOut && results.length > 0, () => navigate('/'),
+  );
   // Online quick match: human opponents that can be added as friends.
   const [quickMatch, setQuickMatch] = useState<null | Array<{ id: string; name: string; index: number }>>(null);
   const [requested, setRequested] = useState<Set<string>>(() => new Set());
@@ -218,7 +222,7 @@ export default function ResultsPage() {
               <motion.button
                 key={f.id}
                 onClick={() => handleAddFriend(f)}
-                disabled={already}
+                disabled={already || leaving}
                 className="w-full py-3 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold flex items-center justify-center gap-2 disabled:opacity-60"
                 whileTap={{ scale: 0.97 }}
               >
@@ -230,7 +234,7 @@ export default function ResultsPage() {
           {isMultiplayer && rematchOpponent && !quickMatch && (
             <motion.button
               onClick={handleRematch}
-              disabled={inviting}
+              disabled={inviting || leaving}
               className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow flex items-center justify-center gap-2 disabled:opacity-60"
               whileTap={{ scale: 0.97 }}
             >
@@ -248,7 +252,8 @@ export default function ResultsPage() {
             </motion.button>
           )}
           <motion.button
-            onClick={() => navigate('/')}
+            onClick={leave}
+            disabled={leaving || inviting}
             className="w-full py-3 rounded-2xl text-muted-foreground font-medium text-sm"
             whileTap={{ scale: 0.97 }}
           >

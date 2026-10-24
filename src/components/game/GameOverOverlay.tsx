@@ -17,9 +17,10 @@ interface GameOverOverlayProps {
   aiPlayers: number[];
   onPlayAgain: () => void;
   onBackToMenu: () => void;
+  leaving?: boolean;
 }
 
-export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackToMenu }: GameOverOverlayProps) {
+export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackToMenu, leaving = false }: GameOverOverlayProps) {
   const { t } = useTranslation();
   const sorted = [...players].sort((a, b) => b.score - a.score);
   const winner = sorted[0];
@@ -139,6 +140,7 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
             <div className="flex flex-col gap-2.5 pt-2">
               <motion.button
                 onClick={onPlayAgain}
+                disabled={leaving}
                 className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-[15px] flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_hsl(var(--primary)/0.4)]"
                 whileTap={{ scale: 0.97 }}
                 initial={{ opacity: 0, y: 8 }}
@@ -150,6 +152,7 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
               </motion.button>
               <motion.button
                 onClick={onBackToMenu}
+                disabled={leaving}
                 className="w-full py-3 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-sm flex items-center justify-center gap-2"
                 whileTap={{ scale: 0.97 }}
                 initial={{ opacity: 0, y: 8 }}

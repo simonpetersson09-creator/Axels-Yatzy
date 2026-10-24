@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Felsök väntrummet – 24 oktober
+- [ ] Återskapa och rätta återinträde som kan fastna i gammal matchkoppling; verifiera med isolerade serverprov och körande app utan att röra andra spelares väntplatser.
+
 ## Begränsa väntrumsnotiser – 23 oktober
 - [x] Serverstyrd atomisk spärr: högst en väntrumsnotis per enhet var 15:e minut, oavsett väntplats/session. Undertryckta återkomstnotiser konsumeras och skickas aldrig senare. Matchnotiser, spelpåminnelser, platser och spelregler oförändrade. Migrering verifierad live och notify-waiting-room driftsatt med samma enhetsbindning.
 - [x] 23 tester godkända, varav 5 isolerade prov av den driftsatta SQL-funktionen: dubbelt uttag, ny plats/session, 14:59/15:00, separata enheter/notistyper och ogiltiga mottagare. Inga riktiga platser ändrade eller push skickade. Bygge OK; riktig telefonleverans inte testad här.

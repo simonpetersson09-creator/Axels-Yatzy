@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Större onlinetärningar och märkta telefonbilder – 24 oktober
+- [x] Större onlinetärningar med tätare 3D-avstånd; datorvyn oförändrad. Tolv simulerade skärmar har bricka och Hem/Ge upp i linje ovanför nederkant; 12 tester godkända, bygge OK. Riktig telefonvisning kräver nästa appbygge.
+- [x] Tolv oskalade bilder granskade med exakt logisk skärmbredd, iPhone-modell respektive Android-skärmtyp och skärmmått tryckta på varje bild; isolerade fyrspelarsvar, inga live-spel ändrade.
+
 ## Hela telefonbilder och linjerad nederkant – 24 oktober
 - [x] Onlinevyn anpassad endast i CSS: tolv telefonmått med simulerade safe areas ger identiska nederkanter för bricka och Hem/Ge upp, helt ovanför nederkant. Inga runtimefel; tre annonstester godkända, bygge OK. Telefonkontroll kräver nästa appbygge.
 - [x] Tolv nya oskalade PNG-bilder granskade individuellt, pixelmått verifierade och sparade i spelskarmar_v2 med isolerade fyrspelarsvar; inga riktiga matcher eller spelaruppgifter ändrade.

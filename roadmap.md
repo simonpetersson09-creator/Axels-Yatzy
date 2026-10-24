@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Helskärmsannons efter färdig match – 24 oktober
+- [ ] Visa vid återgång till startsidan från matchresultatet, med befintliga interstitial-ID:n, utan XP eller extra App Open; avhopp och laddningsfel ska gå direkt hem.
+- [ ] Testa annonslivscykel och resultatknappar; riktig annonsvisning kräver nästa appbygge och telefonprov.
+
 ## Vänta på telefonens identitetskontroll – 24 oktober
 - [x] Kast, låsning, poäng, matchstart och avhopp väntar på lyckad registrering; misslyckad registrering får återförsök utan att skicka spelhandlingen. Även skapa/ansluta, snabbsök, inbjudningar och resultatbackfill inväntar kontrollen.
 - [x] 26 tester godkända och bygge OK. Körande provmatch med isolerade svar: fyra sekunders kontroll → exakt ett serverkast; nekad kontroll → inget kast; nytt försök → lyckad kontroll före kastet, fem serversexor och Kast 2 synliga, inga runtimefel. Ingen riktig match ändrad; äldre appstöd och serverns spärrar oförändrade.

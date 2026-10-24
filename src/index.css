@@ -716,6 +716,8 @@ html:not(.ad-banner-on):has(.mp-game) {
     --tablet-game-w: 900px;
   }
 
+  html:not(.preview-frame) #root > div > :is(.max-w-sm, .max-w-md).mx-auto,
+  html:not(.preview-frame) #root > .app-fixed-screen > .max-w-sm,
   html:not(.preview-frame) :is(.mobile-scroll-screen, .app-screen, .multiplayer-lobby-screen) :is(.max-w-sm, .max-w-md).mx-auto,
   html:not(.preview-frame) .app-screen > .max-w-sm,
   html:not(.preview-frame) .mobile-scroll-screen > .max-w-sm {
@@ -729,6 +731,8 @@ html:not(.ad-banner-on):has(.mp-game) {
     max-width: var(--tablet-detail-w);
     padding: 24px;
   }
+  html:not(.preview-frame) dialog.max-w-sm,
+  html:not(.preview-frame) [role="dialog"].max-w-sm,
   html:not(.preview-frame) :is([role="dialog"], .waiting-modal-backdrop) :is(.max-w-sm, .max-w-md) {
     max-width: 560px;
   }

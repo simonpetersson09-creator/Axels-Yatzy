@@ -680,6 +680,9 @@ html:not(.ad-banner-on):has(.mp-game) {
 @media (max-height: 800px) {
   .mp-game .mp-dice-hint { top: -12px; }
 }
+@media (max-height: 760px) {
+  .mp-game .mp-dice-column { margin-top: 4px; }
+}
 .waiting-table-stage { --waiting-sit-dist: calc(var(--waiting-table-size) * .3); }
 .waiting-seat-0 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset) - 31px)); }
 .waiting-seat-2 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) - var(--waiting-seat-offset) + 31px)) rotate(180deg); }

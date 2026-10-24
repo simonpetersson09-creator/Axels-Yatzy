@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Vänta på telefonens identitetskontroll – 24 oktober
-- [ ] Kast, låsning, poäng, matchstart och avhopp väntar på lyckad registrering; misslyckad registrering får återförsök utan att skicka spelhandlingen.
-- [ ] Kontrollera långsam/misslyckad registrering och återförsök med tester och i körande app; äldre appstöd och serverns spärrar lämnas oförändrade.
+- [x] Kast, låsning, poäng, matchstart och avhopp väntar på lyckad registrering; misslyckad registrering får återförsök utan att skicka spelhandlingen. Även skapa/ansluta, snabbsök, inbjudningar och resultatbackfill inväntar kontrollen.
+- [x] 26 tester godkända och bygge OK. Körande provmatch med isolerade svar: fyra sekunders kontroll → exakt ett serverkast; nekad kontroll → inget kast; nytt försök → lyckad kontroll före kastet, fem serversexor och Kast 2 synliga, inga runtimefel. Ingen riktig match ändrad; äldre appstöd och serverns spärrar oförändrade.
 - [ ] Telefonprov kräver nästa appbygge; stängning av gamla klienttärningsvägen ingår inte här.
 
 ## Försiktig förstoring på stora skärmar – 24 oktober

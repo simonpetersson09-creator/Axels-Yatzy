@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Felsök väntrummet – 24 oktober
+- [x] Återskapat: sparad väntplats returnerade en avslutad match och kunde fånga återinträdet. Serverrättningen 0087 släpper endast avslutade matchkopplingar; aktiva matchövergångar, andra väntplatser, spel och statistik bevaras. Gäller utan ny appversion.
+- [x] 26 tester godkända, inklusive tre isolerade prov mot driftsatt SQL (avslutad koppling, ny plats, aktiv match). Körande app verifierad med isolerade svar: utgången plats → Sätt dig vid bordet → Redo, inga runtimefel; inga live-testplatser eller push skapades. Telefonens återinträde behöver bekräftas av användaren.
+
 ## Begränsa väntrumsnotiser – 23 oktober
 - [x] Serverstyrd atomisk spärr: högst en väntrumsnotis per enhet var 15:e minut, oavsett väntplats/session. Undertryckta återkomstnotiser konsumeras och skickas aldrig senare. Matchnotiser, spelpåminnelser, platser och spelregler oförändrade. Migrering verifierad live och notify-waiting-room driftsatt med samma enhetsbindning.
 - [x] 23 tester godkända, varav 5 isolerade prov av den driftsatta SQL-funktionen: dubbelt uttag, ny plats/session, 14:59/15:00, separata enheter/notistyper och ogiltiga mottagare. Inga riktiga platser ändrade eller push skickade. Bygge OK; riktig telefonleverans inte testad här.

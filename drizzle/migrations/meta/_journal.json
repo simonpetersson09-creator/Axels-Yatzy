@@ -610,6 +610,13 @@
       "when": 1792744597416,
       "tag": "0086_waiting_room_push_device_cooldown",
       "breakpoints": true
+    },
+    {
+      "idx": 87,
+      "version": "7",
+      "when": 1792821164019,
+      "tag": "0087_waiting_room_release_finished_handoffs",
+      "breakpoints": true
     }
   ]
 }

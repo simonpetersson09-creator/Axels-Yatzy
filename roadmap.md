@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Vänta på telefonens identitetskontroll – 24 oktober
+- [ ] Kast, låsning, poäng, matchstart och avhopp väntar på lyckad registrering; misslyckad registrering får återförsök utan att skicka spelhandlingen.
+- [ ] Kontrollera långsam/misslyckad registrering och återförsök med tester och i körande app; äldre appstöd och serverns spärrar lämnas oförändrade.
+- [ ] Telefonprov kräver nästa appbygge; stängning av gamla klienttärningsvägen ingår inte här.
+
 ## Försiktig förstoring på stora skärmar – 24 oktober
 - [x] Endast onlinetärningar över 880 px skärmhöjd förstoras cirka 5 %; mindre skärmar och tärningsmellanrum oförändrade.
 - [x] Åtta simulerade telefonstorlekar med fyra långa namn och låsta tärningar: fria namn/chatt; på de stora skärmarna minst 27 px mellanrum och linjerad nederkant. Två stora bilder granskade; fem regressionstester och bygge OK. Isolerade matchsvar, inga riktiga matcher ändrade.

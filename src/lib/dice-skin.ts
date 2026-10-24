@@ -14,6 +14,11 @@ export function asSkin(v: unknown): DiceSkin {
   return v === 'bronze' || v === 'silver' || v === 'gold' || v === 'platinum' ? v : 'white';
 }
 
+/** True when an id names an earned tier colour (players can pick an unlocked tier as their dice). */
+export function isTierSkin(v: unknown): v is Exclude<DiceSkin, 'white'> {
+  return v === 'bronze' || v === 'silver' || v === 'gold' || v === 'platinum';
+}
+
 /** Next tier to reach, or null when permanent platinum is unlocked. */
 export function nextTier(yatzyMatches: number) {
   return TIER_GOALS.find((g) => yatzyMatches < g.goal) ?? null;

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, claimSession } from '@/lib/session';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
-import { asSkin, type DiceSkin, type DiceLook } from '@/lib/dice-skin';
+import { asSkin, isTierSkin, type DiceSkin, type DiceLook } from '@/lib/dice-skin';
 import { getDesign, designLook } from '@/lib/dice-designs';
 
 export interface GoldStatus {
@@ -175,6 +175,8 @@ export interface DiceProfile {
 export function profileSkin(p: DiceProfile | undefined): DiceLook {
   if (!p) return 'white';
   if (p.design && getDesign(p.design)) return designLook(p.design);
+  // A picked tier colour (bronze/silver/gold/platinum) is stored as the design.
+  if (isTierSkin(p.design)) return p.design;
   if (p.preferWhite) return 'white';
   return p.inviteGold && p.tier !== 'platinum' ? 'gold' : p.tier;
 }

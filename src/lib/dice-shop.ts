@@ -6,7 +6,7 @@ import { getSessionId, claimSession } from '@/lib/session';
 import { getDeviceIdSync, initDeviceId } from '@/lib/device';
 import { designLook, getDesign } from '@/lib/dice-designs';
 import { effectiveSkin, useGoldStatus, fetchGoldStatus } from '@/lib/gold-dice';
-import type { DiceLook } from '@/lib/dice-skin';
+import { isTierSkin, type DiceLook } from '@/lib/dice-skin';
 
 export interface ShopState {
   xp: number;
@@ -139,10 +139,11 @@ export async function selectCosmetic(slot: 'celebration' | 'frame', id: string |
   } catch { return false; }
 }
 
-/** The look of my own dice: shop design if chosen, otherwise the tier colour. */
+/** The look of my own dice: shop design or picked tier if chosen, otherwise the tier colour. */
 export function useMyDiceLook(): DiceLook {
   const gold = useGoldStatus();
   const shop = useShop();
   if (shop.selected && getDesign(shop.selected)) return designLook(shop.selected);
+  if (isTierSkin(shop.selected)) return shop.selected;
   return effectiveSkin(gold);
 }

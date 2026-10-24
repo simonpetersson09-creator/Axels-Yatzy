@@ -175,6 +175,8 @@ export interface DiceProfile {
 export function profileSkin(p: DiceProfile | undefined): DiceLook {
   if (!p) return 'white';
   if (p.design && getDesign(p.design)) return designLook(p.design);
+  // A picked tier colour (bronze/silver/gold/platinum) is stored as the design.
+  if (isTierSkin(p.design)) return p.design;
   if (p.preferWhite) return 'white';
   return p.inviteGold && p.tier !== 'platinum' ? 'gold' : p.tier;
 }

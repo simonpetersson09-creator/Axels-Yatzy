@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Rätta trånga tärningar – 24 oktober
+- [x] Öka endast onlinetärningarnas faktiska 3D-mellanrum inom samma höjdbudget; namn, chatt, spelregler och annonser oförändrade.
+- [ ] Kontrollera fem synliga tärningar och fria mellanrum på små och stora telefonvyer.
+
 ## Större onlinetärningar – 24 oktober
 - [x] Större onlinetärningar med luftigare faktisk 3D-delning och reserverad namnyta/chatt; lokala spel och annonser oförändrade.
 - [x] Tretton simulerade iPhone-/Android-mått verifierade med fyra spelare och låsta tärningar: linjerad nederkant, minst 12 px till namn och 8 px till chatt. Tolv tester godkända, bygge OK; fysisk telefonkontroll kräver nästa appversion.

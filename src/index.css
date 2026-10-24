@@ -645,7 +645,7 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.8; }
    Nineteen score rows plus the fixed header/section chrome determine height. */
 html:not(.ad-banner-on):has(.mp-game) {
   --game-top-gap-mp: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
-  --sb-row-h: clamp(20px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 120px) / 19), 36px);
+  --sb-row-h: clamp(20px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 120px) / 19), 44px);
 }
 .mp-game .ios-side-zone {
   min-height: 0;

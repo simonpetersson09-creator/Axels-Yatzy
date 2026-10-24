@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Större onlinetärningar och märkta telefonbilder – 24 oktober
+- [ ] Förstora tärningarna utan att flytta brickans och Hem/Ge upp-knapparnas gemensamma nederkant.
+- [ ] Skapa och granska oskalade bilder med rätt skärmbredd och telefonnamn på varje bild.
+
 ## Hela telefonbilder och linjerad nederkant – 24 oktober
 - [x] Onlinevyn anpassad endast i CSS: tolv telefonmått med simulerade safe areas ger identiska nederkanter för bricka och Hem/Ge upp, helt ovanför nederkant. Inga runtimefel; tre annonstester godkända, bygge OK. Telefonkontroll kräver nästa appbygge.
 - [x] Tolv nya oskalade PNG-bilder granskade individuellt, pixelmått verifierade och sparade i spelskarmar_v2 med isolerade fyrspelarsvar; inga riktiga matcher eller spelaruppgifter ändrade.

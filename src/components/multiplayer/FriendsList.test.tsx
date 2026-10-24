@@ -28,13 +28,14 @@ async function openInvite() { render(<FriendsList />); await act(async () => {})
 it('Android back minimizes an invite without cancelling it', async () => {
   await openInvite(); expect(screen.getByText('inviteWaiting')).toBeInTheDocument();
   act(() => { expect(runTopBackHandler()).toBe(true); });
+  await act(async () => { await vi.advanceTimersByTimeAsync(500); });
   expect(screen.queryByText('inviteWaiting')).not.toBeInTheDocument(); expect(m.respond).not.toHaveBeenCalled();
 });
 it('failed cancellation retains invite and successful retry closes it', async () => {
   m.respond.mockResolvedValueOnce({ ok: false, error: 'offline' }).mockResolvedValueOnce({ ok: true });
-  await openInvite(); fireEvent.click(screen.getByRole('button', { name: 'cancelInvite' })); await act(async () => {});
+  await openInvite(); fireEvent.click(screen.getByRole('button', { name: 'cancel', exact: true })); await act(async () => {});
   expect(screen.getByText('inviteWaiting')).toBeInTheDocument(); expect(m.error).toHaveBeenCalledWith('offline');
-  fireEvent.click(screen.getByRole('button', { name: 'cancelInvite' })); await act(async () => {});
+  fireEvent.click(screen.getByRole('button', { name: 'cancel', exact: true })); await act(async () => { await vi.advanceTimersByTimeAsync(500); });
   expect(screen.queryByText('inviteWaiting')).not.toBeInTheDocument(); expect(m.respond).toHaveBeenCalledTimes(2);
 });
 it('late empty card result never redirects away from a newer card', async () => {

@@ -71,11 +71,11 @@ export default function WaitingRoomPage() {
       try {
         const response = await roomAction(action, { seatId: seatRef.current, ...options });
         if (!mounted.current || life !== generation.current) return;
-        failedAction.current = null;
+        if (failedAction.current?.action === action || !failedAction.current) failedAction.current = null;
         offset.current = Date.parse(response.server_now) - Date.now();
         seatRef.current = response.mine?.id ?? (response.error === 'expired' || action === 'leave' ? null : seatRef.current);
         setSnapshot(response);
-        setConnectionLost(false);
+        setConnectionLost(!!failedAction.current);
         if (action === 'leave' && !response.error) { seatRef.current = null; navigate('/', { replace: true }); }
         if (lastCountdown.current && !response.countdown_at && !response.mine?.game_id) toast.info(t('wrCancelled'));
         lastCountdown.current = response.countdown_at;
@@ -136,7 +136,7 @@ export default function WaitingRoomPage() {
         if (active.current) void performRef.current('sync');
       }).subscribe();
     return () => {
-      mounted.current = false; disposed = true; generation.current += 1;
+      mounted.current = false; disposed = true; generation.current += 1; entered.current = false;
       clearInterval(time); clearInterval(heartbeat); clearInterval(tick);
       document.removeEventListener('visibilitychange', visibility); nativeRemove?.();
       void supabase.removeChannel(channel);

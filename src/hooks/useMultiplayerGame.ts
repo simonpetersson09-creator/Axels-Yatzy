@@ -339,9 +339,7 @@ export function useMultiplayerGame() {
         gameError: gameRes.error?.message,
         playersError: playersRes.error?.message,
       });
-      // Clear any pending submit guard so the next realtime payload isn't
-      // permanently ignored if the DB blip leaves the ref stuck.
-      pendingSubmitRef.current = null;
+      // An unrelated read failure must not unlock an in-flight score.
       // Retry a few times so a server hiccup heals itself instead of leaving
       // the match showing stale dice/scores.
       if (attempt < 3) {
@@ -358,6 +356,7 @@ export function useMultiplayerGame() {
 
     const game = gameRes.data;
     const dbPlayers = playersRes.data;
+    if (!game || !dbPlayers || !mountedRef.current) return;
 
     // Several refreshes can be in flight at once; never let an older server
     // snapshot (lower updated_at) overwrite a newer one already applied.

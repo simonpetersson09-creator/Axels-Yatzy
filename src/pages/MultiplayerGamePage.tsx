@@ -6,7 +6,6 @@ import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
-import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
@@ -744,12 +743,12 @@ export default function MultiplayerGamePage() {
                 return (
                   <motion.div
                     key={player.id}
-                    className={`flex items-center gap-2.5 px-2 py-1 rounded-xl transition-all ${
+                    className={`mp-player-row flex items-center gap-2.5 px-2 py-1 rounded-xl transition-all ${
                       isCurrent ? 'bg-secondary/80' : ''
                     }`}
                     onClick={() => { setInfoIndex(idx); trackEvent('dice_info_opened', { from: 'name' }); }}
                     role="button"
-                    animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
+                    animate={{ scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
                     <div className="relative shrink-0 isolate">
@@ -774,7 +773,7 @@ export default function MultiplayerGamePage() {
                       </span>
                     )}
                     </div>
-                    <span className={`text-[10px] font-semibold truncate max-w-[80px] max-[379px]:max-w-[64px] ${
+                    <span className={`mp-player-name text-[10px] font-semibold truncate max-w-[80px] max-[379px]:max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
                       {player.name}
@@ -849,16 +848,6 @@ export default function MultiplayerGamePage() {
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
               <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
-                {gameState.rollsLeft > 0 && gameState.rollsLeft < 3 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
-                  <TurnIndicator
-                    currentPlayerName={currentPlayer.name}
-                    isMyTurn={true}
-                    rollsLeft={gameState.rollsLeft}
-                    isRolling={false}
-                    playerIndex={gameState.currentPlayerIndex}
-                    placement="left"
-                  />
-                )}
                 <button
                   type="button"
                   onPointerDown={(e) => {
@@ -885,6 +874,9 @@ export default function MultiplayerGamePage() {
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
                 >
                   <span className="pointer-events-none text-center leading-tight px-1">
+                  {gameState.rollsLeft > 0 && gameState.rollsLeft < 3 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
+                    <span className="block text-[9px] font-medium leading-tight mb-1">{t('yourTurnLabel')}</span>
+                  )}
                   {!isMyTurn ? (
                     <span className="flex flex-col items-center gap-0.5 leading-none">
                       <span className="text-[10px] font-medium opacity-80">P{gameState.currentPlayerIndex + 1}</span>

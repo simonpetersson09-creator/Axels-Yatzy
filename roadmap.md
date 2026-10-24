@@ -187,3 +187,7 @@
 - [x] Registrera SDK-besked separat från appens visa/dölj-kommandon.
 - [x] Testa återvisning efter laddningsfel och snabba sidbyten automatiskt (31 annonstester godkända).
 - [ ] Testa första/nästa match, bakgrund och snabbsök på fysisk telefon (kräver nytt native-bygge).
+
+## Mindre luft ovanför onlinespelet – 24 oktober
+- [x] Placera matchkoden utan extra flödesmarginal, behåll säker zon och minska avståndet till brickan.
+- [ ] Kontrollera telefonmått och fria mellanrum efter justeringen.

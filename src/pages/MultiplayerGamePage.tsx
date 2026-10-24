@@ -801,7 +801,7 @@ export default function MultiplayerGamePage() {
 
             {/* Dice — tapping the opponent's dice shows their level */}
             <div
-              className="relative mt-2"
+              className="mp-dice-column relative mt-2"
               onClick={!isMyTurn ? () => { setInfoIndex(gameState.currentPlayerIndex); trackEvent('dice_info_opened', { from: 'dice' }); } : undefined}
             >
               <PickDiceHint
@@ -814,7 +814,7 @@ export default function MultiplayerGamePage() {
                   )
                 }
                 text={showRollFirstHint ? t('rollFirstHint') : undefined}
-                className="mx-auto mb-1"
+                className="mp-dice-hint mx-auto mb-1"
               />
               <DiceArea
                 dice={gameState.dice}
@@ -823,6 +823,7 @@ export default function MultiplayerGamePage() {
                 isRolling={localRolling || remoteRolling || (!isMyTurn && gameState.isRolling)}
                 onToggleLock={isMyTurn ? (i: number) => { playLightHaptic().catch(() => {}); toggleLock(i); } : () => {}}
                 compact
+                spacing={0.45}
                 playerIndex={gameState.currentPlayerIndex}
                 skin={profileSkin(diceProfiles.get(gameState.currentPlayerIndex))}
                 className="mt-0"

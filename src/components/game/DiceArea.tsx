@@ -15,6 +15,8 @@ interface DiceAreaProps {
   playerIndex?: number;
   /** Dice colour for the player whose turn it is. */
   skin?: DiceLook;
+  /** Presentation spacing in die-width units; defaults preserve local games. */
+  spacing?: number;
 }
 
 type Five<T> = [T, T, T, T, T];
@@ -37,6 +39,7 @@ export function DiceArea({
   className,
   playerIndex = 0,
   skin = 'white',
+  spacing: spacingOverride,
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   // --dice-scale (index.css) shrinks the column when the ad banner needs room.
@@ -45,7 +48,7 @@ export function DiceArea({
   const [diceScale, gapScale] = useDiceScale();
   const diceSize = Math.round((compact ? 54 : 60) * diceScale);
   const gap = Math.round((compact ? 29 : 36) * gapScale);
-  const spacing = compact ? 0.65 : 0.78;
+  const spacing = spacingOverride ?? (compact ? 0.65 : 0.78);
   const canLock = !isRolling && hasRolled && rollsLeft > 0;
 
   const columnHeight = diceSize * 5 + gap * 4;

@@ -7,7 +7,7 @@
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
-- Online-game problems (errors, slow calls >3 s, dice/score mismatches) are logged silently as analytics_events 'mp_issue' from useMultiplayerGame — diagnoses desync reports without user effort.
+- useMultiplayerGame silently logs errors, calls >3 s and dice/score mismatches as analytics_events 'mp_issue'.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
 - Online locks send full locked_dice batches; per-die toggles are legacy only.
 - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
@@ -16,18 +16,19 @@
 - *_authed combines claim/action; ROLL_RECOVER_* reads games. Client multiplayer-actions await requireClaimedDevice; failed claims retry.
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit).
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
-- Game layout keys reset on orientationchange, never resize; presentation-only dice recovery preserves server rolls, turns and ads.
-- Online: 20 rows plus fixed chrome/safe clearance; names stay in column, turn label in roll button; dice centred; no state/ad changes.
+- Game layout resets on orientationchange, never resize; visual recovery preserves rolls, turns and ads.
+- Online layout: 20 rows + safe clearance; names in column, turn in roll button, centred dice; preserve game state.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Weekly lists use server ranks; most-games notices compare before/after reporting with a Stockholm-week cache. Score reporting trims names and caps scores server-side.
 - Forfeits affect no statistics: recordGameResult(completed=false) is a no-op; preserve all pre-existing totals rather than recalculating history.
 - Local match identities persist per game slot and rotate only on replay; commit stats and an untrimmed dedupe ledger atomically before marking multiplayer results recorded, so restarts cannot double-count future matches.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
-- DiceInfoSheet: safe-area scroll, body-portaled celebrations, inline frames. Shop receipts use body portals/useBackHandler; ownedOnly reuses selections/previews in Settings.
+- DiceInfoSheet: safe scroll, body-portaled celebrations, inline frames. Receipts use portals/useBackHandler; Settings ownedOnly reuses selections/previews.
+- Completed-match home exits use usePostMatchExit and existing interstitial units: preload results, skip unready ads, await dismissal, no XP, match-key dedupe and App Open suppression prevent duplicate ads.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
-- Banners serialize; failures reload. Search uses a portal/measured slot. MultiplayerGamePage disables useGameBanner, clearing ads/sizing; GamePage keeps it.
+- Banners serialize/reload on failure. Search uses a portal/measured slot; only local matches keep useGameBanner.
 
 - Ad privacy: sync repairs UMP reader registration. OBTAINED/canRequestAds aren't acceptance. Log only read outcomes, never choices/errors; never store consent.
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.

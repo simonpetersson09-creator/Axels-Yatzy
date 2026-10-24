@@ -43,6 +43,9 @@ function MiniDie({ d, size = 44 }: { d: DiceDesign; size?: number }) {
 export function DiceShop({ ownedOnly = false }: { ownedOnly?: boolean }) {
   const { t, lang } = useTranslation();
   const shop = useShop();
+  const gold = useGoldStatus();
+  const unlockedTiers = TIER_DICE.filter((d) => SKIN_RANK[d.id as DiceSkin] <= SKIN_RANK[gold.tier]);
+  const tierName = (id: string) => t(`tier${id[0].toUpperCase()}${id.slice(1)}` as TranslationKey);
   const [picked, setPicked] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [previewCel, setPreviewCel] = useState<string | null>(null);
@@ -101,10 +104,18 @@ export function DiceShop({ ownedOnly = false }: { ownedOnly?: boolean }) {
         {shop.selected === null && <Check className="w-4 h-4 text-primary" />}
       </button>
 
-      {DICE_DESIGNS.some((d) => shop.owned.includes(d.id)) && (
+      {(unlockedTiers.length > 0 || DICE_DESIGNS.some((d) => shop.owned.includes(d.id))) && (
         <div className="mt-4">
           {!ownedOnly && <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t('shopKind_owned')}</p>}
           <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
+            {unlockedTiers.map((d) => (
+              <button key={d.id} disabled={busy} onClick={() => use(d.id)} aria-label={tierName(d.id)}
+                className={cn('relative shrink-0 flex flex-col items-center gap-1 rounded-xl border p-2 w-[72px]', shop.selected === d.id ? 'border-primary bg-primary/10' : 'border-border bg-secondary/40')}>
+                <MiniDie d={d} size={40} />
+                <span className="text-[10px] font-semibold text-foreground truncate max-w-full">{tierName(d.id)}</span>
+                {shop.selected === d.id && <Check className="absolute top-1 right-1 w-3 h-3 text-primary" />}
+              </button>
+            ))}
             {DICE_DESIGNS.filter((d) => shop.owned.includes(d.id)).map((d) => (
               <button key={d.id} disabled={busy} onClick={() => use(d.id)} aria-label={designName(d, lang)}
                 className={cn('relative shrink-0 flex flex-col items-center gap-1 rounded-xl border p-2 w-[72px]', shop.selected === d.id ? 'border-primary bg-primary/10' : 'border-border bg-secondary/40')}>

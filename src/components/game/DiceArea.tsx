@@ -48,6 +48,8 @@ export function DiceArea({
   const [diceScale, gapScale] = useDiceScale();
   const diceSize = Math.round((compact ? 54 : 60) * diceScale);
   const gap = Math.round((compact ? 29 : 36) * gapScale);
+  // An explicit spacing must leave room for the die's rotated silhouette,
+  // not just its unit cube. Keep the existing column budget and tap centres.
   const spacing = spacingOverride ?? (compact ? 0.65 : 0.78);
   const canLock = !isRolling && hasRolled && rollsLeft > 0;
 

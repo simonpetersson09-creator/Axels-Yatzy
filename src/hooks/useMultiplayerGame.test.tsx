@@ -96,4 +96,17 @@ describe('authoritative multiplayer recovery', () => {
     await act(async () => { resolve({ data: { success: true, score: 50 }, error: null }); });
     expect(result.current.pendingCategory).toBeNull();
   });
+  it('failed score and failed refresh restore the previous board and keep actions blocked', async () => {
+    game = { ...game, rolls_left: 0, dice: [6,6,6,6,6] };
+    const { result } = await joined();
+    failReads = true; m.roll.mockResolvedValue({ data: null, error: new Error('offline') });
+    await act(async () => { void result.current.selectCategory('yatzy'); await vi.advanceTimersByTimeAsync(15000); });
+    expect(result.current.gameState?.players[0].scores.yatzy).toBeUndefined();
+    expect(result.current.gameState?.dice).toEqual([6,6,6,6,6]);
+    expect(result.current.rollPending).toBe(true); expect(result.current.getPossibleScores()).toBeNull();
+    failReads = false;
+    await act(async () => { await result.current.retryConnection(); });
+    expect(result.current.rollPending).toBe(false);
+    expect(result.current.getPossibleScores()?.yatzy).toBe(50);
+  });
 });

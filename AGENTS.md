@@ -26,7 +26,7 @@
 - DiceInfoSheet: safe-area scroll, body-portaled celebrations, inline frames. Shop receipts use body portals/useBackHandler; ownedOnly reuses selections/previews in Settings.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
-- Serialize banners with global listeners; failures force reload. SDK events lack request IDs. Search uses a body portal and measured native rectangle slot; reuse must match size and margin.
+- Banners serialize; failures reload. Search uses a portal/measured slot. MultiplayerGamePage disables useGameBanner, clearing ads/sizing; GamePage keeps it.
 
 - Ad privacy: sync repairs UMP reader registration. OBTAINED/canRequestAds aren't acceptance. Log only read outcomes, never choices/errors; never store consent.
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.

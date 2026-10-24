@@ -45,8 +45,8 @@ const PLAYER_COLORS = [
 const PLAYER_HSL = ['36 82% 52%', '210 70% 52%', '155 60% 42%', '350 65% 52%'];
 
 const SLOT_COUNT = 4;
-const COL_W = 'min-w-[42px] w-[42px]';
-const LABEL_W = 'w-[86px] min-w-[86px]';
+const COL_W = 'min-w-[var(--sb-col-w,42px)] w-[var(--sb-col-w,42px)]';
+const LABEL_W = 'w-[var(--sb-label-w,86px)] min-w-[var(--sb-label-w,86px)]';
 const ROW_H = 'h-[var(--sb-row-h,34px)]';
 
 function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor, justPlaced }: {

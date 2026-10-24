@@ -4,7 +4,11 @@ import { hideGameBanner, showGameBanner } from '@/lib/admob';
 /** Visar den stående annonsbannern längst ner så länge spelskärmen är öppen. */
 export function useGameBanner(active = true, placement: 'game' | 'search' = 'game') {
   useEffect(() => {
-    if (!active) return;
+    if (!active) {
+      // Clear a banner and its layout reservation left by the previous screen.
+      void hideGameBanner();
+      return;
+    }
     const show = () => { void showGameBanner(placement); };
     show();
     if (placement === 'search') {

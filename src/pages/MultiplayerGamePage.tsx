@@ -268,7 +268,7 @@ export default function MultiplayerGamePage() {
 
   // Only a real rotation needs the iOS layout reset; ordinary resize must
   // preserve the live dice canvas and its animation state.
-  useGameBanner();
+  useGameBanner(false);
   const [orientationKey, setOrientationKey] = useState(0);
   useEffect(() => {
     let raf = 0;

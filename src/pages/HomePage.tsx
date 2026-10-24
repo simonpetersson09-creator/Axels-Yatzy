@@ -54,6 +54,31 @@ let startupAdChecked = false;
 /** Module-level so it survives HomePage remounts while the app is in background. */
 let backgroundedAt = 0;
 const RESUME_AD_MIN_AWAY_MS = 60_000;
+/** Set when the player was away ≥ 60 s but resumed outside the start screen. */
+let resumeAdPending = false;
+let resumeWatcherInstalled = false;
+const onStartScreen = () => window.location.pathname === '/' && document.visibilityState === 'visible';
+async function tryShowResumeAd() {
+  if (!resumeAdPending || !onStartScreen()) return;
+  resumeAdPending = false;
+  if (await showAppOpenAd(onStartScreen)) trackEvent('resume_ad');
+}
+/** Installed once and never removed, so leaving the app mid-match is also counted. */
+function installResumeAdWatcher() {
+  if (resumeWatcherInstalled) return;
+  resumeWatcherInstalled = true;
+  void (async () => {
+    const { App } = await import('@capacitor/app');
+    await App.addListener('appStateChange', ({ isActive }) => {
+      if (!isActive) { backgroundedAt = Date.now(); void preloadAppOpenAd(); return; }
+      const away = backgroundedAt ? Date.now() - backgroundedAt : 0;
+      backgroundedAt = 0;
+      if (away < RESUME_AD_MIN_AWAY_MS) return;
+      resumeAdPending = true;
+      void tryShowResumeAd();
+    });
+  })();
+}
 import { shouldShowRatePrompt, snoozeRatePrompt, completeRatePrompt, requestAppReview } from '@/lib/rate-app';
 
 const item = {
@@ -199,28 +224,16 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Resume ad: when the app comes back from the background to the start
-  // screen after at least RESUME_AD_MIN_AWAY_MS. Ads themselves can push the
-  // app to background briefly, so the away-time guard also stops loops.
+  // Resume ad: away-time is tracked app-wide (any page). The ad itself is
+  // only shown on the start screen — immediately if the app resumes there,
+  // otherwise the next time the player lands on the start screen.
   useEffect(() => {
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
-    let remove: (() => void) | undefined;
-    let cancelled = false;
-    void (async () => {
-      const { App } = await import('@capacitor/app');
-      const sub = await App.addListener('appStateChange', async ({ isActive }) => {
-        if (!isActive) { backgroundedAt = Date.now(); void preloadAppOpenAd(); return; }
-        const away = backgroundedAt ? Date.now() - backgroundedAt : 0;
-        backgroundedAt = 0;
-        if (away < RESUME_AD_MIN_AWAY_MS) return;
-        if (window.location.pathname !== '/') return;
-        if (await showAppOpenAd(() => window.location.pathname === '/' && document.visibilityState === 'visible')) {
-          trackEvent('resume_ad');
-        }
-      });
-      if (cancelled) sub.remove(); else remove = () => sub.remove();
-    })();
-    return () => { cancelled = true; remove?.(); };
+    installResumeAdWatcher();
+    if (resumeAdPending) {
+      const timer = setTimeout(() => void tryShowResumeAd(), 800);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   // Preload i bakgrunden – kan aldrig trigga visning. Väntar tills starten är klar.

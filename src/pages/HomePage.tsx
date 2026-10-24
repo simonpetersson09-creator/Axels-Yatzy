@@ -33,8 +33,7 @@ import { getCachedHofRank, subscribeHofRank, syncMyHofRank } from '@/lib/hall-of
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { getStatsPeriod } from '@/lib/stats-period';
-import { syncCountryRank, syncWorldLeaders, getCachedRankInfo, getCachedWorldLeaders, countryToFlag, countryName, type RankInfo, type WorldLeaders } from '@/lib/country-rank';
+import { syncCountryRank, getCachedRankInfo, countryToFlag, countryName, type RankInfo } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
 import { isAdMobAvailable, preloadRewarded, subscribeRewardedState, getRewardedState, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
 import { optionalAdPair } from '@/lib/rewarded-pair';
@@ -113,7 +112,6 @@ export default function HomePage() {
   );
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
   const [rankInfo, setRankInfo] = useState<RankInfo>(getCachedRankInfo);
-  const [worldLeaders, setWorldLeaders] = useState<WorldLeaders>(getCachedWorldLeaders);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
@@ -287,9 +285,6 @@ export default function HomePage() {
     const timer = setTimeout(() => {
       void syncCountryRank().then(res => {
         if (!cancelled) setRankInfo(res.country || res.world ? res : getCachedRankInfo());
-      });
-      void syncWorldLeaders().then(res => {
-        if (!cancelled && res.length) setWorldLeaders(res);
       });
     }, 1200);
     return () => { cancelled = true; clearTimeout(timer); };
@@ -1014,40 +1009,6 @@ export default function HomePage() {
           </div>
 
           <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0">
-            <div className="text-center mb-1">
-              <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('worldLeaderLabel')} {getStatsPeriod(lang).year}
-              </span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {[0, 1, 2].map(idx => {
-                const leader = worldLeaders[idx];
-                const position = idx + 1;
-                return (
-                  <div
-                    key={idx}
-                    className="flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-2xl bg-secondary/60 border border-border/50 relative overflow-hidden"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/8 to-transparent pointer-events-none" />
-                    <span className="text-[10px] font-black text-game-gold uppercase tracking-wider text-center relative z-10">
-                      P{position}
-                    </span>
-                    <span className="text-xl sm:text-2xl leading-none relative z-10" aria-hidden>
-                      {leader ? countryToFlag(leader.country) : '🏳️'}
-                    </span>
-                    {leader ? (
-                      <span className="text-[9px] font-medium text-muted-foreground relative z-10 text-center leading-tight line-clamp-1">
-                        {countryName(leader.country, getLanguage())}
-                      </span>
-                    ) : (
-                      <span className="text-[9px] font-medium text-muted-foreground/50 relative z-10 text-center leading-tight">
-                        –
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
             <div className="text-center mt-2 mb-1">
               <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
                 {t('challengesLabel')}

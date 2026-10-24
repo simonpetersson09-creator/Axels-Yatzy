@@ -1,5 +1,6 @@
 // Shop extras besides dice: Yatzy celebrations and avatar frames.
 // Prices/ownership live server-side (dice_designs rows 'cel_*' / 'frame_*').
+import { catalogName } from './i18n/catalog';
 export interface Celebration { id: string; name: string; en: string; emoji: string[]; colors: string[]; text: string }
 export interface Frame { id: string; name: string; en: string; ring: string; glow: string }
 
@@ -18,4 +19,5 @@ export const FRAMES: Frame[] = [
 ];
 export const getCelebration = (id: string | null | undefined) => CELEBRATIONS.find((c) => c.id === id) ?? null;
 export const getFrame = (id: string | null | undefined) => FRAMES.find((f) => f.id === id) ?? null;
-export const cosmeticName = (c: { name: string; en: string }, lang: string) => (lang === 'sv' ? c.name : c.en);
+export const cosmeticName = (c: { id?: string; name: string; en: string }, lang: string) =>
+  lang === 'sv' ? c.name : (c.id ? catalogName(c.id, lang) : undefined) ?? c.en;

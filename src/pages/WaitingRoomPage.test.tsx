@@ -33,7 +33,8 @@ it('unmount invalidates queued reads and sends no stale presence commands', asyn
   await act(async () => { await vi.advanceTimersByTimeAsync(10000); });
   view.unmount();
   await act(async () => { resolve(snapshot()); });
-  expect(m.action.mock.calls.map(c => c[0])).toEqual(['join']);
+  expect(m.action.mock.calls.map(c => c[0])).toEqual(['join', 'away']);
+  expect(m.action.mock.calls[1][1]).toEqual({ seatId: 'seat' });
   expect(m.navigate).not.toHaveBeenCalled();
 });
 it('coalesces repeated sync requests while a request is pending', async () => {

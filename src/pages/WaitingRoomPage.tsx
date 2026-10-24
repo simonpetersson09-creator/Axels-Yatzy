@@ -70,7 +70,12 @@ export default function WaitingRoomPage() {
       if (!mounted.current || life !== generation.current) return;
       try {
         const response = await roomAction(action, { seatId: seatRef.current, ...options });
-        if (!mounted.current || life !== generation.current) return;
+        if (!mounted.current || life !== generation.current) {
+          // A join already sent may create a seat after navigation. Retain its
+          // identity for cleanup-away without applying UI or navigation.
+          if (!mounted.current && generation.current === life + 1 && response.mine?.id) seatRef.current = response.mine.id;
+          return;
+        }
         if (failedAction.current?.action === action || !failedAction.current) failedAction.current = null;
         offset.current = Date.parse(response.server_now) - Date.now();
         seatRef.current = response.mine?.id ?? (response.error === 'expired' || action === 'leave' ? null : seatRef.current);

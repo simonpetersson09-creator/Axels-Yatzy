@@ -1,5 +1,5 @@
 - Native patches run via `npm run cap:sync:ios/android`; generated edits get lost. iOS patches bind UMP before consent (without starting Ads) and enforce four-hour App Open expiry on reuse/status/show, preserving display scheduling.
-- Clean QA stats from player_country_stats; they displace real players.
+- Remove QA player_country_stats; they displace real players.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - App icon: resources/icon.png (1024x1024, opaque) is the only source; `npm run icons` (scripts/make-icons.js) regenerates resources/android/res, resources/ios/AppIcon.appiconset and public/ copies — never hand-edit generated icon files.
@@ -17,7 +17,7 @@
 - Quick-match forfeit in round 1–2 with another human left turns the seat into a bot (perform_forfeit).
 - Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
 - Game layout keys reset only on actual orientationchange, never ordinary viewport resize; dice recovery is presentation-only and preserves server-owned rolls, turns and ad scheduling.
-- Online CSS aligns score/action bottoms above safe areas; preserve game state and ads.
+- Online CSS aligns score/action bottoms above safe areas; dice gaps reserve names/chat, not state/ads.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
 - Weekly lists use server ranks; most-games notices compare before/after reporting with a Stockholm-week cache. Score reporting trims names and caps scores server-side.

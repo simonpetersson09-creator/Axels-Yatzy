@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Onlinematcher utan banner – 24 oktober
+- [ ] Ta bort bannern och annonsens krympning i alla onlinematcher; behåll mot datorn.
+- [ ] Testa annonsregeln och visa bilder av online med 2, 3 och 4 spelare samt mot datorn.
+
 ## Högra platsens text – 24 oktober
 - [x] Sidoplatserna får reserverat utrymme och långa namn förkortas; flaggor hålls samman i horisontell emoji-text. Fyra simulerade platser kontrollerade på 320/393/440 px: alla etiketter inom skärmen, inga runtimefel, 20 tester godkända och bygge OK. Ingen server-/annonsändring; telefonvisningen behöver nästa appbygge.
 

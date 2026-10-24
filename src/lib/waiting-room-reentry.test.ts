@@ -43,7 +43,8 @@ describe.skipIf(!url)('waiting-room reentry (isolated deployed SQL)', () => {
     expect(row.result.mine.id).not.toBe(seat);
     expect(row.result.mine.game_id).toBeNull();
     expect(row.result.mine.present).toBe(true);
-    expect(row.result.mine.seat).toBe(1);
+    // Seat priority is bottom (2) first, then top (0), right (1), left (3).
+    expect(row.result.mine.seat).toBe(2);
   }));
   it('active match handoff still returns the same game', () => isolated(async (sql, seat, game) => {
     const [row] = await sql`SELECT pg_temp.waiting_room_action('qa-reentry','qa-device','open',${seat}::uuid) AS result`;

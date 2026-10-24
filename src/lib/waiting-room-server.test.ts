@@ -49,7 +49,9 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     }
   });
   it('gives unique seats, rejects fifth, prevents duplicate membership', () => scenario(async (sql, ids, action) => {
-    for (let i = 0; i < 4; i++) expect((await action(i)).mine.seat).toBe(i);
+    // First player takes the bottom chair, second the top chair, then right and left.
+    const priority = [2, 0, 1, 3];
+    for (let i = 0; i < 4; i++) expect((await action(i)).mine.seat).toBe(priority[i]);
     expect((await action(4)).error).toBe('full');
     expect((await action(0)).players.length).toBe(4);
   }));

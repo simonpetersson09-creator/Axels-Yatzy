@@ -1,12 +1,9 @@
 /**
  * Google AdMob interstitial integration.
  *
- * HUVUDREGEL: en annons får ENDAST visas efter att användaren aktivt tryckt på
- * knappen "Frivillig reklam". Ingen automatisk visning vid appstart, mellan
- * matcher, vid navigation, efter timeout eller efter preload.
- *
- * showOptionalInterstitial() är den ENDA funktionen som visar interstitials.
- * Undantag: showAppOpenAd() visar en App Open-annons vid start, max 1 gång/dag.
+ * Interstitials visas efter "Frivillig reklam" eller återgång till startsidan
+ * efter en färdig match. Förladdning visar aldrig annonser.
+ * App Open är ett separat format för appstart/återöppning.
  */
 import { Capacitor } from '@capacitor/core';
 import { readAdConsentChoices, type AdConsentChoices } from './ad-consent';
@@ -101,7 +98,7 @@ function reasonOf(err: unknown): string {
 }
 
 /** Silent diagnostics so failing ads (e.g. on iPad) show up in analytics. */
-function reportAd(kind: 'appOpen' | 'optional' | 'banner', result: string, startedAt: number, reason?: string) {
+function reportAd(kind: 'appOpen' | 'optional' | 'postMatch' | 'banner', result: string, startedAt: number, reason?: string) {
   void import('@/lib/analytics').then(({ trackEvent }) =>
     trackEvent('ad_result', {
       kind,
@@ -272,39 +269,55 @@ export async function preloadInterstitial(): Promise<boolean> {
 export type ShowAdResult = 'shown' | 'unavailable' | 'failed' | 'busy';
 
 /**
- * Visar en interstitial. Får ENDAST anropas direkt från användarens tryck på
- * knappen "Frivillig reklam". Ger ingen reward eller spelmässig fördel.
+ * Visar en interstitial efter tryck på "Frivillig reklam".
  */
 export async function showOptionalInterstitial(): Promise<ShowAdResult> {
+  return showInterstitial('optional');
+}
+
+/** Result exit only: skip unprepared ads rather than delaying navigation. No XP. */
+export async function showPostMatchInterstitial(): Promise<ShowAdResult> {
+  return showInterstitial('postMatch');
+}
+
+async function showInterstitial(kind: 'optional' | 'postMatch'): Promise<ShowAdResult> {
   if (!isAdMobAvailable()) return 'unavailable';
-  if (showing) return 'busy';
+  if (showing || rewardedShowing || appOpenShowing) return 'busy';
+  if (kind === 'postMatch' && (!preparedAt || Date.now() - preparedAt >= PREPARED_TTL_MS)) return 'unavailable';
   showing = true;
   const startedAt = Date.now();
   const listeners: Awaited<ReturnType<AdMobModule['AdMob']['addListener']>>[] = [];
   try {
-    const ready = await preloadInterstitial();
+    const ready = kind === 'postMatch' || await preloadInterstitial();
     if (!ready) {
       showing = false;
-      reportAd('optional', 'load_failed', startedAt, lastPrepareError);
+      reportAd(kind, 'load_failed', startedAt, lastPrepareError);
       return 'failed';
     }
     const mod = await loadModule();
-    // Native presentation resolves immediately; XP must wait until dismissal.
+    // Native presentation resolves immediately; navigation waits for dismissal.
     let settle: (result: ShowAdResult) => void = () => {};
     const closed = new Promise<ShowAdResult>((resolve) => { settle = resolve; });
     listeners.push(await mod.AdMob.addListener(mod.InterstitialAdPluginEvents.Dismissed, () => settle('shown')));
     listeners.push(await mod.AdMob.addListener(mod.InterstitialAdPluginEvents.FailedToShow, () => settle('failed')));
-    await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
+    if (kind === 'postMatch') {
+      suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
+      // Never free an uncancellable native attempt just because a timer elapsed.
+      void mod.AdMob.showInterstitial().catch(() => settle('failed'));
+    } else {
+      await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
+    }
     const result = await closed;
     preparedAt = 0; // förbrukad – laddas om via Dismissed-lyssnaren
-    reportAd('optional', result === 'shown' ? 'shown' : 'show_failed', startedAt);
+    reportAd(kind, result === 'shown' ? 'shown' : 'show_failed', startedAt);
     if (result === 'shown') void preloadInterstitial();
     return result;
   } catch (err) {
     preparedAt = 0;
-    reportAd('optional', 'show_failed', startedAt, reasonOf(err));
+    reportAd(kind, 'show_failed', startedAt, reasonOf(err));
     return 'failed';
   } finally {
+    if (kind === 'postMatch') suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     await Promise.all(listeners.map((listener) => listener.remove().catch(() => {})));
     showing = false;
   }

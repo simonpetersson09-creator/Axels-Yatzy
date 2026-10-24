@@ -184,8 +184,8 @@ export default function WaitingRoomPage() {
           return <div key={seat} className={`waiting-seat waiting-seat-${seat}`}>
             <div className={`waiting-person-label ${p ? '' : 'waiting-person-label-empty'}`}>
               <p className="font-semibold text-xs break-words">{p && <span role="img" aria-label={p.present ? t('onlineNow') : t('wrAway')} className={`waiting-presence ${p.present ? 'waiting-presence-online' : 'waiting-presence-away'}`} />}{country && <span role="img" aria-label={countryName(country, lang)} className="waiting-country-flag">{countryToFlag(country)}</span>}<span className="waiting-player-name" title={p?.player_name || undefined}>{p?.player_name || t('wrSeat')}</span>{own && <span className="text-primary text-[10px] block">{t('you')}</span>}</p>
-              {p && <p className={`text-[11px] leading-tight ${p.ready ? 'text-game-success' : 'text-muted-foreground'}`}>
-                {p.ready ? <span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />{t('wrReady')}</span> : !p.present ? t('wrAway') : '—'}
+              {p && (p.ready || !p.present) && <p className={`text-[11px] leading-tight ${p.ready ? 'text-game-success' : 'text-muted-foreground'}`}>
+                {p.ready ? <span className="inline-flex items-center gap-1"><Check className="w-3 h-3" />{t('wrReady')}</span> : t('wrAway')}
               </p>}
               {p?.recall_until && <p className="text-[10px] text-primary leading-tight">{t('wrReadyLeft', { time: remainingTime(p.recall_until, clock) })}</p>}
             </div>
@@ -193,13 +193,13 @@ export default function WaitingRoomPage() {
             {p && chat.bubbles[p.id] && <div className="waiting-chat-bubble" role="status">{t(chat.bubbles[p.id].phrase)}</div>}
           </div>;
         })}
-        {countdown !== null && <div className="waiting-countdown" role="timer">{countdown > 0 ? countdown : <span className="text-sm">{t('wrStarting')}</span>}</div>}
+        {countdown !== null && <div className="waiting-countdown" role="timer">{countdown > 0 ? countdown : <span className="waiting-countdown-text">{t('wrStarting')}</span>}</div>}
       </section>
       <div className="space-y-3">
         {errorKey && <p role="alert" className="text-center text-primary text-sm">{t(errorKey)}</p>}
         {mine && !mine.game_id ? <>
           <div className="flex items-center justify-center gap-3">
-          <Button variant={mine.ready ? 'success' : 'default'} className="waiting-ready-button font-display font-bold text-base whitespace-normal" disabled={busy || countdown !== null || connectionLost} onClick={() => void command('ready', { ready: !mine.ready })}>
+          <Button variant={mine.ready ? 'success' : 'default'} className="waiting-ready-button font-display font-bold text-lg whitespace-normal" disabled={busy || countdown !== null || connectionLost} onClick={() => void command('ready', { ready: !mine.ready })}>
             <Check /> {t(mine.ready ? 'wrUndo' : 'wrBeReady')}
           </Button>
           <Button size="icon" className="h-12 w-12 rounded-full shrink-0" aria-label={t('quickMessages')} title={t('quickMessages')} disabled={!chat.connected || connectionLost || countdown !== null} onClick={() => setChatOpen(true)}><MessageCircle /></Button>

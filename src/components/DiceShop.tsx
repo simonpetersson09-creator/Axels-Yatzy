@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { DICE_DESIGNS, designName, designSwatchBg, type DiceDesign, type DesignKind } from '@/lib/dice-designs';
 import { buyDesign, selectDesign, selectCosmetic, useShop } from '@/lib/dice-shop';
+import { useGoldStatus } from '@/lib/gold-dice';
+import { SKIN_RANK, type DiceSkin } from '@/lib/dice-skin';
 import { CELEBRATIONS, FRAMES, cosmeticName } from '@/lib/cosmetics';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { getProfileAvatar } from '@/lib/profile';
@@ -17,6 +19,14 @@ import { ShopPurchaseDialog } from '@/components/ShopPurchaseDialog';
 
 const KINDS: DesignKind[] = ['season', 'personal', 'flag', 'color', 'pattern', 'exclusive'];
 const PIPS_5 = [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]];
+
+/** Earned tier colours shown under "Mina tärningar" so players can pick any unlocked tier. */
+const TIER_DICE: DiceDesign[] = [
+  { id: 'bronze', name: 'Brons', kind: 'color', body: '#e09a63', pip: '#4a2410', finish: 'metal' },
+  { id: 'silver', name: 'Silver', kind: 'color', body: '#cdd3db', pip: '#3d444d', finish: 'metal' },
+  { id: 'gold', name: 'Guld', kind: 'color', body: '#f5cc5e', pip: '#5a430e', finish: 'metal' },
+  { id: 'platinum', name: 'Platina', kind: 'color', body: '#eef4fb', pip: '#3f5f86', finish: 'metal' },
+];
 
 function MiniDie({ d, size = 44 }: { d: DiceDesign; size?: number }) {
   const glow = d.id === 'legend' ? `0 0 ${size * 0.5}px #ffb300, 0 0 ${size * 0.2}px #ff3fa8` : d.kind === 'exclusive' ? `0 0 ${size * 0.35}px ${d.glow ?? d.body}` : '0 4px 8px rgba(0,0,0,0.35)';

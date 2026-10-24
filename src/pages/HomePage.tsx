@@ -694,70 +694,75 @@ export default function HomePage() {
           )}
 
 
-          {/* Main actions stacked */}
+          {/* Main actions: rund Snabbspel bredvid Spela med vän och Spelväntrum */}
           <div className="flex flex-col gap-2.5">
-            <motion.button
-              onClick={() => setShowQuickMatch(v => !v)}
-              className="w-full py-3 sm:py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(36_78%_55%/0.3)] active:shadow-[0_2px_8px_hsl(36_78%_55%/0.2)] transition-shadow flex items-center justify-center gap-2"
-              whileTap={{ scale: 0.97 }}
-              variants={item}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-            >
-              🎲 <span className="truncate">{t('quickMatch')}</span>
-            </motion.button>
-          <AnimatePresence>
-            {showQuickMatch && (
-              <motion.div
-                className="space-y-2 overflow-hidden"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25 }}
+            <div className="home-actions">
+              <motion.button
+                onClick={() => setShowQuickMatch(v => !v)}
+                aria-expanded={showQuickMatch}
+                className="home-quick-circle font-display font-bold"
+                whileTap={{ scale: 0.97 }}
+                variants={item}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
               >
-                <p className="text-center text-sm text-muted-foreground font-medium">
-                  {t('selectPlayerCount')}
-                </p>
-                <div className="flex gap-2">
-                  {[1, 2, 3].map(opponents => (
-                    <motion.button
-                      key={opponents}
-                      onClick={() => {
-                        const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
-                        const aiNames = getRandomAiNames(opponents);
-                        const playerNames = [humanName, ...aiNames];
-                        const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
-                        if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
-                          toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
-                          return;
-                        }
-                        setOnlineSearch({ humanName, playerNames, aiPlayers });
-                      }}
-                      className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <span>{opponents} {opponents === 1 ? t('opponent') : t('opponents')}</span>
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-            <motion.button
-              onClick={() => navigate('/multiplayer')}
-              className="w-full py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow flex items-center justify-center gap-2"
-              whileTap={{ scale: 0.97 }}
-              variants={item}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-            >
-              🌐 <span className="truncate">{t('playWithFriends')}</span>
-            </motion.button>
-            <Button asChild variant="waitingRoom" className="relative w-full h-auto py-3 sm:py-4 px-12 rounded-2xl font-display font-bold text-base sm:text-lg whitespace-normal">
-             <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
-              <Users /> <span className="flex flex-col items-center min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-xs font-medium inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
-              {waitingCount > 0 && <span className="absolute right-4 rounded-full bg-destructive text-destructive-foreground min-w-6 h-6 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
-             </motion.button>
-            </Button>
+                <span aria-hidden="true" className="text-xl leading-none">🎲</span>
+                <span className="home-quick-circle-label">{t('quickMatch')}</span>
+              </motion.button>
+              <div className="home-actions-side">
+                <motion.button
+                  onClick={() => navigate('/multiplayer')}
+                  className="w-full px-2 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-sm sm:text-base leading-tight shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow flex items-center justify-center gap-2"
+                  whileTap={{ scale: 0.97 }}
+                  variants={item}
+                  transition={{ duration: 0.45, ease: 'easeOut' }}
+                >
+                  🌐 <span className="truncate">{t('playWithFriends')}</span>
+                </motion.button>
+                <Button asChild variant="waitingRoom" className="relative w-full py-1.5 px-8 rounded-2xl font-display font-bold text-sm sm:text-base leading-tight whitespace-normal">
+                  <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
+                    <Users /> <span className="flex flex-col items-center min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[11px] font-medium inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
+                    {waitingCount > 0 && <span className="absolute right-3 rounded-full bg-destructive text-destructive-foreground min-w-6 h-6 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
+                  </motion.button>
+                </Button>
+              </div>
+            </div>
+            <AnimatePresence>
+              {showQuickMatch && (
+                <motion.div
+                  className="space-y-2 overflow-hidden"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <p className="text-center text-sm text-muted-foreground font-medium">
+                    {t('selectPlayerCount')}
+                  </p>
+                  <div className="flex gap-2">
+                    {[1, 2, 3].map(opponents => (
+                      <motion.button
+                        key={opponents}
+                        onClick={() => {
+                          const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
+                          const aiNames = getRandomAiNames(opponents);
+                          const playerNames = [humanName, ...aiNames];
+                          const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
+                          if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
+                            toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
+                            return;
+                          }
+                          setOnlineSearch({ humanName, playerNames, aiPlayers });
+                        }}
+                        className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span>{opponents} {opponents === 1 ? t('opponent') : t('opponents')}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <motion.button
               onClick={() => navigate('/stats')}
               className="relative w-full py-3 sm:py-4 px-16 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"

@@ -668,7 +668,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .8; --dice-gap-scale: .1; }
 }
 @media (max-height: 600px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .6; --dice-gap-scale: .05; }
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .58; --dice-gap-scale: .03; }
 }
 @media (min-height: 681px) and (max-height: 800px) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1; --dice-gap-scale: .3; }

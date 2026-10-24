@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Centrera onlinetärningar och balansera knappar – 24 oktober
+- [ ] Centrera tärningsgruppen mellan sista namnet och chatten samt mellan brickan och säker högerkant; anpassa kastknappens storlek utan att ändra spel eller annonser.
+- [ ] Kontrollera iPhone-/Android-mått, markerade tärningar och nederkant; fysisk telefonkontroll kräver nästa appbygge.
+
 ## Rätta trånga tärningar – 24 oktober
 - [x] Öka endast onlinetärningarnas faktiska 3D-mellanrum inom samma höjdbudget; namn, chatt, spelregler och annonser oförändrade.
 - [x] Sex simulerade iPhone-/Android-vyer (320×568 till 440×956) bildgranskade: fem separerade tärningar, fria namn/chatt och linjerad nederkant; 12 regressionstester och bygge OK. Fysisk telefonkontroll kräver nästa appversion.

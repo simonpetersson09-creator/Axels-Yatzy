@@ -685,7 +685,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: .82; --dice-gap-scale: .47; }
 }
 @media (min-height: 881px) {
-  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1.24; --dice-gap-scale: .92; }
+  html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1.30; --dice-gap-scale: .92; }
 }
 /* Keep the hint out of the dice budget, without hiding it or moving names/chat. */
 .mp-game .mp-dice-column { margin-top: 0; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }

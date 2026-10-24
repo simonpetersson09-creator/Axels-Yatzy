@@ -190,4 +190,4 @@
 
 ## Mindre luft ovanför onlinespelet – 24 oktober
 - [x] Placera matchkoden utan extra flödesmarginal, behåll säker zon och minska avståndet till brickan.
-- [ ] Kontrollera telefonmått och fria mellanrum efter justeringen.
+- [x] Alla 18 simulerade telefonmått kontrollerade: fria namn/tärningar/chatt och synlig nederkant; iPhone 15 överkant minskad från 94,5 till 79 px. Bygge OK; fysisk telefon kräver nytt appbygge.

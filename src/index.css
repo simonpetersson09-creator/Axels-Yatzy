@@ -9,6 +9,44 @@
 .waiting-room-content { width: 100%; max-width: 440px; margin-inline: auto; display: flex; flex-direction: column; }
 .waiting-home-button { background: linear-gradient(to right, hsl(var(--game-info-light)), hsl(var(--game-info))); box-shadow: 0 4px 16px hsl(var(--game-info) / .3); transition: box-shadow .2s; }
 .waiting-home-button:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }
+/* Startsidans åtgärder: rund Snabbspel till vänster, Spela med vän och Spelväntrum
+   staplade till höger. Cirkelns diameter styr radens höjd och de två högra knapparna
+   delar den höjden lika på sig, så cirkeln blir lika djup som båda knapparna. */
+.home-actions {
+  --home-gap: 10px;
+  --home-circle: 128px;
+  display: grid;
+  grid-template-columns: var(--home-circle) minmax(0, 1fr);
+  gap: var(--home-gap);
+  align-items: stretch;
+}
+.home-quick-circle {
+  width: var(--home-circle);
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 18px;
+  text-align: center;
+  line-height: 1.15;
+  overflow: hidden;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 4px 16px hsl(var(--primary) / .3);
+  transition: box-shadow .2s;
+}
+.home-quick-circle:active { box-shadow: 0 2px 8px hsl(var(--primary) / .2); }
+.home-quick-circle-label { font-size: 13px; overflow-wrap: anywhere; }
+.home-actions-side { display: flex; flex-direction: column; gap: var(--home-gap); min-width: 0; }
+.home-actions-side > * { flex: 1 1 0; min-height: 0; }
+@media (max-width: 359px) {
+  .home-actions { --home-circle: 104px; --home-gap: 8px; }
+  .home-quick-circle { padding: 0 12px; }
+  .home-quick-circle-label { font-size: 11px; }
+}
 .waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .waiting-seat { position: absolute; width: 108px; height: 62px; text-align: center; z-index: 2; }
@@ -745,6 +783,9 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
+  html:not(.preview-frame) .home-actions { --home-circle: 150px; --home-gap: 12px; }
+  html:not(.preview-frame) .home-quick-circle { padding: 0 22px; }
+  html:not(.preview-frame) .home-quick-circle-label { font-size: 15px; }
 
   html:not(.preview-frame):has(.ios-game-layout) {
     --sb-row-h: clamp(25px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 150px) / 20), 55px);

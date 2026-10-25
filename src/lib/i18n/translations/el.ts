@@ -3,6 +3,7 @@ import type { sv } from './sv';
 export const el: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Κλασικό παιχνίδι ζαριών με μοντέρνα πινελιά',
+  brandTagline: 'Ρίξε. Κράτα. Κέρδα.',
   version: 'Έκδοση',
 
   ok: 'ΟΚ',

@@ -5,6 +5,7 @@ export const en: Partial<typeof sv> = {
   ...waitingRoomCopy.en,
   appName: 'Mr.B. Yatzy',
   tagline: 'Classic dice game with a modern twist',
+  brandTagline: 'Roll. Save. Win.',
   version: 'Version',
 
   ok: 'OK',

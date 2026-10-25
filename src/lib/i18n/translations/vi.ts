@@ -3,6 +3,7 @@ import type { sv } from './sv';
 export const vi: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Xúc xắc cổ điển, phong cách hiện đại',
+  brandTagline: 'Gieo. Giữ. Thắng.',
   version: 'Phiên bản',
 
   ok: 'OK',

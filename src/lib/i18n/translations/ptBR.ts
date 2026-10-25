@@ -3,6 +3,7 @@ import type { sv } from './sv';
 export const ptBR: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Um clássico dos dados com um toque moderno',
+  brandTagline: 'Role. Guarde. Ganhe.',
   version: 'Versão',
 
   ok: 'OK',

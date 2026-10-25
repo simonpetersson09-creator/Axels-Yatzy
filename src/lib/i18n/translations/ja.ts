@@ -3,6 +3,7 @@ import type { sv } from './sv';
 export const ja: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: '定番のサイコロゲームを今風に',
+  brandTagline: '振る。残す。勝つ。',
   version: 'バージョン',
 
   ok: 'OK',

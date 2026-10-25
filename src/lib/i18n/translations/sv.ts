@@ -9,6 +9,7 @@ export const sv = {
   // App
   appName: 'Mr.B. Yatzy',
   tagline: 'Klassiskt tärningsspel i modern tappning',
+  brandTagline: 'Kasta. Spara. Vinn.',
   version: 'Version',
 
   // Generic

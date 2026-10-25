@@ -211,7 +211,7 @@ export default function WaitingRoomPage() {
               </p>}
               {p?.recall_until && <p className="text-[10px] text-primary leading-tight">{t('wrReadyLeft', { time: remainingTime(p.recall_until, clock) })}</p>}
             </div>
-            {p && <div aria-hidden="true" className={`waiting-figure figure-${seat} ${!p.present ? 'opacity-50' : ''}`}><span className="waiting-figure-legs" /><span className="waiting-figure-body" /><span className="waiting-figure-arms" /><span className="waiting-figure-head" /></div>}
+            {p && <div aria-hidden="true" className={`waiting-avatar waiting-avatar-${seat}${own ? ' waiting-avatar-own' : ''}${!p.present ? ' waiting-avatar-away' : ''}`}><span className="waiting-avatar-initial">{(p.player_name || t('wrSeat')).trim().charAt(0).toUpperCase()}</span>{p.ready && <span className="waiting-avatar-ready"><Check /></span>}</div>}
             {p && chat.bubbles[p.id] && <div className="waiting-chat-bubble" role="status">{t(chat.bubbles[p.id].phrase)}</div>}
           </div>;
         })}

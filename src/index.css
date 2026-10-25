@@ -87,7 +87,13 @@
   color: hsl(var(--destructive-foreground));
   border: 2px solid hsl(var(--background));
   box-shadow: 0 2px 6px hsl(var(--destructive) / .45);
+  /* Siffran fungerar som en knapp: samma tryckeffekt och öppning som väntrumsknappen. */
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  appearance: none;
 }
+.home-waiting-badge:disabled { cursor: default; }
 .home-stats-action { width: 100%; }
 @media (max-width: 359px) {
   .home-actions-stack { --home-button-height: 40px; --home-gap: 8px; --home-stack: 288px; --home-button-font: 13px; --home-button-icon: 15px; --home-icon-gap: 6px; }

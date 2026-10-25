@@ -49,6 +49,15 @@
   transition: box-shadow .2s;
 }
 .home-action:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }
+/* Runda snabbknappar under Statistik: samma design (gradient + skugga) som
+   huvudknapparna ovan, men i guldton istället för blått. */
+.home-round-action {
+  background: linear-gradient(to bottom right, hsl(var(--game-gold-light)), hsl(var(--game-gold)));
+  color: hsl(var(--background));
+  box-shadow: 0 4px 14px hsl(var(--game-gold) / .35);
+  transition: box-shadow .2s, filter .2s;
+}
+.home-round-action:active { box-shadow: 0 2px 8px hsl(var(--game-gold) / .25); filter: brightness(.95); }
 .home-actions-stack .home-action > svg { width: var(--home-button-icon); height: var(--home-button-icon); }
 .home-action-icon { font-size: var(--home-button-icon); line-height: 1; }
 .home-quick-primary { width: 100%; }

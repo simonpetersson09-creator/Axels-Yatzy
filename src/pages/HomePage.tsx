@@ -28,7 +28,7 @@ import { getRandomAiNames } from '@/lib/yatzy-ai';
 import { getPlayerName, getSessionId, getAnonNumber } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { supabase } from '@/integrations/supabase/client';
-import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Settings, Users, Heart } from 'lucide-react';
+import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Settings, Users, Heart, ChevronDown } from 'lucide-react';
 import { getCachedHofRank, subscribeHofRank, syncMyHofRank } from '@/lib/hall-of-fame';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
@@ -111,6 +111,9 @@ export default function HomePage() {
     () => !!(window.history.state?.usr as { openQuickMatch?: boolean } | undefined)?.openQuickMatch,
   );
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
+  // "Dina siffror – all time": första raden (spelade/vinster/rekord) syns alltid,
+  // resten är infällt bakom rubriken tills spelaren trycker på den.
+  const [statsExpanded, setStatsExpanded] = useState(false);
   const [rankInfo, setRankInfo] = useState<RankInfo>(getCachedRankInfo);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
@@ -816,11 +819,11 @@ export default function HomePage() {
               <div className={`relative flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`} ref={langPickerRef}>
                 <motion.button
                   onClick={() => setShowLangPicker(v => !v)}
-                  className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
+                  className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center"
                   whileTap={{ scale: 0.92 }}
                   aria-label={t('selectLanguage')}
                 >
-                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </motion.button>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('language')}</span>
 
@@ -860,8 +863,8 @@ export default function HomePage() {
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('goSettings')}
               >
-                <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                <div className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center">
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </div>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('settings')}</span>
               </motion.button>
@@ -873,8 +876,8 @@ export default function HomePage() {
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('friendsListTitle')}
               >
-                <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                <div className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </div>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('friends')}</span>
               </motion.button>
@@ -892,8 +895,8 @@ export default function HomePage() {
                     {showAdBubble && !AD_BUTTON_LOCKED && (
                       <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
                     )}
-                    <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
-                      <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
+                    <div className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center">
+                      <Play className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                     </div>
                   </div>
                   <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('adButtonShort')}</span>
@@ -916,11 +919,17 @@ export default function HomePage() {
           variants={item}
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
-          <div className="text-center mb-1">
+          <button
+            type="button"
+            onClick={() => setStatsExpanded(v => !v)}
+            aria-expanded={statsExpanded}
+            className="w-full flex items-center justify-center gap-1.5 mb-1"
+          >
             <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
               {t('homeStatsTitle')}
             </span>
-          </div>
+            <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform duration-200 ${statsExpanded ? 'rotate-180' : ''}`} />
+          </button>
           <div className="grid grid-cols-3 gap-2">
             {[
               { label: t('statGames'), value: stats.gamesPlayed, icon: Gamepad2 },
@@ -942,6 +951,7 @@ export default function HomePage() {
             ))}
           </div>
 
+          {statsExpanded && (<>
           <div className="grid grid-cols-3 gap-2">
             {[
               {
@@ -1009,6 +1019,7 @@ export default function HomePage() {
               <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-transparent via-game-info/50 to-transparent relative z-10" />
             </div>
           </div>
+          </>)}
 
           <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0">
             <div className="text-center mt-2 mb-1">

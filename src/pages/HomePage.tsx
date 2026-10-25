@@ -762,7 +762,7 @@ export default function HomePage() {
             </AnimatePresence>
             <motion.button
               onClick={() => navigate('/stats')}
-              className="home-action home-stats-action font-display relative bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow"
+              className="home-action home-stats-action font-display relative"
               whileTap={{ scale: 0.97 }}
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}

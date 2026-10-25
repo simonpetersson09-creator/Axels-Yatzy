@@ -717,43 +717,6 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <AnimatePresence>
-              {showQuickMatch && (
-                <motion.div
-                  className="space-y-2 overflow-hidden"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <p className="text-center text-sm text-muted-foreground font-medium">
-                    {t('selectPlayerCount')}
-                  </p>
-                  <div className="flex gap-2">
-                    {[1, 2, 3].map(opponents => (
-                      <motion.button
-                        key={opponents}
-                        onClick={() => {
-                          const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
-                          const aiNames = getRandomAiNames(opponents);
-                          const playerNames = [humanName, ...aiNames];
-                          const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
-                          if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
-                            toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
-                            return;
-                          }
-                          setOnlineSearch({ humanName, playerNames, aiPlayers });
-                        }}
-                        className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <span>{opponents} {opponents === 1 ? t('opponent') : t('opponents')}</span>
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
             <motion.button
               onClick={() => navigate('/stats')}
               className="home-action home-stats-action font-display relative"

@@ -732,8 +732,9 @@ export default function HomePage() {
                       aria-label={`${t('wrTitle')} (${waitingCount})`}
                       disabled={waitingChecking}
                       onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)}
+                      variants={item}
+                      transition={{ duration: 0.45, ease: 'easeOut' }}
                       whileTap={{ scale: 0.9 }}
-                      transition={{ duration: 0.2, ease: 'easeOut' }}
                     >
                       {waitingCount}
                     </motion.button>

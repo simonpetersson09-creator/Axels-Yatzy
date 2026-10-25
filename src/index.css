@@ -95,15 +95,15 @@
 }
 .home-match-card-waiting:active { box-shadow: 0 2px 8px hsl(var(--game-gold) / .25); filter: brightness(.95); }
 /* Väntekorten som inte är pågående matcher (skickad inbjudan, öppet väntrum):
-   blå ton som huvudknapparna, så de skiljer sig från grön (din tur) och
+   dämpad violetton så de skiljer sig från blå knapp, grön (din tur) och
    guld (motståndarens tur) på matchkorten. */
 .home-match-card-info {
-  background: linear-gradient(to right, hsl(var(--game-info-light)), hsl(var(--game-info)));
+  background: linear-gradient(to right, hsl(var(--game-violet-light)), hsl(var(--game-violet)));
   color: hsl(var(--primary-foreground));
-  box-shadow: 0 4px 16px hsl(var(--game-info) / .3);
+  box-shadow: 0 4px 16px hsl(var(--game-violet) / .3);
   transition: box-shadow .2s;
 }
-.home-match-card-info:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }
+.home-match-card-info:active { box-shadow: 0 2px 8px hsl(var(--game-violet) / .2); }
 /* Gemensam ikonbricka och textbricka på alla startsidans kort: ett typsnitt, en
    storlek, ett radavstånd och en radie överallt. Båda är solida så ikonen och
    texten alltid står tydligare än mot kortets gradient. */
@@ -375,6 +375,10 @@
     --game-info: 200 65% 50%;
     --game-info-light: 195 80% 70%;
     --game-info-dark: 230 70% 45%;
+    /* Kortvariant: dämpad violett för startsidans väntekort (inbjudan,
+       öppet väntrum) – skiljer sig från blå knapp, grön och guld. */
+    --game-violet: 262 45% 55%;
+    --game-violet-light: 265 55% 72%;
 
     /* Dice tactile surface colors — matte porcelain edition */
     --dice-ivory: 220 14% 98%;           /* cool white porcelain */

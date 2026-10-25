@@ -760,7 +760,7 @@ export default function HomePage() {
             </AnimatePresence>
             <motion.button
               onClick={() => navigate('/stats')}
-              className="relative w-full py-3 sm:py-4 px-16 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"
+              className="relative w-full py-2 sm:py-3 px-16 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"
               whileTap={{ scale: 0.97 }}
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}

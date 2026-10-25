@@ -1,6 +1,6 @@
 - Native patches: `npm run cap:sync:ios/android`, not generated files. UMP before Ads; App Open 4h expiry on reuse/status/show. Preserve scheduling/getRankedGames guards.
 - No QA in live player_country_stats.
-- home-prompt serializes Home news.
+- Serialize Home news.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - App icon: resources/icon.png (1024x1024, opaque) is the only source; `npm run icons` (scripts/make-icons.js) regenerates resources/android/res, resources/ios/AppIcon.appiconset and public/ copies — never hand-edit generated icon files.
@@ -30,7 +30,7 @@
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
 - Banners serialize/reload; measured search portal; useGameBanner only in local games.
 
-- Ad privacy: sync patches UMP/readers/cache bridge. Changes block ads, discard native caches before/after UMP; reject stale loads, fail closed without bridge. Never reset UMP/interrupt ads. Log read outcomes only, never choices/errors; no consent storage. OBTAINED/canRequestAds aren't acceptance.
+- Ad privacy: sync patches UMP/readers/cache bridge. UMP errors/timeouts read native canRequestAds; only true allows ads. Changes block ads/discard caches before+after UMP; reject stale loads, fail closed without bridge. Never reset UMP/interrupt ads/store consent/log choices or errors. OBTAINED isn't acceptance.
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.
 - Statistics period labels use the shared Stockholm formatter to match server period boundaries across phone timezones.
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.

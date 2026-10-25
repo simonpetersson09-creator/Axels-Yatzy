@@ -246,23 +246,15 @@
 .waiting-presence-online { background: hsl(var(--game-success)); box-shadow: 0 0 5px hsl(var(--game-success) / .9); }
 .waiting-presence-away { background: hsl(var(--muted-foreground) / .4); }
 .waiting-chat-panel { width: min(340px, 100%); max-height: 85dvh; overflow-y: auto; border: 1px solid hsl(var(--border)); border-radius: 8px; background: hsl(var(--card)); color: hsl(var(--card-foreground)); box-shadow: 0 12px 32px hsl(var(--background) / .6); }
-.waiting-chat-bubble { position: absolute; z-index: 5; bottom: 40px; left: 0; width: 108px; padding: 7px; border-radius: 8px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 11px; font-weight: 600; overflow-wrap: anywhere; box-shadow: 0 3px 8px hsl(var(--background) / .4); }
-.waiting-chat-bubble::after { content: ''; position: absolute; top: 100%; left: 46px; border: 6px solid transparent; border-top-color: hsl(var(--primary)); }
+.waiting-chat-bubble { position: absolute; z-index: 5; bottom: calc(50% + 30px); left: 50%; transform: translateX(-50%); width: 108px; padding: 7px; border-radius: 8px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 11px; font-weight: 600; overflow-wrap: anywhere; box-shadow: 0 3px 8px hsl(var(--background) / .4); }
+.waiting-chat-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; margin-left: -6px; border: 6px solid transparent; border-top-color: hsl(var(--primary)); }
 /* Minimal iOS-style player avatar: one clean monogram circle per seat. */
-.waiting-avatar { position: absolute; z-index: 3; left: 50%; top: 50%; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--secondary))); color: hsl(var(--card-foreground)); border: 1px solid hsl(var(--border)); box-shadow: 0 2px 6px hsl(var(--background) / .5), 0 0 0 3px hsl(var(--card) / .25); font-family: 'Space Grotesk', system-ui, sans-serif; transition: opacity .2s, filter .2s; }
+.waiting-avatar { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--secondary))); color: hsl(var(--card-foreground)); border: 1px solid hsl(var(--border)); box-shadow: 0 2px 6px hsl(var(--background) / .5), 0 0 0 3px hsl(var(--card) / .25); font-family: 'Space Grotesk', system-ui, sans-serif; transition: opacity .2s, filter .2s; }
 .waiting-avatar-initial { font-size: 16px; font-weight: 700; line-height: 1; }
 .waiting-avatar-own { border-color: hsl(var(--primary) / .45); box-shadow: 0 2px 6px hsl(var(--background) / .5), 0 0 0 2px hsl(var(--primary) / .25); }
 .waiting-avatar-away { opacity: .45; filter: grayscale(1); }
 .waiting-avatar-ready { position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; background: hsl(var(--game-success)); color: hsl(var(--primary-foreground)); display: grid; place-items: center; box-shadow: 0 0 0 2.5px hsl(var(--card)); }
 .waiting-avatar-ready svg { width: 10px; height: 10px; stroke-width: 3.5; }
-.waiting-avatar-0 { transform: translate(-50%, calc(-50% - var(--waiting-avatar-dist))); }
-.waiting-avatar-1 { transform: translate(calc(-50% + var(--waiting-avatar-dist)), -50%); }
-.waiting-avatar-2 { transform: translate(-50%, calc(-50% + var(--waiting-avatar-dist))); }
-.waiting-avatar-3 { transform: translate(calc(-50% - var(--waiting-avatar-dist)), -50%); }
-.figure-0 { color: hsl(var(--yatzy-player1)); }
-.figure-1 { color: hsl(var(--yatzy-player2)); }
-.figure-2 { color: hsl(var(--yatzy-player3)); }
-.figure-3 { color: hsl(var(--yatzy-player4)); }
 .waiting-countdown { position: absolute; left: calc(50% - 40px); top: calc(50% - 40px); width: 80px; height: 80px; border-radius: 50%; background: hsl(var(--background) / .9); color: hsl(var(--primary)); display: grid; place-items: center; font-size: 48px; font-weight: 700; overflow: hidden; }
 .waiting-countdown-text { font-size: 12px; font-weight: 600; line-height: 1.15; text-align: center; padding: 0 10px; max-width: 100%; overflow-wrap: anywhere; }
 .waiting-modal-backdrop { position: fixed; inset: 0; background: hsl(var(--background) / .85); z-index: 100; display: grid; place-items: center; padding: 20px; }

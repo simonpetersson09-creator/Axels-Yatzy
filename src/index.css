@@ -76,7 +76,7 @@
   text-align: left;
 }
 .home-match-card-turn {
-  background: linear-gradient(to right, hsl(var(--game-success-light)), hsl(var(--game-success)));
+  background: linear-gradient(to right, hsl(var(--game-success-card-light)), hsl(var(--game-success-card)));
   color: hsl(var(--primary-foreground));
   box-shadow: 0 4px 16px hsl(var(--game-success) / .3);
   transition: box-shadow .2s;
@@ -300,6 +300,10 @@
     --game-dice-locked: 36 78% 55%;
     --game-success: 160 55% 42%;
     --game-success-light: 160 58% 60%;
+    /* Kortvariant: aningen ljusare grönt så mörk text håller god kontrast
+       på hela kortets yta (den vanliga gröna nyansen används överallt annars). */
+    --game-success-card: 160 52% 50%;
+    --game-success-card-light: 160 58% 66%;
     --game-info: 200 65% 50%;
     --game-info-light: 195 80% 70%;
     --game-info-dark: 230 70% 45%;

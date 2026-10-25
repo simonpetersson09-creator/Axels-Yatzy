@@ -646,7 +646,7 @@ export default function HomePage() {
                           {t('yourTurnLabel')}
                         </p>
                       )}
-                      <div className="flex items-center gap-1.5 leading-tight">
+                      <div className="flex items-center gap-1.5 leading-none">
                         <span className="font-bold text-sm truncate inline-flex items-center gap-1.5">
                           {!isLocal && status?.opponentOnline && (
                             <span
@@ -657,7 +657,7 @@ export default function HomePage() {
                           {isLocal ? (game.opponentName ?? t('resumeMatch')) : (opponent ?? t('resumeMatch'))}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1 mt-px text-[10px] tabular-nums opacity-80 leading-none">
+                      <div className="flex items-center gap-1 mt-px text-[10px] tabular-nums leading-none">
                         <Clock className="w-3 h-3" />
                         <span className="truncate">{t('ongoingMatchRemaining', { time: timeLeft })}</span>
                       </div>

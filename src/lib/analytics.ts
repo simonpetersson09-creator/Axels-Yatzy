@@ -45,9 +45,8 @@ function getPlatform(): string {
     const cap = (window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor;
     const native = cap?.getPlatform?.();
     if (native === 'ios' || native === 'android') return native;
-    const ua = navigator.userAgent || '';
-    if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
-    if (/Android/i.test(ua)) return 'android';
+    // Browsers on phones are web visitors, not app players — never count
+    // them as ios/android.
     return 'web';
   } catch {
     return 'unknown';

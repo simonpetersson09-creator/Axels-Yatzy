@@ -690,7 +690,7 @@ export default function HomePage() {
 
 
           {/* Main actions: rund Snabbspel bredvid Spela med vän och Spelväntrum */}
-          <div className="flex flex-col gap-2.5">
+          <div className="home-actions-stack flex flex-col gap-2.5">
             <div className="home-actions">
               <motion.button
                 onClick={() => setShowQuickMatch(v => !v)}
@@ -713,7 +713,7 @@ export default function HomePage() {
                 >
                   🌐 <span className="truncate">{t('playWithFriends')}</span>
                 </motion.button>
-                <Button asChild variant="waitingRoom" className="relative w-full h-auto py-1.5 px-4 pr-10 rounded-2xl font-display font-bold text-sm sm:text-base leading-tight whitespace-normal">
+                <Button asChild variant="waitingRoom" className="relative w-full h-auto py-1.5 px-4 pr-12 rounded-2xl font-display font-bold text-sm sm:text-base leading-tight whitespace-normal">
                   <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
                     <Users /> <span className="flex flex-col items-center min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[11px] font-medium inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
                     {waitingCount > 0 && <span className="absolute right-3 rounded-full bg-destructive text-destructive-foreground min-w-6 h-6 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}

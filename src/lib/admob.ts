@@ -641,7 +641,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
     if (!pre.value) await withTimeout(mod.AdMob.loadAppOpen({ adId }), APP_OPEN_LOAD_TIMEOUT_MS, 'load');
     const { value } = await mod.AdMob.isAppOpenLoaded();
     if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
-    // Recheck after loading: quick menu navigation is allowed, a started game is not.
+    // Loaded too late (player already left the start screen): never cover a game.
     if (getRankedGames() < 1 || !canShow() || waitingRoomAdBlocked()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
     const showP = mod.AdMob.showAppOpen();
     try {

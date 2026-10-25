@@ -1,4 +1,4 @@
-- Native patches: `npm run cap:sync:ios/android`, not generated files. UMP before Ads; App Open 4h expiry; getRankedGames≥1 gates load/show. app-open-navigation guards survive Home unmount, invalidate on game entry to protect play.
+- Native patches: `npm run cap:sync:ios/android`, not generated files. iOS: UMP before consent without Ads; App Open 4h expiry on reuse/status/show; preserve scheduling. admob.ts checks getRankedGames before App Open load/show.
 - Remove QA player_country_stats; they displace players.
 - home-prompt serializes Home news to avoid overlap.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.

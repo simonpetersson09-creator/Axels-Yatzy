@@ -49,7 +49,6 @@ import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/co
 import ServerNewsPrompt, { shouldShowServerNews, markServerNewsSeen } from '@/components/ServerNewsPrompt';
 import AndroidNewsPrompt, { shouldShowAndroidNews, markAndroidNewsSeen } from '@/components/AndroidNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
-import { createAppOpenNavigationGuard } from '@/lib/app-open-navigation';
 
 /** Module-level: startup ad is only considered once per app launch. */
 let startupAdChecked = false;
@@ -63,7 +62,7 @@ const onStartScreen = () => window.location.pathname === '/' && document.visibil
 async function tryShowResumeAd() {
   if (!resumeAdPending || !onStartScreen()) return;
   resumeAdPending = false;
-  if (await showAppOpenAd(createAppOpenNavigationGuard())) trackEvent('resume_ad');
+  if (await showAppOpenAd(onStartScreen)) trackEvent('resume_ad');
 }
 /** Installed once and never removed, so leaving the app mid-match is also counted. */
 function installResumeAdWatcher() {
@@ -214,18 +213,18 @@ export default function HomePage() {
     if (startupAdChecked) return;
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
     if (!shouldShowDailyStartupAd()) return;
-    startupAdChecked = true;
-    const canShow = createAppOpenNavigationGuard();
     // Start loading right away so the ad is usually ready when it is shown.
     void preloadAppOpenAd();
-    setTimeout(async () => {
+    const timer = setTimeout(async () => {
+      if (startupAdChecked) return;
+      startupAdChecked = true;
       // App Open-annons; ingen annons → appen fortsätter som vanligt
-      if (await showAppOpenAd(canShow)) {
+      if (await showAppOpenAd(() => window.location.pathname === '/' && document.visibilityState === 'visible')) {
         markDailyStartupAdShown();
         trackEvent('daily_startup_ad');
       }
     }, 1500);
-    // This launch-owned attempt survives quick navigation; its guard cancels on game start.
+    return () => clearTimeout(timer);
   }, []);
 
   // Resume ad: away-time is tracked app-wide (any page). The ad itself is
@@ -235,7 +234,8 @@ export default function HomePage() {
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
     installResumeAdWatcher();
     if (resumeAdPending) {
-      void tryShowResumeAd();
+      const timer = setTimeout(() => void tryShowResumeAd(), 800);
+      return () => clearTimeout(timer);
     }
   }, []);
 

@@ -8,6 +8,12 @@ const mark = 'MRB_PRIVACY_CACHE';
 async function patch(path, transform, required) {
   const file = resolve(root, path);
   let source = await readFile(file, 'utf8');
+  // Repair the additional stale-error guard in an already patched iOS banner.
+  if (path.endsWith('Banner/BannerExecutor.swift') && source.includes(mark) && !source.includes('MRB_PRIVACY_BANNER_ERROR')) {
+    const anchor = '                    didFailToReceiveAdWithError error: Error) {';
+    if (!source.includes(anchor)) throw new Error('Privacy banner error anchor missing');
+    source = source.replace(anchor, anchor + '\n        // MRB_PRIVACY_BANNER_ERROR\n        guard bannerView === self.bannerView else { return }');
+  }
   if (!source.includes(mark)) {
     const replace = (anchor, value) => {
       if (!source.includes(anchor)) throw new Error(`Privacy cache anchor missing in ${path}: ${anchor}`);
@@ -58,6 +64,7 @@ if (!platform || platform === 'ios') {
       '    func bannerViewDidReceiveAd(_ bannerView: BannerView) {',
       '    func bannerViewDidRecordImpression(_ bannerView: BannerView) {',
     ]) replace(signature, signature + '\n        guard bannerView === self.bannerView else { return }');
+    replace('                    didFailToReceiveAdWithError error: Error) {', '                    didFailToReceiveAdWithError error: Error) {\n        // MRB_PRIVACY_BANNER_ERROR\n        guard bannerView === self.bannerView else { return }');
   }, [mark, 'bannerView?.delegate = nil', 'guard bannerView === self.bannerView']);
   await patch(base + 'AppOpen/AppOpenAdPlugin.swift', replace => {
     replace('    private var preparedManagers:', `    // ${mark}

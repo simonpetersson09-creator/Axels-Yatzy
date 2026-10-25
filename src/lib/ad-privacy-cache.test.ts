@@ -101,6 +101,25 @@ describe.each(['ios', 'android'])('%s privacy cache boundary', platform => {
     expect(await m.preloadAppOpenAd()).toBe(false);
   });
 
+  it('blocks ads after privacy form failure and allows a successful retry', async () => {
+    n.form.mockRejectedValueOnce(new Error('private choice must not be logged'));
+    const m = await import('./admob');
+    expect(await m.showAdPrivacyOptions()).toBe(false);
+    expect(await m.preloadInterstitial()).toBe(false);
+    expect(await m.showAdPrivacyOptions()).toBe(true);
+    expect(await m.preloadInterstitial()).toBe(true);
+  });
+
+  it('uses UMP again after restart without resetting its saved choice', async () => {
+    const first = await import('./admob');
+    await first.showAdPrivacyOptions();
+    vi.resetModules(); n.info.mockClear();
+    const restarted = await import('./admob');
+    expect(await restarted.preloadRewarded()).toBe(true);
+    expect(n.info).toHaveBeenCalledOnce();
+    expect(n.clear).toHaveBeenCalledTimes(2);
+  });
+
   it('does not interrupt an active fullscreen ad to open privacy options', async () => {
     const m = await import('./admob'); await m.preloadInterstitial();
     const shown = m.showPostMatchInterstitial(); await vi.advanceTimersByTimeAsync(0);

@@ -705,19 +705,19 @@ export default function HomePage() {
               </motion.button>
               </Button>
               <div className="home-actions-side">
-                <Button asChild className="home-companion-action w-full px-1.5 rounded-lg font-display font-bold text-[13px] leading-tight whitespace-normal">
+                <Button asChild className="home-action home-companion-action font-display">
                 <motion.button
                   onClick={() => navigate('/multiplayer')}
                   whileTap={{ scale: 0.97 }}
                   variants={item}
                   transition={{ duration: 0.45, ease: 'easeOut' }}
                 >
-                  <span aria-hidden="true" className="text-base leading-none shrink-0">🌐</span><span className="min-w-0">{t('playWithFriends')}</span>
+                  <span aria-hidden="true" className="home-action-icon">🌐</span><span>{t('playWithFriends')}</span>
                 </motion.button>
                 </Button>
-                <Button asChild variant="waitingRoom" className="relative w-full py-1 pl-1.5 pr-6 rounded-lg font-display font-bold text-[13px] leading-tight whitespace-normal">
+                <Button asChild variant="waitingRoom" className="home-action home-waiting-action font-display relative">
                   <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
-                    <Users className="shrink-0" /> <span className="flex flex-col items-start min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[10px] font-medium inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
+                    <Users /> <span className="flex flex-col items-start min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[10px] font-medium inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
                     {waitingCount > 0 && <span className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-destructive text-destructive-foreground min-w-5 h-5 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
                   </motion.button>
                 </Button>

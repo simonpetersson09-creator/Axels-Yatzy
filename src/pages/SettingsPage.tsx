@@ -21,7 +21,7 @@ import {
 import { countryToFlag, countryName, syncCountryRank } from '@/lib/country-rank';
 import { resetLocalStats, getLocalStats, saveLocalStats, type LocalStats } from '@/lib/local-stats';
 import { t } from '@/lib/i18n';
-import { getAnonNumber } from '@/lib/session';
+import { getAnonNumber, reservePlayerName } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { getAdConsentChoices, isAdPrivacyOptionsRequired, showAdPrivacyOptions } from '@/lib/admob';
 import { readAdConsentChoices } from '@/lib/ad-consent';

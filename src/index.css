@@ -12,7 +12,7 @@
 /* Alla huvudknapparna på startsidan delar höjd via --home-button-height. */
 .home-actions-stack {
   --home-gap: 10px;
-  --home-button-height: 62px;
+  --home-button-height: 44px;
   width: 100%;
   max-width: var(--home-stack, 360px);
   margin-inline: auto;
@@ -31,8 +31,8 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 0 18px;
+  gap: 8px;
+  padding: 0 14px;
   text-align: center;
   line-height: 1.15;
   overflow: hidden;
@@ -42,13 +42,13 @@
   transition: box-shadow .2s;
 }
 .home-quick-primary:active { box-shadow: 0 2px 8px hsl(var(--primary) / .2); }
-.home-quick-primary-label { font-size: 16px; overflow-wrap: anywhere; }
+.home-quick-primary-label { font-size: 15px; overflow-wrap: anywhere; }
 .home-actions-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--home-gap); min-width: 0; }
-.home-actions-side > * { height: var(--home-button-height); min-width: 0; }
+.home-actions-side > * { height: var(--home-button-height); min-width: 0; gap: 6px; }
 .home-companion-action { background: hsl(var(--game-info)); color: hsl(var(--primary-foreground)); }
 .home-stats-action { width: 100%; height: var(--home-button-height); }
 @media (max-width: 359px) {
-  .home-actions-stack { --home-button-height: 56px; --home-gap: 8px; --home-stack: 288px; }
+  .home-actions-stack { --home-button-height: 40px; --home-gap: 8px; --home-stack: 288px; }
 }
 .waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }
@@ -786,8 +786,8 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
-  html:not(.preview-frame) .home-actions-stack { --home-button-height: 68px; --home-gap: 12px; --home-stack: 440px; }
-  html:not(.preview-frame) .home-quick-primary-label { font-size: 18px; }
+  html:not(.preview-frame) .home-actions-stack { --home-button-height: 52px; --home-gap: 12px; --home-stack: 440px; }
+  html:not(.preview-frame) .home-quick-primary-label { font-size: 16px; }
 
   html:not(.preview-frame):has(.ios-game-layout) {
     --sb-row-h: clamp(25px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 150px) / 20), 55px);

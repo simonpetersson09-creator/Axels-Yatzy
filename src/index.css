@@ -43,7 +43,7 @@
   text-align: center;
   overflow: hidden;
 }
-.home-action > svg { width: var(--home-button-icon); height: var(--home-button-icon); }
+.home-actions-stack .home-action > svg { width: var(--home-button-icon); height: var(--home-button-icon); }
 .home-action-icon { font-size: var(--home-button-icon); line-height: 1; }
 .home-quick-primary { width: 100%; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 4px 16px hsl(var(--primary) / .3); transition: box-shadow .2s; }
 .home-quick-primary:active { box-shadow: 0 2px 8px hsl(var(--primary) / .2); }

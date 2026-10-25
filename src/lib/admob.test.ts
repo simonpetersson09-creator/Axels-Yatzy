@@ -467,8 +467,12 @@ describe('preloading', () => {
     const navigation = await import('./app-open-navigation');
     navigation.setAppOpenPath('/');
     const guard = navigation.createAppOpenNavigationGuard();
-    native.loadAppOpen.mockImplementationOnce(() => new Promise(resolve => setTimeout(resolve, 500)));
     const m = await import('./admob');
+    await m.preloadAppOpenAd();
+    // Warm dynamic imports before advancing the simulated SDK load clock.
+    await m.showAppOpenAd(() => false);
+    native.appOpenLoaded = false;
+    native.loadAppOpen.mockImplementationOnce(() => new Promise(resolve => setTimeout(resolve, 500)));
     const pending = m.showAppOpenAd(guard);
     await vi.advanceTimersByTimeAsync(100);
     navigation.setAppOpenPath('/settings');
@@ -480,8 +484,11 @@ describe('preloading', () => {
     const navigation = await import('./app-open-navigation');
     navigation.setAppOpenPath('/');
     const guard = navigation.createAppOpenNavigationGuard();
-    native.loadAppOpen.mockImplementationOnce(() => new Promise(resolve => setTimeout(resolve, 500)));
     const m = await import('./admob');
+    await m.preloadAppOpenAd();
+    await m.showAppOpenAd(() => false);
+    native.appOpenLoaded = false;
+    native.loadAppOpen.mockImplementationOnce(() => new Promise(resolve => setTimeout(resolve, 500)));
     const pending = m.showAppOpenAd(guard);
     await vi.advanceTimersByTimeAsync(100);
     navigation.setAppOpenPath(path);

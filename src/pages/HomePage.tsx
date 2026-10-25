@@ -715,7 +715,7 @@ export default function HomePage() {
                   <span aria-hidden="true">🌐</span><span>{t('playWithFriends')}</span>
                 </motion.button>
                 </Button>
-                <Button asChild variant="waitingRoom" className="relative w-full py-1.5 px-2 rounded-lg font-display font-bold text-sm leading-tight whitespace-normal flex-col">
+                <Button asChild variant="waitingRoom" className="relative w-full py-1 px-2 rounded-lg font-display font-bold text-sm leading-tight whitespace-normal flex-col">
                   <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
                     <Users /> <span className="flex flex-col items-center min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[11px] font-medium inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
                     {waitingCount > 0 && <span className="absolute right-2 top-1.5 rounded-full bg-destructive text-destructive-foreground min-w-5 h-5 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
@@ -762,7 +762,7 @@ export default function HomePage() {
             </AnimatePresence>
             <motion.button
               onClick={() => navigate('/stats')}
-              className="relative w-full py-2 sm:py-3 px-16 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"
+              className="home-stats-action relative px-16 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"
               whileTap={{ scale: 0.97 }}
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}

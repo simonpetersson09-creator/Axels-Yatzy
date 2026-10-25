@@ -1073,32 +1073,32 @@ html:not(.ad-banner-on):has(.mp-game) {
 .home-quick-hint {
   position: absolute;
   right: 6px;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 6px);
   z-index: 5;
-  max-width: 150px;
+  max-width: 104px;
   pointer-events: none;
-  padding: 10px 14px;
+  padding: 5px 8px;
   text-align: center;
-  border-radius: 18px 18px 4px 18px;
-  border: 1.5px solid hsl(var(--primary) / 0.8);
+  border-radius: 11px 11px 3px 11px;
+  border: 1px solid hsl(var(--primary) / 0.8);
   background: hsl(var(--card));
   color: hsl(var(--foreground));
-  font-size: 14.5px;
+  font-size: 10.5px;
   font-weight: 700;
-  line-height: 1.25;
-  box-shadow: 0 6px 18px hsl(var(--background) / 0.6);
+  line-height: 1.2;
+  box-shadow: 0 3px 10px hsl(var(--background) / 0.6);
   animation: home-hint-in 0.4s ease-out 1.2s both;
 }
 .home-quick-hint::after {
   content: '';
   position: absolute;
-  bottom: -9px;
-  left: 22px;
-  width: 16px;
-  height: 16px;
+  bottom: -5px;
+  left: 13px;
+  width: 9px;
+  height: 9px;
   transform: rotate(45deg);
-  border-right: 1.5px solid hsl(var(--primary) / 0.8);
-  border-bottom: 1.5px solid hsl(var(--primary) / 0.8);
+  border-right: 1px solid hsl(var(--primary) / 0.8);
+  border-bottom: 1px solid hsl(var(--primary) / 0.8);
   background: hsl(var(--card));
 }
 .home-quick-glow { animation: home-quick-glow 1.8s ease-in-out infinite; }

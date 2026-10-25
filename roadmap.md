@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Kontroll av nya versionen – 25 oktober 16:34
+- [ ] Kontrollera nya engångsbubblan, spelarnotisernas 2/4 sekunder och säkra regressionstester; rätta verifierade fel utan layoutändring.
+- [ ] Kontrollera körande app: startsida, navigation och lokal match till resultat utan live-teststatistik.
+- [ ] Telefonprov av riktiga annonser, push och tvåtelefonmatch; kräver signerade telefonbyggen och anslutna telefoner.
+
 ## Slutkontroll – 25 oktober
 - [x] Körande genomgång 25 okt: 251 tester godkända. Startsidans knappar navigerar (Statistik, Inställningar, Vänner, butik, språkbyte till engelska), hel lokal match spelades till slutresultat och hem utan runtimefel, väntrummet öppnades med välkomstruta och lämnades igen utan kvarvarande provplats, och den röda siffran i väntrumsknappen stämde med serverns verkliga plats. Konsolvarningarna om ”refs” kommer bara från förhandsvisningens komponentmärkare (lovable-tagger, utvecklingsläge) och finns inte i skickad app. Riktiga annonser, push och tvåtelefonprov kräver fortfarande signerade telefonbyggen.
 - [x] Uppföljning på ”Testa det då”: två separata webbläsarvyer gick genom väntrum, samtidig redo, matchstart, låsning/omkast, 30 poängval mot tillfälliga kopior av aktuella serverfunktioner, båda resultatsidorna och hemutgång utan runtimefel. Motspelaruppdateringar utlösta med pageshow, alltså inte verifierad produktions-realtime. 101 riktade och 229 samlade säkra tester godkända. Första helkörningen blockerades av provets långa väntrumslås; omkörning efter stängd brygga godkänd, gemensamma live-väntrumsprov undantagna. Tre tomma QA-matcher från initialt missade lokala anrop identifierades och togs bort med exakta ID-/poängskydd. Annonsernas riktiga visning, pushleverans och fysiska tvåtelefonprov återstår: saknar signerade native-byggen och anslutna telefoner. Ingen publicering gjord.

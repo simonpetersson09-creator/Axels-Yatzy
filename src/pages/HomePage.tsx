@@ -567,7 +567,7 @@ export default function HomePage() {
           </p>
         </motion.div>
 
-        <div className="w-full space-y-2 sm:space-y-3">
+        <div className="w-full space-y-2 sm:space-y-3 mt-3 sm:mt-5">
           <FriendRequestNotice />
           <HofRankNotice />
           <SentInvitesCards />

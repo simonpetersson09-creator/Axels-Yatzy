@@ -9,6 +9,7 @@ vi.mock('framer-motion', () => ({ AnimatePresence: ({ children }: any) => childr
 import Notice from './QuickMatchOpponentNotice';
 beforeEach(() => {
   vi.useFakeTimers();
+  vi.clearAllMocks();
   api.lookup.mockResolvedValue({ data: { session_id: 'opponent' } });
   api.rank.mockResolvedValue({ data: { country: 'ES' } });
 });

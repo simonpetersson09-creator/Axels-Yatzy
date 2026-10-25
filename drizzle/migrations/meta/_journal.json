@@ -638,6 +638,13 @@
       "when": 1792945327285,
       "tag": "0090_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 91,
+      "version": "7",
+      "when": 1792949773987,
+      "tag": "0091_remove_web_waiting_seat",
+      "breakpoints": true
     }
   ]
 }

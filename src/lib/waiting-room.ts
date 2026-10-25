@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { initDeviceId } from '@/lib/device';
 import { getSessionId, getPlayerName, getAnonNumber } from '@/lib/session';
@@ -13,6 +14,8 @@ export type RoomAction = 'sync' | 'join' | 'open' | 'heartbeat' | 'ready' | 'awa
 const SEAT_KEY = 'yatzy_waiting_seat';
 export function savedWaitingSeat() { return localStorage.getItem(SEAT_KEY); }
 export async function roomAction(action: RoomAction, opts: { seatId?: string | null; ready?: boolean; notify?: boolean } = {}): Promise<WaitingSnapshot> {
+  // Browser seats (preview/web) linger forever as solo seats; only the app may take one.
+  if (action === 'join' && !Capacitor.isNativePlatform()) throw new Error('native_only');
   const { data, error } = await supabase.rpc('waiting_room_action', {
     p_session_id: getSessionId(), p_device_id: await initDeviceId(), p_action: action,
     p_seat_id: opts.seatId ?? undefined, p_ready: opts.ready ?? false, p_notify: opts.notify ?? false,

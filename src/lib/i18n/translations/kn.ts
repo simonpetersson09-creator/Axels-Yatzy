@@ -2,6 +2,7 @@ import type { sv } from './sv';
 
 export const kn: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
+  brandTagline: 'ಎಸೆಯಿರಿ. ಉಳಿಸಿ. ಗೆಲ್ಲಿರಿ.',
   tagline: 'ಹೊಸ ಮೆರುಗಿನ ಸಾಂಪ್ರದಾಯಿಕ ದಾಳದ ಆಟ',
   version: 'ಆವೃತ್ತಿ',
 

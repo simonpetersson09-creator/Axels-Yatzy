@@ -2,6 +2,7 @@ import type { sv } from './sv';
 
 export const pa: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
+  brandTagline: 'ਸੁੱਟੋ. ਰੱਖੋ. ਜਿੱਤੋ.',
   tagline: 'ਪਾਸਿਆਂ ਦੀ ਪੁਰਾਣੀ ਖੇਡ, ਨਵੇਂ ਅੰਦਾਜ਼ ਨਾਲ',
   version: 'ਵਰਜ਼ਨ',
 

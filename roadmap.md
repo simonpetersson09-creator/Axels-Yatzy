@@ -1,6 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Slutkontroll – 25 oktober
+- [x] Startsidesnycklar granskade: brandTagline kompletterad på 10 språk och servernyheten på 32 språk; OK-knappar översatta. En gemensam prioritet hindrar Androidnyhet/notisfråga från att visas samtidigt; långa nyhets-/frågerutor kan rullas, kortnotiser tar hänsyn till säker nederkant. Topplisterutan verifierad på 40 språk × 2 telefonmått utan textspill; vännotis och frågeruta med långt namn verifierade isolerat. 14 relevanta tester godkända; telefonernas riktiga notisleverans och språklig expertgranskning återstår.
 - [x] Startsidesnavigation, språkbyte, statistikens utfällning, butik, tärningsinformation samt väntrums-/annonsbekräftelsens Avbryt verifierade utan att ändra riktiga väntplatser. Isolerad datormatch: låsning, kast, alla 15 poängrader, slutresultat och Till menyn → startsidan med lokal statistik; inga runtimefel. Inga nya programfel hittade.
 - [x] 211 tester godkända, 32 server-/databastester säkert överhoppade; senaste bygge OK. Riktiga onlineflöden, annonser, samtycke, push och bakgrund/återkomst behöver fortsatt signerade telefonbyggen och telefonprov enligt nedan.
 

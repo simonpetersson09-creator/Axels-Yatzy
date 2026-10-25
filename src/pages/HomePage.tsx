@@ -42,6 +42,7 @@ import { OptionalAdsDialog } from '@/components/OptionalAdsDialog';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
+import { getHomePrompt } from '@/lib/home-prompt';
 import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
@@ -524,6 +525,8 @@ export default function HomePage() {
     }
   };
 
+
+  const homePrompt = getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk });
 
   return (
     <div
@@ -1037,17 +1040,17 @@ export default function HomePage() {
       </motion.div>
 
       <AnimatePresence>
-        {showServerNews && <ServerNewsPrompt onClose={closeServerNews} />}
-        {showOnlineNews && !showServerNews && (
+        {homePrompt === 'server' && <ServerNewsPrompt onClose={closeServerNews} />}
+        {homePrompt === 'online' && (
           <OnlineNewsPrompt onPlay={() => closeOnlineNews(true)} onClose={() => closeOnlineNews(false)} />
         )}
-        {showAndroidNews && !showOnlineNews && !showServerNews && (
+        {homePrompt === 'android' && (
           <AndroidNewsPrompt onClose={closeAndroidNews} />
         )}
-        {showRatePrompt && !showOnlineNews && !showAndroidNews && !showServerNews && (
+        {homePrompt === 'rate' && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
         )}
-        {showNotifAsk && !showOnlineNews && !showRatePrompt && !showServerNews && (
+        {homePrompt === 'notifications' && (
           <NotificationAskPrompt onYes={() => closeNotifAsk(true)} onLater={() => closeNotifAsk(false)} />
         )}
       </AnimatePresence>

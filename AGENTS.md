@@ -1,5 +1,6 @@
 - Native patches run via `npm run cap:sync:ios/android`; generated edits get lost. iOS patches bind UMP before consent (without starting Ads) and enforce four-hour App Open expiry on reuse/status/show, preserving display scheduling.
 - Remove QA player_country_stats; they displace players.
+- home-prompt serializes Home news to avoid overlap.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - App icon: resources/icon.png (1024x1024, opaque) is the only source; `npm run icons` (scripts/make-icons.js) regenerates resources/android/res, resources/ios/AppIcon.appiconset and public/ copies — never hand-edit generated icon files.

@@ -570,26 +570,26 @@ export default function HomePage() {
           </p>
         </motion.div>
 
-        <div className="w-full space-y-2 sm:space-y-3 mt-8 sm:mt-10">
+        <div className="home-pending-stack w-full space-y-2 sm:space-y-3 mt-8 sm:mt-10">
           <FriendRequestNotice />
           <HofRankNotice />
           <SentInvitesCards />
           {openLobbies.map((lb) => (
             <div
               key={lb.gameId}
-              className="w-full px-3 py-1.5 rounded-xl flex items-center gap-2.5 text-left bg-secondary/70 text-foreground border border-border/60 border-l-4 border-l-primary/80"
+              className="home-match-card home-match-card-waiting font-display"
             >
               <button
                 onClick={() => navigate('/multiplayer', { state: { rejoinCode: lb.code } })}
-                className="flex-1 min-w-0 flex items-center gap-2.5 text-left active:scale-[0.98] transition"
+                className="flex-1 min-w-0 flex items-center gap-2 h-full text-left active:scale-[0.98] transition"
               >
-              <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center bg-primary/15">
-                <Users className="w-3.5 h-3.5 text-primary" />
+              <div className="flex-shrink-0 w-6 h-6 rounded-[7px] flex items-center justify-center bg-background/20">
+                <Users className="w-3 h-3 text-background" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-display font-bold text-sm truncate">{t('lobbyOpenCard', { code: lb.code })}</p>
-                <p className="flex items-center gap-1 mt-px text-[10px] text-muted-foreground/80">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
+                <p className="font-bold text-[11px] leading-none truncate">{t('lobbyOpenCard', { code: lb.code })}</p>
+                <p className="flex items-center gap-1 text-[8px] leading-none opacity-90">
+                  <span className="w-1 h-1 rounded-full bg-background/80 animate-pulse flex-shrink-0" />
                   <span className="truncate">{t('waitingShort')}…</span>
                 </p>
               </div>
@@ -600,7 +600,7 @@ export default function HomePage() {
                   if (ok) setOpenLobbies((l) => l.filter((x) => x.gameId !== lb.gameId));
                   else toast.error(t('errGeneric'));
                 }}
-                className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-muted/70 text-muted-foreground active:scale-95 transition"
+                className="flex-shrink-0 text-[8px] font-bold uppercase tracking-wider px-2 py-[3px] rounded-full bg-background/25 text-background active:scale-95 transition"
               >
                 {t('close')}
               </button>

@@ -928,7 +928,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
-  html:not(.preview-frame) .home-actions-stack { --home-button-height: 52px; --home-gap: 12px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; }
+  html:not(.preview-frame) .home-actions-stack, html:not(.preview-frame) .home-pending-stack { --home-button-height: 52px; --home-gap: 12px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; }
 
   html:not(.preview-frame):has(.ios-game-layout) {
     --sb-row-h: clamp(25px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 150px) / 20), 55px);

@@ -787,6 +787,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
   html:not(.preview-frame) .home-actions { --home-circle: 150px; --home-gap: 12px; }
+  html:not(.preview-frame) .home-actions-stack { --home-stack: 380px; }
   html:not(.preview-frame) .home-quick-circle { padding: 0 22px; }
   html:not(.preview-frame) .home-quick-circle-label { font-size: 15px; }
 

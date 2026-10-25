@@ -692,7 +692,7 @@ export default function HomePage() {
           {/* Main actions: Snabbspel above two equal companion buttons */}
           <div className="home-actions-stack flex flex-col gap-2.5">
             <div className="home-actions">
-              <Button asChild className="home-quick-primary font-display font-bold">
+              <Button asChild className="home-action home-quick-primary font-display">
               <motion.button
                 onClick={() => setShowQuickMatch(v => !v)}
                 aria-expanded={showQuickMatch}
@@ -700,24 +700,24 @@ export default function HomePage() {
                 variants={item}
                 transition={{ duration: 0.45, ease: 'easeOut' }}
               >
-                <span aria-hidden="true" className="text-xl leading-none">🎲</span>
-                <span className="home-quick-primary-label">{t('quickMatch')}</span>
+                <span aria-hidden="true" className="home-action-icon">🎲</span>
+                <span>{t('quickMatch')}</span>
               </motion.button>
               </Button>
               <div className="home-actions-side">
-                <Button asChild className="home-companion-action w-full px-1.5 rounded-lg font-display font-bold text-[13px] leading-tight whitespace-normal">
+                <Button asChild className="home-action home-companion-action font-display">
                 <motion.button
                   onClick={() => navigate('/multiplayer')}
                   whileTap={{ scale: 0.97 }}
                   variants={item}
                   transition={{ duration: 0.45, ease: 'easeOut' }}
                 >
-                  <span aria-hidden="true" className="text-base leading-none shrink-0">🌐</span><span className="min-w-0">{t('playWithFriends')}</span>
+                  <span aria-hidden="true" className="home-action-icon">🌐</span><span>{t('playWithFriends')}</span>
                 </motion.button>
                 </Button>
-                <Button asChild variant="waitingRoom" className="relative w-full py-1 pl-1.5 pr-6 rounded-lg font-display font-bold text-[13px] leading-tight whitespace-normal">
+                <Button asChild variant="waitingRoom" className="home-action home-waiting-action font-display relative">
                   <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
-                    <Users className="shrink-0" /> <span className="flex flex-col items-start min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[10px] font-medium inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
+                    <Users /> <span className="flex flex-col items-start min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[10px] font-medium inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
                     {waitingCount > 0 && <span className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-destructive text-destructive-foreground min-w-5 h-5 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
                   </motion.button>
                 </Button>
@@ -762,12 +762,12 @@ export default function HomePage() {
             </AnimatePresence>
             <motion.button
               onClick={() => navigate('/stats')}
-              className="home-stats-action relative px-16 rounded-2xl bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground font-display font-bold text-base sm:text-lg shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow flex items-center justify-center gap-2"
+              className="home-action home-stats-action font-display relative bg-gradient-to-r from-game-success to-game-success/80 text-primary-foreground shadow-[0_4px_16px_hsl(150_55%_40%/0.3)] active:shadow-[0_2px_8px_hsl(150_55%_40%/0.2)] transition-shadow"
               whileTap={{ scale: 0.97 }}
               variants={item}
               transition={{ duration: 0.45, ease: 'easeOut' }}
             >
-              <BarChart3 className="w-5 h-5" /> <span className="truncate">{t('statsPage')}</span>
+              <BarChart3 /> <span>{t('statsPage')}</span>
               {hofRank && (
                 <span
                   className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-full bg-game-gold text-background px-2 py-1 text-xs leading-none font-bold tabular-nums whitespace-nowrap shadow-md"

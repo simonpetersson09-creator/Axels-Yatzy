@@ -9,10 +9,13 @@
 .waiting-room-content { width: 100%; max-width: 440px; margin-inline: auto; display: flex; flex-direction: column; }
 .waiting-home-button { background: linear-gradient(to right, hsl(var(--game-info-light)), hsl(var(--game-info))); box-shadow: 0 4px 16px hsl(var(--game-info) / .3); transition: box-shadow .2s; }
 .waiting-home-button:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }
-/* Alla huvudknapparna på startsidan delar höjd via --home-button-height. */
+/* Alla huvudknapparna på startsidan delar höjd, typsnitt, textstorlek, ikonstorlek och radie. */
 .home-actions-stack {
   --home-gap: 10px;
   --home-button-height: 44px;
+  --home-button-font: 14px;
+  --home-button-icon: 16px;
+  --home-icon-gap: 8px;
   width: 100%;
   max-width: var(--home-stack, 360px);
   margin-inline: auto;
@@ -23,32 +26,34 @@
   gap: var(--home-gap);
   align-items: stretch;
 }
-.home-quick-primary {
-  width: 100%;
+.home-action {
   height: var(--home-button-height);
-  border-radius: 8px;
+  min-width: 0;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 14px;
-  text-align: center;
+  gap: var(--home-icon-gap);
+  padding: 0 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: var(--home-button-font);
   line-height: 1.15;
+  white-space: normal;
+  text-align: center;
   overflow: hidden;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  box-shadow: 0 4px 16px hsl(var(--primary) / .3);
-  transition: box-shadow .2s;
 }
+.home-actions-stack .home-action > svg { width: var(--home-button-icon); height: var(--home-button-icon); }
+.home-action-icon { font-size: var(--home-button-icon); line-height: 1; }
+.home-quick-primary { width: 100%; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 4px 16px hsl(var(--primary) / .3); transition: box-shadow .2s; }
 .home-quick-primary:active { box-shadow: 0 2px 8px hsl(var(--primary) / .2); }
-.home-quick-primary-label { font-size: 15px; overflow-wrap: anywhere; }
 .home-actions-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--home-gap); min-width: 0; }
-.home-actions-side > * { height: var(--home-button-height); min-width: 0; gap: 6px; }
+.home-actions-side .home-action { padding-inline: 8px; }
 .home-companion-action { background: hsl(var(--game-info)); color: hsl(var(--primary-foreground)); }
-.home-stats-action { width: 100%; height: var(--home-button-height); }
+.home-waiting-action { padding-inline-end: 24px; }
+.home-stats-action { width: 100%; }
 @media (max-width: 359px) {
-  .home-actions-stack { --home-button-height: 40px; --home-gap: 8px; --home-stack: 288px; }
+  .home-actions-stack { --home-button-height: 40px; --home-gap: 8px; --home-stack: 288px; --home-button-font: 13px; --home-button-icon: 15px; }
 }
 .waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }
@@ -786,8 +791,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
-  html:not(.preview-frame) .home-actions-stack { --home-button-height: 52px; --home-gap: 12px; --home-stack: 440px; }
-  html:not(.preview-frame) .home-quick-primary-label { font-size: 16px; }
+  html:not(.preview-frame) .home-actions-stack { --home-button-height: 52px; --home-gap: 12px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; }
 
   html:not(.preview-frame):has(.ios-game-layout) {
     --sb-row-h: clamp(25px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 150px) / 20), 55px);

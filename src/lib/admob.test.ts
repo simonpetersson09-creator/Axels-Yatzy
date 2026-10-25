@@ -463,6 +463,33 @@ describe('preloading', () => {
     expect(native.loadAppOpen).toHaveBeenCalledOnce();
   });
 
+  it('shows a delayed startup ad after quick navigation to settings', async () => {
+    const navigation = await import('./app-open-navigation');
+    navigation.setAppOpenPath('/');
+    const guard = navigation.createAppOpenNavigationGuard();
+    native.loadAppOpen.mockImplementationOnce(() => new Promise(resolve => setTimeout(resolve, 500)));
+    const m = await import('./admob');
+    const pending = m.showAppOpenAd(guard);
+    await vi.advanceTimersByTimeAsync(100);
+    navigation.setAppOpenPath('/settings');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(await pending).toBe(true);
+  });
+
+  it.each(['/game', '/multiplayer-game'])('skips a delayed startup ad once %s starts', async path => {
+    const navigation = await import('./app-open-navigation');
+    navigation.setAppOpenPath('/');
+    const guard = navigation.createAppOpenNavigationGuard();
+    native.loadAppOpen.mockImplementationOnce(() => new Promise(resolve => setTimeout(resolve, 500)));
+    const m = await import('./admob');
+    const pending = m.showAppOpenAd(guard);
+    await vi.advanceTimersByTimeAsync(100);
+    navigation.setAppOpenPath(path);
+    navigation.setAppOpenPath('/');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(await pending).toBe(false);
+  });
+
   it('banner is parked between matches and resumed, not reloaded', async () => {
     const m = await import('./admob');
     const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;

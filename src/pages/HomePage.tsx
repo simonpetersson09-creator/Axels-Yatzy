@@ -640,14 +640,14 @@ export default function HomePage() {
                     }`}>
                       <Play className={`w-3 h-3 ${myTurn ? 'text-white' : 'text-background'}`} />
                     </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
+                    <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
                       {myTurn && (
                         <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/85 leading-none">
                           {t('yourTurnLabel')}
                         </p>
                       )}
                       <div className="flex items-center leading-none">
-                        <span className="font-bold text-[12.5px] leading-none truncate inline-flex items-center gap-1.5">
+                        <span className="match-card-name font-bold text-[12.5px] leading-none truncate inline-flex items-center gap-1.5">
                           {!isLocal && status?.opponentOnline && (
                             <span
                               className="inline-block w-1 h-1 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.9)]"

@@ -220,23 +220,22 @@
   .home-match-card .match-card-body { gap: 2px; }
   .home-match-card .match-card-name { font-size: 10.5px; }
 }
-.waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-dist: calc(var(--waiting-table-size) * .52); }
+.waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .waiting-seat { position: absolute; width: 108px; height: 62px; text-align: center; z-index: 2; }
-.waiting-seat-0 { top: calc(50% - var(--waiting-seat-dist) - 31px); left: calc(50% - 54px); }
-.waiting-seat-1 { top: calc(50% - 31px); left: calc(50% + var(--waiting-seat-dist) - 54px); }
-.waiting-seat-2 { top: calc(50% + var(--waiting-seat-dist) - 31px); left: calc(50% - 54px); }
-.waiting-seat-3 { top: calc(50% - 31px); left: calc(50% - var(--waiting-seat-dist) - 54px); }
+.waiting-seat-0 { top: calc(50% - var(--waiting-seat-offset)); left: calc(50% - 54px); }
+.waiting-seat-1 { top: calc(50% - 31px); left: calc(50% + var(--waiting-seat-offset) - 54px); }
+.waiting-seat-2 { top: calc(50% + var(--waiting-seat-offset) - 62px); left: calc(50% - 54px); }
+.waiting-seat-3 { top: calc(50% - 31px); left: calc(50% - var(--waiting-seat-offset) - 54px); }
 .waiting-person-label { position: absolute; width: 108px; padding: 0; background: none; overflow-wrap: anywhere; }
 /* Alla fyra platser visar samma ordning: namn vid stolsryggen, sedan status, sedan nedräkning ytterst.
    Överstolen vänder stapeln (column-reverse) så namnet hamnar närmast ryggen. */
-.waiting-seat-0 .waiting-person-label { bottom: calc(100% + 8px); display: flex; flex-direction: column-reverse; align-items: center; }
-.waiting-seat-2 .waiting-person-label { top: calc(100% + 8px); }
-/* Sidostolarnas etiketter läses uppifrån och ned, utanför stolen (vertical-lr / vertical-rl). */
-.waiting-seat-1 .waiting-person-label { left: calc(50% + 26px); top: 50%; width: auto; height: max-content; writing-mode: vertical-lr; transform: translateY(-50%); }
-.waiting-seat-3 .waiting-person-label { right: calc(50% + 26px); top: 50%; width: auto; height: max-content; writing-mode: vertical-rl; transform: translateY(-50%); }
-/* Medan en chattbubbla syns ersätter den namnskylten — ingen överlappning. */
-.waiting-seat:has(.waiting-chat-bubble) .waiting-person-label { opacity: 0; }
+.waiting-seat-0 .waiting-person-label { bottom: 100%; margin-bottom: calc(var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); display: flex; flex-direction: column-reverse; align-items: center; }
+.waiting-seat-2 .waiting-person-label { top: 100%; margin-top: calc(var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); }
+/* Sidostolarnas etiketter läses uppifrån och ned, men raderna stackas UTÅT från bordet
+   (vertical-lr / vertical-rl) så text aldrig viker in över stolen. */
+.waiting-seat-1 .waiting-person-label { left: calc(54px + var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); top: 31px; width: auto; height: max-content; writing-mode: vertical-lr; transform: translateY(-50%); }
+.waiting-seat-3 .waiting-person-label { right: calc(62px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); top: 31px; width: auto; height: max-content; writing-mode: vertical-rl; transform: translateY(-50%); }
 .waiting-person-label-empty { color: hsl(var(--muted-foreground)); }
 .waiting-country-flag { display: inline-block; writing-mode: horizontal-tb; white-space: nowrap; font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; font-size: 14px; line-height: 1; vertical-align: middle; margin-inline-end: 4px; }
 /* Sidetexter: hålls alltid inom bordets höjd och långa namn kortas av med ellipsis. */
@@ -248,19 +247,27 @@
 .waiting-presence-online { background: hsl(var(--game-success)); box-shadow: 0 0 5px hsl(var(--game-success) / .9); }
 .waiting-presence-away { background: hsl(var(--muted-foreground) / .4); }
 .waiting-chat-panel { width: min(340px, 100%); max-height: 85dvh; overflow-y: auto; border: 1px solid hsl(var(--border)); border-radius: 8px; background: hsl(var(--card)); color: hsl(var(--card-foreground)); box-shadow: 0 12px 32px hsl(var(--background) / .6); }
-.waiting-chat-bubble { position: absolute; z-index: 5; bottom: calc(50% + 30px); left: 50%; transform: translateX(-50%); width: 108px; padding: 7px; border-radius: 8px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 11px; font-weight: 600; overflow-wrap: anywhere; box-shadow: 0 3px 8px hsl(var(--background) / .4); }
-.waiting-chat-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; margin-left: -6px; border: 6px solid transparent; border-top-color: hsl(var(--primary)); }
-/* Minimal iOS-style player avatar: one clean monogram circle per seat. */
-.waiting-avatar { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--secondary))); color: hsl(var(--card-foreground)); border: 1px solid hsl(var(--border)); box-shadow: 0 2px 6px hsl(var(--background) / .5), 0 0 0 3px hsl(var(--card) / .25); font-family: 'Space Grotesk', system-ui, sans-serif; transition: opacity .2s, filter .2s; }
-.waiting-avatar-initial { font-size: 16px; font-weight: 700; line-height: 1; }
-.waiting-avatar-own { border-color: hsl(var(--primary) / .45); box-shadow: 0 2px 6px hsl(var(--background) / .5), 0 0 0 2px hsl(var(--primary) / .25); }
-.waiting-avatar-away { opacity: .45; filter: grayscale(1); }
-.waiting-avatar-ready { position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; background: hsl(var(--game-success)); color: hsl(var(--primary-foreground)); display: grid; place-items: center; box-shadow: 0 0 0 2.5px hsl(var(--card)); }
-.waiting-avatar-ready svg { width: 10px; height: 10px; stroke-width: 3.5; }
+.waiting-chat-bubble { position: absolute; z-index: 5; bottom: 40px; left: 0; width: 108px; padding: 7px; border-radius: 8px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 11px; font-weight: 600; overflow-wrap: anywhere; box-shadow: 0 3px 8px hsl(var(--background) / .4); }
+.waiting-chat-bubble::after { content: ''; position: absolute; top: 100%; left: 46px; border: 6px solid transparent; border-top-color: hsl(var(--primary)); }
+.waiting-figure { position: absolute; width: 46px; height: 58px; left: 31px; top: 2px; filter: drop-shadow(0 3px 3px hsl(var(--background) / .7)); }
+.waiting-seat-1 .waiting-figure { transform: rotate(90deg); }
+.waiting-seat-2 .waiting-figure { transform: rotate(180deg); }
+.waiting-seat-3 .waiting-figure { transform: rotate(-90deg); }
+.waiting-figure-head { position: absolute; width: 24px; height: 26px; left: 11px; top: 10px; border-radius: 50%; background: hsl(var(--game-dice-dot)); box-shadow: inset 3px 2px 0 hsl(var(--muted)), 0 2px 3px hsl(var(--background) / .4); z-index: 3; }
+.waiting-figure-head::after { content: ''; position: absolute; width: 10px; height: 5px; border-radius: 0 0 50% 50%; bottom: -2px; left: 7px; background: hsl(var(--game-dice)); }
+.waiting-figure-body { position: absolute; width: 40px; height: 27px; left: 3px; top: 18px; border-radius: 45% 45% 30% 30%; background: currentColor; box-shadow: inset 0 4px 0 hsl(var(--foreground) / .16), inset 0 -5px 0 hsl(var(--background) / .2); }
+.waiting-figure-arms { position: absolute; left: 2px; top: 32px; width: 7px; height: 17px; border-radius: 4px; background: currentColor; border-bottom: 5px solid hsl(var(--game-dice)); }
+.waiting-figure-arms::after { content: ''; position: absolute; left: 35px; top: 0; width: 7px; height: 17px; border-radius: 4px; background: currentColor; border-bottom: 5px solid hsl(var(--game-dice)); }
+.waiting-figure-legs { position: absolute; width: 27px; height: 19px; left: 10px; top: 36px; border-radius: 5px; background: hsl(var(--game-dice-dot)); }
+.waiting-figure-legs::after { content: ''; position: absolute; left: 12px; top: 7px; width: 3px; height: 12px; background: hsl(var(--background)); }
+.figure-0 { color: hsl(var(--yatzy-player1)); }
+.figure-1 { color: hsl(var(--yatzy-player2)); }
+.figure-2 { color: hsl(var(--yatzy-player3)); }
+.figure-3 { color: hsl(var(--yatzy-player4)); }
 .waiting-countdown { position: absolute; left: calc(50% - 40px); top: calc(50% - 40px); width: 80px; height: 80px; border-radius: 50%; background: hsl(var(--background) / .9); color: hsl(var(--primary)); display: grid; place-items: center; font-size: 48px; font-weight: 700; overflow: hidden; }
 .waiting-countdown-text { font-size: 12px; font-weight: 600; line-height: 1.15; text-align: center; padding: 0 10px; max-width: 100%; overflow-wrap: anywhere; }
 .waiting-modal-backdrop { position: fixed; inset: 0; background: hsl(var(--background) / .85); z-index: 100; display: grid; place-items: center; padding: 20px; }
-@media (max-width: 350px) { .waiting-table-stage { height: 370px; --waiting-seat-dist: calc(var(--waiting-table-size) * .56); } .waiting-person-label { width: 92px; } .waiting-seat-0 .waiting-person-label, .waiting-seat-2 .waiting-person-label { left: 8px; } }
+@media (max-width: 350px) { .waiting-table-stage { height: 370px; } .waiting-person-label { width: 92px; } .waiting-seat-0 .waiting-person-label, .waiting-seat-2 .waiting-person-label { left: 8px; } .waiting-seat-1 .waiting-person-label { left: calc(58px + var(--waiting-chair-edge) - var(--waiting-seat-offset)); } .waiting-seat-3 .waiting-person-label { right: calc(58px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); } }
 
 /* Fixed native ad footprint, not a scaled web banner. */
 .quick-search-screen {
@@ -951,6 +958,11 @@ html:not(.ad-banner-on):has(.mp-game) {
 /* Keep the hint out of the dice budget, without hiding it or moving names/chat. */
 .mp-game .mp-dice-column { margin-top: 0; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .mp-game .mp-dice-hint { position: absolute; inset-inline: 0; top: 0; }
+.waiting-table-stage { --waiting-sit-dist: calc(var(--waiting-table-size) * .3); }
+.waiting-seat-0 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset) - 31px)); }
+.waiting-seat-2 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) - var(--waiting-seat-offset) + 31px)) rotate(180deg); }
+.waiting-seat-1 .waiting-figure { transform: translateX(calc(var(--waiting-sit-dist) - var(--waiting-seat-offset))) rotate(90deg); }
+.waiting-seat-3 .waiting-figure { transform: translateX(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset))) rotate(-90deg); }
 
 /* Tablet geometry is independent of phone metrics and the desktop phone frame.
    The height budget includes all 20 score rows, fixed headers, safe areas and
@@ -989,8 +1001,6 @@ html:not(.ad-banner-on):has(.mp-game) {
     --waiting-table-size: min(64cqw, 360px, calc(100cqw - 160px));
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
-  html:not(.preview-frame) .waiting-avatar { width: 48px; height: 48px; }
-  html:not(.preview-frame) .waiting-avatar-initial { font-size: 19px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
   html:not(.preview-frame) .home-actions-stack, html:not(.preview-frame) .home-pending-stack { --home-button-height: 52px; --home-gap: 9px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; }
 

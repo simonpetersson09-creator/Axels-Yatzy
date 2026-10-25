@@ -42,6 +42,7 @@ import { OptionalAdsDialog } from '@/components/OptionalAdsDialog';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
+import { getHomePrompt } from '@/lib/home-prompt';
 import { shouldAskForNotifications, markNotificationsAsked } from '@/lib/notif-ask';
 import { getPushPermissionState, requestPushPermission } from '@/lib/notifications';
 import OnlineNewsPrompt, { shouldShowOnlineNews, markOnlineNewsSeen } from '@/components/OnlineNewsPrompt';
@@ -1037,17 +1038,17 @@ export default function HomePage() {
       </motion.div>
 
       <AnimatePresence>
-        {showServerNews && <ServerNewsPrompt onClose={closeServerNews} />}
-        {showOnlineNews && !showServerNews && (
+        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'server' && <ServerNewsPrompt onClose={closeServerNews} />}
+        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'online' && (
           <OnlineNewsPrompt onPlay={() => closeOnlineNews(true)} onClose={() => closeOnlineNews(false)} />
         )}
-        {showAndroidNews && !showOnlineNews && !showServerNews && (
+        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'android' && (
           <AndroidNewsPrompt onClose={closeAndroidNews} />
         )}
-        {showRatePrompt && !showOnlineNews && !showAndroidNews && !showServerNews && (
+        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'rate' && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
         )}
-        {showNotifAsk && !showOnlineNews && !showAndroidNews && !showRatePrompt && !showServerNews && (
+        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'notifications' && (
           <NotificationAskPrompt onYes={() => closeNotifAsk(true)} onLater={() => closeNotifAsk(false)} />
         )}
       </AnimatePresence>

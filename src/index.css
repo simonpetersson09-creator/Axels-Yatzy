@@ -233,8 +233,8 @@
 .waiting-seat-0 .waiting-person-label { bottom: calc(100% + 8px); display: flex; flex-direction: column-reverse; align-items: center; }
 .waiting-seat-2 .waiting-person-label { top: calc(100% + 8px); }
 /* Sidostolarnas etiketter läses uppifrån och ned, utanför stolen (vertical-lr / vertical-rl). */
-.waiting-seat-1 .waiting-person-label { left: calc(100% + 10px); top: 50%; width: auto; height: max-content; writing-mode: vertical-lr; transform: translateY(-50%); }
-.waiting-seat-3 .waiting-person-label { right: calc(100% + 10px); top: 50%; width: auto; height: max-content; writing-mode: vertical-rl; transform: translateY(-50%); }
+.waiting-seat-1 .waiting-person-label { left: calc(50% + 26px); top: 50%; width: auto; height: max-content; writing-mode: vertical-lr; transform: translateY(-50%); }
+.waiting-seat-3 .waiting-person-label { right: calc(50% + 26px); top: 50%; width: auto; height: max-content; writing-mode: vertical-rl; transform: translateY(-50%); }
 .waiting-person-label-empty { color: hsl(var(--muted-foreground)); }
 .waiting-country-flag { display: inline-block; writing-mode: horizontal-tb; white-space: nowrap; font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; font-size: 14px; line-height: 1; vertical-align: middle; margin-inline-end: 4px; }
 /* Sidetexter: hålls alltid inom bordets höjd och långa namn kortas av med ellipsis. */

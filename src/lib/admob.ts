@@ -121,11 +121,36 @@ async function loadModule(): Promise<AdMobModule> {
 
 let consentPromise: Promise<boolean> | null = null;
 let privacyOptionsRequired = false;
+let privacyChanging = false;
+let privacyBlocked = false;
+let adGeneration = 0;
+const adAllowed = (generation: number) => !privacyChanging && !privacyBlocked && generation === adGeneration;
+
+async function discardPrivacyCaches(mod: AdMobModule): Promise<void> {
+  const native = mod.AdMob as typeof mod.AdMob & {
+    discardPrivacyCaches(): Promise<{ privacyCacheVersion: number }>;
+  };
+  const result = await native.discardPrivacyCaches();
+  if (result?.privacyCacheVersion !== 1) throw new Error('privacy_cache_unavailable');
+  preparedAt = 0;
+  rewardedPreparedAt = 0;
+  preparing = null;
+  rewardedPreparing = null;
+  appOpenPreload = null;
+  clearTimeout(bannerParkTimer);
+  bannerGen++;
+  bannerShown = false;
+  bannerParked = false;
+  bannerLoaded = false;
+  shownMargin = -1;
+  parkedMargin = -1;
+  setBannerSpace(false);
+}
 
 /**
- * Googles samtyckesruta (UMP) – visas bara där den krävs (EU/UK) och bara
- * tills spelaren svarat. Returnerar om annonser får begäras.
- * Fel i samtyckesflödet blockerar inte spelet; Google avgör då själv.
+ * Refresh UMP and present its form when required. canRequestAds is request
+ * eligibility, not acceptance or personalization. Errors block this attempt;
+ * gameplay continues. UMP remains the only persisted consent authority.
  */
 function ensureConsent(mod: AdMobModule): Promise<boolean> {
   if (!consentPromise) {
@@ -191,15 +216,30 @@ export async function getAdConsentChoices(): Promise<AdConsentChoices> {
 /** Öppnar Googles ruta så spelaren kan ändra sitt annonsval. */
 export async function showAdPrivacyOptions(): Promise<boolean> {
   if (!isAdMobAvailable()) return false;
+  // Never release a native delegate or reward lifecycle while it may present.
+  if (privacyChanging || showing || rewardedShowing || appOpenShowing) return false;
+  privacyChanging = true;
+  privacyBlocked = true;
+  adGeneration++;
+  bannerGen++;
   try {
     const mod = await loadModule();
+    await queueBannerOperation(() => discardPrivacyCaches(mod));
     await mod.AdMob.showPrivacyOptionsForm();
     consentPromise = null;
-    await ensureConsent(mod);
+    const eligible = await ensureConsent(mod);
+    // Discard again: a native operation issued before the boundary may have
+    // finished while the form was open. Native generations reject late results.
+    await discardPrivacyCaches(mod);
+    privacyBlocked = !eligible;
     return true;
-  } catch (err) {
-    console.warn('[AdMob] privacy options failed', err);
+  } catch {
+    // Fail closed, including on old native builds missing the cache bridge.
+    // Never log choices or privacy-form error payloads.
     return false;
+  } finally {
+    privacyChanging = false;
+    if (!privacyBlocked && bannerWanted) void showGameBanner(shownPlacement);
   }
 }
 
@@ -225,13 +265,17 @@ export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
 }
 
 async function ensureInitialized(): Promise<AdMobModule> {
+  const generation = adGeneration;
+  if (!adAllowed(generation)) throw new Error('privacy_transition');
   const mod = await loadModule();
   // Samtycke först: inga annonser begärs innan spelaren svarat i EU.
   const canRequest = await ensureConsent(mod);
+  if (!adAllowed(generation)) throw new Error('privacy_transition');
   if (!canRequest) throw new Error('consent_not_given');
   if (!initialized) {
     // iOS: Apples spårningsfråga (ATT) efter Googles samtycke, bara en gång.
     await ensureTrackingAuthorization(mod);
+    if (!adAllowed(generation)) throw new Error('privacy_transition');
     await mod.AdMob.initialize({
       initializeForTesting: ADMOB_CONFIG.useTestAds,
     });
@@ -262,6 +306,8 @@ async function ensureInitialized(): Promise<AdMobModule> {
  * Säker att anropa när som helst – den kan inte trigga visning.
  */
 export async function preloadInterstitial(): Promise<boolean> {
+  const generation = adGeneration;
+  if (!adAllowed(generation)) return false;
   if (!isAdMobAvailable() || !adUnitId('optional')) return false;
   if (preparing) return preparing;
   if (preparedAt && Date.now() - preparedAt < PREPARED_TTL_MS) return true;
@@ -269,20 +315,21 @@ export async function preloadInterstitial(): Promise<boolean> {
   preparing = (async () => {
     try {
       const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
+      if (!adAllowed(generation)) return false;
       const adId = adUnitId('optional');
       if (!adId) return false;
       await withTimeout(mod.AdMob.prepareInterstitial({
         adId,
         isTesting: ADMOB_CONFIG.useTestAds,
       }), PREPARE_TIMEOUT_MS, 'prepare');
+      if (!adAllowed(generation)) return false;
       preparedAt = Date.now();
       return true;
     } catch (err) {
-      lastPrepareError = reasonOf(err);
-      preparedAt = 0;
+      if (adAllowed(generation)) { lastPrepareError = reasonOf(err); preparedAt = 0; }
       return false;
     } finally {
-      preparing = null;
+      if (generation === adGeneration) preparing = null;
     }
   })();
 
@@ -304,6 +351,8 @@ export async function showPostMatchInterstitial(): Promise<ShowAdResult> {
 }
 
 async function showInterstitial(kind: 'optional' | 'postMatch'): Promise<ShowAdResult> {
+  const generation = adGeneration;
+  if (!adAllowed(generation)) return 'busy';
   if (!isAdMobAvailable()) return 'unavailable';
   if (showing || rewardedShowing || appOpenShowing) return 'busy';
   if (kind === 'postMatch' && (!preparedAt || Date.now() - preparedAt >= PREPARED_TTL_MS)) return 'unavailable';
@@ -318,11 +367,13 @@ async function showInterstitial(kind: 'optional' | 'postMatch'): Promise<ShowAdR
       return 'failed';
     }
     const mod = await loadModule();
+    if (!adAllowed(generation)) return 'unavailable';
     // Native presentation resolves immediately; navigation waits for dismissal.
     let settle: (result: ShowAdResult) => void = () => {};
     const closed = new Promise<ShowAdResult>((resolve) => { settle = resolve; });
     listeners.push(await mod.AdMob.addListener(mod.InterstitialAdPluginEvents.Dismissed, () => settle('shown')));
     listeners.push(await mod.AdMob.addListener(mod.InterstitialAdPluginEvents.FailedToShow, () => settle('failed')));
+    if (!adAllowed(generation)) return 'unavailable';
     if (kind === 'postMatch') {
       suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
       // Never free an uncancellable native attempt just because a timer elapsed.
@@ -380,6 +431,8 @@ export function usesRewardedOptionalAd(): boolean {
 }
 
 export async function preloadRewarded(): Promise<boolean> {
+  const generation = adGeneration;
+  if (!adAllowed(generation)) return false;
   const adId = rewardedUnitId();
   if (!isAdMobAvailable() || !adId) return false;
   if (rewardedPreparing) return rewardedPreparing;
@@ -388,15 +441,16 @@ export async function preloadRewarded(): Promise<boolean> {
     try {
       const loadMs = adPlatform() === 'android' ? ANDROID_REWARDED_LOAD_TIMEOUT_MS : PREPARE_TIMEOUT_MS;
       const mod = await withTimeout(ensureInitialized(), loadMs, 'init');
+      if (!adAllowed(generation)) return false;
       await withTimeout(mod.AdMob.prepareRewardVideoAd({ adId, isTesting: ADMOB_CONFIG.useTestAds }), loadMs, 'prepare');
+      if (!adAllowed(generation)) return false;
       rewardedPreparedAt = Date.now();
       return true;
     } catch (err) {
-      lastPrepareError = reasonOf(err);
-      rewardedPreparedAt = 0;
+      if (adAllowed(generation)) { lastPrepareError = reasonOf(err); rewardedPreparedAt = 0; }
       return false;
     } finally {
-      rewardedPreparing = null;
+      if (generation === adGeneration) rewardedPreparing = null;
     }
   })();
   return rewardedPreparing;
@@ -479,6 +533,8 @@ export function setLateRewardHandler(fn: (() => void) | null): void {
  * new attempt can never overlap or receive the old attempt's events.
  */
 export async function showOptionalRewarded(options: { waitForCompletion?: boolean; onLateReward?: () => void } = {}): Promise<RewardedResult> {
+  const generation = adGeneration;
+  if (!adAllowed(generation)) return 'busy';
   if (!isAdMobAvailable() || !rewardedUnitId()) return 'unavailable';
   if (rewardedShowing || showing || appOpenShowing) return 'busy';
   rewardedShowing = true;
@@ -503,6 +559,7 @@ export async function showOptionalRewarded(options: { waitForCompletion?: boolea
     }
     const mod = await loadModule();
     const E = mod.RewardAdPluginEvents;
+    if (!adAllowed(generation)) return 'unavailable';
     const nativeId = `${startedAt.toString(36)}-${id}`;
     // Tagged events (patched native) must match this attempt; untagged ones
     // (unpatched native) fall back to "the only active attempt".
@@ -530,6 +587,7 @@ export async function showOptionalRewarded(options: { waitForCompletion?: boolea
       setTimeout(() => finish(earned ? 'rewarded' : 'not_earned'), REWARD_GRACE_MS);
     }));
     rewardedPreparedAt = 0; // consumed as soon as we try to show it
+    if (!adAllowed(generation)) return 'unavailable';
     suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     // Both native plugins resolve the show call ONLY from the SDK's
     // earned-reward callback, so resolution is a second reward signal; the
@@ -596,6 +654,8 @@ let appOpenPreload: Promise<boolean> | null = null;
 
 /** Laddar nästa App Open-annons i förväg så den kan visas direkt vid nästa start. */
 export function preloadAppOpenAd(): Promise<boolean> {
+  const generation = adGeneration;
+  if (!adAllowed(generation)) return Promise.resolve(false);
   if (getRankedGames() < 1) return Promise.resolve(false);
   const adId = adUnitId('appOpen');
   if (!isAdMobAvailable() || !adId) return Promise.resolve(false);
@@ -603,14 +663,17 @@ export function preloadAppOpenAd(): Promise<boolean> {
   appOpenPreload = (async () => {
     try {
       const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
+      if (!adAllowed(generation)) return false;
       const { value } = await mod.AdMob.isAppOpenLoaded();
+      if (!adAllowed(generation)) return false;
       if (value) return true;
       await withTimeout(mod.AdMob.loadAppOpen({ adId }), 20_000, 'load');
+      if (!adAllowed(generation)) return false;
       return (await mod.AdMob.isAppOpenLoaded()).value;
     } catch {
       return false;
     } finally {
-      appOpenPreload = null;
+      if (generation === adGeneration) appOpenPreload = null;
     }
   })();
   return appOpenPreload;
@@ -621,6 +684,8 @@ export function preloadAppOpenAd(): Promise<boolean> {
  * visades. Kastar aldrig; misslyckas tyst så att appen fortsätter direkt.
  */
 export async function showAppOpenAd(canShow: () => boolean = () => true): Promise<boolean> {
+  const generation = adGeneration;
+  if (!adAllowed(generation)) return false;
   // New players get one complete match before any startup/resume App Open ad.
   if (getRankedGames() < 1) return false;
   const { waitingRoomAdBlocked } = await import('./waiting-room');
@@ -635,11 +700,14 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   let release = true;
   try {
     const mod = await withTimeout(ensureInitialized(), APP_OPEN_LOAD_TIMEOUT_MS, 'init');
+    if (!adAllowed(generation)) return false;
     // A preload already running (started at cold start) is awaited, not doubled.
     if (appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});
     const pre = await mod.AdMob.isAppOpenLoaded();
+    if (!adAllowed(generation)) return false;
     if (!pre.value) await withTimeout(mod.AdMob.loadAppOpen({ adId }), APP_OPEN_LOAD_TIMEOUT_MS, 'load');
     const { value } = await mod.AdMob.isAppOpenLoaded();
+    if (!adAllowed(generation)) return false;
     if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
     // Loaded too late (player already left the start screen): never cover a game.
     if (getRankedGames() < 1 || !canShow() || waitingRoomAdBlocked()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
@@ -961,10 +1029,12 @@ let bannerGen = 0;
 
 export async function showGameBanner(placement: BannerPlacement = 'game'): Promise<void> {
   bannerWanted = true;
+  shownPlacement = placement;
+  if (privacyChanging || privacyBlocked) return;
   // Varje sidbyte får ett eget nummer; ett äldre anrop som fortfarande väntar
   // avbryts, så att två sidor aldrig visar varsin banner.
   const gen = ++bannerGen;
-  const stale = () => !bannerWanted || gen !== bannerGen;
+  const stale = () => !bannerWanted || gen !== bannerGen || privacyChanging || privacyBlocked;
   return queueBannerOperation(() => showBannerForScreen(stale, placement));
 }
 

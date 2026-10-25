@@ -50,6 +50,9 @@ if (!platform || platform === 'ios') {
     @objc func requestConsentInfo(`);
       }
       if (!source.includes(eligibilityRegistration)) source = source.replace(method, eligibilityRegistration + '\n' + method);
+      // Stable registration order also when repairing a partial installed patch.
+      source = source.replace(registration + '\n', '').replace(eligibilityRegistration + '\n', '');
+      source = source.replace(method, registration + '\n' + eligibilityRegistration + '\n' + method);
       if (!source.includes('import UserMessagingPlatform') || !source.includes(registration)) {
         throw new Error('Consent reader iOS registration verification failed');
       }

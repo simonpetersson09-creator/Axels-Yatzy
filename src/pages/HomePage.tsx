@@ -951,6 +951,7 @@ export default function HomePage() {
             ))}
           </div>
 
+          {statsExpanded && (<>
           <div className="grid grid-cols-3 gap-2">
             {[
               {
@@ -1018,6 +1019,7 @@ export default function HomePage() {
               <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-transparent via-game-info/50 to-transparent relative z-10" />
             </div>
           </div>
+          </>)}
 
           <div className="absolute top-[calc(100%+0.5rem)] left-0 right-0">
             <div className="text-center mt-2 mb-1">

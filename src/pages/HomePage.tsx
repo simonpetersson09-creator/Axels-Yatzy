@@ -725,7 +725,21 @@ export default function HomePage() {
                       <Users /> <span className="flex flex-col items-start min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[10px] font-medium inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
                     </motion.button>
                   </Button>
-                  {waitingCount > 0 && <span className="home-waiting-badge">{waitingCount}</span>}
+                  {waitingCount > 0 && (
+                    <Button asChild variant="waitingRoom" className="home-waiting-badge-btn">
+                      <motion.button
+                        type="button"
+                        className="home-waiting-badge"
+                        aria-label={`${t('wrTitle')} (${waitingCount})`}
+                        disabled={waitingChecking}
+                        onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                      >
+                        {waitingCount}
+                      </motion.button>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

@@ -997,6 +997,8 @@ html:not(.ad-banner-on):has(.mp-game) {
     --waiting-table-size: min(64cqw, 360px, calc(100cqw - 160px));
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
+  html:not(.preview-frame) .waiting-avatar { width: 48px; height: 48px; }
+  html:not(.preview-frame) .waiting-avatar-initial { font-size: 19px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
   html:not(.preview-frame) .home-actions-stack, html:not(.preview-frame) .home-pending-stack { --home-button-height: 52px; --home-gap: 9px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; }
 

@@ -647,7 +647,7 @@ export default function HomePage() {
                         </p>
                       )}
                       <div className="flex items-center gap-1.5 leading-none">
-                        <span className="font-bold text-sm truncate inline-flex items-center gap-1.5">
+                        <span className="font-bold text-sm leading-none truncate inline-flex items-center gap-1.5">
                           {!isLocal && status?.opponentOnline && (
                             <span
                               className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.9)]"

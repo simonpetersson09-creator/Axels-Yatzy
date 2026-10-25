@@ -526,6 +526,8 @@ export default function HomePage() {
   };
 
 
+  const homePrompt = getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk });
+
   return (
     <div
       className="app-fixed-screen flex flex-col items-center px-6 py-3 safe-top safe-bottom relative overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden"
@@ -1038,17 +1040,17 @@ export default function HomePage() {
       </motion.div>
 
       <AnimatePresence>
-        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'server' && <ServerNewsPrompt onClose={closeServerNews} />}
-        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'online' && (
+        {homePrompt === 'server' && <ServerNewsPrompt onClose={closeServerNews} />}
+        {homePrompt === 'online' && (
           <OnlineNewsPrompt onPlay={() => closeOnlineNews(true)} onClose={() => closeOnlineNews(false)} />
         )}
-        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'android' && (
+        {homePrompt === 'android' && (
           <AndroidNewsPrompt onClose={closeAndroidNews} />
         )}
-        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'rate' && (
+        {homePrompt === 'rate' && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
         )}
-        {getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk }) === 'notifications' && (
+        {homePrompt === 'notifications' && (
           <NotificationAskPrompt onYes={() => closeNotifAsk(true)} onLater={() => closeNotifAsk(false)} />
         )}
       </AnimatePresence>

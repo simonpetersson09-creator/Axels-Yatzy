@@ -20,7 +20,10 @@
   --home-button-icon: 16px;
   --home-icon-gap: 8px;
 }
-.home-actions-stack {
+/* Båda högar måste ha samma breddgräns: på iPad blir föräldern 640 px bred,
+   och utan denna gräns skulle väntekorten bli bredare än matchkort och knappar. */
+.home-actions-stack,
+.home-pending-stack {
   width: 100%;
   max-width: var(--home-stack, 360px);
   margin-inline: auto;

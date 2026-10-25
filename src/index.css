@@ -64,6 +64,7 @@
    har turen. Kontainern har klassen .home-actions-stack och ärver därmed
    knapparnas höjd-, typsnitt- och gap-variabler på alla skärmstorlekar. */
 .home-match-card {
+  width: 100%;
   height: var(--home-button-height);
   min-width: 0;
   display: flex;
@@ -140,6 +141,10 @@
   .home-actions-side .home-action { padding-inline: 6px; }
   /* den röda siffran krymper lite så den aldrig nuddar texten på den smalaste skärmen */
   .home-waiting-badge { min-width: 16px; height: 16px; font-size: 9px; padding-inline: 2px; top: 2px; right: 2px; }
+  /* Matchkorten: lite mindre text och tätare radavstånd så de tre raderna får
+     luft mot kanterna på den minsta telefonen (40 px hög knapp). */
+  .home-match-card .match-card-body { gap: 2px; }
+  .home-match-card .match-card-name { font-size: 11.5px; }
 }
 .waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }

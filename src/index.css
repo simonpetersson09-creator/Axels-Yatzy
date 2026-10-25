@@ -48,7 +48,7 @@
 .home-companion-action { background: hsl(var(--game-info)); color: hsl(var(--primary-foreground)); }
 .home-stats-action { width: 100%; height: var(--home-button-height); }
 @media (max-width: 359px) {
-  .home-actions-stack { --home-button-height: 54px; --home-gap: 8px; --home-stack: 288px; }
+  .home-actions-stack { --home-button-height: 56px; --home-gap: 8px; --home-stack: 288px; }
 }
 .waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }

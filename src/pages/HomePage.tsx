@@ -635,41 +635,41 @@ export default function HomePage() {
                     className={`home-match-card font-display ${myTurn ? 'home-match-card-turn' : 'home-match-card-waiting'}`}
                     whileTap={{ scale: 0.97 }}
                   >
-                    <div className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center ${
+                    <div className={`flex-shrink-0 w-6 h-6 rounded-[7px] flex items-center justify-center ${
                       myTurn ? 'bg-white/20' : 'bg-background/20'
                     }`}>
-                      <Play className={`w-4 h-4 ${myTurn ? 'text-white' : 'text-background'}`} />
+                      <Play className={`w-3 h-3 ${myTurn ? 'text-white' : 'text-background'}`} />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
                       {myTurn && (
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-white/80 leading-none">
+                        <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/85 leading-none">
                           {t('yourTurnLabel')}
                         </p>
                       )}
-                      <div className="flex items-center gap-1.5 leading-none">
-                        <span className="font-bold text-sm leading-none truncate inline-flex items-center gap-1.5">
+                      <div className="flex items-center leading-none">
+                        <span className="font-bold text-[12.5px] leading-none truncate inline-flex items-center gap-1.5">
                           {!isLocal && status?.opponentOnline && (
                             <span
-                              className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.9)]"
+                              className="inline-block w-1 h-1 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.9)]"
                               aria-label={t('onlineNow')}
                             />
                           )}
                           {isLocal ? (game.opponentName ?? t('resumeMatch')) : (opponent ?? t('resumeMatch'))}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1 mt-px text-[10px] tabular-nums leading-none">
-                        <Clock className="w-3 h-3" />
+                      <div className="flex items-center gap-1 text-[9px] tabular-nums leading-none opacity-90">
+                        <Clock className="w-2.5 h-2.5 flex-shrink-0" />
                         <span className="truncate">{t('ongoingMatchRemaining', { time: timeLeft })}</span>
                       </div>
                     </div>
                     <div className="flex-shrink-0">
                       {myTurn && (
-                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-game-gold text-background animate-pulse">
+                        <span className="text-[9px] font-bold px-2 py-[3px] rounded-full bg-game-gold text-background animate-pulse">
                           {t('onlineNewsOk')}
                         </span>
                       )}
                       {(opponentTurn || waitingForStatus) && opponent && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-background/20">
+                        <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-[2px] rounded-full bg-background/20">
                           {t('waitingShort')}
                         </span>
                       )}

@@ -64,6 +64,7 @@
    har turen. Kontainern har klassen .home-actions-stack och ärver därmed
    knapparnas höjd-, typsnitt- och gap-variabler på alla skärmstorlekar. */
 .home-match-card {
+  width: 100%;
   height: var(--home-button-height);
   min-width: 0;
   display: flex;

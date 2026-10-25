@@ -689,34 +689,36 @@ export default function HomePage() {
           )}
 
 
-          {/* Main actions: rund Snabbspel bredvid Spela med vän och Spelväntrum */}
+          {/* Main actions: Snabbspel above two equal companion buttons */}
           <div className="home-actions-stack flex flex-col gap-2.5">
             <div className="home-actions">
+              <Button asChild className="home-quick-primary font-display font-bold">
               <motion.button
                 onClick={() => setShowQuickMatch(v => !v)}
                 aria-expanded={showQuickMatch}
-                className="home-quick-circle font-display font-bold"
                 whileTap={{ scale: 0.97 }}
                 variants={item}
                 transition={{ duration: 0.45, ease: 'easeOut' }}
               >
                 <span aria-hidden="true" className="text-xl leading-none">🎲</span>
-                <span className="home-quick-circle-label">{t('quickMatch')}</span>
+                <span className="home-quick-primary-label">{t('quickMatch')}</span>
               </motion.button>
+              </Button>
               <div className="home-actions-side">
+                <Button asChild className="home-companion-action w-full px-2 rounded-lg font-display font-bold text-sm leading-tight flex-col whitespace-normal">
                 <motion.button
                   onClick={() => navigate('/multiplayer')}
-                  className="w-full px-2 rounded-2xl bg-gradient-to-r from-game-info to-game-info/80 text-white font-display font-bold text-sm sm:text-base leading-tight shadow-[0_4px_16px_hsl(200_65%_50%/0.3)] active:shadow-[0_2px_8px_hsl(200_65%_50%/0.2)] transition-shadow flex items-center justify-center gap-2"
                   whileTap={{ scale: 0.97 }}
                   variants={item}
                   transition={{ duration: 0.45, ease: 'easeOut' }}
                 >
-                  🌐 <span className="truncate">{t('playWithFriends')}</span>
+                  <span aria-hidden="true">🌐</span><span>{t('playWithFriends')}</span>
                 </motion.button>
-                <Button asChild variant="waitingRoom" className="relative w-full h-auto py-1.5 px-4 pr-12 rounded-2xl font-display font-bold text-sm sm:text-base leading-tight whitespace-normal">
+                </Button>
+                <Button asChild variant="waitingRoom" className="relative w-full py-1.5 px-2 rounded-lg font-display font-bold text-sm leading-tight whitespace-normal flex-col">
                   <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
                     <Users /> <span className="flex flex-col items-center min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[11px] font-medium inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
-                    {waitingCount > 0 && <span className="absolute right-3 rounded-full bg-destructive text-destructive-foreground min-w-6 h-6 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
+                    {waitingCount > 0 && <span className="absolute right-2 top-1.5 rounded-full bg-destructive text-destructive-foreground min-w-5 h-5 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
                   </motion.button>
                 </Button>
               </div>

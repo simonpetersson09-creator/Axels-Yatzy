@@ -84,11 +84,10 @@ export default function QuickMatchOpponentNotice({ gameId, players, myIndex }: {
         {took && (
           <motion.div
             key="took"
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }}
-            className="fixed inset-x-0 z-[60] flex justify-center pointer-events-none"
-            style={{ bottom: 'calc(env(safe-area-inset-bottom) + 150px)' }}
+            initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none"
           >
-            <div className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground shadow-lg">🖥️ {took}</div>
+            <div className="rounded-full border border-border bg-card px-5 py-2.5 text-base font-semibold text-foreground shadow-2xl">🖥️ {took}</div>
           </motion.div>
         )}
       </AnimatePresence>

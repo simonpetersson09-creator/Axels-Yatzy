@@ -34,7 +34,8 @@
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.
 - Statistics period labels use the shared Stockholm formatter to match server period boundaries across phone timezones.
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
-- Player rank ordering ends with session_id after match count and creation time, ensuring deterministic exact ties without changing match totals.
+- Rank ties: match count, creation time, then session_id; totals unchanged.
+- Notice expiry ignores score updates to prevent stuck overlays.
 - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
 - Waiting-room pushes atomically reserve a device-scoped rate_limits key in internal_waiting_room_take_push; suppressed recalls are consumed, and delivery must use that same bound device so seat/session churn cannot bypass the cooldown. Other notification categories never share this key.
 - Waiting-room quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.

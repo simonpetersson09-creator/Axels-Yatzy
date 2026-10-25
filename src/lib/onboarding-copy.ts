@@ -1,4 +1,5 @@
 import { getLanguage, type Language } from '@/lib/profile';
+import { getRankedGames } from '@/lib/local-stats';
 
 /** First-launch quick-match hint and quick-match opponent notices, all 40 languages. */
 type Copy = { hint: string; real: string; took: string };
@@ -52,7 +53,7 @@ export function onboardingCopy(lang: Language = getLanguage()): Copy {
 
 const HINT_KEY = 'mrb_quick_hint_done';
 export function quickHintPending(): boolean {
-  try { return localStorage.getItem(HINT_KEY) !== '1'; } catch { return false; }
+  try { return localStorage.getItem(HINT_KEY) !== '1' && getRankedGames() === 0; } catch { return false; }
 }
 export function markQuickHintDone(): void {
   try { localStorage.setItem(HINT_KEY, '1'); } catch { /* ignore */ }

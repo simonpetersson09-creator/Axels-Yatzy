@@ -21,15 +21,35 @@ export default function QuickMatchOpponentNotice({ gameId, players, myIndex }: {
   const [took, setTook] = useState<string | null>(null);
   const shownRef = useRef<string | null>(null);
   const prevRef = useRef<Seat[] | null>(null);
+  // Score/roll updates must not cancel the notice's lifetime.
+  const seatsKey = JSON.stringify(players.map(p => ({ name: p.name, badge: p.badge })));
+
+  useEffect(() => {
+    shownRef.current = null;
+    prevRef.current = null;
+    setIntro(null);
+    setTook(null);
+  }, [gameId]);
+
+  useEffect(() => {
+    if (!intro) return;
+    const timer = window.setTimeout(() => setIntro(null), 2000);
+    return () => window.clearTimeout(timer);
+  }, [intro]);
+
+  useEffect(() => {
+    if (!took) return;
+    const timer = window.setTimeout(() => setTook(null), 4000);
+    return () => window.clearTimeout(timer);
+  }, [took]);
 
   // Intro card once per match, for the first real opponent.
   useEffect(() => {
     if (!gameId || myIndex === null || shownRef.current === gameId) return;
-    const idx = players.findIndex((p, i) => i !== myIndex && p.badge === 'online');
+    const seats: Seat[] = JSON.parse(seatsKey);
+    const idx = seats.findIndex((p, i) => i !== myIndex && p.badge === 'online');
     if (idx < 0) return;
-    shownRef.current = gameId;
     let alive = true;
-    let timer: number | undefined;
     void (async () => {
       let f = '';
       try {
@@ -42,23 +62,22 @@ export default function QuickMatchOpponentNotice({ gameId, players, myIndex }: {
         }
       } catch { /* flag is optional */ }
       if (!alive) return;
-      setIntro({ name: players[idx].name, flag: f });
-      timer = window.setTimeout(() => setIntro(null), 2000);
+      shownRef.current = gameId;
+      setIntro({ name: seats[idx].name, flag: f });
     })();
-    return () => { alive = false; if (timer) window.clearTimeout(timer); };
-  }, [gameId, myIndex, players]);
+    return () => { alive = false; };
+  }, [gameId, myIndex, seatsKey]);
 
   // Pill when a real seat becomes a computer seat.
   useEffect(() => {
     const prev = prevRef.current;
-    prevRef.current = players;
+    const seats: Seat[] = JSON.parse(seatsKey);
+    prevRef.current = seats;
     if (!prev) return;
-    const i = players.findIndex((p, k) => p.badge === 'bot' && prev[k]?.badge === 'online');
+    const i = seats.findIndex((p, k) => p.badge === 'bot' && prev[k]?.badge === 'online');
     if (i < 0) return;
-    setTook(copy.took.replace('{name}', players[i].name));
-    const t = window.setTimeout(() => setTook(null), 4000);
-    return () => window.clearTimeout(t);
-  }, [players, copy.took]);
+    setTook(copy.took.replace('{name}', seats[i].name));
+  }, [seatsKey, copy.took]);
 
   return (
     <>

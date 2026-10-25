@@ -958,11 +958,7 @@ html:not(.ad-banner-on):has(.mp-game) {
 /* Keep the hint out of the dice budget, without hiding it or moving names/chat. */
 .mp-game .mp-dice-column { margin-top: 0; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .mp-game .mp-dice-hint { position: absolute; inset-inline: 0; top: 0; }
-.waiting-table-stage { --waiting-sit-dist: calc(var(--waiting-table-size) * .3); }
-.waiting-seat-0 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset) - 31px)); }
-.waiting-seat-2 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) - var(--waiting-seat-offset) + 31px)) rotate(180deg); }
-.waiting-seat-1 .waiting-figure { transform: translateX(calc(var(--waiting-sit-dist) - var(--waiting-seat-offset))) rotate(90deg); }
-.waiting-seat-3 .waiting-figure { transform: translateX(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset))) rotate(-90deg); }
+.waiting-table-stage { --waiting-avatar-dist: calc(var(--waiting-table-size) * .42); }
 
 /* Tablet geometry is independent of phone metrics and the desktop phone frame.
    The height budget includes all 20 score rows, fixed headers, safe areas and

@@ -110,6 +110,7 @@ export default function HomePage() {
   const [activeGames, setActiveGames] = useState<ActiveGame[]>(() => getActiveGames());
   const [openLobbies, setOpenLobbies] = useState<OpenLobby[]>([]);
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
+  const [quickHint, setQuickHint] = useState(() => quickHintPending());
   const [showQuickMatch, setShowQuickMatch] = useState(
     () => !!(window.history.state?.usr as { openQuickMatch?: boolean } | undefined)?.openQuickMatch,
   );

@@ -28,7 +28,7 @@ import { getRandomAiNames } from '@/lib/yatzy-ai';
 import { getPlayerName, getSessionId, getAnonNumber } from '@/lib/session';
 import { getLocalStats, type LocalStats } from '@/lib/local-stats';
 import { supabase } from '@/integrations/supabase/client';
-import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Settings, Users, Heart } from 'lucide-react';
+import { Play, Clock, Gamepad2, Trophy, Star, Percent, Dices, Flame, Globe, Settings, Users, Heart, ChevronDown } from 'lucide-react';
 import { getCachedHofRank, subscribeHofRank, syncMyHofRank } from '@/lib/hall-of-fame';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n';
@@ -111,6 +111,9 @@ export default function HomePage() {
     () => !!(window.history.state?.usr as { openQuickMatch?: boolean } | undefined)?.openQuickMatch,
   );
   const [stats, setStats] = useState<LocalStats>(() => getLocalStats());
+  // "Dina siffror – all time": första raden (spelade/vinster/rekord) syns alltid,
+  // resten är infällt bakom rubriken tills spelaren trycker på den.
+  const [statsExpanded, setStatsExpanded] = useState(false);
   const [rankInfo, setRankInfo] = useState<RankInfo>(getCachedRankInfo);
   const [showLangPicker, setShowLangPicker] = useState(false);
   const [showAdBubble, setShowAdBubble] = useState(false);
@@ -916,11 +919,17 @@ export default function HomePage() {
           variants={item}
           transition={{ duration: 0.45, ease: 'easeOut' }}
         >
-          <div className="text-center mb-1">
+          <button
+            type="button"
+            onClick={() => setStatsExpanded(v => !v)}
+            aria-expanded={statsExpanded}
+            className="w-full flex items-center justify-center gap-1.5 mb-1"
+          >
             <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">
               {t('homeStatsTitle')}
             </span>
-          </div>
+            <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform duration-200 ${statsExpanded ? 'rotate-180' : ''}`} />
+          </button>
           <div className="grid grid-cols-3 gap-2">
             {[
               { label: t('statGames'), value: stats.gamesPlayed, icon: Gamepad2 },

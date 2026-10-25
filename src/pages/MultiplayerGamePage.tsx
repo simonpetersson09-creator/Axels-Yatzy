@@ -1,3 +1,4 @@
+import QuickMatchOpponentNotice from '@/components/multiplayer/QuickMatchOpponentNotice';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
@@ -675,6 +676,7 @@ export default function MultiplayerGamePage() {
       }}
     >
       <QuickMatchTakeover gameId={gameId} />
+      <QuickMatchOpponentNotice gameId={gameId} players={gameState.players as { name: string; badge?: string }[]} myIndex={myPlayerIndex} />
       <DiceInfoSheet
         open={infoIndex !== null}
         onClose={() => setInfoIndex(null)}

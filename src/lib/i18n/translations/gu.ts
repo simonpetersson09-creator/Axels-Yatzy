@@ -2,6 +2,7 @@ import type { sv } from './sv';
 
 export const gu: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
+  brandTagline: 'ફેંકો. રાખો. જીતો.',
   tagline: 'નવા અંદાજમાં ક્લાસિક પાસાની રમત',
   version: 'આવૃત્તિ',
 

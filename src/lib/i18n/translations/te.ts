@@ -2,6 +2,7 @@ import type { sv } from './sv';
 
 export const te: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
+  brandTagline: 'వేయండి. ఉంచండి. గెలవండి.',
   tagline: 'కొత్త హంగులతో క్లాసిక్ పాచికల ఆట',
   version: 'వెర్షన్',
 

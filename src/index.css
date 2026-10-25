@@ -64,13 +64,13 @@
 .home-quick-primary { width: 100%; }
 .home-actions-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--home-gap); min-width: 0; }
 .home-actions-side .home-action { padding-inline: 8px; }
-/* Röd väntrumssiffra i iPhone-stil: hänger på knappens överhögra hörn,
-   halvt på och halvt utanför, med kant i bakgrundsfärgen så den syns
-   mot både knappen och sidbakgrunden. */
+/* Röd väntrumssiffra: ligger helt ovanpå knappens överhögra hörn så hela
+   siffran syns (knappen klipper innehåll som sticker utanför), med kant i
+   bakgrundsfärgen så den avskiljs från knappens gradient. */
 .home-waiting-badge {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: 4px;
+  right: 4px;
   z-index: 10;
   min-width: 20px;
   height: 20px;
@@ -94,13 +94,18 @@
   appearance: none;
 }
 .home-waiting-badge:disabled { cursor: default; }
+/* Knappen klipper normallyt innehåll som går utanför, men det får inte klippa
+   siffran i hörnet. Släpp klippningen för den knappen och håll istället texten
+   kvar inom knappens höjd så den inte kan rinna ut. */
+.home-waiting-action { overflow: visible; }
+.home-waiting-action > span { max-height: 100%; overflow: hidden; }
 .home-stats-action { width: 100%; }
 @media (max-width: 359px) {
   .home-actions-stack { --home-button-height: 40px; --home-gap: 8px; --home-stack: 288px; --home-button-font: 13px; --home-button-icon: 15px; --home-icon-gap: 6px; }
   /* På den minsta telefonen får sidoknapparna lite mindre luft runt texten så "Spela med vän" ryms på en rad. */
   .home-actions-side .home-action { padding-inline: 6px; }
   /* den röda siffran krymper lite så den aldrig nuddar texten på den smalaste skärmen */
-  .home-waiting-badge { min-width: 18px; height: 18px; font-size: 10px; top: -5px; right: -5px; }
+  .home-waiting-badge { min-width: 18px; height: 18px; font-size: 10px; top: 3px; right: 3px; }
 }
 .waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }

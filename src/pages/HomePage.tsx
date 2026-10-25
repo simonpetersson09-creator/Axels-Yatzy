@@ -718,12 +718,14 @@ export default function HomePage() {
                   <span aria-hidden="true" className="home-action-icon">🌐</span><span>{t('playWithFriends')}</span>
                 </motion.button>
                 </Button>
-                <Button asChild variant="waitingRoom" className="home-action home-waiting-action font-display relative">
-                  <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
-                    <Users /> <span className="flex flex-col items-start min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[10px] font-medium inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
-                    {waitingCount > 0 && <span className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full bg-destructive text-destructive-foreground min-w-5 h-5 flex items-center justify-center text-xs tabular-nums">{waitingCount}</span>}
-                  </motion.button>
-                </Button>
+                <div className="relative min-w-0">
+                  <Button asChild variant="waitingRoom" className="home-action home-waiting-action font-display w-full">
+                    <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
+                      <Users /> <span className="flex flex-col items-start min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[10px] font-medium inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
+                    </motion.button>
+                  </Button>
+                  {waitingCount > 0 && <span className="home-waiting-badge">{waitingCount}</span>}
+                </div>
               </div>
             </div>
             <AnimatePresence>

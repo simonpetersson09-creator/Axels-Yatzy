@@ -230,12 +230,11 @@
 .waiting-person-label { position: absolute; width: 108px; padding: 0; background: none; overflow-wrap: anywhere; }
 /* Alla fyra platser visar samma ordning: namn vid stolsryggen, sedan status, sedan nedräkning ytterst.
    Överstolen vänder stapeln (column-reverse) så namnet hamnar närmast ryggen. */
-.waiting-seat-0 .waiting-person-label { bottom: 100%; margin-bottom: calc(var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); display: flex; flex-direction: column-reverse; align-items: center; }
-.waiting-seat-2 .waiting-person-label { top: 100%; margin-top: calc(var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); }
-/* Sidostolarnas etiketter läses uppifrån och ned, men raderna stackas UTÅT från bordet
-   (vertical-lr / vertical-rl) så text aldrig viker in över stolen. */
-.waiting-seat-1 .waiting-person-label { left: calc(54px + var(--waiting-chair-edge) - var(--waiting-seat-offset) + 8px); top: 31px; width: auto; height: max-content; writing-mode: vertical-lr; transform: translateY(-50%); }
-.waiting-seat-3 .waiting-person-label { right: calc(62px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); top: 31px; width: auto; height: max-content; writing-mode: vertical-rl; transform: translateY(-50%); }
+.waiting-seat-0 .waiting-person-label { bottom: calc(100% + 26px); display: flex; flex-direction: column-reverse; align-items: center; }
+.waiting-seat-2 .waiting-person-label { top: calc(100% + 26px); }
+/* Sidostolarnas etiketter läses uppifrån och ned, utanför stolen (vertical-lr / vertical-rl). */
+.waiting-seat-1 .waiting-person-label { left: calc(100% + 10px); top: 50%; width: auto; height: max-content; writing-mode: vertical-lr; transform: translateY(-50%); }
+.waiting-seat-3 .waiting-person-label { right: calc(100% + 10px); top: 50%; width: auto; height: max-content; writing-mode: vertical-rl; transform: translateY(-50%); }
 .waiting-person-label-empty { color: hsl(var(--muted-foreground)); }
 .waiting-country-flag { display: inline-block; writing-mode: horizontal-tb; white-space: nowrap; font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; font-size: 14px; line-height: 1; vertical-align: middle; margin-inline-end: 4px; }
 /* Sidetexter: hålls alltid inom bordets höjd och långa namn kortas av med ellipsis. */

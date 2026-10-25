@@ -206,6 +206,7 @@ export const sl: Partial<typeof sv> = {
   resetStatsConfirm: 'Res želiš nadaljevati? Vsa statistika bo izbrisana.',
   resetDone: 'Statistika ponastavljena',
   nameSaved: 'Ime igralca shranjeno',
+  nameTaken: 'To ime je že zasedeno',
   avatarSaved: 'Avatar shranjen',
   avatarRemoved: 'Avatar odstranjen',
   languageSaved: 'Jezik posodobljen',

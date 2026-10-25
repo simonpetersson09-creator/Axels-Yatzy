@@ -206,6 +206,7 @@ export const gu: Partial<typeof sv> = {
   resetStatsConfirm: 'ખાતરી છે? બધા આંકડા ભૂંસાઈ જશે.',
   resetDone: 'આંકડા રીસેટ થયા',
   nameSaved: 'ખેલાડીનું નામ સાચવ્યું',
+  nameTaken: 'આ નામ પહેલેથી લેવાયું છે',
   avatarSaved: 'અવતાર સાચવ્યો',
   avatarRemoved: 'અવતાર દૂર કર્યો',
   languageSaved: 'ભાષા બદલી',

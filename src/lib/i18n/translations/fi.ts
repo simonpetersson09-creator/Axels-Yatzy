@@ -206,6 +206,7 @@ export const fi: Partial<typeof sv> = {
   resetStatsConfirm: 'Oletko varma? Kaikki tilastot poistetaan.',
   resetDone: 'Tilastot nollattu',
   nameSaved: 'Pelaajan nimi tallennettu',
+  nameTaken: 'Nimi on jo varattu',
   avatarSaved: 'Profiilikuva tallennettu',
   avatarRemoved: 'Profiilikuva poistettu',
   languageSaved: 'Kieli päivitetty',

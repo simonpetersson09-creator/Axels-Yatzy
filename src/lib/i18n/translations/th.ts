@@ -206,6 +206,7 @@ export const th: Partial<typeof sv> = {
   resetStatsConfirm: 'แน่ใจไหม? สถิติทั้งหมดจะถูกลบ',
   resetDone: 'รีเซ็ตสถิติแล้ว',
   nameSaved: 'บันทึกชื่อผู้เล่นแล้ว',
+  nameTaken: 'ชื่อนี้มีคนใช้แล้ว',
   avatarSaved: 'บันทึกรูปแล้ว',
   avatarRemoved: 'ลบรูปแล้ว',
   languageSaved: 'เปลี่ยนภาษาแล้ว',

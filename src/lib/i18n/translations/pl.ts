@@ -206,6 +206,7 @@ export const pl: Partial<typeof sv> = {
   resetStatsConfirm: 'Na pewno? Wszystkie statystyki zostaną usunięte.',
   resetDone: 'Statystyki wyzerowane',
   nameSaved: 'Nazwa gracza zapisana',
+  nameTaken: 'Ta nazwa jest już zajęta',
   avatarSaved: 'Awatar zapisany',
   avatarRemoved: 'Awatar usunięty',
   languageSaved: 'Język zmieniony',

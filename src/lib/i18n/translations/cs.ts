@@ -206,6 +206,7 @@ export const cs: Partial<typeof sv> = {
   resetStatsConfirm: 'Opravdu? Všechny statistiky se smažou.',
   resetDone: 'Statistiky smazány',
   nameSaved: 'Jméno hráče uloženo',
+  nameTaken: 'Toto jméno je už obsazené',
   avatarSaved: 'Avatar uložen',
   avatarRemoved: 'Avatar odebrán',
   languageSaved: 'Jazyk změněn',

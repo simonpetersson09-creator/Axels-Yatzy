@@ -206,6 +206,7 @@ export const uk: Partial<typeof sv> = {
   resetStatsConfirm: 'Точно скинути? Усю статистику буде видалено.',
   resetDone: 'Статистику скинуто',
   nameSaved: 'Ім’я гравця збережено',
+  nameTaken: 'Це ім’я вже зайняте',
   avatarSaved: 'Аватар збережено',
   avatarRemoved: 'Аватар видалено',
   languageSaved: 'Мову оновлено',

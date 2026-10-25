@@ -206,6 +206,7 @@ export const it: Partial<typeof sv> = {
   resetStatsConfirm: 'Sei sicuro? Tutte le statistiche verranno cancellate.',
   resetDone: 'Statistiche azzerate',
   nameSaved: 'Nome salvato',
+  nameTaken: 'Questo nome è già in uso',
   avatarSaved: 'Avatar salvato',
   avatarRemoved: 'Avatar rimosso',
   languageSaved: 'Lingua aggiornata',

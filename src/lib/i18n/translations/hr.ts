@@ -206,6 +206,7 @@ export const hr: Partial<typeof sv> = {
   resetStatsConfirm: 'Sigurno? Sva će statistika biti izbrisana.',
   resetDone: 'Statistika poništena',
   nameSaved: 'Ime igrača spremljeno',
+  nameTaken: 'Ovo ime je već zauzeto',
   avatarSaved: 'Avatar spremljen',
   avatarRemoved: 'Avatar uklonjen',
   languageSaved: 'Jezik promijenjen',

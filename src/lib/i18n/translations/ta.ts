@@ -206,6 +206,7 @@ export const ta: Partial<typeof sv> = {
   resetStatsConfirm: 'உறுதியாகவா? எல்லாப் புள்ளிவிவரங்களும் அழிக்கப்படும்.',
   resetDone: 'புள்ளிவிவரங்கள் மீட்டமைக்கப்பட்டன',
   nameSaved: 'வீரர் பெயர் சேமிக்கப்பட்டது',
+  nameTaken: 'இந்தப் பெயர் ஏற்கனவே எடுக்கப்பட்டது',
   avatarSaved: 'படம் சேமிக்கப்பட்டது',
   avatarRemoved: 'படம் நீக்கப்பட்டது',
   languageSaved: 'மொழி மாற்றப்பட்டது',

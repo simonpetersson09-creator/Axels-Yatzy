@@ -206,6 +206,7 @@ export const kn: Partial<typeof sv> = {
   resetStatsConfirm: 'ಖಚಿತವೇ? ಎಲ್ಲಾ ಅಂಕಿಅಂಶಗಳು ಅಳಿದುಹೋಗುತ್ತವೆ.',
   resetDone: 'ಅಂಕಿಅಂಶಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ',
   nameSaved: 'ಆಟಗಾರನ ಹೆಸರು ಉಳಿಸಲಾಗಿದೆ',
+  nameTaken: 'ಈ ಹೆಸರು ಈಗಾಗಲೇ ಬಳಕೆಯಲ್ಲಿದೆ',
   avatarSaved: 'ಅವತಾರ ಉಳಿಸಲಾಗಿದೆ',
   avatarRemoved: 'ಅವತಾರ ತೆಗೆದುಹಾಕಲಾಗಿದೆ',
   languageSaved: 'ಭಾಷೆ ಬದಲಿಸಲಾಗಿದೆ',

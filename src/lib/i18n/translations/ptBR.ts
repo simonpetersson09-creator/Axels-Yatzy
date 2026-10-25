@@ -206,6 +206,7 @@ export const ptBR: Partial<typeof sv> = {
   resetStatsConfirm: 'Tem certeza? Todas as estatísticas serão apagadas.',
   resetDone: 'Estatísticas zeradas',
   nameSaved: 'Nome do jogador salvo',
+  nameTaken: 'Esse nome já está em uso',
   avatarSaved: 'Avatar salvo',
   avatarRemoved: 'Avatar removido',
   languageSaved: 'Idioma atualizado',

@@ -206,6 +206,7 @@ export const mr: Partial<typeof sv> = {
   resetStatsConfirm: 'नक्की? सगळी आकडेवारी पुसली जाईल.',
   resetDone: 'आकडेवारी पुसली',
   nameSaved: 'खेळाडूचं नाव सेव्ह केलं',
+  nameTaken: 'हे नाव आधीच घेतलं आहे',
   avatarSaved: 'अवतार सेव्ह केला',
   avatarRemoved: 'अवतार काढला',
   languageSaved: 'भाषा बदलली',

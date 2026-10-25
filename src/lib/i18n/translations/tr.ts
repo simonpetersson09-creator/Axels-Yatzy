@@ -206,6 +206,7 @@ export const tr: Partial<typeof sv> = {
   resetStatsConfirm: 'Emin misin? Tüm istatistikler silinecek.',
   resetDone: 'İstatistikler sıfırlandı',
   nameSaved: 'Oyuncu adı kaydedildi',
+  nameTaken: 'Bu ad zaten alınmış',
   avatarSaved: 'Avatar kaydedildi',
   avatarRemoved: 'Avatar kaldırıldı',
   languageSaved: 'Dil güncellendi',

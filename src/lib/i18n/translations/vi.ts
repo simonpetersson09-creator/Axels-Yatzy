@@ -206,6 +206,7 @@ export const vi: Partial<typeof sv> = {
   resetStatsConfirm: 'Bạn chắc chứ? Mọi thống kê sẽ bị xóa.',
   resetDone: 'Đã xóa thống kê',
   nameSaved: 'Đã lưu tên người chơi',
+  nameTaken: 'Tên này đã có người dùng',
   avatarSaved: 'Đã lưu ảnh đại diện',
   avatarRemoved: 'Đã xóa ảnh đại diện',
   languageSaved: 'Đã đổi ngôn ngữ',

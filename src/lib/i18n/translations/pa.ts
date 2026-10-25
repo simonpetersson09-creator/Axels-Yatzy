@@ -206,6 +206,7 @@ export const pa: Partial<typeof sv> = {
   resetStatsConfirm: 'ਪੱਕਾ? ਸਾਰੇ ਅੰਕੜੇ ਮਿਟ ਜਾਣਗੇ।',
   resetDone: 'ਅੰਕੜੇ ਰੀਸੈੱਟ ਹੋ ਗਏ',
   nameSaved: 'ਖਿਡਾਰੀ ਦਾ ਨਾਂ ਸੇਵ ਹੋ ਗਿਆ',
+  nameTaken: 'ਇਹ ਨਾਂ ਪਹਿਲਾਂ ਹੀ ਲਿਆ ਜਾ ਚੁੱਕਾ ਹੈ',
   avatarSaved: 'ਅਵਤਾਰ ਸੇਵ ਹੋ ਗਿਆ',
   avatarRemoved: 'ਅਵਤਾਰ ਹਟਾ ਦਿੱਤਾ',
   languageSaved: 'ਭਾਸ਼ਾ ਬਦਲ ਗਈ',

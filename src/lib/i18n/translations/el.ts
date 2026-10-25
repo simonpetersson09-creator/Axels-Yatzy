@@ -206,6 +206,7 @@ export const el: Partial<typeof sv> = {
   resetStatsConfirm: 'Σίγουρα; Όλα τα στατιστικά θα διαγραφούν.',
   resetDone: 'Τα στατιστικά μηδενίστηκαν',
   nameSaved: 'Το όνομα αποθηκεύτηκε',
+  nameTaken: 'Το όνομα χρησιμοποιείται ήδη',
   avatarSaved: 'Η εικόνα αποθηκεύτηκε',
   avatarRemoved: 'Η εικόνα αφαιρέθηκε',
   languageSaved: 'Η γλώσσα ενημερώθηκε',

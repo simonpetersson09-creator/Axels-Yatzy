@@ -206,6 +206,7 @@ export const no: Partial<typeof sv> = {
   resetStatsConfirm: 'Er du sikker? All statistikk slettes.',
   resetDone: 'Statistikk tilbakestilt',
   nameSaved: 'Spillernavn lagret',
+  nameTaken: 'Navnet er allerede tatt',
   avatarSaved: 'Profilbilde lagret',
   avatarRemoved: 'Profilbilde fjernet',
   languageSaved: 'Språk oppdatert',

@@ -206,6 +206,7 @@ export const hu: Partial<typeof sv> = {
   resetStatsConfirm: 'Biztos vagy benne? Minden statisztika törlődik.',
   resetDone: 'Statisztikák törölve',
   nameSaved: 'Játékosnév mentve',
+  nameTaken: 'Ez a név már foglalt',
   avatarSaved: 'Profilkép mentve',
   avatarRemoved: 'Profilkép eltávolítva',
   languageSaved: 'Nyelv módosítva',

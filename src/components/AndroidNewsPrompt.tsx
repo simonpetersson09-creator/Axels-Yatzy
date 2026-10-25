@@ -51,7 +51,7 @@ export default function AndroidNewsPrompt({ onClose }: { onClose: () => void }) 
     >
       <motion.div
         role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}
-        className="w-full max-w-sm rounded-3xl bg-secondary border border-game-gold/30 p-5 text-center game-shadow-soft"
+        className="w-full max-w-sm max-h-[calc(100dvh-96px)] overflow-y-auto break-words rounded-3xl bg-secondary border border-game-gold/30 p-5 text-center game-shadow-soft"
         initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16 }}
       >
         <div className="flex flex-col items-center gap-3">
@@ -67,7 +67,7 @@ export default function AndroidNewsPrompt({ onClose }: { onClose: () => void }) 
             </motion.button>
             <motion.button onClick={onClose} whileTap={{ scale: 0.97 }}
               className="w-full py-2.5 rounded-2xl text-muted-foreground text-xs font-semibold">
-              OK
+              {t('ok')}
             </motion.button>
           </div>
         </div>

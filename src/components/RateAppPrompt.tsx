@@ -23,7 +23,7 @@ export default function RateAppPrompt({ onRate, onLater }: Props) {
         role="dialog"
         aria-modal="true"
         onClick={e => e.stopPropagation()}
-        className="w-full max-w-sm rounded-3xl bg-secondary border border-game-gold/30 p-5 text-center game-shadow-soft relative overflow-hidden"
+        className="w-full max-w-sm max-h-[calc(100dvh-96px)] overflow-y-auto break-words rounded-3xl bg-secondary border border-game-gold/30 p-5 text-center game-shadow-soft relative"
         initial={{ opacity: 0, y: 24, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 16, scale: 0.97 }}

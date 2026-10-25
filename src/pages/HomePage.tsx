@@ -1047,7 +1047,7 @@ export default function HomePage() {
         {showRatePrompt && !showOnlineNews && !showAndroidNews && !showServerNews && (
           <RateAppPrompt onRate={handleRateNow} onLater={handleRateLater} />
         )}
-        {showNotifAsk && !showOnlineNews && !showRatePrompt && !showServerNews && (
+        {showNotifAsk && !showOnlineNews && !showAndroidNews && !showRatePrompt && !showServerNews && (
           <NotificationAskPrompt onYes={() => closeNotifAsk(true)} onLater={() => closeNotifAsk(false)} />
         )}
       </AnimatePresence>

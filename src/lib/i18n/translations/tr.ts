@@ -3,6 +3,7 @@ import type { sv } from './sv';
 export const tr: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klasik zar oyununa modern bir dokunuş',
+  brandTagline: 'At. Sakla. Kazan.',
   version: 'Sürüm',
 
   ok: 'Tamam',

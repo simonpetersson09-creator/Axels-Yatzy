@@ -559,14 +559,11 @@ export default function HomePage() {
           >
             <img src={mrBDie} width={360} height={360} alt="" className="w-full h-full object-contain" loading="eager" decoding="async" />
           </motion.div>
-          <h1
-            className="text-4xl sm:text-5xl font-display font-black text-gold-gradient"
-            style={{ textShadow: '0 0 30px hsl(36 78% 55% / 0.15), 0 0 60px hsl(36 78% 55% / 0.08)' }}
-          >
-            {t('appName')}
+          <h1 className="brand-wordmark text-4xl sm:text-5xl">
+            Mr B Yatzy
           </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm px-2">
-            {t('tagline')}
+          <p className="brand-tagline">
+            {t('brandTagline')}
           </p>
         </motion.div>
 

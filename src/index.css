@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Telugu:wght@400;600;700&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&family=Noto+Sans+Gujarati:wght@400;600;700&family=Noto+Sans+Gurmukhi:wght@400;600;700&family=Noto+Sans+Oriya:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap');
 
 @tailwind base;
@@ -239,6 +240,11 @@
     --dice-platinum-mid: 208 45% 84%;
     --dice-platinum-dark: 212 30% 58%;
     --game-gold-dark: 32 80% 40%;
+    /* Varumärkesguld: ordet "MR B YATZY" och taglinesen på startsidan */
+    --brand-gold-hi: 45 80% 75%;
+    --brand-gold-mid: 38 72% 58%;
+    --brand-gold-lo: 36 56% 41%;
+    --brand-gold-tag: 42 63% 72%;
     --game-surface: 195 40% 17%;
     --game-surface-hover: 195 35% 22%;
     --game-dice: 40 12% 90%;
@@ -550,6 +556,29 @@
   .text-gold-gradient {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, hsl(var(--game-gold-light)), hsl(var(--game-gold)), hsl(var(--game-gold-dark)));
+  }
+  /* Startsidans varumärkesord — samma guldbryckning som appikonen och logotypen */
+  .brand-wordmark {
+    @apply bg-clip-text text-transparent;
+    font-family: 'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.06;
+    background-image: linear-gradient(180deg,
+      hsl(var(--brand-gold-hi)) 0%,
+      hsl(var(--brand-gold-hi)) 26%,
+      hsl(var(--brand-gold-mid)) 58%,
+      hsl(var(--brand-gold-lo)) 100%);
+    filter: drop-shadow(0 1px 0 hsl(195 50% 8% / 0.6)) drop-shadow(0 10px 26px hsl(var(--game-gold) / 0.18));
+  }
+  /* Tagline i bred, ljus guldbrygd — "Kasta. Spara. Vinn." */
+  .brand-tagline {
+    color: hsl(var(--brand-gold-tag));
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    padding-inline-start: 0.34em; /* väger upp det breda avståndet så raden centreras */
   }
   .glass-card {
     @apply backdrop-blur-xl border border-border/40 rounded-2xl;

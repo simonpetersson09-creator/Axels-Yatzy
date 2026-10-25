@@ -3,6 +3,7 @@ import type { sv } from './sv';
 export const de: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klassisches Würfelspiel im modernen Look',
+  brandTagline: 'Würfeln. Sichern. Gewinnen.',
   version: 'Version',
 
   ok: 'OK',

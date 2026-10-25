@@ -3,6 +3,7 @@ import type { sv } from './sv';
 export const hu: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klasszikus kockajáték modern csavarral',
+  brandTagline: 'Dobj. Tartsd. Nyerj.',
   version: 'Verzió',
 
   ok: 'OK',

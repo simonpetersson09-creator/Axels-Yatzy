@@ -3,6 +3,7 @@ import type { sv } from './sv';
 export const sk: Partial<typeof sv> = {
   appName: 'Mr.B. Yatzy',
   tagline: 'Klasická hra s kockami v modernom šate',
+  brandTagline: 'Hoď. Zadrž. Vyhraj.',
   version: 'Verzia',
 
   ok: 'OK',

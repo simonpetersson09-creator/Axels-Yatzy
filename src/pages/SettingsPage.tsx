@@ -90,7 +90,10 @@ export default function SettingsPage() {
     } finally { setAdPrivacyBusy(false); }
   };
 
-  const saveName = () => {
+  const saveName = async () => {
+    const res = await reservePlayerName(name);
+    if (res === 'taken') { toast.error(t('nameTaken')); return; }
+    if (res === 'error') { toast.error(t('errorGeneric')); return; }
     setProfileName(name);
     setEditingName(false);
     toast.success(t('nameSaved'));

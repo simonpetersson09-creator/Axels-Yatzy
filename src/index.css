@@ -12,8 +12,7 @@
 /* Wide primary action followed by two equal companion actions. */
 .home-actions {
   --home-gap: 10px;
-  --home-primary-height: 52px;
-  --home-side-height: 64px;
+  --home-button-height: 62px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--home-gap);
@@ -21,7 +20,7 @@
 }
 .home-quick-primary {
   width: 100%;
-  height: var(--home-primary-height);
+  height: var(--home-button-height);
   border-radius: 8px;
   display: flex;
   flex-direction: row;
@@ -40,11 +39,12 @@
 .home-quick-primary:active { box-shadow: 0 2px 8px hsl(var(--primary) / .2); }
 .home-quick-primary-label { font-size: 16px; overflow-wrap: anywhere; }
 .home-actions-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--home-gap); min-width: 0; }
-.home-actions-side > * { height: var(--home-side-height); min-width: 0; }
+.home-actions-side > * { height: var(--home-button-height); min-width: 0; }
 .home-companion-action { background: hsl(var(--game-info)); color: hsl(var(--primary-foreground)); }
+.home-stats-action { width: 100%; height: var(--home-button-height); }
 .home-actions-stack { width: 100%; max-width: var(--home-stack, 360px); margin-inline: auto; }
 @media (max-width: 359px) {
-  .home-actions { --home-primary-height: 48px; --home-gap: 8px; }
+  .home-actions { --home-button-height: 54px; --home-gap: 8px; }
   .home-actions-stack { --home-stack: 288px; }
 }
 .waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
@@ -783,7 +783,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
-  html:not(.preview-frame) .home-actions { --home-primary-height: 60px; --home-side-height: 72px; --home-gap: 12px; }
+  html:not(.preview-frame) .home-actions { --home-button-height: 68px; --home-gap: 12px; }
   html:not(.preview-frame) .home-actions-stack { --home-stack: 440px; }
   html:not(.preview-frame) .home-quick-primary-label { font-size: 18px; }
 

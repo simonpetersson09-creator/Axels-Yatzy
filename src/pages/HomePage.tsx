@@ -1,4 +1,5 @@
 import { BarChart3, ChevronRight } from 'lucide-react';
+import mrBDie from '@/assets/mr-b-die.png';
 import { Button } from '@/components/ui/button';
 import { useWaitingRoomCount } from '@/hooks/useWaitingRoomCount';
 import { WaitingRoomChoiceDialog } from '@/components/WaitingRoomChoiceDialog';
@@ -552,11 +553,11 @@ export default function HomePage() {
       >
         <motion.div className="text-center space-y-1 sm:space-y-2" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
           <motion.div
-            className="inline-flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-primary/10 border border-primary/20 mb-2 sm:mb-4"
-            animate={{ rotate: [0, 0, 6, -4, 0], scale: [1, 1, 1.06, 1.02, 1] }}
+            className="inline-flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 mb-2 sm:mb-4 drop-shadow-[0_6px_16px_hsl(195_50%_8%/0.45)]"
+            animate={{ rotate: [0, 0, 4, -3, 0], scale: [1, 1, 1.05, 1.02, 1] }}
             transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
           >
-            <span className="text-3xl sm:text-4xl">🎲</span>
+            <img src={mrBDie} width={360} height={360} alt="" className="w-full h-full object-contain" loading="eager" decoding="async" />
           </motion.div>
           <h1
             className="text-4xl sm:text-5xl font-display font-black text-gold-gradient"

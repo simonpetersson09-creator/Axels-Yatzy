@@ -553,11 +553,11 @@ export default function HomePage() {
       >
         <motion.div className="text-center space-y-1 sm:space-y-2" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
           <motion.div
-            className="inline-flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 mb-2 sm:mb-4 drop-shadow-[0_6px_16px_hsl(195_50%_8%/0.45)]"
+            className="inline-flex items-center justify-center w-28 h-28 sm:w-36 sm:h-36 mb-2 sm:mb-4 drop-shadow-[0_6px_16px_hsl(195_50%_8%/0.45)]"
             animate={{ rotate: [0, 0, 4, -3, 0], scale: [1, 1, 1.05, 1.02, 1] }}
             transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
           >
-            <img src={mrBDie} width={360} height={360} alt="" className="w-full h-full object-contain" loading="eager" decoding="async" />
+            <img src={mrBDie} width={383} height={512} alt="" className="w-full h-full object-contain" loading="eager" decoding="async" />
           </motion.div>
           <h1 className="brand-wordmark text-4xl sm:text-5xl">
             Mr B Yatzy

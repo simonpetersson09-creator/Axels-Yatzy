@@ -577,7 +577,7 @@ export default function HomePage() {
           {openLobbies.map((lb) => (
             <div
               key={lb.gameId}
-              className="home-match-card home-match-card-waiting font-display"
+              className="home-match-card home-match-card-info font-display"
             >
               <button
                 onClick={() => navigate('/multiplayer', { state: { rejoinCode: lb.code } })}

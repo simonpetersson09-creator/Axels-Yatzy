@@ -79,7 +79,7 @@ export function SentInvitesCards() {
         {invites.map((inv) => (
           <motion.div
             key={inv.id}
-            className="home-match-card home-match-card-waiting font-display"
+            className="home-match-card home-match-card-info font-display"
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0 }}

@@ -94,6 +94,16 @@
   transition: box-shadow .2s, filter .2s;
 }
 .home-match-card-waiting:active { box-shadow: 0 2px 8px hsl(var(--game-gold) / .25); filter: brightness(.95); }
+/* Väntekorten som inte är pågående matcher (skickad inbjudan, öppet väntrum):
+   blå ton som huvudknapparna, så de skiljer sig från grön (din tur) och
+   guld (motståndarens tur) på matchkorten. */
+.home-match-card-info {
+  background: linear-gradient(to right, hsl(var(--game-info-light)), hsl(var(--game-info)));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 4px 16px hsl(var(--game-info) / .3);
+  transition: box-shadow .2s;
+}
+.home-match-card-info:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }
 /* Gemensam ikonbricka och textbricka på alla startsidans kort: ett typsnitt, en
    storlek, ett radavstånd och en radie överallt. Båda är solida så ikonen och
    texten alltid står tydligare än mot kortets gradient. */

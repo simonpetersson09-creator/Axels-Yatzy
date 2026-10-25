@@ -816,11 +816,11 @@ export default function HomePage() {
               <div className={`relative flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`} ref={langPickerRef}>
                 <motion.button
                   onClick={() => setShowLangPicker(v => !v)}
-                  className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300"
+                  className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center"
                   whileTap={{ scale: 0.92 }}
                   aria-label={t('selectLanguage')}
                 >
-                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                  <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </motion.button>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('language')}</span>
 
@@ -860,8 +860,8 @@ export default function HomePage() {
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('goSettings')}
               >
-                <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                <div className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center">
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </div>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('settings')}</span>
               </motion.button>
@@ -873,8 +873,8 @@ export default function HomePage() {
                 whileTap={{ scale: 0.92 }}
                 aria-label={t('friendsListTitle')}
               >
-                <div className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full bg-secondary/40 border border-border/50 flex items-center justify-center shadow-md group-hover:bg-secondary/60 transition-all duration-300">
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary/90" />
+                <div className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </div>
                 <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('friends')}</span>
               </motion.button>
@@ -892,8 +892,8 @@ export default function HomePage() {
                     {showAdBubble && !AD_BUTTON_LOCKED && (
                       <div className="absolute -inset-1 rounded-full border-2 border-primary/40 animate-pulse" />
                     )}
-                    <div className={`w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center shadow-md transition-all duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'bg-primary/20 border border-primary/60' : 'bg-secondary/40 border border-border/50 group-hover:bg-secondary/60'}`}>
-                      <Play className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300 ${showAdBubble && !AD_BUTTON_LOCKED ? 'text-primary' : 'text-primary/90'}`} />
+                    <div className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center">
+                      <Play className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                     </div>
                   </div>
                   <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('adButtonShort')}</span>

@@ -84,9 +84,10 @@ export function SentInvitesCards() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0 }}
           >
-            <div className="flex-shrink-0 w-6 h-6 rounded-[7px] flex items-center justify-center bg-background/20">
-              <Send className="w-3 h-3 text-background" />
+            <div className="home-card-chip">
+              <Send />
             </div>
+
             <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
               <p className="font-bold text-[11px] leading-none truncate">{inv.to_name}</p>
               <p className="flex items-center gap-1 text-[8px] leading-none opacity-90">
@@ -101,7 +102,7 @@ export function SentInvitesCards() {
             <button
               onClick={() => cancel(inv.id)}
               disabled={cancelling === inv.id}
-              className="flex-shrink-0 text-[8px] font-bold uppercase tracking-wider px-2 py-[3px] rounded-full bg-background/25 text-background active:scale-95 transition disabled:opacity-60"
+              className="home-card-pill"
             >
               {cancelling === inv.id ? <Loader2 className="w-3 h-3 animate-spin" /> : t('cancel')}
             </button>

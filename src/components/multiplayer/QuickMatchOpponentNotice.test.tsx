@@ -41,3 +41,22 @@ it('does not introduce a computer-only or friend match', async () => {
   expect(view.container.textContent).toBe('');
   expect(api.lookup).not.toHaveBeenCalled();
 });
+it('retries a pending introduction after the opponent snapshot changes', async () => {
+  let resolve: (value: unknown) => void = () => {};
+  api.lookup.mockImplementationOnce(() => new Promise(r => { resolve = r; }));
+  const view = render(<Notice gameId="game" players={humans()} myIndex={0} />);
+  view.rerender(<Notice gameId="game" players={[{ name: 'Simon', badge: 'online' }, { name: 'Updated', badge: 'online' }]} myIndex={0} />);
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); resolve({ data: null }); });
+  expect(view.container.textContent).toContain('Updated');
+  expect(view.container.textContent).not.toContain('Opponent');
+});
+it('cleans up notices when leaving and introduces a different match anew', async () => {
+  const view = render(<Notice gameId="first" players={humans()} myIndex={0} />);
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+  view.rerender(<Notice gameId="second" players={humans()} myIndex={0} />);
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+  expect(api.lookup).toHaveBeenCalledTimes(2);
+  expect(view.container.textContent).toContain('Opponent');
+  view.unmount();
+  expect(vi.getTimerCount()).toBe(0);
+});

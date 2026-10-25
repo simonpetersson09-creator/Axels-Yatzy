@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--home-icon-gap);
-  padding-inline: 12px;
+  padding: 0 12px;
   border-radius: 10px;
   font-weight: 700;
   font-size: var(--home-button-font);

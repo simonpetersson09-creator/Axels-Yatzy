@@ -10,13 +10,17 @@
 .waiting-room-content { width: 100%; max-width: 440px; margin-inline: auto; display: flex; flex-direction: column; }
 .waiting-home-button { background: linear-gradient(to right, hsl(var(--game-info-light)), hsl(var(--game-info))); box-shadow: 0 4px 16px hsl(var(--game-info) / .3); transition: box-shadow .2s; }
 .waiting-home-button:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }
-/* Alla huvudknapparna på startsidan delar höjd, typsnitt, textstorlek, ikonstorlek och radie. */
-.home-actions-stack {
+/* Alla huvudknapparna på startsidan delar höjd, typsnitt, textstorlek, ikonstorlek och radie.
+   .home-pending-stack är behållaren runt väntekorten (inbjudan/väntrum) som ska ärva samma mått. */
+.home-actions-stack,
+.home-pending-stack {
   --home-gap: 10px;
   --home-button-height: 44px;
   --home-button-font: 14px;
   --home-button-icon: 16px;
   --home-icon-gap: 8px;
+}
+.home-actions-stack {
   width: 100%;
   max-width: var(--home-stack, 360px);
   margin-inline: auto;
@@ -136,7 +140,7 @@
 .home-waiting-action > span { max-height: 100%; overflow: hidden; }
 .home-stats-action { width: 100%; }
 @media (max-width: 359px) {
-  .home-actions-stack { --home-button-height: 40px; --home-gap: 8px; --home-stack: 288px; --home-button-font: 13px; --home-button-icon: 15px; --home-icon-gap: 6px; }
+  .home-actions-stack, .home-pending-stack { --home-button-height: 40px; --home-gap: 8px; --home-stack: 288px; --home-button-font: 13px; --home-button-icon: 15px; --home-icon-gap: 6px; }
   /* På den minsta telefonen får sidoknapparna lite mindre luft runt texten så "Spela med vän" ryms på en rad. */
   .home-actions-side .home-action { padding-inline: 6px; }
   /* den röda siffran krymper lite så den aldrig nuddar texten på den smalaste skärmen */

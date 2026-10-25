@@ -1,3 +1,4 @@
+import { onboardingCopy, quickHintPending, markQuickHintDone } from '@/lib/onboarding-copy';
 import { BarChart3, ChevronRight } from 'lucide-react';
 import mrBDie from '@/assets/mr-b-die.png';
 import { Button } from '@/components/ui/button';
@@ -679,9 +680,12 @@ export default function HomePage() {
           {/* Main actions: Snabbspel above two equal companion buttons */}
           <div className="home-actions-stack home-button-stack">
             <div className="home-actions">
-              <Button asChild className="home-action home-quick-primary font-display">
+              {quickHint && (
+                <div className="home-quick-hint" role="note">{onboardingCopy().hint}</div>
+              )}
+              <Button asChild className={`home-action home-quick-primary font-display${quickHint ? ' home-quick-glow' : ''}`}>
               <motion.button
-                onClick={() => setShowQuickMatch(v => !v)}
+                onClick={() => { if (quickHint) { markQuickHintDone(); setQuickHint(false); } setShowQuickMatch(v => !v); }}
                 aria-expanded={showQuickMatch}
                 whileTap={{ scale: 0.97 }}
                 variants={item}

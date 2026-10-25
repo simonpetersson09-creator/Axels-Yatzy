@@ -73,7 +73,7 @@ export default function QuickMatchOpponentNotice({ gameId, players, myIndex }: {
               {intro.flag && <div className="text-5xl leading-none mb-3">{intro.flag}</div>}
               <div className="font-display text-2xl font-bold text-foreground">{intro.name}</div>
               <div className="mt-2 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <span className="h-2.5 w-2.5 rounded-full bg-success" aria-hidden="true" />
+                <span className="h-2.5 w-2.5 rounded-full bg-game-success" aria-hidden="true" />
                 {copy.real}
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const n = vi.hoisted(() => ({
-  platform: 'ios', eligible: true, info: vi.fn(), form: vi.fn(), clear: vi.fn(),
+  platform: 'ios', eligible: true, info: vi.fn(), form: vi.fn(), clear: vi.fn(), eligibility: vi.fn(), consentForm: vi.fn(),
   interstitial: vi.fn(), rewarded: vi.fn(), open: vi.fn(), show: vi.fn(),
   handlers: new Map<string, () => void>(),
 }));
@@ -16,6 +16,7 @@ vi.mock('@capacitor-community/admob', () => ({
   RewardAdPluginEvents: { Rewarded: 'reward', Showed: 'showed', Dismissed: 'r_dismissed', FailedToShow: 'r_failed' },
   AdMob: {
     requestConsentInfo: n.info, showPrivacyOptionsForm: n.form, discardPrivacyCaches: n.clear,
+    getConsentEligibility: n.eligibility, showConsentForm: n.consentForm,
     initialize: async () => {}, trackingAuthorizationStatus: async () => ({ status: 'denied' }),
     prepareInterstitial: n.interstitial, prepareRewardVideoAd: n.rewarded,
     isAppOpenLoaded: async () => ({ value: false }), loadAppOpen: n.open,
@@ -32,11 +33,48 @@ describe.each(['ios', 'android'])('%s privacy cache boundary', platform => {
     vi.resetModules(); vi.useFakeTimers(); vi.clearAllMocks(); n.handlers.clear();
     n.platform = platform; n.eligible = true;
     n.info.mockImplementation(async () => ({ canRequestAds: n.eligible }));
+    n.eligibility.mockResolvedValue({ canRequestAds: false });
     n.clear.mockResolvedValue({ privacyCacheVersion: 1 }); n.form.mockResolvedValue(undefined);
     n.interstitial.mockResolvedValue({}); n.rewarded.mockResolvedValue({}); n.open.mockResolvedValue({});
     n.show.mockResolvedValue(undefined);
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
+
+  it.each(['error', 'timeout', 'form_error', 'form_timeout'])('checks current UMP after %s in allowed and blocked modes', async failure => {
+    for (const permitted of [true, false]) {
+      vi.resetModules(); n.interstitial.mockClear(); n.eligibility.mockClear();
+      n.eligibility.mockResolvedValue({ canRequestAds: permitted });
+      const reject = async () => { throw new Error('UMP error'); };
+      const hang = () => new Promise<never>(() => {});
+      n.info.mockImplementation(failure.startsWith('form')
+        ? async () => ({ isConsentFormAvailable: true, status: 'REQUIRED', canRequestAds: false })
+        : failure === 'error' ? reject : hang);
+      n.consentForm.mockImplementation(failure === 'form_error' ? reject : hang);
+      const m = await import('./admob');
+      // initialize may time out while the form is pending; after the UMP
+      // operation settles the next attempt must use the authoritative result.
+      const attempt = m.preloadInterstitial();
+      await vi.advanceTimersByTimeAsync(failure === 'form_timeout' ? 120_001 : 10_001);
+      await attempt;
+      if (failure.includes('timeout')) {
+        n.info.mockImplementation(reject);
+        await m.preloadInterstitial();
+      }
+      expect(n.eligibility).toHaveBeenCalled();
+      expect(n.interstitial.mock.calls.length > 0).toBe(permitted);
+    }
+  });
+
+  it.each(['missing', 'read_error', 'read_timeout', 'unknown'])('blocks ads when current UMP eligibility is %s', async failure => {
+    n.info.mockRejectedValue(new Error('refresh failed'));
+    n.eligibility.mockImplementation(failure === 'read_timeout' ? () => new Promise<never>(() => {})
+      : failure === 'unknown' ? async () => ({ canRequestAds: undefined })
+      : async () => { throw new Error(failure === 'missing' ? 'UNIMPLEMENTED' : 'read failed'); });
+    const m = await import('./admob'); const attempt = m.preloadInterstitial();
+    await vi.advanceTimersByTimeAsync(5_001);
+    expect(await attempt).toBe(false);
+    expect(n.interstitial).not.toHaveBeenCalled();
+  });
 
   it('discards old interstitial and rewarded inventory before and after changed choices', async () => {
     const m = await import('./admob');

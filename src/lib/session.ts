@@ -77,6 +77,20 @@ export function setPlayerName(name: string): void {
   localStorage.setItem(PLAYER_NAME_KEY, name.trim());
 }
 
+/** Reserve a globally unique player name (case-insensitive) on the server. */
+export async function reservePlayerName(name: string): Promise<'ok' | 'taken' | 'error'> {
+  try {
+    const deviceId = await initDeviceId();
+    const { data, error } = await supabase.rpc('reserve_player_name', {
+      p_session_id: getSessionId(), p_device_id: deviceId, p_name: name,
+    });
+    if (error) return 'error';
+    return data === 'ok' ? 'ok' : data === 'taken' ? 'taken' : 'error';
+  } catch {
+    return 'error';
+  }
+}
+
 /** Stable 4-digit number per session, used as "Spelare 4832" when no name is set. */
 export function getAnonNumber(): number {
   const id = getSessionId();

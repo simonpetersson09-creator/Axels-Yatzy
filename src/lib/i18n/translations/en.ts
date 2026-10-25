@@ -225,6 +225,7 @@ export const en: Partial<typeof sv> = {
   deleteDataRestart: 'Your data has been removed from this phone and our active player records. Tap OK to start again as a new player.',
   adPrivacyWeb: 'View and change your ad choices in the iPhone or Android app. Google’s consent form is not available in this web preview.',
   nameSaved: 'Player name saved',
+  nameTaken: 'That name is already taken',
   avatarSaved: 'Avatar saved',
   avatarRemoved: 'Avatar removed',
   languageSaved: 'Language updated',

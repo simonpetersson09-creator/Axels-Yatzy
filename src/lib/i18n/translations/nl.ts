@@ -206,6 +206,7 @@ export const nl: Partial<typeof sv> = {
   resetStatsConfirm: 'Weet je het zeker? Alle statistieken worden gewist.',
   resetDone: 'Statistieken gewist',
   nameSaved: 'Spelersnaam opgeslagen',
+  nameTaken: 'Deze naam is al bezet',
   avatarSaved: 'Avatar opgeslagen',
   avatarRemoved: 'Avatar verwijderd',
   languageSaved: 'Taal bijgewerkt',

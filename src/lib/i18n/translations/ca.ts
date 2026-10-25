@@ -205,6 +205,7 @@ export const ca: Partial<typeof sv> = {
   resetStatsConfirm: 'Segur? S’esborraran totes les estadístiques.',
   resetDone: 'Estadístiques reiniciades',
   nameSaved: 'Nom de jugador desat',
+  nameTaken: 'Aquest nom ja està agafat',
   avatarSaved: 'Avatar desat',
   avatarRemoved: 'Avatar eliminat',
   languageSaved: 'Idioma actualitzat',

@@ -693,6 +693,27 @@ export type Database = {
         }
         Relationships: []
       }
+      player_names: {
+        Row: {
+          name: string
+          name_key: string
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          name: string
+          name_key: string
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          name_key?: string
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       player_xp: {
         Row: {
           earned_day: string
@@ -1462,6 +1483,10 @@ export type Database = {
           p_session_id: string
         }
         Returns: Json
+      }
+      reserve_player_name: {
+        Args: { p_device_id: string; p_name: string; p_session_id: string }
+        Returns: string
       }
       respond_friend_request: {
         Args: {

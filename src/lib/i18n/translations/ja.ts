@@ -206,6 +206,7 @@ export const ja: Partial<typeof sv> = {
   resetStatsConfirm: '本当にリセットする？すべての成績が消えるよ。',
   resetDone: '成績をリセットしたよ',
   nameSaved: 'プレイヤー名を保存したよ',
+  nameTaken: 'その名前はもう使われているよ',
   avatarSaved: 'アバターを保存したよ',
   avatarRemoved: 'アバターを削除したよ',
   languageSaved: '言語を変更したよ',

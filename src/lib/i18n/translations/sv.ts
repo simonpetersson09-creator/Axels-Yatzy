@@ -240,6 +240,7 @@ export const sv = {
   deleteDataRestart: 'Dina uppgifter har tagits bort från telefonen och våra aktiva spelarregister. Tryck OK för att börja om som en ny spelare.',
   adPrivacyWeb: 'Dina annonsval visas och ändras i iPhone- eller Android-appen. Googles samtyckesruta är inte tillgänglig här i webbförhandsvisningen.',
   nameSaved: 'Spelnamn sparat',
+  nameTaken: 'Namnet är redan upptaget',
   avatarSaved: 'Profilbild sparad',
   avatarRemoved: 'Profilbild borttagen',
   languageSaved: 'Språk uppdaterat',

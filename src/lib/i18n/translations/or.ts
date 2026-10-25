@@ -206,6 +206,7 @@ export const or: Partial<typeof sv> = {
   resetStatsConfirm: 'ନିଶ୍ଚିତ ତ? ସବୁ ପରିସଂଖ୍ୟାନ ଲିଭିଯିବ।',
   resetDone: 'ପରିସଂଖ୍ୟାନ ରିସେଟ୍ ହେଲା',
   nameSaved: 'ଖେଳାଳି ନାମ ସଞ୍ଚିତ',
+  nameTaken: 'ଏହି ନାମ ପୂର୍ବରୁ ନିଆଯାଇଛି',
   avatarSaved: 'ଅବତାର ସଞ୍ଚିତ',
   avatarRemoved: 'ଅବତାର ହଟିଲା',
   languageSaved: 'ଭାଷା ବଦଳିଲା',

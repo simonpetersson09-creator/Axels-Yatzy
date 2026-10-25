@@ -206,6 +206,7 @@ export const bn: Partial<typeof sv> = {
   resetStatsConfirm: 'নিশ্চিত? সব পরিসংখ্যান মুছে যাবে।',
   resetDone: 'পরিসংখ্যান মুছে গেছে',
   nameSaved: 'খেলোয়াড়ের নাম সেভ হয়েছে',
+  nameTaken: 'এই নামটি আগেই নেওয়া হয়েছে',
   avatarSaved: 'অবতার সেভ হয়েছে',
   avatarRemoved: 'অবতার মুছে গেছে',
   languageSaved: 'ভাষা বদলেছে',

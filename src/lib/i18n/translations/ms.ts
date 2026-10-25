@@ -206,6 +206,7 @@ export const ms: Partial<typeof sv> = {
   resetStatsConfirm: 'Awak pasti? Semua statistik akan dipadam.',
   resetDone: 'Statistik diset semula',
   nameSaved: 'Nama pemain disimpan',
+  nameTaken: 'Nama ini sudah digunakan',
   avatarSaved: 'Avatar disimpan',
   avatarRemoved: 'Avatar dibuang',
   languageSaved: 'Bahasa dikemas kini',

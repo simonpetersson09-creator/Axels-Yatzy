@@ -206,6 +206,7 @@ export const ko: Partial<typeof sv> = {
   resetStatsConfirm: '정말 초기화할까? 모든 통계가 지워져.',
   resetDone: '통계를 초기화했어',
   nameSaved: '이름을 저장했어',
+  nameTaken: '이미 사용 중인 이름이야',
   avatarSaved: '아바타를 저장했어',
   avatarRemoved: '아바타를 삭제했어',
   languageSaved: '언어를 변경했어',

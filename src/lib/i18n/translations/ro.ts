@@ -206,6 +206,7 @@ export const ro: Partial<typeof sv> = {
   resetStatsConfirm: 'Sigur? Toate statisticile vor fi șterse.',
   resetDone: 'Statistici resetate',
   nameSaved: 'Nume de jucător salvat',
+  nameTaken: 'Acest nume este deja folosit',
   avatarSaved: 'Avatar salvat',
   avatarRemoved: 'Avatar eliminat',
   languageSaved: 'Limbă actualizată',

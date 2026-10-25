@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getPlayerName, setPlayerName as savePlayerName } from '@/lib/session';
+import { getPlayerName, setPlayerName as savePlayerName, reservePlayerName } from '@/lib/session';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ScanLine, Send, KeyRound, Users, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
@@ -38,16 +38,25 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
   });
   const [scannerOpen, setScannerOpen] = useState(false);
 
-  const handleCreate = () => {
-    const name = sanitizeName(playerName) || t('playerN', { n: 1 });
-    savePlayerName(name);
-    onCreateGame(name);
+  // Typed names must be globally unique; default "Player N" names are not reserved.
+  const ensureName = async (fallback: string): Promise<string | null> => {
+    const typed = sanitizeName(playerName);
+    if (!typed) return fallback;
+    const res = await reservePlayerName(typed);
+    if (res === 'taken') { toast.error(t('nameTaken')); return null; }
+    if (res === 'error') { toast.error(t('errorGeneric')); return null; }
+    savePlayerName(typed);
+    return typed;
   };
 
-  const handleJoin = () => {
-    const name = sanitizeName(playerName) || t('playerN', { n: 2 });
-    savePlayerName(name);
-    onJoinGame(joinCode.toUpperCase(), name);
+  const handleCreate = async () => {
+    const name = await ensureName(t('playerN', { n: 1 }));
+    if (name) onCreateGame(name);
+  };
+
+  const handleJoin = async () => {
+    const name = await ensureName(t('playerN', { n: 2 }));
+    if (name) onJoinGame(joinCode.toUpperCase(), name);
   };
 
   // Gold card "Invite" on Home: behave exactly like pressing "Create game".

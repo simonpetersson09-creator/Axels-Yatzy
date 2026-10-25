@@ -206,6 +206,7 @@ export const te: Partial<typeof sv> = {
   resetStatsConfirm: 'ఖచ్చితమేనా? గణాంకాలన్నీ చెరిగిపోతాయి.',
   resetDone: 'గణాంకాలు రీసెట్ అయ్యాయి',
   nameSaved: 'ఆటగాడి పేరు సేవ్ అయింది',
+  nameTaken: 'ఈ పేరు ఇప్పటికే తీసుకోబడింది',
   avatarSaved: 'అవతార్ సేవ్ అయింది',
   avatarRemoved: 'అవతార్ తీసేశాం',
   languageSaved: 'భాష మారింది',

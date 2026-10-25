@@ -206,6 +206,7 @@ export const ml: Partial<typeof sv> = {
   resetStatsConfirm: 'ഉറപ്പാണോ? എല്ലാ കണക്കുകളും മായും.',
   resetDone: 'കണക്കുകൾ മായ്ച്ചു',
   nameSaved: 'കളിക്കാരന്റെ പേര് സേവ് ചെയ്തു',
+  nameTaken: 'ഈ പേര് ഇതിനകം എടുത്തിട്ടുണ്ട്',
   avatarSaved: 'അവതാർ സേവ് ചെയ്തു',
   avatarRemoved: 'അവതാർ നീക്കി',
   languageSaved: 'ഭാഷ മാറ്റി',

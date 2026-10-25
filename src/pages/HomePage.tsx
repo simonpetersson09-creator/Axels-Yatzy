@@ -607,7 +607,7 @@ export default function HomePage() {
             </div>
           ))}
           {activeGames.length > 0 && (
-            <motion.div className="space-y-1.5" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
+            <motion.div className="home-actions-stack space-y-1.5" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               {[...activeGames].sort((a, b) => {
                 // "Din tur"-spel överst
                 const aMyTurn = a.type === 'local'
@@ -632,32 +632,22 @@ export default function HomePage() {
                   <motion.button
                     key={key}
                     onClick={() => resumeGame(game)}
-                    className={`w-full rounded-xl transition-all flex items-center text-left border-l-4 ${
-                      myTurn ? 'px-3.5 py-3 gap-3' : 'px-3 py-1.5 gap-2.5'
-                    } ${
-                      myTurn
-                        ? 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
-                        : opponentTurn || waitingForStatus
-                          ? 'bg-secondary/70 text-foreground border border-border/60 border-l-game-info/80 hover:bg-secondary/85'
-                          : 'bg-gradient-to-r from-game-success to-game-success/90 text-white shadow-[0_2px_10px_hsl(142_72%_45%/0.25)] border-l-game-gold'
-                    }`}
-                    whileTap={{ scale: 0.98 }}
+                    className={`home-match-card font-display ${myTurn ? 'home-match-card-turn' : 'home-match-card-waiting'}`}
+                    whileTap={{ scale: 0.97 }}
                   >
-                    <div className={`flex-shrink-0 rounded-lg flex items-center justify-center ${
-                      myTurn ? 'w-10 h-10 bg-white/15' : 'w-7 h-7 bg-muted/50'
+                    <div className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center ${
+                      myTurn ? 'bg-white/20' : 'bg-background/20'
                     }`}>
-                      <Play className={myTurn ? 'w-5 h-5' : 'w-3.5 h-3.5 text-muted-foreground'} />
+                      <Play className={`w-4 h-4 ${myTurn ? 'text-white' : 'text-background'}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       {myTurn && (
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-white/80 leading-none mb-1">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-white/80 leading-none">
                           {t('yourTurnLabel')}
                         </p>
                       )}
-                      <div className="flex items-center gap-1.5">
-                        <span className={`font-display font-bold truncate inline-flex items-center gap-1.5 ${
-                          myTurn ? 'text-base text-white' : 'text-sm text-foreground'
-                        }`}>
+                      <div className="flex items-center gap-1.5 leading-tight">
+                        <span className="font-bold text-sm truncate inline-flex items-center gap-1.5">
                           {!isLocal && status?.opponentOnline && (
                             <span
                               className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.9)]"
@@ -667,21 +657,19 @@ export default function HomePage() {
                           {isLocal ? (game.opponentName ?? t('resumeMatch')) : (opponent ?? t('resumeMatch'))}
                         </span>
                       </div>
-                      <div className={`flex items-center gap-1 mt-px text-[10px] tabular-nums ${
-                        myTurn ? 'text-white/70' : 'text-muted-foreground/80'
-                      }`}>
+                      <div className="flex items-center gap-1 mt-px text-[10px] tabular-nums opacity-80 leading-none">
                         <Clock className="w-3 h-3" />
                         <span className="truncate">{t('ongoingMatchRemaining', { time: timeLeft })}</span>
                       </div>
                     </div>
                     <div className="flex-shrink-0">
                       {myTurn && (
-                        <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-game-gold text-background animate-pulse">
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-game-gold text-background animate-pulse">
                           {t('onlineNewsOk')}
                         </span>
                       )}
                       {(opponentTurn || waitingForStatus) && opponent && (
-                        <span className="text-[9px] font-medium uppercase tracking-wider px-2 py-1 rounded-full bg-muted/70 text-muted-foreground">
+                        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-background/20">
                           {t('waitingShort')}
                         </span>
                       )}

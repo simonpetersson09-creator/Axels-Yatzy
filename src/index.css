@@ -59,6 +59,36 @@
   transition: box-shadow .2s, filter .2s;
 }
 .home-round-action:active { box-shadow: 0 2px 8px hsl(var(--game-gold) / .25); filter: brightness(.95); }
+/* Pågående match-korten på startsidan: samma design (höjd, radie, gradient +
+   skugga) som huvudknapparna, men grönt för "Din tur" och guld när motståndaren
+   har turen. Kontainern har klassen .home-actions-stack och ärver därmed
+   knapparnas höjd-, typsnitt- och gap-variabler på alla skärmstorlekar. */
+.home-match-card {
+  height: var(--home-button-height);
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--home-icon-gap);
+  padding: 0 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  text-align: left;
+}
+.home-match-card-turn {
+  background: linear-gradient(to right, hsl(var(--game-success-light)), hsl(var(--game-success)));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 4px 16px hsl(var(--game-success) / .3);
+  transition: box-shadow .2s;
+}
+.home-match-card-turn:active { box-shadow: 0 2px 8px hsl(var(--game-success) / .2); }
+.home-match-card-waiting {
+  background: linear-gradient(to right, hsl(var(--game-gold-light)), hsl(var(--game-gold)));
+  color: hsl(var(--background));
+  box-shadow: 0 4px 14px hsl(var(--game-gold) / .35);
+  transition: box-shadow .2s, filter .2s;
+}
+.home-match-card-waiting:active { box-shadow: 0 2px 8px hsl(var(--game-gold) / .25); filter: brightness(.95); }
 .home-actions-stack .home-action > svg { width: var(--home-button-icon); height: var(--home-button-icon); }
 .home-action-icon { font-size: var(--home-button-icon); line-height: 1; }
 .home-quick-primary { width: 100%; }
@@ -269,6 +299,7 @@
     --game-dice-dot: 195 40% 10%;
     --game-dice-locked: 36 78% 55%;
     --game-success: 160 55% 42%;
+    --game-success-light: 160 58% 60%;
     --game-info: 200 65% 50%;
     --game-info-light: 195 80% 70%;
     --game-info-dark: 230 70% 45%;

@@ -786,8 +786,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
-  html:not(.preview-frame) .home-actions { --home-button-height: 68px; --home-gap: 12px; }
-  html:not(.preview-frame) .home-actions-stack { --home-stack: 440px; }
+  html:not(.preview-frame) .home-actions-stack { --home-button-height: 68px; --home-gap: 12px; --home-stack: 440px; }
   html:not(.preview-frame) .home-quick-primary-label { font-size: 18px; }
 
   html:not(.preview-frame):has(.ios-game-layout) {

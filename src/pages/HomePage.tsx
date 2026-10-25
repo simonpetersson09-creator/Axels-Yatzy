@@ -726,19 +726,17 @@ export default function HomePage() {
                     </motion.button>
                   </Button>
                   {waitingCount > 0 && (
-                    <Button asChild variant="waitingRoom" className="home-waiting-badge-btn">
-                      <motion.button
-                        type="button"
-                        className="home-waiting-badge"
-                        aria-label={`${t('wrTitle')} (${waitingCount})`}
-                        disabled={waitingChecking}
-                        onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)}
-                        whileTap={{ scale: 0.9 }}
-                        transition={{ duration: 0.2, ease: 'easeOut' }}
-                      >
-                        {waitingCount}
-                      </motion.button>
-                    </Button>
+                    <motion.button
+                      type="button"
+                      className="home-waiting-badge"
+                      aria-label={`${t('wrTitle')} (${waitingCount})`}
+                      disabled={waitingChecking}
+                      onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)}
+                      whileTap={{ scale: 0.9 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                    >
+                      {waitingCount}
+                    </motion.button>
                   )}
                 </div>
               </div>

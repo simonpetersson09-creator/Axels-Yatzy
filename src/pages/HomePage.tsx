@@ -570,7 +570,7 @@ export default function HomePage() {
           </p>
         </motion.div>
 
-        <div className="home-pending-stack w-full space-y-2 sm:space-y-3 mt-8 sm:mt-10">
+        <div className="home-pending-stack home-card-stack w-full mt-8 sm:mt-10">
           <FriendRequestNotice />
           <HofRankNotice />
           <SentInvitesCards />
@@ -608,7 +608,7 @@ export default function HomePage() {
             </div>
           ))}
           {activeGames.length > 0 && (
-            <motion.div className="home-actions-stack space-y-1.5" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
+            <motion.div className="home-actions-stack home-card-stack" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               {[...activeGames].sort((a, b) => {
                 // "Din tur"-spel överst
                 const aMyTurn = a.type === 'local'
@@ -677,7 +677,7 @@ export default function HomePage() {
 
 
           {/* Main actions: Snabbspel above two equal companion buttons */}
-          <div className="home-actions-stack flex flex-col gap-2.5">
+          <div className="home-actions-stack home-button-stack">
             <div className="home-actions">
               <Button asChild className="home-action home-quick-primary font-display">
               <motion.button

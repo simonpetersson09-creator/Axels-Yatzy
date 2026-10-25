@@ -25,6 +25,14 @@
   max-width: var(--home-stack, 360px);
   margin-inline: auto;
 }
+/* Korthögarna (inbjudan, väntrum, pågående matcher) och knappstacken delar
+   exakt samma radavstånd: --home-gap. Inget eget Tailwind-mellanrum här. */
+.home-card-stack,
+.home-button-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--home-gap);
+}
 .home-actions {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

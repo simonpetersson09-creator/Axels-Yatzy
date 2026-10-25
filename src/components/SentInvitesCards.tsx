@@ -74,7 +74,7 @@ export function SentInvitesCards() {
   if (invites.length === 0) return null;
 
   return (
-    <div className="space-y-1.5">
+    <div className="home-card-stack">
       <AnimatePresence initial={false}>
         {invites.map((inv) => (
           <motion.div

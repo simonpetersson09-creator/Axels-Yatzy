@@ -641,11 +641,6 @@ export default function HomePage() {
                     </div>
 
                     <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
-                      {myTurn && (
-                        <p className="text-[7px] font-bold uppercase tracking-[0.14em] text-white leading-none">
-                          {t('yourTurnLabel')}
-                        </p>
-                      )}
                       <div className="flex items-center leading-none">
                         <span className="match-card-name font-bold text-[11px] leading-none truncate inline-flex items-center gap-1.5">
                           {!isLocal && status?.opponentOnline && (
@@ -665,7 +660,7 @@ export default function HomePage() {
                     <div className="flex-shrink-0">
                       {myTurn && (
                         <span className="home-card-pill home-card-pill-action animate-pulse">
-                          {t('onlineNewsOk')}
+                          {t('yourTurnLabel')}
                         </span>
                       )}
                       {(opponentTurn || waitingForStatus) && opponent && (

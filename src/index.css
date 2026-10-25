@@ -14,7 +14,7 @@
    .home-pending-stack är behållaren runt väntekorten (inbjudan/väntrum) som ska ärva samma mått. */
 .home-actions-stack,
 .home-pending-stack {
-  --home-gap: 10px;
+  --home-gap: 7px;
   --home-button-height: 44px;
   --home-button-font: 14px;
   --home-button-icon: 16px;
@@ -207,7 +207,7 @@
 .home-waiting-action > span { max-height: 100%; overflow: hidden; }
 .home-stats-action { width: 100%; }
 @media (max-width: 359px) {
-  .home-actions-stack, .home-pending-stack { --home-button-height: 40px; --home-gap: 8px; --home-stack: 288px; --home-button-font: 13px; --home-button-icon: 15px; --home-icon-gap: 6px; }
+  .home-actions-stack, .home-pending-stack { --home-button-height: 40px; --home-gap: 6px; --home-stack: 288px; --home-button-font: 13px; --home-button-icon: 15px; --home-icon-gap: 6px; }
   /* På den minsta telefonen får sidoknapparna lite mindre luft runt texten så "Spela med vän" ryms på en rad. */
   .home-actions-side .home-action { padding-inline: 6px; }
   /* den röda siffran krymper lite så den aldrig nuddar texten på den smalaste skärmen */
@@ -999,7 +999,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
-  html:not(.preview-frame) .home-actions-stack, html:not(.preview-frame) .home-pending-stack { --home-button-height: 52px; --home-gap: 12px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; }
+  html:not(.preview-frame) .home-actions-stack, html:not(.preview-frame) .home-pending-stack { --home-button-height: 52px; --home-gap: 9px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; }
 
   html:not(.preview-frame):has(.ios-game-layout) {
     --sb-row-h: clamp(25px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 150px) / 20), 55px);

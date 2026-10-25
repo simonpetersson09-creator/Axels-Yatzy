@@ -67,9 +67,9 @@ export default function QuickMatchOpponentNotice({ gameId, players, myIndex }: {
           <motion.div
             key="intro"
             initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-[60] flex items-center justify-center pointer-events-none"
           >
-            <div className="rounded-3xl border border-border bg-card/95 px-8 py-6 text-center shadow-2xl">
+            <div className="rounded-3xl border border-border bg-card px-8 py-6 text-center shadow-2xl">
               {intro.flag && <div className="text-5xl leading-none mb-3">{intro.flag}</div>}
               <div className="font-display text-2xl font-bold text-foreground">{intro.name}</div>
               <div className="mt-2 flex items-center justify-center gap-2 text-sm text-muted-foreground">
@@ -85,10 +85,10 @@ export default function QuickMatchOpponentNotice({ gameId, players, myIndex }: {
           <motion.div
             key="took"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }}
-            className="fixed inset-x-0 z-50 flex justify-center pointer-events-none"
-            style={{ bottom: 'calc(env(safe-area-inset-bottom) + 96px)' }}
+            className="fixed inset-x-0 z-[60] flex justify-center pointer-events-none"
+            style={{ bottom: 'calc(env(safe-area-inset-bottom) + 150px)' }}
           >
-            <div className="rounded-full border border-border bg-card/95 px-4 py-2 text-sm text-foreground shadow-lg">🖥️ {took}</div>
+            <div className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground shadow-lg">🖥️ {took}</div>
           </motion.div>
         )}
       </AnimatePresence>

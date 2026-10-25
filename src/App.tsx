@@ -21,7 +21,8 @@ import LegalPage from "./pages/LegalPage";
 import JoinPage from "./pages/JoinPage";
 import NotFound from "./pages/NotFound";
 import { MultiplayerProvider } from "./hooks/MultiplayerProvider";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
+import { setAppOpenPath } from '@/lib/app-open-navigation';
 import { preloadDiceEngine } from "./components/dice-engine/preload";
 import InviteOverlay from "./components/InviteOverlay";
 import NotificationNavigator from "./components/NotificationNavigator";
@@ -64,12 +65,19 @@ const DiceEnginePreloader = () => {
   return null;
 };
 
+const AppOpenNavigation = () => {
+  const { pathname } = useLocation();
+  useLayoutEffect(() => { setAppOpenPath(pathname); }, [pathname]);
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AppOpenNavigation />
         <DiceEnginePreloader />
         <InviteOverlay />
         <NotificationNavigator />

@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Samtyckesrättning – 25 oktober
+- [ ] Säkra native-samtyckesrättningen och generationstömning av alla använda annonsformat utan ATT-ändringar eller UMP-återställning.
+- [ ] Kör regressionstester för ändrade val, sena laddningar, fel och aktiva annonser.
+- [ ] Ad Inspector på fysisk telefon: godkänn/neka/omstart, samt jämförbara AdMob-prissiffror; kräver signerat telefonbygge, testtelefon och AdMob-underlag.
+
 ## Kontroll av nya versionen – 25 oktober 16:34
 - [x] 227 säkra tester godkända, 32 serverprov överhoppade för att inte röra live-data; senaste bygge OK. Återskapade och rättade att notisernas timers avbröts av matchsvar samt att befintliga spelare med färdiga matcher fick nybörjarbubblan. Sju nya regressionstester täcker 2/4 sekunder, uppdateringar under landsläsning, byte av match, avmontering och engångsvisning.
 - [x] Körande app på 393×706: bubblan synlig, första Snabbspel-tryck döljer permanent även efter omladdning; statistik, inställningar och vänner öppnade; alla 15 poängrader, slutresultat, exakt en lokalt registrerad färdig match och hemutgång verifierade utan runtimefel. Webbanalys skickar web, inte ios/android. Alla server-/funktionssvar isolerade, ingen live-teststatistik. Riktig online-realtime inte verifierad i detta prov.

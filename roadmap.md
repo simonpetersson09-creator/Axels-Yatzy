@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Samtyckesrättning – 25 oktober
-- [ ] Säkra native-samtyckesrättningen och generationstömning av alla använda annonsformat utan ATT-ändringar eller UMP-återställning.
-- [ ] Kör regressionstester för ändrade val, sena laddningar, fel och aktiva annonser.
+- [x] Befintlig UMP-rättning verifierad i installerad källa; båda sync-kommandona inkluderar native-cachebryggan. Interstitial, rewarded, App Open och banners töms före/efter ändrade val; gamla laddningar spärras. Inga ATT-ändringar eller UMP-återställningar.
+- [x] 96 relevanta tester godkända, inklusive 18 klientprov för båda plattformarna och idempotens/trasig native-brygga. Senaste webbbygge OK. Native kompilering och verklig SDK-visning kan inte köras här; kräver telefonbygge.
 - [ ] Ad Inspector på fysisk telefon: godkänn/neka/omstart, samt jämförbara AdMob-prissiffror; kräver signerat telefonbygge, testtelefon och AdMob-underlag.
 
 ## Kontroll av nya versionen – 25 oktober 16:34

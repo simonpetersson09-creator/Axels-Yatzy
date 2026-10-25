@@ -583,9 +583,10 @@ export default function HomePage() {
                 onClick={() => navigate('/multiplayer', { state: { rejoinCode: lb.code } })}
                 className="flex-1 min-w-0 flex items-center gap-2 h-full text-left active:scale-[0.98] transition"
               >
-              <div className="flex-shrink-0 w-6 h-6 rounded-[7px] flex items-center justify-center bg-background/20">
-                <Users className="w-3 h-3 text-background" />
+              <div className="home-card-chip">
+                <Users />
               </div>
+
               <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
                 <p className="font-bold text-[11px] leading-none truncate">{t('lobbyOpenCard', { code: lb.code })}</p>
                 <p className="flex items-center gap-1 text-[8px] leading-none opacity-90">
@@ -600,7 +601,7 @@ export default function HomePage() {
                   if (ok) setOpenLobbies((l) => l.filter((x) => x.gameId !== lb.gameId));
                   else toast.error(t('errGeneric'));
                 }}
-                className="flex-shrink-0 text-[8px] font-bold uppercase tracking-wider px-2 py-[3px] rounded-full bg-background/25 text-background active:scale-95 transition"
+                className="home-card-pill"
               >
                 {t('close')}
               </button>
@@ -635,14 +636,13 @@ export default function HomePage() {
                     className={`home-match-card font-display ${myTurn ? 'home-match-card-turn' : 'home-match-card-waiting'}`}
                     whileTap={{ scale: 0.97 }}
                   >
-                    <div className={`flex-shrink-0 w-6 h-6 rounded-[7px] flex items-center justify-center ${
-                      myTurn ? 'bg-white/20' : 'bg-background/20'
-                    }`}>
-                      <Play className={`w-3 h-3 ${myTurn ? 'text-white' : 'text-background'}`} />
+                    <div className={`home-card-chip${myTurn ? ' home-card-chip-light' : ''}`}>
+                      <Play />
                     </div>
+
                     <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
                       {myTurn && (
-                        <p className="text-[7px] font-bold uppercase tracking-[0.14em] text-white/85 leading-none">
+                        <p className="text-[7px] font-bold uppercase tracking-[0.14em] text-white leading-none">
                           {t('yourTurnLabel')}
                         </p>
                       )}
@@ -664,12 +664,12 @@ export default function HomePage() {
                     </div>
                     <div className="flex-shrink-0">
                       {myTurn && (
-                        <span className="text-[8px] font-bold px-2 py-[3px] rounded-full bg-game-gold text-background animate-pulse">
+                        <span className="home-card-pill home-card-pill-action animate-pulse">
                           {t('onlineNewsOk')}
                         </span>
                       )}
                       {(opponentTurn || waitingForStatus) && opponent && (
-                        <span className="text-[7px] font-bold uppercase tracking-wider px-1.5 py-[2px] rounded-full bg-background/20">
+                        <span className="home-card-pill">
                           {t('waitingShort')}
                         </span>
                       )}

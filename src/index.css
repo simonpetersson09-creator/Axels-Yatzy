@@ -94,6 +94,55 @@
   transition: box-shadow .2s, filter .2s;
 }
 .home-match-card-waiting:active { box-shadow: 0 2px 8px hsl(var(--game-gold) / .25); filter: brightness(.95); }
+/* Gemensam ikonbricka och textbricka på alla startsidans kort: ett typsnitt, en
+   storlek, ett radavstånd och en radie överallt. Båda är solida så ikonen och
+   texten alltid står tydligare än mot kortets gradient. */
+.home-card-chip {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+.home-card-chip > svg { width: 12px; height: 12px; }
+/* Det gröna kortet använder samma bricka men i ljust utfall så den vita
+   spelikonen behåller kontrasten mot grönt. */
+.home-card-chip-light {
+  background: hsl(0 0% 100% / .22);
+  color: hsl(0 0% 100%);
+}
+.home-card-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  transition: transform .15s ease, filter .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-card-pill:active { transform: scale(.95); }
+.home-card-pill:disabled { opacity: .6; }
+/* Åtgärdsbrickan "Spela nu": samma mått men i guld så den sticker ut som det
+   enda trycket som kräver något nu. */
+.home-card-pill-action {
+  background: linear-gradient(to right, hsl(var(--game-gold-light)), hsl(var(--game-gold)));
+  color: hsl(var(--primary-foreground));
+}
+
 .home-actions-stack .home-action > svg { width: var(--home-button-icon); height: var(--home-button-icon); }
 .home-action-icon { font-size: var(--home-button-icon); line-height: 1; }
 .home-quick-primary { width: 100%; }

@@ -642,12 +642,12 @@ export default function HomePage() {
                     </div>
                     <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
                       {myTurn && (
-                        <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/85 leading-none">
+                        <p className="text-[7px] font-bold uppercase tracking-[0.14em] text-white/85 leading-none">
                           {t('yourTurnLabel')}
                         </p>
                       )}
                       <div className="flex items-center leading-none">
-                        <span className="match-card-name font-bold text-[12.5px] leading-none truncate inline-flex items-center gap-1.5">
+                        <span className="match-card-name font-bold text-[11px] leading-none truncate inline-flex items-center gap-1.5">
                           {!isLocal && status?.opponentOnline && (
                             <span
                               className="inline-block w-1 h-1 rounded-full bg-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.9)]"
@@ -657,19 +657,19 @@ export default function HomePage() {
                           {isLocal ? (game.opponentName ?? t('resumeMatch')) : (opponent ?? t('resumeMatch'))}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1 text-[9px] tabular-nums leading-none opacity-90">
+                      <div className="flex items-center gap-1 text-[8px] tabular-nums leading-none opacity-90">
                         <Clock className="w-2.5 h-2.5 flex-shrink-0" />
                         <span className="truncate">{t('ongoingMatchRemaining', { time: timeLeft })}</span>
                       </div>
                     </div>
                     <div className="flex-shrink-0">
                       {myTurn && (
-                        <span className="text-[9px] font-bold px-2 py-[3px] rounded-full bg-game-gold text-background animate-pulse">
+                        <span className="text-[8px] font-bold px-2 py-[3px] rounded-full bg-game-gold text-background animate-pulse">
                           {t('onlineNewsOk')}
                         </span>
                       )}
                       {(opponentTurn || waitingForStatus) && opponent && (
-                        <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-[2px] rounded-full bg-background/20">
+                        <span className="text-[7px] font-bold uppercase tracking-wider px-1.5 py-[2px] rounded-full bg-background/20">
                           {t('waitingShort')}
                         </span>
                       )}

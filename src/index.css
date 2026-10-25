@@ -249,17 +249,17 @@
 .waiting-chat-panel { width: min(340px, 100%); max-height: 85dvh; overflow-y: auto; border: 1px solid hsl(var(--border)); border-radius: 8px; background: hsl(var(--card)); color: hsl(var(--card-foreground)); box-shadow: 0 12px 32px hsl(var(--background) / .6); }
 .waiting-chat-bubble { position: absolute; z-index: 5; bottom: 40px; left: 0; width: 108px; padding: 7px; border-radius: 8px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 11px; font-weight: 600; overflow-wrap: anywhere; box-shadow: 0 3px 8px hsl(var(--background) / .4); }
 .waiting-chat-bubble::after { content: ''; position: absolute; top: 100%; left: 46px; border: 6px solid transparent; border-top-color: hsl(var(--primary)); }
-.waiting-figure { position: absolute; width: 46px; height: 58px; left: 31px; top: 2px; filter: drop-shadow(0 3px 3px hsl(var(--background) / .7)); }
-.waiting-seat-1 .waiting-figure { transform: rotate(90deg); }
-.waiting-seat-2 .waiting-figure { transform: rotate(180deg); }
-.waiting-seat-3 .waiting-figure { transform: rotate(-90deg); }
-.waiting-figure-head { position: absolute; width: 24px; height: 26px; left: 11px; top: 10px; border-radius: 50%; background: hsl(var(--game-dice-dot)); box-shadow: inset 3px 2px 0 hsl(var(--muted)), 0 2px 3px hsl(var(--background) / .4); z-index: 3; }
-.waiting-figure-head::after { content: ''; position: absolute; width: 10px; height: 5px; border-radius: 0 0 50% 50%; bottom: -2px; left: 7px; background: hsl(var(--game-dice)); }
-.waiting-figure-body { position: absolute; width: 40px; height: 27px; left: 3px; top: 18px; border-radius: 45% 45% 30% 30%; background: currentColor; box-shadow: inset 0 4px 0 hsl(var(--foreground) / .16), inset 0 -5px 0 hsl(var(--background) / .2); }
-.waiting-figure-arms { position: absolute; left: 2px; top: 32px; width: 7px; height: 17px; border-radius: 4px; background: currentColor; border-bottom: 5px solid hsl(var(--game-dice)); }
-.waiting-figure-arms::after { content: ''; position: absolute; left: 35px; top: 0; width: 7px; height: 17px; border-radius: 4px; background: currentColor; border-bottom: 5px solid hsl(var(--game-dice)); }
-.waiting-figure-legs { position: absolute; width: 27px; height: 19px; left: 10px; top: 36px; border-radius: 5px; background: hsl(var(--game-dice-dot)); }
-.waiting-figure-legs::after { content: ''; position: absolute; left: 12px; top: 7px; width: 3px; height: 12px; background: hsl(var(--background)); }
+/* Minimal iOS-style player avatar: one clean monogram circle per seat. */
+.waiting-avatar { position: absolute; z-index: 3; left: 50%; top: 50%; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--secondary))); color: hsl(var(--card-foreground)); border: 1px solid hsl(var(--border)); box-shadow: 0 2px 6px hsl(var(--background) / .5), 0 0 0 3px hsl(var(--card) / .25); font-family: 'Space Grotesk', system-ui, sans-serif; transition: opacity .2s, filter .2s; }
+.waiting-avatar-initial { font-size: 16px; font-weight: 700; line-height: 1; }
+.waiting-avatar-own { border-color: hsl(var(--primary) / .45); box-shadow: 0 2px 6px hsl(var(--background) / .5), 0 0 0 2px hsl(var(--primary) / .25); }
+.waiting-avatar-away { opacity: .45; filter: grayscale(1); }
+.waiting-avatar-ready { position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; background: hsl(var(--game-success)); color: hsl(var(--primary-foreground)); display: grid; place-items: center; box-shadow: 0 0 0 2.5px hsl(var(--card)); }
+.waiting-avatar-ready svg { width: 10px; height: 10px; stroke-width: 3.5; }
+.waiting-avatar-0 { transform: translate(-50%, calc(-50% - var(--waiting-avatar-dist))); }
+.waiting-avatar-1 { transform: translate(calc(-50% + var(--waiting-avatar-dist)), -50%); }
+.waiting-avatar-2 { transform: translate(-50%, calc(-50% + var(--waiting-avatar-dist))); }
+.waiting-avatar-3 { transform: translate(calc(-50% - var(--waiting-avatar-dist)), -50%); }
 .figure-0 { color: hsl(var(--yatzy-player1)); }
 .figure-1 { color: hsl(var(--yatzy-player2)); }
 .figure-2 { color: hsl(var(--yatzy-player3)); }

@@ -9,10 +9,15 @@
 .waiting-room-content { width: 100%; max-width: 440px; margin-inline: auto; display: flex; flex-direction: column; }
 .waiting-home-button { background: linear-gradient(to right, hsl(var(--game-info-light)), hsl(var(--game-info))); box-shadow: 0 4px 16px hsl(var(--game-info) / .3); transition: box-shadow .2s; }
 .waiting-home-button:active { box-shadow: 0 2px 8px hsl(var(--game-info) / .2); }
-/* Wide primary action followed by two equal companion actions. */
-.home-actions {
+/* Alla huvudknapparna på startsidan delar höjd via --home-button-height. */
+.home-actions-stack {
   --home-gap: 10px;
   --home-button-height: 62px;
+  width: 100%;
+  max-width: var(--home-stack, 360px);
+  margin-inline: auto;
+}
+.home-actions {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--home-gap);
@@ -42,10 +47,8 @@
 .home-actions-side > * { height: var(--home-button-height); min-width: 0; }
 .home-companion-action { background: hsl(var(--game-info)); color: hsl(var(--primary-foreground)); }
 .home-stats-action { width: 100%; height: var(--home-button-height); }
-.home-actions-stack { width: 100%; max-width: var(--home-stack, 360px); margin-inline: auto; }
 @media (max-width: 359px) {
-  .home-actions { --home-button-height: 54px; --home-gap: 8px; }
-  .home-actions-stack { --home-stack: 288px; }
+  .home-actions-stack { --home-button-height: 54px; --home-gap: 8px; --home-stack: 288px; }
 }
 .waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }

@@ -1,4 +1,4 @@
-- Native patches run via `npm run cap:sync:ios/android`; generated edits get lost. iOS patches bind UMP before consent (without starting Ads) and enforce four-hour App Open expiry on reuse/status/show, preserving display scheduling.
+- Native patches: `npm run cap:sync:ios/android`, not generated files. iOS: UMP before consent without Ads; App Open 4h expiry on reuse/status/show; preserve scheduling. admob.ts checks getRankedGames before App Open load/show.
 - Remove QA player_country_stats; they displace players.
 - home-prompt serializes Home news to avoid overlap.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.

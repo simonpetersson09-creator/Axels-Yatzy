@@ -14,7 +14,7 @@
    delar den höjden lika på sig, så cirkeln blir lika djup som båda knapparna. */
 .home-actions {
   --home-gap: 10px;
-  --home-circle: 128px;
+  --home-circle: 104px;
   display: grid;
   grid-template-columns: var(--home-circle) minmax(0, 1fr);
   gap: var(--home-gap);
@@ -45,7 +45,7 @@
 /* Knapparna samlas i en smalare, centrerad hög så ingen knapp sträcker sig över hela skärmen. */
 .home-actions-stack { width: 100%; max-width: var(--home-stack, 300px); margin-inline: auto; }
 @media (max-width: 359px) {
-  .home-actions { --home-circle: 104px; --home-gap: 8px; }
+  .home-actions { --home-circle: 92px; --home-gap: 8px; }
   .home-actions-stack { --home-stack: 264px; }
   .home-quick-circle { padding: 0 12px; }
   .home-quick-circle-label { font-size: 11px; }
@@ -786,7 +786,7 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
-  html:not(.preview-frame) .home-actions { --home-circle: 150px; --home-gap: 12px; }
+  html:not(.preview-frame) .home-actions { --home-circle: 128px; --home-gap: 12px; }
   html:not(.preview-frame) .home-actions-stack { --home-stack: 380px; }
   html:not(.preview-frame) .home-quick-circle { padding: 0 22px; }
   html:not(.preview-frame) .home-quick-circle-label { font-size: 15px; }

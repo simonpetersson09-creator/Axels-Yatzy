@@ -690,7 +690,7 @@ export default function HomePage() {
 
 
           {/* Main actions: rund Snabbspel bredvid Spela med vän och Spelväntrum */}
-          <div className="flex flex-col gap-2.5">
+          <div className="home-actions-stack flex flex-col gap-2.5">
             <div className="home-actions">
               <motion.button
                 onClick={() => setShowQuickMatch(v => !v)}

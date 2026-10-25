@@ -220,7 +220,7 @@
   .home-match-card .match-card-body { gap: 2px; }
   .home-match-card .match-card-name { font-size: 10.5px; }
 }
-.waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-offset: calc(var(--waiting-table-size) * .365); }
+.waiting-table-stage { position: relative; width: 100%; height: 390px; margin: 10px auto 12px; container-type: inline-size; --waiting-table-size: min(76cqw, 274px, calc(100cqw - 120px)); --waiting-chair-edge: calc(var(--waiting-table-size) / 2); --waiting-seat-dist: calc(var(--waiting-table-size) * .58); }
 .waiting-table-image { position: absolute; width: var(--waiting-table-size); height: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .waiting-seat { position: absolute; width: 108px; height: 62px; text-align: center; z-index: 2; }
 .waiting-seat-0 { top: calc(50% - var(--waiting-seat-dist) - 31px); left: calc(50% - 54px); }
@@ -258,7 +258,7 @@
 .waiting-countdown { position: absolute; left: calc(50% - 40px); top: calc(50% - 40px); width: 80px; height: 80px; border-radius: 50%; background: hsl(var(--background) / .9); color: hsl(var(--primary)); display: grid; place-items: center; font-size: 48px; font-weight: 700; overflow: hidden; }
 .waiting-countdown-text { font-size: 12px; font-weight: 600; line-height: 1.15; text-align: center; padding: 0 10px; max-width: 100%; overflow-wrap: anywhere; }
 .waiting-modal-backdrop { position: fixed; inset: 0; background: hsl(var(--background) / .85); z-index: 100; display: grid; place-items: center; padding: 20px; }
-@media (max-width: 350px) { .waiting-table-stage { height: 370px; } .waiting-person-label { width: 92px; } .waiting-seat-0 .waiting-person-label, .waiting-seat-2 .waiting-person-label { left: 8px; } .waiting-seat-1 .waiting-person-label { left: calc(58px + var(--waiting-chair-edge) - var(--waiting-seat-offset)); } .waiting-seat-3 .waiting-person-label { right: calc(58px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); } }
+@media (max-width: 350px) { .waiting-table-stage { height: 370px; --waiting-seat-dist: calc(var(--waiting-table-size) * .62); } .waiting-person-label { width: 92px; } .waiting-seat-0 .waiting-person-label, .waiting-seat-2 .waiting-person-label { left: 8px; } }
 
 /* Fixed native ad footprint, not a scaled web banner. */
 .quick-search-screen {
@@ -949,7 +949,6 @@ html:not(.ad-banner-on):has(.mp-game) {
 /* Keep the hint out of the dice budget, without hiding it or moving names/chat. */
 .mp-game .mp-dice-column { margin-top: 0; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .mp-game .mp-dice-hint { position: absolute; inset-inline: 0; top: 0; }
-.waiting-table-stage { --waiting-avatar-dist: calc(var(--waiting-table-size) * .42); }
 
 /* Tablet geometry is independent of phone metrics and the desktop phone frame.
    The height budget includes all 20 score rows, fixed headers, safe areas and

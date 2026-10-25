@@ -235,6 +235,8 @@
 /* Sidostolarnas etiketter läses uppifrån och ned, utanför stolen (vertical-lr / vertical-rl). */
 .waiting-seat-1 .waiting-person-label { left: calc(50% + 26px); top: 50%; width: auto; height: max-content; writing-mode: vertical-lr; transform: translateY(-50%); }
 .waiting-seat-3 .waiting-person-label { right: calc(50% + 26px); top: 50%; width: auto; height: max-content; writing-mode: vertical-rl; transform: translateY(-50%); }
+/* Medan en chattbubbla syns ersätter den namnskylten — ingen överlappning. */
+.waiting-seat:has(.waiting-chat-bubble) .waiting-person-label { opacity: 0; }
 .waiting-person-label-empty { color: hsl(var(--muted-foreground)); }
 .waiting-country-flag { display: inline-block; writing-mode: horizontal-tb; white-space: nowrap; font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; font-size: 14px; line-height: 1; vertical-align: middle; margin-inline-end: 4px; }
 /* Sidetexter: hålls alltid inom bordets höjd och långa namn kortas av med ellipsis. */

@@ -29,6 +29,46 @@ vi.mock('@capacitor-community/admob', () => ({
 }));
 const emit = (event: string) => native.handlers.get(event)?.forEach((handler) => handler());
 
+// Existing ad scenarios exercise players who have already finished a match.
+beforeEach(() => {
+  localStorage.clear();
+  localStorage.setItem('yatzy-player-stats', JSON.stringify({ gamesPlayed: 1, completedGames: 1 }));
+});
+
+describe.each(['ios', 'android'])('%s first-match App Open protection', (platform) => {
+  beforeEach(() => {
+    vi.resetModules(); vi.useFakeTimers(); native.platform = platform;
+    native.loadAppOpen.mockClear(); native.appOpenLoaded = false;
+    localStorage.clear();
+  });
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); native.platform = 'ios'; });
+
+  it('does not load or show App Open before the first completed match', async () => {
+    const m = await import('./admob');
+    expect(await m.preloadAppOpenAd()).toBe(false);
+    expect(await m.showAppOpenAd()).toBe(false);
+    expect(native.loadAppOpen).not.toHaveBeenCalled();
+  });
+
+  it('allows App Open from game two after exactly one completed match', async () => {
+    const { recordGameResult, getRankedGames } = await import('./local-stats');
+    expect(recordGameResult(200, true, 0, 'first-match')).toBe(true);
+    expect(getRankedGames()).toBe(1);
+    const m = await import('./admob');
+    expect(await m.showAppOpenAd()).toBe(true);
+    expect(native.loadAppOpen).toHaveBeenCalledOnce();
+  });
+
+  it('an abandoned first match does not unlock App Open', async () => {
+    const { recordGameResult, getRankedGames } = await import('./local-stats');
+    expect(recordGameResult(20, false, 0, 'abandoned-first-match', false)).toBe(false);
+    expect(getRankedGames()).toBe(0);
+    const m = await import('./admob');
+    expect(await m.showAppOpenAd()).toBe(false);
+    expect(native.loadAppOpen).not.toHaveBeenCalled();
+  });
+});
+
 describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {
   beforeEach(() => {
     vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = platform;

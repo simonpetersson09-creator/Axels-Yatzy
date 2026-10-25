@@ -7,6 +7,7 @@
  */
 import { Capacitor } from '@capacitor/core';
 import { readAdConsentChoices, type AdConsentChoices } from './ad-consent';
+import { getRankedGames } from './local-stats';
 
 /* ------------------------------------------------------------------ */
 /* Central konfiguration                                               */
@@ -595,6 +596,7 @@ let appOpenPreload: Promise<boolean> | null = null;
 
 /** Laddar nästa App Open-annons i förväg så den kan visas direkt vid nästa start. */
 export function preloadAppOpenAd(): Promise<boolean> {
+  if (getRankedGames() < 1) return Promise.resolve(false);
   const adId = adUnitId('appOpen');
   if (!isAdMobAvailable() || !adId) return Promise.resolve(false);
   if (appOpenPreload) return appOpenPreload;
@@ -619,6 +621,8 @@ export function preloadAppOpenAd(): Promise<boolean> {
  * visades. Kastar aldrig; misslyckas tyst så att appen fortsätter direkt.
  */
 export async function showAppOpenAd(canShow: () => boolean = () => true): Promise<boolean> {
+  // New players get one complete match before any startup/resume App Open ad.
+  if (getRankedGames() < 1) return false;
   const { waitingRoomAdBlocked } = await import('./waiting-room');
   if (waitingRoomAdBlocked()) return false;
   const adId = adUnitId('appOpen');
@@ -638,7 +642,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
     const { value } = await mod.AdMob.isAppOpenLoaded();
     if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
     // Loaded too late (player already left the start screen): never cover a game.
-    if (!canShow() || waitingRoomAdBlocked()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
+    if (getRankedGames() < 1 || !canShow() || waitingRoomAdBlocked()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
     const showP = mod.AdMob.showAppOpen();
     try {
       await withTimeout(showP, SHOW_TIMEOUT_MS, 'show');

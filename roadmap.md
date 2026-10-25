@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Slutkontroll – 25 oktober
+- [x] Startsidesnavigation, språkbyte, statistikens utfällning, butik, tärningsinformation samt väntrums-/annonsbekräftelsens Avbryt verifierade utan att ändra riktiga väntplatser. Isolerad datormatch: låsning, kast, alla 15 poängrader, slutresultat och Till menyn → startsidan med lokal statistik; inga runtimefel. Inga nya programfel hittade.
+- [x] 211 tester godkända, 32 server-/databastester säkert överhoppade; senaste bygge OK. Riktiga onlineflöden, annonser, samtycke, push och bakgrund/återkomst behöver fortsatt signerade telefonbyggen och telefonprov enligt nedan.
+
 ## Kontroll inför ny version – 24 oktober
 - [x] Granskat knappar, matcher, nätfel, väntrum, vänner och 40 språk. Rättat obekräftade kast/poäng, avhopp före godkännande, botars klientväg, lokalt slots aktivitetsdatum, köade väntrumsanrop/återförsök och väninbjudans tillbaka/avbokning/kort-race. 68 butiksnamn täcker nu alla språk; språklig expertgranskning inte gjord.
 - [x] Poängens expected-dice-kontroll använder samma serverlås som poängregistreringen (0089), verifierat med lästest och behållna service-behörigheter. Väntrumsplatsordningen verifierad korrekt i driftsatt funktion, ingen ny ordningsändring behövdes.

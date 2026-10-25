@@ -149,7 +149,7 @@ async function discardPrivacyCaches(mod: AdMobModule): Promise<void> {
 
 /**
  * Refresh UMP and present its form when required. canRequestAds is request
- * eligibility, not acceptance or personalization. Errors block this attempt;
+ * eligibility, not acceptance or personalization. On errors read current UMP;
  * gameplay continues. UMP remains the only persisted consent authority.
  */
 function ensureConsent(mod: AdMobModule): Promise<boolean> {
@@ -158,15 +158,23 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
       try {
         let info = await withTimeout(mod.AdMob.requestConsentInfo(), 10_000, 'consent_info');
         if (info.isConsentFormAvailable && info.status === mod.AdmobConsentStatus.REQUIRED) {
-          info = await mod.AdMob.showConsentForm();
+          info = await withTimeout(mod.AdMob.showConsentForm(), 120_000, 'consent_form');
         }
         privacyOptionsRequired = info.privacyOptionsRequirementStatus === 'REQUIRED';
-        return info.canRequestAds;
-      } catch (err) {
-        console.warn('[AdMob] consent flow failed', err);
+        return info.canRequestAds === true;
+      } catch {
         consentPromise = null; // försök igen nästa gång
-        // Inget samtycke inhämtat: visa inga annonser alls denna gång (EU-krav).
-        return false;
+        // Do not infer eligibility from status/purpose bits or a cached JS value.
+        // UMP itself may still allow ads with consent saved before this error.
+        try {
+          const native = mod.AdMob as typeof mod.AdMob & {
+            getConsentEligibility(): Promise<{ canRequestAds: boolean }>;
+          };
+          const current = await withTimeout(native.getConsentEligibility(), 5_000, 'consent_eligibility');
+          return current?.canRequestAds === true;
+        } catch {
+          return false; // Missing bridge, failed read or timeout: fail closed.
+        }
       }
     })();
   }

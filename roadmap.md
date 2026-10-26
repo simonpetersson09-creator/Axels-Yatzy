@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Färre dubbla väntrumshämtningar – 26 oktober
+- [ ] Samordna väntrummets och startsidans upprepade läsningar; behåll närvaro, serverstyrd start och återanslutning.
+- [ ] Kör riktade tester och isolerat sidprov utan att ändra riktiga väntplatser.
+
 ## Samtyckesrättning – 25 oktober
 - [x] UMP-fel/timeout läser aktuell native canRequestAds utan ny refresh/reset: endast true tillåter annonser. 113 tester godkända inklusive info-/formfel, timeout, true/false och saknad/felande läsare på båda plattformarna. Inga ATT-ändringar; verkligt iPhone-prov kvar enligt punkten nedan.
 - [x] Befintlig UMP-rättning verifierad i installerad källa; båda sync-kommandona inkluderar native-cachebryggan. Interstitial, rewarded, App Open och banners töms före/efter ändrade val; gamla laddningar spärras. Inga ATT-ändringar eller UMP-återställningar.

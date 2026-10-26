@@ -1,4 +1,4 @@
-- Native patches: `npm run cap:sync:ios/android` (verify-admob-patches.js gates it; list new required native methods there). UMP before Ads; App Open 4h expiry on reuse/status/show. Preserve scheduling/getRankedGames guards.
+- Native patches: `npm run cap:sync:ios/android` (gated by verify-admob-patches.js; add new native methods there). UMP before Ads; App Open 4h expiry on reuse/status/show. Preserve scheduling/getRankedGames guards.
 - No QA in live player_country_stats.
 - Serialize Home news.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
@@ -10,8 +10,7 @@
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile authoritatively; score/forfeit guards await server acceptance. Expected dice validate under the scoring lock.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
-- Online locks send full batches; per-die toggles are legacy.
-- Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
+- - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — audits fairness and disputes.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).
 - *_authed combines claim/action; ROLL_RECOVER_* reads games. Client multiplayer-actions await requireClaimedDevice; failed claims retry.
@@ -35,8 +34,7 @@
 - Statistics period labels use the shared Stockholm formatter to match server period boundaries across phone timezones.
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
 - Rank ties: match count, creation time, session_id; totals unchanged.
-- Notice expiry ignores score updates.
-- Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
+- - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
 - Waiting-room pushes atomically reserve a device-scoped rate_limits key in internal_waiting_room_take_push; suppressed recalls are consumed, and delivery must use that same bound device so seat/session churn cannot bypass the cooldown. Other notification categories never share this key.
 - Waiting-room quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
 - Waiting-room flags read public ranks once per membership change, self from profile; never guess missing countries or mutate seats.

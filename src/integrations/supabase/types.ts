@@ -1300,6 +1300,7 @@ export type Database = {
       }
       internal_hof_rank: { Args: { p_session_id: string }; Returns: number }
       internal_hof_week: { Args: never; Returns: string }
+      internal_is_valid_timezone: { Args: { _tz: string }; Returns: boolean }
       internal_record_friend_match: {
         Args: { p_game_id: string }
         Returns: undefined

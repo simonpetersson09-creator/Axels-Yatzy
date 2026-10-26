@@ -1,4 +1,4 @@
-- Native patches: `npm run cap:sync:ios/android`, not generated files. UMP before Ads; App Open 4h expiry on reuse/status/show. Preserve scheduling/getRankedGames guards.
+- Native patches: `npm run cap:sync:ios/android` (verify-admob-patches.js gates it; list new required native methods there). UMP before Ads; App Open 4h expiry on reuse/status/show. Preserve scheduling/getRankedGames guards.
 - No QA in live player_country_stats.
 - Serialize Home news.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
@@ -45,4 +45,3 @@
 - Waiting-room welcome is device-local. Reads debounce, retain one trailing refresh and expire on unmount; retry repeats failed commands before cleanup-away. Countdown syncs at its server deadline; heartbeat/realtime recover missed updates.
 - Waiting-room entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
 - Waiting-room reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
-- cap:sync:* runs scripts/verify-admob-patches.js before and after cap sync; add every new required native AdMob method/registration there so a build without patches fails loudly.

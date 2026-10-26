@@ -16,8 +16,20 @@ import { clearGameNotifications } from '@/lib/notifications';
 // Online-spelets felrapportering: skickas tyst som 'mp_issue' i analytics så
 // vi kan se fel, långsamma anrop och skillnader mellan skärm och server.
 const MP_SLOW_MS = 3000;
+// When each match's server snapshot was last applied, and what the screen
+// believed (turn/round/rolls) — attached to every issue for event ordering.
+const mpSnapshotAt = new Map<string, number>();
+let mpViewContext: (() => Record<string, unknown>) | null = null;
 function reportMpIssue(kind: string, gameId: string | null | undefined, meta: Record<string, unknown> = {}) {
-  try { trackEvent('mp_issue', { kind, ...meta }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' }); } catch { /* never throw */ }
+  try {
+    const at = gameId ? mpSnapshotAt.get(gameId) : undefined;
+    const ctx = { snapAgeMs: at ? Date.now() - at : null, ...(mpViewContext?.() ?? {}) };
+    trackEvent('mp_issue', { kind, ...ctx, ...meta }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
+  } catch { /* never throw */ }
+}
+/** Only a running match whose screen is not already over accepts actions. */
+export function isActionable(s: { status: string; gameState: { gameOver?: boolean } | null }): boolean {
+  return s.status === 'playing' && !!s.gameState && !s.gameState.gameOver;
 }
 function errText(e: unknown): string {
   return String((e as Error)?.message ?? e ?? '').slice(0, 200);
@@ -347,6 +359,14 @@ export function useMultiplayerGame() {
           if (mountedRef.current) void refreshGameStateRef.current?.(gameId, attempt + 1);
         }, 2000 * (attempt + 1));
       } else if (mountedRef.current) {
+        // A failed roll/score is waiting for the real match state: keep
+        // trying (slower) so the board never stays blocked or out of date.
+        if (failedRollReconcileRef.current === gameId) {
+          reportMpIssue('reconcile_retry', gameId, { attempt });
+          setTimeout(() => {
+            if (mountedRef.current) void refreshGameStateRef.current?.(gameId, attempt + 1);
+          }, 5000);
+        }
         // Retries exhausted: never leave the match stuck on a spinner — show a
         // visible error with a way out instead of loading forever.
         setState(prev => prev.loading ? { ...prev, loading: false, error: t('errGeneric') } : prev);
@@ -362,6 +382,14 @@ export function useMultiplayerGame() {
     // snapshot (lower updated_at) overwrite a newer one already applied.
     if (isStaleSnapshot(lastSnapshotRef.current, gameId, (game as { updated_at?: string }).updated_at)) return;
     lastSnapshotRef.current = { gameId, updatedAt: (game as { updated_at?: string }).updated_at ?? '' };
+    mpSnapshotAt.set(gameId, Date.now());
+    // The match ended on the server: lock the board at once, before any
+    // later step (animations, buffering) can leave it looking playable.
+    if (game.status === 'finished') {
+      pendingLockRef.current = null;
+      if (lockBatchRef.current?.timer) { clearTimeout(lockBatchRef.current.timer); lockBatchRef.current.resolve(true); pendingLockPromisesRef.current.delete(lockBatchRef.current.promise); lockBatchRef.current = null; }
+      setState(prev => prev.gameId === gameId && prev.status !== 'finished' ? { ...prev, status: 'finished' } : prev);
+    }
 
     const isQuick = !!(game as { is_quick_match?: boolean }).is_quick_match;
     const players: Player[] = dbPlayers.map(p => ({
@@ -837,7 +865,7 @@ export function useMultiplayerGame() {
     // M9: read latest state from ref so stale closures (after rapid renders)
     // don't gate the roll against an outdated snapshot.
     const initial = stateRef.current;
-    if (!initial.gameId || !initial.gameState) return false;
+    if (!initial.gameId || !initial.gameState || !isActionable(initial)) return false;
     const initialGs = initial.gameState;
     if (initialGs.rollsLeft <= 0) return false;
     if (initial.myPlayerIndex !== initialGs.currentPlayerIndex) return false;
@@ -1074,7 +1102,7 @@ export function useMultiplayerGame() {
     if (rollingGuardRef.current || !rollConfirmedRef.current || submittingRef.current || forfeitingRef.current) return;
     const latest = stateRef.current;
     const gs = latest.gameState;
-    if (!latest.gameId || !gs) return;
+    if (!latest.gameId || !gs || !isActionable(latest)) return;
     if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     const gameId = latest.gameId;
@@ -1124,6 +1152,8 @@ export function useMultiplayerGame() {
         const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
         const locks = pending?.gameId === gameId ? pending.lockedDice : null;
         if (!locks) { skip(); return; }
+        // The match ended while the taps were batched: never send them.
+        if (!isActionable(stateRef.current)) { pendingLockRef.current = null; skip(); return; }
         // Queued calls read the latest locks; if the previous call already sent
         // exactly these, skip — rapid taps no longer pile up identical calls.
         const last = lastSentLocksRef.current;
@@ -1190,6 +1220,7 @@ export function useMultiplayerGame() {
     // Never score dice the server hasn't confirmed yet.
     if (!rollConfirmedRef.current) return;
     const gs = latest.gameState;
+    if (!isActionable(latest)) return;
     if (gs.rollsLeft === 3 || latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     const currentPlayer = gs.players[gs.currentPlayerIndex];

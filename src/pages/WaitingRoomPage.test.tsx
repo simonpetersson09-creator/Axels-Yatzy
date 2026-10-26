@@ -41,8 +41,22 @@ it('coalesces repeated sync requests while a request is pending', async () => {
   m.action.mockResolvedValue(snapshot()); render(<WaitingRoomPage />); await act(async () => {});
   let resolve: (value: unknown) => void = () => {};
   m.action.mockImplementationOnce(() => new Promise(r => { resolve = r; }));
-  await act(async () => { m.onChange.fn(); });
+  await act(async () => { m.onChange.fn(); await vi.advanceTimersByTimeAsync(100); });
   await act(async () => { for (let i=0;i<30;i++) m.onChange.fn(); });
-  await act(async () => { resolve(snapshot()); });
+  await act(async () => { resolve(snapshot()); await vi.advanceTimersByTimeAsync(100); });
+  expect(m.action.mock.calls.filter(c => c[0] === 'sync')).toHaveLength(2);
+});
+it('reads at the countdown deadline rather than every second and keeps the heartbeat fallback', async () => {
+  const start = snapshot();
+  const counting = { ...start, countdown_at: new Date().toISOString() };
+  m.action.mockResolvedValue(counting);
+  render(<WaitingRoomPage />); await act(async () => {});
+  await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
+  expect(m.action.mock.calls.filter(c => c[0] === 'sync')).toHaveLength(0);
+  m.action.mockResolvedValue({ ...counting, mine: { ...start.mine, game_id: 'server-game' } });
+  await act(async () => { await vi.advanceTimersByTimeAsync(100); });
   expect(m.action.mock.calls.filter(c => c[0] === 'sync')).toHaveLength(1);
+  expect(m.navigate).toHaveBeenCalledWith('/multiplayer-game?gameId=server-game', { replace: true });
+  await act(async () => { await vi.advanceTimersByTimeAsync(1900); });
+  expect(m.action.mock.calls.filter(c => c[0] === 'heartbeat')).toHaveLength(1);
 });

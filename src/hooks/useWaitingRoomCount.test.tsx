@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWaitingRoomCount } from './useWaitingRoomCount';
 
 const mocks = vi.hoisted(() => ({ action: vi.fn(), rpc: vi.fn(), revision: undefined as undefined | (() => void) }));
@@ -13,6 +13,23 @@ vi.mock('@/integrations/supabase/client', () => ({ supabase: {
 
 describe('home waiting seat', () => {
   beforeEach(() => { vi.clearAllMocks(); mocks.rpc.mockResolvedValue({ data: 2, error: null }); });
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
+  it('coalesces revision bursts and rereads membership after an in-flight change', async () => {
+    vi.useFakeTimers();
+    mocks.action.mockResolvedValue({ error: null, mine: { game_id: null } });
+    const { result } = renderHook(useWaitingRoomCount);
+    await act(async () => {});
+    let resolve: (value: unknown) => void = () => {};
+    mocks.action.mockImplementationOnce(() => new Promise(r => { resolve = r; }));
+    await act(async () => { for (let i = 0; i < 30; i++) mocks.revision?.(); await vi.advanceTimersByTimeAsync(100); });
+    expect(mocks.action).toHaveBeenCalledTimes(2);
+    await act(async () => { for (let i = 0; i < 30; i++) mocks.revision?.(); });
+    mocks.action.mockResolvedValue({ error: 'expired', mine: null });
+    await act(async () => { resolve({ error: null, mine: { game_id: null } }); await vi.advanceTimersByTimeAsync(100); });
+    expect(mocks.action).toHaveBeenCalledTimes(3);
+    expect(result.current.seated).toBe(false);
+    expect(mocks.action.mock.calls.every(c => c[0] === 'sync')).toBe(true);
+  });
   it('shows a retained absent seat without joining or sending presence', async () => {
     mocks.action.mockResolvedValue({ error: null, mine: { id: 'saved-seat', game_id: null, present: false } });
     const { result } = renderHook(useWaitingRoomCount);

@@ -126,12 +126,32 @@ let privacyBlocked = false;
 let adGeneration = 0;
 const adAllowed = (generation: number) => !privacyChanging && !privacyBlocked && generation === adGeneration;
 
+/** Logs only the native cache-bridge error (never consent choices or UMP payloads). */
+function reportPrivacyCacheFailure(err: unknown): void {
+  const error = err as { code?: unknown; message?: unknown } | undefined;
+  const code = typeof error?.code === 'string' ? error.code.slice(0, 40) : '';
+  const message = typeof error?.message === 'string' ? error.message.slice(0, 160) : String(err).slice(0, 160);
+  console.warn('[admob] discardPrivacyCaches failed', code, message);
+  void import('@/lib/analytics').then(({ trackEvent }) =>
+    trackEvent('ad_privacy_cache_failed', { code, message }),
+  ).catch(() => {});
+}
+
 async function discardPrivacyCaches(mod: AdMobModule): Promise<void> {
   const native = mod.AdMob as typeof mod.AdMob & {
     discardPrivacyCaches(): Promise<{ privacyCacheVersion: number }>;
   };
-  const result = await native.discardPrivacyCaches();
-  if (result?.privacyCacheVersion !== 1) throw new Error('privacy_cache_unavailable');
+  let result: { privacyCacheVersion: number } | undefined;
+  try {
+    result = await native.discardPrivacyCaches();
+  } catch (err) {
+    reportPrivacyCacheFailure(err);
+    throw err;
+  }
+  if (result?.privacyCacheVersion !== 1) {
+    reportPrivacyCacheFailure(new Error(`unexpected_version:${String(result?.privacyCacheVersion)}`));
+    throw new Error('privacy_cache_unavailable');
+  }
   preparedAt = 0;
   rewardedPreparedAt = 0;
   preparing = null;

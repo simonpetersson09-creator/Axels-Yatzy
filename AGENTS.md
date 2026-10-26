@@ -1,17 +1,16 @@
-- Native patches: `npm run cap:sync:ios/android`, not generated files. UMP before Ads; App Open 4h expiry on reuse/status/show. Preserve scheduling/getRankedGames guards.
+- Native patches: `npm run cap:sync:ios/android` (gated by verify-admob-patches.js; add new native methods there). UMP before Ads; App Open 4h expiry on reuse/status/show. Preserve scheduling/getRankedGames guards.
 - No QA in live player_country_stats.
 - Serialize Home news.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - App icon: resources/icon.png (1024x1024, opaque) is the only source; `npm run icons` (scripts/make-icons.js) regenerates resources/android/res, resources/ios/AppIcon.appiconset and public/ copies — never hand-edit generated icon files.
-- admob.ts: platform-specific ADMOB_IDS/REWARDED_IDS (null disables; never iOS IDs on Android); fitGameAboveBanner reserves banner space. rewarded-pair deduplicates each SDK reward across pages; RewardedXpHost requests server XP only on confirmed reward, never auto-chains ads. Legacy partial bundles are cleared, never treated as reward proof. Suppress App Open 2 min afterward. Never auto-reset uncancellable SDK attempts; subscribeRewardedState tracks status. scripts/patch-admob-rewarded.js tags events with attemptId — prevents overlap/unearned XP.
+- admob.ts: platform-specific ADMOB_IDS/REWARDED_IDS (null disables; never iOS IDs on Android); fitGameAboveBanner reserves banner space. rewarded-pair deduplicates each SDK reward across pages; RewardedXpHost requests server XP only on confirmed reward, never auto-chains ads. Legacy partial bundles are cleared, never treated as reward proof. Suppress App Open 2 min afterward. Never auto-reset uncancellable SDK attempts (subscribeRewardedState tracks). scripts/patch-admob-rewarded.js tags events with attemptId — prevents overlap/unearned XP.
 - Store links come only from src/lib/app-links.ts (getStoreLinks); the Play link stays hidden until PLAY_STORE_LIVE is true.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile authoritatively; score/forfeit guards await server acceptance. Expected dice validate under the scoring lock.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
-- Online locks send full batches; per-die toggles are legacy.
-- Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
+- - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — audits fairness and disputes.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).
 - *_authed combines claim/action; ROLL_RECOVER_* reads games. Client multiplayer-actions await requireClaimedDevice; failed claims retry.
@@ -35,13 +34,13 @@
 - Statistics period labels use the shared Stockholm formatter to match server period boundaries across phone timezones.
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
 - Rank ties: match count, creation time, session_id; totals unchanged.
-- Notice expiry ignores score updates.
-- Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
-- Waiting-room pushes atomically reserve a device-scoped rate_limits key in internal_waiting_room_take_push; suppressed recalls are consumed, and delivery must use that same bound device so seat/session churn cannot bypass the cooldown. Other notification categories never share this key.
-- Waiting-room quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
-- Waiting-room flags read public ranks once per membership change, self from profile; never guess missing countries or mutate seats.
-- Waiting-room labels reserve side space; flags use atomic horizontal writing to preserve regional-indicator pairs.
-- Waiting-room UI and push translations share a dependency-free copy module under functions/_shared; merge it with each app dictionary so language coverage stays consistent across client and server.
-- Waiting-room welcome is device-local. Reads debounce, retain one trailing refresh and expire on unmount; retry repeats failed commands before cleanup-away. Countdown syncs at its server deadline; heartbeat/realtime recover missed updates.
-- Waiting-room entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
-- Waiting-room reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
+- - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
+- WR pushes atomically reserve a device-scoped rate_limits key in internal_waiting_room_take_push; suppressed recalls are consumed, and delivery must use that same bound device so seat/session churn cannot bypass the cooldown. Other notification categories never share this key.
+- WR quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
+- WR flags read public ranks once per membership change, self from profile; never guess missing countries or mutate seats.
+- WR labels reserve side space; flags use atomic horizontal writing to preserve regional-indicator pairs.
+- WR UI and push translations share a dependency-free copy module under functions/_shared; merge it with each app dictionary so language coverage stays consistent across client and server.
+- WR welcome is device-local. Reads debounce, retain one trailing refresh and expire on unmount; retry repeats failed commands before cleanup-away. Countdown syncs at its server deadline; heartbeat/realtime recover missed updates.
+- WR entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
+- WR reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
+- Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.

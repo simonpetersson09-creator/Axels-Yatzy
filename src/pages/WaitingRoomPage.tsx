@@ -21,6 +21,7 @@ import { useWaitingRoomCountries } from '@/hooks/useWaitingRoomCountries';
 import { countryName, countryToFlag } from '@/lib/country-rank';
 import { getProfileCountry } from '@/lib/profile';
 import { WaitingRoomChoiceDialog } from '@/components/WaitingRoomChoiceDialog';
+import { createCoalescedRefresh } from '@/lib/coalesced-refresh';
 
 export default function WaitingRoomPage() {
   const { t, lang } = useTranslation();
@@ -120,9 +121,9 @@ export default function WaitingRoomPage() {
     const heartbeat = setInterval(() => {
       if (active.current) void performRef.current('heartbeat');
     }, 5_000);
-    const tick = setInterval(() => {
-      if (active.current && lastCountdown.current) void performRef.current('sync');
-    }, 1000);
+    const revisionReads = createCoalescedRefresh(async () => {
+      if (active.current) await performRef.current('sync');
+    });
     const stateChanged = (isActive: boolean) => {
       if (active.current === isActive) return;
       active.current = isActive;
@@ -138,11 +139,11 @@ export default function WaitingRoomPage() {
     });
     const channel = supabase.channel('waiting-room-table')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'waiting_room_state' }, () => {
-        if (active.current) void performRef.current('sync');
+        if (active.current) revisionReads.schedule();
       }).subscribe();
     return () => {
       mounted.current = false; disposed = true; generation.current += 1; entered.current = false;
-      clearInterval(time); clearInterval(heartbeat); clearInterval(tick);
+      clearInterval(time); clearInterval(heartbeat); revisionReads.dispose();
       document.removeEventListener('visibilitychange', visibility); nativeRemove?.();
       void supabase.removeChannel(channel);
       // Navigating home also retains the seat, but marks it absent from this table.
@@ -150,6 +151,17 @@ export default function WaitingRoomPage() {
       void serial.current.then(() => { if (!mounted.current && generation.current === cleanupLife && seatRef.current) return roomAction('away', { seatId: seatRef.current }); }).catch(() => {});
     };
   }, []);
+
+  // The clock animates locally; only the server may complete the countdown.
+  // Read once at its deadline, keeping heartbeat/realtime as recovery paths.
+  useEffect(() => {
+    if (!snapshot?.countdown_at || snapshot.mine?.game_id) return;
+    const remaining = Date.parse(snapshot.countdown_at) + 3000 - (Date.now() + offset.current);
+    const timer = setTimeout(() => {
+      if (active.current) void performRef.current('sync');
+    }, Math.max(0, remaining) + 100);
+    return () => clearTimeout(timer);
+  }, [snapshot?.countdown_at, snapshot?.mine?.game_id]);
 
   const command = async (action: RoomAction, options: { ready?: boolean; notify?: boolean } = {}) => {
     if (mutation.current) return;

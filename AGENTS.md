@@ -42,6 +42,6 @@
 - Waiting-room flags read public ranks once per membership change, self from profile; never guess missing countries or mutate seats.
 - Waiting-room labels reserve side space; flags use atomic horizontal writing to preserve regional-indicator pairs.
 - Waiting-room UI and push translations share a dependency-free copy module under functions/_shared; merge it with each app dictionary so language coverage stays consistent across client and server.
-- Waiting-room welcome is device-local, never game state. Queued reads coalesce/expire on unmount; retry repeats failed commands before cleanup-away.
+- Waiting-room welcome is device-local. Reads debounce, retain one trailing refresh and expire on unmount; retry repeats failed commands before cleanup-away. Countdown syncs at its server deadline; heartbeat/realtime recover missed updates.
 - Waiting-room entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
-- Waiting-room reconciliation removes handoff seats as soon as their game is finished, while retaining active-game handoffs; stale saved seats must not redirect later room entry into completed games. Seats fill in fixed order: bottom (2), top (0), right (1), left (3).
+- Waiting-room reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).

@@ -741,6 +741,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   let release = true;
   try {
     const mod = await withTimeout(ensureInitialized(), APP_OPEN_LOAD_TIMEOUT_MS, 'init');
+    attachAppOpenRevenue(mod);
     if (!adAllowed(generation)) return false;
     // A preload already running (started at cold start) is awaited, not doubled.
     if (appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});

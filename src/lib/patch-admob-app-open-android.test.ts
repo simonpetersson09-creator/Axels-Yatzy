@@ -4,7 +4,8 @@ import { resolve, dirname } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { expect, it } from 'vitest';
 
-const fixture = readFileSync(resolve('node_modules/@capacitor-community/admob/android/src/main/java/com/getcapacitor/community/admob/appopen/AppOpenAdManager.kt'), 'utf8').replace(/[\s\S]*/, (s) => s);
+const fixture = readFileSync(resolve('node_modules/@capacitor-community/admob/android/src/main/java/com/getcapacitor/community/admob/appopen/AppOpenAdManager.kt'), 'utf8');
+const script = resolve('scripts/patch-admob-app-open-android.js');
 
 it('Android App Open ads expire after four hours, idempotently, and run before sync', () => {
   const cwd = mkdtempSync(resolve(tmpdir(), 'ao-android-'));
@@ -12,7 +13,7 @@ it('Android App Open ads expire after four hours, idempotently, and run before s
   try {
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, fixture);
-    const run = () => { execFileSync(process.execPath, [resolve('scripts/patch-admob-app-open-android.js')], { cwd }); return readFileSync(target, 'utf8'); };
+    const run = () => { execFileSync(process.execPath, [script], { cwd }); return readFileSync(target, 'utf8'); };
     const first = run();
     const m = first.match(/maxAdAgeMs: Long = (\d+)L \* (\d+)L \* (\d+)L \* (\d+)L/);
     expect(m?.slice(1).reduce((a, b) => a * Number(b), 1)).toBe(14_400_000);

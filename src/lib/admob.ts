@@ -659,6 +659,38 @@ const APP_OPEN_LOAD_TIMEOUT_MS = 8000;
 
 let appOpenShowing = false;
 let appOpenPreload: Promise<boolean> | null = null;
+/** The native load itself; cleared only when the SDK answers, never on a JS timeout. */
+let appOpenNativeLoad: Promise<unknown> | null = null;
+let appOpenRevenueListener = false;
+
+/** One native App Open load at a time: a timed-out wait reuses the running load. */
+function loadAppOpenOnce(mod: AdMobModule, adId: string, ms: number, label: string): Promise<unknown> {
+  if (!appOpenNativeLoad) {
+    const p = mod.AdMob.loadAppOpen({ adId });
+    appOpenNativeLoad = p;
+    p.then(() => {}, () => {}).finally(() => { if (appOpenNativeLoad === p) appOpenNativeLoad = null; });
+  }
+  return withTimeout(appOpenNativeLoad, ms, label);
+}
+
+/** Impression-level revenue from Google (paid event) for App Open ads. No consent data. */
+function attachAppOpenRevenue(mod: AdMobModule) {
+  if (appOpenRevenueListener) return;
+  appOpenRevenueListener = true;
+  try {
+    void mod.AdMob.addListener(mod.AppOpenAdPluginEvents.AdImpression, (d: {
+      valueMicros?: number; currencyCode?: string; precision?: number | string; networkName?: string;
+    }) => {
+      void import('@/lib/analytics').then(({ trackEvent }) => trackEvent('ad_revenue', {
+        kind: 'appOpen',
+        value_micros: Number(d?.valueMicros ?? 0),
+        currency: String(d?.currencyCode ?? ''),
+        precision: d?.precision ?? null,
+        network: String(d?.networkName ?? '').slice(0, 120),
+      })).catch(() => {});
+    });
+  } catch { appOpenRevenueListener = false; }
+}
 
 /** Laddar nästa App Open-annons i förväg så den kan visas direkt vid nästa start. */
 export function preloadAppOpenAd(): Promise<boolean> {
@@ -672,10 +704,11 @@ export function preloadAppOpenAd(): Promise<boolean> {
     try {
       const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
       if (!adAllowed(generation)) return false;
+      attachAppOpenRevenue(mod);
       const { value } = await mod.AdMob.isAppOpenLoaded();
       if (!adAllowed(generation)) return false;
       if (value) return true;
-      await withTimeout(mod.AdMob.loadAppOpen({ adId }), 20_000, 'load');
+      await loadAppOpenOnce(mod, adId, 20_000, 'load');
       if (!adAllowed(generation)) return false;
       return (await mod.AdMob.isAppOpenLoaded()).value;
     } catch {
@@ -708,12 +741,13 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   let release = true;
   try {
     const mod = await withTimeout(ensureInitialized(), APP_OPEN_LOAD_TIMEOUT_MS, 'init');
+    attachAppOpenRevenue(mod);
     if (!adAllowed(generation)) return false;
     // A preload already running (started at cold start) is awaited, not doubled.
     if (appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});
     const pre = await mod.AdMob.isAppOpenLoaded();
     if (!adAllowed(generation)) return false;
-    if (!pre.value) await withTimeout(mod.AdMob.loadAppOpen({ adId }), APP_OPEN_LOAD_TIMEOUT_MS, 'load');
+    if (!pre.value) await loadAppOpenOnce(mod, adId, APP_OPEN_LOAD_TIMEOUT_MS, 'load');
     const { value } = await mod.AdMob.isAppOpenLoaded();
     if (!adAllowed(generation)) return false;
     if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }

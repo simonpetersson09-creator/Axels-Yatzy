@@ -568,6 +568,10 @@ export function useMultiplayerGame() {
   // Keep ref in sync so debouncedRefresh always calls latest version
   useEffect(() => {
     refreshGameStateRef.current = refreshGameState;
+    mpViewContext = () => {
+      const s = stateRef.current;
+      return { viewStatus: s.status, viewPlayer: s.gameState?.currentPlayerIndex ?? null, viewRound: s.gameState?.round ?? null, viewRollsLeft: s.gameState?.rollsLeft ?? null, myIndex: s.myPlayerIndex };
+    };
   }, [refreshGameState]);
 
   // Debounced refresh — uses ref to avoid stale closure (BUG 10 fix)

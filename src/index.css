@@ -1012,12 +1012,10 @@ html:not(.ad-banner-on):has(.mp-game) {
   html:not(.preview-frame) .home-card-pill { font-size: 10px; padding: 5px 10px; gap: 5px; }
   html:not(.preview-frame) .home-waiting-badge { min-width: 22px; height: 22px; font-size: 13px; }
   html:not(.preview-frame) .home-quick-hint { max-width: 132px; font-size: 13px; padding: 6px 10px; }
-  html:not(.preview-frame) .home-actions-stack ~ * .home-round-action,
   html:not(.preview-frame) .home-round-action { width: 60px; height: 60px; }
   html:not(.preview-frame) .home-round-action > svg { width: 24px; height: 24px; }
-  html:not(.preview-frame) .home-round-action ~ span.text-\[8px\],
-  html:not(.preview-frame) .group > span.text-\[8px\] { font-size: 11px; }
-  html:not(.preview-frame) .group > span.text-\[7px\] { font-size: 9px; }
+  html:not(.preview-frame) .home-round-label { font-size: 11px; }
+  html:not(.preview-frame) .home-round-status { font-size: 9px; }
 
   html:not(.preview-frame):has(.ios-game-layout) {
     --sb-row-h: clamp(25px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 150px) / 20), 55px);

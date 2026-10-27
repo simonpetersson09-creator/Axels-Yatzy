@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Säker återhämtning vid Ge upp – 27 oktober
+- [ ] Kontrollera serverns match/plats vid förlorat svar och före manuellt återförsök; håll matchen synlig med separat fel och återförsök.
+- [ ] Testa registrerat avhopp, datorövertagande, läsfel, sena svar och dubbeltryck utan live-matchändringar.
+- [ ] Verkligt telefonprov kräver nästa signerade appbygge och telefon.
+
 ## Samordnad annonsstart – 27 oktober
 - [x] Samma pågående uppstart delas av alla annonsformat, även efter en väntande anrops tidsgräns; samtycke, ATT och frekvensregler bevaras.
 - [x] 69 tester godkända, inklusive 11 nya för samtidighet, tidsgräns, fel/återförsök, samtyckesspärrar och ATT-väntan över 10 s. Bygge OK.

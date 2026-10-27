@@ -37,19 +37,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/session';
 import { QuickMatchTakeover } from '@/components/multiplayer/QuickMatchTakeover';
 import { useGameBanner } from '@/hooks/useGameBanner';
+import { getForfeitError } from '@/lib/forfeit-copy';
 
 const DEBUG = false;
 
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [searchParams] = useSearchParams();
   const {
     gameState, gameCode, status, myPlayerIndex, isMyTurn, error,
-    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex, locksPending, rollPending, forfeiting, retryConnection,
+    localRolling, remoteRolling, pendingCategory, pendingPlayerIndex, locksPending, rollPending, forfeiting, forfeitError, retryConnection,
     roll, toggleLock, getPossibleScores, selectCategory, rejoinGame, forfeitGame,
   } = useMultiplayerGame();
+
+  useEffect(() => {
+    if (!forfeitError) return;
+    const id = toast.error(getForfeitError(lang), {
+      duration: Infinity,
+      action: { label: t('wrRetry'), onClick: () => { void forfeitGame(); } },
+    });
+    return () => { toast.dismiss(id); };
+  }, [forfeitError, lang, t, forfeitGame]);
 
   // A match that was never started belongs in the waiting room (the server
   // refuses rolls/scores until the host taps Start).

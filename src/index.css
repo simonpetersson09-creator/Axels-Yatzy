@@ -1045,13 +1045,13 @@ html:not(.ad-banner-on):has(.mp-game) {
     padding-inline: 8px;
   }
   html:not(.preview-frame) .ios-score-zone { flex-shrink: 0; }
-  html:not(.preview-frame) .ios-score-zone :is(.text-\[9px\], .text-\[10px\], .text-\[11px\]) { font-size: 14px; letter-spacing: 0; }
-  html:not(.preview-frame) .ios-score-zone :is(.text-\[12px\], .text-\[13px\]) { font-size: 18px; }
-  html:not(.preview-frame) .ios-score-zone .text-\[15px\] { font-size: 22px; letter-spacing: 0; }
-  html:not(.preview-frame) .ios-side-zone > .flex.flex-col:first-child { height: auto; min-height: 124px; }
-  html:not(.preview-frame) .ios-side-zone > .flex.flex-col:first-child > div { min-height: 32px; }
-  html:not(.preview-frame) .ios-side-zone .text-\[10px\].truncate { font-size: 14px; max-width: none; min-width: 0; flex: 1; }
-  html:not(.preview-frame) .ios-side-zone > .relative.mt-2 {
+  html:not(.preview-frame) .ios-score-zone .sb-fs-s { font-size: 14px; letter-spacing: 0; }
+  html:not(.preview-frame) .ios-score-zone .sb-fs-m { font-size: 18px; }
+  html:not(.preview-frame) .ios-score-zone .sb-fs-l { font-size: 22px; letter-spacing: 0; }
+  html:not(.preview-frame) .ios-side-zone :is(.game-player-names, .mp-player-names) { height: auto; min-height: 124px; }
+  html:not(.preview-frame) .ios-side-zone :is(.game-player-row, .mp-player-row) { min-height: 32px; }
+  html:not(.preview-frame) .ios-side-zone :is(.game-player-name, .mp-player-name) { font-size: 14px; max-width: none; min-width: 0; flex: 1; }
+  html:not(.preview-frame) .ios-side-zone :is(.game-dice-column, .mp-dice-column) {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -1059,13 +1059,13 @@ html:not(.ad-banner-on):has(.mp-game) {
     align-items: center;
     min-height: 0;
   }
-  html:not(.preview-frame) .ios-action-zone > .relative > button,
+  html:not(.preview-frame) .ios-action-zone .game-roll-button,
   html:not(.preview-frame) .mp-game .mp-roll-button {
     width: 104px;
     height: 104px;
     font-size: 18px;
   }
-  html:not(.preview-frame) .ios-action-zone > .flex > button { min-height: 44px; min-width: 72px; font-size: 13px; }
+  html:not(.preview-frame) .ios-action-zone .game-nav-button { min-height: 44px; min-width: 72px; font-size: 13px; }
   html:not(.preview-frame) .mp-chat-zone button { min-height: 44px; min-width: 44px; }
   html:not(.preview-frame) .mp-game > p { font-size: 12px; }
 }
@@ -1074,7 +1074,7 @@ html:not(.ad-banner-on):has(.mp-game) {
 @media (min-width: 700px) and (min-height: 600px) and (max-height: 950px) {
   html:not(.preview-frame):has(.ios-game-layout) { --dice-scale: 1.05; --dice-gap-scale: .5; }
   html:not(.preview-frame) .ios-side-zone { gap: 8px; }
-  html:not(.preview-frame) .ios-action-zone > .relative > button,
+  html:not(.preview-frame) .ios-action-zone .game-roll-button,
   html:not(.preview-frame) .mp-game .mp-roll-button { width: 80px; height: 80px; font-size: 16px; }
   html:not(.preview-frame) .waiting-table-stage { height: 420px; --waiting-table-size: min(60cqw, 300px, calc(100cqw - 160px)); }
 }

@@ -725,7 +725,7 @@ export default function MultiplayerGamePage() {
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/35 pointer-events-auto">
                   <div className="flex items-center gap-2 rounded-full bg-card/90 px-3 py-1.5 shadow-lg">
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    {slowServer && <span className="text-[11px] font-medium text-foreground">{t('slowConnection')}</span>}
+                    {slowServer && <span className="text-[11px] sb-fs-s font-medium text-foreground">{t('slowConnection')}</span>}
                   </div>
                 </div>
               )}
@@ -922,7 +922,7 @@ export default function MultiplayerGamePage() {
                   }}
                   onPointerCancel={() => { pressedButtonRef.current = null; }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="inline-flex items-center justify-center px-2 min-w-[3.2rem] min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
+                  className="game-nav-button inline-flex items-center justify-center px-2 min-w-[3.2rem] min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                   title={t('toMenu')}
                   aria-label={t('home')}

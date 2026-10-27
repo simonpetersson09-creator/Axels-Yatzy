@@ -272,6 +272,22 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
 }
 
 let trackingAsked: Promise<void> | null = null;
+let trackingPromptOpen = false;
+/**
+ * Init med tidsgräns, men tiden när Apples spårningsfråga visas räknas inte:
+ * första annonsen väntar alltid in spelarens svar i stället för att ge upp.
+ */
+async function initWithTimeout(ms: number): Promise<AdMobModule> {
+  const start = withTimeout(ensureInitialized(), ms, 'init');
+  if (adPlatform() !== 'ios') return start;
+  try {
+    return await start;
+  } catch (e) {
+    if (!trackingPromptOpen || !trackingAsked) throw e;
+    await trackingAsked;
+    return withTimeout(ensureInitialized(), ms, 'init');
+  }
+}
 /**
  * Visar Apples "Tillåt spårning?" en gång (iOS bestämmer själv att den bara
  * visas när status är notDetermined). Fel blockerar aldrig annonser.
@@ -283,9 +299,12 @@ export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
       try {
         const { status } = await withTimeout(mod.AdMob.trackingAuthorizationStatus(), 5_000, 'att_status');
         if (status !== 'notDetermined') return;
+        trackingPromptOpen = true;
         await withTimeout(mod.AdMob.requestTrackingAuthorization(), 120_000, 'att_request');
       } catch {
         /* spårningsfrågan är best effort */
+      } finally {
+        trackingPromptOpen = false;
       }
     })();
   }
@@ -342,7 +361,7 @@ export async function preloadInterstitial(): Promise<boolean> {
 
   preparing = (async () => {
     try {
-      const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
+      const mod = await initWithTimeout(PREPARE_TIMEOUT_MS);
       if (!adAllowed(generation)) return false;
       const adId = adUnitId('optional');
       if (!adId) return false;
@@ -468,7 +487,7 @@ export async function preloadRewarded(): Promise<boolean> {
   rewardedPreparing = (async () => {
     try {
       const loadMs = adPlatform() === 'android' ? ANDROID_REWARDED_LOAD_TIMEOUT_MS : PREPARE_TIMEOUT_MS;
-      const mod = await withTimeout(ensureInitialized(), loadMs, 'init');
+      const mod = await initWithTimeout(loadMs);
       if (!adAllowed(generation)) return false;
       await withTimeout(mod.AdMob.prepareRewardVideoAd({ adId, isTesting: ADMOB_CONFIG.useTestAds }), loadMs, 'prepare');
       if (!adAllowed(generation)) return false;
@@ -722,7 +741,7 @@ export function preloadAppOpenAd(): Promise<boolean> {
   if (appOpenPreload) return appOpenPreload;
   appOpenPreload = (async () => {
     try {
-      const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
+      const mod = await initWithTimeout(PREPARE_TIMEOUT_MS);
       if (!adAllowed(generation)) return false;
       attachAppOpenRevenue(mod);
       const { value } = await mod.AdMob.isAppOpenLoaded();
@@ -760,7 +779,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   const startedAt = Date.now();
   let release = true;
   try {
-    const mod = await withTimeout(ensureInitialized(), APP_OPEN_LOAD_TIMEOUT_MS, 'init');
+    const mod = await initWithTimeout(APP_OPEN_LOAD_TIMEOUT_MS);
     attachAppOpenRevenue(mod);
     if (!adAllowed(generation)) return false;
     // A preload already running (started at cold start) is awaited, not doubled.
@@ -1109,7 +1128,7 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
     return;
   }
   try {
-    const mod = await withTimeout(ensureInitialized(), PREPARE_TIMEOUT_MS, 'init');
+    const mod = await initWithTimeout(PREPARE_TIMEOUT_MS);
     if (stale()) return;
     await ensureBannerListeners(mod);
     if (stale()) return;

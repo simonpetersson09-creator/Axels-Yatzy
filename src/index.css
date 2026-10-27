@@ -868,11 +868,14 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.74; }
 }
 
 /* Mindre tom yta under klockraden: under ön/klockraden behövs inte hela
-   safe-area-marginalen. max() skyddar telefoner med låg statusrad (SE, Android). */
-html.ad-banner-on,
-html.ad-banner-on body {
-  --game-top-gap: max(calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - 14px), calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) * 0.75)) !important;
-  --game-top-gap-mp: max(calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - 14px), calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) * 0.75)) !important;
+   safe-area-marginalen. max() skyddar telefoner med låg statusrad (SE, Android).
+   Bara telefoner: !important skulle annars köra över surfplattans eget avstånd. */
+@media (max-width: 699px), (max-height: 599px) {
+  html.ad-banner-on,
+  html.ad-banner-on body {
+    --game-top-gap: max(calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - 14px), calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) * 0.75)) !important;
+    --game-top-gap-mp: max(calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - 14px), calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) * 0.75)) !important;
+  }
 }
 
 /* Online: mindre pratbubbleknapp (36 px) ger plats för lite större tärningar.
@@ -1002,7 +1005,19 @@ html:not(.ad-banner-on):has(.mp-game) {
   }
   html:not(.preview-frame) .waiting-person-label p { font-size: 14px; }
   html:not(.preview-frame) .waiting-ready-button { width: 300px; }
-  html:not(.preview-frame) .home-actions-stack, html:not(.preview-frame) .home-pending-stack { --home-button-height: 52px; --home-gap: 9px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; }
+  html:not(.preview-frame) .home-actions-stack, html:not(.preview-frame) .home-pending-stack { --home-button-height: 52px; --home-gap: 9px; --home-stack: 440px; --home-button-font: 15px; --home-button-icon: 18px; --home-icon-gap: 10px; }
+  /* New home design parts scale with the buttons; phone values above stay untouched. */
+  html:not(.preview-frame) .home-card-chip { width: 30px; height: 30px; border-radius: 9px; }
+  html:not(.preview-frame) .home-card-chip > svg { width: 15px; height: 15px; }
+  html:not(.preview-frame) .home-card-pill { font-size: 10px; padding: 5px 10px; gap: 5px; }
+  html:not(.preview-frame) .home-waiting-badge { min-width: 22px; height: 22px; font-size: 13px; }
+  html:not(.preview-frame) .home-quick-hint { max-width: 132px; font-size: 13px; padding: 6px 10px; }
+  html:not(.preview-frame) .home-actions-stack ~ * .home-round-action,
+  html:not(.preview-frame) .home-round-action { width: 60px; height: 60px; }
+  html:not(.preview-frame) .home-round-action > svg { width: 24px; height: 24px; }
+  html:not(.preview-frame) .home-round-action ~ span.text-\[8px\],
+  html:not(.preview-frame) .group > span.text-\[8px\] { font-size: 11px; }
+  html:not(.preview-frame) .group > span.text-\[7px\] { font-size: 9px; }
 
   html:not(.preview-frame):has(.ios-game-layout) {
     --sb-row-h: clamp(25px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 150px) / 20), 55px);

@@ -33,8 +33,18 @@ export const isNativeIos =
 // Lovable/desktop preview: not on a real iOS device and not running in Capacitor.
 // In this case we render the app inside a fixed iPhone 15-sized frame (393×852)
 // so the layout looks the same as on the real device. Forced when iosPreview=true.
+// Dev-only: ?ipadPreview=1 drops the phone frame so tablet layout rules can be
+// checked at the real window size (use the tablet device button).
+const isIpadPreview = (() => {
+  try {
+    const p = new URL(window.location.href).searchParams.get('ipadPreview');
+    if (p === '1' || p === 'true') sessionStorage.setItem('lovable:ipadPreview', '1');
+    if (p === '0' || p === 'false') sessionStorage.removeItem('lovable:ipadPreview');
+    return sessionStorage.getItem('lovable:ipadPreview') === '1';
+  } catch { return false; }
+})();
 const isPreviewFrame =
-  isIosPreview || (!Capacitor.isNativePlatform() && !isIos);
+  !isIpadPreview && (isIosPreview || (!Capacitor.isNativePlatform() && !isIos));
 
 const PREVIEW_W = 393;
 const PREVIEW_H = 852;

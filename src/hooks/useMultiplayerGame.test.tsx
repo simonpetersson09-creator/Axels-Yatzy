@@ -148,6 +148,24 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.forfeitError).toBe(false);
     expect(m.action).toHaveBeenCalledOnce();
   });
+  it('late playing snapshots cannot reopen an accepted exit', async () => {
+    const { result } = await joined();
+    m.action.mockResolvedValue({ data: { success: true, game_ended: false }, error: null });
+    await act(async () => { await result.current.forfeitGame(); await result.current.retryConnection(); });
+    expect(result.current.status).toBe('finished');
+    expect(result.current.gameState?.forfeitedBySessionId).toBe('me');
+  });
+  it('preserves another player’s server-confirmed forfeit instead of attributing it to me', async () => {
+    const { result } = await joined();
+    m.action.mockImplementation(async () => {
+      game = { ...game, status: 'finished', forfeited_by: 'Other', forfeited_by_session_id: 'other' };
+      throw new Error('offline');
+    });
+    await act(async () => { await result.current.forfeitGame(); });
+    expect(result.current.status).toBe('finished');
+    expect(result.current.gameState?.forfeitedBySessionId).toBe('other');
+    expect(result.current.forfeitError).toBe(false);
+  });
   it('pending last score never exposes a confirmed finished board or permits another action', async () => {
     game = { ...game, rolls_left: 0, dice: [6,6,6,6,6] };
     const { result } = await joined();

@@ -212,6 +212,10 @@ export function useMultiplayerGame() {
   const [forfeitError, setForfeitError] = useState(false);
   const unconfirmedForfeitRef = useRef<string | null>(null);
   const confirmedForfeitsRef = useRef(new Set<string>());
+  useEffect(() => {
+    setForfeitError(false);
+    if (unconfirmedForfeitRef.current !== state.gameId) unconfirmedForfeitRef.current = null;
+  }, [state.gameId]);
   const remoteRollingGuardRef = useRef(false);
   /** When the opponent's numbers arrived (0 = still waiting). */
   const remoteResultAtRef = useRef(0);

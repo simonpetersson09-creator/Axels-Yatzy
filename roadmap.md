@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Samordnad annonsstart – 27 oktober
-- [ ] Samma pågående uppstart delas av alla annonsformat, även efter en väntande anrops tidsgräns; samtycke, ATT och frekvensregler bevaras.
-- [ ] Kör regressionstester för samtidighet, tidsgräns, fel/återförsök och samtyckesspärrar.
+- [x] Samma pågående uppstart delas av alla annonsformat, även efter en väntande anrops tidsgräns; samtycke, ATT och frekvensregler bevaras.
+- [x] 69 tester godkända, inklusive 11 nya för samtidighet, tidsgräns, fel/återförsök, samtyckesspärrar och ATT-väntan över 10 s. Bygge OK.
 - [ ] Riktig annonsstart på iPhone/Android kräver nästa signerade telefonbygge och testtelefon.
 
 ## Färre dubbla väntrumshämtningar – 26 oktober

@@ -5,7 +5,7 @@
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - App icon: resources/icon.png (1024x1024, opaque) is the only source; `npm run icons` (scripts/make-icons.js) regenerates resources/android/res, resources/ios/AppIcon.appiconset and public/ copies — never hand-edit generated icon files.
 - admob.ts: platform-specific ADMOB_IDS/REWARDED_IDS (null disables; never iOS IDs on Android); fitGameAboveBanner reserves banner space. rewarded-pair deduplicates each SDK reward across pages; RewardedXpHost requests server XP only on confirmed reward, never auto-chains ads. Legacy partial bundles are cleared, never treated as reward proof. Suppress App Open 2 min afterward. Never auto-reset uncancellable SDK attempts (subscribeRewardedState tracks). scripts/patch-admob-rewarded.js tags events with attemptId — prevents overlap/unearned XP.
-- Store links come only from src/lib/app-links.ts (getStoreLinks); the Play link stays hidden until PLAY_STORE_LIVE is true.
+- Store links: src/lib/app-links.ts (getStoreLinks); hide Play until PLAY_STORE_LIVE.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile authoritatively; score/forfeit guards await server acceptance. Expected dice validate under the scoring lock.
@@ -44,4 +44,4 @@
 - WR entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
 - WR reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
-- postinstall re-applies/verifies iOS AdMob patches; ad init timeouts exclude open ATT prompt time.
+- postinstall verifies iOS patches; init excludes ATT wait. Shared ad init retains ownership until native settlement, preventing duplicates after caller timeout.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-// @ts-expect-error plain JS build script
+// @ts-ignore plain JS build script (types may or may not resolve)
 import { verify } from '../../scripts/verify-admob-patches.js';
 
 describe('verify-admob-patches', () => {

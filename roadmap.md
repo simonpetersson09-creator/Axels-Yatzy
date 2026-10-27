@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Samordnad annonsstart – 27 oktober
+- [ ] Samma pågående uppstart delas av alla annonsformat, även efter en väntande anrops tidsgräns; samtycke, ATT och frekvensregler bevaras.
+- [ ] Kör regressionstester för samtidighet, tidsgräns, fel/återförsök och samtyckesspärrar.
+- [ ] Riktig annonsstart på iPhone/Android kräver nästa signerade telefonbygge och testtelefon.
+
 ## Färre dubbla väntrumshämtningar – 26 oktober
 - [x] Samordnade revisionshändelser med en efterföljande läsning vid ändring under pågående hämtning; nedräkning läser vid serverns slutpunkt i stället för varje sekund. Närvaro var 5 s och startsidans reservkontroll var 10 s bevarade.
 - [x] 28 riktade tester godkända; isolerat sidprov Redo → serverbekräftad matchväg med exakt en sync, inga riktiga väntplatser ändrade. Bygge OK. Verklig telefon/realtime-kontroll återstår i nästa appbygge enligt befintliga telefonprov.

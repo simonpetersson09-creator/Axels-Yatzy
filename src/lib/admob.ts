@@ -77,6 +77,7 @@ type AdMobModule = typeof import('@capacitor-community/admob');
 
 let modulePromise: Promise<AdMobModule> | null = null;
 let initialized = false;
+let initializationPromise: Promise<AdMobModule> | null = null;
 let preparedAt = 0;
 let preparing: Promise<boolean> | null = null;
 let showing = false;
@@ -314,6 +315,19 @@ export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
 async function ensureInitialized(): Promise<AdMobModule> {
   const generation = adGeneration;
   if (!adAllowed(generation)) throw new Error('privacy_transition');
+  // Caller timeouts never cancel native initialization. Keep ownership until
+  // the shared operation settles so late callers cannot start another one.
+  if (!initializationPromise) {
+    initializationPromise = initializeAds(generation).finally(() => {
+      initializationPromise = null;
+    });
+  }
+  const mod = await initializationPromise;
+  if (!adAllowed(generation)) throw new Error('privacy_transition');
+  return mod;
+}
+
+async function initializeAds(generation: number): Promise<AdMobModule> {
   const mod = await loadModule();
   // Samtycke först: inga annonser begärs innan spelaren svarat i EU.
   const canRequest = await ensureConsent(mod);
@@ -328,6 +342,7 @@ async function ensureInitialized(): Promise<AdMobModule> {
     });
     initialized = true;
   }
+  if (!adAllowed(generation)) throw new Error('privacy_transition');
   if (!dismissListenerAttached) {
     dismissListenerAttached = true;
     try {

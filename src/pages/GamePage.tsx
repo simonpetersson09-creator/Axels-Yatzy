@@ -439,7 +439,7 @@ export default function GamePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
-        <div className="flex w-full max-w-full gap-1 items-start mt-[var(--game-top-gap,50px)] mb-0">
+        <div className="game-play-row flex w-full max-w-full gap-1 items-start mt-[var(--game-top-gap,50px)] mb-0">
           {/* Left: Scoreboard */}
           <div className="ios-score-zone flex flex-col gap-3 self-start">
             <div className="relative game-shadow-soft rounded-lg overflow-hidden">
@@ -458,7 +458,7 @@ export default function GamePage() {
 
           <div className="ios-side-zone flex w-[124px] max-[379px]:w-[108px] flex-shrink-0 flex-col gap-2 self-start">
             {/* Player indicators */}
-            <div className="flex flex-col gap-1 h-[124px]">
+            <div className="game-player-names flex flex-col gap-1 h-[124px]">
               {gameState.players.map((player, idx) => {
                 const isCurrent = idx === gameState.currentPlayerIndex;
                 const color = PLAYER_COLORS[idx];
@@ -469,7 +469,7 @@ export default function GamePage() {
                 return (
                   <motion.div
                     key={player.id}
-                    className={`flex items-center gap-2.5 px-2 py-1 rounded-xl transition-all ${
+                    className={`game-player-row flex items-center gap-2.5 px-2 py-1 rounded-xl transition-all ${
                       isCurrent ? 'bg-secondary/80' : ''
                     }`}
                     animate={isCurrent ? { scale: 1.05 } : { scale: 1 }}
@@ -487,7 +487,7 @@ export default function GamePage() {
                       )}
                     </div>
                     </div>
-                    <span className={`text-[10px] font-semibold truncate max-w-[80px] max-[379px]:max-w-[64px] ${
+                    <span className={`game-player-name text-[10px] font-semibold truncate max-w-[80px] max-[379px]:max-w-[64px] ${
                       isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                     }`}>
                       {player.name}
@@ -507,7 +507,7 @@ export default function GamePage() {
             </div>
 
             {/* Dice — tapping the computer's dice shows its info */}
-            <div className="relative mt-2" onClick={isCurrentAi ? () => setAiInfoOpen(true) : undefined}>
+            <div className="game-dice-column relative mt-2" onClick={isCurrentAi ? () => setAiInfoOpen(true) : undefined}>
               <PickDiceHint
                 show={
                   gameState.rollsLeft === 2 &&
@@ -563,7 +563,7 @@ export default function GamePage() {
                 onPointerCancel={() => { pressedButtonRef.current = null; }}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 disabled={!canRoll || gameState.isRolling}
-                className={`relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
+                className={`game-roll-button relative w-[88px] h-[88px] rounded-full font-display font-bold text-[16px] tracking-wide transition-colors duration-200 flex items-center justify-center active:scale-[0.94] ${
                   canRoll && !gameState.isRolling
                     ? 'bg-gradient-to-b from-primary to-game-gold-dark text-primary-foreground shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)] kasta-pulse'
                     : 'bg-secondary text-muted-foreground shadow-none'
@@ -612,7 +612,7 @@ export default function GamePage() {
                   }}
                   onPointerCancel={() => { pressedButtonRef.current = null; }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="inline-flex items-center justify-center px-2 min-w-[3.2rem] min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
+                  className="game-nav-button inline-flex items-center justify-center px-2 min-w-[3.2rem] min-h-[32px] rounded-lg text-[10px] font-medium text-primary/85 bg-primary/10 border border-primary/25 active:bg-primary/20 transition-colors duration-200 whitespace-nowrap shadow-[0_2px_8px_-2px_hsl(0_0%_0%/0.4)]"
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
                   title={t('toMenu')}
                   aria-label={t('home')}

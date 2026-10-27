@@ -816,7 +816,7 @@ export default function HomePage() {
                 >
                   <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </motion.button>
-                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('language')}</span>
+                <span className="home-round-label text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('language')}</span>
 
                 <AnimatePresence>
                   {showLangPicker && (
@@ -857,7 +857,7 @@ export default function HomePage() {
                 <div className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center">
                   <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </div>
-                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('settings')}</span>
+                <span className="home-round-label text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('settings')}</span>
               </motion.button>
               </div>
 
@@ -870,7 +870,7 @@ export default function HomePage() {
                 <div className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center">
                   <Users className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                 </div>
-                <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('friends')}</span>
+                <span className="home-round-label text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('friends')}</span>
               </motion.button>
 
               <div className="relative flex flex-col items-center">
@@ -890,12 +890,12 @@ export default function HomePage() {
                       <Play className="w-4 h-4 sm:w-5 sm:h-5 text-background" />
                     </div>
                   </div>
-                  <span className="text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('adButtonShort')}</span>
+                  <span className="home-round-label text-[8px] font-medium tracking-wider text-primary/60 uppercase whitespace-nowrap inline-flex items-start leading-none">{t('adButtonShort')}</span>
                   {adStatusText && !AD_BUTTON_LOCKED && (
-                    <span role="status" className="text-[7px] font-medium text-primary/80 text-center leading-none -mt-1 whitespace-nowrap">{adStatusText}</span>
+                    <span role="status" className="home-round-status text-[7px] font-medium text-primary/80 text-center leading-none -mt-1 whitespace-nowrap">{adStatusText}</span>
                   )}
                   {AD_BUTTON_LOCKED && (
-                    <span className={`text-[7px] font-medium text-destructive text-center leading-none -mt-1 transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adComingSoon')}</span>
+                    <span className={`home-round-status text-[7px] font-medium text-destructive text-center leading-none -mt-1 transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}>{t('adComingSoon')}</span>
                   )}
                 </motion.button>
               </div>

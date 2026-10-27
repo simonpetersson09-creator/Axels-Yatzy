@@ -13,14 +13,15 @@ vi.mock('@/lib/notifications', () => ({ clearGameNotifications: vi.fn() }));
 import { useMultiplayerGame } from './useMultiplayerGame';
 let game: Record<string, unknown>;
 let failReads = false;
-const players = [{ id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false }, { id: 'p2', player_name: 'Other', player_index: 1, scores: {}, is_bot: false }];
+const players = [{ id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false, session_id: 'me' }, { id: 'p2', player_name: 'Other', player_index: 1, scores: {}, is_bot: false, session_id: 'other' }];
 beforeEach(() => {
   vi.useFakeTimers(); failReads = false;
+  players[0] = { id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false, session_id: 'me' };
   game = { id: 'game', game_code: 'ABCDEF', status: 'playing', current_player_index: 0, dice: [1,1,1,1,1], locked_dice: [false,false,false,false,false], rolls_left: 3, round: 1, updated_at: '2026-10-24T12:00:00Z' };
   m.rpc.mockReset().mockImplementation(async (name: string) => ({ data: name === 'validate_game_session' ? { valid: true, player_index: 0 } : true, error: null }));
   m.from.mockReset().mockImplementation((table: string) => {
     const response = () => Promise.resolve(failReads ? { data: null, error: { message: 'offline' } } : { data: table === 'games' ? { ...game } : players, error: null });
-    const q = { select: () => q, eq: () => q, order: response, single: response, maybeSingle: response }; return q;
+    const q = { select: () => q, eq: () => q, order: response, single: response, maybeSingle: () => Promise.resolve(failReads ? { data: null, error: { message: 'offline' } } : { data: players[0], error: null }) }; return q;
   });
   m.roll.mockReset(); m.action.mockReset();
 });
@@ -83,6 +84,69 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.status).toBe('playing');
     expect(result.current.gameState?.forfeitedBySessionId ?? null).toBeNull();
     expect(result.current.forfeiting).toBe(false);
+    expect(result.current.error).toBeNull();
+    expect(result.current.forfeitError).toBe(true);
+  });
+  it('lost response recovers a server-accepted forfeit without sending twice', async () => {
+    const { result } = await joined();
+    m.action.mockImplementation(async () => {
+      game = { ...game, status: 'finished', forfeited_by: 'Me', forfeited_by_session_id: 'me' };
+      throw new Error('Load failed');
+    });
+    await act(async () => { await result.current.forfeitGame(); });
+    expect(result.current.status).toBe('finished');
+    expect(result.current.gameState?.forfeitedBySessionId).toBe('me');
+    expect(result.current.forfeitError).toBe(false);
+    expect(m.action).toHaveBeenCalledOnce();
+  });
+  it('recovers an early quick-match forfeit from the replaced seat', async () => {
+    game = { ...game, is_quick_match: true };
+    const { result } = await joined();
+    m.action.mockImplementation(async () => {
+      players[0] = { ...players[0], is_bot: true, session_id: 'bot:replacement' };
+      throw new Error('Load failed');
+    });
+    await act(async () => { await result.current.forfeitGame(); });
+    expect(game.status).toBe('playing');
+    expect(result.current.status).toBe('finished');
+    expect(result.current.gameState?.forfeitedBySessionId).toBe('me');
+    expect(m.action).toHaveBeenCalledOnce();
+  });
+  it('failed reconciliation stays on the board and blocks a blind manual retry', async () => {
+    const { result } = await joined(); failReads = true;
+    m.action.mockRejectedValue(new Error('offline'));
+    await act(async () => { await result.current.forfeitGame(); });
+    await act(async () => { await result.current.forfeitGame(); });
+    expect(result.current.status).toBe('playing');
+    expect(result.current.error).toBeNull();
+    expect(result.current.forfeitError).toBe(true);
+    expect(m.action).toHaveBeenCalledOnce();
+    failReads = false;
+    m.action.mockResolvedValue({ data: { success: true }, error: null });
+    await act(async () => { await result.current.forfeitGame(); });
+    expect(m.action).toHaveBeenCalledTimes(2);
+    expect(result.current.status).toBe('finished');
+  });
+  it('manual retry reads the accepted forfeit before attempting another request', async () => {
+    const { result } = await joined();
+    m.action.mockRejectedValue(new Error('offline'));
+    await act(async () => { await result.current.forfeitGame(); });
+    game = { ...game, status: 'finished', forfeited_by_session_id: 'me' };
+    await act(async () => { await result.current.forfeitGame(); });
+    expect(result.current.status).toBe('finished');
+    expect(m.action).toHaveBeenCalledOnce();
+  });
+  it('a late success after timeout clears the retry error without another request', async () => {
+    const { result } = await joined();
+    let resolve: (value: unknown) => void = () => {};
+    m.action.mockImplementation(() => new Promise(r => { resolve = r; }));
+    await act(async () => { void result.current.forfeitGame(); await vi.advanceTimersByTimeAsync(8_000); });
+    expect(result.current.status).toBe('playing');
+    expect(result.current.forfeitError).toBe(true);
+    await act(async () => { resolve({ data: { success: true }, error: null }); });
+    expect(result.current.status).toBe('finished');
+    expect(result.current.forfeitError).toBe(false);
+    expect(m.action).toHaveBeenCalledOnce();
   });
   it('pending last score never exposes a confirmed finished board or permits another action', async () => {
     game = { ...game, rolls_left: 0, dice: [6,6,6,6,6] };

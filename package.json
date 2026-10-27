@@ -22,7 +22,8 @@
     "cap:android:icons": "node scripts/set-android-icons.js",
     "cap:android:min-sdk": "node scripts/set-android-min-sdk.js",
     "cap:android:firebase": "node scripts/set-android-firebase.js",
-    "cap:android:admob": "node scripts/set-android-admob-manifest.js"
+    "cap:android:admob": "node scripts/set-android-admob-manifest.js",
+    "postinstall": "node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && node scripts/patch-admob-privacy-cache.js ios && node scripts/verify-admob-patches.js ios || echo '\u26a0 AdMob-patchar kunde inte l\u00e4ggas in automatiskt \u2013 k\u00f6r npm run cap:sync:ios'"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.1.0",

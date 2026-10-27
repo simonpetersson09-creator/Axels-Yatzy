@@ -9,7 +9,7 @@
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile authoritatively; score/forfeit guards await server acceptance. Expected dice validate under the scoring lock.
-- Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
+- Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls); client tumbles via diceAwait until server numbers arrive (cheat-proof).
 - - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — audits fairness and disputes.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).
@@ -35,7 +35,7 @@
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
 - Rank ties: match count, creation time, session_id; totals unchanged.
 - - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
-- WR pushes atomically reserve a device-scoped rate_limits key in internal_waiting_room_take_push; suppressed recalls are consumed, and delivery must use that same bound device so seat/session churn cannot bypass the cooldown. Other notification categories never share this key.
+- WR pushes reserve a device-scoped rate_limits key (internal_waiting_room_take_push); suppressed recalls are consumed and delivery uses the same device, so churn cannot bypass cooldown; no other category shares it.
 - WR quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
 - WR flags read public ranks once per membership change, self from profile; never guess missing countries or mutate seats.
 - WR labels reserve side space; flags use atomic horizontal writing to preserve regional-indicator pairs.
@@ -44,3 +44,4 @@
 - WR entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
 - WR reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
+- postinstall re-applies/verifies iOS AdMob patches; ad init timeouts exclude open ATT prompt time.

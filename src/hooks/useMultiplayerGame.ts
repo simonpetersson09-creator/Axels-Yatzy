@@ -209,6 +209,13 @@ export function useMultiplayerGame() {
   const [rollPending, setRollPending] = useState(false);
   const forfeitingRef = useRef(false);
   const [forfeiting, setForfeiting] = useState(false);
+  const [forfeitError, setForfeitError] = useState(false);
+  const unconfirmedForfeitRef = useRef<string | null>(null);
+  const confirmedForfeitsRef = useRef(new Set<string>());
+  useEffect(() => {
+    setForfeitError(false);
+    if (unconfirmedForfeitRef.current !== state.gameId) unconfirmedForfeitRef.current = null;
+  }, [state.gameId]);
   const remoteRollingGuardRef = useRef(false);
   /** When the opponent's numbers arrived (0 = still waiting). */
   const remoteResultAtRef = useRef(0);
@@ -377,6 +384,9 @@ export function useMultiplayerGame() {
     const game = gameRes.data;
     const dbPlayers = playersRes.data;
     if (!game || !dbPlayers || !mountedRef.current) return;
+    // The exiting player's accepted forfeit is terminal locally, including
+    // a quick-match seat handed to a bot. Late reads must not reopen it.
+    if (confirmedForfeitsRef.current.has(gameId)) return;
 
     // Several refreshes can be in flight at once; never let an older server
     // snapshot (lower updated_at) overwrite a newer one already applied.
@@ -1367,41 +1377,83 @@ export function useMultiplayerGame() {
     const myName = myPlayerIndex !== null && state.gameState
       ? state.gameState.players[myPlayerIndex]?.name ?? null
       : null;
+    const myPlayerId = myPlayerIndex !== null ? state.gameState?.players[myPlayerIndex]?.id : undefined;
 
     forfeitingRef.current = true;
     setForfeiting(true);
+    setForfeitError(false);
 
-    try {
-      const { data, error } = await withTimeout(invokeDeviceAction('forfeit-game', {
-        game_id: gameId, session_id: sessionId,
-      }));
-      if (error || !data?.success) throw error ?? new Error('forfeit not accepted');
-      if (mountedRef.current) setState(prev => prev.gameId === gameId ? {
+    const isCurrent = () => mountedRef.current && stateRef.current.gameId === gameId;
+    const accept = () => {
+      if (!isCurrent()) return;
+      unconfirmedForfeitRef.current = null;
+      setForfeitError(false);
+      setState(prev => prev.gameId === gameId ? {
         ...prev, status: 'finished', error: null,
         gameState: prev.gameState ? { ...prev.gameState, forfeitedBy: myName, forfeitedBySessionId: sessionId } : null,
       } : prev);
-      trackEvent('game_forfeited', undefined, { gameId, gameMode: 'multiplayer' });
+      if (!confirmedForfeitsRef.current.has(gameId)) {
+        confirmedForfeitsRef.current.add(gameId);
+        trackEvent('game_forfeited', undefined, { gameId, gameMode: 'multiplayer' });
+      }
+    };
+    const reconcile = async (): Promise<'accepted' | 'ended' | 'running' | 'unknown'> => {
+      try {
+        const [gameRes, seatRes] = await withTimeout(Promise.all([
+          supabase.from('games').select('status, is_quick_match, forfeited_by_session_id').eq('id', gameId).single(),
+          supabase.from('game_players').select('id, player_index, is_bot, session_id').eq('game_id', gameId).eq('player_index', myPlayerIndex ?? -1).maybeSingle(),
+        ]), 5_000);
+        if (!isCurrent() || gameRes.error || seatRes.error || !gameRes.data || !seatRes.data) return 'unknown';
+        const game = gameRes.data;
+        const seat = seatRes.data;
+        if ((game.status === 'finished' && game.forfeited_by_session_id === sessionId) ||
+          (game.is_quick_match && seat.id === myPlayerId && seat.is_bot &&
+            seat.session_id !== sessionId && seat.session_id.startsWith('bot:'))) {
+          accept();
+          reportMpIssue('forfeit_recovered', gameId);
+          return 'accepted';
+        }
+        if (game.status === 'finished') {
+          unconfirmedForfeitRef.current = null;
+          await withTimeout(refreshGameState(gameId), 5_000);
+          return 'ended';
+        }
+        return game.status === 'playing' && seat.session_id === sessionId && !seat.is_bot ? 'running' : 'unknown';
+      } catch {
+        return 'unknown';
+      }
+    };
+
+    try {
+      // A manual retry first reads authoritative state; never resend blind.
+      if (unconfirmedForfeitRef.current === gameId) {
+        const outcome = await reconcile();
+        if (outcome === 'accepted' || outcome === 'ended') return;
+        if (outcome !== 'running') throw new Error('forfeit_unconfirmed');
+      }
+      const request = invokeDeviceAction('forfeit-game', {
+        game_id: gameId, session_id: sessionId,
+      });
+      // Timeout does not cancel the request: a late success still confirms
+      // this match, without resending or attributing it to another match.
+      void request.then(({ data, error }) => {
+        if (!error && data?.success) accept();
+      }).catch(() => {});
+      const { data, error } = await withTimeout(request);
+      if (error || !data?.success) throw error ?? new Error('forfeit not accepted');
+      accept();
     } catch (err) {
       console.error('Forfeit failed:', err);
       reportMpIssue('forfeit_failed', gameId, { err: errText(err) });
-      // The server never got the forfeit: the match is still running there.
-      // Bring the player back to the board with an error instead of leaving
-      // them on a finished-looking screen while the match lives on.
-      if (mountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          status: 'playing',
-          error: t('errGeneric'),
-          gameState: prev.gameState
-            ? { ...prev.gameState, forfeitedBy: null, forfeitedBySessionId: null }
-            : prev.gameState,
-        }));
-      }
+      if (!isCurrent() || confirmedForfeitsRef.current.has(gameId)) return;
+      unconfirmedForfeitRef.current = gameId;
+      const outcome = await reconcile();
+      if (outcome !== 'accepted' && outcome !== 'ended' && isCurrent() && !confirmedForfeitsRef.current.has(gameId)) setForfeitError(true);
     } finally {
       forfeitingRef.current = false;
       if (mountedRef.current) setForfeiting(false);
     }
-  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
+  }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId, refreshGameState]);
 
   const retryConnection = useCallback(async () => {
     const id = stateRef.current.gameId;
@@ -1548,6 +1600,7 @@ export function useMultiplayerGame() {
     locksPending,
     rollPending,
     forfeiting,
+    forfeitError,
     retryConnection,
     remoteRolling,
     pendingCategory,

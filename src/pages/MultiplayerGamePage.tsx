@@ -54,14 +54,17 @@ export default function MultiplayerGamePage() {
 
   const forfeitErrorMessage = getForfeitError(lang);
   const retryLabel = t('wrRetry');
+  const retryForfeitRef = useRef(forfeitGame);
+  retryForfeitRef.current = forfeitGame;
   useEffect(() => {
     if (!forfeitError) return;
     const id = toast.error(forfeitErrorMessage, {
+      id: 'multiplayer-forfeit-error',
       duration: Infinity,
-      action: { label: retryLabel, onClick: () => { void forfeitGame(); } },
+      action: { label: retryLabel, onClick: () => { void retryForfeitRef.current(); } },
     });
     return () => { toast.dismiss(id); };
-  }, [forfeitError, forfeitErrorMessage, retryLabel, forfeitGame]);
+  }, [forfeitError, forfeitErrorMessage, retryLabel]);
 
   // A match that was never started belongs in the waiting room (the server
   // refuses rolls/scores until the host taps Start).

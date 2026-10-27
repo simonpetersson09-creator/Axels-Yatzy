@@ -380,6 +380,9 @@ export function useMultiplayerGame() {
     const game = gameRes.data;
     const dbPlayers = playersRes.data;
     if (!game || !dbPlayers || !mountedRef.current) return;
+    // The exiting player's accepted forfeit is terminal locally, including
+    // a quick-match seat handed to a bot. Late reads must not reopen it.
+    if (confirmedForfeitsRef.current.has(gameId)) return;
 
     // Several refreshes can be in flight at once; never let an older server
     // snapshot (lower updated_at) overwrite a newer one already applied.

@@ -35,7 +35,7 @@
 - Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
 - Rank ties: match count, creation time, session_id; totals unchanged.
 - - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
-- WR pushes atomically reserve a device-scoped rate_limits key in internal_waiting_room_take_push; suppressed recalls are consumed, and delivery must use that same bound device so seat/session churn cannot bypass the cooldown. Other notification categories never share this key.
+- WR pushes reserve a device-scoped rate_limits key (internal_waiting_room_take_push); suppressed recalls are consumed and delivery uses the same device, so churn cannot bypass cooldown; no other category shares it.
 - WR quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
 - WR flags read public ranks once per membership change, self from profile; never guess missing countries or mutate seats.
 - WR labels reserve side space; flags use atomic horizontal writing to preserve regional-indicator pairs.
@@ -44,4 +44,4 @@
 - WR entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
 - WR reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
-- npm postinstall re-applies and verifies iOS AdMob patches, so an npm install between sync and Xcode build cannot silently drop them; ad init timeouts exclude time the ATT prompt is open.
+- postinstall re-applies/verifies iOS AdMob patches; ad init timeouts exclude open ATT prompt time.

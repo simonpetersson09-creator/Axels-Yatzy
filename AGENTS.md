@@ -9,7 +9,7 @@
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile authoritatively; score/forfeit guards await server acceptance. Expected dice validate under the scoring lock.
-- Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls — remove once updated); client tumbles via diceAwait until server numbers arrive — keeps matches cheat-proof.
+- Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls); client tumbles via diceAwait until server numbers arrive (cheat-proof).
 - - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — audits fairness and disputes.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).

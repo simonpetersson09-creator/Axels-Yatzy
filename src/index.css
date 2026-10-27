@@ -1034,7 +1034,7 @@ html:not(.ad-banner-on):has(.mp-game) {
     max-width: var(--tablet-game-w);
     --sb-col-w: 74px;
   }
-  html:not(.preview-frame) .ios-game-card > .flex { gap: 24px; }
+  html:not(.preview-frame) .ios-game-card :is(.game-play-row, .mp-play-layout) { gap: 24px; }
   html:not(.preview-frame) .ios-game-layout .ios-side-zone {
     flex: 1;
     width: auto;

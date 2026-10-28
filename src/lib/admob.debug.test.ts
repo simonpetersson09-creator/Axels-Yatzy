@@ -36,17 +36,32 @@ describe('debug slow load', () => {
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
 
-  it('probe', async () => {
-    const { recordGameResult } = await import('./local-stats');
+  it('probe without the hanging mock', async () => {
+    const { recordGameResult, getRankedGames } = await import('./local-stats');
     recordGameResult(200, true, 0, 'first-match');
+    console.log('ranked=', getRankedGames());
+    const m = await import('./admob');
+    const r = await vi.waitFor(async () => {
+      const v = await Promise.race([m.showAppOpenAd(), new Promise((res) => setTimeout(() => res('pending'), 1))]);
+      return v;
+    }, { timeout: 1, interval: 1 });
+    console.log('plain result=', r, 'calls=', native.loadAppOpen.mock.calls.length);
+    expect(typeof r).toBe('boolean');
+  });
+
+  it('probe with the hanging mock', async () => {
+    const { recordGameResult, getRankedGames } = await import('./local-stats');
+    recordGameResult(200, true, 0, 'first-match');
+    console.log('ranked=', getRankedGames());
     native.loadAppOpen.mockImplementationOnce(() => new Promise<void>(() => {}));
     const m = await import('./admob');
     let result: boolean | undefined;
     void m.showAppOpenAd().then((shown) => { result = shown; });
-    for (const ms of [1, 1000, 8000, 4000, 12000, 20000]) {
-      await vi.advanceTimersByTimeAsync(ms);
-      console.log('after', ms, 'result=', result, 'calls=', native.loadAppOpen.mock.calls.length, 'loaded=', native.appOpenLoaded);
-    }
+    await vi.advanceTimersByTimeAsync(13_000);
+    console.log('hanging result=', result, 'calls=', native.loadAppOpen.mock.calls.length, 'loaded=', native.appOpenLoaded);
+    expect(result).toBe(false);
+  });
+});
     expect(true).toBe(true);
   });
 });

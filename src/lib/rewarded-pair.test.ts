@@ -37,6 +37,19 @@ describe('one optional video for one XP', () => {
     expect(show).toHaveBeenCalledTimes(2);
     expect(xp).toHaveBeenCalledExactlyOnceWith(1);
   });
+  it('still awards 1 XP when the player closes a completed video after the 2-minute limit', async () => {
+    vi.useFakeTimers();
+    let finish: (r: RewardedResult) => void = () => {};
+    const show = vi.fn().mockImplementation(() => new Promise(r => { finish = r; }));
+    const pair = createRewardedPair(show); const xp = vi.fn(); pair.setRewardHandler(() => xp(1));
+    const running = pair.run();
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(await running).toBe('not_earned');
+    finish('rewarded');
+    await vi.advanceTimersByTimeAsync(0);
+    expect(xp).toHaveBeenCalledExactlyOnceWith(1);
+    vi.useRealTimers();
+  });
   it('deduplicates late SDK rewards for each single completed video', async () => {
     const late: (() => void)[] = [];
     const show = vi.fn(async (fn: () => void): Promise<RewardedResult> => { late.push(fn); return 'not_earned'; });

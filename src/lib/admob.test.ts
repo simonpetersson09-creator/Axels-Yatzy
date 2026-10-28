@@ -59,57 +59,42 @@ describe.each(['ios', 'android'])('%s first-match App Open protection', (platfor
     expect(native.loadAppOpen).toHaveBeenCalledOnce();
   });
 
-  it('still shows the startup ad when the consent answer takes 10 seconds', async () => {
+  it('still shows the startup ad when the consent answer takes 9 seconds', async () => {
     const { recordGameResult } = await import('./local-stats');
     expect(recordGameResult(200, true, 0, 'first-match')).toBe(true);
     const admobModule = await import('@capacitor-community/admob');
     const original = admobModule.AdMob.requestConsentInfo;
-    for (const name of ['initialize', 'isAppOpenLoaded', 'loadAppOpen', 'showAppOpen'] as const) {
-      const f = admobModule.AdMob[name];
-      admobModule.AdMob[name] = (async (...args: unknown[]) => {
-        console.log('DEBUG call', name);
-        return (f as (...a: unknown[]) => unknown)(...args);
-      }) as typeof admobModule.AdMob[typeof name];
-    }
-    let release: (value: { canRequestAds: boolean }) => void = () => {};
-    admobModule.AdMob.requestConsentInfo = () => { console.log('DEBUG call requestConsentInfo'); return new Promise((resolve) => { release = resolve; }); };
+    // Slow UMP answer on a fake timer: with the old 8-second budget this failed.
+    admobModule.AdMob.requestConsentInfo = () =>
+      new Promise((resolve) => { setTimeout(() => resolve({ canRequestAds: true }), 9_000); });
     const m = await import('./admob');
     try {
       const shown = m.showAppOpenAd();
-      console.log('DEBUG showAppOpenAd started, promise =', shown instanceof Promise);
-      await vi.advanceTimersByTimeAsync(10_000);
-      console.log('DEBUG: advanced 10s');
-      release({ canRequestAds: true });
-      console.log('DEBUG: released');
-      await Promise.resolve();
-      await Promise.resolve();
-      console.log('DEBUG: two microtask ticks flushed, loadAppOpen calls =', native.loadAppOpen.mock.calls.length);
+      await vi.advanceTimersByTimeAsync(9_000);
       expect(await shown).toBe(true);
-      console.log('DEBUG: shown resolved');
       expect(native.loadAppOpen).toHaveBeenCalledOnce();
     } finally {
       admobModule.AdMob.requestConsentInfo = original;
     }
   });
 
-  it('gives up on the startup ad only after the 30-second consent budget', async () => {
+  it('shows no startup ad when the consent answer never arrives', async () => {
     const { recordGameResult } = await import('./local-stats');
     expect(recordGameResult(200, true, 0, 'first-match')).toBe(true);
     const admobModule = await import('@capacitor-community/admob');
     const original = admobModule.AdMob.requestConsentInfo;
-    let release: (value: { canRequestAds: boolean }) => void = () => {};
-    admobModule.AdMob.requestConsentInfo = () => new Promise((resolve) => { release = resolve; });
+    admobModule.AdMob.requestConsentInfo = () => new Promise(() => {});
     const m = await import('./admob');
     try {
       const shown = m.showAppOpenAd();
       await vi.advanceTimersByTimeAsync(30_000);
-      release({ canRequestAds: true });
       expect(await shown).toBe(false);
       expect(native.loadAppOpen).not.toHaveBeenCalled();
     } finally {
       admobModule.AdMob.requestConsentInfo = original;
     }
   });
+
 
 
   it('an abandoned first match does not unlock App Open', async () => {

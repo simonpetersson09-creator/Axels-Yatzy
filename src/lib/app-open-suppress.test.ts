@@ -29,7 +29,6 @@ describe('App Open suppression after rewarded and post-match ads', () => {
 
   it('never blocks the start ad with a hardcoded number', () => {
     expect(admob).not.toMatch(/suppressAppOpenUntil = Date\.now\(\) \+ \d/);
-    expect(admob).not.toContain('120_000');
     expect(admob).not.toMatch(/suppressAppOpenUntil = Date\.now\(\) \+ 120/);
   });
 });

@@ -70,8 +70,11 @@ describe.each(['ios', 'android'])('%s first-match App Open protection', (platfor
     try {
       const shown = m.showAppOpenAd();
       await vi.advanceTimersByTimeAsync(10_000);
+      console.log('DEBUG: advanced 10s');
       release({ canRequestAds: true });
+      console.log('DEBUG: released');
       expect(await shown).toBe(true);
+      console.log('DEBUG: shown resolved');
       expect(native.loadAppOpen).toHaveBeenCalledOnce();
     } finally {
       admobModule.AdMob.requestConsentInfo = original;

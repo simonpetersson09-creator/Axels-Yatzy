@@ -708,8 +708,8 @@ export async function showOptionalRewarded(options: { waitForCompletion?: boolea
 /* Helt separat från interstitial-flödet för "Frivillig reklam".       */
 /* ------------------------------------------------------------------ */
 
-/** Laddas annonsen inte inom denna tid visas den inte alls denna start. */
-const APP_OPEN_LOAD_TIMEOUT_MS = 8000;
+/** Laddas annonsen inte inom denna tid (12 s) visas den inte alls denna start. */
+const APP_OPEN_LOAD_TIMEOUT_MS = 12_000;
 
 let appOpenShowing = false;
 let appOpenPreload: Promise<boolean> | null = null;

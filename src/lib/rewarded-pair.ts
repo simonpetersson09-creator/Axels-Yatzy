@@ -32,8 +32,12 @@ export function createRewardedPair(show: (late: () => void) => Promise<RewardedR
           };
           // Hard timeout: if the native ad never reports back (no show, no
           // dismiss), release the bundle instead of blocking it until restart.
+          // A reward confirmed AFTER the timeout (long ad + late close) still
+          // pays exactly once via accept().
+          const shown = show(accept);
+          void shown.then((r) => { if (r === 'rewarded') accept(); }, () => {});
           const result = await Promise.race<RewardedResult>([
-            show(accept),
+            shown,
             new Promise<RewardedResult>((r) => setTimeout(() => r('not_earned'), AD_HARD_TIMEOUT_MS)),
           ]);
           if (result !== 'rewarded') return result;

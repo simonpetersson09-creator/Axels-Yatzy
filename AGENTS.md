@@ -44,4 +44,4 @@
 - WR entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.
 - WR reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
-- postinstall verifies iOS patches; init excludes ATT wait. Shared ad init retains ownership until native settlement, preventing duplicates after caller timeout.
+- postinstall patches Android Rewarded, verifies iOS; Android sync requires Kotlin getters (private fields). Shared init owns native settlement after timeout; no ATT wait.

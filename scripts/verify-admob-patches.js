@@ -10,6 +10,7 @@ const root = resolve('node_modules/@capacitor-community/admob');
 const platform = process.argv[2] || 'ios';
 
 const ios = 'ios/Sources/AdMobPlugin/';
+const rewardedAndroid = 'android/src/main/java/com/getcapacitor/community/admob/rewarded/';
 const checks = {
   ios: [
     [ios + 'AdMobPlugin.swift', [
@@ -36,6 +37,12 @@ const checks = {
     ]],
   ],
   android: [
+    [rewardedAndroid + 'AdRewardExecutor.java', [
+      ['LOVABLE_ATTEMPT_PATCH', 'Rewarded attemptId-patch'],
+      ...['Showed', 'FailedToShow', 'Dismissed'].map(event => [
+        `RewardAdPluginEvents.INSTANCE.get${event}()`, `Rewarded publik getter get${event}() (privata Kotlin-fält får inte användas)`,
+      ]),
+    ]],
     ['android/src/main/java/com/getcapacitor/community/admob/AdMob.java', [
       ['public void getStoredConsentChoices(final PluginCall call)', 'implementation av getStoredConsentChoices'],
       ['public void getConsentEligibility(final PluginCall call)', 'implementation av getConsentEligibility'],
@@ -58,9 +65,28 @@ export async function verify(target, read = path => readFile(resolve(root, path)
   }
   // Android registers @PluginMethod methods only when annotated.
   if (target === 'android' && !missing.length) {
-    const src = await read(checks.android[0][0]);
+    const src = await read('android/src/main/java/com/getcapacitor/community/admob/AdMob.java');
     for (const name of ['getStoredConsentChoices', 'getConsentEligibility', 'discardPrivacyCaches']) {
       if (!new RegExp(`@PluginMethod\\s+public void ${name}\\(`).test(src)) missing.push(`AdMob.java: @PluginMethod för ${name}`);
+    }
+  }
+  if (target === 'android') {
+    try {
+      const executor = await read(rewardedAndroid + 'AdRewardExecutor.java');
+      for (const event of ['Showed', 'FailedToShow', 'Dismissed']) {
+        if (new RegExp(`RewardAdPluginEvents\\.${event}\\b`).test(executor)) {
+          missing.push(`AdRewardExecutor.java: privat fält RewardAdPluginEvents.${event}; använd INSTANCE.get${event}()`);
+        }
+      }
+      const events = await read(rewardedAndroid + 'RewardAdPluginEvents.kt');
+      if (!/object\s+RewardAdPluginEvents\b/.test(events)) missing.push('RewardAdPluginEvents.kt: Kotlin object saknas');
+      for (const event of ['Showed', 'FailedToShow', 'Dismissed']) {
+        if (!new RegExp(`override\\s+val\\s+${event}\\b`).test(events)) {
+          missing.push(`RewardAdPluginEvents.kt: publik getter get${event}() kan inte verifieras`);
+        }
+      }
+    } catch {
+      missing.push('Rewarded: Java-executor eller Kotlin-händelse-API saknas');
     }
   }
   return missing;

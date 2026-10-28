@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFile } from 'node:fs/promises';
 // @ts-ignore plain JS build script (types may or may not resolve)
 import { verify } from '../../scripts/verify-admob-patches.js';
 
@@ -48,7 +49,30 @@ describe('verify-admob-patches', () => {
       'maxAdAgeMs',
       'discardExpiredAd',
     ].join('\n');
+    const rewardedSource = [
+      'LOVABLE_ATTEMPT_PATCH',
+      'object RewardAdPluginEvents',
+      ...['Showed', 'FailedToShow', 'Dismissed'].flatMap(event => [
+        `RewardAdPluginEvents.INSTANCE.get${event}()`, `override val ${event} = "event"`,
+      ]),
+    ].join('\n');
     expect(await verify('ios', async () => iosSource)).toEqual([]);
-    expect(await verify('android', async () => androidSource)).toEqual([]);
+    expect(await verify('android', async () => androidSource + '\n' + rewardedSource)).toEqual([]);
+  });
+
+  it.each(['Showed', 'FailedToShow', 'Dismissed'])('rejects private Rewarded field %s even alongside valid getters', async event => {
+    const missing: string[] = await verify('android', async (path: string) => {
+      const source = await readFile(`node_modules/@capacitor-community/admob/${path}`, 'utf8');
+      return path.endsWith('AdRewardExecutor.java') ? source + `\nRewardAdPluginEvents.${event}` : source;
+    });
+    expect(missing).toContain(`AdRewardExecutor.java: privat fält RewardAdPluginEvents.${event}; använd INSTANCE.get${event}()`);
+  });
+
+  it('rejects an incompatible Kotlin event API', async () => {
+    const missing: string[] = await verify('android', async (path: string) => {
+      const source = await readFile(`node_modules/@capacitor-community/admob/${path}`, 'utf8');
+      return path.endsWith('RewardAdPluginEvents.kt') ? source.replace('override val Showed', 'private val Showed') : source;
+    });
+    expect(missing).toContain('RewardAdPluginEvents.kt: publik getter getShowed() kan inte verifieras');
   });
 });

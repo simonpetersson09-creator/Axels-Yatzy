@@ -29,12 +29,22 @@ const checks = {
     [ios + 'Rewarded/AdRewardExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för belöningsannons']]],
     [ios + 'Banner/BannerExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för banner']]],
     [ios + 'AppOpen/AppOpenAdPlugin.swift', [['func discardPrivacyCache()', 'cacherensning för appstartsannons']]],
+    [ios + 'AppOpen/AppOpenAdManager.swift', [
+      ['MRB_APP_OPEN_EXPIRY', "appstartsannonsens 4-timmarsutgång (patch-admob-app-open.js)"],
+      ['maxAdAge', '4-timmarsgräns för sparad appstartsannons'],
+      ['discardExpiredAd', 'rensning av för gammal appstartsannons'],
+    ]],
   ],
   android: [
     ['android/src/main/java/com/getcapacitor/community/admob/AdMob.java', [
       ['public void getStoredConsentChoices(final PluginCall call)', 'implementation av getStoredConsentChoices'],
       ['public void getConsentEligibility(final PluginCall call)', 'implementation av getConsentEligibility'],
       ['public void discardPrivacyCaches(final PluginCall call)', 'implementation av discardPrivacyCaches'],
+    ]],
+    ['android/src/main/java/com/getcapacitor/community/admob/appopen/AppOpenAdManager.kt', [
+      ['MRB_APP_OPEN_EXPIRY', "appstartsannonsens 4-timmarsutgång (patch-admob-app-open-android.js)"],
+      ['maxAdAgeMs', '4-timmarsgräns för sparad appstartsannons'],
+      ['discardExpiredAd', 'rensning av för gammal appstartsannons'],
     ]],
   ],
 };

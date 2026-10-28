@@ -708,6 +708,11 @@ export async function showOptionalRewarded(options: { waitForCompletion?: boolea
 /* Helt separat från interstitial-flödet för "Frivillig reklam".       */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Samtycket och Apples spårningsfråga ingår i uppstarten: ge upp först efter
+ * 30 s, så att en spelare som funderar i en ruta ändå får sin startannons.
+ */
+const APP_OPEN_INIT_TIMEOUT_MS = 30_000;
 /** Laddas annonsen inte inom denna tid visas den inte alls denna start. */
 const APP_OPEN_LOAD_TIMEOUT_MS = 8000;
 
@@ -756,7 +761,7 @@ export function preloadAppOpenAd(): Promise<boolean> {
   if (appOpenPreload) return appOpenPreload;
   appOpenPreload = (async () => {
     try {
-      const mod = await initWithTimeout(PREPARE_TIMEOUT_MS);
+      const mod = await initWithTimeout(APP_OPEN_INIT_TIMEOUT_MS);
       if (!adAllowed(generation)) return false;
       attachAppOpenRevenue(mod);
       const { value } = await mod.AdMob.isAppOpenLoaded();
@@ -794,7 +799,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   const startedAt = Date.now();
   let release = true;
   try {
-    const mod = await initWithTimeout(APP_OPEN_LOAD_TIMEOUT_MS);
+    const mod = await initWithTimeout(APP_OPEN_INIT_TIMEOUT_MS);
     attachAppOpenRevenue(mod);
     if (!adAllowed(generation)) return false;
     // A preload already running (started at cold start) is awaited, not doubled.

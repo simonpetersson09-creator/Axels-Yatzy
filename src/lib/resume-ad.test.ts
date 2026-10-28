@@ -5,11 +5,11 @@ import { resolve } from 'node:path';
 const home = readFileSync(resolve(__dirname, '../pages/HomePage.tsx'), 'utf8');
 
 /** The player must be away at least this long before a return may show the App Open ad. */
-const AWAY_MS = 40_000;
+const AWAY_SECONDS = 40;
 
 describe('return-away App Open rule', () => {
   it('requires 40 seconds away', () => {
-    expect(home).toContain(`const RESUME_AD_MIN_AWAY_MS = ${AWAY_MS};`);
+    expect(home).toContain(`const RESUME_AD_MIN_AWAY_MS = ${AWAY_SECONDS}_000;`);
   });
 
   it('gates the resume ad on that constant, not on a hardcoded number', () => {

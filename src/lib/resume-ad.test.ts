@@ -18,7 +18,7 @@ describe('return-away App Open rule', () => {
   });
 
   it('keeps the comment in step with the value', () => {
-    expect(home).toContain(`away ≥ ${AWAY_MS / 1000} s`);
+    expect(home).toContain(`away ≥ ${AWAY_SECONDS} s`);
     expect(home).not.toMatch(/away ≥ 60 s/);
   });
 });

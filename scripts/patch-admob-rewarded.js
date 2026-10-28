@@ -1,5 +1,5 @@
 /**
- * Patch @capacitor-community/admob (8.1.x) rewarded ads so every show attempt
+ * Patch @capacitor-community/admob (8.1.x–8.2.x) rewarded ads so every show attempt
  * is identifiable and always ends with a definite answer.
  *
  * Contract after the patch (iOS + Android), for showRewardVideoAd({ attemptId }):
@@ -181,8 +181,8 @@ async function patch(file, startMarker, tail, label) {
 
 async function main() {
   const pkg = JSON.parse(await readFile(resolve(ROOT, 'package.json'), 'utf-8'));
-  if (!String(pkg.version).startsWith('8.1.')) {
-    console.error(`[admob patch] plugin ${pkg.version} not verified (expected 8.1.x) — update scripts/patch-admob-rewarded.js.`);
+  if (!/^8\.[12]\./.test(String(pkg.version))) {
+    console.error(`[admob patch] plugin ${pkg.version} not verified (expected 8.1.x–8.2.x) — update scripts/patch-admob-rewarded.js.`);
     process.exit(1);
   }
   if (platform !== 'android') await patch(IOS_FILE, '    func showRewardVideoAd(', IOS_TAIL, 'iOS');

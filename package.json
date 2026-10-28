@@ -26,7 +26,7 @@
     "postinstall": "node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && node scripts/patch-admob-privacy-cache.js ios && node scripts/verify-admob-patches.js ios || echo '\u26a0 AdMob-patchar kunde inte l\u00e4ggas in automatiskt \u2013 k\u00f6r npm run cap:sync:ios'"
   },
   "dependencies": {
-    "@capacitor-community/admob": "^8.1.0",
+    "@capacitor-community/admob": "^8.2.1",
     "@capacitor-community/in-app-review": "^8.0.0",
     "@capacitor/android": "^8.3.1",
     "@capacitor/app": "^8.1.1",

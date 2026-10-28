@@ -473,8 +473,8 @@ const ANDROID_REWARDED_LOAD_TIMEOUT_MS = 20_000;
 const ANDROID_REWARDED_OPEN_TIMEOUT_MS = 20_000;
 /** Reward callback may arrive just after dismissal on some SDK versions. */
 const REWARD_GRACE_MS = 1500;
-/** Start ad stays away this long after the rewarded ad closes. */
-const APP_OPEN_SUPPRESS_AFTER_REWARDED_MS = 2 * 60_000;
+/** Start ad stays away this long (60 s) after the rewarded or post-match ad closes. */
+const APP_OPEN_SUPPRESS_AFTER_REWARDED_MS = 60_000;
 
 let rewardedShowing = false;
 let rewardedPreparedAt = 0;

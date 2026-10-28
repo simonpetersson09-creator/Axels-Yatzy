@@ -71,14 +71,20 @@ describe.each(['ios', 'android'])('%s first-match App Open protection', (platfor
   it('waits up to 12 seconds for a slow start ad, then lets the player through', async () => {
     const { recordGameResult } = await import('./local-stats');
     recordGameResult(200, true, 0, 'first-match');
-    native.loadAppOpen.mockImplementationOnce(() => new Promise<void>(() => {}));
+    native.loadAppOpen.mockImplementationOnce(() => new Promise<void>((res) => setTimeout(res, 20_000)));
     const m = await import('./admob');
+    // The start-ad flow pulls the waiting-room module in dynamically; warm it
+    // with the real clock so the fake-clock phase only has to run the ad timeout.
+    vi.useRealTimers();
+    await import('./waiting-room');
+    vi.useFakeTimers();
     let result: boolean | undefined;
     void m.showAppOpenAd().then((shown) => { result = shown; });
     await vi.advanceTimersByTimeAsync(8_000);
     expect(result).toBeUndefined();
     await vi.advanceTimersByTimeAsync(4_000);
     expect(result).toBe(false);
+    await vi.advanceTimersByTimeAsync(8_000);
   });
 });
 

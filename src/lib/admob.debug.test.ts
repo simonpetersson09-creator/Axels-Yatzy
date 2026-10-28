@@ -51,7 +51,7 @@ describe('debug', () => {
   });
 
   it('stalled load gives up after 12 s', async () => {
-    native.loadAppOpen.mockImplementationOnce(() => new Promise<void>(() => {}));
+    native.loadAppOpen.mockImplementationOnce(() => new Promise<void>((res) => setTimeout(res, 60_000)));
     const m = await setup();
     let result: boolean | undefined;
     void m.showAppOpenAd().then((shown) => { result = shown; });

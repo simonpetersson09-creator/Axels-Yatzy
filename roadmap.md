@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Android Rewarded-kompilering – 28 oktober
-- [ ] Rätta privata händelsefält via pluginets publika getters, reparera tidigare patchade installationer och kör automatiskt vid installation/synkning.
-- [ ] Verifiera händelse-API före Android-synkning och testa färsk patch, återkörning och felkontroll; kontrollera tillgänglig Java-byggmiljö.
+- [x] Privata Showed/FailedToShow/Dismissed ersatta med Kotlin-objektets publika getters; befintliga patchar repareras utan att cacherensning ersätts. Android Rewarded körs vid postinstall och befintlig Android-sync.
+- [x] 67 tester godkända i fyra filer; färsk patch, gammal patch, idempotens, varje privat fält och ändrat Kotlin-API testade. postinstall samt iOS-/Android-verifiering körda; senaste webbbygge OK.
+- [ ] Java-/Gradle-kompilering kräver användarens Android-byggmiljö: här saknas Java, javac, Gradle, Android SDK och genererad android-app. Ingen native-kompilering eller telefonvisning verifierad.
 
 ## Säker återhämtning vid Ge upp – 27 oktober
 - [x] Kontrollera serverns match/plats vid förlorat svar och före manuellt återförsök; håll matchen synlig med separat fel och återförsök på alla 40 språk. Sena svar och matchläsningar återöppnar inte godkänt avhopp.

@@ -67,6 +67,19 @@ describe.each(['ios', 'android'])('%s first-match App Open protection', (platfor
     expect(await m.showAppOpenAd()).toBe(false);
     expect(native.loadAppOpen).not.toHaveBeenCalled();
   });
+
+  it('waits up to 12 seconds for a slow start ad, then lets the player through', async () => {
+    const { recordGameResult } = await import('./local-stats');
+    recordGameResult(200, true, 0, 'first-match');
+    native.loadAppOpen.mockImplementationOnce(() => new Promise<void>(() => {}));
+    const m = await import('./admob');
+    let result: boolean | undefined;
+    void m.showAppOpenAd().then((shown) => { result = shown; });
+    await vi.advanceTimersByTimeAsync(8_000);
+    expect(result).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(4_000);
+    expect(result).toBe(false);
+  });
 });
 
 describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {

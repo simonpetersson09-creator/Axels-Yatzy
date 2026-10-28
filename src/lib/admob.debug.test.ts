@@ -12,12 +12,12 @@ vi.mock('@capacitor-community/admob', () => ({
   BannerAdPluginEvents: { Loaded: 'b_loaded', FailedToLoad: 'b_failed', AdImpression: 'b_impression', SizeChanged: 'b_size', Opened: 'b_opened', Closed: 'b_closed' },
   RewardAdPluginEvents: { Showed: 'r_showed', Rewarded: 'r_reward', Dismissed: 'r_dismissed', FailedToShow: 'r_failed' },
   AdMob: {
-    requestConsentInfo: async () => ({ canRequestAds: true }),
-    initialize: async () => {}, prepareInterstitial: async () => {}, showInterstitial: native.show,
+    requestConsentInfo: async () => { console.log('MOCK consent'); return { canRequestAds: true }; },
+    initialize: async () => { console.log('MOCK init'); }, prepareInterstitial: async () => {}, showInterstitial: native.show,
     prepareRewardVideoAd: native.prepareRewarded, showRewardVideoAd: native.showRewarded,
-    isAppOpenLoaded: async () => ({ value: native.appOpenLoaded }),
-    loadAppOpen: async () => { await native.loadAppOpen(); native.appOpenLoaded = true; },
-    showAppOpen: async () => {},
+    isAppOpenLoaded: async () => { console.log('MOCK loaded?', native.appOpenLoaded); return ({ value: native.appOpenLoaded }); },
+    loadAppOpen: async () => { console.log('MOCK load'); await native.loadAppOpen(); native.appOpenLoaded = true; },
+    showAppOpen: async () => { console.log('MOCK show'); },
     showBanner: native.banner.show, hideBanner: native.banner.hide, resumeBanner: native.banner.resume, removeBanner: native.banner.remove,
     addListener: async (event: string, handler: () => void) => {
       const handlers = native.handlers.get(event) ?? new Set();

@@ -59,6 +59,44 @@ describe.each(['ios', 'android'])('%s first-match App Open protection', (platfor
     expect(native.loadAppOpen).toHaveBeenCalledOnce();
   });
 
+  it('still shows the startup ad when the consent answer takes 9 seconds', async () => {
+    const { recordGameResult } = await import('./local-stats');
+    expect(recordGameResult(200, true, 0, 'first-match')).toBe(true);
+    const admobModule = await import('@capacitor-community/admob');
+    const original = admobModule.AdMob.requestConsentInfo;
+    // Slow UMP answer on a fake timer: with the old 8-second budget this failed.
+    admobModule.AdMob.requestConsentInfo = () =>
+      new Promise((resolve) => { setTimeout(() => resolve({ canRequestAds: true }), 9_000); });
+    const m = await import('./admob');
+    try {
+      const shown = m.showAppOpenAd();
+      await vi.advanceTimersByTimeAsync(9_000);
+      expect(await shown).toBe(true);
+      expect(native.loadAppOpen).toHaveBeenCalledOnce();
+    } finally {
+      admobModule.AdMob.requestConsentInfo = original;
+    }
+  });
+
+  it('shows no startup ad when the consent answer never arrives', async () => {
+    const { recordGameResult } = await import('./local-stats');
+    expect(recordGameResult(200, true, 0, 'first-match')).toBe(true);
+    const admobModule = await import('@capacitor-community/admob');
+    const original = admobModule.AdMob.requestConsentInfo;
+    admobModule.AdMob.requestConsentInfo = () => new Promise(() => {});
+    const m = await import('./admob');
+    try {
+      const shown = m.showAppOpenAd();
+      await vi.advanceTimersByTimeAsync(30_000);
+      expect(await shown).toBe(false);
+      expect(native.loadAppOpen).not.toHaveBeenCalled();
+    } finally {
+      admobModule.AdMob.requestConsentInfo = original;
+    }
+  });
+
+
+
   it('an abandoned first match does not unlock App Open', async () => {
     const { recordGameResult, getRankedGames } = await import('./local-stats');
     expect(recordGameResult(20, false, 0, 'abandoned-first-match', false)).toBe(false);

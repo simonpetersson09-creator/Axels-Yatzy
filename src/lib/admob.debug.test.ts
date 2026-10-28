@@ -51,8 +51,13 @@ describe('debug', () => {
   });
 
   it('stalled load gives up after 12 s', async () => {
-    native.loadAppOpen.mockImplementationOnce(() => new Promise<void>((res) => setTimeout(res, 60_000)));
+    native.loadAppOpen.mockImplementationOnce(() => new Promise<void>((res) => setTimeout(res, 20_000)));
     const m = await setup();
+    // The start-ad flow pulls the waiting-room module in dynamically; warm it
+    // with the real clock so the fake-clock phase only has to run the ad timeout.
+    vi.useRealTimers();
+    await import('./waiting-room');
+    vi.useFakeTimers();
     let result: boolean | undefined;
     void m.showAppOpenAd().then((shown) => { result = shown; });
     await vi.advanceTimersByTimeAsync(8_000);
@@ -60,5 +65,7 @@ describe('debug', () => {
     await vi.advanceTimersByTimeAsync(4_000);
     console.log('at 12 s result =', result, 'calls =', native.loadAppOpen.mock.calls.length);
     expect(result).toBe(false);
+    await vi.advanceTimersByTimeAsync(8_000);
   });
+});
 });

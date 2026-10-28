@@ -59,6 +59,45 @@ describe.each(['ios', 'android'])('%s first-match App Open protection', (platfor
     expect(native.loadAppOpen).toHaveBeenCalledOnce();
   });
 
+  it('still shows the startup ad when the consent answer takes 10 seconds', async () => {
+    const { recordGameResult } = await import('./local-stats');
+    expect(recordGameResult(200, true, 0, 'first-match')).toBe(true);
+    const admobModule = await import('@capacitor-community/admob');
+    const original = admobModule.AdMob.requestConsentInfo;
+    let release: (value: { canRequestAds: boolean }) => void = () => {};
+    admobModule.AdMob.requestConsentInfo = () => new Promise((resolve) => { release = resolve; });
+    const m = await import('./admob');
+    try {
+      const shown = m.showAppOpenAd();
+      await vi.advanceTimersByTimeAsync(10_000);
+      release({ canRequestAds: true });
+      expect(await shown).toBe(true);
+      expect(native.loadAppOpen).toHaveBeenCalledOnce();
+    } finally {
+      admobModule.AdMob.requestConsentInfo = original;
+    }
+  });
+
+  it('gives up on the startup ad only after the 30-second consent budget', async () => {
+    const { recordGameResult } = await import('./local-stats');
+    expect(recordGameResult(200, true, 0, 'first-match')).toBe(true);
+    const admobModule = await import('@capacitor-community/admob');
+    const original = admobModule.AdMob.requestConsentInfo;
+    let release: (value: { canRequestAds: boolean }) => void = () => {};
+    admobModule.AdMob.requestConsentInfo = () => new Promise((resolve) => { release = resolve; });
+    const m = await import('./admob');
+    try {
+      const shown = m.showAppOpenAd();
+      await vi.advanceTimersByTimeAsync(30_000);
+      release({ canRequestAds: true });
+      expect(await shown).toBe(false);
+      expect(native.loadAppOpen).not.toHaveBeenCalled();
+    } finally {
+      admobModule.AdMob.requestConsentInfo = original;
+    }
+  });
+
+
   it('an abandoned first match does not unlock App Open', async () => {
     const { recordGameResult, getRankedGames } = await import('./local-stats');
     expect(recordGameResult(20, false, 0, 'abandoned-first-match', false)).toBe(false);

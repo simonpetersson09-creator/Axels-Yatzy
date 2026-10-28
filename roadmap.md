@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Android Rewarded-kompilering – 28 oktober
+- [ ] Rätta privata händelsefält via pluginets publika getters, reparera tidigare patchade installationer och kör automatiskt vid installation/synkning.
+- [ ] Verifiera händelse-API före Android-synkning och testa färsk patch, återkörning och felkontroll; kontrollera tillgänglig Java-byggmiljö.
+
 ## Säker återhämtning vid Ge upp – 27 oktober
 - [x] Kontrollera serverns match/plats vid förlorat svar och före manuellt återförsök; håll matchen synlig med separat fel och återförsök på alla 40 språk. Sena svar och matchläsningar återöppnar inte godkänt avhopp.
 - [x] Registrerat avhopp, datorövertagande, läsfel, sena svar och dubbeltryck testade utan live-matchändringar. Isolerat skärmprov: anslutningsfel → synlig match + Försök igen → serverbekräftat avhopp på resultatsidan; exakt två anrop, inga runtimefel eller riktiga matchändringar.

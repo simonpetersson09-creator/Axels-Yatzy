@@ -128,21 +128,21 @@ const ANDROID_SHOW = `    // ${MARK}
                     @Override
                     public void onAdShowedFullScreenContent() {
                         JSObject d = new JSObject(); d.put("attemptId", attemptId);
-                        notifyListenersFunction.accept(RewardAdPluginEvents.Showed, d);
+                        notifyListenersFunction.accept(RewardAdPluginEvents.INSTANCE.getShowed(), d);
                     }
                     @Override
                     public void onAdFailedToShowFullScreenContent(com.google.android.gms.ads.AdError adError) {
                         dropAd.run();
                         JSObject d = new JSObject();
                         d.put("code", adError.getCode()); d.put("message", adError.getMessage()); d.put("attemptId", attemptId);
-                        notifyListenersFunction.accept(RewardAdPluginEvents.FailedToShow, d);
+                        notifyListenersFunction.accept(RewardAdPluginEvents.INSTANCE.getFailedToShow(), d);
                         call.reject("Failed to present: " + adError.getMessage());
                     }
                     @Override
                     public void onAdDismissedFullScreenContent() {
                         dropAd.run();
                         JSObject d = new JSObject(); d.put("attemptId", attemptId);
-                        notifyListenersFunction.accept(RewardAdPluginEvents.Dismissed, d);
+                        notifyListenersFunction.accept(RewardAdPluginEvents.INSTANCE.getDismissed(), d);
                         JSObject r = new JSObject();
                         r.put("attemptId", attemptId); r.put("rewarded", rewarded[0]); r.put("patched", true);
                         call.resolve(r);
@@ -171,6 +171,16 @@ const ANDROID_SHOW = `    // ${MARK}
 async function patch(file, startMarker, tail, label) {
   if (!existsSync(file)) { console.warn(`[admob patch] ${label}: ${file} missing — skipped.`); return; }
   let src = await readFile(file, 'utf-8');
+  // Kotlin override val fields are private on the JVM; Java must use the object getters.
+  // Repair existing patches too, without replacing their privacy-cache additions.
+  if (label === 'Android' && src.includes(MARK)) {
+    const repaired = src.replace(/RewardAdPluginEvents\.(Showed|FailedToShow|Dismissed)\b/g,
+      (_, event) => `RewardAdPluginEvents.INSTANCE.get${event}()`);
+    if (repaired !== src) {
+      await writeFile(file, repaired, 'utf-8');
+      console.log('[admob patch] Android: repaired Kotlin event access.');
+    }
+  }
   if (src.includes(MARK)) { console.log(`[admob patch] ${label}: already patched.`); return; }
   const i = src.indexOf(startMarker);
   if (i < 0) { console.error(`[admob patch] ${label}: unexpected plugin source (marker not found).`); process.exit(1); }

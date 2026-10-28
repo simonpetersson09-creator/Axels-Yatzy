@@ -64,15 +64,26 @@ describe.each(['ios', 'android'])('%s first-match App Open protection', (platfor
     expect(recordGameResult(200, true, 0, 'first-match')).toBe(true);
     const admobModule = await import('@capacitor-community/admob');
     const original = admobModule.AdMob.requestConsentInfo;
+    for (const name of ['initialize', 'isAppOpenLoaded', 'loadAppOpen', 'showAppOpen'] as const) {
+      const f = admobModule.AdMob[name];
+      admobModule.AdMob[name] = (async (...args: unknown[]) => {
+        console.log('DEBUG call', name);
+        return (f as (...a: unknown[]) => unknown)(...args);
+      }) as typeof admobModule.AdMob[typeof name];
+    }
     let release: (value: { canRequestAds: boolean }) => void = () => {};
-    admobModule.AdMob.requestConsentInfo = () => new Promise((resolve) => { release = resolve; });
+    admobModule.AdMob.requestConsentInfo = () => { console.log('DEBUG call requestConsentInfo'); return new Promise((resolve) => { release = resolve; }); };
     const m = await import('./admob');
     try {
       const shown = m.showAppOpenAd();
+      console.log('DEBUG showAppOpenAd started, promise =', shown instanceof Promise);
       await vi.advanceTimersByTimeAsync(10_000);
       console.log('DEBUG: advanced 10s');
       release({ canRequestAds: true });
       console.log('DEBUG: released');
+      await Promise.resolve();
+      await Promise.resolve();
+      console.log('DEBUG: two microtask ticks flushed, loadAppOpen calls =', native.loadAppOpen.mock.calls.length);
       expect(await shown).toBe(true);
       console.log('DEBUG: shown resolved');
       expect(native.loadAppOpen).toHaveBeenCalledOnce();

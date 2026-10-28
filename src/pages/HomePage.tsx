@@ -55,8 +55,8 @@ import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/
 let startupAdChecked = false;
 /** Module-level so it survives HomePage remounts while the app is in background. */
 let backgroundedAt = 0;
-const RESUME_AD_MIN_AWAY_MS = 60_000;
-/** Set when the player was away ≥ 60 s but resumed outside the start screen. */
+const RESUME_AD_MIN_AWAY_MS = 40_000;
+/** Set when the player was away ≥ 40 s but resumed outside the start screen. */
 let resumeAdPending = false;
 let resumeWatcherInstalled = false;
 const onStartScreen = () => window.location.pathname === '/' && document.visibilityState === 'visible';

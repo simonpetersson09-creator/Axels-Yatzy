@@ -9,10 +9,15 @@ export function usePostMatchExit(matchKey: string, completed: boolean, onHome: (
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
+    busy.current = false;
+    setLeaving(false);
+  }, [matchKey]);
+
+  useEffect(() => {
     if (completed && !attemptedMatches.has(matchKey)) void preloadInterstitial();
   }, [completed, matchKey]);
 
-  const leave = useCallback(async () => {
+  const leave = useCallback(async (onContinue?: () => void) => {
     if (busy.current) return;
     busy.current = true;
     setLeaving(true);
@@ -21,8 +26,8 @@ export function usePostMatchExit(matchKey: string, completed: boolean, onHome: (
         attemptedMatches.add(matchKey);
         await showPostMatchInterstitial();
       }
-    } catch { /* An ad failure must never prevent returning home. */ }
-    finally { onHome(); }
+    } catch { /* An ad failure must never prevent continuing. */ }
+    finally { (onContinue ?? onHome)(); }
   }, [completed, matchKey, onHome]);
 
   return { leaving, leave };

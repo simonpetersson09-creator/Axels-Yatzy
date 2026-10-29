@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Matchannons vid Spela igen – 29 oktober
+- [x] Spela igen delar matchannonsflödet med hemutgång; nästa match väntar på stängning, oladdad annons hoppas över och dubbeltryck spärras. Låset återställs först med nästa matchnyckel.
+- [x] 62 tester godkända: replay/stängning, dubbeltryck mellan knapparna, flera matcher, hemutgång och annonsfel. Isolerat körande appprov: Spela igen → ny matchnyckel/runda 1 utan runtimefel eller live-statistik; bygge OK.
+- [ ] Riktig annonsvisning vid Spela igen kräver nästa signerade telefonbygge och testtelefon.
+
 ## Linjediagram i admin – 29 oktober
 - [x] Diagram-knapp, egen sida och tio valbara linjer för alla tabellmått med samma skyddade dagssiffror; iPhone/Android visas separat.
 - [x] Inloggad navigation, individuella val, dölj alla, två linjer, direkt omladdning och återgång till 90-dagarstabellen verifierade utan runtimefel; 12 statistiktester godkända och bygge OK.

@@ -418,8 +418,8 @@ export default function GamePage() {
         show={gameState.gameOver}
         players={gameOverResults}
         aiPlayers={aiPlayers}
-        onPlayAgain={handlePlayAgain}
-        onBackToMenu={leave}
+        onPlayAgain={() => { void leave(handlePlayAgain); }}
+        onBackToMenu={() => { void leave(); }}
         leaving={leaving}
       />
       <DiceInfoSheet

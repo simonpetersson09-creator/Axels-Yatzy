@@ -81,6 +81,9 @@ export default function AdminLineChart({ rows }: { rows: AdminDayRow[] }) {
               {SERIES.filter((s) => visible.includes(s.key)).map((s) => (
                 <Line key={s.key} type="linear" dataKey={s.key} name={s.label} stroke={`hsl(var(--${s.token}))`} strokeWidth={1.75} dot={false} activeDot={{ r: 4 }} isAnimationActive={false} connectNulls={false} />
               ))}
+              {showTrend && SERIES.filter((s) => visible.includes(s.key)).map((s) => (
+                <Line key={`trend_${s.key}`} type="linear" dataKey={`trend_${s.key}`} name={`${s.label} (trend)`} stroke={`hsl(var(--${s.token}))`} strokeWidth={1.5} strokeDasharray="6 4" strokeOpacity={0.65} dot={false} activeDot={false} isAnimationActive={false} connectNulls legendType="none" tooltipType="none" />
+              ))}
             </LineChart>
           </ResponsiveContainer>
         )}

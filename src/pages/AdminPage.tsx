@@ -96,6 +96,7 @@ export default function AdminPage() {
   }
 
   const sum = (k: keyof DayRow) => k === "total" ? sum("cpu_finished") + sum("online_finished") : rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
+  const records = useMemo(() => adminRecordIndexes(rows, COLUMNS.map((c) => c.key)), [rows]);
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
@@ -126,12 +127,21 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {rows.map((r, i) => (
               <tr key={r.day} className="border-t border-border">
                 <td className="px-3 py-1.5 whitespace-nowrap">{fmtDay(r.day)}</td>
                 {COLUMNS.map((c) => (
-                  <td key={c.key} className="px-3 py-1.5 text-right tabular-nums">
+                  <td key={c.key} className="px-3 py-1.5 text-right tabular-nums whitespace-nowrap">
                     {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
+                    {records[c.key] === i && (
+                      <span
+                        aria-hidden="true"
+                        title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
+                        className={WORST_COLUMNS.includes(c.key) ? "ml-1 text-destructive" : "ml-1 text-primary"}
+                      >
+                        ★
+                      </span>
+                    )}
                   </td>
                 ))}
               </tr>
@@ -152,6 +162,7 @@ export default function AdminPage() {
         </table>
       </div>
       <p className="text-xs text-muted-foreground mt-3">
+        ★ = högsta värdet i kolumnen under de senaste 30 dagarna. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.
         Snabbspel mot datorn räknar alla startade, även ej färdiga. Enhetssummor visas inte eftersom samma enhet spelar flera dagar.
       </p>
     </div>

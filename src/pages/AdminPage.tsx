@@ -2,8 +2,10 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   adminRecordIndexes,
+  buildRibbon,
   type AdminColumnKey,
   type AdminDayRow as DayRow,
+  type StarPoint,
 } from "@/lib/admin-records";
 
 const ADMIN_KEY_STORAGE = "lovable.admin.key";
@@ -21,48 +23,6 @@ const COLUMNS: { key: AdminColumnKey; label: string }[] = [
 
 /** Columns where the highest number is a bad day rather than an achievement. */
 const WORST_COLUMNS: AdminColumnKey[] = ["forfeits", "issues"];
-
-type StarPoint = {
-  key: AdminColumnKey;
-  day: string;
-  x: number;
-  y: number;
-  /** y of the empty padding band just inside this star's row top border. */
-  lane: number;
-};
-
-/**
- * Ribbon drawn between record stars. Every vertical run stays inside the star
- * slot of its column (the only empty strip in a row) and every horizontal run
- * stays in the padding band between two rows, so the line never crosses a
- * digit. Corners are rounded so each turn reads as one sweep, not a zigzag.
- */
-function buildRibbon(pts: StarPoint[]): string {
-  if (pts.length < 2) return "";
-  const f = (n: number) => n.toFixed(1);
-  let d = `M ${f(pts[0].x)} ${f(pts[0].y)}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const a = pts[i];
-    const b = pts[i + 1];
-    const lane = a.lane;
-    const dx = b.x - a.x;
-    const dy1 = lane - a.y;
-    const dy2 = b.y - lane;
-    const r = Math.max(0, Math.min(14, Math.abs(dy1) / 2, Math.abs(dx) / 2, Math.abs(dy2) / 2));
-    if (Math.abs(dx) < 1 || r < 3) {
-      d += ` L ${f(a.x)} ${f(lane)} L ${f(b.x)} ${f(lane)} L ${f(b.x)} ${f(b.y)}`;
-      continue;
-    }
-    const sx = Math.sign(dx);
-    d +=
-      ` L ${f(a.x)} ${f(lane - Math.sign(dy1) * r)}` +
-      ` Q ${f(a.x)} ${f(lane)} ${f(a.x + sx * r)} ${f(lane)}` +
-      ` L ${f(b.x - sx * r)} ${f(lane)}` +
-      ` Q ${f(b.x)} ${f(lane)} ${f(b.x)} ${f(lane + Math.sign(dy2) * r)}` +
-      ` L ${f(b.x)} ${f(b.y)}`;
-  }
-  return d;
-}
 
 function fmtDay(d: string) {
   const dt = new Date(d + "T12:00:00");

@@ -6,3 +6,10 @@ SELECT
   public.admin_mean_app_age(DATE '2026-08-01', ARRAY[DATE '2026-07-31', DATE '2026-07-30', DATE '2026-08-01']) = 1.0 AS equal_device_weight,
   public.admin_mean_app_age(DATE '2026-08-01', ARRAY[DATE '2026-08-01', DATE '2026-08-01', DATE '2026-07-31']) = 0.3 AS rounds_to_one_decimal,
   public.admin_mean_app_age(DATE '2026-08-01', ARRAY[]::date[]) IS NULL AS no_devices_is_unknown;
+
+SELECT
+  public.admin_median_app_age(DATE '2026-08-01', ARRAY[DATE '2026-08-01', DATE '2026-07-31', DATE '2026-05-01']) = 1.0 AS median_resists_outlier,
+  public.admin_median_app_age(DATE '2026-08-01', ARRAY[DATE '2026-07-31', DATE '2026-07-28']) = 2.5 AS even_count_averages_middle,
+  public.admin_median_app_age(DATE '2026-08-01', ARRAY[DATE '2026-07-01']) = 31.0 AS median_includes_full_history,
+  public.admin_median_app_age(DATE '2026-08-01', ARRAY[DATE '2026-08-01']) = 0.0 AS median_first_day_zero,
+  public.admin_median_app_age(DATE '2026-08-01', ARRAY[]::date[]) IS NULL AS empty_median_unknown;

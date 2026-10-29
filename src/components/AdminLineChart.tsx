@@ -54,6 +54,11 @@ export default function AdminLineChart({ rows }: { rows: AdminDayRow[] }) {
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={() => setVisible(SERIES.map((s) => s.key))}>Visa alla</Button>
         <Button variant="outline" size="sm" onClick={() => setVisible([])}>Dölj alla</Button>
+        <label className="inline-flex items-center gap-2 text-sm cursor-pointer ml-2">
+          <input type="checkbox" checked={showTrend} onChange={(e) => setShowTrend(e.target.checked)} className="size-4 accent-primary" />
+          <svg width="22" height="10" aria-hidden="true"><path d="M 0 5 H 22" stroke="hsl(var(--muted-foreground))" strokeWidth="2" strokeDasharray="4 3" /></svg>
+          Trendlinjer
+        </label>
       </div>
       <fieldset className="flex flex-wrap gap-x-6 gap-y-3">
         <legend className="sr-only">Synliga linjer</legend>

@@ -1159,6 +1159,20 @@ export type Database = {
           played: number
         }[]
       }
+      admin_daily_stats_v3: {
+        Args: { _start?: string }
+        Returns: {
+          android: number
+          cpu_finished: number
+          day: string
+          devices: number
+          forfeits: number
+          ios: number
+          issues: number
+          online_finished: number
+          played: number
+        }[]
+      }
       award_ad_xp: {
         Args: { p_device_id: string; p_session_id: string }
         Returns: Json

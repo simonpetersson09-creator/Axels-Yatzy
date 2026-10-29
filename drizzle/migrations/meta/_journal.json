@@ -666,6 +666,13 @@
       "when": 1793262342236,
       "tag": "0094_admin_daily_stats_v2",
       "breakpoints": true
+    },
+    {
+      "idx": 95,
+      "version": "7",
+      "when": 1793263298778,
+      "tag": "0095_admin_daily_stats_from_aug_1",
+      "breakpoints": true
     }
   ]
 }

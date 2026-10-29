@@ -34,7 +34,7 @@ const TEXT: Record<string, [string, string]> = {
   hr: ["Mr.B Yatzy je ažuriran 🎲", "Čekaju nova poboljšanja. Ažuriraj i baci Yatzy!"],
   sl: ["Mr.B Yatzy je posodobljen 🎲", "Čakajo nove izboljšave. Posodobi in vrzi Yatzy!"],
   el: ["Το Mr.B Yatzy ενημερώθηκε 🎲", "Νέες βελτιώσεις σας περιμένουν. Ενημερώστε και ρίξτε ένα Yatzy!"],
-  ca: ["Mr.B Yatzy s"ha actualitzat 🎲", "T"esperen noves millores. Actualitza i treu un Yatzy!"],
+  ca: ["Mr.B Yatzy s’ha actualitzat 🎲", "T’esperen noves millores. Actualitza i treu un Yatzy!"],
   id: ["Mr.B Yatzy telah diperbarui 🎲", "Peningkatan baru menanti. Perbarui dan lempar Yatzy!"],
   ms: ["Mr.B Yatzy telah dikemas kini 🎲", "Penambahbaikan baharu menanti. Kemas kini dan baling Yatzy!"],
   vi: ["Mr.B Yatzy đã được cập nhật 🎲", "Những cải tiến mới đang chờ. Cập nhật và đổ một Yatzy!"],

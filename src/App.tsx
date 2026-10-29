@@ -41,7 +41,7 @@ const IS_PREVIEW_HOST = (() => {
   } catch { return false; }
 })();
 const WEB_BLOCKED = !Capacitor.isNativePlatform() && !import.meta.env.DEV && !IS_PREVIEW_HOST;
-const WEB_OPEN_PATHS = ['/join', '/legal', '/admin'];
+const WEB_OPEN_PATHS = ['/join', '/legal', '/admin', '/admin/diagram'];
 
 const WebGate = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
@@ -102,6 +102,9 @@ const App = () => (
           <Route path="/friends" element={<FriendsListPage />} />
 
           <Route path="/legal" element={<LegalPage />} />
+          {ADMIN_ENABLED && AdminPage && (
+            <Route path="/admin/diagram" element={<Suspense fallback={<div className="p-8">Laddar…</div>}><AdminPage diagram /></Suspense>} />
+          )}
           {ADMIN_ENABLED && AdminPage && (
             <Route
               path="/admin"

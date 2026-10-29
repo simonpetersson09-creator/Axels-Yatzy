@@ -345,6 +345,17 @@
     --input: 195 28% 24%;
     --ring: 36 78% 55%;
 
+    --admin-chart-devices: 36 78% 55%;
+    --admin-chart-ios: 195 80% 70%;
+    --admin-chart-android: 160 58% 60%;
+    --admin-chart-played: 325 70% 72%;
+    --admin-chart-age: 265 55% 72%;
+    --admin-chart-total: 38 30% 90%;
+    --admin-chart-cpu: 90 55% 62%;
+    --admin-chart-online: 215 85% 68%;
+    --admin-chart-forfeits: 18 85% 65%;
+    --admin-chart-issues: 0 75% 62%;
+
     --radius: 0.875rem;
 
     --sidebar-background: 195 42% 16%;

@@ -100,7 +100,7 @@ export default function AdminPage() {
     );
   }
 
-  const sum = (k: keyof DayRow) => rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
+  const sum = (k: keyof DayRow) => k === "total" ? sum("cpu_finished") + sum("online_finished") : rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
@@ -136,7 +136,7 @@ export default function AdminPage() {
                 <td className="px-3 py-1.5 whitespace-nowrap">{fmtDay(r.day)}</td>
                 {COLUMNS.map((c) => (
                   <td key={c.key} className="px-3 py-1.5 text-right tabular-nums">
-                    {c.key === "ios" ? `${r.ios} / ${r.android}` : r[c.key]}
+                    {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
                   </td>
                 ))}
               </tr>

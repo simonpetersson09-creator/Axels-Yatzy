@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   adminRecordIndexes,
@@ -22,6 +22,10 @@ const COLUMNS: { key: AdminColumnKey; label: string }[] = [
 /** Columns where the highest number is a bad day rather than an achievement. */
 const WORST_COLUMNS: AdminColumnKey[] = ["forfeits", "issues"];
 
+type StarPoint = { key: AdminColumnKey; day: string; x: number; y: number };
+
+const toSvgPoints = (pts: StarPoint[]) => pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+
 function fmtDay(d: string) {
   const dt = new Date(d + "T12:00:00");
   return dt.toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
@@ -32,6 +36,47 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [lines, setLines] = useState<{ gold: StarPoint[]; red: StarPoint[]; w: number; h: number }>({
+    gold: [],
+    red: [],
+    w: 0,
+    h: 0,
+  });
+
+  // Draw the record stars into lines: oldest day first, newest last.
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const order = COLUMNS.map((c) => c.key);
+    const measure = () => {
+      const box = wrap.getBoundingClientRect();
+      const stars = Array.from(wrap.querySelectorAll<HTMLElement>("[data-star]")).map((el) => {
+        const b = el.getBoundingClientRect();
+        return {
+          key: el.dataset.star as AdminColumnKey,
+          day: el.dataset.day ?? "",
+          x: b.left - box.left + wrap.scrollLeft + b.width / 2,
+          y: b.top - box.top + wrap.scrollTop + b.height / 2,
+        };
+      });
+      const byDay = (a: StarPoint, b: StarPoint) =>
+        a.day !== b.day ? (a.day < b.day ? -1 : 1) : order.indexOf(a.key) - order.indexOf(b.key);
+      setLines({
+        gold: stars.filter((s) => !WORST_COLUMNS.includes(s.key)).sort(byDay),
+        red: stars.filter((s) => WORST_COLUMNS.includes(s.key)).sort(byDay),
+        w: wrap.scrollWidth,
+        h: wrap.scrollHeight,
+      });
+    };
+    measure();
+    const raf = requestAnimationFrame(measure);
+    window.addEventListener("resize", measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", measure);
+    };
+  }, [rows]);
   const [adminKey, setAdminKey] = useState<string>(() => {
     try { return localStorage.getItem(ADMIN_KEY_STORAGE) ?? ""; } catch { return ""; }
   });
@@ -116,8 +161,39 @@ export default function AdminPage() {
         </button>
       </div>
       {error && <p className="text-sm text-destructive mb-2">{error}</p>}
-      <div className="overflow-x-auto rounded-lg border border-border">
-        <table className="w-full text-sm">
+      <div ref={wrapRef} className="relative overflow-x-auto rounded-lg border border-border">
+        <svg
+          className="pointer-events-none absolute left-0 top-0 z-0"
+          width={lines.w}
+          height={lines.h}
+          aria-hidden="true"
+        >
+          <polyline
+            points={toSvgPoints(lines.gold)}
+            fill="none"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity={0.7}
+            style={{ stroke: "hsl(var(--primary))" }}
+          />
+          <polyline
+            points={toSvgPoints(lines.red)}
+            fill="none"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity={0.7}
+            style={{ stroke: "hsl(var(--destructive))" }}
+          />
+          {lines.gold.map((p, i) => (
+            <circle key={`g${i}`} cx={p.x} cy={p.y} r={3} style={{ fill: "hsl(var(--primary))" }} />
+          ))}
+          {lines.red.map((p, i) => (
+            <circle key={`r${i}`} cx={p.x} cy={p.y} r={3} style={{ fill: "hsl(var(--destructive))" }} />
+          ))}
+        </svg>
+        <table className="relative z-10 w-full text-sm">
           <thead className="bg-card">
             <tr>
               <th className="text-left px-3 py-2 font-medium">Datum</th>
@@ -144,6 +220,8 @@ export default function AdminPage() {
                       <span className="w-7 h-5 flex items-center justify-center" aria-hidden="true">
                         {records[c.key] === i && (
                           <span
+                            data-star={c.key}
+                            data-day={r.day}
                             title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
                             className={`inline-block leading-none text-xl scale-150 ${WORST_COLUMNS.includes(c.key) ? "text-destructive" : "text-primary"}`}
                           >
@@ -176,6 +254,7 @@ export default function AdminPage() {
       </div>
       <p className="text-xs text-muted-foreground mt-3">
         ★ = högsta värdet i kolumnen under de senaste 30 dagarna. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.
+        Linjerna binder samman stjärnorna i tidsordning, äldst dag till nyast: guldlinje för rekord, röd linje för avhopp och problem.
         Snabbspel mot datorn räknar alla startade, även ej färdiga. Enhetssummor visas inte eftersom samma enhet spelar flera dagar.
       </p>
     </div>

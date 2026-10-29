@@ -148,7 +148,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
       <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-semibold">Senaste 30 dagarna per dag</h1>
+          <h1 className="text-xl font-semibold">1 augusti och hit, per dag</h1>
           <p className="text-sm text-muted-foreground">
             Svensk tid, bara appen (iPhone/Android). Dagens rad är inte komplett.
           </p>
@@ -223,7 +223,7 @@ export default function AdminPage() {
                           <span
                             data-star={c.key}
                             data-day={r.day}
-                            title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
+                            title={WORST_COLUMNS.includes(c.key) ? "Flest sedan 1 augusti" : "Rekord sedan 1 augusti"}
                             className={`inline-block leading-none text-xl scale-150 ${WORST_COLUMNS.includes(c.key) ? "text-destructive" : "text-primary"}`}
                           >
                             ★
@@ -254,7 +254,7 @@ export default function AdminPage() {
         </table>
       </div>
       <p className="text-xs text-muted-foreground mt-3">
-        ★ = högsta värdet i kolumnen under de senaste 30 dagarna. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.
+        ★ = högsta värdet i kolumnen sedan 1 augusti. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.
         Linjerna binder samman stjärnorna i tidsordning, äldst dag till nyast: guldlinje för rekord, röd linje för avhopp och problem.
         Snabbspel mot datorn räknar alla startade, även ej färdiga. Enhetssummor visas inte eftersom samma enhet spelar flera dagar.
       </p>

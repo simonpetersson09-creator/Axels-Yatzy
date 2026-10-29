@@ -31,6 +31,7 @@ export default function AdminPage() {
   const [rows, setRows] = useState<DayRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
   const [adminKey, setAdminKey] = useState<string>(() => {
     try { return localStorage.getItem(ADMIN_KEY_STORAGE) ?? ""; } catch { return ""; }
   });
@@ -96,7 +97,6 @@ export default function AdminPage() {
   }
 
   const sum = (k: keyof DayRow) => k === "total" ? sum("cpu_finished") + sum("online_finished") : rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
-  const records = useMemo(() => adminRecordIndexes(rows, COLUMNS.map((c) => c.key)), [rows]);
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">

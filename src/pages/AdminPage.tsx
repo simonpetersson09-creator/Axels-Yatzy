@@ -2,8 +2,10 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   adminRecordIndexes,
+  buildRibbon,
   type AdminColumnKey,
   type AdminDayRow as DayRow,
+  type StarPoint,
 } from "@/lib/admin-records";
 
 const ADMIN_KEY_STORAGE = "lovable.admin.key";
@@ -21,10 +23,6 @@ const COLUMNS: { key: AdminColumnKey; label: string }[] = [
 
 /** Columns where the highest number is a bad day rather than an achievement. */
 const WORST_COLUMNS: AdminColumnKey[] = ["forfeits", "issues"];
-
-type StarPoint = { key: AdminColumnKey; day: string; x: number; y: number };
-
-const toSvgPoints = (pts: StarPoint[]) => pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
 
 function fmtDay(d: string) {
   const dt = new Date(d + "T12:00:00");
@@ -53,11 +51,14 @@ export default function AdminPage() {
       const box = wrap.getBoundingClientRect();
       const stars = Array.from(wrap.querySelectorAll<HTMLElement>("[data-star]")).map((el) => {
         const b = el.getBoundingClientRect();
+        const row = el.closest("tr");
+        const rb = row ? row.getBoundingClientRect() : b;
         return {
           key: el.dataset.star as AdminColumnKey,
           day: el.dataset.day ?? "",
           x: b.left - box.left + wrap.scrollLeft + b.width / 2,
           y: b.top - box.top + wrap.scrollTop + b.height / 2,
+          lane: rb.top - box.top + wrap.scrollTop + 3,
         };
       });
       const byDay = (a: StarPoint, b: StarPoint) =>
@@ -168,29 +169,29 @@ export default function AdminPage() {
           height={lines.h}
           aria-hidden="true"
         >
-          <polyline
-            points={toSvgPoints(lines.gold)}
+          <path
+            d={buildRibbon(lines.gold)}
             fill="none"
-            strokeWidth={2}
+            strokeWidth={1.25}
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity={0.7}
+            opacity={1}
             style={{ stroke: "hsl(var(--primary))" }}
           />
-          <polyline
-            points={toSvgPoints(lines.red)}
+          <path
+            d={buildRibbon(lines.red)}
             fill="none"
-            strokeWidth={2}
+            strokeWidth={1.25}
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity={0.7}
+            opacity={1}
             style={{ stroke: "hsl(var(--destructive))" }}
           />
           {lines.gold.map((p, i) => (
-            <circle key={`g${i}`} cx={p.x} cy={p.y} r={3} style={{ fill: "hsl(var(--primary))" }} />
+            <circle key={`g${i}`} cx={p.x} cy={p.y} r={2.5} style={{ fill: "hsl(var(--primary))" }} />
           ))}
           {lines.red.map((p, i) => (
-            <circle key={`r${i}`} cx={p.x} cy={p.y} r={3} style={{ fill: "hsl(var(--destructive))" }} />
+            <circle key={`r${i}`} cx={p.x} cy={p.y} r={2.5} style={{ fill: "hsl(var(--destructive))" }} />
           ))}
         </svg>
         <table className="relative z-10 w-full text-sm">

@@ -680,6 +680,13 @@
       "when": 1793263321513,
       "tag": "0096_revoke_admin_daily_stats_v3_public",
       "breakpoints": true
+    },
+    {
+      "idx": 97,
+      "version": "7",
+      "when": 1793263390065,
+      "tag": "0097_deprecate_admin_daily_stats_v2",
+      "breakpoints": true
     }
   ]
 }

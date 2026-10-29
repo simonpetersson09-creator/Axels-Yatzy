@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Linjediagram i admin – 29 oktober
-- [ ] Diagram-knapp, egen sida och valbara linjer för alla tabellmått med samma skyddade dagssiffror.
-- [ ] Verifiera inloggad navigation, val, diagram och återgång till tabellen.
+- [x] Diagram-knapp, egen sida och tio valbara linjer för alla tabellmått med samma skyddade dagssiffror; iPhone/Android visas separat.
+- [x] Inloggad navigation, individuella val, dölj alla, två linjer, direkt omladdning och återgång till 90-dagarstabellen verifierade utan runtimefel; 12 statistiktester godkända och bygge OK.
 
 ## Medianappålder i admin – 29 oktober
 - [x] Medianappålder mellan Enheter som spelade och Medelappålder från 1 augusti med samma enhetsunderlag och rekordstjärna.

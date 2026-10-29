@@ -215,7 +215,7 @@ export default function AdminPage() {
             strokeWidth={1.25}
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity={0.85}
+            opacity={1}
             style={{ stroke: "hsl(var(--primary))" }}
           />
           <path
@@ -224,7 +224,7 @@ export default function AdminPage() {
             strokeWidth={1.25}
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity={0.85}
+            opacity={1}
             style={{ stroke: "hsl(var(--destructive))" }}
           />
           {lines.gold.map((p, i) => (

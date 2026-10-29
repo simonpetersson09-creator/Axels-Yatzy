@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Matchannons vid Spela igen – 29 oktober
+- [ ] Återanvänd matchannonsflödet vid Spela igen; nästa match väntar på stängning, oladdad annons hoppas över och dubbeltryck spärras.
+- [ ] Verifiera replay, nästa match, hemutgång och annonsfel med riktade tester och körande app.
+- [ ] Riktig annonsvisning vid Spela igen kräver nästa signerade telefonbygge och testtelefon.
+
 ## Linjediagram i admin – 29 oktober
 - [x] Diagram-knapp, egen sida och tio valbara linjer för alla tabellmått med samma skyddade dagssiffror; iPhone/Android visas separat.
 - [x] Inloggad navigation, individuella val, dölj alla, två linjer, direkt omladdning och återgång till 90-dagarstabellen verifierade utan runtimefel; 12 statistiktester godkända och bygge OK.

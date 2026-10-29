@@ -125,7 +125,7 @@ export default function AdminPage() {
                 <th key={c.key} className="px-3 py-2 font-medium whitespace-nowrap">
                   <span className="flex items-baseline justify-end gap-1">
                     {c.label}
-                    <span className="w-6" aria-hidden="true" />
+                    <span className="w-7" aria-hidden="true" />
                   </span>
                 </th>
               ))}
@@ -141,7 +141,7 @@ export default function AdminPage() {
                       <span className="text-right">
                         {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
                       </span>
-                      <span className="w-6 text-center leading-none text-2xl" aria-hidden="true">
+                      <span className="w-7 text-center leading-none text-3xl" aria-hidden="true">
                         {records[c.key] === i && (
                           <span
                             title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
@@ -166,7 +166,7 @@ export default function AdminPage() {
                     <span className="text-right">
                       {c.key === "devices" || c.key === "ios" || c.key === "played" ? "—" : sum(c.key)}
                     </span>
-                    <span className="w-6" aria-hidden="true" />
+                    <span className="w-7" aria-hidden="true" />
                   </span>
                 </td>
               ))}

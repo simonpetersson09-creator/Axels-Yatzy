@@ -75,7 +75,7 @@ export default function AdminPage() {
           className="w-full max-w-sm space-y-3"
           onSubmit={(e) => { e.preventDefault(); void load(adminKey); }}
         >
-          <h1 className="text-2xl font-semibold">Admin</h1>
+          <h1 className="text-xl font-semibold">Admin</h1>
           <input
             type="password"
             value={adminKey}
@@ -102,7 +102,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
       <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Senaste 30 dagarna per dag</h1>
+          <h1 className="text-xl font-semibold">Senaste 30 dagarna per dag</h1>
           <p className="text-sm text-muted-foreground">
             Svensk tid, bara appen (iPhone/Android). Dagens rad är inte komplett.
           </p>

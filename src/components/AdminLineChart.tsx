@@ -19,18 +19,46 @@ const SERIES: { key: AdminColumnKey; label: string; token: string }[] = [
 const fmtDay = (day: string) => new Date(`${day}T12:00:00`).toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
 const fmtValue = (value: unknown) => Number(value).toLocaleString("sv-SE", { maximumFractionDigits: 0 });
 
+const DEFAULT_VISIBLE: AdminColumnKey[] = ["devices", "played"];
+
+// Linjär trend (minsta kvadrat) över dagindex; null-värden hoppas över.
+function addTrend(data: Record<string, unknown>[], key: AdminColumnKey) {
+  const pts = data.map((d, i) => ({ x: i, y: d[key] })).filter((p): p is { x: number; y: number } => typeof p.y === "number");
+  if (pts.length < 2) return;
+  const n = pts.length;
+  const sx = pts.reduce((s, p) => s + p.x, 0);
+  const sy = pts.reduce((s, p) => s + p.y, 0);
+  const sxx = pts.reduce((s, p) => s + p.x * p.x, 0);
+  const sxy = pts.reduce((s, p) => s + p.x * p.y, 0);
+  const denom = n * sxx - sx * sx;
+  if (denom === 0) return;
+  const slope = (n * sxy - sx * sy) / denom;
+  const intercept = (sy - slope * sx) / n;
+  data.forEach((d, i) => { d[`trend_${key}`] = Math.max(0, intercept + slope * i); });
+}
+
 export default function AdminLineChart({ rows }: { rows: AdminDayRow[] }) {
-  const [visible, setVisible] = useState<AdminColumnKey[]>(SERIES.map((s) => s.key));
-  const data = useMemo(() => [...rows].sort((a, b) => a.day.localeCompare(b.day)).map((r) => ({
-    ...r,
-    total: adminCellValue(r, "total"),
-  })), [rows]);
+  const [visible, setVisible] = useState<AdminColumnKey[]>(DEFAULT_VISIBLE);
+  const [showTrend, setShowTrend] = useState(true);
+  const data = useMemo(() => {
+    const sorted = [...rows].sort((a, b) => a.day.localeCompare(b.day)).map((r) => ({
+      ...r,
+      total: adminCellValue(r, "total"),
+    })) as Record<string, unknown>[];
+    SERIES.forEach((s) => addTrend(sorted, s.key));
+    return sorted;
+  }, [rows]);
 
   return (
     <section className="space-y-5" aria-label="Daglig statistik i linjediagram">
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={() => setVisible(SERIES.map((s) => s.key))}>Visa alla</Button>
         <Button variant="outline" size="sm" onClick={() => setVisible([])}>Dölj alla</Button>
+        <label className="inline-flex items-center gap-2 text-sm cursor-pointer ml-2">
+          <input type="checkbox" checked={showTrend} onChange={(e) => setShowTrend(e.target.checked)} className="size-4 accent-primary" />
+          <svg width="22" height="10" aria-hidden="true"><path d="M 0 5 H 22" stroke="hsl(var(--muted-foreground))" strokeWidth="2" strokeDasharray="4 3" /></svg>
+          Trendlinjer
+        </label>
       </div>
       <fieldset className="flex flex-wrap gap-x-6 gap-y-3">
         <legend className="sr-only">Synliga linjer</legend>
@@ -52,6 +80,9 @@ export default function AdminLineChart({ rows }: { rows: AdminDayRow[] }) {
               <Tooltip labelFormatter={(day) => fmtDay(String(day))} formatter={(value) => fmtValue(value)} contentStyle={{ background: "hsl(var(--popover))", borderColor: "hsl(var(--border))", color: "hsl(var(--popover-foreground))", borderRadius: 6 }} labelStyle={{ color: "hsl(var(--foreground))" }} />
               {SERIES.filter((s) => visible.includes(s.key)).map((s) => (
                 <Line key={s.key} type="linear" dataKey={s.key} name={s.label} stroke={`hsl(var(--${s.token}))`} strokeWidth={1.75} dot={false} activeDot={{ r: 4 }} isAnimationActive={false} connectNulls={false} />
+              ))}
+              {showTrend && SERIES.filter((s) => visible.includes(s.key)).map((s) => (
+                <Line key={`trend_${s.key}`} type="linear" dataKey={`trend_${s.key}`} name={`${s.label} (trend)`} stroke={`hsl(var(--${s.token}))`} strokeWidth={1.5} strokeDasharray="6 4" strokeOpacity={0.65} dot={false} activeDot={false} isAnimationActive={false} connectNulls legendType="none" tooltipType="none" />
               ))}
             </LineChart>
           </ResponsiveContainer>

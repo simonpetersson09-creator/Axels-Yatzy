@@ -23,7 +23,7 @@
     "cap:android:min-sdk": "node scripts/set-android-min-sdk.js",
     "cap:android:firebase": "node scripts/set-android-firebase.js",
     "cap:android:admob": "node scripts/set-android-admob-manifest.js",
-    "postinstall": "node scripts/patch-admob-rewarded.js android && node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && node scripts/patch-admob-privacy-cache.js ios && node scripts/verify-admob-patches.js ios || echo '\u26a0 AdMob-patchar kunde inte l\u00e4ggas in automatiskt \u2013 k\u00f6r npm run cap:sync:ios/android'"
+    "postinstall": "node scripts/patch-admob-rewarded.js android && node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && node scripts/patch-admob-privacy-cache.js ios && node scripts/verify-admob-patches.js ios || echo '⚠ AdMob-patchar kunde inte läggas in automatiskt – kör npm run cap:sync:ios/android'"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.2.1",
@@ -56,6 +56,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.1",
+    "recharts": "^3.10.1",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",

@@ -1,0 +1,1 @@
+COMMENT ON FUNCTION public.admin_daily_stats_v2(integer) IS 'DEPRECATED: replaced by admin_daily_stats_v3 (fixed start date)';

@@ -694,6 +694,13 @@
       "when": 1793263667929,
       "tag": "0098_admin_daily_stats_v3_complete_counts",
       "breakpoints": true
+    },
+    {
+      "idx": 99,
+      "version": "7",
+      "when": 1793264239401,
+      "tag": "0099_admin_daily_mean_app_age",
+      "breakpoints": true
     }
   ]
 }

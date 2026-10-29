@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Medianappålder i admin – 29 oktober
+- [ ] Lägg till medianappålder mellan Enheter som spelade och Medelappålder från 1 augusti med samma enhetsunderlag.
+- [ ] Verifiera beräkningen och den inloggade tabellen utan ändringar i spelstatistiken.
+
 ## Medelappålder i admin – 29 oktober
 - [x] Lägg till dagligt medel sedan första appaktivitet, från 1 augusti, utan att ändra befintliga räkneregler.
 - [x] Inloggad /admin visade kolumnen efter Enheter som spelade, värden på alla 90 dagar och 1 augusti sist; 11 tester godkända.

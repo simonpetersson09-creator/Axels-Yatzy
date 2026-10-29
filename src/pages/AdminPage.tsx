@@ -149,7 +149,7 @@ export default function AdminPage() {
               <td className="px-3 py-2">Summa</td>
               {COLUMNS.map((c) => (
                 <td key={c.key} className="px-3 py-2 text-right tabular-nums">
-                  {c.key === "devices" || c.key === "played" || c.key === "quick_devices"
+                  {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "quick_devices"
                     ? "—"
                     : c.key === "ios"
                       ? `${sum("ios")} / ${sum("android")}`

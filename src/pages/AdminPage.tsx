@@ -7,10 +7,9 @@ interface DayRow {
   ios: number;
   android: number;
   played: number;
-  quick_started: number;
-  quick_devices: number;
+  total: number;
+  cpu_finished: number;
   online_finished: number;
-  quick_online: number;
   forfeits: number;
   issues: number;
 }
@@ -21,11 +20,10 @@ const COLUMNS: { key: keyof DayRow; label: string }[] = [
   { key: "devices", label: "Aktiva enheter" },
   { key: "ios", label: "iPhone / Android" },
   { key: "played", label: "Enheter som spelade" },
-  { key: "quick_started", label: "Snabbspel mot datorn" },
-  { key: "quick_devices", label: "Enheter med snabbspel" },
-  { key: "online_finished", label: "Färdiga onlinematcher" },
-  { key: "quick_online", label: "varav Snabbspel online" },
-  { key: "forfeits", label: "Avhopp" },
+  { key: "total", label: "Färdiga matcher totalt" },
+  { key: "cpu_finished", label: "Mot datorn" },
+  { key: "online_finished", label: "Online (inkl. Snabbspel)" },
+  { key: "forfeits", label: "Avhopp online" },
   { key: "issues", label: "Problemhändelser" },
 ];
 
@@ -149,7 +147,7 @@ export default function AdminPage() {
               <td className="px-3 py-2">Summa</td>
               {COLUMNS.map((c) => (
                 <td key={c.key} className="px-3 py-2 text-right tabular-nums">
-                  {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "quick_devices"
+                  {c.key === "devices" || c.key === "ios" || c.key === "played"
                     ? "—"
                     : sum(c.key)}
                 </td>

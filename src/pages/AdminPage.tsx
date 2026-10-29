@@ -14,6 +14,7 @@ const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "devices", label: "Aktiva enheter" },
   { key: "ios", label: "iPhone / Android" },
   { key: "played", label: "Enheter som spelade" },
+  { key: "median_app_age_days", label: "Medianappålder (dagar)" },
   { key: "avg_app_age_days", label: "Medelappålder (dagar)" },
   { key: "total", label: "Färdiga matcher totalt" },
   { key: "cpu_finished", label: "Mot datorn" },
@@ -217,7 +218,7 @@ export default function AdminPage() {
                   <td key={c.key} className="px-3 py-1.5 whitespace-nowrap">
                     <span className="flex items-baseline justify-end gap-1 tabular-nums">
                       <span className="text-right">
-                        {c.key === "avg_app_age_days" ? r.avg_app_age_days == null ? "—" : Number(r.avg_app_age_days).toLocaleString("sv-SE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
+                        {c.key === "avg_app_age_days" || c.key === "median_app_age_days" ? r[c.key] == null ? "—" : Number(r[c.key]).toLocaleString("sv-SE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
                       </span>
                       <span className="w-7 h-5 flex items-center justify-center" aria-hidden="true">
                         {records[c.key] === i && (
@@ -244,7 +245,7 @@ export default function AdminPage() {
                 <td key={c.key} className="px-3 py-2 whitespace-nowrap">
                   <span className="flex items-baseline justify-end gap-1 tabular-nums">
                     <span className="text-right">
-                      {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "avg_app_age_days" ? "—" : sum(c.key)}
+                      {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "avg_app_age_days" || c.key === "median_app_age_days" ? "—" : sum(c.key)}
                     </span>
                     <span className="w-7" aria-hidden="true" />
                   </span>
@@ -255,7 +256,7 @@ export default function AdminPage() {
         </table>
       </div>
       <p className="text-xs text-muted-foreground mt-3">
-        Medelappålder: dagar sedan första registrerade appaktiviteten för dagens unika aktiva enhets-ID:n, inte verifierad nedladdningsdag. Ominstallation kan ge ett nytt ID.
+        Appålder: dagar sedan första registrerade appaktiviteten för dagens unika aktiva enhets-ID:n, inte verifierad nedladdningsdag. Ominstallation kan ge ett nytt ID.
       </p>
       <p className="text-xs text-muted-foreground mt-3">
         ★ = högsta värdet i kolumnen sedan 1 augusti. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.

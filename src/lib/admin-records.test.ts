@@ -23,6 +23,11 @@ const row = (over: Partial<AdminDayRow>): AdminDayRow => ({
 });
 
 describe("adminRecordIndexes", () => {
+  it("preserves median app age and selects its highest daily value", () => {
+    const rows = [row({ median_app_age_days: 3.5 }), row({ median_app_age_days: 10 })];
+    expect(adminCellValue(rows[0], "median_app_age_days")).toBe(3.5);
+    expect(adminRecordIndexes(rows, ["median_app_age_days"]).median_app_age_days).toBe(1);
+  });
   it("preserves fractional app age and records its highest daily mean", () => {
     const rows = [row({ avg_app_age_days: 2.5 }), row({ avg_app_age_days: 12.4 })];
     expect(adminCellValue(rows[0], "avg_app_age_days")).toBe(2.5);

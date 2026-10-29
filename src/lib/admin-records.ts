@@ -4,6 +4,7 @@ export interface AdminDayRow {
   ios: number;
   android: number;
   played: number;
+  median_app_age_days?: number | null;
   avg_app_age_days?: number | null;
   total: number;
   cpu_finished: number;

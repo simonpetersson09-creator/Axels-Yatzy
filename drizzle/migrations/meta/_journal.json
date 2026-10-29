@@ -701,6 +701,13 @@
       "when": 1793264239401,
       "tag": "0099_admin_daily_mean_app_age",
       "breakpoints": true
+    },
+    {
+      "idx": 100,
+      "version": "7",
+      "when": 1793264734101,
+      "tag": "0100_admin_daily_median_app_age",
+      "breakpoints": true
     }
   ]
 }

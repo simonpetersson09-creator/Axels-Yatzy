@@ -1,22 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-interface DayRow {
-  day: string;
-  devices: number;
-  ios: number;
-  android: number;
-  played: number;
-  total: number;
-  cpu_finished: number;
-  online_finished: number;
-  forfeits: number;
-  issues: number;
-}
+import {
+  adminRecordIndexes,
+  type AdminColumnKey,
+  type AdminDayRow as DayRow,
+} from "@/lib/admin-records";
 
 const ADMIN_KEY_STORAGE = "lovable.admin.key";
 
-const COLUMNS: { key: keyof DayRow; label: string }[] = [
+const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "devices", label: "Aktiva enheter" },
   { key: "ios", label: "iPhone / Android" },
   { key: "played", label: "Enheter som spelade" },
@@ -27,6 +19,9 @@ const COLUMNS: { key: keyof DayRow; label: string }[] = [
   { key: "issues", label: "Problemhändelser" },
 ];
 
+/** Columns where the highest number is a bad day rather than an achievement. */
+const WORST_COLUMNS: AdminColumnKey[] = ["forfeits", "issues"];
+
 function fmtDay(d: string) {
   const dt = new Date(d + "T12:00:00");
   return dt.toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
@@ -36,6 +31,7 @@ export default function AdminPage() {
   const [rows, setRows] = useState<DayRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
   const [adminKey, setAdminKey] = useState<string>(() => {
     try { return localStorage.getItem(ADMIN_KEY_STORAGE) ?? ""; } catch { return ""; }
   });
@@ -131,12 +127,21 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
+            {rows.map((r, i) => (
               <tr key={r.day} className="border-t border-border">
                 <td className="px-3 py-1.5 whitespace-nowrap">{fmtDay(r.day)}</td>
                 {COLUMNS.map((c) => (
-                  <td key={c.key} className="px-3 py-1.5 text-right tabular-nums">
+                  <td key={c.key} className="px-3 py-1.5 text-right tabular-nums whitespace-nowrap">
                     {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
+                    {records[c.key] === i && (
+                      <span
+                        aria-hidden="true"
+                        title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
+                        className={WORST_COLUMNS.includes(c.key) ? "ml-1 text-destructive" : "ml-1 text-primary"}
+                      >
+                        ★
+                      </span>
+                    )}
                   </td>
                 ))}
               </tr>
@@ -157,6 +162,7 @@ export default function AdminPage() {
         </table>
       </div>
       <p className="text-xs text-muted-foreground mt-3">
+        ★ = högsta värdet i kolumnen under de senaste 30 dagarna. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.
         Snabbspel mot datorn räknar alla startade, även ej färdiga. Enhetssummor visas inte eftersom samma enhet spelar flera dagar.
       </p>
     </div>

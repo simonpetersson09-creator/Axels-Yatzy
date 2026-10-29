@@ -652,6 +652,13 @@
       "when": 1793040461544,
       "tag": "0092_speed_up_reminders",
       "breakpoints": true
+    },
+    {
+      "idx": 93,
+      "version": "7",
+      "when": 1793261606214,
+      "tag": "0093_admin_daily_stats",
+      "breakpoints": true
     }
   ]
 }

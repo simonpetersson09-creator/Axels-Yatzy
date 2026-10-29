@@ -218,7 +218,7 @@ export default function AdminPage() {
                   <td key={c.key} className="px-3 py-1.5 whitespace-nowrap">
                     <span className="flex items-baseline justify-end gap-1 tabular-nums">
                       <span className="text-right">
-                        {c.key === "avg_app_age_days" || c.key === "median_app_age_days" ? r[c.key] == null ? "—" : Number(r[c.key]).toLocaleString("sv-SE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
+                        {c.key === "avg_app_age_days" || c.key === "median_app_age_days" ? r[c.key] == null ? "—" : Number(r[c.key]).toLocaleString("sv-SE", { maximumFractionDigits: 0 }) : c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
                       </span>
                       <span className="w-7 h-5 flex items-center justify-center" aria-hidden="true">
                         {records[c.key] === i && (

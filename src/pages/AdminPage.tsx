@@ -141,11 +141,11 @@ export default function AdminPage() {
                       <span className="text-right">
                         {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
                       </span>
-                      <span className="w-7 text-center leading-none text-3xl" aria-hidden="true">
+                      <span className="w-7 flex items-center justify-center" aria-hidden="true">
                         {records[c.key] === i && (
                           <span
                             title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
-                            className={WORST_COLUMNS.includes(c.key) ? "text-destructive" : "text-primary"}
+                            className={`inline-block leading-none text-xl scale-150 ${WORST_COLUMNS.includes(c.key) ? "text-destructive" : "text-primary"}`}
                           >
                             ★
                           </span>

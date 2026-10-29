@@ -1,5 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
+import { ArrowLeft, ChartLine, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import AdminLineChart from "@/components/AdminLineChart";
 import {
   adminRecordIndexes,
   buildRibbon,
@@ -30,7 +34,7 @@ function fmtDay(d: string) {
   return dt.toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
 }
 
-export default function AdminPage() {
+export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   const [rows, setRows] = useState<DayRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -78,7 +82,7 @@ export default function AdminPage() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", measure);
     };
-  }, [rows]);
+  }, [rows, diagram]);
   const [adminKey, setAdminKey] = useState<string>(() => {
     try { return localStorage.getItem(ADMIN_KEY_STORAGE) ?? ""; } catch { return ""; }
   });
@@ -149,20 +153,28 @@ export default function AdminPage() {
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
       <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-semibold">1 augusti och hit, per dag</h1>
+          <h1 className="text-xl font-semibold">{diagram ? "Linjediagram – 1 augusti och hit" : "1 augusti och hit, per dag"}</h1>
           <p className="text-sm text-muted-foreground">
             Svensk tid, bara appen (iPhone/Android). Dagens rad är inte komplett.
           </p>
         </div>
-        <button
+        <div className="flex gap-2">
+        <Button asChild variant="outline" size="sm">
+          <Link to={diagram ? "/admin" : "/admin/diagram"}>
+            {diagram ? <ArrowLeft /> : <ChartLine />}{diagram ? "Till tabellen" : "Diagram"}
+          </Link>
+        </Button>
+        <Button variant="outline" size="sm"
           onClick={() => void load(adminKey)}
           disabled={loading}
-          className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-50"
         >
+          <RefreshCw />
           {loading ? "Uppdaterar…" : "Uppdatera"}
-        </button>
+        </Button>
+        </div>
       </div>
       {error && <p className="text-sm text-destructive mb-2">{error}</p>}
+      {diagram ? <AdminLineChart rows={rows} /> : <>
       <div ref={wrapRef} className="relative overflow-x-auto rounded-lg border border-border">
         <svg
           className="pointer-events-none absolute left-0 top-0 z-0"
@@ -262,6 +274,7 @@ export default function AdminPage() {
         Linjerna binder samman stjärnorna i tidsordning, äldst dag till nyast: guldlinje för rekord, röd linje för avhopp och problem.
         Snabbspel mot datorn räknar alla startade, även ej färdiga. Enhetssummor visas inte eftersom samma enhet spelar flera dagar.
       </p>
+      </>}
     </div>
   );
 }

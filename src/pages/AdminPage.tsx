@@ -34,7 +34,7 @@ export default function AdminPage() {
   const [rows, setRows] = useState<DayRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key).filter((k) => k !== "avg_app_age_days")), [rows]);
+  const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [lines, setLines] = useState<{ gold: StarPoint[]; red: StarPoint[]; w: number; h: number }>({
     gold: [],

@@ -687,6 +687,13 @@
       "when": 1793263390065,
       "tag": "0097_deprecate_admin_daily_stats_v2",
       "breakpoints": true
+    },
+    {
+      "idx": 98,
+      "version": "7",
+      "when": 1793263667929,
+      "tag": "0098_admin_daily_stats_v3_complete_counts",
+      "breakpoints": true
     }
   ]
 }

@@ -102,7 +102,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
       <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Senaste 30 dagarna per dag</h1>
+          <h1 className="text-xl font-semibold">Senaste 30 dagarna per dag</h1>
           <p className="text-sm text-muted-foreground">
             Svensk tid, bara appen (iPhone/Android). Dagens rad är inte komplett.
           </p>
@@ -122,7 +122,12 @@ export default function AdminPage() {
             <tr>
               <th className="text-left px-3 py-2 font-medium">Datum</th>
               {COLUMNS.map((c) => (
-                <th key={c.key} className="text-right px-3 py-2 font-medium whitespace-nowrap">{c.label}</th>
+                <th key={c.key} className="px-3 py-2 font-medium whitespace-nowrap">
+                  <span className="flex items-baseline justify-end gap-1">
+                    {c.label}
+                    <span className="w-7" aria-hidden="true" />
+                  </span>
+                </th>
               ))}
             </tr>
           </thead>
@@ -131,17 +136,22 @@ export default function AdminPage() {
               <tr key={r.day} className="border-t border-border">
                 <td className="px-3 py-1.5 whitespace-nowrap">{fmtDay(r.day)}</td>
                 {COLUMNS.map((c) => (
-                  <td key={c.key} className="px-3 py-1.5 text-right tabular-nums whitespace-nowrap">
-                    {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
-                    {records[c.key] === i && (
-                      <span
-                        aria-hidden="true"
-                        title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
-                        className={WORST_COLUMNS.includes(c.key) ? "ml-1 text-destructive" : "ml-1 text-primary"}
-                      >
-                        ★
+                  <td key={c.key} className="px-3 py-1.5 whitespace-nowrap">
+                    <span className="flex items-baseline justify-end gap-1 tabular-nums">
+                      <span className="text-right">
+                        {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
                       </span>
-                    )}
+                      <span className="w-7 h-5 flex items-center justify-center" aria-hidden="true">
+                        {records[c.key] === i && (
+                          <span
+                            title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
+                            className={`inline-block leading-none text-xl scale-150 ${WORST_COLUMNS.includes(c.key) ? "text-destructive" : "text-primary"}`}
+                          >
+                            ★
+                          </span>
+                        )}
+                      </span>
+                    </span>
                   </td>
                 ))}
               </tr>
@@ -151,10 +161,13 @@ export default function AdminPage() {
             <tr className="border-t border-border">
               <td className="px-3 py-2">Summa</td>
               {COLUMNS.map((c) => (
-                <td key={c.key} className="px-3 py-2 text-right tabular-nums">
-                  {c.key === "devices" || c.key === "ios" || c.key === "played"
-                    ? "—"
-                    : sum(c.key)}
+                <td key={c.key} className="px-3 py-2 whitespace-nowrap">
+                  <span className="flex items-baseline justify-end gap-1 tabular-nums">
+                    <span className="text-right">
+                      {c.key === "devices" || c.key === "ios" || c.key === "played" ? "—" : sum(c.key)}
+                    </span>
+                    <span className="w-7" aria-hidden="true" />
+                  </span>
                 </td>
               ))}
             </tr>

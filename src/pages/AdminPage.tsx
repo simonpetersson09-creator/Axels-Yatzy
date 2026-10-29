@@ -22,9 +22,47 @@ const COLUMNS: { key: AdminColumnKey; label: string }[] = [
 /** Columns where the highest number is a bad day rather than an achievement. */
 const WORST_COLUMNS: AdminColumnKey[] = ["forfeits", "issues"];
 
-type StarPoint = { key: AdminColumnKey; day: string; x: number; y: number };
+type StarPoint = {
+  key: AdminColumnKey;
+  day: string;
+  x: number;
+  y: number;
+  /** y of the empty padding band just inside this star's row top border. */
+  lane: number;
+};
 
-const toSvgPoints = (pts: StarPoint[]) => pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+/**
+ * Ribbon drawn between record stars. Every vertical run stays inside the star
+ * slot of its column (the only empty strip in a row) and every horizontal run
+ * stays in the padding band between two rows, so the line never crosses a
+ * digit. Corners are rounded so each turn reads as one sweep, not a zigzag.
+ */
+function buildRibbon(pts: StarPoint[]): string {
+  if (pts.length < 2) return "";
+  const f = (n: number) => n.toFixed(1);
+  let d = `M ${f(pts[0].x)} ${f(pts[0].y)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i];
+    const b = pts[i + 1];
+    const lane = a.lane;
+    const dx = b.x - a.x;
+    const dy1 = lane - a.y;
+    const dy2 = b.y - lane;
+    const r = Math.max(0, Math.min(14, Math.abs(dy1) / 2, Math.abs(dx) / 2, Math.abs(dy2) / 2));
+    if (Math.abs(dx) < 1 || r < 3) {
+      d += ` L ${f(a.x)} ${f(lane)} L ${f(b.x)} ${f(lane)} L ${f(b.x)} ${f(b.y)}`;
+      continue;
+    }
+    const sx = Math.sign(dx);
+    d +=
+      ` L ${f(a.x)} ${f(lane - Math.sign(dy1) * r)}` +
+      ` Q ${f(a.x)} ${f(lane)} ${f(a.x + sx * r)} ${f(lane)}` +
+      ` L ${f(b.x - sx * r)} ${f(lane)}` +
+      ` Q ${f(b.x)} ${f(lane)} ${f(b.x)} ${f(lane + Math.sign(dy2) * r)}` +
+      ` L ${f(b.x)} ${f(b.y)}`;
+  }
+  return d;
+}
 
 function fmtDay(d: string) {
   const dt = new Date(d + "T12:00:00");
@@ -53,11 +91,14 @@ export default function AdminPage() {
       const box = wrap.getBoundingClientRect();
       const stars = Array.from(wrap.querySelectorAll<HTMLElement>("[data-star]")).map((el) => {
         const b = el.getBoundingClientRect();
+        const row = el.closest("tr");
+        const rb = row ? row.getBoundingClientRect() : b;
         return {
           key: el.dataset.star as AdminColumnKey,
           day: el.dataset.day ?? "",
           x: b.left - box.left + wrap.scrollLeft + b.width / 2,
           y: b.top - box.top + wrap.scrollTop + b.height / 2,
+          lane: rb.top - box.top + wrap.scrollTop + 3,
         };
       });
       const byDay = (a: StarPoint, b: StarPoint) =>
@@ -168,29 +209,29 @@ export default function AdminPage() {
           height={lines.h}
           aria-hidden="true"
         >
-          <polyline
-            points={toSvgPoints(lines.gold)}
+          <path
+            d={buildRibbon(lines.gold)}
             fill="none"
-            strokeWidth={2}
+            strokeWidth={1.25}
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity={0.7}
+            opacity={0.85}
             style={{ stroke: "hsl(var(--primary))" }}
           />
-          <polyline
-            points={toSvgPoints(lines.red)}
+          <path
+            d={buildRibbon(lines.red)}
             fill="none"
-            strokeWidth={2}
+            strokeWidth={1.25}
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity={0.7}
+            opacity={0.85}
             style={{ stroke: "hsl(var(--destructive))" }}
           />
           {lines.gold.map((p, i) => (
-            <circle key={`g${i}`} cx={p.x} cy={p.y} r={3} style={{ fill: "hsl(var(--primary))" }} />
+            <circle key={`g${i}`} cx={p.x} cy={p.y} r={2.5} style={{ fill: "hsl(var(--primary))" }} />
           ))}
           {lines.red.map((p, i) => (
-            <circle key={`r${i}`} cx={p.x} cy={p.y} r={3} style={{ fill: "hsl(var(--destructive))" }} />
+            <circle key={`r${i}`} cx={p.x} cy={p.y} r={2.5} style={{ fill: "hsl(var(--destructive))" }} />
           ))}
         </svg>
         <table className="relative z-10 w-full text-sm">

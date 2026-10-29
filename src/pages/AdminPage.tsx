@@ -122,7 +122,12 @@ export default function AdminPage() {
             <tr>
               <th className="text-left px-3 py-2 font-medium">Datum</th>
               {COLUMNS.map((c) => (
-                <th key={c.key} className="text-right px-3 py-2 font-medium whitespace-nowrap">{c.label}</th>
+                <th key={c.key} className="px-3 py-2 font-medium whitespace-nowrap">
+                  <span className="flex items-baseline justify-end gap-1">
+                    {c.label}
+                    <span className="w-5" aria-hidden="true" />
+                  </span>
+                </th>
               ))}
             </tr>
           </thead>
@@ -131,17 +136,22 @@ export default function AdminPage() {
               <tr key={r.day} className="border-t border-border">
                 <td className="px-3 py-1.5 whitespace-nowrap">{fmtDay(r.day)}</td>
                 {COLUMNS.map((c) => (
-                  <td key={c.key} className="px-3 py-1.5 text-right tabular-nums whitespace-nowrap">
-                    {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
-                    {records[c.key] === i && (
-                      <span
-                        aria-hidden="true"
-                        title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
-                        className={WORST_COLUMNS.includes(c.key) ? "ml-1 text-destructive" : "ml-1 text-primary"}
-                      >
-                        ★
+                  <td key={c.key} className="px-3 py-1.5 whitespace-nowrap">
+                    <span className="flex items-baseline justify-end gap-1 tabular-nums">
+                      <span className="text-right">
+                        {c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
                       </span>
-                    )}
+                      <span className="w-5 text-center leading-none text-xl" aria-hidden="true">
+                        {records[c.key] === i && (
+                          <span
+                            title={WORST_COLUMNS.includes(c.key) ? "Flest under de senaste 30 dagarna" : "Rekord under de senaste 30 dagarna"}
+                            className={WORST_COLUMNS.includes(c.key) ? "text-destructive" : "text-primary"}
+                          >
+                            ★
+                          </span>
+                        )}
+                      </span>
+                    </span>
                   </td>
                 ))}
               </tr>
@@ -151,10 +161,13 @@ export default function AdminPage() {
             <tr className="border-t border-border">
               <td className="px-3 py-2">Summa</td>
               {COLUMNS.map((c) => (
-                <td key={c.key} className="px-3 py-2 text-right tabular-nums">
-                  {c.key === "devices" || c.key === "ios" || c.key === "played"
-                    ? "—"
-                    : sum(c.key)}
+                <td key={c.key} className="px-3 py-2 whitespace-nowrap">
+                  <span className="flex items-baseline justify-end gap-1 tabular-nums">
+                    <span className="text-right">
+                      {c.key === "devices" || c.key === "ios" || c.key === "played" ? "—" : sum(c.key)}
+                    </span>
+                    <span className="w-5" aria-hidden="true" />
+                  </span>
                 </td>
               ))}
             </tr>

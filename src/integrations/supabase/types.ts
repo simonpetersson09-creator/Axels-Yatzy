@@ -1129,6 +1129,22 @@ export type Database = {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
       }
+      admin_daily_stats: {
+        Args: { _days?: number }
+        Returns: {
+          android: number
+          day: string
+          devices: number
+          forfeits: number
+          ios: number
+          issues: number
+          online_finished: number
+          played: number
+          quick_devices: number
+          quick_online: number
+          quick_started: number
+        }[]
+      }
       award_ad_xp: {
         Args: { p_device_id: string; p_session_id: string }
         Returns: Json

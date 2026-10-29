@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { adminCellValue, adminRecordIndexes, type AdminDayRow } from "./admin-records";
+import {
+  adminCellValue,
+  adminRecordIndexes,
+  buildRibbon,
+  type AdminColumnKey,
+  type AdminDayRow,
+  type StarPoint,
+} from "./admin-records";
 
 const row = (over: Partial<AdminDayRow>): AdminDayRow => ({
   day: "2026-10-29",

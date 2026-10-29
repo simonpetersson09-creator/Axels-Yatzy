@@ -252,7 +252,7 @@ export default function ResultsPage() {
             </motion.button>
           )}
           <motion.button
-            onClick={leave}
+            onClick={() => { void leave(); }}
             disabled={leaving || inviting}
             className="w-full py-3 rounded-2xl text-muted-foreground font-medium text-sm"
             whileTap={{ scale: 0.97 }}

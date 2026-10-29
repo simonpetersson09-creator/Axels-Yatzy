@@ -19,12 +19,35 @@ const SERIES: { key: AdminColumnKey; label: string; token: string }[] = [
 const fmtDay = (day: string) => new Date(`${day}T12:00:00`).toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
 const fmtValue = (value: unknown) => Number(value).toLocaleString("sv-SE", { maximumFractionDigits: 0 });
 
+const DEFAULT_VISIBLE: AdminColumnKey[] = ["devices", "played"];
+
+// Linjär trend (minsta kvadrat) över dagindex; null-värden hoppas över.
+function addTrend(data: Record<string, unknown>[], key: AdminColumnKey) {
+  const pts = data.map((d, i) => ({ x: i, y: d[key] })).filter((p): p is { x: number; y: number } => typeof p.y === "number");
+  if (pts.length < 2) return;
+  const n = pts.length;
+  const sx = pts.reduce((s, p) => s + p.x, 0);
+  const sy = pts.reduce((s, p) => s + p.y, 0);
+  const sxx = pts.reduce((s, p) => s + p.x * p.x, 0);
+  const sxy = pts.reduce((s, p) => s + p.x * p.y, 0);
+  const denom = n * sxx - sx * sx;
+  if (denom === 0) return;
+  const slope = (n * sxy - sx * sy) / denom;
+  const intercept = (sy - slope * sx) / n;
+  data.forEach((d, i) => { d[`trend_${key}`] = Math.max(0, intercept + slope * i); });
+}
+
 export default function AdminLineChart({ rows }: { rows: AdminDayRow[] }) {
-  const [visible, setVisible] = useState<AdminColumnKey[]>(SERIES.map((s) => s.key));
-  const data = useMemo(() => [...rows].sort((a, b) => a.day.localeCompare(b.day)).map((r) => ({
-    ...r,
-    total: adminCellValue(r, "total"),
-  })), [rows]);
+  const [visible, setVisible] = useState<AdminColumnKey[]>(DEFAULT_VISIBLE);
+  const [showTrend, setShowTrend] = useState(true);
+  const data = useMemo(() => {
+    const sorted = [...rows].sort((a, b) => a.day.localeCompare(b.day)).map((r) => ({
+      ...r,
+      total: adminCellValue(r, "total"),
+    })) as Record<string, unknown>[];
+    SERIES.forEach((s) => addTrend(sorted, s.key));
+    return sorted;
+  }, [rows]);
 
   return (
     <section className="space-y-5" aria-label="Daglig statistik i linjediagram">

@@ -1,22 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-interface DayRow {
-  day: string;
-  devices: number;
-  ios: number;
-  android: number;
-  played: number;
-  total: number;
-  cpu_finished: number;
-  online_finished: number;
-  forfeits: number;
-  issues: number;
-}
+import {
+  adminRecordIndexes,
+  type AdminColumnKey,
+  type AdminDayRow as DayRow,
+} from "@/lib/admin-records";
 
 const ADMIN_KEY_STORAGE = "lovable.admin.key";
 
-const COLUMNS: { key: keyof DayRow; label: string }[] = [
+const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "devices", label: "Aktiva enheter" },
   { key: "ios", label: "iPhone / Android" },
   { key: "played", label: "Enheter som spelade" },
@@ -26,6 +18,9 @@ const COLUMNS: { key: keyof DayRow; label: string }[] = [
   { key: "forfeits", label: "Avhopp online" },
   { key: "issues", label: "Problemhändelser" },
 ];
+
+/** Columns where the highest number is a bad day rather than an achievement. */
+const WORST_COLUMNS: AdminColumnKey[] = ["forfeits", "issues"];
 
 function fmtDay(d: string) {
   const dt = new Date(d + "T12:00:00");

@@ -23,6 +23,11 @@ const row = (over: Partial<AdminDayRow>): AdminDayRow => ({
 });
 
 describe("adminRecordIndexes", () => {
+  it("preserves fractional app age and records its highest daily mean", () => {
+    const rows = [row({ avg_app_age_days: 2.5 }), row({ avg_app_age_days: 12.4 })];
+    expect(adminCellValue(rows[0], "avg_app_age_days")).toBe(2.5);
+    expect(adminRecordIndexes(rows, ["avg_app_age_days"]).avg_app_age_days).toBe(1);
+  });
   it("marks the highest number in each column", () => {
     const rows = [row({ day: "2026-10-29" }), row({ day: "2026-10-28", devices: 85 }), row({ day: "2026-10-27" })];
     const records = adminRecordIndexes(rows, ["devices"]);

@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Medelappålder i admin – 29 oktober
+- [x] Lägg till dagligt medel sedan första appaktivitet, från 1 augusti, utan att ändra befintliga räkneregler.
+- [x] Inloggad /admin visade kolumnen efter Enheter som spelade, värden på alla 90 dagar och 1 augusti sist; 11 tester godkända.
+
 ## Android Rewarded-kompilering – 28 oktober
 - [x] Privata Showed/FailedToShow/Dismissed ersatta med Kotlin-objektets publika getters; befintliga patchar repareras utan att cacherensning ersätts. Android Rewarded körs vid postinstall och befintlig Android-sync.
 - [x] 67 tester godkända i fyra filer; färsk patch, gammal patch, idempotens, varje privat fält och ändrat Kotlin-API testade. postinstall samt iOS-/Android-verifiering körda; senaste webbbygge OK.

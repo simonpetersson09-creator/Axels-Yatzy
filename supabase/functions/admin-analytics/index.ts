@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
   // App devices only (ios/android), Stockholm days; computed in SQL so no row caps apply.
-  const { data, error } = await supabase.rpc("admin_daily_stats", { _days: 30 });
+  const { data, error } = await supabase.rpc("admin_daily_stats_v2", { _days: 30 });
   if (error) return json({ error: error.message }, 500);
   return json({ days: data ?? [] });
 });

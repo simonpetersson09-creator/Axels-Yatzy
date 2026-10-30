@@ -6,7 +6,7 @@
 - Icon source: resources/icon.png (1024px, opaque). `npm run icons` regenerates native/public copies; never edit outputs.
 - Admin: shared protected data, full-history device-day age; saved key validates before data; logout clears.
 - admob.ts: platform-specific ADMOB_IDS/REWARDED_IDS (null disables; never iOS IDs on Android); fitGameAboveBanner reserves banner space. rewarded-pair deduplicates each SDK reward across pages; RewardedXpHost requests server XP only on confirmed reward, never auto-chains ads. Legacy partial bundles are cleared, never treated as reward proof. Suppress App Open 2 min afterward. Never auto-reset uncancellable SDK attempts (subscribeRewardedState tracks). scripts/patch-admob-rewarded.js tags events with attemptId — prevents overlap/unearned XP.
-- Store links: src/lib/app-links.ts (getStoreLinks); hide Play until PLAY_STORE_LIVE.
+- Store links: app-links.ts/getStoreLinks; hide Play until PLAY_STORE_LIVE.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile; forfeit reads server before retry, preserves accepted exits. Expected dice validate under scoring lock.
@@ -32,13 +32,13 @@
 
 - Ad privacy: sync patches UMP/readers/cache bridge. UMP errors/timeouts read native canRequestAds; only true allows ads. Changes block ads/discard caches before+after UMP; reject stale loads, fail closed without bridge. Never reset UMP/interrupt ads/store consent/log choices or errors. OBTAINED isn't acceptance.
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.
-- Statistics period labels use the shared Stockholm formatter to match server period boundaries across phone timezones.
-- Finished-match analytics use a persistent identity ledger, separate from statistics so forfeits cannot alter totals; completed events require a successful stats commit.
-- Rank ties: match count, creation time, session_id; totals unchanged.
+- Period labels use shared Stockholm formatting for server boundaries.
+- Finished analytics dedupe persistently; completion requires committed stats. PlayJourneyHost tracks coarse actions/screens and first/last activity; network exits imply correlation, not cause. No names, inputs, admin or consent; retries retain event IDs.
+- Rank ties: matches, created_at, session_id; totals unchanged.
 - - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
 - WR pushes reserve a device-scoped rate_limits key (internal_waiting_room_take_push); suppressed recalls are consumed and delivery uses the same device, so churn cannot bypass cooldown; no other category shares it.
 - WR quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
-- WR flags read public ranks once per membership change, self from profile; never guess missing countries or mutate seats.
+- WR flags: ranks per membership change, self from profile; no guessed countries or seat mutations.
 - WR labels reserve side space; flags use atomic horizontal writing to preserve regional-indicator pairs.
 - WR UI and push translations share a dependency-free copy module under functions/_shared; merge it with each app dictionary so language coverage stays consistent across client and server.
 - WR welcome is device-local. Reads debounce, retain one trailing refresh and expire on unmount; retry repeats failed commands before cleanup-away. Countdown syncs at its server deadline; heartbeat/realtime recover missed updates.

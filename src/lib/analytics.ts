@@ -54,16 +54,28 @@ function getPlatform(): string {
 }
 
 const queue: QueuedEvent[] = [];
+const DIAGNOSTIC_KEY = 'play-diagnostics-pending-v1';
+const isDiagnostic = (e: QueuedEvent) => e.event_name.startsWith('play_') || e.event_name === 'post_match_exit';
+function persistDiagnostics(): void {
+  try { localStorage.setItem(DIAGNOSTIC_KEY, JSON.stringify(queue.filter(isDiagnostic).slice(-200))); } catch { /* Storage is best-effort. */ }
+}
+try {
+  const saved: unknown = JSON.parse(localStorage.getItem(DIAGNOSTIC_KEY) ?? '[]');
+  if (Array.isArray(saved)) queue.push(...saved.filter((e): e is QueuedEvent => !!e && typeof e.event_name === 'string' && isDiagnostic(e)).slice(-200));
+} catch { /* Corrupt storage must not block play. */ }
+let flushing = false;
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 const FLUSH_DELAY_MS = 1500;
 const MAX_BATCH = 20;
 
 async function flush(): Promise<void> {
+  if (flushing) return;
   if (flushTimer) {
     clearTimeout(flushTimer);
     flushTimer = null;
   }
   if (queue.length === 0) return;
+  flushing = true;
   // Make sure the device id is resolved (and claimed server-side) before
   // flushing so events get attributed to this device.
   let deviceId: string | null = null;
@@ -73,17 +85,18 @@ async function flush(): Promise<void> {
   } catch {
     // ignore
   }
-  if (!deviceId) return;
+  if (!deviceId) { flushing = false; scheduleFlush(15_000); return; }
   // Stamp the real app version at send time: events queued during cold start
   // would otherwise keep the '1.0.0' fallback from before the native version
   // finished resolving.
   await appVersionReady;
   const appVersion = getAppVersion();
-  const batch = queue.splice(0, MAX_BATCH);
+  const batch = queue.slice(0, MAX_BATCH);
+  let failed = false;
   try {
     // Server-side RPC stamps device_id/auth_user_id itself; client-supplied
     // identity fields are ignored.
-    await supabase.rpc('log_analytics_events' as any, {
+    const { error } = await supabase.rpc('log_analytics_events' as any, {
       p_device_id: deviceId,
       p_events: batch.map((e) => ({
         event_name: e.event_name,
@@ -95,17 +108,25 @@ async function flush(): Promise<void> {
         app_version: appVersion,
       })),
     });
+    failed = !!error;
   } catch {
+    failed = true;
     // Swallow — never crash the app due to analytics.
   }
-  if (queue.length > 0) scheduleFlush();
+  queue.splice(0, batch.length);
+  // Preserve diagnostic evidence through temporary offline periods/restarts.
+  // Retries keep event_id so analysis can deduplicate ambiguous deliveries.
+  if (failed) queue.unshift(...batch.filter(isDiagnostic));
+  persistDiagnostics();
+  flushing = false;
+  if (queue.length > 0) scheduleFlush(failed ? 15_000 : FLUSH_DELAY_MS);
 }
 
-function scheduleFlush(): void {
+function scheduleFlush(delay = FLUSH_DELAY_MS): void {
   if (flushTimer) return;
   flushTimer = setTimeout(() => {
     void flush();
-  }, FLUSH_DELAY_MS);
+  }, delay);
 }
 
 interface TrackOptions {
@@ -134,10 +155,11 @@ export function trackEvent(
       local_user_id: deviceId,
       game_id: options?.gameId ?? null,
       game_mode: options?.gameMode ?? null,
-      metadata: metadata ?? null,
+      metadata: eventName === 'post_match_exit' ? { ...metadata, event_id: crypto.randomUUID(), occurred_at: new Date().toISOString() } : metadata ?? null,
       platform: getPlatform(),
       app_version: getAppVersion(),
     });
+    if (eventName.startsWith('play_') || eventName === 'post_match_exit') persistDiagnostics();
     if (queue.length >= MAX_BATCH) {
       void flush();
     } else {
@@ -147,6 +169,8 @@ export function trackEvent(
     // Never throw.
   }
 }
+
+if (queue.length) scheduleFlush();
 
 // Flush on page hide so we don't lose tail events.
 // Guard against double-registration: React Strict Mode (dev) double-mounts

@@ -29,6 +29,7 @@ import { LobbyJoinNotice } from "./components/LobbyJoinNotice";
 import NotificationAskHost from "./components/NotificationAskHost";
 import RewardedXpHost from "./components/RewardedXpHost";
 import WaitingRoomPage from './pages/WaitingRoomPage';
+import PlayJourneyHost from './components/PlayJourneyHost';
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
@@ -70,6 +71,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <PlayJourneyHost />
         <DiceEnginePreloader />
         <InviteOverlay />
         <NotificationNavigator />

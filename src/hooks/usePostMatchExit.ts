@@ -32,7 +32,7 @@ export function usePostMatchExit(matchKey: string, completed: boolean, onHome: (
         log(result);
       } else log(completed ? 'already_attempted' : 'unfinished');
     } catch { log('failed'); /* An ad failure must never prevent continuing. */ }
-    finally { (onContinue ?? onHome)(); }
+    finally { log('continued'); (onContinue ?? onHome)(); }
   }, [completed, matchKey, onHome]);
 
   return { leaving, leave };

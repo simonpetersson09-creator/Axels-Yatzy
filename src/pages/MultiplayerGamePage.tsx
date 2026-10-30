@@ -38,6 +38,7 @@ import { getSessionId } from '@/lib/session';
 import { QuickMatchTakeover } from '@/components/multiplayer/QuickMatchTakeover';
 import { useGameBanner } from '@/hooks/useGameBanner';
 import { getForfeitError } from '@/lib/forfeit-copy';
+import { usePlayNetworkDiagnostics } from '@/hooks/usePlayNetworkDiagnostics';
 
 const DEBUG = false;
 
@@ -105,6 +106,7 @@ export default function MultiplayerGamePage() {
   }, [waitingServer]);
 
   const gameId = searchParams.get('gameId');
+  usePlayNetworkDiagnostics(gameId, status, !!error || !!forfeitError, slowServer);
   const diceProfiles = useDiceProfiles(gameId, gameState?.players.map(p => p.name).join('|'));
   const playerStats = usePlayerStats(gameId, gameState?.players.map(p => p.name).join('|'));
   const gameAvatars = useGameAvatars(gameId, gameState?.players.map(p => p.name).join('|'));

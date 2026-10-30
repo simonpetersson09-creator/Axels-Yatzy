@@ -1,9 +1,10 @@
 # Roadmap – Snabbspel online
 
 ## Mätning av spelhinder – 30 oktober
-- [ ] Registrera första val, besökta spelsidor och sista aktivitet vid bakgrund/utgång utan namn, fritext eller samtyckesuppgifter.
-- [ ] Koppla matchknappar och befintliga annonsbeslut till spelvägen; registrera utgång under konstaterat anslutningsproblem utan att påstå orsak.
-- [ ] Verifiera med isolerade tester och körande app utan live-teststatistik. Telefonregistrering kräver nästa signerade appbygge.
+- [x] Registrera första val, besökta spelsidor och sista aktivitet per förgrundsperiod utan namn, fritext, admin- eller samtyckesuppgifter. Bakgrund är inte bevis för att spelaren slutat.
+- [x] Matchknappar och befintliga annonsbeslut kompletterade med fortsatt navigation; utgång under offline/fel/långsamt svar registreras som samband, inte bevisad orsak. Diagnostik sparas tillfälligt vid nätfel och återförsöks med samma händelse-ID.
+- [x] 26 tester godkända; körande startsida → Snabbspel-val → Statistik → bakgrund verifierade med första/sista val och webbmärkning, inga runtimefel eller live-teststatistik. Bygge OK.
+- [ ] Verklig telefonregistrering och bakgrund/återkomst kräver nästa signerade appbygge och testtelefon.
 
 ## Loggning av matchannonser – 30 oktober
 - [x] Registrera hem/replay, beslut och delad interstitial-laddning med korrelations-ID utan ändrade visningsregler eller samtyckesuppgifter. Delade laddningar skiljs från matchannonser; SDK-laddningsfel och tidsgränser syns, UMP-fel registreras inte.

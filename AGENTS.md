@@ -4,9 +4,9 @@
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - Icon source: resources/icon.png (1024px, opaque). `npm run icons` regenerates native/public copies; never edit outputs.
-- Admin: shared protected data, full-history device-day age; saved key validates before data; logout clears.
+- Admin: protected shared SQL; completion needs both forfeit fields null; full-history age; saved key validates; logout clears.
 - admob.ts: platform-specific ADMOB_IDS/REWARDED_IDS (null disables; never iOS IDs on Android); fitGameAboveBanner reserves banner space. rewarded-pair deduplicates each SDK reward across pages; RewardedXpHost requests server XP only on confirmed reward, never auto-chains ads. Legacy partial bundles are cleared, never treated as reward proof. Suppress App Open 2 min afterward. Never auto-reset uncancellable SDK attempts (subscribeRewardedState tracks). scripts/patch-admob-rewarded.js tags events with attemptId — prevents overlap/unearned XP.
-- Store links: app-links.ts/getStoreLinks; hide Play until PLAY_STORE_LIVE.
+- Store links: getStoreLinks; hide Play until PLAY_STORE_LIVE.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile; forfeit reads server before retry, preserves accepted exits. Expected dice validate under scoring lock.

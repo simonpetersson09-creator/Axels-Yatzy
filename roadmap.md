@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Admins enheter som spelade – 30 oktober
-- [ ] Uteslut enbart väntan och automatiska stängningar från spelade enheter; bevara registrerade spelstarter och verkliga kast även vid senare avhopp.
-- [ ] Verifiera isolerade serverprov, skyddade behörigheter och driftsatt beräkning utan live-teststatistik.
+- [x] Uteslut enbart väntan och automatiska stängningar från spelade enheter; bevara registrerade spelstarter och verkliga egna kast på kastdagen även vid senare avhopp. Övriga mått/spelaruppgifter oförändrade.
+- [x] 22 isolerade serverprov godkända inklusive webbexkludering, dedupe och skyddade behörigheter. Driftsatt definition verifierad; tillfälliga kopior av v5 → v4 → v3 matchar oberoende beräkning alla 91 dagar utan live-teststatistik. Bygge OK. Skyddad adminvy inte öppnad i detta prov.
 
 ## Admins färdigspelade onlinematcher – 30 oktober
 - [x] Gemensam serverräknare kräver att båda avhoppsfälten saknas; automatiska stängningar räknas inte som färdigspelade. Tabell, totalsumma och diagram får rättningen direkt, utan ändrade spelaruppgifter eller avhoppskolumn.

@@ -50,7 +50,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
     h: 0,
   });
 
-  // Draw the record stars into lines: oldest day first, newest last.
+  // Connect stars in table-column order, always left to right.
   useLayoutEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
@@ -71,11 +71,10 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
           lane: rb.top - box.top - wrap.clientTop + wrap.scrollTop + 3,
         };
       });
-      const byDay = (a: StarPoint, b: StarPoint) =>
-        a.day !== b.day ? (a.day < b.day ? -1 : 1) : order.indexOf(a.key) - order.indexOf(b.key);
+      const byColumn = (a: StarPoint, b: StarPoint) => order.indexOf(a.key) - order.indexOf(b.key);
       setLines({
-        gold: stars.filter((s) => !WORST_COLUMNS.includes(s.key)).sort(byDay),
-        red: stars.filter((s) => WORST_COLUMNS.includes(s.key)).sort(byDay),
+        gold: stars.filter((s) => !WORST_COLUMNS.includes(s.key)).sort(byColumn),
+        red: stars.filter((s) => WORST_COLUMNS.includes(s.key)).sort(byColumn),
         w: table.offsetWidth,
         h: table.offsetHeight,
       });
@@ -308,7 +307,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
       </p>
       <p className="text-xs text-muted-foreground mt-3">
         ★ = högsta värdet i kolumnen sedan 1 augusti. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.
-        Linjerna binder samman stjärnorna i tidsordning, äldst dag till nyast: guldlinje för rekord, röd linje för avhopp och problem.
+        Linjerna binder samman stjärnorna kolumn för kolumn från vänster till höger: guldlinje för rekord, röd linje för avhopp och problem.
         Snabbspel mot datorn räknar alla startade, även ej färdiga. Enhetssummor visas inte eftersom samma enhet spelar flera dagar.
       </p>
       </>}

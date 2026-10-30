@@ -374,13 +374,15 @@ async function initializeAds(generation: number): Promise<AdMobModule> {
 export async function preloadInterstitial(): Promise<boolean> {
   const generation = adGeneration;
   const startedAt = Date.now();
-  const log = (result: string, reason?: string) => reportAd('interstitial', result, startedAt, reason, { loadId: interstitialLoadId });
+  let loadId = interstitialLoadId;
+  const log = (result: string, reason?: string) => reportAd('interstitial', result, startedAt, reason, { loadId });
   if (!adAllowed(generation)) { log('load_skipped', 'ads_not_ready'); return false; }
   if (!isAdMobAvailable() || !adUnitId('optional')) { log('load_skipped', 'unavailable'); return false; }
   if (preparing) { log('load_reused_pending'); return preparing; }
   if (preparedAt && Date.now() - preparedAt < PREPARED_TTL_MS) { log('load_reused_ready'); return true; }
   if (preparedAt) log('cache_expired');
   interstitialLoadId = `${interstitialLogSession}:${++interstitialLoadSequence}`;
+  loadId = interstitialLoadId;
   let stage = 'initialization';
   log('load_started');
 
@@ -403,7 +405,7 @@ export async function preloadInterstitial(): Promise<boolean> {
     } catch (err) {
       if (adAllowed(generation)) { lastPrepareError = reasonOf(err); preparedAt = 0; }
       // Initialization includes UMP: never record its errors or choices.
-      log('load_failed', stage === 'prepare' ? reasonOf(err) : 'initialization_not_ready');
+      log('load_failed', stage === 'prepare' ? reasonOf(err) : reasonOf(err) === 'init_timeout' ? 'init_timeout' : 'initialization_not_ready');
       return false;
     } finally {
       if (generation === adGeneration) preparing = null;
@@ -440,6 +442,7 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
   if (showing || rewardedShowing || appOpenShowing) return skip('busy', 'another_ad_active');
   if (kind === 'postMatch' && (!preparedAt || Date.now() - preparedAt >= PREPARED_TTL_MS)) return skip('unavailable', preparedAt ? 'cache_expired' : preparing ? 'still_loading' : 'not_loaded');
   showing = true;
+  let lastShowError: string | undefined;
   const listeners: Awaited<ReturnType<AdMobModule['AdMob']['addListener']>>[] = [];
   try {
     const ready = kind === 'postMatch' || await preloadInterstitial();

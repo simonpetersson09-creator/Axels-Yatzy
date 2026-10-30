@@ -634,6 +634,7 @@ export default function HomePage() {
                 return (
                   <motion.button
                     key={key}
+                    data-play-action={isLocal ? 'resume_local' : 'resume_online'}
                     onClick={() => resumeGame(game)}
                     className={`home-match-card font-display ${myTurn ? 'home-match-card-turn' : 'home-match-card-waiting'}`}
                     whileTap={{ scale: 0.97 }}
@@ -686,6 +687,7 @@ export default function HomePage() {
               )}
               <Button asChild className={`home-action home-quick-primary font-display${quickHint ? ' home-quick-glow' : ''}`}>
               <motion.button
+                data-play-action="quick_match"
                 onClick={() => { if (quickHint) { markQuickHintDone(); setQuickHint(false); } setShowQuickMatch(v => !v); }}
                 aria-expanded={showQuickMatch}
                 whileTap={{ scale: 0.97 }}
@@ -712,12 +714,14 @@ export default function HomePage() {
                       {[1, 2, 3].map(opponents => (
                         <motion.button
                           key={opponents}
+                          data-play-action={`opponents_${opponents}`}
                           onClick={() => {
                             const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
                             const aiNames = getRandomAiNames(opponents);
                             const playerNames = [humanName, ...aiNames];
                             const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
                             if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
+                              trackEvent('play_start_blocked', { reason: 'local_match_limit', opponents });
                               toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
                               return;
                             }
@@ -736,6 +740,7 @@ export default function HomePage() {
               <div className="home-actions-side">
                 <Button asChild className="home-action home-companion-action font-display">
                 <motion.button
+                  data-play-action="friend_game"
                   onClick={() => navigate('/multiplayer')}
                   whileTap={{ scale: 0.97 }}
                   variants={item}
@@ -746,7 +751,7 @@ export default function HomePage() {
                 </Button>
                 <div className="relative min-w-0">
                   <Button asChild variant="waitingRoom" className="home-action home-waiting-action font-display w-full">
-                    <motion.button disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }} className="relative">
+                    <motion.button data-play-action="waiting_room" disabled={waitingChecking} onClick={() => waitingSeated ? navigate('/waiting-room') : setWaitingEntryOpen(true)} whileTap={{ scale: 0.97 }} variants={item} transition={{ duration: 0.45, ease: 'easeOut' }} className="relative">
                       <Users /> <span className="flex flex-col items-start min-w-0"><span>{t('wrTitle')}</span>{waitingSeated && <span className="text-[10px] font-medium inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-game-success shrink-0" />{t('wrSeated')}</span>}</span>
                       {waitingCount > 0 && <span className="home-waiting-badge" aria-label={`${t('wrTitle')} (${waitingCount})`}>{waitingCount}</span>}
                     </motion.button>
@@ -755,6 +760,7 @@ export default function HomePage() {
               </div>
             </div>
             <motion.button
+              data-play-action="stats"
               onClick={() => navigate('/stats')}
               className="home-action home-stats-action font-display relative"
               whileTap={{ scale: 0.97 }}
@@ -790,7 +796,7 @@ export default function HomePage() {
                   trackEvent('quick_match_started', { opponents: aiPlayers.length, fallback: true }, { gameMode: 'quick_match' });
                   navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
                 }}
-                onCancel={() => setOnlineSearch(null)}
+                onCancel={() => { trackEvent('play_search_cancelled', { players: onlineSearch.playerNames.length }); setOnlineSearch(null); }}
               />
             )}
           </AnimatePresence>
@@ -809,6 +815,7 @@ export default function HomePage() {
             >
               <div className={`relative flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`} ref={langPickerRef}>
                 <motion.button
+                  data-play-action="language"
                   onClick={() => setShowLangPicker(v => !v)}
                   className="home-round-action w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center"
                   whileTap={{ scale: 0.92 }}
@@ -849,6 +856,7 @@ export default function HomePage() {
 
               <div className="relative">
               <motion.button
+                data-play-action="settings"
                 onClick={() => navigate('/settings')}
                 className={`flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}
                 whileTap={{ scale: 0.92 }}
@@ -862,6 +870,7 @@ export default function HomePage() {
               </div>
 
               <motion.button
+                data-play-action="friends"
                 onClick={() => navigate('/friends')}
                 className={`flex flex-col items-center gap-1.5 group transition-opacity duration-300 ${showAdBubble ? 'opacity-40' : 'opacity-100'}`}
                 whileTap={{ scale: 0.92 }}
@@ -876,6 +885,7 @@ export default function HomePage() {
               <div className="relative flex flex-col items-center">
 
                 <motion.button
+                  data-play-action="optional_ad"
                   onClick={() => setShowAdsConsent(true)}
                   disabled={adBusy || AD_BUTTON_LOCKED}
                   className="flex flex-col items-center gap-1.5 group disabled:opacity-60"

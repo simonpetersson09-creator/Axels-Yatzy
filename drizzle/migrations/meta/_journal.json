@@ -715,6 +715,13 @@
       "when": 1793356954411,
       "tag": "0101_admin_online_completed_matches_only",
       "breakpoints": true
+    },
+    {
+      "idx": 102,
+      "version": "7",
+      "when": 1793357347578,
+      "tag": "0102_admin_played_devices_exclude_waiting",
+      "breakpoints": true
     }
   ]
 }

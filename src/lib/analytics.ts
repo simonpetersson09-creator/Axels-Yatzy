@@ -54,7 +54,7 @@ function getPlatform(): string {
 }
 
 const queue: QueuedEvent[] = [];
-const DIAGNOSTIC_KEY = 'play-diagnostics-pending-v1';
+const DIAGNOSTIC_KEY = 'yatzy_play_diagnostics_pending_v1';
 const isDiagnostic = (e: QueuedEvent) => e.event_name.startsWith('play_') || e.event_name === 'post_match_exit';
 function persistDiagnostics(): void {
   try { localStorage.setItem(DIAGNOSTIC_KEY, JSON.stringify(queue.filter(isDiagnostic).slice(-200))); } catch { /* Storage is best-effort. */ }

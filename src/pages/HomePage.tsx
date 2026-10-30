@@ -126,7 +126,7 @@ export default function HomePage() {
   // Bumps whenever any profile field (country, name, avatar) changes, so
   // rank sync re-runs even when the language itself didn't change.
   const [profileVersion, setProfileVersion] = useState(0);
-  const [onlineSearch, setOnlineSearch] = useState<null | { humanName: string; playerNames: string[]; aiPlayers: number[] }>(null);
+  const [onlineSearch, setOnlineSearch] = useState<null | { humanName: string; playerNames: string[]; aiPlayers: number[]; startedAt?: number }>(null);
   useEffect(() => subscribeProfileChanges(() => setProfileVersion(v => v + 1)), []);
   const adInFlightRef = useRef(false);
   const langPickerRef = useRef<HTMLDivElement>(null);
@@ -725,7 +725,7 @@ export default function HomePage() {
                               toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
                               return;
                             }
-                            setOnlineSearch({ humanName, playerNames, aiPlayers });
+                            setOnlineSearch({ humanName, playerNames, aiPlayers, startedAt: Date.now() });
                           }}
                           className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"
                           whileTap={{ scale: 0.95 }}
@@ -787,16 +787,16 @@ export default function HomePage() {
                 onMatched={(id) => {
                   const players = onlineSearch.playerNames.length;
                   setOnlineSearch(null);
-                  trackEvent('quick_match_online_matched', { players }, { gameMode: 'quick_match_online' });
+                  trackEvent('quick_match_online_matched', { players, wait_ms: searchWaitMs(onlineSearch.startedAt) }, { gameMode: 'quick_match_online' });
                   navigate(`/multiplayer-game?gameId=${id}`);
                 }}
                 onNoMatch={() => {
                   const { playerNames, aiPlayers } = onlineSearch;
                   setOnlineSearch(null);
-                  trackEvent('quick_match_started', { opponents: aiPlayers.length, fallback: true }, { gameMode: 'quick_match' });
+                  trackEvent('quick_match_started', { opponents: aiPlayers.length, fallback: true, wait_ms: searchWaitMs(onlineSearch.startedAt) }, { gameMode: 'quick_match' });
                   navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
                 }}
-                onCancel={() => { trackEvent('play_search_cancelled', { players: onlineSearch.playerNames.length }); setOnlineSearch(null); }}
+                onCancel={() => { trackEvent('play_search_cancelled', { players: onlineSearch.playerNames.length, wait_ms: searchWaitMs(onlineSearch.startedAt) }); setOnlineSearch(null); }}
               />
             )}
           </AnimatePresence>

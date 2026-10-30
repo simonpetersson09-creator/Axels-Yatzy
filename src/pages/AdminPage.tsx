@@ -82,14 +82,14 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
     };
     measure();
     const raf = requestAnimationFrame(measure);
-    const observer = new ResizeObserver(measure);
-    observer.observe(table);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(table);
     let active = true;
-    void document.fonts.ready.then(() => { if (active) measure(); });
+    void document.fonts?.ready.then(() => { if (active) measure(); });
     window.addEventListener("resize", measure);
     return () => {
       active = false;
-      observer.disconnect();
+      observer?.disconnect();
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", measure);
     };

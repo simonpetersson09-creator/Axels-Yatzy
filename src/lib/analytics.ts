@@ -105,7 +105,7 @@ async function flush(): Promise<void> {
         game_mode: e.game_mode,
         metadata: e.metadata,
         platform: e.platform,
-        app_version: appVersion,
+        app_version: isDiagnostic(e) && e.app_version !== '1.0.0' ? e.app_version : appVersion,
       })),
     });
     failed = !!error;
@@ -155,7 +155,7 @@ export function trackEvent(
       local_user_id: deviceId,
       game_id: options?.gameId ?? null,
       game_mode: options?.gameMode ?? null,
-      metadata: eventName === 'post_match_exit' ? { ...metadata, event_id: crypto.randomUUID(), occurred_at: new Date().toISOString() } : metadata ?? null,
+      metadata: eventName === 'post_match_exit' || eventName.startsWith('play_') ? { event_id: crypto.randomUUID(), occurred_at: new Date().toISOString(), ...metadata } : metadata ?? null,
       platform: getPlatform(),
       app_version: getAppVersion(),
     });

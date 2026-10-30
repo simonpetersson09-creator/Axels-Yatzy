@@ -43,6 +43,27 @@ describe("remembered admin login", () => {
     openAdmin();
     await waitFor(() => expect(screen.getByRole("button", { name: "Logga in" })).toBeTruthy());
     expect(screen.queryByRole("table")).toBeNull();
+    expect(localStorage.getItem("lovable.admin.key")).toBeNull();
+    expect((screen.getByLabelText("Adminnyckel") as HTMLInputElement).value).toBe("");
+    mocks.invoke.mockResolvedValue({ data: { days: [] }, error: null });
+    fireEvent.change(screen.getByLabelText("Adminnyckel"), { target: { value: "corrected-test-key" } });
+    fireEvent.click(screen.getByRole("button", { name: "Logga in" }));
+    await waitFor(() => expect(screen.getByRole("table")).toBeTruthy());
+    expect(localStorage.getItem("lovable.admin.key")).toBe("corrected-test-key");
+  });
+
+  it("handles a server 401 and preserves saved login on temporary network errors", async () => {
+    localStorage.setItem("lovable.admin.key", "test-only-key");
+    mocks.invoke.mockResolvedValueOnce({ data: null, error: { message: "Failed to send", context: undefined } });
+    const view = openAdmin();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Logga in" })).toBeTruthy());
+    expect(localStorage.getItem("lovable.admin.key")).toBe("test-only-key");
+    view.unmount();
+    mocks.invoke.mockResolvedValueOnce({ data: null, error: { message: "Edge Function returned a non-2xx status code", context: { status: 401 } } });
+    openAdmin();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Logga in" })).toBeTruthy());
+    expect(localStorage.getItem("lovable.admin.key")).toBeNull();
+    expect(screen.queryByRole("table")).toBeNull();
   });
 
   it("forgets the saved login when explicitly logged out", async () => {

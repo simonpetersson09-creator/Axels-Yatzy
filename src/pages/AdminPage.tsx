@@ -101,7 +101,15 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         headers: { "x-admin-key": key },
       });
       if (error || !data || "error" in data) {
-        setError(error?.message || String(data?.error ?? "Unauthorized"));
+        const status = error && "context" in error ? (error.context as { status?: number } | undefined)?.status : undefined;
+        const unauthorized = status === 401 || data?.error === "Unauthorized" || error?.message === "Unauthorized";
+        if (unauthorized) {
+          try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch { /* ignore */ }
+          setAdminKey("");
+        }
+        setError(unauthorized
+          ? "Lösenordet godkändes inte. Skriv ditt aktuella adminlösenord igen."
+          : "Admin kunde inte öppnas just nu. Försök igen.");
         setRows(null);
         return;
       }

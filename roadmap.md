@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Admins färdigspelade onlinematcher – 30 oktober
+- [x] Gemensam serverräknare kräver att båda avhoppsfälten saknas; automatiska stängningar räknas inte som färdigspelade. Tabell, totalsumma och diagram får rättningen direkt, utan ändrade spelaruppgifter eller avhoppskolumn.
+- [x] 27 tester godkända, inklusive 10 isolerade serverprov utan live-testmatcher. Driftsatt funktionskopia mot verkliga läsdata: alla 91 dagar matchar oberoende beräkning; v5 → v4 → v3 verifierat; bygge OK. Skyddad adminvy inte öppnad i detta prov.
+
 ## Mätning av spelhinder – 30 oktober
 - [x] Registrera första val, besökta spelsidor och sista aktivitet per förgrundsperiod utan namn, fritext, admin- eller samtyckesuppgifter. Bakgrund är inte bevis för att spelaren slutat.
 - [x] Matchknappar och befintliga annonsbeslut kompletterade med fortsatt navigation; utgång under offline/fel/långsamt svar registreras som samband, inte bevisad orsak. Diagnostik sparas tillfälligt vid nätfel och återförsöks med samma händelse-ID.

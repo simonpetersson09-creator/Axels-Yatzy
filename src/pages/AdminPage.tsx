@@ -150,7 +150,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   const sum = (k: keyof DayRow) => k === "total" ? sum("cpu_finished") + sum("online_finished") : rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
+    <div className="min-h-screen max-h-screen overflow-y-auto overscroll-contain bg-background text-foreground p-4 md:p-8">
       <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
         <div>
           <h1 className="text-xl font-semibold">{diagram ? "Linjediagram – 1 augusti och hit" : "1 augusti och hit, per dag"}</h1>

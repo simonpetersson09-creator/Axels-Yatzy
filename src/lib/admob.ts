@@ -100,6 +100,25 @@ function reasonOf(err: unknown): string {
   return String(e?.message ?? e?.code ?? err ?? 'unknown').slice(0, 160);
 }
 
+/**
+ * Varför en annons aldrig efterfrågades (t.ex. få annonser på Android).
+ * En gång per appstart och kind+orsak; inga UMP-val eller UMP-fel loggas.
+ */
+export type AdSkipReason =
+  | 'ads_not_ready' | 'unavailable' | 'first_match_pending' | 'waiting_room'
+  | 'other_ad_showing' | 'rewarded_suppression' | 'init_timeout' | 'initialization_not_ready' | 'load_failed';
+const reportedSkips = new Set<string>();
+function reportSkip(kind: 'appOpen' | 'rewarded', reason: AdSkipReason) {
+  const key = `${kind}:${reason}`;
+  if (reportedSkips.has(key)) return;
+  reportedSkips.add(key);
+  try { trackEvent('ad_skipped', { kind, reason }); } catch { /* best effort */ }
+}
+function initFailureReason(err: unknown): AdSkipReason {
+  const r = reasonOf(err);
+  return r === 'init_timeout' ? 'init_timeout' : r === 'consent_not_given' || r === 'privacy_transition' ? 'initialization_not_ready' : 'load_failed';
+}
+
 /** Silent diagnostics so failing ads (e.g. on iPad) show up in analytics. */
 function reportAd(kind: 'appOpen' | 'optional' | 'postMatch' | 'banner' | 'interstitial', result: string, startedAt: number, reason?: string, context?: Record<string, unknown>) {
   try {
@@ -554,15 +573,17 @@ export function usesRewardedOptionalAd(): boolean {
 
 export async function preloadRewarded(): Promise<boolean> {
   const generation = adGeneration;
-  if (!adAllowed(generation)) return false;
+  if (!adAllowed(generation)) { reportSkip('rewarded', 'ads_not_ready'); return false; }
   const adId = rewardedUnitId();
-  if (!isAdMobAvailable() || !adId) return false;
+  if (!isAdMobAvailable() || !adId) { reportSkip('rewarded', 'unavailable'); return false; }
   if (rewardedPreparing) return rewardedPreparing;
   if (rewardedPreparedAt && Date.now() - rewardedPreparedAt < PREPARED_TTL_MS) return true;
   rewardedPreparing = (async () => {
+    let initDone = false;
     try {
       const loadMs = adPlatform() === 'android' ? ANDROID_REWARDED_LOAD_TIMEOUT_MS : PREPARE_TIMEOUT_MS;
       const mod = await initWithTimeout(loadMs);
+      initDone = true;
       if (!adAllowed(generation)) return false;
       await withTimeout(mod.AdMob.prepareRewardVideoAd({ adId, isTesting: ADMOB_CONFIG.useTestAds }), loadMs, 'prepare');
       if (!adAllowed(generation)) return false;
@@ -570,6 +591,7 @@ export async function preloadRewarded(): Promise<boolean> {
       return true;
     } catch (err) {
       if (adAllowed(generation)) { lastPrepareError = reasonOf(err); rewardedPreparedAt = 0; }
+      reportSkip('rewarded', initDone ? 'load_failed' : initFailureReason(err));
       return false;
     } finally {
       if (generation === adGeneration) rewardedPreparing = null;
@@ -809,14 +831,16 @@ function attachAppOpenRevenue(mod: AdMobModule) {
 /** Laddar nästa App Open-annons i förväg så den kan visas direkt vid nästa start. */
 export function preloadAppOpenAd(): Promise<boolean> {
   const generation = adGeneration;
-  if (!adAllowed(generation)) return Promise.resolve(false);
-  if (getRankedGames() < 1) return Promise.resolve(false);
+  if (!adAllowed(generation)) { reportSkip('appOpen', 'ads_not_ready'); return Promise.resolve(false); }
+  if (getRankedGames() < 1) { reportSkip('appOpen', 'first_match_pending'); return Promise.resolve(false); }
   const adId = adUnitId('appOpen');
-  if (!isAdMobAvailable() || !adId) return Promise.resolve(false);
+  if (!isAdMobAvailable() || !adId) { reportSkip('appOpen', 'unavailable'); return Promise.resolve(false); }
   if (appOpenPreload) return appOpenPreload;
   appOpenPreload = (async () => {
+    let initDone = false;
     try {
       const mod = await initWithTimeout(PREPARE_TIMEOUT_MS);
+      initDone = true;
       if (!adAllowed(generation)) return false;
       attachAppOpenRevenue(mod);
       const { value } = await mod.AdMob.isAppOpenLoaded();
@@ -825,7 +849,8 @@ export function preloadAppOpenAd(): Promise<boolean> {
       await loadAppOpenOnce(mod, adId, 20_000, 'load');
       if (!adAllowed(generation)) return false;
       return (await mod.AdMob.isAppOpenLoaded()).value;
-    } catch {
+    } catch (err) {
+      reportSkip('appOpen', initDone ? 'load_failed' : initFailureReason(err));
       return false;
     } finally {
       if (generation === adGeneration) appOpenPreload = null;
@@ -840,21 +865,27 @@ export function preloadAppOpenAd(): Promise<boolean> {
  */
 export async function showAppOpenAd(canShow: () => boolean = () => true): Promise<boolean> {
   const generation = adGeneration;
-  if (!adAllowed(generation)) return false;
+  if (!adAllowed(generation)) { reportSkip('appOpen', 'ads_not_ready'); return false; }
   // New players get one complete match before any startup/resume App Open ad.
-  if (getRankedGames() < 1) return false;
+  if (getRankedGames() < 1) { reportSkip('appOpen', 'first_match_pending'); return false; }
   const { waitingRoomAdBlocked } = await import('./waiting-room');
-  if (waitingRoomAdBlocked()) return false;
+  if (waitingRoomAdBlocked()) { reportSkip('appOpen', 'waiting_room'); return false; }
   const adId = adUnitId('appOpen');
-  if (!isAdMobAvailable() || !adId) return false;
-  if (appOpenShowing || showing || rewardedShowing) return false;
+  if (!isAdMobAvailable() || !adId) { reportSkip('appOpen', 'unavailable'); return false; }
+  if (appOpenShowing || showing || rewardedShowing) { reportSkip('appOpen', 'other_ad_showing'); return false; }
   // Never show the start ad right after the player returns from the rewarded ad.
-  if (Date.now() < suppressAppOpenUntil) return false;
+  if (Date.now() < suppressAppOpenUntil) { reportSkip('appOpen', 'rewarded_suppression'); return false; }
   appOpenShowing = true;
   const startedAt = Date.now();
   let release = true;
   try {
-    const mod = await initWithTimeout(APP_OPEN_LOAD_TIMEOUT_MS);
+    let mod: AdMobModule;
+    try {
+      mod = await initWithTimeout(APP_OPEN_LOAD_TIMEOUT_MS);
+    } catch (err) {
+      reportSkip('appOpen', initFailureReason(err));
+      throw err;
+    }
     attachAppOpenRevenue(mod);
     if (!adAllowed(generation)) return false;
     // A preload already running (started at cold start) is awaited, not doubled.

@@ -8,6 +8,7 @@
 import { Capacitor } from '@capacitor/core';
 import { readAdConsentChoices, type AdConsentChoices } from './ad-consent';
 import { getRankedGames } from './local-stats';
+import { trackEvent } from './analytics';
 
 /* ------------------------------------------------------------------ */
 /* Central konfiguration                                               */
@@ -101,7 +102,7 @@ function reasonOf(err: unknown): string {
 
 /** Silent diagnostics so failing ads (e.g. on iPad) show up in analytics. */
 function reportAd(kind: 'appOpen' | 'optional' | 'postMatch' | 'banner' | 'interstitial', result: string, startedAt: number, reason?: string, context?: Record<string, unknown>) {
-  void import('@/lib/analytics').then(({ trackEvent }) =>
+  try {
     trackEvent('ad_result', {
       ...context,
       kind,
@@ -109,8 +110,8 @@ function reportAd(kind: 'appOpen' | 'optional' | 'postMatch' | 'banner' | 'inter
       reason,
       ms: Date.now() - startedAt,
       ipad: typeof navigator !== 'undefined' && /iPad|Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1,
-    }),
-  ).catch(() => {});
+    });
+  } catch { /* Diagnostics never affect ad presentation. */ }
 }
 
 const PREPARE_TIMEOUT_MS = 10_000;

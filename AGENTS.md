@@ -4,14 +4,14 @@
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - Icon source: resources/icon.png (1024px, opaque). `npm run icons` regenerates native/public copies; never edit outputs.
-- Admin: protected shared SQL; completion needs both forfeit fields null; full-history age; saved key validates; logout clears.
+- Admin: protected SQL; finished needs null forfeits; played excludes waiting/closure alone, retains starts/active/completed/own dated rolls; full-history age; saved key validates/logout clears.
 - admob.ts: platform-specific ADMOB_IDS/REWARDED_IDS (null disables; never iOS IDs on Android); fitGameAboveBanner reserves banner space. rewarded-pair deduplicates each SDK reward across pages; RewardedXpHost requests server XP only on confirmed reward, never auto-chains ads. Legacy partial bundles are cleared, never treated as reward proof. Suppress App Open 2 min afterward. Never auto-reset uncancellable SDK attempts (subscribeRewardedState tracks). scripts/patch-admob-rewarded.js tags events with attemptId — prevents overlap/unearned XP.
 - Store links: getStoreLinks; hide Play until PLAY_STORE_LIVE.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile; forfeit reads server before retry, preserves accepted exits. Expected dice validate under scoring lock.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls); client tumbles via diceAwait until server numbers arrive (cheat-proof).
-- - Online game actions (roll, lock, score, start, forfeit, invite reply, result backfill) verify the device via _shared/session-auth.ts (claim_session); perform_* RPCs are service-role only. REQUIRE_DEVICE stays false only until old versions are gone — session ids are public, so the device id is the real proof of identity.
+- Online actions (roll/lock/score/start/forfeit/invite/backfill) verify devices via _shared/session-auth.ts (claim_session); perform_* is service-role only. REQUIRE_DEVICE stays false until old versions are gone: session IDs are public; device ID proves identity.
 - Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — audits fairness and disputes.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).
 - *_authed combines claim/action; ROLL_RECOVER_* reads games. Client multiplayer-actions await requireClaimedDevice; failed claims retry.

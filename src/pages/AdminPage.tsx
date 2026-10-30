@@ -54,6 +54,8 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   useLayoutEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
+    const table = wrap.querySelector("table");
+    if (!table) return;
     const order = COLUMNS.map((c) => c.key);
     const measure = () => {
       const box = wrap.getBoundingClientRect();
@@ -64,9 +66,9 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         return {
           key: el.dataset.star as AdminColumnKey,
           day: el.dataset.day ?? "",
-          x: b.left - box.left + wrap.scrollLeft + b.width / 2,
-          y: b.top - box.top + wrap.scrollTop + b.height / 2,
-          lane: rb.top - box.top + wrap.scrollTop + 3,
+          x: b.left - box.left - wrap.clientLeft + wrap.scrollLeft + b.width / 2,
+          y: b.top - box.top - wrap.clientTop + wrap.scrollTop + b.height / 2,
+          lane: rb.top - box.top - wrap.clientTop + wrap.scrollTop + 3,
         };
       });
       const byDay = (a: StarPoint, b: StarPoint) =>
@@ -74,14 +76,20 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
       setLines({
         gold: stars.filter((s) => !WORST_COLUMNS.includes(s.key)).sort(byDay),
         red: stars.filter((s) => WORST_COLUMNS.includes(s.key)).sort(byDay),
-        w: wrap.scrollWidth,
-        h: wrap.scrollHeight,
+        w: table.offsetWidth,
+        h: table.offsetHeight,
       });
     };
     measure();
     const raf = requestAnimationFrame(measure);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(table);
+    let active = true;
+    void document.fonts?.ready.then(() => { if (active) measure(); });
     window.addEventListener("resize", measure);
     return () => {
+      active = false;
+      observer?.disconnect();
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", measure);
     };

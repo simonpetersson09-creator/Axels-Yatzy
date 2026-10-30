@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ChartLine, RefreshCw } from "lucide-react";
+import { ArrowLeft, ChartLine, LogOut, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminLineChart from "@/components/AdminLineChart";
 import {
@@ -35,9 +35,12 @@ function fmtDay(d: string) {
 }
 
 export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
+  const [adminKey, setAdminKey] = useState<string>(() => {
+    try { return localStorage.getItem(ADMIN_KEY_STORAGE) ?? ""; } catch { return ""; }
+  });
   const [rows, setRows] = useState<DayRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(Boolean(adminKey));
   const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [lines, setLines] = useState<{ gold: StarPoint[]; red: StarPoint[]; w: number; h: number }>({
@@ -83,9 +86,6 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
       window.removeEventListener("resize", measure);
     };
   }, [rows, diagram]);
-  const [adminKey, setAdminKey] = useState<string>(() => {
-    try { return localStorage.getItem(ADMIN_KEY_STORAGE) ?? ""; } catch { return ""; }
-  });
 
   useEffect(() => {
     const els = [document.documentElement, document.body, document.getElementById("root")];
@@ -120,6 +120,14 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   }, []);
 
   if (!rows) {
+    if (loading) {
+      return (
+        <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6" role="status">
+          <RefreshCw className="mr-2 h-5 w-5 motion-safe:animate-spin" />
+          Öppnar admin…
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
         <form
@@ -128,19 +136,22 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         >
           <h1 className="text-xl font-semibold">Admin</h1>
           <input
+            name="admin-password"
+            autoComplete="current-password"
+            aria-label="Adminnyckel"
             type="password"
             value={adminKey}
             onChange={(e) => setAdminKey(e.target.value)}
             placeholder="Adminnyckel"
             className="w-full rounded-md border border-border bg-card px-3 py-2"
           />
-          <button
+          <Button
             type="submit"
             disabled={loading || !adminKey}
-            className="w-full rounded-md bg-primary text-primary-foreground py-2 font-medium disabled:opacity-50"
+            className="w-full"
           >
             {loading ? "Laddar…" : "Logga in"}
-          </button>
+          </Button>
           {error && <p className="text-sm text-destructive">{error}</p>}
         </form>
       </div>
@@ -170,6 +181,16 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         >
           <RefreshCw />
           {loading ? "Uppdaterar…" : "Uppdatera"}
+        </Button>
+        <Button variant="outline" size="sm" disabled={loading}
+          onClick={() => {
+            try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch { /* ignore */ }
+            setAdminKey("");
+            setRows(null);
+            setError(null);
+          }}
+        >
+          <LogOut />Logga ut
         </Button>
         </div>
       </div>

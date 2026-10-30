@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Loggning av matchannonser – 30 oktober
-- [ ] Registrera hem/replay, beslut och delad interstitial-laddning med korrelations-ID utan ändrade visningsregler eller samtyckesuppgifter.
-- [ ] Verifiera loggar, fel, överhopp och dubbeltryck med isolerade tester.
+- [x] Registrera hem/replay, beslut och delad interstitial-laddning med korrelations-ID utan ändrade visningsregler eller samtyckesuppgifter. Delade laddningar skiljs från matchannonser; SDK-laddningsfel och tidsgränser syns, UMP-fel registreras inte.
+- [x] 77 tester godkända: no-fill, timeout, delad laddning, överhopp, hem/replay och dubbeltryck. Körande isolerat hookprov: Spela igen fortsätter utan native-annons; alla serveranrop avskilda. Bygge OK.
 - [ ] Verkliga annonsloggar kräver nästa signerade telefonbygge och testtelefon.
 
 ## Matchannons vid Spela igen – 29 oktober

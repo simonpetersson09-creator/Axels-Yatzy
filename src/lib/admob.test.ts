@@ -124,6 +124,7 @@ describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {
     await vi.advanceTimersByTimeAsync(10_000);
     expect(await first).toBe(false);
     expect(await second).toBe(false);
+    await vi.dynamicImportSettled();
     expect(diagnostics.prepare).toHaveBeenCalledOnce();
     expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ result: 'load_reused_pending' }));
     expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'postMatch', result: 'skipped', reason: 'still_loading', matchKey: 'test-match', action: 'home' }));

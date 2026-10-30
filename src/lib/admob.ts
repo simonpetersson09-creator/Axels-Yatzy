@@ -279,6 +279,30 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
 
 let trackingAsked: Promise<void> | null = null;
 let trackingPromptOpen = false;
+let trackingSettled = false;
+let trackingPrompted = false;
+let trackingStartedAt = 0;
+let firstAdRequestReported = false;
+
+/**
+ * Anonym diagnostik för Apples spårningsfråga. Spelarens svar (status) loggas
+ * aldrig – bara tidsgränser/fel och ordningen mot första annonsförfrågan.
+ */
+export type TrackingDiagStage =
+  | 'status_failed' | 'status_timeout' | 'request_failed' | 'request_timeout' | 'first_ad_request';
+function reportTracking(stage: TrackingDiagStage, extra?: Record<string, unknown>) {
+  try {
+    trackEvent('ad_att_diag', { stage, ms: trackingStartedAt ? Date.now() - trackingStartedAt : null, ...extra });
+  } catch {
+    /* diagnostik får aldrig störa annonser */
+  }
+}
+/** Registreras en gång per appstart, precis före första annonsförfrågan. */
+function reportFirstAdRequest() {
+  if (firstAdRequestReported || adPlatform() !== 'ios') return;
+  firstAdRequestReported = true;
+  reportTracking('first_ad_request', { att_settled: trackingSettled, prompted: trackingPrompted });
+}
 /**
  * Init med tidsgräns, men tiden när Apples spårningsfråga visas räknas inte:
  * första annonsen väntar alltid in spelarens svar i stället för att ge upp.
@@ -302,15 +326,25 @@ export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
   if (adPlatform() !== 'ios') return Promise.resolve();
   if (!trackingAsked) {
     trackingAsked = (async () => {
+      trackingStartedAt = Date.now();
+      let status: string;
       try {
-        const { status } = await withTimeout(mod.AdMob.trackingAuthorizationStatus(), 5_000, 'att_status');
+        ({ status } = await withTimeout(mod.AdMob.trackingAuthorizationStatus(), 5_000, 'att_status'));
+      } catch (e) {
+        reportTracking(reasonOf(e) === 'att_status_timeout' ? 'status_timeout' : 'status_failed');
+        trackingSettled = true;
+        return;
+      }
+      try {
         if (status !== 'notDetermined') return;
         trackingPromptOpen = true;
+        trackingPrompted = true;
         await withTimeout(mod.AdMob.requestTrackingAuthorization(), 120_000, 'att_request');
-      } catch {
-        /* spårningsfrågan är best effort */
+      } catch (e) {
+        reportTracking(reasonOf(e) === 'att_request_timeout' ? 'request_timeout' : 'request_failed');
       } finally {
         trackingPromptOpen = false;
+        trackingSettled = true;
       }
     })();
   }
@@ -342,6 +376,7 @@ async function initializeAds(generation: number): Promise<AdMobModule> {
     // iOS: Apples spårningsfråga (ATT) efter Googles samtycke, bara en gång.
     await ensureTrackingAuthorization(mod);
     if (!adAllowed(generation)) throw new Error('privacy_transition');
+    reportFirstAdRequest();
     await mod.AdMob.initialize({
       initializeForTesting: ADMOB_CONFIG.useTestAds,
     });

@@ -1,11 +1,13 @@
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const ads = vi.hoisted(() => ({ preload: vi.fn(async () => true), show: vi.fn(async () => 'shown') }));
+const analytics = vi.hoisted(() => ({ trackEvent: vi.fn() }));
+vi.mock('@/lib/analytics', () => analytics);
 vi.mock('@/lib/admob', () => ({ preloadInterstitial: ads.preload, showPostMatchInterstitial: ads.show }));
 import { usePostMatchExit } from './usePostMatchExit';
 
 describe('completed-match home exit', () => {
-  beforeEach(() => { ads.preload.mockClear(); ads.show.mockReset(); ads.show.mockResolvedValue('shown'); });
+  beforeEach(() => { analytics.trackEvent.mockClear(); ads.preload.mockClear(); ads.show.mockReset(); ads.show.mockResolvedValue('shown'); });
   afterEach(cleanup);
 
   it.each(['local', 'online'])('%s: waits for the ad to close before going home, only once', async (mode) => {
@@ -59,6 +61,9 @@ describe('completed-match home exit', () => {
     expect(ads.show).toHaveBeenCalledOnce();
     expect(replay).not.toHaveBeenCalled();
     expect(home).not.toHaveBeenCalled();
+    expect(ads.show).toHaveBeenCalledWith({ matchKey: 'replay:wait', action: 'replay' });
+    expect(analytics.trackEvent).toHaveBeenCalledWith('post_match_exit', { matchKey: 'replay:wait', action: 'replay', completed: true, result: 'clicked' });
+    expect(analytics.trackEvent).toHaveBeenCalledWith('post_match_exit', { matchKey: 'replay:wait', action: 'home', completed: true, result: 'duplicate_tap' });
     expect(result.current.leaving).toBe(true);
     await act(async () => { close('shown'); await pending; });
     expect(replay).toHaveBeenCalledOnce();

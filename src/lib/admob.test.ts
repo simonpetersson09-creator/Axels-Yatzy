@@ -4,7 +4,8 @@ const native = vi.hoisted(() => ({ platform: 'ios', handlers: new Map<string, Se
 vi.mock('@capacitor/core', () => ({ Capacitor: {
   getPlatform: () => native.platform, isNativePlatform: () => true, isPluginAvailable: () => true,
 } }));
-vi.mock('@/lib/analytics', () => ({ trackEvent: vi.fn() }));
+const diagnostics = vi.hoisted(() => ({ trackEvent: vi.fn(), prepare: vi.fn(async () => {}) }));
+vi.mock('@/lib/analytics', () => ({ trackEvent: diagnostics.trackEvent }));
 vi.mock('@capacitor-community/admob', () => ({
   AdmobConsentStatus: { REQUIRED: 'REQUIRED' },
   InterstitialAdPluginEvents: { Dismissed: 'dismissed', FailedToShow: 'failed' },
@@ -13,7 +14,7 @@ vi.mock('@capacitor-community/admob', () => ({
   RewardAdPluginEvents: { Showed: 'r_showed', Rewarded: 'r_reward', Dismissed: 'r_dismissed', FailedToShow: 'r_failed' },
   AdMob: {
     requestConsentInfo: async () => ({ canRequestAds: true }),
-    initialize: async () => {}, prepareInterstitial: async () => {}, showInterstitial: native.show,
+    initialize: async () => {}, prepareInterstitial: diagnostics.prepare, showInterstitial: native.show,
     prepareRewardVideoAd: native.prepareRewarded, showRewardVideoAd: native.showRewarded,
     isAppOpenLoaded: async () => ({ value: native.appOpenLoaded }),
     loadAppOpen: async () => { await native.loadAppOpen(); native.appOpenLoaded = true; },
@@ -90,6 +91,7 @@ describe.each(['ios', 'android'])('%s first-match App Open protection', (platfor
 
 describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {
   beforeEach(() => {
+    diagnostics.trackEvent.mockClear(); diagnostics.prepare.mockReset(); diagnostics.prepare.mockResolvedValue(undefined);
     vi.resetModules(); vi.useFakeTimers(); native.handlers.clear(); native.platform = platform;
     native.show.mockReset(); native.show.mockResolvedValue(undefined);
   });
@@ -99,6 +101,34 @@ describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {
     const m = await import('./admob');
     expect(await m.showPostMatchInterstitial()).toBe('unavailable');
     expect(native.show).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'postMatch', result: 'skipped', reason: 'not_loaded' }));
+  });
+
+  it('records no-fill without presenting an ad', async () => {
+    diagnostics.prepare.mockRejectedValueOnce(new Error('No ad to show'));
+    const m = await import('./admob');
+    expect(await m.preloadInterstitial()).toBe(false);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'interstitial', result: 'load_failed', reason: 'No ad to show', loadId: expect.any(String) }));
+    expect(native.show).not.toHaveBeenCalled();
+  });
+
+  it('records pending reuse and timeout without a second SDK load', async () => {
+    diagnostics.prepare.mockImplementationOnce(() => new Promise(() => {}));
+    const m = await import('./admob');
+    const first = m.preloadInterstitial();
+    await vi.advanceTimersByTimeAsync(0);
+    const second = m.preloadInterstitial();
+    expect(await m.showPostMatchInterstitial({ matchKey: 'test-match', action: 'home' })).toBe('unavailable');
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(await first).toBe(false);
+    expect(await second).toBe(false);
+    await vi.dynamicImportSettled();
+    expect(diagnostics.prepare).toHaveBeenCalledOnce();
+    expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ result: 'load_reused_pending' }));
+    expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'postMatch', result: 'skipped', reason: 'still_loading', matchKey: 'test-match', action: 'home' }));
+    expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ result: 'load_failed', reason: 'prepare_timeout' }));
   });
 
   it('holds navigation until dismissal and suppresses a second start ad', async () => {

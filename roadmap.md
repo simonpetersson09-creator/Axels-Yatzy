@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Loggning av matchannonser – 30 oktober
+- [x] Registrera hem/replay, beslut och delad interstitial-laddning med korrelations-ID utan ändrade visningsregler eller samtyckesuppgifter. Delade laddningar skiljs från matchannonser; SDK-laddningsfel och tidsgränser syns, UMP-fel registreras inte.
+- [x] 77 tester godkända: no-fill, timeout, delad laddning, överhopp, hem/replay och dubbeltryck. Körande isolerat hookprov: Spela igen fortsätter utan native-annons; alla serveranrop avskilda. Bygge OK.
+- [ ] Verkliga annonsloggar kräver nästa signerade telefonbygge och testtelefon.
+
 ## Matchannons vid Spela igen – 29 oktober
 - [x] Spela igen delar matchannonsflödet med hemutgång; nästa match väntar på stängning, oladdad annons hoppas över och dubbeltryck spärras. Låset återställs först med nästa matchnyckel.
 - [x] 62 tester godkända: replay/stängning, dubbeltryck mellan knapparna, flera matcher, hemutgång och annonsfel. Isolerat körande appprov: Spela igen → ny matchnyckel/runda 1 utan runtimefel eller live-statistik; bygge OK.

@@ -8,6 +8,7 @@
 import { Capacitor } from '@capacitor/core';
 import { readAdConsentChoices, type AdConsentChoices } from './ad-consent';
 import { getRankedGames } from './local-stats';
+import { trackEvent } from './analytics';
 
 /* ------------------------------------------------------------------ */
 /* Central konfiguration                                               */
@@ -100,16 +101,17 @@ function reasonOf(err: unknown): string {
 }
 
 /** Silent diagnostics so failing ads (e.g. on iPad) show up in analytics. */
-function reportAd(kind: 'appOpen' | 'optional' | 'postMatch' | 'banner', result: string, startedAt: number, reason?: string) {
-  void import('@/lib/analytics').then(({ trackEvent }) =>
+function reportAd(kind: 'appOpen' | 'optional' | 'postMatch' | 'banner' | 'interstitial', result: string, startedAt: number, reason?: string, context?: Record<string, unknown>) {
+  try {
     trackEvent('ad_result', {
+      ...context,
       kind,
       result,
       reason,
       ms: Date.now() - startedAt,
       ipad: typeof navigator !== 'undefined' && /iPad|Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1,
-    }),
-  ).catch(() => {});
+    });
+  } catch { /* Diagnostics never affect ad presentation. */ }
 }
 
 const PREPARE_TIMEOUT_MS = 10_000;
@@ -125,6 +127,9 @@ let privacyOptionsRequired = false;
 let privacyChanging = false;
 let privacyBlocked = false;
 let adGeneration = 0;
+let interstitialLoadId: string | undefined;
+let interstitialLoadSequence = 0;
+const interstitialLogSession = Date.now().toString(36);
 const adAllowed = (generation: number) => !privacyChanging && !privacyBlocked && generation === adGeneration;
 
 /** Logs only the native cache-bridge error (never consent choices or UMP payloads). */
@@ -369,26 +374,39 @@ async function initializeAds(generation: number): Promise<AdMobModule> {
  */
 export async function preloadInterstitial(): Promise<boolean> {
   const generation = adGeneration;
-  if (!adAllowed(generation)) return false;
-  if (!isAdMobAvailable() || !adUnitId('optional')) return false;
-  if (preparing) return preparing;
-  if (preparedAt && Date.now() - preparedAt < PREPARED_TTL_MS) return true;
+  const startedAt = Date.now();
+  let loadId = interstitialLoadId;
+  const log = (result: string, reason?: string) => reportAd('interstitial', result, startedAt, reason, { loadId });
+  if (!adAllowed(generation)) { log('load_skipped', 'ads_not_ready'); return false; }
+  if (!isAdMobAvailable() || !adUnitId('optional')) { log('load_skipped', 'unavailable'); return false; }
+  if (preparing) { log('load_reused_pending'); return preparing; }
+  if (preparedAt && Date.now() - preparedAt < PREPARED_TTL_MS) { log('load_reused_ready'); return true; }
+  if (preparedAt) log('cache_expired');
+  interstitialLoadId = `${interstitialLogSession}:${++interstitialLoadSequence}`;
+  loadId = interstitialLoadId;
+  let stage = 'initialization';
+  log('load_started');
 
   preparing = (async () => {
     try {
       const mod = await initWithTimeout(PREPARE_TIMEOUT_MS);
-      if (!adAllowed(generation)) return false;
+      if (!adAllowed(generation)) { log('load_discarded', 'ads_state_changed'); return false; }
       const adId = adUnitId('optional');
-      if (!adId) return false;
+      if (!adId) { log('load_skipped', 'unavailable'); return false; }
+      stage = 'prepare';
+      log('load_requested');
       await withTimeout(mod.AdMob.prepareInterstitial({
         adId,
         isTesting: ADMOB_CONFIG.useTestAds,
       }), PREPARE_TIMEOUT_MS, 'prepare');
-      if (!adAllowed(generation)) return false;
+      if (!adAllowed(generation)) { log('load_discarded', 'ads_state_changed'); return false; }
       preparedAt = Date.now();
+      log('loaded');
       return true;
     } catch (err) {
       if (adAllowed(generation)) { lastPrepareError = reasonOf(err); preparedAt = 0; }
+      // Initialization includes UMP: never record its errors or choices.
+      log('load_failed', stage === 'prepare' ? reasonOf(err) : reasonOf(err) === 'init_timeout' ? 'init_timeout' : 'initialization_not_ready');
       return false;
     } finally {
       if (generation === adGeneration) preparing = null;
@@ -408,18 +426,24 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
 }
 
 /** Result exit only: skip unprepared ads rather than delaying navigation. No XP. */
-export async function showPostMatchInterstitial(): Promise<ShowAdResult> {
-  return showInterstitial('postMatch');
+export async function showPostMatchInterstitial(context?: { matchKey: string; action: 'home' | 'replay' }): Promise<ShowAdResult> {
+  return showInterstitial('postMatch', context);
 }
 
-async function showInterstitial(kind: 'optional' | 'postMatch'): Promise<ShowAdResult> {
+async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matchKey: string; action: 'home' | 'replay' }): Promise<ShowAdResult> {
   const generation = adGeneration;
-  if (!adAllowed(generation)) return 'busy';
-  if (!isAdMobAvailable()) return 'unavailable';
-  if (showing || rewardedShowing || appOpenShowing) return 'busy';
-  if (kind === 'postMatch' && (!preparedAt || Date.now() - preparedAt >= PREPARED_TTL_MS)) return 'unavailable';
-  showing = true;
   const startedAt = Date.now();
+  const details = { ...context, loadId: interstitialLoadId, cacheAgeMs: preparedAt ? Date.now() - preparedAt : null };
+  const skip = (result: ShowAdResult, reason: string) => {
+    if (kind === 'postMatch') reportAd(kind, 'skipped', startedAt, reason, details);
+    return result;
+  };
+  if (!adAllowed(generation)) return skip('busy', 'ads_not_ready');
+  if (!isAdMobAvailable()) return skip('unavailable', 'native_unavailable');
+  if (showing || rewardedShowing || appOpenShowing) return skip('busy', 'another_ad_active');
+  if (kind === 'postMatch' && (!preparedAt || Date.now() - preparedAt >= PREPARED_TTL_MS)) return skip('unavailable', preparedAt ? 'cache_expired' : preparing ? 'still_loading' : 'not_loaded');
+  showing = true;
+  let lastShowError: string | undefined;
   const listeners: Awaited<ReturnType<AdMobModule['AdMob']['addListener']>>[] = [];
   try {
     const ready = kind === 'postMatch' || await preloadInterstitial();
@@ -429,28 +453,29 @@ async function showInterstitial(kind: 'optional' | 'postMatch'): Promise<ShowAdR
       return 'failed';
     }
     const mod = await loadModule();
-    if (!adAllowed(generation)) return 'unavailable';
+    if (!adAllowed(generation)) return skip('unavailable', 'ads_state_changed');
     // Native presentation resolves immediately; navigation waits for dismissal.
     let settle: (result: ShowAdResult) => void = () => {};
     const closed = new Promise<ShowAdResult>((resolve) => { settle = resolve; });
     listeners.push(await mod.AdMob.addListener(mod.InterstitialAdPluginEvents.Dismissed, () => settle('shown')));
     listeners.push(await mod.AdMob.addListener(mod.InterstitialAdPluginEvents.FailedToShow, () => settle('failed')));
-    if (!adAllowed(generation)) return 'unavailable';
+    if (!adAllowed(generation)) return skip('unavailable', 'ads_state_changed');
     if (kind === 'postMatch') {
+      reportAd(kind, 'show_requested', startedAt, undefined, details);
       suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
       // Never free an uncancellable native attempt just because a timer elapsed.
-      void mod.AdMob.showInterstitial().catch(() => settle('failed'));
+      void mod.AdMob.showInterstitial().catch((err) => { lastShowError = reasonOf(err); settle('failed'); });
     } else {
       await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
     }
     const result = await closed;
     preparedAt = 0; // förbrukad – laddas om via Dismissed-lyssnaren
-    reportAd(kind, result === 'shown' ? 'shown' : 'show_failed', startedAt);
+    reportAd(kind, result === 'shown' ? 'shown' : 'show_failed', startedAt, lastShowError, details);
     if (result === 'shown') void preloadInterstitial();
     return result;
   } catch (err) {
     preparedAt = 0;
-    reportAd(kind, 'show_failed', startedAt, reasonOf(err));
+    reportAd(kind, 'show_failed', startedAt, reasonOf(err), details);
     return 'failed';
   } finally {
     if (kind === 'postMatch') suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;

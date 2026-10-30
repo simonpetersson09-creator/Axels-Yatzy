@@ -62,3 +62,15 @@ describe('ATT diagnostics', () => {
     expect(diag().map(d => d.stage)).toEqual(['request_timeout', 'first_ad_request']);
   });
 });
+
+describe('ad skip diagnostics', () => {
+  beforeEach(() => { vi.resetModules(); sdk.track.mockReset(); });
+  it('logs App Open first_match_pending once per app start', async () => {
+    vi.doMock('./local-stats', () => ({ getRankedGames: () => 0 }));
+    const m = await import('./admob');
+    await m.preloadAppOpenAd(); await m.showAppOpenAd(); await m.preloadAppOpenAd();
+    const skips = sdk.track.mock.calls.filter(c => c[0] === 'ad_skipped').map(c => c[1]);
+    expect(skips).toEqual([{ kind: 'appOpen', reason: 'first_match_pending' }]);
+    vi.doUnmock('./local-stats');
+  });
+});

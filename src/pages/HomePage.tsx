@@ -1,3 +1,4 @@
+import { searchWaitMs } from '@/lib/play-timing';
 import { onboardingCopy, quickHintPending, markQuickHintDone } from '@/lib/onboarding-copy';
 import { BarChart3, ChevronRight } from 'lucide-react';
 import mrBDie from '@/assets/mr-b-die.png';

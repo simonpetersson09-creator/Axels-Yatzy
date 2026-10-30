@@ -9,6 +9,7 @@ import { getSessionId } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { getLanguage, subscribeProfileChanges } from '@/lib/profile';
 import { waitingRoomNotification } from '@/lib/waiting-room';
+import { reportPushTapNavigated } from '@/lib/play-timing';
 
 const PREFS_KEY = 'yatzy_notif_prefs_v1';
 
@@ -233,6 +234,7 @@ async function doInitNotifications(): Promise<void> {
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', async (action) => {
+      const tappedAt = Date.now();
       const data = action.notification?.data ?? {};
       const kind = (data.kind as string | undefined) ?? 'turn';
       const notifId = data.notification_id as string | undefined;
@@ -270,6 +272,8 @@ async function doInitNotifications(): Promise<void> {
       if (typeof window !== 'undefined') {
         // Defer to next tick so the app is mounted and listeners are attached.
         setTimeout(() => {
+          const gameId = kind === 'invite' || kind === 'lobby_join' ? undefined : (data.game_id as string | undefined);
+          reportPushTapNavigated(kind, tappedAt, gameId);
           if (kind === 'invite' && inviteId) {
             window.dispatchEvent(new CustomEvent('app:invite-tap', { detail: { inviteId } }));
           } else if (kind === 'lobby_join' && data.game_code) {

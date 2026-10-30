@@ -1,3 +1,4 @@
+import { reportPushTapGameShown } from '@/lib/play-timing';
 import QuickMatchOpponentNotice from '@/components/multiplayer/QuickMatchOpponentNotice';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -107,6 +108,8 @@ export default function MultiplayerGamePage() {
 
   const gameId = searchParams.get('gameId');
   usePlayNetworkDiagnostics(gameId, status, !!error || !!forfeitError, slowServer);
+  const gameShown = !!gameState;
+  useEffect(() => { if (gameShown) reportPushTapGameShown(gameId); }, [gameShown, gameId]);
   const diceProfiles = useDiceProfiles(gameId, gameState?.players.map(p => p.name).join('|'));
   const playerStats = usePlayerStats(gameId, gameState?.players.map(p => p.name).join('|'));
   const gameAvatars = useGameAvatars(gameId, gameState?.players.map(p => p.name).join('|'));

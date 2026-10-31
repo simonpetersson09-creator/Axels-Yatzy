@@ -575,6 +575,7 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
   if (kind === 'postMatch' && (!preparedAt || Date.now() - preparedAt >= PREPARED_TTL_MS)) return skip('unavailable', preparedAt ? 'cache_expired' : preparing ? 'still_loading' : 'not_loaded');
   showing = true;
   let lastShowError: string | undefined;
+  let shownLoadId = interstitialLoadId;
   const listeners: Awaited<ReturnType<AdMobModule['AdMob']['addListener']>>[] = [];
   try {
     const ready = kind === 'postMatch' || await preloadInterstitial();
@@ -583,6 +584,7 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
       reportAd(kind, 'load_failed', startedAt, lastPrepareError);
       return 'failed';
     }
+    shownLoadId = interstitialLoadId;
     const mod = await loadModule();
     if (!adAllowed(generation)) return skip('unavailable', 'ads_state_changed');
     // Native presentation resolves immediately; navigation waits for dismissal.
@@ -605,7 +607,7 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
     reportAd(kind, result === 'shown' ? 'shown' : 'show_failed', startedAt, lastShowError, details);
     return result;
   } catch (err) {
-    preparedAt = 0;
+    if (adAllowed(generation) && interstitialLoadId === shownLoadId) preparedAt = 0;
     reportAd(kind, 'show_failed', startedAt, reasonOf(err), details);
     return 'failed';
   } finally {

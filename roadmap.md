@@ -1,9 +1,10 @@
 # Roadmap – Snabbspel online
 
 ## Match-/XP-laddningar och Android-patchkedja – 31 oktober
-- [ ] Behåll SDK-laddningsägarskap över väntetimeout, sena svar och samtyckesgenerationer på iOS/Android; ingen XP-ersättningsladdning efter laddningsfel.
-- [ ] Rätta och verifiera reproducerbar Android-installation/synkning, inklusive Rewarded-getters och App Open fyra timmar; riktade/regressionstester.
-- [ ] Dokumentera filer, resultat, exakta byggsteg och telefonprov; fysisk verifiering kräver signerade byggen och testtelefoner. Ingen publicering.
+- [x] SDK-laddningsägarskap kvar över väntetimeout, sena svar och samtyckesgenerationer på iOS/Android; ingen XP-ersättningsladdning efter laddningsfel. Native per-enhetssamordning, generations-/ägargränser och bevarade belöningar/visningsregler.
+- [x] Komplett postinstall och patchkedjor verifierade installerat samt två gånger på ren 8.2.1. Android Rewarded-cacheluckan rättad, getters och exakt fyra timmar verifierade; 225 tester godkända i 20 filer, webbbygge OK.
+- [x] Filredovisning, aldrig-svarande SDK, exakta byggsteg och båda telefonchecklistorna i docs/fullscreen-load-ownership.md. Ingen publicering.
+- [ ] Full native-synkning/kompilering och fysisk verifiering: Android-sync stoppades efter godkända patchar eftersom native-projekt saknas; Java/Gradle/Android SDK/Xcode och signerade telefonbyggen/testtelefoner saknas här. Butiksversionens innehåll ej verifierat.
 
 ## iOS App Open – gamla laddningar vid annonsval
 - [x] Ogiltigförklarar gamla laddningar före SDK och vid båda svaren; separata laddningsägare och stale-no-fill-skydd utan SDK-avbrott. No-fill, ATT och andra format/regler bevarade.

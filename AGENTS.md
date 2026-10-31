@@ -1,4 +1,4 @@
-- Native patches: `npm run cap:sync:ios/android` (gated by verify-admob-patches.js; add new native methods there). UMP before Ads; App Open 4h expiry on reuse/status/show. Preserve scheduling/getRankedGames guards.
+- cap:sync:ios/android verifies methods. Keep UMP-first, 4h expiry, scheduling/ranked guards. iOS telemetry: passive snapshots/SDK impressions, ephemeral IDs, protected admin, no personal data or consent resets.
 - No QA in live player_country_stats.
 - Serialize Home news.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.

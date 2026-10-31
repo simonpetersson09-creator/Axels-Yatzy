@@ -1,5 +1,24 @@
 # iPhone: appstartsdiagnostik
 
+## Samtyckeslås och aktiv ATT – 31 oktober
+
+JavaScript-tidsgränser avslutar bara anroparens väntan. Samma verkliga UMP-/ATT-operation behåller sitt lås till native-svar; annonsinitieringen väntar medan spel och navigation kan fortsätta. Ett försök som aldrig svarar återställs inte av en timer: annonser förblir väntande för denna process, nya anrop delar försöket. Avsluta/starta appen först när eventuell systemruta är stängd; ingen automatisk reset av UMP eller användarval görs.
+
+UMP-timeout läser fortfarande aktuell `canRequestAds`, men ett true startar inte ATT eller laddning innan en pågående UMP-ruta faktiskt avslutats. Ett sent svar initierar delad annonsering en gång; avslutade visningsanrop återupptas inte. Native ATT väntar på aktiv app, avslutad UMP-ruta och tillgänglig presenterare, kontrollerar faktisk `notDetermined` precis före Apple-anropet och behåller ägarskap tills callback. Beredskapskontrollen var 250 ms begär inga annonser/tillstånd. Tidigare denied/restricted/authorized bevaras; notDetermined eller fel räknas inte som avklarat.
+
+Diagnostik: `consent_started`, `consent_reused_pending`, `consent_info_timeout`/`consent_form_timeout` (endast väntan), `consent_finished` (verkligt avslut), `att_deferred_inactive`/`att_deferred_consent`/`att_deferred_presenter`, `att_before_request`, `att_answer`, `att_finished`. ATT-värden i native-snapshots är faktisk status. Orsaker finns i händelsenamnen; befintlig adminläsare behöver inga nya fält. `replayed=true` är fortfarande historik, inte ett nytt försök.
+
+### Nytt native-bygge och konkret iPhone-prov
+
+1. Uppdatera lokal källa från anslutna repot på Mac. Kör `npm install`, `npm run build:dev`, `npm run cap:sync:ios`, `npm run cap:ios:verify`; synksteget inkluderar `npx cap sync`. Höj buildnummer, kompilera/signera/installera med Xcode. **Nytt native-bygge krävs** för aktivitets-/presenterarlåset, huvudtråd och nya native-händelser. Enbart webbuppdatering räcker inte. Läs https://lovable.dev/blog/capacitor.
+2. Behåll samtycke på befintlig testtelefon. Kontrollera testmärkning, `test_mode=true` och iOS App Open-ID `ca-app-pub-3940256099942544/5575463023`. Tidigare ATT ska inte frågas igen; eligible UMP ska fortsatt kunna ge impression även med denied ATT.
+3. Separat ren testtelefon/installation med obesvarad ATT och möjlighet att fråga aktiverad: slutför första matchen när App Open är låst, följ UMP → canRequestAds → ATT → laddning. Bakgrunda medan UMP väntar och återvänd flera gånger; ingen ytterligare UMP-ruta eller ATT över UMP. Om UMP själv besvarar ATT ska ingen separat fråga visas.
+4. Om ATT är kvar som notDetermined: gå till bakgrunden precis efter UMP, återvänd. `att_deferred_*` ska följas av högst ett `att_before_request` när telefonen är redo och därefter faktisk `att_answer`. Neka ATT och kontrollera fortsatt testannons när UMP tillåter begäran.
+5. Lämna startsidan medan frågorna väntar; navigation/spel ska fungera och inget sent svar ska visa App Open över spelet. Återvänd först vid ett normalt visningstillfälle. Behåll oanvänd cache, prova kort/lång bakgrund och bekräfta återbruk samt oförändrad 60 s no-fill-paus enligt proven nedan.
+6. Kopiera adminloggar och jämför version/build, process-/försöks-ID och tider. Långsam verklig UMP kan ge väntetimeout följd av verkligt slut; ett andra formulär får inte starta. Deterministiska aldrig-svar-/timeout-prov kräver isolerad mock/testharness; standardtestannonser garanterar inte dessa fall.
+
+Verifierat automatiskt: ägarskap, samtidighet, sena svar, tidigare ATT-val och no-fill/cache/laddningslås. Xcode-kompilering och fysisk iPhone/Apple/Google-callback är **inte telefonverifierade här**. Ingen eCPM-effekt utlovas; andra identifierade risker ändras inte.
+
 ## Vad loggen betyder
 
 Admin → iPhone – appstartsdiagnostik → Hämta → Kopiera ger JSON-rader, senaste 600 händelserna inom 30 dagar. De grupperas på tillfälligt `attempt_id` och sorteras med telefonens `occurred_at_ms`; `received_at` är serverns mottagningstid. Uteblivna rader bevisar inte ett fel: telefonen kan vara offline, appen kan ha avslutats eller gamla versionen saknar native-stödet.

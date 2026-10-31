@@ -49,12 +49,6 @@ describe('verify-admob-patches', () => {
       'MRB_APP_OPEN_EXPIRY',
       'maxAdAge',
       'discardExpiredAd',
-      'public void discardPrivacyCache()', 'MRB_FULLSCREEN_LOAD_OWNER', 'pendingLoads.get(id) != owner',
-      'pending.calls.add(call)', 'final int generation = privacyGeneration',
-      'age >= maxAdAgeMs', '4L * 60L * 60L * 1000L',
-      'discardExpiredAd()\n        if (appOpenAd != null)',
-      'discardExpiredAd()\n        if (appOpenAd == null || isShowingAd)',
-      'discardExpiredAd()\n            return appOpenAd != null',
       'MRB_APP_OPEN_DIAGNOSTICS_V2', '"load_no_fill"', 'noteCachedAd("presentation_requested")',
       'call.reject(message, nil, nil, details)',
     ].join('\n');
@@ -65,6 +59,12 @@ describe('verify-admob-patches', () => {
       'MRB_APP_OPEN_EXPIRY',
       'maxAdAgeMs',
       'discardExpiredAd',
+      'public void discardPrivacyCache()', 'MRB_FULLSCREEN_LOAD_OWNER', 'pendingLoads.get(id) != owner',
+      'pending.calls.add(call)', 'final int generation = privacyGeneration',
+      'age >= maxAdAgeMs', '4L * 60L * 60L * 1000L',
+      'discardExpiredAd()\n        if (appOpenAd != null)',
+      'discardExpiredAd()\n        if (appOpenAd == null || isShowingAd)',
+      'discardExpiredAd()\n            return appOpenAd != null',
     ].join('\n');
     const rewardedSource = [
       'LOVABLE_ATTEMPT_PATCH',

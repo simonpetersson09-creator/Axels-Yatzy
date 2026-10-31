@@ -20,7 +20,10 @@ it('Android App Open ads expire after four hours, idempotently, and run before s
     expect(first.match(/appOpenAd = null\n                loadedAt = 0L/g)).toHaveLength(2);
     expect(run()).toBe(first);
   } finally { rmSync(cwd, { recursive: true, force: true }); }
-  const steps = JSON.parse(readFileSync('package.json', 'utf8')).scripts['cap:sync:android'].split(' && ');
-  expect(steps.indexOf('node scripts/patch-admob-app-open-android.js')).toBeLessThan(steps.indexOf('npx cap sync android'));
+  const scripts = JSON.parse(readFileSync('package.json', 'utf8')).scripts;
+  const steps = scripts['cap:patch:android'].split(' && ');
+  const sync = scripts['cap:sync:android'].split(' && ');
+  expect(sync.indexOf('npm run cap:patch:android')).toBeLessThan(sync.indexOf('npx cap sync android'));
   expect(steps.indexOf('node scripts/patch-admob-app-open-android.js')).toBeGreaterThanOrEqual(0);
+  expect(scripts.postinstall).toContain('npm run cap:patch:android');
 });

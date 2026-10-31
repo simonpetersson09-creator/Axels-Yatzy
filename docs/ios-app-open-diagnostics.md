@@ -19,6 +19,8 @@ Diagnostik: `consent_started`, `consent_reused_pending`, `consent_info_timeout`/
 
 Verifierat automatiskt: ägarskap, samtidighet, sena svar, tidigare ATT-val och no-fill/cache/laddningslås. Xcode-kompilering och fysisk iPhone/Apple/Google-callback är **inte telefonverifierade här**. Ingen eCPM-effekt utlovas; andra identifierade risker ändras inte.
 
+Ändrade filer: `src/lib/admob.ts`; ny `scripts/patch-admob-ios-consent-lifecycle.js`; `package.json`, `scripts/verify-admob-patches.js`; riktade nya/uppdaterade tester för samtycke/ATT, initiering, privacy och patchkedjan; denna provguide, `AGENTS.md` och `roadmap.md`. `scripts/patch-admob-app-open.js` har enbart fått en verifieringskompatibilitet med befintlig V2-cacheloggning: native-annonskod och fyra timmars giltighetstid skrivs inte om. Utan denna kontrollrättning stoppades andra synkningen på redan korrekt diagnostikpatchad källa.
+
 ## Vad loggen betyder
 
 Admin → iPhone – appstartsdiagnostik → Hämta → Kopiera ger JSON-rader, senaste 600 händelserna inom 30 dagar. De grupperas på tillfälligt `attempt_id` och sorteras med telefonens `occurred_at_ms`; `received_at` är serverns mottagningstid. Uteblivna rader bevisar inte ett fel: telefonen kan vara offline, appen kan ha avslutats eller gamla versionen saknar native-stödet.

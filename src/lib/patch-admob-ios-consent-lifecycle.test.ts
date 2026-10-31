@@ -20,7 +20,7 @@ it('patches existing diagnostic installs idempotently without changing ad/cache 
       .replace('    // MRB_IOS_CONSENT_LIFECYCLE: only read/write on the main queue.\n    var consentUIBusy = false\n','')
       .replace('            completionHandler: { error in\n                DispatchQueue.main.async {','            completionHandler: { error in')
       .replace('                }\n            })','            })')
-      .replaceAll('        dispatchPrecondition(condition: .onQueue(.main))\n        guard !consentUIBusy else { call.reject("Consent UI pending"); return }\n        if #available(iOS 14, *) {\n            guard plugin?.isTrackingNativePending != true else { call.reject("ATT UI pending"); return }\n        }','')
+      .split('        dispatchPrecondition(condition: .onQueue(.main))\n        guard !consentUIBusy else { call.reject("Consent UI pending"); return }\n        if #available(iOS 14, *) {\n            guard plugin?.isTrackingNativePending != true else { call.reject("ATT UI pending"); return }\n        }').join('')
       .replace('        consentUIBusy = true\n        Task { @MainActor in\n            defer { self.consentUIBusy = false }','        Task {')
       .replace('                consentUIBusy = true\n                Task { @MainActor in\n                    defer { self.consentUIBusy = false }','                Task { @MainActor in');
     writeFileSync(c,text);

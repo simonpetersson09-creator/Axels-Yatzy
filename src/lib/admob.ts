@@ -222,6 +222,7 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
     consentPending = true;
     consentPhase = 'consent_info';
     noteIOSDiagnostic(mod, 'consent_started');
+    let consentFailed = false;
     consentPromise = (async () => {
       try {
         let info = await (adPlatform() === 'ios' ? mod.AdMob.requestConsentInfo() : withTimeout(mod.AdMob.requestConsentInfo(), 10_000, 'consent_info'));
@@ -233,7 +234,7 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
         noteIOSDiagnostic(mod, 'consent_finished');
         return info.canRequestAds === true;
       } catch (err) {
-        consentPromise = null; // Only a real native completion releases iOS ownership.
+        consentFailed = true;
         const reason = reasonOf(err);
         noteIOSDiagnostic(mod, ['consent_info_timeout', 'consent_form_timeout'].includes(reason) ? reason : 'consent_failed');
         // Do not infer eligibility from status/purpose bits or a cached JS value.
@@ -251,7 +252,7 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
           return false; // Missing bridge, failed read or timeout: fail closed.
         }
       }
-    })().finally(() => { consentPending = false; });
+    })().finally(() => { consentPending = false; if (consentFailed) consentPromise = null; });
   } else if (consentPending) {
     noteIOSDiagnostic(mod, 'consent_reused_pending');
   }

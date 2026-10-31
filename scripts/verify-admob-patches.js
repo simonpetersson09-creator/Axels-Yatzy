@@ -34,8 +34,12 @@ const checks = {
       ['self.consentExecutor.plugin = self\n            self.consentExecutor.showPrivacyOptionsForm(', 'samtyckesbindning för integritetsformuläret'],
     ]],
     [ios + 'Consent/ConsentExecutor.swift', [['defer { self.consentUIBusy = false }', 'UMP-rutans faktiska avslut'], ['DispatchQueue.main.async {', 'UMP-svar på huvudtråd']]],
-    [ios + 'Interstitial/AdInterstitialExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för helskärmsannons']]],
-    [ios + 'Rewarded/AdRewardExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för belöningsannons']]],
+    ...['Interstitial/AdInterstitialExecutor.swift', 'Rewarded/AdRewardExecutor.swift'].map(file => [ios + file, [
+      ['func discardPrivacyCache()', 'cacherensning för helskärmsannons'],
+      ['MRB_FULLSCREEN_LOAD_OWNER', 'SDK-laddningsägarskap'],
+      ['self.pendingLoads[adUnitID] === owner', 'SDK-svarsägare'],
+      ['pending.calls.append(call)', 'återbruk av SDK-laddning'],
+    ]]),
     [ios + 'Banner/BannerExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för banner']]],
     [ios + 'AppOpen/AppOpenAdPlugin.swift', [['func discardPrivacyCache()', 'cacherensning för appstartsannons'],
       ['call.reject(message, nil, nil, details)', 'strukturerad App Open felkod/feldomän']]],
@@ -54,6 +58,13 @@ const checks = {
     ]],
   ],
   android: [
+    ...['interstitial/AdInterstitialExecutor.java', 'rewarded/AdRewardExecutor.java'].map(file => ['android/src/main/java/com/getcapacitor/community/admob/' + file, [
+      ['public void discardPrivacyCache()', 'cacherensning för helskärmsannons'],
+      ['MRB_FULLSCREEN_LOAD_OWNER', 'SDK-laddningsägarskap'],
+      ['pendingLoads.get(id) != owner', 'SDK-svarsägare'],
+      ['pending.calls.add(call)', 'återbruk av SDK-laddning'],
+      ['final int generation = privacyGeneration', 'generation före schemalagt SDK-anrop'],
+    ]]),
     [rewardedAndroid + 'AdRewardExecutor.java', [
       ['LOVABLE_ATTEMPT_PATCH', 'Rewarded attemptId-patch'],
       ...['Showed', 'FailedToShow', 'Dismissed'].map(event => [
@@ -69,6 +80,11 @@ const checks = {
       ['MRB_APP_OPEN_EXPIRY', "appstartsannonsens 4-timmarsutgång (patch-admob-app-open-android.js)"],
       ['maxAdAgeMs', '4-timmarsgräns för sparad appstartsannons'],
       ['discardExpiredAd', 'rensning av för gammal appstartsannons'],
+      ['age >= maxAdAgeMs', 'exakt utgångsvillkor'],
+      ['4L * 60L * 60L * 1000L', 'exakt fyratimmarsgräns'],
+      ['discardExpiredAd()\n        if (appOpenAd != null)', 'utgång före återbruk'],
+      ['discardExpiredAd()\n        if (appOpenAd == null || isShowingAd)', 'utgång före presentation'],
+      ['discardExpiredAd()\n            return appOpenAd != null', 'utgång före statusläsning'],
     ]],
   ],
 };

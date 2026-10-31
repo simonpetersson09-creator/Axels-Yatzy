@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## iOS samtyckeslås och ATT – 31 oktober
-- [ ] Behåll verkligt UMP-försök efter väntetimeout; samordna ATT till aktiv app utan samtyckesruta. Bevara no-fill och övriga annonsregler.
-- [ ] Riktade tester, patchverifiering och iPhone-provguide.
+- [x] Verkligt UMP-/ATT-ägarskap bevarat efter väntetimeout; ATT väntar på aktiv huvudtråd/presenterare utan UMP-ruta. No-fill och övriga annonsregler bevarade.
+- [x] 150 tester godkända i 12 filer, inklusive 19 no-fill-prov; ren 8.2.1-plugin och upprepad patchkedja verifierade. Befintlig V2-cacheobservation krävde enbart kompatibel verifiering för omsynkning, inte ändrad native-annonskod. Webbbygge OK. iPhone-provguide och ändrade filer redovisade i docs/ios-app-open-diagnostics.md.
 - [ ] Fysisk verifiering kräver nytt signerat native-bygge och iPhone.
 
 ## iOS App Open no-fill – 31 oktober

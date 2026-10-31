@@ -21,6 +21,8 @@ Verifierat automatiskt: ägarskap, samtidighet, sena svar, tidigare ATT-val och 
 
 Ändrade filer: `src/lib/admob.ts`; ny `scripts/patch-admob-ios-consent-lifecycle.js`; `package.json`, `scripts/verify-admob-patches.js`; riktade nya/uppdaterade tester för samtycke/ATT, initiering, privacy och patchkedjan; denna provguide, `AGENTS.md` och `roadmap.md`. `scripts/patch-admob-app-open.js` har enbart fått en verifieringskompatibilitet med befintlig V2-cacheloggning: native-annonskod och fyra timmars giltighetstid skrivs inte om. Utan denna kontrollrättning stoppades andra synkningen på redan korrekt diagnostikpatchad källa.
 
+Testfiler: nya `src/lib/ios-consent-lifecycle.test.ts` och `src/lib/patch-admob-ios-consent-lifecycle.test.ts`; uppdaterade `src/lib/admob-att-diag.test.ts`, `src/lib/admob-initialization.test.ts`, `src/lib/ad-privacy-cache.test.ts`, `src/lib/verify-admob-patches.test.ts`, `src/lib/patch-admob-app-open.test.ts`. **150 tester godkända i 12 filer**, inklusive 19 oförändrade no-fill-prov. Ren 8.2.1-plugin patchad och hela kedjan omkörd/verifierad. Native-beredskapen kontrolleras i Swift-källan och patchproven; bakgrund → förgrund med verklig Apple-ruta är fortfarande ett fysiskt telefonprov, inte verifierat av JavaScript-mockarna.
+
 ## Vad loggen betyder
 
 Admin → iPhone – appstartsdiagnostik → Hämta → Kopiera ger JSON-rader, senaste 600 händelserna inom 30 dagar. De grupperas på tillfälligt `attempt_id` och sorteras med telefonens `occurred_at_ms`; `received_at` är serverns mottagningstid. Uteblivna rader bevisar inte ett fel: telefonen kan vara offline, appen kan ha avslutats eller gamla versionen saknar native-stödet.

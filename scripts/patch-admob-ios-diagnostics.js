@@ -5,7 +5,16 @@ const root = resolve('node_modules/@capacitor-community/admob/ios/Sources/AdMobP
 async function patch(file, edit) {
   const path = resolve(root, file);
   const before = await readFile(path, 'utf8');
-  if (before.includes('MRB_APP_OPEN_DIAGNOSTICS')) return;
+  if (before.includes('MRB_APP_OPEN_DIAGNOSTICS')) {
+    if (file === 'AdMobPlugin.swift') {
+      const repaired = before.replace('    private var diagnosticHistory: [[String: Any]] = []', '    private let diagnosticLock = NSLock()\n    private var diagnosticHistory: [[String: Any]] = []')
+        .replace('        diagnosticHistory.append(row)', '        diagnosticLock.lock()\n        diagnosticHistory.append(row)')
+        .replace('        notifyListeners("appOpenDiagnostic", data: row, retainUntilConsumed: true)', '        diagnosticLock.unlock()\n        notifyListeners("appOpenDiagnostic", data: row, retainUntilConsumed: true)')
+        .replace('            for var row in self.diagnosticHistory {', '            self.diagnosticLock.lock()\n            let history = self.diagnosticHistory\n            self.diagnosticLock.unlock()\n            for var row in history {');
+      if (!before.includes('diagnosticLock')) await writeFile(path, repaired);
+    }
+    return;
+  }
   const replace = (text, anchor, value) => {
     if (!text.includes(anchor)) throw new Error(`Diagnostics anchor missing: ${file}: ${anchor}`);
     return text.replace(anchor, value);
@@ -15,12 +24,15 @@ async function patch(file, edit) {
 await patch('AdMobPlugin.swift', (s, r) => {
   s = r(s, '        CAPPluginMethod(name: "initialize",', '        CAPPluginMethod(name: "noteAppOpenDiagnostic", returnType: CAPPluginReturnPromise),\n        CAPPluginMethod(name: "initialize",');
   s = r(s, '    private let appOpenAdPlugin = AppOpenAdPlugin()', `    // MRB_APP_OPEN_DIAGNOSTICS: bounded, process-local technical history only.
+    private let diagnosticLock = NSLock()
     private var diagnosticHistory: [[String: Any]] = []
     private var diagnosticFlowId = UUID().uuidString
     func recordAppOpenDiagnostic(_ stage: String) {
         let row = appOpenDiagnosticSnapshot(stage)
+        diagnosticLock.lock()
         diagnosticHistory.append(row)
         if diagnosticHistory.count > 24 { diagnosticHistory.removeFirst() }
+        diagnosticLock.unlock()
         notifyListeners("appOpenDiagnostic", data: row, retainUntilConsumed: true)
     }
     func appOpenDiagnosticSnapshot(_ stage: String) -> [String: Any] {
@@ -62,7 +74,10 @@ await patch('AdMobPlugin.swift', (s, r) => {
     private let appOpenAdPlugin = AppOpenAdPlugin()`);
   s = r(s, '        appOpenAdPlugin.loadAppOpen(\n', `        let attemptId = call.getString("diagnosticAttemptId") ?? UUID().uuidString
         DispatchQueue.main.async {
-            for var row in self.diagnosticHistory {
+            self.diagnosticLock.lock()
+            let history = self.diagnosticHistory
+            self.diagnosticLock.unlock()
+            for var row in history {
                 row["attempt_id"] = attemptId
                 row["replayed"] = true
                 self.notifyListeners("appOpenDiagnostic", data: row, retainUntilConsumed: true)

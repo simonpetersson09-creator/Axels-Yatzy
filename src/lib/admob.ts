@@ -824,19 +824,21 @@ let appOpenShowing = false;
 let appOpenPreload: Promise<boolean> | null = null;
 /** The native load itself; cleared only when the SDK answers, never on a JS timeout. */
 let appOpenNativeLoad: Promise<unknown> | null = null;
+let appOpenAttemptId: string | undefined;
 let appOpenRevenueListener = false;
 
 /** One native App Open load at a time: a timed-out wait reuses the running load. */
 function loadAppOpenOnce(mod: AdMobModule, adId: string, ms: number, label: string): Promise<unknown> {
   if (!appOpenNativeLoad) {
     const attemptId = adPlatform() === 'ios' ? crypto.randomUUID() : undefined;
+    appOpenAttemptId = attemptId;
     const p = mod.AdMob.loadAppOpen({ adId, ...(attemptId ? { diagnosticAttemptId: attemptId, diagnosticTestMode: ADMOB_CONFIG.useTestAds } : {}) });
     appOpenNativeLoad = p;
     p.then(() => {}, () => {}).finally(() => { if (appOpenNativeLoad === p) appOpenNativeLoad = null; });
   }
   return withTimeout(appOpenNativeLoad, ms, label).catch(err => {
     if (adPlatform() === 'ios' && reasonOf(err) === `${label}_timeout`) {
-      void loadModule().then(mod => noteIOSDiagnostic(mod, 'init_timeout')).catch(() => {});
+      recordAppOpenDiagnostic({ stage: 'load_wait_timeout', attempt_id: appOpenAttemptId, occurred_at_ms: Date.now(), ad_unit_id: adId, test_mode: ADMOB_CONFIG.useTestAds });
     }
     throw err;
   });

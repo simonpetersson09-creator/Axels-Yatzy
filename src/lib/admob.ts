@@ -159,6 +159,8 @@ async function loadModule(): Promise<AdMobModule> {
 }
 
 let consentPromise: Promise<boolean> | null = null;
+let consentPending = false;
+let consentWait: Promise<boolean> | null = null;
 let privacyOptionsRequired = false;
 let privacyChanging = false;
 let privacyBlocked = false;
@@ -217,19 +219,34 @@ async function discardPrivacyCaches(mod: AdMobModule): Promise<void> {
 function ensureConsent(mod: AdMobModule): Promise<boolean> {
   attachIOSDiagnostics(mod);
   if (!consentPromise) {
+    consentPending = true;
+    noteIOSDiagnostic(mod, 'consent_started');
+    let consentFailed = false;
+    const observeWait = <T,>(operation: Promise<T>, ms: number, phase: string): Promise<T> => {
+      const wait = withTimeout(operation, ms, phase);
+      if (adPlatform() === 'ios') consentWait = wait.then(() => true, async error => {
+        if (reasonOf(error) !== `${phase}_timeout`) return false;
+        noteIOSDiagnostic(mod, `${phase}_timeout`);
+        try {
+          const native = mod.AdMob as typeof mod.AdMob & { getConsentEligibility(): Promise<{ canRequestAds: boolean }> };
+          return (await withTimeout(native.getConsentEligibility(), 5_000, 'consent_eligibility'))?.canRequestAds === true;
+        } catch { return false; }
+      });
+      return adPlatform() === 'ios' ? operation : wait;
+    };
     consentPromise = (async () => {
       try {
-        let info = await withTimeout(mod.AdMob.requestConsentInfo(), 10_000, 'consent_info');
+        let info = await observeWait(mod.AdMob.requestConsentInfo(), 10_000, 'consent_info');
         if (info.isConsentFormAvailable && info.status === mod.AdmobConsentStatus.REQUIRED) {
-          info = await withTimeout(mod.AdMob.showConsentForm(), 120_000, 'consent_form');
+          info = await observeWait(mod.AdMob.showConsentForm(), 120_000, 'consent_form');
         }
         privacyOptionsRequired = info.privacyOptionsRequirementStatus === 'REQUIRED';
         noteIOSDiagnostic(mod, 'consent_finished');
         return info.canRequestAds === true;
       } catch (err) {
+        consentFailed = true;
         const reason = reasonOf(err);
         noteIOSDiagnostic(mod, ['consent_info_timeout', 'consent_form_timeout'].includes(reason) ? reason : 'consent_failed');
-        consentPromise = null; // försök igen nästa gång
         // Do not infer eligibility from status/purpose bits or a cached JS value.
         // UMP itself may still allow ads with consent saved before this error.
         try {
@@ -245,9 +262,25 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
           return false; // Missing bridge, failed read or timeout: fail closed.
         }
       }
-    })();
+    })().finally(() => { consentPending = false; if (consentFailed) consentPromise = null; });
+  } else if (consentPending) {
+    noteIOSDiagnostic(mod, 'consent_reused_pending');
   }
-  return consentPromise;
+  const owned = consentPromise;
+  if (adPlatform() !== 'ios') return owned;
+  // Follow phase changes without starting any new native operation.
+  return (async () => {
+    let wait = consentWait;
+    while (consentPending && wait) {
+      const eligible = await wait;
+      if (wait === consentWait) {
+        if (consentPending) return eligible;
+        break;
+      }
+      wait = consentWait;
+    }
+    return owned;
+  })();
 }
 
 /** Om knappen "Annonsinställningar" ska visas (bara där Google kräver det). */
@@ -295,6 +328,7 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
   if (!isAdMobAvailable()) return false;
   // Never release a native delegate or reward lifecycle while it may present.
   if (privacyChanging || showing || rewardedShowing || appOpenShowing) return false;
+  if (adPlatform() === 'ios' && (consentPending || trackingAsked && !trackingSettled)) return false;
   privacyChanging = true;
   privacyBlocked = true;
   adGeneration++;
@@ -321,7 +355,6 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
 }
 
 let trackingAsked: Promise<void> | null = null;
-let trackingPromptOpen = false;
 let trackingSettled = false;
 let trackingPrompted = false;
 let trackingStartedAt = 0;
@@ -347,19 +380,14 @@ function reportFirstAdRequest() {
   reportTracking('first_ad_request', { att_settled: trackingSettled, prompted: trackingPrompted });
 }
 /**
- * Init med tidsgräns, men tiden när Apples spårningsfråga visas räknas inte:
- * första annonsen väntar alltid in spelarens svar i stället för att ge upp.
+ * Caller deadlines never release shared UMP/ATT/native ownership.
  */
 async function initWithTimeout(ms: number): Promise<AdMobModule> {
-  const start = withTimeout(ensureInitialized(), ms, 'init');
-  if (adPlatform() !== 'ios') return start;
   try {
-    return await start;
+    return await withTimeout(ensureInitialized(), ms, 'init');
   } catch (e) {
     if (reasonOf(e) === 'init_timeout') void loadModule().then(mod => noteIOSDiagnostic(mod, 'init_timeout')).catch(() => {});
-    if (!trackingPromptOpen || !trackingAsked) throw e;
-    await trackingAsked;
-    return withTimeout(ensureInitialized(), ms, 'init');
+    throw e;
   }
 }
 /**
@@ -373,27 +401,29 @@ export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
       trackingStartedAt = Date.now();
       let status: string;
       try {
-        ({ status } = await withTimeout(mod.AdMob.trackingAuthorizationStatus(), 5_000, 'att_status'));
+        const read = mod.AdMob.trackingAuthorizationStatus();
+        void withTimeout(read, 5_000, 'att_status').catch(e => { if (reasonOf(e) === 'att_status_timeout') { noteIOSDiagnostic(mod, 'att_status_timeout'); reportTracking('status_timeout'); } });
+        ({ status } = await read);
       } catch (e) {
         noteIOSDiagnostic(mod, reasonOf(e) === 'att_status_timeout' ? 'att_status_timeout' : 'att_status_failed');
         reportTracking(reasonOf(e) === 'att_status_timeout' ? 'status_timeout' : 'status_failed');
-        trackingSettled = true;
         return;
       }
       try {
-        if (status !== 'notDetermined') return;
-        trackingPromptOpen = true;
+        if (status !== 'notDetermined') { trackingSettled = true; return; }
         trackingPrompted = true;
-        await withTimeout(mod.AdMob.requestTrackingAuthorization(), 120_000, 'att_request');
+        const request = mod.AdMob.requestTrackingAuthorization();
+        void withTimeout(request, 120_000, 'att_request').catch(e => { if (reasonOf(e) === 'att_request_timeout') { noteIOSDiagnostic(mod, 'att_request_timeout'); reportTracking('request_timeout'); } });
+        await request;
+        const after = await mod.AdMob.trackingAuthorizationStatus();
+        trackingSettled = after.status !== 'notDetermined';
       } catch (e) {
         noteIOSDiagnostic(mod, reasonOf(e) === 'att_request_timeout' ? 'att_request_timeout' : 'att_request_failed');
         reportTracking(reasonOf(e) === 'att_request_timeout' ? 'request_timeout' : 'request_failed');
       } finally {
         noteIOSDiagnostic(mod, 'att_finished');
-        trackingPromptOpen = false;
-        trackingSettled = true;
       }
-    })();
+    })().finally(() => { if (!trackingSettled) trackingAsked = null; });
   }
   return trackingAsked;
 }
@@ -416,12 +446,17 @@ async function ensureInitialized(): Promise<AdMobModule> {
 async function initializeAds(generation: number): Promise<AdMobModule> {
   const mod = await loadModule();
   // Samtycke först: inga annonser begärs innan spelaren svarat i EU.
-  const canRequest = await ensureConsent(mod);
+  let canRequest = await ensureConsent(mod);
+  // Eligibility reads after timeout do not mean a pending UMP UI has ended.
+  // Keep the shared initialization parked; caller deadlines leave gameplay free.
+  if (adPlatform() === 'ios' && consentPending && consentPromise) {
+    canRequest = await consentPromise;
+  }
   if (!adAllowed(generation)) throw new Error('privacy_transition');
   if (!canRequest) throw new Error('consent_not_given');
+  if (adPlatform() === 'ios' && !trackingSettled) await ensureTrackingAuthorization(mod);
   if (!initialized) {
     // iOS: Apples spårningsfråga (ATT) efter Googles samtycke, bara en gång.
-    await ensureTrackingAuthorization(mod);
     if (!adAllowed(generation)) throw new Error('privacy_transition');
     reportFirstAdRequest();
     await mod.AdMob.initialize({

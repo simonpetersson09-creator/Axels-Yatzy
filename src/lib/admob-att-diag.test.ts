@@ -31,7 +31,7 @@ describe('ATT diagnostics', () => {
 
   it('logs first ad request only after the ATT answer, without the answer', async () => {
     sdk.status.mockResolvedValue({ status: 'notDetermined' });
-    sdk.att.mockImplementation(async () => { sdk.order.push('att_answer'); return { status: 'denied' }; });
+    sdk.att.mockImplementation(async () => { sdk.order.push('att_answer'); sdk.status.mockResolvedValue({ status: 'denied' }); return { status: 'denied' }; });
     sdk.track.mockImplementation((n: string) => { if (n === 'ad_att_diag') sdk.order.push('diag'); });
     const m = await import('./admob');
     const p = m.preloadInterstitial(); await vi.advanceTimersByTimeAsync(0); await p;
@@ -43,8 +43,9 @@ describe('ATT diagnostics', () => {
   it('logs status_timeout after 5 s', async () => {
     sdk.status.mockReturnValue(new Promise(() => {}));
     const m = await import('./admob');
-    const p = m.preloadInterstitial(); await vi.advanceTimersByTimeAsync(5_000); await p;
-    expect(diag().map(d => d.stage)).toEqual(['status_timeout', 'first_ad_request']);
+    const p = m.preloadInterstitial(); await vi.advanceTimersByTimeAsync(10_000); expect(await p).toBe(false);
+    expect(diag().map(d => d.stage)).toEqual(['status_timeout']);
+    expect(sdk.init).not.toHaveBeenCalled();
   });
 
   it('logs status_failed on error', async () => {
@@ -59,7 +60,8 @@ describe('ATT diagnostics', () => {
     sdk.att.mockReturnValue(new Promise(() => {}));
     const m = await import('./admob');
     const p = m.preloadInterstitial(); await vi.advanceTimersByTimeAsync(120_000); await p;
-    expect(diag().map(d => d.stage)).toEqual(['request_timeout', 'first_ad_request']);
+    expect(diag().map(d => d.stage)).toEqual(['request_timeout']);
+    expect(sdk.init).not.toHaveBeenCalled();
   });
 });
 

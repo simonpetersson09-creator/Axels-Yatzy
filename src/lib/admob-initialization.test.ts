@@ -132,7 +132,9 @@ describe('iOS ATT during shared initialization', () => {
     expect(sdk.initialize).not.toHaveBeenCalled();
     expect(sdk.interstitial).not.toHaveBeenCalled(); expect(sdk.rewarded).not.toHaveBeenCalled();
     answer.resolve();
-    expect(await first).toBe(true); expect(await second).toBe(true);
+    expect(await first).toBe(false); expect(await second).toBe(false);
+    sdk.status.mockResolvedValue({ status: 'denied' });
+    expect(await m.preloadInterstitial()).toBe(true);
     expect(sdk.initialize).toHaveBeenCalledOnce();
   });
 });

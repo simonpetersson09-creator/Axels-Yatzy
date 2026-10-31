@@ -68,6 +68,18 @@ it('preserves an active presentation and is idempotent', () => {
   });
 });
 
+it('accepts the existing diagnostics reuse observation without rewriting native behavior', () => {
+  const cwd = mkdtempSync(resolve(tmpdir(), 'app-open-v2-'));
+  const target = resolve(cwd, 'node_modules/@capacitor-community/admob/ios/Sources/AdMobPlugin/AppOpen/AppOpenAdManager.swift');
+  try {
+    mkdirSync(dirname(target), { recursive: true });
+    const text = readFileSync(resolve('node_modules/@capacitor-community/admob/ios/Sources/AdMobPlugin/AppOpen/AppOpenAdManager.swift'), 'utf8');
+    writeFileSync(target, text);
+    execFileSync(process.execPath, [resolve('scripts/patch-admob-app-open.js')], { cwd });
+    expect(readFileSync(target, 'utf8')).toBe(text);
+  } finally { rmSync(cwd, { recursive: true, force: true }); }
+});
+
 it('runs both fixes before Capacitor sync in the existing iOS command', () => {
   const pkg = JSON.parse(readFileSync(resolve('package.json'), 'utf8'));
   const steps = pkg.scripts['cap:sync:ios'].split(' && ');

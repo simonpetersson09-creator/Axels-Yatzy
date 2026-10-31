@@ -58,10 +58,12 @@ describe.each(['ios', 'android'])('%s privacy cache boundary', platform => {
       await attempt;
       if (failure.includes('timeout')) {
         n.info.mockImplementation(reject);
-        await m.preloadInterstitial();
+        const retry = m.preloadInterstitial();
+        await vi.advanceTimersByTimeAsync(130_001);
+        await retry;
       }
       expect(n.eligibility).toHaveBeenCalled();
-      expect(n.interstitial.mock.calls.length > 0).toBe(permitted);
+      expect(n.interstitial.mock.calls.length > 0).toBe(platform === 'ios' && failure.includes('timeout') ? false : permitted);
     }
   });
 

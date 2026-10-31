@@ -49,7 +49,7 @@ describe.each(['ios', 'android'])('%s fullscreen SDK load ownership', platform =
     };
     it.each(['success', 'error'])('timeout then reuse until a late %s, without extra SDK requests or presentation', async outcome => {
       const pending = deferred(); n[format].mockReturnValueOnce(pending.promise);
-      const first = load(); await vi.advanceTimersByTimeAsync(timeout()); expect(await first).toBe(false);
+      const first = load(); await vi.advanceTimersByTimeAsync(0); await vi.advanceTimersByTimeAsync(timeout()); expect(await first).toBe(false);
       const second = load(); await vi.advanceTimersByTimeAsync(0); expect(n[format]).toHaveBeenCalledOnce();
       if (outcome === 'success') pending.resolve(); else pending.reject(new Error('sdk failed'));
       expect(await second).toBe(outcome === 'success'); expect(n.show).not.toHaveBeenCalled();
@@ -58,9 +58,9 @@ describe.each(['ios', 'android'])('%s fullscreen SDK load ownership', platform =
     });
     it('never blindly unlocks a permanently unanswered SDK attempt', async () => {
       n[format].mockReturnValueOnce(new Promise(() => {}));
-      const first = load(); await vi.advanceTimersByTimeAsync(timeout()); expect(await first).toBe(false);
+      const first = load(); await vi.advanceTimersByTimeAsync(0); await vi.advanceTimersByTimeAsync(timeout()); expect(await first).toBe(false);
       await vi.advanceTimersByTimeAsync(24 * 60 * 60_000);
-      const next = load(); await vi.advanceTimersByTimeAsync(timeout()); expect(await next).toBe(false);
+      const next = load(); await vi.advanceTimersByTimeAsync(0); await vi.advanceTimersByTimeAsync(timeout()); expect(await next).toBe(false);
       expect(n[format]).toHaveBeenCalledOnce(); expect(n.show).not.toHaveBeenCalled();
     });
     it.each(['success', 'error'])('old %s cannot release a replacement owner or remove its cache', async outcome => {

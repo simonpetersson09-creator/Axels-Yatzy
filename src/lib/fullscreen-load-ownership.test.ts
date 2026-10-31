@@ -48,6 +48,7 @@ describe.each(['ios', 'android'])('%s fullscreen SDK load ownership', platform =
       return format === 'rewarded' ? m.preloadRewarded() : m.preloadInterstitial();
     };
     it.each(['success', 'error'])('timeout then reuse until a late %s, without extra SDK requests or presentation', async outcome => {
+      await import('./admob');
       const pending = deferred(); n[format].mockReturnValueOnce(pending.promise);
       const first = load(); await vi.advanceTimersByTimeAsync(0); await vi.advanceTimersByTimeAsync(timeout()); expect(await first).toBe(false);
       const second = load(); await vi.advanceTimersByTimeAsync(0); expect(n[format]).toHaveBeenCalledOnce();
@@ -57,6 +58,7 @@ describe.each(['ios', 'android'])('%s fullscreen SDK load ownership', platform =
       expect(n[format]).toHaveBeenCalledTimes(outcome === 'success' ? 1 : 2);
     });
     it('never blindly unlocks a permanently unanswered SDK attempt', async () => {
+      await import('./admob');
       n[format].mockReturnValueOnce(new Promise(() => {}));
       const first = load(); await vi.advanceTimersByTimeAsync(0); await vi.advanceTimersByTimeAsync(timeout()); expect(await first).toBe(false);
       await vi.advanceTimersByTimeAsync(24 * 60 * 60_000);

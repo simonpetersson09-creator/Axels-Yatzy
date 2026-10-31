@@ -224,15 +224,16 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
     noteIOSDiagnostic(mod, 'consent_started');
     consentPromise = (async () => {
       try {
-        let info = await mod.AdMob.requestConsentInfo();
+        let info = await (adPlatform() === 'ios' ? mod.AdMob.requestConsentInfo() : withTimeout(mod.AdMob.requestConsentInfo(), 10_000, 'consent_info'));
         if (info.isConsentFormAvailable && info.status === mod.AdmobConsentStatus.REQUIRED) {
           consentPhase = 'consent_form';
-          info = await mod.AdMob.showConsentForm();
+          info = await (adPlatform() === 'ios' ? mod.AdMob.showConsentForm() : withTimeout(mod.AdMob.showConsentForm(), 120_000, 'consent_form'));
         }
         privacyOptionsRequired = info.privacyOptionsRequirementStatus === 'REQUIRED';
         noteIOSDiagnostic(mod, 'consent_finished');
         return info.canRequestAds === true;
       } catch (err) {
+        consentPromise = null; // Only a real native completion releases iOS ownership.
         const reason = reasonOf(err);
         noteIOSDiagnostic(mod, ['consent_info_timeout', 'consent_form_timeout'].includes(reason) ? reason : 'consent_failed');
         // Do not infer eligibility from status/purpose bits or a cached JS value.
@@ -255,6 +256,7 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
     noteIOSDiagnostic(mod, 'consent_reused_pending');
   }
   const owned = consentPromise;
+  if (adPlatform() !== 'ios') return owned;
   return withTimeout(owned, consentPhase === 'consent_form' ? 120_000 : 10_000, consentPhase).catch(async () => {
     // Caller wait expired, not the UMP operation. Never replace its ownership.
     noteIOSDiagnostic(mod, `${consentPhase}_timeout`);
@@ -310,6 +312,7 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
   if (!isAdMobAvailable()) return false;
   // Never release a native delegate or reward lifecycle while it may present.
   if (privacyChanging || showing || rewardedShowing || appOpenShowing) return false;
+  if (adPlatform() === 'ios' && (consentPending || trackingAsked && !trackingSettled)) return false;
   privacyChanging = true;
   privacyBlocked = true;
   adGeneration++;
@@ -431,11 +434,11 @@ async function ensureInitialized(): Promise<AdMobModule> {
 async function initializeAds(generation: number): Promise<AdMobModule> {
   const mod = await loadModule();
   // Samtycke först: inga annonser begärs innan spelaren svarat i EU.
-  const canRequest = await ensureConsent(mod);
+  let canRequest = await ensureConsent(mod);
   // Eligibility reads after timeout do not mean a pending UMP UI has ended.
   // Keep the shared initialization parked; caller deadlines leave gameplay free.
   if (adPlatform() === 'ios' && consentPending && consentPromise) {
-    if (!(await consentPromise)) throw new Error('consent_not_given');
+    canRequest = await consentPromise;
   }
   if (!adAllowed(generation)) throw new Error('privacy_transition');
   if (!canRequest) throw new Error('consent_not_given');

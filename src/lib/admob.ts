@@ -270,8 +270,6 @@ export async function isAdPrivacyOptionsRequired(): Promise<boolean> {
   if (!isAdMobAvailable()) return false;
   try {
     const mod = await loadModule();
-    // A timed-out UMP or ATT operation still owns its native UI.
-    if (consentPending || trackingAsked && !trackingSettled) return false;
     await ensureConsent(mod);
     return privacyOptionsRequired;
   } catch {

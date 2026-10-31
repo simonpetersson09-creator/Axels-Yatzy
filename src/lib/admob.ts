@@ -95,6 +95,7 @@ function noteIOSDiagnostic(mod: AdMobModule, stage: string, fields: Record<strin
   } catch { /* Diagnostics must never affect the flow. */ }
 }
 let initialized = false;
+let initializedModule: AdMobModule | null = null;
 let initializationPromise: Promise<AdMobModule> | null = null;
 let preparedAt = 0;
 let preparing: Promise<boolean> | null = null;
@@ -488,6 +489,7 @@ async function initializeAds(generation: number): Promise<AdMobModule> {
       /* listeners är best effort */
     }
   }
+  initializedModule = mod;
   return mod;
 }
 
@@ -985,6 +987,10 @@ export function preloadAppOpenAd(source: AppOpenLoadSource = 'preload'): Promise
 export async function showAppOpenAd(canShow: () => boolean = () => true, source: AppOpenLoadSource = 'startup'): Promise<boolean> {
   const generation = adGeneration;
   if (!canShow()) return false;
+  // Return opportunities never initiate or await consent/initialization.
+  const readyModule = source === 'resume' ? initializedModule : null;
+  if (source === 'resume' && (!initialized || !readyModule || initializationPromise || consentPending ||
+    (adPlatform() === 'ios' && !trackingSettled))) return false;
   if (!adAllowed(generation)) { reportSkip('appOpen', 'ads_not_ready'); return false; }
   // New players get one complete match before any startup/resume App Open ad.
   if (getRankedGames() < 1) { reportSkip('appOpen', 'first_match_pending'); return false; }
@@ -1002,7 +1008,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
   try {
     let mod: AdMobModule;
     try {
-      mod = await initWithTimeout(APP_OPEN_LOAD_TIMEOUT_MS);
+      mod = readyModule ?? await initWithTimeout(APP_OPEN_LOAD_TIMEOUT_MS);
     } catch (err) {
       reportSkip('appOpen', initFailureReason(err));
       throw err;
@@ -1010,14 +1016,15 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
     attachAppOpenRevenue(mod);
     if (!adAllowed(generation)) return false;
     // A preload already running (started at cold start) is awaited, not doubled.
-    if (appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});
+    if (source !== 'resume' && appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});
     const pre = await mod.AdMob.isAppOpenLoaded();
     if (!adAllowed(generation)) return false;
     if (!pre.value) {
+      if (source === 'resume') { reportAd('appOpen', 'not_loaded', startedAt); return false; }
       if (!canShow() || waitingRoomAdBlocked()) return false;
       await loadAppOpenOnce(mod, adId, APP_OPEN_LOAD_TIMEOUT_MS, 'load', source, generation);
     }
-    const { value } = await mod.AdMob.isAppOpenLoaded();
+    const { value } = source === 'resume' ? pre : await mod.AdMob.isAppOpenLoaded();
     if (!adAllowed(generation)) return false;
     if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
     // Loaded too late (player already left the start screen): never cover a game.

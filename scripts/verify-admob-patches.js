@@ -14,6 +14,9 @@ const rewardedAndroid = 'android/src/main/java/com/getcapacitor/community/admob/
 const checks = {
   ios: [
     [ios + 'AdMobPlugin.swift', [
+      ['CAPPluginMethod(name: "noteAppOpenDiagnostic", returnType: CAPPluginReturnPromise)', 'registrering av noteAppOpenDiagnostic'],
+      ['@objc func noteAppOpenDiagnostic(_ call: CAPPluginCall)', 'implementation av noteAppOpenDiagnostic'],
+      ['diagnosticAttemptId', 'App Open försöks-ID'],
       ['MRB_READ_CONSENT', 'samtyckesläsning (patch-admob-consent.js)'],
       ['@objc func getStoredConsentChoices(_ call: CAPPluginCall)', 'implementation av getStoredConsentChoices'],
       ['CAPPluginMethod(name: "getStoredConsentChoices", returnType: CAPPluginReturnPromise)', 'registrering av getStoredConsentChoices'],
@@ -31,6 +34,8 @@ const checks = {
     [ios + 'Banner/BannerExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för banner']]],
     [ios + 'AppOpen/AppOpenAdPlugin.swift', [['func discardPrivacyCache()', 'cacherensning för appstartsannons']]],
     [ios + 'AppOpen/AppOpenAdManager.swift', [
+      ['adDidRecordImpression', 'verklig App Open impression'],
+      ['diagnostic("load_requested")', 'native App Open laddningsgräns'],
       ['MRB_APP_OPEN_EXPIRY', "appstartsannonsens 4-timmarsutgång (patch-admob-app-open.js)"],
       ['maxAdAge', '4-timmarsgräns för sparad appstartsannons'],
       ['discardExpiredAd', 'rensning av för gammal appstartsannons'],

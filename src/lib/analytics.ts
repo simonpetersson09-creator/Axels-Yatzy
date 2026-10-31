@@ -55,7 +55,8 @@ function getPlatform(): string {
 
 const queue: QueuedEvent[] = [];
 const DIAGNOSTIC_KEY = 'yatzy_play_diagnostics_pending_v1';
-const isDiagnostic = (e: QueuedEvent) => e.event_name.startsWith('play_') || e.event_name === 'post_match_exit';
+const isDiagnosticName = (name: string) => name.startsWith('play_') || name === 'post_match_exit' || name === 'ios_app_open_diag';
+const isDiagnostic = (e: QueuedEvent) => isDiagnosticName(e.event_name);
 function persistDiagnostics(): void {
   try { localStorage.setItem(DIAGNOSTIC_KEY, JSON.stringify(queue.filter(isDiagnostic).slice(-200))); } catch { /* Storage is best-effort. */ }
 }
@@ -155,11 +156,11 @@ export function trackEvent(
       local_user_id: deviceId,
       game_id: options?.gameId ?? null,
       game_mode: options?.gameMode ?? null,
-      metadata: eventName === 'post_match_exit' || eventName.startsWith('play_') ? { event_id: crypto.randomUUID(), occurred_at: new Date().toISOString(), ...metadata } : metadata ?? null,
+      metadata: isDiagnosticName(eventName) ? { event_id: crypto.randomUUID(), occurred_at: new Date().toISOString(), ...metadata } : metadata ?? null,
       platform: getPlatform(),
       app_version: getAppVersion(),
     });
-    if (eventName.startsWith('play_') || eventName === 'post_match_exit') persistDiagnostics();
+    if (isDiagnosticName(eventName)) persistDiagnostics();
     if (queue.length >= MAX_BATCH) {
       void flush();
     } else {

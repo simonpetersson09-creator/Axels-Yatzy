@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, ChartLine, LogOut, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminLineChart from "@/components/AdminLineChart";
+import AdminAdDiagnostics from "@/components/AdminAdDiagnostics";
 import {
   adminRecordIndexes,
   buildRibbon,
@@ -210,6 +211,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         </div>
       </div>
       {error && <p className="text-sm text-destructive mb-2">{error}</p>}
+      <AdminAdDiagnostics adminKey={adminKey} />
       {diagram ? <AdminLineChart rows={rows} /> : <>
       <div ref={wrapRef} className="relative overflow-x-auto rounded-lg border border-border">
         <svg

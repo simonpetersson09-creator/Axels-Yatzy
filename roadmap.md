@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## iOS App Open-diagnostik – 31 oktober
+- [x] Tillfälliga försöks-ID:n, tekniska ATT/UMP-statusar och versions/builduppgifter vid befintliga native-gränser; SDK-impression separat från visning/betald händelse. Inga IDFA, samtyckessträngar eller fria feltexter; befintlig analytics-enhetskoppling används men visas inte i admin.
+- [x] Kopierbar skyddad adminvy, senaste 600 rader inom 30 dagar; driftsatt autentiserad läsning verifierad, ännu inga native-rader. 94 tester godkända, orörd 8.2.1-plugin patchad/verifierad isolerat, kopiering testad i körande admin med avskilda provloggar. Bygge OK. Fysisk provguide finns i docs/ios-app-open-diagnostics.md.
+- [ ] Verkligt SDK-/telefonprov kräver nytt signerat iOS-bygge och fysisk iPhone.
+
 ## Admins enheter som spelade – 30 oktober
 - [x] Uteslut enbart väntan och automatiska stängningar från spelade enheter; bevara registrerade spelstarter och verkliga egna kast på kastdagen även vid senare avhopp. Övriga mått/spelaruppgifter oförändrade.
 - [x] 22 isolerade serverprov godkända inklusive webbexkludering, dedupe och skyddade behörigheter. Driftsatt definition verifierad; tillfälliga kopior av v5 → v4 → v3 matchar oberoende beräkning alla 91 dagar utan live-teststatistik. Bygge OK. Skyddad adminvy inte öppnad i detta prov.

@@ -600,9 +600,9 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
       await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
     }
     const result = await closed;
-    preparedAt = 0; // förbrukad – laddas om via Dismissed-lyssnaren
+    // Dismissed/FailedToShow owns cache consumption. Do not clear a replacement
+    // load that the global dismissal listener may already have completed.
     reportAd(kind, result === 'shown' ? 'shown' : 'show_failed', startedAt, lastShowError, details);
-    if (result === 'shown') void preloadInterstitial();
     return result;
   } catch (err) {
     preparedAt = 0;

@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "cap:sync:ios": "node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && node scripts/patch-admob-privacy-cache.js ios && node scripts/patch-admob-ios-diagnostics.js && node scripts/patch-admob-ios-consent-lifecycle.js && node scripts/verify-admob-patches.js ios && npx cap sync ios && node scripts/verify-admob-patches.js ios && node scripts/set-ios-admob-plist.js && node scripts/set-ios-push.js && node scripts/set-ios-icons.js",
+    "cap:sync:ios": "node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && node scripts/patch-admob-privacy-cache.js ios && node scripts/patch-admob-ios-diagnostics.js && node scripts/patch-admob-ios-consent-lifecycle.js && node scripts/patch-admob-ios-app-open-generation.js && node scripts/verify-admob-patches.js ios && npx cap sync ios && node scripts/verify-admob-patches.js ios && node scripts/set-ios-admob-plist.js && node scripts/set-ios-push.js && node scripts/set-ios-icons.js",
     "cap:ios:verify": "node scripts/verify-admob-patches.js ios",
     "cap:ios:admob": "node scripts/set-ios-admob-plist.js",
     "cap:ios:push": "node scripts/set-ios-push.js",
@@ -23,7 +23,7 @@
     "cap:android:min-sdk": "node scripts/set-android-min-sdk.js",
     "cap:android:firebase": "node scripts/set-android-firebase.js",
     "cap:android:admob": "node scripts/set-android-admob-manifest.js",
-    "postinstall": "node scripts/patch-admob-rewarded.js android && node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && node scripts/patch-admob-privacy-cache.js ios && node scripts/patch-admob-ios-diagnostics.js && node scripts/patch-admob-ios-consent-lifecycle.js && node scripts/verify-admob-patches.js ios || echo '⚠ AdMob-patchar kunde inte läggas in automatiskt – kör npm run cap:sync:ios/android'"
+    "postinstall": "node scripts/patch-admob-rewarded.js android && node scripts/patch-admob-rewarded.js ios && node scripts/patch-admob-consent.js ios && node scripts/patch-admob-app-open.js && node scripts/patch-admob-privacy-cache.js ios && node scripts/patch-admob-ios-diagnostics.js && node scripts/patch-admob-ios-consent-lifecycle.js && node scripts/patch-admob-ios-app-open-generation.js && node scripts/verify-admob-patches.js ios || echo '⚠ AdMob-patchar kunde inte läggas in automatiskt – kör npm run cap:sync:ios/android'"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.2.1",

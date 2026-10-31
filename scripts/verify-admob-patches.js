@@ -40,6 +40,9 @@ const checks = {
     [ios + 'AppOpen/AppOpenAdPlugin.swift', [['func discardPrivacyCache()', 'cacherensning för appstartsannons'],
       ['call.reject(message, nil, nil, details)', 'strukturerad App Open felkod/feldomän']]],
     [ios + 'AppOpen/AppOpenAdManager.swift', [
+      ['MRB_APP_OPEN_LOAD_GENERATION', 'App Open laddningsgeneration'],
+      ['privacyInvalidated = true', 'ogiltigförklaring av gammal App Open-hanterare'],
+      ['guard !self.privacyInvalidated else { invalidated(); return }', 'App Open SDK-/svarsgräns'],
       ['adDidRecordImpression', 'verklig App Open impression'],
       ['diagnostic("load_requested")', 'native App Open laddningsgräns'],
       ['MRB_APP_OPEN_EXPIRY', "appstartsannonsens 4-timmarsutgång (patch-admob-app-open.js)"],

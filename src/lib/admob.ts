@@ -10,6 +10,7 @@ import { readAdConsentChoices, type AdConsentChoices } from './ad-consent';
 import { getRankedGames } from './local-stats';
 import { trackEvent } from './analytics';
 import { recordAppOpenDiagnostic } from './app-open-diagnostics';
+import { setAppOpenPresentationPending } from './app-open-presentation';
 
 /* ------------------------------------------------------------------ */
 /* Central konfiguration                                               */
@@ -1042,6 +1043,9 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
     // Loaded too late (player already left the start screen): never cover a game.
     if (getRankedGames() < 1 || !canShow() || waitingRoomAdBlocked()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
     presentationAttempted = true;
+    // Close the JS → native queue race: gameplay cannot mount while a
+    // dispatched presentation is unresolved, even after our caller times out.
+    setAppOpenPresentationPending(true);
     const showP = mod.AdMob.showAppOpen();
     try {
       await withTimeout(showP, SHOW_TIMEOUT_MS, 'show');
@@ -1053,7 +1057,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
       showP.then(
         () => reportAd('appOpen', 'shown_late', startedAt),
         (e) => reportAd('appOpen', 'failed', startedAt, reasonOf(e)),
-      ).finally(() => { appOpenShowing = false; void preloadAppOpenAd('after_presentation'); });
+      ).finally(() => { setAppOpenPresentationPending(false); appOpenShowing = false; void preloadAppOpenAd('after_presentation'); });
       return true;
     }
     return true;
@@ -1063,7 +1067,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
     reportAd('appOpen', 'failed', startedAt, ['load_timeout', 'preload_timeout', 'init_timeout', 'app_open_retry_paused'].includes(reason) ? reason : 'sdk_failed');
     return false;
   } finally {
-    if (release) { appOpenShowing = false; if (presentationAttempted) void preloadAppOpenAd('after_presentation'); }
+    if (release) { if (presentationAttempted) setAppOpenPresentationPending(false); appOpenShowing = false; if (presentationAttempted) void preloadAppOpenAd('after_presentation'); }
   }
 }
 

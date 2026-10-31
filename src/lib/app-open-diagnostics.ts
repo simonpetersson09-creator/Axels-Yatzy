@@ -7,6 +7,9 @@ export function safeAppOpenDiagnostic(input: Record<string, unknown>): Record<st
   return Object.fromEntries(fields.filter(k => typeof input[k] === 'string' || typeof input[k] === 'boolean' ||
     (['occurred_at_ms', 'error_code', 'cache_age_ms', 'retry_remaining_ms'].includes(k) && typeof input[k] === 'number' && Number.isFinite(input[k])))
     .filter(k => k !== 'error_domain' || ['com.google.admob', 'other'].includes(String(input[k])))
+    .filter(k => k !== 'error_code' || (typeof input[k] === 'number' && Number.isInteger(input[k])))
+    .filter(k => k !== 'source' || ['startup', 'resume', 'background', 'preload', 'after_presentation'].includes(String(input[k])))
+    .filter(k => k !== 'reason' || ['privacy_change', 'clock_rollback', 'expired', 'consumed', 'presentation_failed'].includes(String(input[k])))
     .map(k => [k, typeof input[k] === 'string' ? input[k].slice(0, 100) : input[k]]));
 }
 export function recordAppOpenDiagnostic(input: Record<string, unknown>): void {

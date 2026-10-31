@@ -976,7 +976,9 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
     }
     return true;
   } catch (err) {
-    reportAd('appOpen', 'failed', startedAt, reasonOf(err));
+    // Free SDK error messages never belong in App Open diagnostics.
+    const reason = reasonOf(err);
+    reportAd('appOpen', 'failed', startedAt, ['load_timeout', 'preload_timeout', 'init_timeout', 'app_open_retry_paused'].includes(reason) ? reason : 'sdk_failed');
     return false;
   } finally {
     if (release) { appOpenShowing = false; if (presentationAttempted) void preloadAppOpenAd('after_presentation'); }

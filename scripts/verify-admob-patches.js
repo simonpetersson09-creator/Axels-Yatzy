@@ -32,13 +32,17 @@ const checks = {
     [ios + 'Interstitial/AdInterstitialExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för helskärmsannons']]],
     [ios + 'Rewarded/AdRewardExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för belöningsannons']]],
     [ios + 'Banner/BannerExecutor.swift', [['func discardPrivacyCache()', 'cacherensning för banner']]],
-    [ios + 'AppOpen/AppOpenAdPlugin.swift', [['func discardPrivacyCache()', 'cacherensning för appstartsannons']]],
+    [ios + 'AppOpen/AppOpenAdPlugin.swift', [['func discardPrivacyCache()', 'cacherensning för appstartsannons'],
+      ['call.reject(message, nil, nil, details)', 'strukturerad App Open felkod/feldomän']]],
     [ios + 'AppOpen/AppOpenAdManager.swift', [
       ['adDidRecordImpression', 'verklig App Open impression'],
       ['diagnostic("load_requested")', 'native App Open laddningsgräns'],
       ['MRB_APP_OPEN_EXPIRY', "appstartsannonsens 4-timmarsutgång (patch-admob-app-open.js)"],
       ['maxAdAge', '4-timmarsgräns för sparad appstartsannons'],
       ['discardExpiredAd', 'rensning av för gammal appstartsannons'],
+      ['MRB_APP_OPEN_DIAGNOSTICS_V2', 'App Open livscykeldiagnostik V2'],
+      ['"load_no_fill"', 'App Open no-fill klassificering'],
+      ['noteCachedAd("presentation_requested")', 'App Open presentation separat från impression'],
     ]],
   ],
   android: [

@@ -1,4 +1,4 @@
-- iOS App Open shares no-fill backoff; SDK/results check privacy validity before cache/telemetry. Loads retain ownership within generation; detach on change, never clear newer locks. Keep UMP-first/4h expiry.
+- iOS App Open: no-fill backoff, SDK/result privacy guards, generation owners, UMP-first/4h expiry. Resume: ready init/cache only; Home-unmount/background epochs end returns, no deferral. Cold start unchanged.
 - No QA in live player_country_stats.
 - Serialize Home news.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.

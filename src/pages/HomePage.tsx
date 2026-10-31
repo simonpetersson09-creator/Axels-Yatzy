@@ -5,7 +5,7 @@ import mrBDie from '@/assets/mr-b-die.png';
 import { Button } from '@/components/ui/button';
 import { useWaitingRoomCount } from '@/hooks/useWaitingRoomCount';
 import { WaitingRoomChoiceDialog } from '@/components/WaitingRoomChoiceDialog';
-import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react';
 import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
 import { SentInvitesCards } from '@/components/SentInvitesCards';
@@ -57,14 +57,14 @@ let startupAdChecked = false;
 /** Module-level so it survives HomePage remounts while the app is in background. */
 let backgroundedAt = 0;
 const RESUME_AD_MIN_AWAY_MS = 40_000;
-/** Set when the player was away ≥ 40 s but resumed outside the start screen. */
-let resumeAdPending = false;
+/** Leaving Home or backgrounding permanently invalidates the current return. */
+let resumeHomeEpoch = 0;
 let resumeWatcherInstalled = false;
 const onStartScreen = () => window.location.pathname === '/' && document.visibilityState === 'visible';
 async function tryShowResumeAd() {
-  if (!resumeAdPending || !onStartScreen()) return;
-  resumeAdPending = false;
-  if (await showAppOpenAd(onStartScreen, 'resume')) trackEvent('resume_ad');
+  if (!onStartScreen()) return;
+  const epoch = resumeHomeEpoch;
+  if (await showAppOpenAd(() => epoch === resumeHomeEpoch && onStartScreen(), 'resume')) trackEvent('resume_ad');
 }
 /** Installed once and never removed, so leaving the app mid-match is also counted. */
 function installResumeAdWatcher() {
@@ -73,11 +73,10 @@ function installResumeAdWatcher() {
   void (async () => {
     const { App } = await import('@capacitor/app');
     await App.addListener('appStateChange', ({ isActive }) => {
-      if (!isActive) { backgroundedAt = Date.now(); void preloadAppOpenAd('background'); return; }
+      if (!isActive) { resumeHomeEpoch++; backgroundedAt = Date.now(); void preloadAppOpenAd('background'); return; }
       const away = backgroundedAt ? Date.now() - backgroundedAt : 0;
       backgroundedAt = 0;
       if (away < RESUME_AD_MIN_AWAY_MS) return;
-      resumeAdPending = true;
       void tryShowResumeAd();
     });
   })();
@@ -230,16 +229,11 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Resume ad: away-time is tracked app-wide (any page). The ad itself is
-  // only shown on the start screen — immediately if the app resumes there,
-  // otherwise the next time the player lands on the start screen.
+  // Resume ad: away ≥ 40 s, only at the actual return on Home; never deferred.
+  useLayoutEffect(() => () => { resumeHomeEpoch++; }, []);
   useEffect(() => {
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
     installResumeAdWatcher();
-    if (resumeAdPending) {
-      const timer = setTimeout(() => void tryShowResumeAd(), 800);
-      return () => clearTimeout(timer);
-    }
   }, []);
 
   // Preload i bakgrunden – kan aldrig trigga visning. Väntar tills starten är klar.

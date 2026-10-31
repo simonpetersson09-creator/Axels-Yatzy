@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Återkomstannonser – 31 oktober
-- [ ] iOS/Android: endast redan initierad/giltig cache, ingen laddningsväntan eller uppskjuten Home-visning; navigation avslutar tillfället permanent. Kallstart/samtycke/frekvens/cache orörda.
-- [ ] Riktade tester för sena svar och navigation samt redovisning av telefonbygge; ingen publicering.
+- [x] iOS/Android: endast redan initierad/giltig cache, ingen laddningsväntan eller uppskjuten Home-visning; navigation avslutar tillfället permanent. Kallstart/samtycke/frekvens/cache orörda.
+- [x] 146 tester i 7 filer godkända, inklusive 18 riktade återkomst-/navigeringsprov. Telefonsteg i docs/app-open-resume-ready.md; ingen publicering.
+- [ ] Fysiskt iOS-/Android-prov kräver nya signerade telefonbyggen och testtelefoner; native-annonsvisning kan inte verifieras i webbförhandsvisningen.
 
 ## Match-/XP-laddningar och Android-patchkedja – 31 oktober
 - [x] SDK-laddningsägarskap kvar över väntetimeout, sena svar och samtyckesgenerationer på iOS/Android; ingen XP-ersättningsladdning efter laddningsfel. Native per-enhetssamordning, generations-/ägargränser och bevarade belöningar/visningsregler.

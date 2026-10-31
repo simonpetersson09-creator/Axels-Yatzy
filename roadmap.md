@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Appstartsannonser under spel
+- [ ] Kontrollera båda plattformarna och förstärk skydd för väntande kallstarts-/återkomstförsök vid spelstart; bevara övriga annonser.
+- [ ] Kör riktade tester för spelrutter, sena svar och lämnad startsida. Ingen publicering; telefonprov kräver signerade byggen/testtelefoner.
+
 ## Återkomstannonser – 31 oktober
 - [x] iOS/Android: endast redan initierad/giltig cache, ingen laddningsväntan eller uppskjuten Home-visning; navigation avslutar tillfället permanent. Kallstart/samtycke/frekvens/cache orörda.
 - [x] 146 tester i 7 filer godkända, inklusive 18 riktade återkomst-/navigeringsprov. Telefonsteg i docs/app-open-resume-ready.md; ingen publicering.

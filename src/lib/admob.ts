@@ -986,6 +986,18 @@ export function preloadAppOpenAd(source: AppOpenLoadSource = 'preload'): Promise
  */
 export async function showAppOpenAd(canShow: () => boolean = () => true, source: AppOpenLoadSource = 'startup'): Promise<boolean> {
   const generation = adGeneration;
+  // Fail closed outside Home, even if a caller omits its navigation guard.
+  // Once an opportunity becomes invalid, later Home visits cannot revive it.
+  const callerCanShow = canShow;
+  let opportunityEnded = false;
+  canShow = () => {
+    if (opportunityEnded) return false;
+    if (window.location.pathname !== '/' || document.visibilityState !== 'visible' || !callerCanShow()) {
+      opportunityEnded = true;
+      return false;
+    }
+    return true;
+  };
   if (!canShow()) return false;
   // Return opportunities never initiate or await consent/initialization.
   const readyModule = source === 'resume' ? initializedModule : null;
@@ -1014,7 +1026,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
       throw err;
     }
     attachAppOpenRevenue(mod);
-    if (!adAllowed(generation)) return false;
+    if (!adAllowed(generation) || !canShow()) return false;
     // A preload already running (started at cold start) is awaited, not doubled.
     if (source !== 'resume' && appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});
     const pre = await mod.AdMob.isAppOpenLoaded();

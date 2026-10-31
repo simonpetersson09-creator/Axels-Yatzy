@@ -217,16 +217,17 @@ export default function HomePage() {
     if (!shouldShowDailyStartupAd()) return;
     // Start loading right away so the ad is usually ready when it is shown.
     void preloadAppOpenAd('startup');
+    let cancelled = false;
     const timer = setTimeout(async () => {
       if (startupAdChecked) return;
       startupAdChecked = true;
       // App Open-annons; ingen annons → appen fortsätter som vanligt
-      if (await showAppOpenAd(() => window.location.pathname === '/' && document.visibilityState === 'visible', 'startup')) {
+      if (await showAppOpenAd(() => !cancelled && onStartScreen(), 'startup')) {
         markDailyStartupAdShown();
         trackEvent('daily_startup_ad');
       }
     }, 1500);
-    return () => clearTimeout(timer);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, []);
 
   // Resume ad: away ≥ 40 s, only at the actual return on Home; never deferred.

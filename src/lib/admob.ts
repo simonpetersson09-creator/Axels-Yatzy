@@ -502,7 +502,10 @@ export async function preloadInterstitial(): Promise<boolean> {
   const log = (result: string, reason?: string) => reportAd('interstitial', result, startedAt, reason, { loadId });
   if (!adAllowed(generation)) { log('load_skipped', 'ads_not_ready'); return false; }
   if (!isAdMobAvailable() || !adUnitId('optional')) { log('load_skipped', 'unavailable'); return false; }
-  if (preparing) { log('load_reused_pending'); return preparing; }
+  if (preparing) {
+    log('load_reused_pending');
+    return withTimeout(preparing, PREPARE_TIMEOUT_MS, 'prepare').catch(() => false);
+  }
   if (preparedAt && Date.now() - preparedAt < PREPARED_TTL_MS) { log('load_reused_ready'); return true; }
   if (preparedAt) log('cache_expired');
   interstitialLoadId = `${interstitialLogSession}:${++interstitialLoadSequence}`;
@@ -510,7 +513,7 @@ export async function preloadInterstitial(): Promise<boolean> {
   let stage = 'initialization';
   log('load_started');
 
-  preparing = (async () => {
+  const owned = (async () => {
     try {
       const mod = await initWithTimeout(PREPARE_TIMEOUT_MS);
       if (!adAllowed(generation)) { log('load_discarded', 'ads_state_changed'); return false; }
@@ -518,10 +521,10 @@ export async function preloadInterstitial(): Promise<boolean> {
       if (!adId) { log('load_skipped', 'unavailable'); return false; }
       stage = 'prepare';
       log('load_requested');
-      await withTimeout(mod.AdMob.prepareInterstitial({
+      await mod.AdMob.prepareInterstitial({
         adId,
         isTesting: ADMOB_CONFIG.useTestAds,
-      }), PREPARE_TIMEOUT_MS, 'prepare');
+      });
       if (!adAllowed(generation)) { log('load_discarded', 'ads_state_changed'); return false; }
       preparedAt = Date.now();
       log('loaded');
@@ -531,12 +534,17 @@ export async function preloadInterstitial(): Promise<boolean> {
       // Initialization includes UMP: never record its errors or choices.
       log('load_failed', stage === 'prepare' ? reasonOf(err) : reasonOf(err) === 'init_timeout' ? 'init_timeout' : 'initialization_not_ready');
       return false;
-    } finally {
-      if (generation === adGeneration) preparing = null;
     }
   })();
-
-  return preparing;
+  preparing = owned;
+  void owned.then(() => { if (preparing === owned) preparing = null; });
+  // Only this caller's wait expires. The SDK operation keeps its owner until
+  // a real result, and a late success only prepares inventory, never presents.
+  return withTimeout(owned, PREPARE_TIMEOUT_MS, 'prepare').catch(err => {
+    if (adAllowed(generation) && preparing === owned) lastPrepareError = reasonOf(err);
+    log('load_failed', reasonOf(err));
+    return false;
+  });
 }
 
 export type ShowAdResult = 'shown' | 'unavailable' | 'failed' | 'busy';
@@ -592,9 +600,9 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
       await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
     }
     const result = await closed;
-    preparedAt = 0; // förbrukad – laddas om via Dismissed-lyssnaren
+    // Dismissed/FailedToShow owns cache consumption. Do not clear a replacement
+    // load that the global dismissal listener may already have completed.
     reportAd(kind, result === 'shown' ? 'shown' : 'show_failed', startedAt, lastShowError, details);
-    if (result === 'shown') void preloadInterstitial();
     return result;
   } catch (err) {
     preparedAt = 0;
@@ -645,16 +653,16 @@ export async function preloadRewarded(): Promise<boolean> {
   if (!adAllowed(generation)) { reportSkip('rewarded', 'ads_not_ready'); return false; }
   const adId = rewardedUnitId();
   if (!isAdMobAvailable() || !adId) { reportSkip('rewarded', 'unavailable'); return false; }
-  if (rewardedPreparing) return rewardedPreparing;
+  const loadMs = adPlatform() === 'android' ? ANDROID_REWARDED_LOAD_TIMEOUT_MS : PREPARE_TIMEOUT_MS;
+  if (rewardedPreparing) return withTimeout(rewardedPreparing, loadMs, 'prepare').catch(() => false);
   if (rewardedPreparedAt && Date.now() - rewardedPreparedAt < PREPARED_TTL_MS) return true;
-  rewardedPreparing = (async () => {
+  const owned = (async () => {
     let initDone = false;
     try {
-      const loadMs = adPlatform() === 'android' ? ANDROID_REWARDED_LOAD_TIMEOUT_MS : PREPARE_TIMEOUT_MS;
       const mod = await initWithTimeout(loadMs);
       initDone = true;
       if (!adAllowed(generation)) return false;
-      await withTimeout(mod.AdMob.prepareRewardVideoAd({ adId, isTesting: ADMOB_CONFIG.useTestAds }), loadMs, 'prepare');
+      await mod.AdMob.prepareRewardVideoAd({ adId, isTesting: ADMOB_CONFIG.useTestAds });
       if (!adAllowed(generation)) return false;
       rewardedPreparedAt = Date.now();
       return true;
@@ -662,11 +670,15 @@ export async function preloadRewarded(): Promise<boolean> {
       if (adAllowed(generation)) { lastPrepareError = reasonOf(err); rewardedPreparedAt = 0; }
       reportSkip('rewarded', initDone ? 'load_failed' : initFailureReason(err));
       return false;
-    } finally {
-      if (generation === adGeneration) rewardedPreparing = null;
     }
   })();
-  return rewardedPreparing;
+  rewardedPreparing = owned;
+  void owned.then(() => { if (rewardedPreparing === owned) rewardedPreparing = null; });
+  return withTimeout(owned, loadMs, 'prepare').catch(err => {
+    if (adAllowed(generation) && rewardedPreparing === owned) lastPrepareError = reasonOf(err);
+    reportSkip('rewarded', 'load_failed');
+    return false;
+  });
 }
 
 export type RewardedResult = 'rewarded' | 'not_earned' | 'unavailable' | 'failed' | 'busy' | 'pending';
@@ -756,13 +768,14 @@ export async function showOptionalRewarded(options: { waitForCompletion?: boolea
   activeRewardedAttempt = id;
   const startedAt = Date.now();
   const listeners: Awaited<ReturnType<AdMobModule['AdMob']['addListener']>>[] = [];
+  let presentationAttempted = false;
   const release = () => {
     void Promise.all(listeners.map((l) => l.remove().catch(() => {})));
     if (activeRewardedAttempt === id) activeRewardedAttempt = 0;
     suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     rewardedShowing = false;
     setRewardedState('idle');
-    void preloadRewarded();
+    if (presentationAttempted) void preloadRewarded();
   };
   let lifecycleOwnsRelease = false;
   try {
@@ -799,8 +812,9 @@ export async function showOptionalRewarded(options: { waitForCompletion?: boolea
       if (earned) { finish('rewarded'); return; }
       setTimeout(() => finish(earned ? 'rewarded' : 'not_earned'), REWARD_GRACE_MS);
     }));
-    rewardedPreparedAt = 0; // consumed as soon as we try to show it
     if (!adAllowed(generation)) return 'unavailable';
+    rewardedPreparedAt = 0; // consumed as soon as we try to show it
+    presentationAttempted = true;
     suppressAppOpenUntil = Date.now() + APP_OPEN_SUPPRESS_AFTER_REWARDED_MS;
     // Both native plugins resolve the show call ONLY from the SDK's
     // earned-reward callback, so resolution is a second reward signal; the

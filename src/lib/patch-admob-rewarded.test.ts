@@ -43,8 +43,11 @@ describe('Android Rewarded Kotlin event access', () => {
   it('runs Android Rewarded during install and before Android sync verification', () => {
     const { scripts } = JSON.parse(readFileSync('package.json', 'utf8'));
     expect(scripts.postinstall.startsWith('node scripts/patch-admob-rewarded.js android &&')).toBe(true);
-    expect(scripts['cap:sync:android'].indexOf('patch-admob-rewarded.js android')).toBeLessThan(
-      scripts['cap:sync:android'].indexOf('verify-admob-patches.js android'),
+    expect(scripts['cap:patch:android'].indexOf('patch-admob-rewarded.js android')).toBeLessThan(
+      scripts['cap:patch:android'].indexOf('verify-admob-patches.js android'),
     );
+    expect(scripts['cap:sync:android'].indexOf('npm run cap:patch:android')).toBeLessThan(scripts['cap:sync:android'].indexOf('npx cap sync android'));
+    expect(scripts.postinstall).toContain('npm run cap:patch:android');
+    expect(scripts.postinstall).not.toContain('|| echo');
   });
 });

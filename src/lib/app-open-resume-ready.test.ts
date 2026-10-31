@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
+import { createElement } from 'react';
 
 const sdk = vi.hoisted(() => ({ platform: 'ios', loaded: false, games: 1, blocked: false,
   consent: vi.fn(), init: vi.fn(), load: vi.fn(), show: vi.fn(), check: vi.fn() }));
@@ -54,12 +55,13 @@ describe.each(['ios', 'android'])('%s ready-only resume', platform => {
     const { isAppOpenPresentationPending } = await import('./app-open-presentation');
     const { AppOpenGameGate } = await import('../components/AppOpenGameGate');
     window.history.replaceState(null, '', '/game');
-    const view = render(<AppOpenGameGate><div>Playing match</div></AppOpenGameGate>);
+    const game = createElement(AppOpenGameGate, { children: createElement('div', null, 'Playing match') });
+    const view = render(game);
     expect(screen.queryByText('Playing match')).toBeNull();
     await vi.advanceTimersByTimeAsync(8_000); expect(await attempt).toBe(true);
     expect(isAppOpenPresentationPending()).toBe(true);
     gate.resolve(); await vi.advanceTimersByTimeAsync(0);
-    view.rerender(<AppOpenGameGate><div>Playing match</div></AppOpenGameGate>);
+    view.rerender(game);
     expect(screen.getByText('Playing match')).toBeTruthy(); expect(isAppOpenPresentationPending()).toBe(false);
   });
   it('skips without starting initialization', async () => {

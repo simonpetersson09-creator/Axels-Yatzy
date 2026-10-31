@@ -51,6 +51,11 @@ extension AppOpenAdManager: FullScreenContentDelegate {`;
       writeFileSync(dest, text);
     }
     const script = resolve('scripts/patch-admob-ios-diagnostics.js');
+    // Exercise an actual V1 installation upgrade, not just fresh V2 markers.
+    const v1 = resolve(cwd, 'install-v1.mjs');
+    writeFileSync(v1, readFileSync(script, 'utf8').split('// Upgrade V1 installations')[0]);
+    execFileSync(process.execPath, [v1], { cwd });
+    expect(readFileSync(resolve(cwd, base, names[3]), 'utf8')).not.toContain('MRB_APP_OPEN_DIAGNOSTICS_V2');
     execFileSync(process.execPath, [script], { cwd });
     const first = names.map(n => readFileSync(resolve(cwd, base, n), 'utf8'));
     execFileSync(process.execPath, [script], { cwd });

@@ -9,6 +9,7 @@ import { Capacitor } from '@capacitor/core';
 import { readAdConsentChoices, type AdConsentChoices } from './ad-consent';
 import { getRankedGames } from './local-stats';
 import { trackEvent } from './analytics';
+import { recordAppOpenDiagnostic } from './app-open-diagnostics';
 
 /* ------------------------------------------------------------------ */
 /* Central konfiguration                                               */
@@ -77,6 +78,21 @@ export function isAdMobAvailable(): boolean {
 type AdMobModule = typeof import('@capacitor-community/admob');
 
 let modulePromise: Promise<AdMobModule> | null = null;
+let diagnosticListener: Promise<unknown> | null = null;
+function attachIOSDiagnostics(mod: AdMobModule): void {
+  if (adPlatform() !== 'ios' || diagnosticListener) return;
+  try {
+    diagnosticListener = mod.AdMob.addListener('appOpenDiagnostic' as any, recordAppOpenDiagnostic)
+      .catch(() => { diagnosticListener = null; });
+  } catch { /* Old native builds: no telemetry, unchanged ads. */ }
+}
+function noteIOSDiagnostic(mod: AdMobModule, stage: string): void {
+  if (adPlatform() !== 'ios') return;
+  try {
+    const native = mod.AdMob as typeof mod.AdMob & { noteAppOpenDiagnostic(input: { stage: string }): Promise<void> };
+    void native.noteAppOpenDiagnostic({ stage }).catch(() => {});
+  } catch { /* Diagnostics must never affect the flow. */ }
+}
 let initialized = false;
 let initializationPromise: Promise<AdMobModule> | null = null;
 let preparedAt = 0;
@@ -198,6 +214,7 @@ async function discardPrivacyCaches(mod: AdMobModule): Promise<void> {
  * gameplay continues. UMP remains the only persisted consent authority.
  */
 function ensureConsent(mod: AdMobModule): Promise<boolean> {
+  attachIOSDiagnostics(mod);
   if (!consentPromise) {
     consentPromise = (async () => {
       try {
@@ -206,8 +223,11 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
           info = await withTimeout(mod.AdMob.showConsentForm(), 120_000, 'consent_form');
         }
         privacyOptionsRequired = info.privacyOptionsRequirementStatus === 'REQUIRED';
+        noteIOSDiagnostic(mod, 'consent_finished');
         return info.canRequestAds === true;
-      } catch {
+      } catch (err) {
+        const reason = reasonOf(err);
+        noteIOSDiagnostic(mod, ['consent_info_timeout', 'consent_form_timeout'].includes(reason) ? reason : 'consent_failed');
         consentPromise = null; // försök igen nästa gång
         // Do not infer eligibility from status/purpose bits or a cached JS value.
         // UMP itself may still allow ads with consent saved before this error.
@@ -216,8 +236,11 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
             getConsentEligibility(): Promise<{ canRequestAds: boolean }>;
           };
           const current = await withTimeout(native.getConsentEligibility(), 5_000, 'consent_eligibility');
+          noteIOSDiagnostic(mod, 'consent_finished');
           return current?.canRequestAds === true;
-        } catch {
+        } catch (err) {
+          noteIOSDiagnostic(mod, reasonOf(err) === 'consent_eligibility_timeout' ? 'consent_eligibility_timeout' : 'consent_eligibility_failed');
+          noteIOSDiagnostic(mod, 'consent_finished');
           return false; // Missing bridge, failed read or timeout: fail closed.
         }
       }
@@ -332,6 +355,7 @@ async function initWithTimeout(ms: number): Promise<AdMobModule> {
   try {
     return await start;
   } catch (e) {
+    if (reasonOf(e) === 'init_timeout') void loadModule().then(mod => noteIOSDiagnostic(mod, 'init_timeout')).catch(() => {});
     if (!trackingPromptOpen || !trackingAsked) throw e;
     await trackingAsked;
     return withTimeout(ensureInitialized(), ms, 'init');
@@ -350,6 +374,7 @@ export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
       try {
         ({ status } = await withTimeout(mod.AdMob.trackingAuthorizationStatus(), 5_000, 'att_status'));
       } catch (e) {
+        noteIOSDiagnostic(mod, reasonOf(e) === 'att_status_timeout' ? 'att_status_timeout' : 'att_status_failed');
         reportTracking(reasonOf(e) === 'att_status_timeout' ? 'status_timeout' : 'status_failed');
         trackingSettled = true;
         return;
@@ -360,8 +385,10 @@ export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
         trackingPrompted = true;
         await withTimeout(mod.AdMob.requestTrackingAuthorization(), 120_000, 'att_request');
       } catch (e) {
+        noteIOSDiagnostic(mod, reasonOf(e) === 'att_request_timeout' ? 'att_request_timeout' : 'att_request_failed');
         reportTracking(reasonOf(e) === 'att_request_timeout' ? 'request_timeout' : 'request_failed');
       } finally {
+        noteIOSDiagnostic(mod, 'att_finished');
         trackingPromptOpen = false;
         trackingSettled = true;
       }
@@ -802,11 +829,17 @@ let appOpenRevenueListener = false;
 /** One native App Open load at a time: a timed-out wait reuses the running load. */
 function loadAppOpenOnce(mod: AdMobModule, adId: string, ms: number, label: string): Promise<unknown> {
   if (!appOpenNativeLoad) {
-    const p = mod.AdMob.loadAppOpen({ adId });
+    const attemptId = adPlatform() === 'ios' ? crypto.randomUUID() : undefined;
+    const p = mod.AdMob.loadAppOpen({ adId, ...(attemptId ? { diagnosticAttemptId: attemptId, diagnosticTestMode: ADMOB_CONFIG.useTestAds } : {}) });
     appOpenNativeLoad = p;
     p.then(() => {}, () => {}).finally(() => { if (appOpenNativeLoad === p) appOpenNativeLoad = null; });
   }
-  return withTimeout(appOpenNativeLoad, ms, label);
+  return withTimeout(appOpenNativeLoad, ms, label).catch(err => {
+    if (adPlatform() === 'ios' && reasonOf(err) === `${label}_timeout`) {
+      void loadModule().then(mod => noteIOSDiagnostic(mod, 'init_timeout')).catch(() => {});
+    }
+    throw err;
+  });
 }
 
 /** Impression-level revenue from Google (paid event) for App Open ads. No consent data. */

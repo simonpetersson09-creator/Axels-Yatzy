@@ -25,6 +25,9 @@ describe('verify-admob-patches', () => {
 
   it('accepts complete iOS and Android sources (all required AdMob pieces present)', async () => {
     const iosSource = [
+      'CAPPluginMethod(name: "noteAppOpenDiagnostic", returnType: CAPPluginReturnPromise)',
+      '@objc func noteAppOpenDiagnostic(_ call: CAPPluginCall)',
+      'diagnosticAttemptId', 'adDidRecordImpression', 'diagnostic("load_requested")',
       'MRB_READ_CONSENT',
       '@objc func getStoredConsentChoices(_ call: CAPPluginCall)',
       'CAPPluginMethod(name: "getStoredConsentChoices", returnType: CAPPluginReturnPromise)',

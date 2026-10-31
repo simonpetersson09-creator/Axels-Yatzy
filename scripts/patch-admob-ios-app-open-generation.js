@@ -7,6 +7,9 @@ async function patch(file, edit, required) {
   const path = resolve(root, file);
   const before = await readFile(path, 'utf8');
   let source = before;
+  if (file === 'AppOpenAdManager.swift' && source.includes(marker)) {
+    source = source.replace('        Task { @MainActor [weak self] in\n            guard let self = self else {\n                return\n            }', '        Task { @MainActor in');
+  }
   const replace = (anchor, value) => {
     if (!source.includes(anchor)) throw new Error(`App Open generation anchor missing: ${file}: ${anchor}`);
     source = source.replace(anchor, value);

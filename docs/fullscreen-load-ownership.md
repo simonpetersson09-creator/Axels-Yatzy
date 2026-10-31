@@ -40,6 +40,7 @@ Androids kontroll kräver nu exakt fyra timmar (14 400 000 ms) och utgångskontr
 
 ## Lokal verifiering och begränsningar
 
+- **225 tester godkända i 20 filer**, inklusive 38 riktade laddningsprov och 4 native-patchprov; matchutgång, belöningsdedupe, no-fill, ATT/samtycke och App Open-generationer godkända. Senaste automatiska webbbygge: OK.
 - Riktade JavaScript-prov omfattar timeout → nytt anrop, sent lyckat/felaktigt svar, gammalt svar före/efter ny framgång, schemalagd gammal begäran före samtyckesändring, aldrig svarande SDK, ingen omedelbar XP-extraladdning, återladdning efter förbrukning och dubbelbelöningsskydd.
 - Native-patchprov kontrollerar faktiska `InterstitialAd.load`/`RewardedAd.load`-gränser och båda resultatvägarna. Presentations-/belöningsmetoder jämförs byte för byte före/efter laddningspatchen. Dessa är källprov, inte körning av Googles SDK.
 - `npm run postinstall`: båda plattformar godkända. Ren 8.2.1: båda hela kedjor godkända två gånger.
@@ -74,7 +75,7 @@ npx cap open android
 
 Om Android-projekt saknas: kör `npx cap add android` efter `build:dev`, sedan `npm run cap:sync:android`. Öka versionCode och installera testbygget via Android Studio.
 
-`cap:sync:*` innehåller `npx cap sync` plus projektets obligatoriska patchar; använd därför projektkommandot, inte enbart fristående synkning. Kontrollera även `capacitor.config.ts`: om `server.url` används kommer den webbkod telefonen laddar från den adressen, inte automatiskt från lokala `build:dev`. För ett lokalt test måste telefonen faktiskt köra development-bundlen med `useTestAds=true`; ta tillfälligt bort server.url i den lokala testkopian eller använd en uttryckligen kontrollerad utvecklingsserver. Ändra inte projektets ordinarie serverkonfiguration här.
+`cap:sync:*` innehåller `npx cap sync` plus projektets obligatoriska patchar; använd därför projektkommandot, inte enbart fristående synkning. Aktuell `capacitor.config.ts` har ingen `server.url` och använder den synkade lokala bundlen i `dist`; `build:dev` ger därmed testannonser i dessa telefonbyggen. Konfigurationen har inte ändrats.
 
 Bekräfta Googles testmärkning och ID innan prov:
 

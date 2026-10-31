@@ -64,7 +64,7 @@ const onStartScreen = () => window.location.pathname === '/' && document.visibil
 async function tryShowResumeAd() {
   if (!resumeAdPending || !onStartScreen()) return;
   resumeAdPending = false;
-  if (await showAppOpenAd(onStartScreen)) trackEvent('resume_ad');
+  if (await showAppOpenAd(onStartScreen, 'resume')) trackEvent('resume_ad');
 }
 /** Installed once and never removed, so leaving the app mid-match is also counted. */
 function installResumeAdWatcher() {
@@ -73,7 +73,7 @@ function installResumeAdWatcher() {
   void (async () => {
     const { App } = await import('@capacitor/app');
     await App.addListener('appStateChange', ({ isActive }) => {
-      if (!isActive) { backgroundedAt = Date.now(); void preloadAppOpenAd(); return; }
+      if (!isActive) { backgroundedAt = Date.now(); void preloadAppOpenAd('background'); return; }
       const away = backgroundedAt ? Date.now() - backgroundedAt : 0;
       backgroundedAt = 0;
       if (away < RESUME_AD_MIN_AWAY_MS) return;
@@ -217,12 +217,12 @@ export default function HomePage() {
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
     if (!shouldShowDailyStartupAd()) return;
     // Start loading right away so the ad is usually ready when it is shown.
-    void preloadAppOpenAd();
+    void preloadAppOpenAd('startup');
     const timer = setTimeout(async () => {
       if (startupAdChecked) return;
       startupAdChecked = true;
       // App Open-annons; ingen annons → appen fortsätter som vanligt
-      if (await showAppOpenAd(() => window.location.pathname === '/' && document.visibilityState === 'visible')) {
+      if (await showAppOpenAd(() => window.location.pathname === '/' && document.visibilityState === 'visible', 'startup')) {
         markDailyStartupAdShown();
         trackEvent('daily_startup_ad');
       }

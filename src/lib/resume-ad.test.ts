@@ -25,6 +25,19 @@ async function harness() {
 }
 afterEach(() => { vi.useRealTimers(); });
 describe('return-away Home lifecycle', () => {
+  it('cold-start Home cleanup permanently cancels its pending show even after returning', async () => {
+    const block = home.slice(home.indexOf('    if (startupAdChecked) return;'), home.indexOf('  }, []);', home.indexOf('    if (startupAdChecked) return;')));
+    let allowed: () => boolean = () => false;
+    const startScreen = vi.fn(() => true);
+    const show = vi.fn(async (check: () => boolean) => { allowed = check; return false; });
+    vi.useFakeTimers();
+    const setup = new Function('isAdMobAvailable', 'shouldShowDailyStartupAd', 'preloadAppOpenAd', 'showAppOpenAd', 'onStartScreen', 'markDailyStartupAdShown', 'trackEvent',
+      `let startupAdChecked = false; const AD_BUTTON_LOCKED = false; ${block}`);
+    const stop = setup(() => true, () => true, vi.fn(), show, startScreen, vi.fn(), vi.fn());
+    await vi.advanceTimersByTimeAsync(1500); expect(allowed()).toBe(true);
+    stop(); startScreen.mockReturnValue(false); expect(allowed()).toBe(false);
+    startScreen.mockReturnValue(true); expect(allowed()).toBe(false);
+  });
   it('retains the 40-second threshold, not 39,999 ms', async () => {
     const h = await harness(); h.state(false); await vi.advanceTimersByTimeAsync(39_999); h.state(true);
     expect(h.show).not.toHaveBeenCalled();

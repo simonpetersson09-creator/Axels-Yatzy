@@ -30,6 +30,7 @@ import NotificationAskHost from "./components/NotificationAskHost";
 import RewardedXpHost from "./components/RewardedXpHost";
 import WaitingRoomPage from './pages/WaitingRoomPage';
 import PlayJourneyHost from './components/PlayJourneyHost';
+import { AppOpenGameGate } from './components/AppOpenGameGate';
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
@@ -92,13 +93,13 @@ const App = () => (
           <Route path="/setup" element={<GameSetupPage />} />
           <Route path="/waiting-room" element={<WaitingRoomPage />} />
           <Route path="/join" element={<JoinPage />} />
-          <Route path="/game" element={<GamePage />} />
+          <Route path="/game" element={<AppOpenGameGate><GamePage /></AppOpenGameGate>} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route element={<MultiplayerProvider />}>
             <Route path="/multiplayer" element={<MultiplayerLobbyPage />} />
-            <Route path="/multiplayer-game" element={<MultiplayerGamePage />} />
+            <Route path="/multiplayer-game" element={<AppOpenGameGate><MultiplayerGamePage /></AppOpenGameGate>} />
           </Route>
           <Route path="/friend-stats" element={<FriendStatsPage />} />
           <Route path="/friends" element={<FriendsListPage />} />

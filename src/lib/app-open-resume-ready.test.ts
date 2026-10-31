@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, cleanup, act } from '@testing-library/react';
+import { createElement } from 'react';
 
 const sdk = vi.hoisted(() => ({ platform: 'ios', loaded: false, games: 1, blocked: false,
   consent: vi.fn(), init: vi.fn(), load: vi.fn(), show: vi.fn(), check: vi.fn() }));
@@ -27,10 +29,41 @@ function deferred() {
 describe.each(['ios', 'android'])('%s ready-only resume', platform => {
   beforeEach(() => {
     vi.resetModules(); vi.useFakeTimers(); sdk.platform = platform; sdk.loaded = false; sdk.games = 1; sdk.blocked = false;
+    window.history.replaceState(null, '', '/');
     sdk.consent.mockReset().mockResolvedValue({ canRequestAds: true });
     for (const fn of [sdk.init, sdk.load, sdk.show, sdk.check]) fn.mockReset().mockResolvedValue(undefined);
   });
-  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
+  afterEach(() => { cleanup(); vi.clearAllTimers(); vi.useRealTimers(); window.history.replaceState(null, '', '/'); });
+  it.each(['/game', '/multiplayer-game'])('never dispatches App Open on %s even without a caller guard', async route => {
+    const m = await import('./admob'); await m.preloadAppOpenAd();
+    window.history.replaceState(null, '', route);
+    expect(await m.showAppOpenAd()).toBe(false);
+    expect(await m.showAppOpenAd(() => true, 'resume')).toBe(false);
+    expect(sdk.show).not.toHaveBeenCalled(); expect(sdk.loaded).toBe(true);
+  });
+  it('late cold-start loading caches the ad but cannot cover gameplay', async () => {
+    const m = await import('./admob'); await m.preloadAppOpenAd(); sdk.loaded = false;
+    const gate = deferred(); sdk.load.mockReturnValueOnce(gate.promise);
+    const attempt = m.showAppOpenAd(); await vi.advanceTimersByTimeAsync(0);
+    window.history.replaceState(null, '', '/game'); gate.resolve();
+    expect(await attempt).toBe(false); expect(sdk.loaded).toBe(true); expect(sdk.show).not.toHaveBeenCalled();
+  });
+  it('holds gameplay across native queue and show timeout until real dismissal', async () => {
+    const m = await import('./admob'); await m.preloadAppOpenAd();
+    const gate = deferred(); sdk.show.mockReturnValueOnce(gate.promise);
+    const attempt = m.showAppOpenAd(() => true, 'resume'); await vi.advanceTimersByTimeAsync(0);
+    const { isAppOpenPresentationPending } = await import('./app-open-presentation');
+    const { AppOpenGameGate } = await import('../components/AppOpenGameGate');
+    window.history.replaceState(null, '', '/game');
+    const game = createElement(AppOpenGameGate, { children: createElement('div', null, 'Playing match') });
+    const view = render(game);
+    expect(screen.queryByText('Playing match')).toBeNull();
+    await vi.advanceTimersByTimeAsync(8_000); expect(await attempt).toBe(true);
+    expect(isAppOpenPresentationPending()).toBe(true);
+    await act(async () => { gate.resolve(); await vi.advanceTimersByTimeAsync(0); });
+    view.rerender(game);
+    expect(screen.getByText('Playing match')).toBeTruthy(); expect(isAppOpenPresentationPending()).toBe(false);
+  });
   it('skips without starting initialization', async () => {
     const m = await import('./admob');
     expect(await m.showAppOpenAd(() => true, 'resume')).toBe(false);

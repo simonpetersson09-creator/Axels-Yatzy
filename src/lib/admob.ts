@@ -160,7 +160,6 @@ async function loadModule(): Promise<AdMobModule> {
 
 let consentPromise: Promise<boolean> | null = null;
 let consentPending = false;
-let consentPhase = 'consent_info';
 let consentWait: Promise<boolean> | null = null;
 let privacyOptionsRequired = false;
 let privacyChanging = false;
@@ -221,12 +220,12 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
   attachIOSDiagnostics(mod);
   if (!consentPromise) {
     consentPending = true;
-    consentPhase = 'consent_info';
     noteIOSDiagnostic(mod, 'consent_started');
     let consentFailed = false;
     const observeWait = <T,>(operation: Promise<T>, ms: number, phase: string): Promise<T> => {
       const wait = withTimeout(operation, ms, phase);
-      if (adPlatform() === 'ios') consentWait = wait.then(() => true, async () => {
+      if (adPlatform() === 'ios') consentWait = wait.then(() => true, async error => {
+        if (reasonOf(error) !== `${phase}_timeout`) return false;
         noteIOSDiagnostic(mod, `${phase}_timeout`);
         try {
           const native = mod.AdMob as typeof mod.AdMob & { getConsentEligibility(): Promise<{ canRequestAds: boolean }> };
@@ -239,7 +238,6 @@ function ensureConsent(mod: AdMobModule): Promise<boolean> {
       try {
         let info = await observeWait(mod.AdMob.requestConsentInfo(), 10_000, 'consent_info');
         if (info.isConsentFormAvailable && info.status === mod.AdmobConsentStatus.REQUIRED) {
-          consentPhase = 'consent_form';
           info = await observeWait(mod.AdMob.showConsentForm(), 120_000, 'consent_form');
         }
         privacyOptionsRequired = info.privacyOptionsRequirementStatus === 'REQUIRED';

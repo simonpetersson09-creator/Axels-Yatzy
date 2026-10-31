@@ -29,6 +29,8 @@ describe('verify-admob-patches', () => {
       '@objc func noteAppOpenDiagnostic(_ call: CAPPluginCall)',
       'diagnosticAttemptId', 'adDidRecordImpression', 'diagnostic("load_requested")',
       'MRB_READ_CONSENT',
+      'MRB_APP_OPEN_LOAD_GENERATION', 'privacyInvalidated = true',
+      'guard !self.privacyInvalidated else { invalidated(); return }',
       'MRB_IOS_CONSENT_LIFECYCLE', 'UIApplication.shared.applicationState != .active',
       'trackingAuthorizationStatus == .notDetermined', 'consentExecutor.consentUIBusy',
       'defer { self.consentUIBusy = false }', 'DispatchQueue.main.async {',

@@ -1,5 +1,25 @@
 # iPhone: appstartsdiagnostik
 
+## Punkt 1: appstartsladdning vid ändrade annonsval – 31 oktober
+
+Endast iOS App Open-laddning ändras. Vid annonsvalens befintliga gräns kopplas gamla JavaScript-laddningsägare loss. Native-markerad gammal hanterare blir permanent ogiltig; dess SDK-anrop avbryts inte. Giltighet kontrolleras före den schemalagda SDK-begäran och före både lyckat och misslyckat svars cache-/låsändring. Ett gammalt svar rapporteras som `load_invalidated`, med ursprungligt `attempt_id` och `reason=privacy_change`, aldrig som användbar `load_succeeded` eller aktuell `load_no_fill`. Befintlig adminvy kan redan läsa/kopiera dessa fält.
+
+Nya tillåtna laddningar får ny hanterare och laddningsägare efter uppdaterat UMP-/ATT-flöde. Gamla promise-callbacks rensar bara sitt eget ägarskap och får inte starta en ny no-fill-paus. En redan intjänad 60-sekunderspaus bevaras. Dubbelladdningsskydd och sena svar efter vanlig timeout bevaras inom samma samtyckesläge. En gammal och en ny SDK-begäran kan därför tillfälligt finnas samtidigt **över olika samtyckeslägen**, eftersom SDK:n inte kan avbrytas; endast den nya kan skapa användbar cache. Inga automatiska återförsök, ändrade frekvenser eller visningsregler införs.
+
+**Ändrade filer:** `src/lib/admob.ts`; ny `scripts/patch-admob-ios-app-open-generation.js`; `package.json`; `scripts/verify-admob-patches.js`; nya `src/lib/app-open-privacy-generation.test.ts` och `src/lib/patch-admob-ios-app-open-generation.test.ts`; `src/lib/verify-admob-patches.test.ts`; denna guide, `AGENTS.md`, `roadmap.md`. Patches körs efter befintlig diagnostik/ATT-patch och före sync/verifiering. De ändrar bara `AppOpenAdManager.swift` och laddningens generationsläsning i `AppOpenAdPlugin.swift`. Visnings-/stängningscallbacks (punkt 2–4) och andra annonsformat lämnas orörda.
+
+**Verifierat här:** 164 tester godkända i 15 filer, inklusive 10 riktade generationsprov, 3 native-patchprov och 19 befintliga no-fill-prov. Klientproven kontrollerar gamla sena lyckade/felande svar före/efter ersättningsladdning, ny ägares lås/cache, schemalagd cachekontroll före SDK, uppdaterad UMP-spärr, omstartsfria laddningar, timeout och bevarad no-fill-paus. Native-patchproven kontrollerar skyddsordningen före SDK och båda svaren, oförändrade visningscallbacks, idempotens och avslag för ofullständig patch. Ren 8.2.1-plugin och en andra full patchkedja verifierade. Detta är **inte** ett kompilerat Xcode-bygge eller verkligt SDK-telefonprov.
+
+### Telefonprov med testannonser – nytt native-bygge krävs
+
+1. Uppdatera lokal källa från anslutna repot på Mac. Kör `npm install`, `npm run build:dev`, `npm run cap:sync:ios` (inkluderar `npx cap sync ios`), `npm run cap:ios:verify`. Höj buildnummer och installera signerat med Xcode. **Nytt native-bygge krävs** för SDK-/svarsgränserna; en webbuppdatering räcker inte. Läs https://lovable.dev/blog/capacitor.
+2. Behåll befintliga samtycken; ingen UMP-reset. Kontrollera testmärkning, `test_mode=true` och iOS App Open-ID `ca-app-pub-3940256099942544/5575463023`. Slutför första matchen om appstartsladdning ännu är låst.
+3. När en appstartsförladdning pågår och ingen annons visas: gå till Inställningar → Annonsinställningar där Google kräver knappen. Ändra val och avsluta Googles ruta. Använd gärna långsamt testnät för längre laddningsfönster. Kopiera adminloggen: gamla försöket ska få `load_invalidated` om dess resultat kommer efter gränsen, inte ny användbar framgång. `cache_discarded/privacy_change` kan förekomma även innan resultatet. Ingen annons får återuppta ett redan övergivet visningstillfälle.
+4. Utan omstart: om uppdaterad UMP tillåter annonser, återvänd vid ett normalt tillfälle. Nytt laddnings-ID ska kunna ge `load_succeeded` → presentation → verklig impression; gammalt svar får inte radera denna cache eller spärra ny laddning. Upprepa med nätfel på gamla begäran och flera korta återkomster. När UMP inte tillåter begäran ska ingen ny `load_requested` följa.
+5. Kontrollera vanlig cacheåteranvändning, timeout/sent svar inom samma läge och den oförändrade no-fill-pausen enligt tidigare guide. Googles testannonser och långsamt nät garanterar **inte** ett bestämt sent svar eller no-fill; alla exakta ordningar är automatiskt provade med avskilda mocks. Deterministiskt native-telefonprov kräver separat testharness, inte felinjektion i produktionsappen.
+
+Fysisk iPhone/Xcode-kompilering, sena verkliga Google-svar och impressioner återstår. Ingen publicering har gjorts och inget bevisat samband med eCPM-tappet påstås.
+
 ## Samtyckeslås och aktiv ATT – 31 oktober
 
 JavaScript-tidsgränser avslutar bara anroparens väntan. Samma verkliga UMP-/ATT-operation behåller sitt lås till native-svar; annonsinitieringen väntar medan spel och navigation kan fortsätta. Ett försök som aldrig svarar återställs inte av en timer: annonser förblir väntande för denna process, nya anrop delar försöket. Avsluta/starta appen först när eventuell systemruta är stängd; ingen automatisk reset av UMP eller användarval görs.

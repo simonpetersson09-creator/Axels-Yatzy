@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## iOS App Open – gamla laddningar vid annonsval
+- [x] Ogiltigförklarar gamla laddningar före SDK och vid båda svaren; separata laddningsägare och stale-no-fill-skydd utan SDK-avbrott. No-fill, ATT och andra format/regler bevarade.
+- [x] 164 tester godkända i 15 filer, inklusive 10 generationsprov, 3 native-patchprov och 19 befintliga no-fill-prov. Ren/omsynkad 8.2.1-patchkedja verifierad. Filredovisning och telefonprovguide i docs/ios-app-open-diagnostics.md. Ingen publicering.
+- [ ] Fysisk verifiering kräver nytt signerat iPhone-bygge och testtelefon.
+
 ## iOS samtyckeslås och ATT – 31 oktober
 - [x] Verkligt UMP-/ATT-ägarskap bevarat efter väntetimeout; ATT väntar på aktiv huvudtråd/presenterare utan UMP-ruta. No-fill och övriga annonsregler bevarade.
 - [x] 150 tester godkända i 12 filer, inklusive 19 no-fill-prov; ren 8.2.1-plugin och upprepad patchkedja verifierade. Befintlig V2-cacheobservation krävde enbart kompatibel verifiering för omsynkning, inte ändrad native-annonskod. Webbbygge OK. iPhone-provguide och ändrade filer redovisade i docs/ios-app-open-diagnostics.md.

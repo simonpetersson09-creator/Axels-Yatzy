@@ -332,6 +332,12 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
   privacyChanging = true;
   privacyBlocked = true;
   adGeneration++;
+  if (adPlatform() === 'ios') {
+    // Detach the old generation, not cancel its SDK request. Late callbacks
+    // retain their own promise identity and cannot release the new owner.
+    appOpenNativeLoad = null;
+    appOpenPreload = null;
+  }
   bannerGen++;
   try {
     const mod = await loadModule();
@@ -868,7 +874,8 @@ let appOpenAttemptId: string | undefined;
 let appOpenRevenueListener = false;
 
 /** One native App Open load at a time: a timed-out wait reuses the running load. */
-function loadAppOpenOnce(mod: AdMobModule, adId: string, ms: number, label: string, source: AppOpenLoadSource): Promise<unknown> {
+function loadAppOpenOnce(mod: AdMobModule, adId: string, ms: number, label: string, source: AppOpenLoadSource, generation: number): Promise<unknown> {
+  if (!adAllowed(generation)) return Promise.reject(new Error('app_open_invalidated'));
   if (appOpenNativeLoad) {
     noteIOSDiagnostic(mod, 'load_reused_pending', { attempt_id: appOpenAttemptId, source });
   } else if (adPlatform() === 'ios' && Date.now() < appOpenRetryAfter) {
@@ -883,15 +890,20 @@ function loadAppOpenOnce(mod: AdMobModule, adId: string, ms: number, label: stri
     // Observe the actual SDK settlement, including after the caller's timeout.
     p.then(() => {}, (err: unknown) => {
       const failure = err as { code?: unknown; data?: { error_domain?: unknown; error_code?: unknown } } | undefined;
-      if (adPlatform() === 'ios' && (failure?.code === 'APP_OPEN_NO_FILL' ||
+      if (adPlatform() === 'ios' && adAllowed(generation) && appOpenNativeLoad === p && (failure?.code === 'APP_OPEN_NO_FILL' ||
         (failure?.data?.error_domain === 'com.google.admob' && failure.data.error_code === 1))) {
         appOpenRetryAfter = Date.now() + APP_OPEN_NO_FILL_RETRY_MS;
       }
     }).finally(() => { if (appOpenNativeLoad === p) appOpenNativeLoad = null; });
   }
-  return withTimeout(appOpenNativeLoad, ms, label).catch(err => {
+  const ownedLoad = appOpenNativeLoad;
+  const ownedId = appOpenAttemptId;
+  return withTimeout(ownedLoad, ms, label).then(result => {
+    if (!adAllowed(generation)) throw new Error('app_open_invalidated');
+    return result;
+  }).catch(err => {
     if (adPlatform() === 'ios' && reasonOf(err) === `${label}_timeout`) {
-      recordAppOpenDiagnostic({ stage: 'load_wait_timeout', attempt_id: appOpenAttemptId, occurred_at_ms: Date.now(), ad_unit_id: adId, test_mode: ADMOB_CONFIG.useTestAds });
+      recordAppOpenDiagnostic({ stage: 'load_wait_timeout', attempt_id: ownedId, occurred_at_ms: Date.now(), ad_unit_id: adId, test_mode: ADMOB_CONFIG.useTestAds });
     }
     throw err;
   });
@@ -937,7 +949,7 @@ export function preloadAppOpenAd(source: AppOpenLoadSource = 'preload'): Promise
       const { value } = await mod.AdMob.isAppOpenLoaded();
       if (!adAllowed(generation)) return false;
       if (value) return true;
-      await loadAppOpenOnce(mod, adId, 20_000, 'load', source);
+      await loadAppOpenOnce(mod, adId, 20_000, 'load', source, generation);
       if (!adAllowed(generation)) return false;
       return (await mod.AdMob.isAppOpenLoaded()).value;
     } catch (err) {
@@ -987,7 +999,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
     if (!adAllowed(generation)) return false;
     if (!pre.value) {
       if (!canShow() || waitingRoomAdBlocked()) return false;
-      await loadAppOpenOnce(mod, adId, APP_OPEN_LOAD_TIMEOUT_MS, 'load', source);
+      await loadAppOpenOnce(mod, adId, APP_OPEN_LOAD_TIMEOUT_MS, 'load', source, generation);
     }
     const { value } = await mod.AdMob.isAppOpenLoaded();
     if (!adAllowed(generation)) return false;

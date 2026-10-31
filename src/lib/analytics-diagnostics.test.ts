@@ -10,10 +10,10 @@ vi.mock('@/lib/app-version', () => ({ appVersionReady: Promise.resolve('5.4'), g
 describe('diagnostics delivery', () => {
   beforeEach(() => { vi.useFakeTimers(); vi.resetModules(); localStorage.clear(); mocks.rpc.mockReset(); });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
-  it('retains evidence on failure and retries with the same event ID', async () => {
+  it.each(['play_network_exit', 'ios_app_open_diag'])('retains %s on failure and retries with the same event ID', async (event) => {
     mocks.rpc.mockResolvedValueOnce({ error: { message: 'offline' } }).mockResolvedValue({ error: null });
     const { trackEvent } = await import('./analytics');
-    trackEvent('play_network_exit', { reason: 'screen_left' });
+    trackEvent(event, { reason: 'screen_left' });
     const saved = JSON.parse(localStorage.getItem('yatzy_play_diagnostics_pending_v1') ?? '[]');
     expect(saved).toHaveLength(1);
     expect(saved[0].metadata.event_id).toBeTruthy();

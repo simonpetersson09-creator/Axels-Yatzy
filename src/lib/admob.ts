@@ -82,7 +82,8 @@ let diagnosticListener: Promise<unknown> | null = null;
 function attachIOSDiagnostics(mod: AdMobModule): void {
   if (adPlatform() !== 'ios' || diagnosticListener) return;
   try {
-    diagnosticListener = mod.AdMob.addListener('appOpenDiagnostic' as any, recordAppOpenDiagnostic)
+    const native = mod.AdMob as unknown as { addListener(name: string, callback: (data: Record<string, unknown>) => void): Promise<unknown> };
+    diagnosticListener = native.addListener('appOpenDiagnostic', recordAppOpenDiagnostic)
       .catch(() => { diagnosticListener = null; });
   } catch { /* Old native builds: no telemetry, unchanged ads. */ }
 }

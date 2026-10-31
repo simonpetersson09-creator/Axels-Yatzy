@@ -31,7 +31,9 @@ await patch('AppOpenAdManager.swift', replace => {
         }
         guard !privacyInvalidated else { invalidated(); return }
         let diagnostic: (String) -> Void = { stage in diagnosticEvent(stage, [:]) }`);
-  replace('        Task { [weak self] in', '        Task { @MainActor [weak self] in');
+  // Retain detached ownership until settlement, even if invalidation precedes
+  // this scheduled task. No task handle is stored, so this is not a cycle.
+  replace('        Task { [weak self] in\n            guard let self = self else {\n                return\n            }', '        Task { @MainActor in');
   replace('            do {\n                diagnostic("load_requested")', `            // The scheduled task may start after the privacy boundary.
             guard !self.privacyInvalidated else { invalidated(); return }
             do {
@@ -52,7 +54,7 @@ await patch('AppOpenAdManager.swift', replace => {
             impressionDiagnostic = nil
         }
     }`);
-}, ['privacyInvalidated = true', 'Task { @MainActor [weak self] in', '"load_invalidated"', 'guard !self.privacyInvalidated else { invalidated(); return }']);
+}, ['privacyInvalidated = true', 'Task { @MainActor in', '"load_invalidated"', 'guard !self.privacyInvalidated else { invalidated(); return }']);
 await patch('AppOpenAdPlugin.swift', replace => {
   // Snapshot the generation on the same queue used for discards. The queued
   // work retains the snapshot so changes before its execution reject it.

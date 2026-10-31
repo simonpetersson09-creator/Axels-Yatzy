@@ -13,10 +13,10 @@ async function harness() {
   const show = vi.fn(async (_allowed: () => boolean, _source: string) => false);
   const preload = vi.fn(); const track = vi.fn();
   const block = home.slice(home.indexOf('let startupAdChecked'), home.indexOf("import { shouldShowRatePrompt"))
-    .replace("await import('@capacitor/app')", 'await Promise.resolve({ App })');
+    .replace("await import('@capacitor/app')", 'await Promise.resolve({ App: bridge })');
   const cleanupMatch = home.match(/useLayoutEffect\((\(\) => \(\) => \{ resumeHomeEpoch\+\+; \}), \[\]\)/);
   if (!cleanupMatch) throw new Error('Home lifecycle cleanup missing');
-  const setup = new Function('App', 'window', 'document', 'showAppOpenAd', 'preloadAppOpenAd', 'trackEvent',
+  const setup = new Function('bridge', 'window', 'document', 'showAppOpenAd', 'preloadAppOpenAd', 'trackEvent',
     `${block}\nreturn { installResumeAdWatcher, leaveHome: (${cleanupMatch[1]})() };`);
   const lifecycle = setup(App, window, document, show, preload, track);
   lifecycle.installResumeAdWatcher(); await vi.advanceTimersByTimeAsync(0);

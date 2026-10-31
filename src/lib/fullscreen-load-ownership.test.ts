@@ -95,6 +95,14 @@ describe.each(['ios', 'android'])('%s fullscreen SDK load ownership', platform =
     pending.resolve(); await vi.advanceTimersByTimeAsync(0);
     expect(n.show).not.toHaveBeenCalled(); expect(n.rewarded).toHaveBeenCalledOnce();
   });
+  it('privacy change before initialization resumes prevents both old SDK requests', async () => {
+    const m = await import('./admob');
+    const first = m.preloadInterstitial(); const xp = m.preloadRewarded();
+    const change = m.showAdPrivacyOptions();
+    expect(await first).toBe(false); expect(await xp).toBe(false); expect(await change).toBe(true);
+    expect(n.interstitial).not.toHaveBeenCalled(); expect(n.rewarded).not.toHaveBeenCalled();
+    expect(await m.preloadInterstitial()).toBe(true); expect(await m.preloadRewarded()).toBe(true);
+  });
   it('consumed XP ad reloads once; duplicated SDK reward yields one reward', async () => {
     const m = await import('./admob'); const xp = vi.fn();
     const show = m.showOptionalRewarded().then(result => { if (result === 'rewarded') xp(1); return result; });

@@ -82,8 +82,12 @@ it('accepts the existing diagnostics reuse observation without rewriting native 
 
 it('runs both fixes before Capacitor sync in the existing iOS command', () => {
   const pkg = JSON.parse(readFileSync(resolve('package.json'), 'utf8'));
-  const steps = pkg.scripts['cap:sync:ios'].split(' && ');
+  const steps = pkg.scripts['cap:patch:ios'].split(' && ');
+  const sync = pkg.scripts['cap:sync:ios'].split(' && ');
+  expect(sync.indexOf('npm run cap:patch:ios')).toBeGreaterThanOrEqual(0);
+  expect(sync.indexOf('npm run cap:patch:ios')).toBeLessThan(sync.indexOf('npx cap sync ios'));
   expect(steps.indexOf('node scripts/patch-admob-app-open.js')).toBeGreaterThanOrEqual(0);
-  expect(steps.indexOf('node scripts/patch-admob-app-open.js')).toBeLessThan(steps.indexOf('npx cap sync ios'));
-  expect(steps.indexOf('node scripts/patch-admob-consent.js ios')).toBeLessThan(steps.indexOf('npx cap sync ios'));
+  expect(steps.indexOf('node scripts/patch-admob-app-open.js')).toBeLessThan(steps.indexOf('node scripts/verify-admob-patches.js ios'));
+  expect(steps.indexOf('node scripts/patch-admob-consent.js ios')).toBeGreaterThanOrEqual(0);
+  expect(steps.indexOf('node scripts/patch-admob-consent.js ios')).toBeLessThan(steps.indexOf('node scripts/verify-admob-patches.js ios'));
 });

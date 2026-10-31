@@ -36,8 +36,10 @@ if (!source.includes(marker)) {
   // Reset the timestamp whenever the consumed/failed ad is released.
   source = source.replaceAll('        appOpenAd = nil\n        isShowingAd = false', '        appOpenAd = nil\n        loadedAt = nil\n        isShowingAd = false');
 }
+// Diagnostics V2 observes reuse between expiry checking and the return.
+const verifiedSource = source.replace('        if appOpenAd != nil { noteCachedAd("cache_reused") }\n', '');
 for (const required of [marker, 'age >= maxAdAge', 'self.loadedAt = Date()', 'discardExpiredAd()\n        if appOpenAd', 'discardExpiredAd()\n        guard let ad', 'discardExpiredAd()\n        return appOpenAd']) {
-  if (!source.includes(required)) throw new Error(`App Open expiry verification failed: ${required}`);
+  if (!verifiedSource.includes(required)) throw new Error(`App Open expiry verification failed: ${required}`);
 }
 await writeFile(path, source);
 console.log('Patched iOS App Open expiry (four hours)');

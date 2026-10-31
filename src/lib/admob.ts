@@ -87,11 +87,11 @@ function attachIOSDiagnostics(mod: AdMobModule): void {
       .catch(() => { diagnosticListener = null; });
   } catch { /* Old native builds: no telemetry, unchanged ads. */ }
 }
-function noteIOSDiagnostic(mod: AdMobModule, stage: string): void {
+function noteIOSDiagnostic(mod: AdMobModule, stage: string, fields: Record<string, unknown> = {}): void {
   if (adPlatform() !== 'ios') return;
   try {
-    const native = mod.AdMob as typeof mod.AdMob & { noteAppOpenDiagnostic(input: { stage: string }): Promise<void> };
-    void native.noteAppOpenDiagnostic({ stage }).catch(() => {});
+    const native = mod.AdMob as typeof mod.AdMob & { noteAppOpenDiagnostic(input: Record<string, unknown>): Promise<void> };
+    void native.noteAppOpenDiagnostic({ stage, ...fields }).catch(() => {});
   } catch { /* Diagnostics must never affect the flow. */ }
 }
 let initialized = false;
@@ -820,6 +820,10 @@ export async function showOptionalRewarded(options: { waitForCompletion?: boolea
 
 /** Laddas annonsen inte inom denna tid (12 s) visas den inte alls denna start. */
 const APP_OPEN_LOAD_TIMEOUT_MS = 12_000;
+/** One minute avoids burst retries without a timer or changing presentation eligibility. iOS only. */
+export const APP_OPEN_NO_FILL_RETRY_MS = 60_000;
+export type AppOpenLoadSource = 'startup' | 'resume' | 'background' | 'preload' | 'after_presentation';
+let appOpenRetryAfter = 0;
 
 let appOpenShowing = false;
 let appOpenPreload: Promise<boolean> | null = null;
@@ -829,13 +833,26 @@ let appOpenAttemptId: string | undefined;
 let appOpenRevenueListener = false;
 
 /** One native App Open load at a time: a timed-out wait reuses the running load. */
-function loadAppOpenOnce(mod: AdMobModule, adId: string, ms: number, label: string): Promise<unknown> {
+function loadAppOpenOnce(mod: AdMobModule, adId: string, ms: number, label: string, source: AppOpenLoadSource): Promise<unknown> {
+  if (appOpenNativeLoad) {
+    noteIOSDiagnostic(mod, 'load_reused_pending', { attempt_id: appOpenAttemptId, source });
+  } else if (adPlatform() === 'ios' && Date.now() < appOpenRetryAfter) {
+    noteIOSDiagnostic(mod, 'retry_paused', { attempt_id: appOpenAttemptId, source, retry_remaining_ms: appOpenRetryAfter - Date.now() });
+    return Promise.reject(new Error('app_open_retry_paused'));
+  }
   if (!appOpenNativeLoad) {
     const attemptId = adPlatform() === 'ios' ? crypto.randomUUID() : undefined;
     appOpenAttemptId = attemptId;
-    const p = mod.AdMob.loadAppOpen({ adId, ...(attemptId ? { diagnosticAttemptId: attemptId, diagnosticTestMode: ADMOB_CONFIG.useTestAds } : {}) });
+    const p = mod.AdMob.loadAppOpen({ adId, ...(attemptId ? { diagnosticAttemptId: attemptId, diagnosticTestMode: ADMOB_CONFIG.useTestAds, diagnosticSource: source } : {}) });
     appOpenNativeLoad = p;
-    p.then(() => {}, () => {}).finally(() => { if (appOpenNativeLoad === p) appOpenNativeLoad = null; });
+    // Observe the actual SDK settlement, including after the caller's timeout.
+    p.then(() => {}, (err: unknown) => {
+      const failure = err as { code?: unknown; data?: { error_domain?: unknown; error_code?: unknown } } | undefined;
+      if (adPlatform() === 'ios' && (failure?.code === 'APP_OPEN_NO_FILL' ||
+        (failure?.data?.error_domain === 'com.google.admob' && failure.data.error_code === 1))) {
+        appOpenRetryAfter = Date.now() + APP_OPEN_NO_FILL_RETRY_MS;
+      }
+    }).finally(() => { if (appOpenNativeLoad === p) appOpenNativeLoad = null; });
   }
   return withTimeout(appOpenNativeLoad, ms, label).catch(err => {
     if (adPlatform() === 'ios' && reasonOf(err) === `${label}_timeout`) {
@@ -865,13 +882,16 @@ function attachAppOpenRevenue(mod: AdMobModule) {
 }
 
 /** Laddar nästa App Open-annons i förväg så den kan visas direkt vid nästa start. */
-export function preloadAppOpenAd(): Promise<boolean> {
+export function preloadAppOpenAd(source: AppOpenLoadSource = 'preload'): Promise<boolean> {
   const generation = adGeneration;
   if (!adAllowed(generation)) { reportSkip('appOpen', 'ads_not_ready'); return Promise.resolve(false); }
   if (getRankedGames() < 1) { reportSkip('appOpen', 'first_match_pending'); return Promise.resolve(false); }
   const adId = adUnitId('appOpen');
   if (!isAdMobAvailable() || !adId) { reportSkip('appOpen', 'unavailable'); return Promise.resolve(false); }
-  if (appOpenPreload) return appOpenPreload;
+  if (appOpenPreload) {
+    void loadModule().then(mod => noteIOSDiagnostic(mod, 'preload_reused_pending', { attempt_id: appOpenAttemptId, source })).catch(() => {});
+    return appOpenPreload;
+  }
   appOpenPreload = (async () => {
     let initDone = false;
     try {
@@ -882,7 +902,7 @@ export function preloadAppOpenAd(): Promise<boolean> {
       const { value } = await mod.AdMob.isAppOpenLoaded();
       if (!adAllowed(generation)) return false;
       if (value) return true;
-      await loadAppOpenOnce(mod, adId, 20_000, 'load');
+      await loadAppOpenOnce(mod, adId, 20_000, 'load', source);
       if (!adAllowed(generation)) return false;
       return (await mod.AdMob.isAppOpenLoaded()).value;
     } catch (err) {
@@ -899,8 +919,9 @@ export function preloadAppOpenAd(): Promise<boolean> {
  * Laddar och visar en App Open-annons vid appstart. Returnerar true om den
  * visades. Kastar aldrig; misslyckas tyst så att appen fortsätter direkt.
  */
-export async function showAppOpenAd(canShow: () => boolean = () => true): Promise<boolean> {
+export async function showAppOpenAd(canShow: () => boolean = () => true, source: AppOpenLoadSource = 'startup'): Promise<boolean> {
   const generation = adGeneration;
+  if (!canShow()) return false;
   if (!adAllowed(generation)) { reportSkip('appOpen', 'ads_not_ready'); return false; }
   // New players get one complete match before any startup/resume App Open ad.
   if (getRankedGames() < 1) { reportSkip('appOpen', 'first_match_pending'); return false; }
@@ -914,6 +935,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
   appOpenShowing = true;
   const startedAt = Date.now();
   let release = true;
+  let presentationAttempted = false;
   try {
     let mod: AdMobModule;
     try {
@@ -928,12 +950,16 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
     if (appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});
     const pre = await mod.AdMob.isAppOpenLoaded();
     if (!adAllowed(generation)) return false;
-    if (!pre.value) await loadAppOpenOnce(mod, adId, APP_OPEN_LOAD_TIMEOUT_MS, 'load');
+    if (!pre.value) {
+      if (!canShow() || waitingRoomAdBlocked()) return false;
+      await loadAppOpenOnce(mod, adId, APP_OPEN_LOAD_TIMEOUT_MS, 'load', source);
+    }
     const { value } = await mod.AdMob.isAppOpenLoaded();
     if (!adAllowed(generation)) return false;
     if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
     // Loaded too late (player already left the start screen): never cover a game.
     if (getRankedGames() < 1 || !canShow() || waitingRoomAdBlocked()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
+    presentationAttempted = true;
     const showP = mod.AdMob.showAppOpen();
     try {
       await withTimeout(showP, SHOW_TIMEOUT_MS, 'show');
@@ -945,15 +971,17 @@ export async function showAppOpenAd(canShow: () => boolean = () => true): Promis
       showP.then(
         () => reportAd('appOpen', 'shown_late', startedAt),
         (e) => reportAd('appOpen', 'failed', startedAt, reasonOf(e)),
-      ).finally(() => { appOpenShowing = false; void preloadAppOpenAd(); });
+      ).finally(() => { appOpenShowing = false; void preloadAppOpenAd('after_presentation'); });
       return true;
     }
     return true;
   } catch (err) {
-    reportAd('appOpen', 'failed', startedAt, reasonOf(err));
+    // Free SDK error messages never belong in App Open diagnostics.
+    const reason = reasonOf(err);
+    reportAd('appOpen', 'failed', startedAt, ['load_timeout', 'preload_timeout', 'init_timeout', 'app_open_retry_paused'].includes(reason) ? reason : 'sdk_failed');
     return false;
   } finally {
-    if (release) { appOpenShowing = false; void preloadAppOpenAd(); }
+    if (release) { appOpenShowing = false; if (presentationAttempted) void preloadAppOpenAd('after_presentation'); }
   }
 }
 

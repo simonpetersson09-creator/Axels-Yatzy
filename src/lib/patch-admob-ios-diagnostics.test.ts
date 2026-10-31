@@ -24,24 +24,48 @@ it('native diagnostics patch is idempotent and leaves real SDK calls and privacy
                         call.resolve([
                         call.reject("Request consent info failed")`
         : name === 'AppOpen/AppOpenAdPlugin.swift' ? `        notify: @escaping (String, [String: Any]) -> Void
-            self.preparedManagers[adUnitId]?.loadAd(onLoaded:`
+        preparedManagers.removeAll()
+            self.preparedManagers[adUnitId]?.loadAd(onLoaded:
+                call.reject(message)
+            }, onPaidEvent:`
         : `    public func loadAd(onLoaded:
+        discardExpiredAd()
         if appOpenAd != nil {
             onLoaded()
+        isLoadingAd = true
                 let ad = try await AppOpenAd.load(with: self.adUnitId, request: Request())
                     self.appOpenAd = ad
+                    self.loadedAt = Date()
                     onFailed(error)
+        if age < 0 || age >= maxAdAge {
+        return appOpenAd != nil
+        ad.present(from: rootViewController)
+        let onOpened = self.onOpened
+        appOpenAd = nil
+        loadedAt = nil
+        isShowingAd = false
+    public func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        appOpenAd = nil
     private var onClosed:
 extension AppOpenAdManager: FullScreenContentDelegate {`;
       writeFileSync(dest, text);
     }
     const script = resolve('scripts/patch-admob-ios-diagnostics.js');
+    // Exercise an actual V1 installation upgrade, not just fresh V2 markers.
+    const v1 = resolve(cwd, 'install-v1.mjs');
+    writeFileSync(v1, readFileSync(script, 'utf8').split('// Upgrade V1 installations')[0]);
+    execFileSync(process.execPath, [v1], { cwd });
+    expect(readFileSync(resolve(cwd, base, names[3]), 'utf8')).not.toContain('MRB_APP_OPEN_DIAGNOSTICS_V2');
     execFileSync(process.execPath, [script], { cwd });
     const first = names.map(n => readFileSync(resolve(cwd, base, n), 'utf8'));
     execFileSync(process.execPath, [script], { cwd });
     expect(names.map(n => readFileSync(resolve(cwd, base, n), 'utf8'))).toEqual(first);
     expect(first[3]).toContain('diagnostic("load_requested")\n                let ad = try await AppOpenAd.load(with: self.adUnitId, request: Request())');
     expect(first[3]).toContain('adDidRecordImpression');
+    expect(first[2]).toContain('call.reject(message, nil, nil, details)');
+    expect(first[3]).toContain('domain == "com.google.admob" && nsError.code == 1 ? "load_no_fill"');
+    expect(first[3]).toContain('noteCachedAd("cache_discarded", reason: "consumed")');
+    expect(first[3]).toContain('noteCachedAd("presentation_requested")');
     expect(first.join('')).not.toContain('advertisingIdentifier');
     expect(first.join('')).not.toContain('ConsentInformation.shared.reset');
     // The installed source also keeps existing eligibility and cache expiry protections.

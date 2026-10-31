@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## iOS App Open no-fill – 31 oktober
+- [x] Gemensam processlokal no-fill-paus 60 s vid laddningsgränsen, tidiga canShow-kontroller och återförladdning efter presentation, inte laddningsfel; native-lås och sena svar bevarade.
+- [x] Kopierbar diagnostik med källa, ursprungligt laddnings-ID, säkra fel, cacheålder/kassering och presentation/impression; adminfält driftsatta. Separata native-risker orörda.
+- [x] 151 berörda tester godkända, 19 riktade no-fill-prov; ren 8.2.1-plugin patchad/verifierad och V1→V2/idempotens testade. Isolerad admininloggning→hämtning→kopiering verifierad utan runtimefel. Telefonprovguide uppdaterad.
+- [ ] Fysisk SDK-/telefonverifiering kräver signerat nytt iPhone-bygge och telefon; deterministiskt no-fill-telefonprov kräver separat testharness (ingår inte).
+
 ## iOS App Open-diagnostik – 31 oktober
 - [x] Tillfälliga försöks-ID:n, tekniska ATT/UMP-statusar och versions/builduppgifter vid befintliga native-gränser; SDK-impression separat från visning/betald händelse. Inga IDFA, samtyckessträngar eller fria feltexter; befintlig analytics-enhetskoppling används men visas inte i admin.
 - [x] Kopierbar skyddad adminvy, senaste 600 rader inom 30 dagar; driftsatt autentiserad läsning verifierad, ännu inga native-rader. 94 tester godkända, orörd 8.2.1-plugin patchad/verifierad isolerat, kopiering testad i körande admin med avskilda provloggar. Bygge OK. Fysisk provguide finns i docs/ios-app-open-diagnostics.md.

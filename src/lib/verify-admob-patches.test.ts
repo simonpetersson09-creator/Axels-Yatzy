@@ -43,6 +43,8 @@ describe('verify-admob-patches', () => {
       'MRB_APP_OPEN_EXPIRY',
       'maxAdAge',
       'discardExpiredAd',
+      'MRB_APP_OPEN_DIAGNOSTICS_V2', '"load_no_fill"', 'noteCachedAd("presentation_requested")',
+      'call.reject(message, nil, nil, details)',
     ].join('\n');
     const androidSource = [
       '@PluginMethod public void getStoredConsentChoices(final PluginCall call)',

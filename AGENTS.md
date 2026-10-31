@@ -1,4 +1,4 @@
-- cap:sync:ios/android verifies methods. Keep UMP-first, 4h expiry, scheduling/ranked guards. iOS telemetry: passive snapshots/SDK impressions, ephemeral IDs, protected admin, no personal data or consent resets.
+- iOS App Open shares no-fill backoff at load boundary and retains pending SDK ownership. Native telemetry owns load/cache lifecycle; upgrades are idempotent. Keep UMP-first, 4h expiry, guards and privacy.
 - No QA in live player_country_stats.
 - Serialize Home news.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.

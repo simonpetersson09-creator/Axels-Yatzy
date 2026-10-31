@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, act } from '@testing-library/react';
 import { createElement } from 'react';
 
 const sdk = vi.hoisted(() => ({ platform: 'ios', loaded: false, games: 1, blocked: false,
@@ -60,7 +60,7 @@ describe.each(['ios', 'android'])('%s ready-only resume', platform => {
     expect(screen.queryByText('Playing match')).toBeNull();
     await vi.advanceTimersByTimeAsync(8_000); expect(await attempt).toBe(true);
     expect(isAppOpenPresentationPending()).toBe(true);
-    gate.resolve(); await vi.advanceTimersByTimeAsync(0);
+    await act(async () => { gate.resolve(); await vi.advanceTimersByTimeAsync(0); });
     view.rerender(game);
     expect(screen.getByText('Playing match')).toBeTruthy(); expect(isAppOpenPresentationPending()).toBe(false);
   });

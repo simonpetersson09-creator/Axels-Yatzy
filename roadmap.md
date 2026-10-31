@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Appstartsannonser under spel
-- [ ] Kontrollera båda plattformarna och förstärk skydd för väntande kallstarts-/återkomstförsök vid spelstart; bevara övriga annonser.
-- [ ] Kör riktade tester för spelrutter, sena svar och lämnad startsida. Ingen publicering; telefonprov kräver signerade byggen/testtelefoner.
+- [x] Kontrollera båda plattformarna: permanent kallstartsavbrott på lämnad Home, central Home-spärr och separat lås för redan skickad native-presentation över båda spelrutter; övriga annonser bevaras.
+- [x] Riktade tester för spelrutter, sena svar, Home-avbrott och native-visning efter timeout; telefonsteg i docs/app-open-gameplay-guard.md. Ingen publicering.
+- [ ] Fysisk visningsverifiering kräver nya signerade iOS-/Android-byggen och testtelefoner, som inte finns här.
 
 ## Återkomstannonser – 31 oktober
 - [x] iOS/Android: endast redan initierad/giltig cache, ingen laddningsväntan eller uppskjuten Home-visning; navigation avslutar tillfället permanent. Kallstart/samtycke/frekvens/cache orörda.

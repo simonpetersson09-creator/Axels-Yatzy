@@ -127,4 +127,76 @@ await patch('AppOpen/AppOpenAdManager.swift', (s, r) => {
 `);
   return s;
 });
-console.log('Patched read-only iOS App Open diagnostics');
+// Upgrade V1 installations as well as freshly patched sources. Observations only:
+// no cancellation, manager ownership or privacy-generation changes.
+async function upgrade(file, transform) {
+  const path = resolve(root, file);
+  const before = await readFile(path, 'utf8');
+  if (before.includes('MRB_APP_OPEN_DIAGNOSTICS_V2')) return;
+  const replace = (text, anchor, value) => {
+    if (!text.includes(anchor)) throw new Error(`Diagnostics V2 anchor missing: ${file}: ${anchor}`);
+    return text.replace(anchor, value);
+  };
+  const after = transform(before, replace);
+  await writeFile(path, '// MRB_APP_OPEN_DIAGNOSTICS_V2\n' + after);
+}
+await upgrade('AdMobPlugin.swift', (s, r) => {
+  s = r(s, '            diagnostic: { [weak self] stage in', '            diagnostic: { [weak self] stage, details in');
+  s = r(s, '                row["test_mode"] = call.getBool("diagnosticTestMode") ?? false', `                row["test_mode"] = call.getBool("diagnosticTestMode") ?? false
+                row["source"] = call.getString("diagnosticSource") ?? "preload"
+                for key in ["reason", "error_code", "error_domain", "cache_age_ms"] {
+                    if let value = details[key] { row[key] = value }
+                }`);
+  s = r(s, '                       "att_finished", "init_timeout"]', '                       "att_finished", "init_timeout", "load_reused_pending", "preload_reused_pending", "retry_paused"]');
+  s = r(s, '            DispatchQueue.main.async { self.recordAppOpenDiagnostic(stage); call.resolve() }', `            DispatchQueue.main.async {
+                if ["load_reused_pending", "preload_reused_pending", "retry_paused"].contains(stage) {
+                    var row = self.appOpenDiagnosticSnapshot(stage)
+                    if let id = call.getString("attempt_id") { row["attempt_id"] = id }
+                    if let source = call.getString("source") { row["source"] = source }
+                    if let remaining = call.getDouble("retry_remaining_ms") { row["retry_remaining_ms"] = remaining }
+                    self.notifyListeners("appOpenDiagnostic", data: row, retainUntilConsumed: true)
+                } else { self.recordAppOpenDiagnostic(stage) }
+                call.resolve()
+            }`);
+  return s;
+});
+await upgrade('AppOpen/AppOpenAdPlugin.swift', (s, r) => {
+  s = r(s, 'diagnostic: @escaping (String) -> Void', 'diagnostic: @escaping (String, [String: Any]) -> Void');
+  s = r(s, '        preparedManagers.removeAll()', '        for manager in preparedManagers.values { manager.notePrivacyDiscard() }\n        preparedManagers.removeAll()');
+  s = r(s, '                call.reject(message)\n            }, onPaidEvent:', `                let nsError = error as NSError?
+                let domain = nsError?.domain == "com.google.admob" ? "com.google.admob" : "other"
+                var details: [String: Any] = ["error_domain": domain]
+                if let code = nsError?.code { details["error_code"] = code }
+                call.reject(message, nil, nil, details)
+            }, onPaidEvent:`);
+  return s;
+});
+await upgrade('AppOpen/AppOpenAdManager.swift', (s, r) => {
+  s = r(s, 'public func loadAd(diagnostic: @escaping (String) -> Void,', 'public func loadAd(diagnostic diagnosticEvent: @escaping (String, [String: Any]) -> Void,');
+  s = r(s, '        discardExpiredAd()\n        if appOpenAd != nil {', '        let diagnostic: (String) -> Void = { stage in diagnosticEvent(stage, [:]) }\n        discardExpiredAd()\n        if appOpenAd != nil {');
+  s = r(s, '            diagnostic("cache_reused")', '            noteCachedAd("cache_reused")');
+  s = r(s, '        isLoadingAd = true', '        lifecycleDiagnostic = diagnosticEvent\n        isLoadingAd = true');
+  s = r(s, '                    diagnostic("load_succeeded")\n                    self.loadedAt = Date()', '                    self.loadedAt = Date()\n                    diagnostic("load_succeeded")');
+  s = r(s, '                    diagnostic("load_failed")', `                    let nsError = error as NSError
+                    let domain = nsError.domain == "com.google.admob" ? "com.google.admob" : "other"
+                    diagnosticEvent(domain == "com.google.admob" && nsError.code == 1 ? "load_no_fill" : "load_failed",
+                                    ["error_domain": domain, "error_code": nsError.code])`);
+  s = r(s, '    private var impressionDiagnostic:', `    private var lifecycleDiagnostic: ((String, [String: Any]) -> Void)?
+    private func noteCachedAd(_ stage: String, reason: String? = nil) {
+        var details: [String: Any] = [:]
+        if let loadedAt = loadedAt { details["cache_age_ms"] = Date().timeIntervalSince(loadedAt) * 1000 }
+        if let reason = reason { details["reason"] = reason }
+        lifecycleDiagnostic?(stage, details)
+    }
+    func notePrivacyDiscard() { noteCachedAd("cache_discarded", reason: "privacy_change") }
+    private var impressionDiagnostic:`);
+  s = r(s, '        if age < 0 || age >= maxAdAge {', '        if age < 0 || age >= maxAdAge {\n            noteCachedAd("cache_discarded", reason: age < 0 ? "clock_rollback" : "expired")');
+  s = r(s, '        return appOpenAd != nil', '        if appOpenAd != nil { noteCachedAd("cache_reused") }\n        return appOpenAd != nil');
+  s = r(s, '        ad.present(from: rootViewController)', '        noteCachedAd("presentation_requested")\n        ad.present(from: rootViewController)');
+  s = r(s, '        let onOpened = self.onOpened', '        noteCachedAd("presentation_started")\n        let onOpened = self.onOpened');
+  s = r(s, '        appOpenAd = nil\n        loadedAt = nil\n        isShowingAd = false', '        noteCachedAd("cache_discarded", reason: "consumed")\n        appOpenAd = nil\n        loadedAt = nil\n        isShowingAd = false');
+  const failed = '    public func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {\n        appOpenAd = nil';
+  s = r(s, failed, failed.replace('        appOpenAd = nil', '        noteCachedAd("cache_discarded", reason: "presentation_failed")\n        appOpenAd = nil'));
+  return s;
+});
+console.log('Patched read-only iOS App Open diagnostics V2');

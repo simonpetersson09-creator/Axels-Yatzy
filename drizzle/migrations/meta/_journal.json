@@ -757,6 +757,13 @@
       "when": 1793522720473,
       "tag": "0107_weekly_top_three_xp_rewards",
       "breakpoints": true
+    },
+    {
+      "idx": 108,
+      "version": "7",
+      "when": 1793522981802,
+      "tag": "0108_weekly_rolling_24h_game_counts",
+      "breakpoints": true
     }
   ]
 }

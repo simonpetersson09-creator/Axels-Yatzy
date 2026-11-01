@@ -3,6 +3,7 @@
 ## Uteslut admin-enhet från statistik – 1 november
 - [x] Simons bekräftade enhet (b051f4b1) ligger i excluded_stat_devices; admin_daily_stats_v3/v4/v5 utesluter den från aktiva enheter, spelade enheter, appålder och problemhändelser. Matchräknare oförändrade.
 - [x] Migration 0105 driftsatt, enheten registrerad, 35 isolerade tester godkända (5 nya uteslutningsprov), bygge OK. Verifierat mot livedata: enheten var 1 av 13 aktiva idag.
+- [x] Rättning: 0105 återinförde av misstag den långsamma versionsuppslagningen (statement timeout i admin-analytics); 0106 återställer den snabba distinct-uppslagningen med uteslutningen kvar. Sviten körd två gånger, 35/35 godkända.
 
 ## Appstartsannonser under spel
 - [x] Kontrollera båda plattformarna: permanent kallstartsavbrott på lämnad Home, central Home-spärr och separat lås för redan skickad native-presentation över båda spelrutter; övriga annonser bevaras.

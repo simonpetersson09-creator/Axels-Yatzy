@@ -4,7 +4,7 @@
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - Icon source: resources/icon.png (1024px, opaque). `npm run icons` regenerates native/public copies; never edit outputs.
-- Admin: protected SQL; finished needs null forfeits; played excludes waiting/closure alone, retains starts/active/completed/own dated rolls; full-history age; saved key validates/logout clears.
+- Admin: protected SQL; issues: latest 2 numeric app releases from sessions/events, builds ignored. Finished: null forfeits; played: starts/active/completed/own rolls. Full-history age; key validates/logout clears.
 - admob.ts: platform-specific IDs (null disables; never cross platforms); fitGameAboveBanner reserves banner space. rewarded-pair/RewardedXpHost pay confirmed SDK rewards once; clear legacy partial bundles, never auto-chain. Preserve App Open suppression. Raw fullscreen load owners survive wait timeouts; native patch after privacy coalesces per-unit, guards generation/owner before SDK/results, never clears newer slots. XP reload only after presentation; interstitial Dismissed owns reload. Rewarded attemptId events prevent overlap/unearned XP.
 - Store links: getStoreLinks; hide Play until PLAY_STORE_LIVE.
 - Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
@@ -38,8 +38,8 @@
 - - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
 - WR pushes reserve a device-scoped rate_limits key (internal_waiting_room_take_push); suppressed recalls are consumed and delivery uses the same device, so churn cannot bypass cooldown; no other category shares it.
 - WR quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.
-- WR flags: ranks per membership change, self from profile; no guessed countries or seat mutations.
-- WR labels reserve side space; flags use atomic horizontal writing to preserve regional-indicator pairs.
+- WR flags: ranks on membership change, self from profile; no guessed countries/seat mutations.
+- WR labels reserve space; flags use atomic horizontal writing for regional-indicator pairs.
 - WR UI and push translations share a dependency-free copy module under functions/_shared; merge it with each app dictionary so language coverage stays consistent across client and server.
 - WR welcome is device-local. Reads debounce, retain one trailing refresh and expire on unmount; retry repeats failed commands before cleanup-away. Countdown syncs at its server deadline; heartbeat/realtime recover missed updates.
 - WR entry confirmation precedes joining; back choices retain the seat via away or await confirmed leave, and the in-room leave button asks before dropping the seat. Home validates membership with sync only, never open/heartbeat, so its indicator cannot keep seats present or extend deadlines. Navigation-only translations stay client-side.

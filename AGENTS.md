@@ -1,22 +1,22 @@
 - App Open: no-fill/privacy owners/4h expiry; resume ready-only. Home required; unmount ends attempts. Gameplay waits for dispatched native presentation's real result, not loading, closing the bridge race.
 - No QA in live player_country_stats.
-- Serialize Home news.
+- Serialize Home news/prizes. Weekly XP: atomic per-list/week settlement, device-bound durable receipts, wallet-delete cascade (no double pay/privacy).
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - Icon source: resources/icon.png (1024px, opaque). `npm run icons` regenerates native/public copies; never edit outputs.
 - Admin: protected SQL; issues: latest 2 numeric app releases from sessions/events, builds ignored. Finished: null forfeits; played: starts/active/completed/own rolls. Full-history age; key validates/logout clears.
 - admob.ts: platform-specific IDs (null disables; never cross platforms); fitGameAboveBanner reserves banner space. rewarded-pair/RewardedXpHost pay confirmed SDK rewards once; clear legacy partial bundles, never auto-chain. Preserve App Open suppression. Raw fullscreen load owners survive wait timeouts; native patch after privacy coalesces per-unit, guards generation/owner before SDK/results, never clears newer slots. XP reload only after presentation; interstitial Dismissed owns reload. Rewarded attemptId events prevent overlap/unearned XP.
 - Store links: getStoreLinks; hide Play until PLAY_STORE_LIVE.
-- Android back button is handled centrally in AndroidBackButton; overlays register a close handler with useBackHandler so back closes them first.
+- AndroidBackButton centrally handles back; overlays register useBackHandler to close first.
 - firebase/google-services.json (public IDs) is copied by scripts/set-android-firebase.js, which writes native-push-config.json; Android registers push only when that flag is true: register() crashes without Firebase.
 - Online mp_issue logs errors/slow calls (>3 s)/mismatches. Failed rolls/scores reconcile; forfeit reads server before retry, preserves accepted exits. Expected dice validate under scoring lock.
 - Online dice are rolled only on the server (perform_roll_dice service-role only; roll-dice still accepts client dice from versions without server_rolls); client tumbles via diceAwait until server numbers arrive (cheat-proof).
 - Online actions (roll/lock/score/start/forfeit/invite/backfill) verify devices via _shared/session-auth.ts (claim_session); perform_* is service-role only. REQUIRE_DEVICE stays false until old versions are gone: session IDs are public; device ID proves identity.
-- Every online roll is logged in dice_roll_log by a trigger on games (all roll paths incl. bots/takeover); service-role only, deleted with its game — audits fairness and disputes.
+- games trigger logs all online rolls (bots/takeover too) in dice_roll_log; service-role only, deleted with game, for fairness audits.
 - Lock taps not yet sent when Kasta is tapped travel with the roll (roll-dice locked_dice → perform_lock_and_roll_authed, which also marks the player active, so rolls send no heartbeat).
 - *_authed combines claim/action; ROLL_RECOVER_* reads games. Client multiplayer-actions await requireClaimedDevice; failed claims retry.
 - Quick-match round 1–2 forfeits become bots if humans remain; bot/idle turns use server quick-match-bot, never another seat's device.
-- Subdirectories have their own AGENTS.md (supabase/functions/, src/lib/i18n/, src/components/dice-engine/) — read it before changing files there.
+- Read nested AGENTS.md before editing supabase/functions/, src/lib/i18n/, src/components/dice-engine/.
 - Game layout resets only on orientationchange, preserving state/ads. Tablet CSS uses shared tokens and stable classes (never text sizes/DOM position; tablet-layout.test.ts); online keeps 20 rows, names above centred dice and turn in roll button.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.

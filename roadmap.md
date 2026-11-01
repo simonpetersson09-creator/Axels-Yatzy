@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Veckolistornas linjer, 24h och pristext
+- [ ] Diskreta likadana avdelare; fasta 24h-/veckokolumner på samma ställe i båda listorna; uttrycklig text om topp tres XP-vinst vid veckoslut.
+- [ ] Bildgranska båda listorna och kontrollera kolumner på telefon/stor skärm utan riktiga statistikändringar.
+
 ## Tydlig prispall i veckolistor
 - [x] Medaljer för placering 1–3 och framhävd möjlig vinst 3/2/1 XP vid spelarnamnet i båda listorna; utdelning och rankning oförändrade.
 - [x] Båda listorna bildgranskade på 393 px och kontrollerade på stor skärm med avskilda provsvar; medaljer/priser synliga utan textspill. Tre befintliga belöningstester godkända; bygge OK. Ingen publicering; når telefonerna med nästa appbygge.

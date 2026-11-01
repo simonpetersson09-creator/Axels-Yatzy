@@ -44,7 +44,50 @@ const COPY: Record<Language, readonly [string, string]> = {
   te: ['వారపు బహుమతి!', 'మీరు {rank}వ స్థానంలో నిలిచి {xp} XP పొందారు.'],
 };
 
+const PODIUM: Record<Language, string> = {
+  sv: 'När veckan avslutas vinner plats 1: 3 XP, plats 2: 2 XP och plats 3: 1 XP.',
+  en: 'At the end of the week, 1st wins 3 XP, 2nd wins 2 XP and 3rd wins 1 XP.',
+  no: 'Ved ukeslutt vinner 1. plass 3 XP, 2. plass 2 XP og 3. plass 1 XP.',
+  da: 'Ved ugens slutning vinder nr. 1: 3 XP, nr. 2: 2 XP og nr. 3: 1 XP.',
+  fi: 'Viikon lopussa 1. sija voittaa 3 XP, 2. sija 2 XP ja 3. sija 1 XP.',
+  es: 'Al terminar la semana, el 1.º gana 3 XP, el 2.º 2 XP y el 3.º 1 XP.',
+  fr: 'En fin de semaine, le 1er gagne 3 XP, le 2e 2 XP et le 3e 1 XP.',
+  it: 'A fine settimana, il 1° vince 3 XP, il 2° 2 XP e il 3° 1 XP.',
+  de: 'Am Wochenende gewinnt Platz 1: 3 XP, Platz 2: 2 XP und Platz 3: 1 XP.',
+  nl: 'Aan het einde van de week wint plek 1: 3 XP, plek 2: 2 XP en plek 3: 1 XP.',
+  ca: 'En acabar la setmana, el 1r guanya 3 XP, el 2n 2 XP i el 3r 1 XP.',
+  ro: 'La finalul săptămânii, locul 1 câștigă 3 XP, locul 2: 2 XP și locul 3: 1 XP.',
+  tr: 'Hafta sonunda 1. sıra 3 XP, 2. sıra 2 XP ve 3. sıra 1 XP kazanır.',
+  pl: 'Na koniec tygodnia 1. miejsce wygrywa 3 XP, 2. miejsce 2 XP, a 3. miejsce 1 XP.',
+  cs: 'Na konci týdne vyhrává 1. místo 3 XP, 2. místo 2 XP a 3. místo 1 XP.',
+  sk: 'Na konci týždňa vyhráva 1. miesto 3 XP, 2. miesto 2 XP a 3. miesto 1 XP.',
+  sl: 'Ob koncu tedna 1. mesto osvoji 3 XP, 2. mesto 2 XP in 3. mesto 1 XP.',
+  hr: 'Na kraju tjedna 1. mjesto osvaja 3 XP, 2. mjesto 2 XP, a 3. mjesto 1 XP.',
+  hu: 'A hét végén az 1. hely 3 XP-t, a 2. hely 2 XP-t, a 3. hely 1 XP-t nyer.',
+  pt: 'No fim da semana, o 1.º ganha 3 XP, o 2.º 2 XP e o 3.º 1 XP.',
+  'pt-BR': 'No fim da semana, o 1º ganha 3 XP, o 2º 2 XP e o 3º 1 XP.',
+  id: 'Di akhir minggu, peringkat 1 memenangkan 3 XP, peringkat 2: 2 XP, dan peringkat 3: 1 XP.',
+  ms: 'Pada akhir minggu, tempat 1 menang 3 XP, tempat 2: 2 XP dan tempat 3: 1 XP.',
+  vi: 'Cuối tuần, hạng 1 nhận 3 XP, hạng 2 nhận 2 XP và hạng 3 nhận 1 XP.',
+  el: 'Στο τέλος της εβδομάδας, η 1η θέση κερδίζει 3 XP, η 2η 2 XP και η 3η 1 XP.',
+  ru: 'По итогам недели 1-е место получает 3 XP, 2-е — 2 XP, 3-е — 1 XP.',
+  uk: 'За підсумками тижня 1-ше місце отримує 3 XP, 2-ге — 2 XP, 3-тє — 1 XP.',
+  ja: '週の終了時、1位は3 XP、2位は2 XP、3位は1 XPを獲得します。',
+  ko: '주간 마감 시 1위는 3 XP, 2위는 2 XP, 3위는 1 XP를 받습니다.',
+  th: 'เมื่อสิ้นสุดสัปดาห์ อันดับ 1 ได้ 3 XP อันดับ 2 ได้ 2 XP และอันดับ 3 ได้ 1 XP',
+  hi: 'सप्ताह के अंत में पहला स्थान 3 XP, दूसरा 2 XP और तीसरा 1 XP जीतता है।',
+  bn: 'সপ্তাহ শেষে প্রথম স্থান 3 XP, দ্বিতীয় 2 XP এবং তৃতীয় 1 XP জেতে।',
+  gu: 'અઠવાડિયાના અંતે પ્રથમ સ્થાન 3 XP, બીજું 2 XP અને ત્રીજું 1 XP જીતે છે.',
+  kn: 'ವಾರದ ಕೊನೆಯಲ್ಲಿ 1ನೇ ಸ್ಥಾನ 3 XP, 2ನೇ ಸ್ಥಾನ 2 XP ಮತ್ತು 3ನೇ ಸ್ಥಾನ 1 XP ಗೆಲ್ಲುತ್ತದೆ.',
+  ml: 'ആഴ്ചയുടെ അവസാനം ഒന്നാം സ്ഥാനം 3 XP, രണ്ടാം സ്ഥാനം 2 XP, മൂന്നാം സ്ഥാനം 1 XP നേടുന്നു.',
+  mr: 'आठवड्याच्या शेवटी पहिला क्रमांक 3 XP, दुसरा 2 XP आणि तिसरा 1 XP जिंकतो.',
+  or: 'ସପ୍ତାହ ଶେଷରେ ପ୍ରଥମ ସ୍ଥାନ 3 XP, ଦ୍ୱିତୀୟ 2 XP ଏବଂ ତୃତୀୟ 1 XP ଜିତେ।',
+  pa: 'ਹਫ਼ਤੇ ਦੇ ਅੰਤ ਵਿੱਚ ਪਹਿਲਾ ਸਥਾਨ 3 XP, ਦੂਜਾ 2 XP ਅਤੇ ਤੀਜਾ 1 XP ਜਿੱਤਦਾ ਹੈ।',
+  ta: 'வார இறுதியில் 1ஆம் இடம் 3 XP, 2ஆம் இடம் 2 XP, 3ஆம் இடம் 1 XP வெல்லும்.',
+  te: 'వారం ముగింపులో 1వ స్థానం 3 XP, 2వ స్థానం 2 XP, 3వ స్థానం 1 XP గెలుస్తాయి.',
+};
+
 export function weeklyRewardCopy(lang: Language) {
   const [title, result] = COPY[lang] ?? COPY.en;
-  return { title, result: (rank: number, xp: number) => result.replace('{rank}', String(rank)).replace('{xp}', String(xp)) };
+  return { title, podium: PODIUM[lang] ?? PODIUM.en, result: (rank: number, xp: number) => result.replace('{rank}', String(rank)).replace('{xp}', String(xp)) };
 }

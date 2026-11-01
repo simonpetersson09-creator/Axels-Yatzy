@@ -35,7 +35,11 @@ describe.skipIf(!url)('admin excluded devices (isolated SQL)', () => {
       `);
       for (const file of FILES) {
         for (const def of definitions(file)) {
-          await sql.unsafe(def.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+          // Pooled backends can retain pg_temp functions from earlier runs, so every create must be idempotent.
+          await sql.unsafe(def
+            .replace(/CREATE FUNCTION/g, 'CREATE OR REPLACE FUNCTION')
+            .replace(/public\.admin_/g, 'pg_temp.admin_')
+            .replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
         }
       }
       for (const id of opts.excluded ?? []) {

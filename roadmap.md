@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Gemensamma spelarnamn i veckolistor
-- [ ] Kontrollera namndubbletter över samma veckounderlag för båda listorna, utan att ändra poäng/rankning eller sparade namn.
-- [ ] Isolerat SQL-prov och verifiera att Spelare 4867 visas i båda listorna.
+- [x] Namndubbletter kontrolleras över samma veckounderlag före topptio-urvalet i båda listorna; poäng/rankning och sparade namn oförändrade. Migration 0109 driftsatt.
+- [x] Isolerat SQL-prov godkänt utan live-testdata; serverns riktiga listor visar Spelare 4867 i båda. Bygge OK.
 
 ## Hall of Fame – återställ poängvisning
 - [x] Återställt bästa poäng som huvudsiffra och matcher under namnet; 24h-kolumn och pristexter bevarade. Körande bildprov visar 301 poäng/123 matcher i Hall of Fame; flitigaste kvar med 123 matcher. Bygge OK.

@@ -130,8 +130,9 @@ export default function StatsPage() {
           icon={<Trophy className="w-3.5 h-3.5 text-game-gold" />}
           title={t('hofTitle')} subtitle={t('hofSubtitle')}
           rows={hof} loading={loading} mySession={mySession} frames={frames} empty={t('hofEmpty')} loadingText={t('loading')}
-          sub={(p) => `${t('hofBestShort')} ${fmt(p.best_score)}`}
-          value={(p) => fmt(p.games_played)}
+          sub={(p) => `${fmt(p.games_played)} ${t('hofMatches')}`}
+          value={(p) => fmt(p.best_score)}
+          valueLabel={t('hofBestShort')}
         />
 
         <HofSection
@@ -140,6 +141,7 @@ export default function StatsPage() {
           rows={most} loading={loading} mySession={mySession} frames={frames} empty={t('hofEmpty')} loadingText={t('loading')}
           sub={(p) => `${t('hofBestShort')} ${fmt(p.best_score)}`}
           value={(p) => fmt(p.games_played)}
+          valueLabel={t('hofMatches')}
         />
 
         <CountryList title={t('topCountriesYearTitle', { year })} rows={top} loading={loading} myCountry={myCountry} lang={lang} loadingText={t('loading')} />
@@ -169,10 +171,10 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
   );
 }
 
-function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, empty, loadingText, sub, value }: {
+function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, empty, loadingText, sub, value, valueLabel }: {
   icon: React.ReactNode; title: string; subtitle: string; rows: HallOfFameEntry[]; loading: boolean;
   mySession: string; frames: Record<string, string>; empty: string; loadingText: string;
-  sub: (p: HallOfFameEntry) => React.ReactNode; value: (p: HallOfFameEntry) => string;
+  sub: (p: HallOfFameEntry) => React.ReactNode; value: (p: HallOfFameEntry) => string; valueLabel: string;
 }) {
   const { t, lang } = useTranslation();
   const prize = weeklyRewardCopy(lang);
@@ -187,7 +189,7 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
       <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
         <div className="flex justify-end gap-3 px-3 pt-2 pb-1 text-[10px] text-muted-foreground">
           <span className="w-9 text-right">24h</span>
-          <span className="w-12 text-right">{t('hofMatches')}</span>
+          <span className="w-12 text-right">{valueLabel}</span>
         </div>
         {loading && <div className="p-4 text-sm text-muted-foreground">{loadingText}</div>}
         {!loading && rows.length === 0 && <div className="p-4 text-sm text-muted-foreground">{empty}</div>}

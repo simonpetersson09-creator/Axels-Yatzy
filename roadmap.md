@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Hall of Fame – återställ poängvisning
+- [ ] Återställ bästa poäng som huvudsiffra och matcher under namnet; behåll 24h-kolumnens placering och pristexter. Kontrollera båda listorna.
+
 ## Veckolistornas linjer, 24h och pristext
 - [x] Diskreta likadana avdelare; fasta 24h-/veckokolumner på samma ställe i båda listorna; uttrycklig översatt text om topp tres XP-vinst vid veckoslut. Bästa poäng kvar under namnet i Hall of Fame, rankning oförändrad.
 - [x] Båda listorna bildgranskade på telefon och kontrollerade på stor skärm med avskilda svar; 24h och veckotal i samma lodräta kolumner. Tre belöningstester godkända; bygge OK, inga riktiga statistikändringar eller publicering.

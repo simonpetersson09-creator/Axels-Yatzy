@@ -1,0 +1,17 @@
+import { describe, it, expect } from 'vitest';
+import { recipients } from './campaign';
+const token = { device_id: 'a', token: 'test', platform: 'ios', enabled: true };
+describe('approved play broadcast audience', () => {
+  it('does not send to a player with play reminders disabled', () => {
+    expect(recipients([token], [{device_id:'a',play_reminders:false,lang:'sv'}])).toEqual([]);
+  });
+  it('sends once per device using the newest token supplied first', () => {
+    const selected = recipients([token, {...token,token:'old'}], [{device_id:'a',play_reminders:true,lang:'sv'}]);
+    expect(selected.map(t => t.token)).toEqual(['test']);
+  });
+  it('does not send to disabled registrations or browsers', () => {
+    expect(recipients([{...token,enabled:false},{...token,device_id:'b',platform:'web'}], [
+      {device_id:'a',play_reminders:true,lang:'sv'},{device_id:'b',play_reminders:true,lang:'sv'}
+    ])).toEqual([]);
+  });
+});

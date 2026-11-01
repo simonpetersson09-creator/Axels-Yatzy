@@ -19,6 +19,7 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
         CREATE TEMP TABLE game_players(game_id text, session_id text, is_bot boolean, player_index integer) ON COMMIT DROP;
         CREATE TEMP TABLE session_owners(session_id text, device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE dice_roll_log(game_id text, player_index integer, created_at timestamptz) ON COMMIT DROP;
+        CREATE TEMP TABLE excluded_stat_devices(device_id text) ON COMMIT DROP;
       `);
       const helper = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8').match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
       if (!helper) throw new Error('Missing isolated release parser');

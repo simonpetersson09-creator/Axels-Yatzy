@@ -12,8 +12,8 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
     return db.begin(async sql => {
       // Only connection-local tables/function are written. No live games, events or player statistics.
       await sql.unsafe(`
-        CREATE TEMP TABLE analytics_sessions(device_id text, platform text, started_at timestamptz, last_seen_at timestamptz) ON COMMIT DROP;
-        CREATE TEMP TABLE analytics_events(device_id text, platform text, created_at timestamptz, event_name text, game_mode text) ON COMMIT DROP;
+        CREATE TEMP TABLE analytics_sessions(device_id text, platform text, started_at timestamptz, last_seen_at timestamptz, app_version text) ON COMMIT DROP;
+        CREATE TEMP TABLE analytics_events(device_id text, platform text, created_at timestamptz, event_name text, game_mode text, app_version text) ON COMMIT DROP;
         CREATE TEMP TABLE games(id text, updated_at timestamptz, status text, forfeited_by text, forfeited_by_session_id text) ON COMMIT DROP;
         CREATE TEMP TABLE game_players(game_id text, session_id text, is_bot boolean, player_index integer) ON COMMIT DROP;
         CREATE TEMP TABLE session_owners(session_id text, device_id text) ON COMMIT DROP;
@@ -26,11 +26,11 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
       await sql.unsafe(isolatedDefinition);
       await sql`insert into pg_temp.games values ('fixture', now(), ${status}, ${marker}, ${sessionMarker})`;
       for (let i = 0; i < players; i++) {
-        await sql`insert into pg_temp.analytics_sessions values (${`device-${i}`}, ${platform}, now(), now())`;
+        await sql`insert into pg_temp.analytics_sessions values (${`device-${i}`}, ${platform}, now(), now(), '5.4 (1)')`;
         await sql`insert into pg_temp.session_owners values (${`session-${i}`}, ${`device-${i}`})`;
         await sql`insert into pg_temp.game_players values ('fixture', ${`session-${i}`}, false, ${i})`;
       }
-      if (event) await sql`insert into pg_temp.analytics_events values ('device-0', ${platform}, now(), ${event}, 'single_player')`;
+      if (event) await sql`insert into pg_temp.analytics_events values ('device-0', ${platform}, now(), ${event}, 'single_player', '5.4 (1)')`;
       if (rollPlayer !== null) await sql`insert into pg_temp.dice_roll_log values ('fixture', ${rollPlayer}, now())`;
       const [row] = await sql`select * from pg_temp.admin_daily_stats_v3((now() at time zone 'Europe/Stockholm')::date)`;
       return Number(row[metric]);

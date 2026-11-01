@@ -73,6 +73,16 @@ describe.each(['ios', 'android'])('%s ready-only resume', platform => {
     expect(telemetry.trackEvent).toHaveBeenCalledWith('ad_opportunity', expect.objectContaining({ kind: 'appOpen', source: 'resume', result: 'skipped', reason: 'initialization_not_ready' }));
     expect(telemetry.trackEvent.mock.calls.filter(([name]) => name === 'ad_opportunity')).toHaveLength(1);
   });
+  it('records only coarse app outcomes and ignores browsers', async () => {
+    const m = await import('./admob');
+    m.trackAdOpportunity('appOpen', 'resume', 'skipped', 'not_loaded', 'temporary-attempt');
+    expect(telemetry.trackEvent).toHaveBeenCalledExactlyOnceWith('ad_opportunity', {
+      kind: 'appOpen', source: 'resume', result: 'skipped', reason: 'not_loaded', attempt_id: 'temporary-attempt',
+    });
+    sdk.platform = 'web';
+    m.trackAdOpportunity('appOpen', 'resume', 'skipped', 'not_loaded');
+    expect(telemetry.trackEvent).toHaveBeenCalledTimes(1);
+  });
   it('does not await pending initialization; late preload is cached without presentation', async () => {
     const gate = deferred(); sdk.init.mockReturnValueOnce(gate.promise);
     const m = await import('./admob'); const preload = m.preloadAppOpenAd('background');

@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Uteslut admin-enhet från statistik – 1 november
+- [ ] Undersök hur admin-enheten identifieras och var enhets-/spelarantal räknas (pågår: två läsagenter).
+- [ ] Uteslut Simons egen enhet från admin-statistikens enheter/spelare; övriga mått oförändrade.
+
 ## Appstartsannonser under spel
 - [x] Kontrollera båda plattformarna: permanent kallstartsavbrott på lämnad Home, central Home-spärr och separat lås för redan skickad native-presentation över båda spelrutter; övriga annonser bevaras.
 - [x] Riktade tester för spelrutter, sena svar, Home-avbrott och native-visning efter timeout; telefonsteg i docs/app-open-gameplay-guard.md. Ingen publicering.

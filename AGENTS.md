@@ -4,7 +4,7 @@
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
 - Icon: resources/icon.png (1024px opaque); `npm run icons` regenerates native/public; never edit outputs.
-- Admin: protected SQL; latest 2 releases, no builds. Finished: null forfeits; played: starts/active/completed/own rolls. Full-history age; key validates/logout clears. Means use fetched days; partial windows unknown.
+- Admin: protected SQL; latest 2 releases, no builds. Finished: null forfeits; played: starts/active/completed/own rolls. Full-history age; key validates/logout clears. Means: fetched days; partial windows unknown.
 - admob.ts: platform-specific IDs (null disables; never cross platforms); fitGameAboveBanner reserves banner space. rewarded-pair/RewardedXpHost pay confirmed SDK rewards once; clear legacy partial bundles, never auto-chain. Preserve App Open suppression. Raw fullscreen load owners survive wait timeouts; native patch after privacy coalesces per-unit, guards generation/owner before SDK/results, never clears newer slots. XP reload only after presentation; interstitial Dismissed owns reload. Rewarded attemptId events prevent overlap/unearned XP.
 - Store links: getStoreLinks; hide Play until PLAY_STORE_LIVE.
 - AndroidBackButton centrally handles back; overlays register useBackHandler to close first.

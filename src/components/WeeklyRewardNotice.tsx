@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from '@/lib/i18n';
 import { useBackHandler } from '@/lib/back-handler';
 import { weeklyRewardCopy } from '@/lib/weekly-reward-copy';
@@ -14,6 +14,12 @@ export function WeeklyRewardNotice({ rewards, onAcknowledged }: { rewards: Weekl
   const [saving, setSaving] = useState(false);
   const [failed, setFailed] = useState(false);
   const pending = useRef(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    dialog?.showModal();
+    return () => { dialog?.close(); };
+  }, []);
   const close = async () => {
     if (!week || pending.current) return;
     pending.current = true;
@@ -25,11 +31,12 @@ export function WeeklyRewardNotice({ rewards, onAcknowledged }: { rewards: Weekl
     if (ok) onAcknowledged(week);
   };
   useBackHandler(true, () => { void close(); });
-  return (
-    <Dialog open onOpenChange={(open) => { if (!open) void close(); }}>
-      <DialogContent className="max-w-sm max-h-[calc(100dvh-96px)] overflow-y-auto border-primary/40 text-center" aria-describedby={undefined}>
+  return createPortal(
+      <dialog ref={dialogRef} aria-labelledby="weekly-reward-title"
+        onCancel={event => { event.preventDefault(); void close(); }}
+        className="fixed inset-0 m-auto w-[calc(100%-48px)] max-w-sm max-h-[calc(100dvh-96px)] overflow-y-auto rounded-lg border border-primary/40 bg-card p-6 text-foreground text-center shadow-2xl backdrop:bg-background/70 backdrop:backdrop-blur-sm space-y-4">
         <Trophy className="mx-auto h-10 w-10 text-game-gold" aria-hidden />
-        <DialogTitle className="font-display text-xl">{copy.title}</DialogTitle>
+        <h2 id="weekly-reward-title" className="font-display text-xl font-bold">{copy.title}</h2>
         <p className="text-3xl font-display font-bold text-primary">+{rewards.reduce((sum, reward) => sum + reward.xp, 0)} XP</p>
         {rewards.map(reward => (
           <div key={reward.list} className="space-y-1">
@@ -39,7 +46,6 @@ export function WeeklyRewardNotice({ rewards, onAcknowledged }: { rewards: Weekl
         ))}
         {failed && <p role="alert" className="text-sm text-destructive">{t('errGeneric')}</p>}
         <Button disabled={saving} onClick={() => { void close(); }}>{saving ? t('loading') : t('ok')}</Button>
-      </DialogContent>
-    </Dialog>
+      </dialog>, document.body,
   );
 }

@@ -23,7 +23,7 @@ describe.skipIf(!url)('admin issues latest two releases (isolated SQL)', () => {
       const definitions = migration.match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/g);
       if (definitions?.length !== 2) throw new Error('Expected both production functions');
       for (const definition of definitions) {
-        await sql.unsafe(definition.replaceAll('public.admin_', 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+        await sql.unsafe(definition.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       }
       for (const version of sessions) {
         await sql`insert into pg_temp.analytics_sessions values ('device', 'ios', now(), now(), ${version})`;

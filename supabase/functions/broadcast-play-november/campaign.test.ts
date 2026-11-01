@@ -2,6 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { recipients } from './campaign';
 const token = { device_id: 'a', token: 'test', platform: 'ios', enabled: true };
 describe('approved play broadcast audience', () => {
+  it('includes an opted-in push device beyond the first 1000 preference rows', () => {
+    const prefs = Array.from({length:1001},(_,i) => ({device_id:`other-${i}`,play_reminders:true,lang:'en'}));
+    prefs.push({device_id:'a',play_reminders:true,lang:'sv'});
+    const pushIds = new Set([token.device_id]);
+    expect(recipients([token],prefs.filter(p => pushIds.has(p.device_id))).map(t => t.device_id)).toEqual(['a']);
+  });
   it('does not send to a player with play reminders disabled', () => {
     expect(recipients([token], [{device_id:'a',play_reminders:false,lang:'sv'}])).toEqual([]);
   });

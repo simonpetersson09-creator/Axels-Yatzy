@@ -41,18 +41,29 @@ describe('return-away Home lifecycle', () => {
     h.state(true); h.window.location.pathname = '/'; h.state(false);
     expect(h.preload).toHaveBeenCalledExactlyOnceWith('background');
   });
-  it('cold-start Home cleanup permanently cancels its pending show even after returning', async () => {
+  it.each(['ios', 'android'])('%s cold start never presents over usable Home, including after a late load or remount', async () => {
     const block = home.slice(home.indexOf('    if (startupAdChecked) return;'), home.indexOf('  }, []);', home.indexOf('    if (startupAdChecked) return;')));
-    let allowed: () => boolean = () => false;
-    const startScreen = vi.fn(() => true);
-    const show = vi.fn(async (check: () => boolean) => { allowed = check; return false; });
+    let loaded = false;
+    let settle: () => void = () => {};
+    const pending = new Promise<void>(resolveLoad => { settle = () => { loaded = true; resolveLoad(); }; });
+    const preload = vi.fn(() => pending);
+    const show = vi.fn();
     vi.useFakeTimers();
     const setup = new Function('isAdMobAvailable', 'shouldShowDailyStartupAd', 'preloadAppOpenAd', 'showAppOpenAd', 'onStartScreen', 'markDailyStartupAdShown', 'trackEvent',
-      `let startupAdChecked = false; const AD_BUTTON_LOCKED = false; ${block}`);
-    const stop = setup(() => true, () => true, vi.fn(), show, startScreen, vi.fn(), vi.fn());
-    await vi.advanceTimersByTimeAsync(1500); expect(allowed()).toBe(true);
-    stop(); startScreen.mockReturnValue(false); expect(allowed()).toBe(false);
-    startScreen.mockReturnValue(true); expect(allowed()).toBe(false);
+      `let startupAdChecked = false; const AD_BUTTON_LOCKED = false; return () => { ${block} };`);
+    const mount = setup(() => true, () => true, preload, show, () => true, vi.fn(), vi.fn());
+    mount();
+    expect(preload).toHaveBeenCalledExactlyOnceWith('startup');
+    expect(show).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(show).not.toHaveBeenCalled();
+    settle(); await pending;
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(loaded).toBe(true);
+    expect(show).not.toHaveBeenCalled();
+    mount();
+    expect(preload).toHaveBeenCalledOnce();
+    expect(show).not.toHaveBeenCalled();
   });
   it('retains the 40-second threshold, not 39,999 ms', async () => {
     const h = await harness(); h.state(false); await vi.advanceTimersByTimeAsync(39_999); h.state(true);

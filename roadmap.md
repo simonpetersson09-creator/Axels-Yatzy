@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Kallstartsannons över användbar startsida – 1 november
+- [x] Avsluta kallstartstillfället när Home är användbar; ta bort fördröjd visning, bevara separat förladdning och återkomst/samtycke/cache/övriga annonser.
+- [ ] Kör riktade tester för utebliven kallstartsvisning, sena laddningssvar och senare återkomst.
+- [ ] Verklig native-visning kräver nytt signerat iOS-/Android-bygge och testtelefoner; ingen publicering.
+
 ## Appstartsannonser under spel
 - [x] Kontrollera båda plattformarna: permanent kallstartsavbrott på lämnad Home, central Home-spärr och separat lås för redan skickad native-presentation över båda spelrutter; övriga annonser bevaras.
 - [x] Riktade tester för spelrutter, sena svar, Home-avbrott och native-visning efter timeout; telefonsteg i docs/app-open-gameplay-guard.md. Ingen publicering.

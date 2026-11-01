@@ -151,15 +151,21 @@ export default function HomePage() {
       reading = false;
       if (alive && rewards) setWeeklyRewards(rewards);
     };
-    // Also catches the Stockholm week reset while Home stays open.
-    const interval = setInterval(() => { void sync(); }, 60_000);
+    // Schedule one read at the actual Stockholm reset, not constant polling.
+    const nextMonday = new Date(Date.now() + 7 * 86_400_000);
+    const stockholmDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Stockholm', year: 'numeric', month: '2-digit', day: '2-digit' }).format(nextMonday);
+    const monday = new Date(`${stockholmDay}T12:00:00Z`);
+    monday.setUTCDate(monday.getUTCDate() - (monday.getUTCDay() + 6) % 7);
+    const offsetLabel = new Intl.DateTimeFormat('en', { timeZone: 'Europe/Stockholm', timeZoneName: 'longOffset' }).formatToParts(monday).find(part => part.type === 'timeZoneName')?.value ?? 'GMT+01:00';
+    const resetAt = Date.parse(`${monday.toISOString().slice(0, 10)}T00:00:00${offsetLabel.replace('GMT', '')}`);
+    const resetTimer = setTimeout(() => { void sync(); }, Math.max(0, resetAt - Date.now()) + 1000);
     const timer = setTimeout(() => { void sync(); }, 1800);
     const onActive = () => { void sync(); };
     window.addEventListener('focus', onActive);
     document.addEventListener('visibilitychange', onActive);
     return () => {
       alive = false;
-      clearInterval(interval); clearTimeout(timer);
+      clearTimeout(resetTimer); clearTimeout(timer);
       window.removeEventListener('focus', onActive);
       document.removeEventListener('visibilitychange', onActive);
     };

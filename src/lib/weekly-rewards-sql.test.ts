@@ -17,10 +17,10 @@ describe.skipIf(!db)('weekly prizes — isolated SQL, no live awards', () => {
       `);
       const tables = source.match(/CREATE TABLE public\.weekly_[\s\S]*?\n(?:\);|GRANT)/g) ?? [];
       for (const table of tables) {
-        await sql.unsafe(table.replace(/\nGRANT$/, '').replace('CREATE TABLE public.', 'CREATE TEMP TABLE ').replaceAll('public.', 'pg_temp.').replace(/\);$/, ') ON COMMIT DROP;'));
+        await sql.unsafe(table.replace(/\nGRANT$/, '').replace('CREATE TABLE public.', 'CREATE TEMP TABLE ').replace(/public\./g, 'pg_temp.').replace(/\);$/, ') ON COMMIT DROP;'));
       }
       for (const fn of source.match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/g) ?? []) {
-        await sql.unsafe(fn.replaceAll('public.', 'pg_temp.').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+        await sql.unsafe(fn.replace(/public\./g, 'pg_temp.').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       }
       await sql.unsafe(`
         INSERT INTO pg_temp.weekly_hall_of_fame VALUES

@@ -1,4 +1,7 @@
 export const CAMPAIGN = 'play_20261101';
+export function deliveryEvent(deviceId: string, platform: string, accepted: boolean) {
+  return {event_name:'broadcast_notification_sent',device_id:deviceId,platform:'server',metadata:{campaign:CAMPAIGN,accepted,recipient_platform:platform}};
+}
 export interface Target { device_id: string; token: string; platform: string; enabled: boolean }
 export interface Preference { device_id: string; play_reminders: boolean; lang: string | null }
 export function recipients(tokens: Target[], prefs: Preference[]) {

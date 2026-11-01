@@ -1,7 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { sendPush, disableTokenIfStale } from '../_shared/apns.ts';
-import { CAMPAIGN, campaignText, recipients } from './campaign.ts';
+import { CAMPAIGN, campaignText, recipients, deliveryEvent } from './campaign.ts';
 
 Deno.serve(async req => {
   const json = (body: object, status = 200) => new Response(JSON.stringify(body), {status,headers:{...corsHeaders,'Content-Type':'application/json'}});
@@ -44,7 +44,7 @@ Deno.serve(async req => {
       reasons[reason] = (reasons[reason] ?? 0) + 1;
       await disableTokenIfStale(db,t.token,r);
     }
-    await db.from('analytics_events').insert({event_name:'broadcast_notification_sent',device_id:t.device_id,platform:t.platform,metadata:{campaign:CAMPAIGN,accepted:r.ok}});
+    await db.from('analytics_events').insert(deliveryEvent(t.device_id,t.platform,r.ok));
   }
   console.log('[broadcast-play-november]',{accepted,failed,skipped,reasons});
   return json({campaign:CAMPAIGN,targets:targets.length,accepted,failed,skipped,reasons});

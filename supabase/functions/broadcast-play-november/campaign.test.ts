@@ -1,7 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { recipients } from './campaign';
+import { recipients, deliveryEvent } from './campaign';
 const token = { device_id: 'a', token: 'test', platform: 'ios', enabled: true };
 describe('approved play broadcast audience', () => {
+  it('server delivery does not count as ios or android player activity', () => {
+    for (const platform of ['ios','android']) {
+      const event = deliveryEvent('test-device',platform,true);
+      expect(event.platform).toBe('server');
+      expect(['ios','android'].includes(event.platform)).toBe(false);
+      expect(event.metadata.recipient_platform).toBe(platform);
+    }
+  });
   it('includes an opted-in push device beyond the first 1000 preference rows', () => {
     const prefs = Array.from({length:1001},(_,i) => ({device_id:`other-${i}`,play_reminders:true,lang:'en'}));
     prefs.push({device_id:'a',play_reminders:true,lang:'sv'});

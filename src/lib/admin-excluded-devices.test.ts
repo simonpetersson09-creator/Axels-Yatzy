@@ -11,6 +11,7 @@ const FILES = [
   'drizzle/migrations/0100_admin_daily_median_app_age.sql',
   'drizzle/migrations/0103_admin_issues_latest_two_versions.sql',
   'drizzle/migrations/0105_admin_exclude_stat_devices.sql',
+  'drizzle/migrations/0106_admin_stats_v3_fast_release_lookup.sql',
 ];
 
 function definitions(file: string) {

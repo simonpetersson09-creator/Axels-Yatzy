@@ -1204,6 +1204,7 @@ export type Database = {
           played: number
         }[]
       }
+      admin_issue_release: { Args: { _version: string }; Returns: number[] }
       admin_mean_app_age: {
         Args: { _day: string; _first_days: string[] }
         Returns: number

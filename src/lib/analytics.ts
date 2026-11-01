@@ -24,6 +24,7 @@ export type AnalyticsEvent =
   | 'game_forfeited'
   | 'yatzy_scored'
   | 'settings_opened'
+  | 'stats_opened'
   | 'language_changed';
 
 interface QueuedEvent {
@@ -55,7 +56,7 @@ function getPlatform(): string {
 
 const queue: QueuedEvent[] = [];
 const DIAGNOSTIC_KEY = 'yatzy_play_diagnostics_pending_v1';
-const isDiagnosticName = (name: string) => name.startsWith('play_') || name === 'post_match_exit' || name === 'ios_app_open_diag';
+const isDiagnosticName = (name: string) => name.startsWith('play_') || name === 'post_match_exit' || name === 'ios_app_open_diag' || name === 'stats_opened';
 const isDiagnostic = (e: QueuedEvent) => isDiagnosticName(e.event_name);
 function persistDiagnostics(): void {
   try { localStorage.setItem(DIAGNOSTIC_KEY, JSON.stringify(queue.filter(isDiagnostic).slice(-200))); } catch { /* Storage is best-effort. */ }
@@ -172,6 +173,13 @@ export function trackEvent(
 }
 
 if (queue.length) scheduleFlush();
+
+// Only installed apps count as statistics visitors; no names or page data.
+export function trackStatsOpened(): void {
+  const platform = getPlatform();
+  if (platform !== 'ios' && platform !== 'android') return;
+  trackEvent('stats_opened');
+}
 
 // Flush on page hide so we don't lose tail events.
 // Guard against double-registration: React Strict Mode (dev) double-mounts

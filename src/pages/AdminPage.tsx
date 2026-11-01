@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ChartLine, LogOut, RefreshCw } from "lucide-react";
+import { ArrowLeft, ChartLine, ChevronLeft, ChevronRight, LogOut, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminLineChart from "@/components/AdminLineChart";
 import AdminAdDiagnostics from "@/components/AdminAdDiagnostics";
@@ -43,6 +43,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   const [rows, setRows] = useState<DayRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(adminKey));
+  const [collapsedColumns, setCollapsedColumns] = useState<AdminColumnKey[]>(["devices", "ios"]);
   const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
   const means = useMemo(() => Object.fromEntries((rows ?? []).map((row) => [row.day,
     Object.fromEntries([...COLUMNS.map((column) => column.key), "android" as const].map((key) =>
@@ -102,7 +103,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", measure);
     };
-  }, [rows, diagram]);
+  }, [rows, diagram, collapsedColumns]);
 
   useEffect(() => {
     const els = [document.documentElement, document.body, document.getElementById("root")];
@@ -259,10 +260,21 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
             <tr>
               <th className="text-left px-3 py-2 font-medium">Datum</th>
               {COLUMNS.map((c) => (
-                <th key={c.key} className="px-3 py-2 font-medium whitespace-nowrap">
+                <th key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-3"} py-2 font-medium whitespace-nowrap`}>
                   <span className="flex items-baseline justify-end gap-1">
-                    {c.label}
-                    <span className="w-7" aria-hidden="true" />
+                    {collapsedColumns.includes(c.key) ? (c.key === "devices" ? "Aktiva" : "iOS/Android") : c.label}
+                    {(c.key === "devices" || c.key === "ios") && <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 shrink-0 self-center"
+                      aria-label={`${collapsedColumns.includes(c.key) ? "Fäll ut" : "Minimera"} ${c.label}`}
+                      aria-expanded={!collapsedColumns.includes(c.key)}
+                      title={`${collapsedColumns.includes(c.key) ? "Fäll ut" : "Minimera"} ${c.label}`}
+                      onClick={() => setCollapsedColumns((keys) => keys.includes(c.key) ? keys.filter((key) => key !== c.key) : [...keys, c.key])}
+                    >
+                      {collapsedColumns.includes(c.key) ? <ChevronRight /> : <ChevronLeft />}
+                    </Button>}
+                    {!collapsedColumns.includes(c.key) && <span className="w-7" aria-hidden="true" />}
                   </span>
                 </th>
               ))}
@@ -273,7 +285,8 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
               <tr key={r.day} className="border-t border-border">
                 <td className="px-3 py-1.5 whitespace-nowrap">{fmtDay(r.day)}</td>
                 {COLUMNS.map((c) => (
-                  <td key={c.key} className="px-3 py-1.5 whitespace-nowrap">
+                  <td key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-3"} py-1.5 whitespace-nowrap`}>
+                    {!collapsedColumns.includes(c.key) &&
                     <span className="flex items-baseline justify-end gap-1 tabular-nums">
                       <span className="text-right">
                         {c.key === "ios" ? <>{r.ios} <span className="text-muted-foreground">({meanText(r.day, "ios")})</span> / {r.android} <span className="text-muted-foreground">({meanText(r.day, "android")})</span></> : <>
@@ -293,7 +306,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                           </span>
                         )}
                       </span>
-                    </span>
+                    </span>}
                   </td>
                 ))}
               </tr>
@@ -303,13 +316,14 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
             <tr className="border-t border-border">
               <td className="px-3 py-2">Summa</td>
               {COLUMNS.map((c) => (
-                <td key={c.key} className="px-3 py-2 whitespace-nowrap">
+                <td key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-3"} py-2 whitespace-nowrap`}>
+                  {!collapsedColumns.includes(c.key) &&
                   <span className="flex items-baseline justify-end gap-1 tabular-nums">
                     <span className="text-right">
                       {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "avg_app_age_days" ? "—" : sum(c.key)}
                     </span>
                     <span className="w-7" aria-hidden="true" />
-                  </span>
+                  </span>}
                 </td>
               ))}
             </tr>

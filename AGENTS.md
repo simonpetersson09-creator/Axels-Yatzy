@@ -1,4 +1,4 @@
-- App Open: no-fill/privacy owners/4h expiry; resume ready-only. Usable Home ends cold-start show; preload stays (no loading screen). Home/unmount guards; gameplay waits for real native presentation result.
+- App Open: no-fill/privacy owners/4h expiry; resume ready-only. Home required; unmount ends attempts. Gameplay waits for dispatched native presentation's real result, not loading, closing the bridge race.
 - No QA in live player_country_stats.
 - Serialize Home news.
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.

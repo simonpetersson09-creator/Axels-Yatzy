@@ -736,6 +736,13 @@
       "when": 1793515647812,
       "tag": "0104_admin_issue_release_lookup_distinct",
       "breakpoints": true
+    },
+    {
+      "idx": 105,
+      "version": "7",
+      "when": 1793518409248,
+      "tag": "0105_admin_exclude_stat_devices",
+      "breakpoints": true
     }
   ]
 }

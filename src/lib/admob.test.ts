@@ -103,6 +103,7 @@ describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {
     expect(native.show).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(0);
     expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'postMatch', result: 'skipped', reason: 'not_loaded' }));
+    expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_opportunity', expect.objectContaining({ kind: 'postMatch', source: 'exit', result: 'skipped', reason: 'not_loaded', attempt_id: expect.any(String) }));
   });
 
   it('records no-fill without presenting an ad', async () => {
@@ -128,6 +129,7 @@ describe.each(['ios', 'android'])('%s post-match interstitial', (platform) => {
     expect(diagnostics.prepare).toHaveBeenCalledOnce();
     expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ result: 'load_reused_pending' }));
     expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ kind: 'postMatch', result: 'skipped', reason: 'still_loading', matchKey: 'test-match', action: 'home' }));
+    expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_opportunity', expect.objectContaining({ kind: 'postMatch', source: 'home', result: 'skipped', reason: 'still_loading' }));
     expect(diagnostics.trackEvent).toHaveBeenCalledWith('ad_result', expect.objectContaining({ result: 'load_failed', reason: 'prepare_timeout' }));
   });
 

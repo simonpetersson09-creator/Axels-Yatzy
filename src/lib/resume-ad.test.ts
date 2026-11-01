@@ -11,16 +11,16 @@ async function harness() {
   let listener: (state: { isActive: boolean }) => void = () => {};
   const App = { addListener: vi.fn(async (_name, callback) => { listener = callback; }) };
   const show = vi.fn(async (_allowed: () => boolean, _source: string) => false);
-  const preload = vi.fn(); const track = vi.fn();
+  const preload = vi.fn(); const track = vi.fn(); const opportunity = vi.fn();
   const block = home.slice(home.indexOf('let startupAdChecked'), home.indexOf("import { shouldShowRatePrompt"))
     .replace("await import('@capacitor/app')", 'await Promise.resolve({ App: bridge })');
   const cleanupMatch = home.match(/useLayoutEffect\((\(\) => \(\) => \{ resumeHomeEpoch\+\+; \}), \[\]\)/);
   if (!cleanupMatch) throw new Error('Home lifecycle cleanup missing');
-  const setup = new Function('bridge', 'window', 'document', 'showAppOpenAd', 'preloadAppOpenAd', 'trackEvent',
+  const setup = new Function('bridge', 'window', 'document', 'showAppOpenAd', 'preloadAppOpenAd', 'trackEvent', 'trackAdOpportunity',
     `${block}\nreturn { installResumeAdWatcher, leaveHome: (${cleanupMatch[1]})() };`);
-  const lifecycle = setup(App, window, document, show, preload, track);
+  const lifecycle = setup(App, window, document, show, preload, track, opportunity);
   lifecycle.installResumeAdWatcher(); await vi.advanceTimersByTimeAsync(0);
-  return { window, document, show, preload, track, leaveHome: lifecycle.leaveHome,
+  return { window, document, show, preload, track, opportunity, leaveHome: lifecycle.leaveHome,
     state: (isActive: boolean) => listener({ isActive }) };
 }
 afterEach(() => { vi.useRealTimers(); });
@@ -57,6 +57,7 @@ describe('return-away Home lifecycle', () => {
   it('retains the 40-second threshold, not 39,999 ms', async () => {
     const h = await harness(); h.state(false); await vi.advanceTimersByTimeAsync(39_999); h.state(true);
     expect(h.show).not.toHaveBeenCalled();
+    expect(h.opportunity).toHaveBeenCalledExactlyOnceWith('appOpen', 'resume', 'skipped', 'away_too_short');
     h.state(false); await vi.advanceTimersByTimeAsync(40_000); h.state(true); await vi.advanceTimersByTimeAsync(0);
     expect(h.show).toHaveBeenCalledOnce(); expect(h.show.mock.calls[0][1]).toBe('resume');
   });
@@ -65,6 +66,7 @@ describe('return-away Home lifecycle', () => {
     h.window.location.pathname = '/game'; h.state(true); h.window.location.pathname = '/';
     await vi.advanceTimersByTimeAsync(60_000); h.state(true);
     expect(h.show).not.toHaveBeenCalled(); expect(h.preload).toHaveBeenCalledWith('background');
+    expect(h.opportunity).toHaveBeenCalledExactlyOnceWith('appOpen', 'resume', 'skipped', 'not_on_home');
   });
   it('permanently invalidates an in-flight return when Home unmounts, even after coming back', async () => {
     const h = await harness(); let permitted: () => boolean = () => false;

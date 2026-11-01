@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { afterAll, describe, expect, it } from 'vitest';
 import postgres from 'postgres';
 
@@ -19,8 +20,12 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
         CREATE TEMP TABLE session_owners(session_id text, device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE dice_roll_log(game_id text, player_index integer, created_at timestamptz) ON COMMIT DROP;
       `);
+      const helper = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8').match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
+      if (!helper) throw new Error('Missing isolated release parser');
+      await sql.unsafe(helper.replaceAll('public.admin_', 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       const isolatedDefinition = source.definition
         .replace('public.admin_daily_stats_v3', 'pg_temp.admin_daily_stats_v3')
+        .replaceAll('public.admin_issue_release', 'pg_temp.admin_issue_release')
         .replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'");
       if (isolatedDefinition === source.definition || isolatedDefinition.includes("SET search_path TO 'public'")) throw new Error('Isolation failed');
       await sql.unsafe(isolatedDefinition);

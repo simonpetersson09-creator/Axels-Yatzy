@@ -2,7 +2,7 @@
 
 ## Kallstartsannons över användbar startsida – 1 november
 - [x] Avsluta kallstartstillfället när Home är användbar; ta bort fördröjd visning, bevara separat förladdning och återkomst/samtycke/cache/övriga annonser.
-- [ ] Kör riktade tester för utebliven kallstartsvisning, sena laddningssvar och senare återkomst.
+- [x] 74 tester godkända: ingen kallstartsvisning över Home, sena laddningar sparas och redo återkomst bevaras; startsidan kontrollerad utan runtimefel, bygge OK.
 - [ ] Verklig native-visning kräver nytt signerat iOS-/Android-bygge och testtelefoner; ingen publicering.
 
 ## Appstartsannonser under spel

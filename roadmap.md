@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Veckolistor – senaste 24h
+- [ ] Tillför exakt rullande dygnsräkning utan att ändra veckototaler/rankning.
+- [ ] Visa 24h bredvid veckototal i båda listor; testa gränsen och layout/flöde.
+
 ## Veckopriser – 1 november
 - [x] Serverstyrd utdelning: 3/2/1 XP för topp tre i båda listorna, separat och atomiskt per vecka. Första vecka 26 oktober; två söndagskörningar täcker Stockholm vinter/sommartid. Serverläsning verifierad, inga retroaktiva priser.
 - [x] Beständig enhetskontrollerad vinstpopup på startsidan, samordnad med andra notiser, synliga priser i listorna. XP tilldelas även offline; popup väntar till nästa startsidesbesök och kvitteras på servern.

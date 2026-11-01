@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Veckopriser – 1 november
+- [ ] Serverstyrd utdelning: 3/2/1 XP för topp tre i båda veckolistorna, en gång per lista och vecka vid Stockholm-reset.
+- [ ] Beständig vinstpopup på startsidan, samordnad med andra notiser, samt synliga priser i listorna.
+- [ ] Isolerade regeltester och kontroll av vinstflödet utan riktiga testpriser.
+
 ## Uteslut admin-enhet från statistik – 1 november
 - [x] Simons bekräftade enhet (b051f4b1) ligger i excluded_stat_devices; admin_daily_stats_v3/v4/v5 utesluter den från aktiva enheter, spelade enheter, appålder och problemhändelser. Matchräknare oförändrade.
 - [x] Migration 0105 driftsatt, enheten registrerad, 35 isolerade tester godkända (5 nya uteslutningsprov), bygge OK. Verifierat mot livedata: enheten var 1 av 13 aktiva idag.

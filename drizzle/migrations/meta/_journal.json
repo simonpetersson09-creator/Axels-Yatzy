@@ -750,6 +750,13 @@
       "when": 1793518792692,
       "tag": "0106_admin_stats_v3_fast_release_lookup",
       "breakpoints": true
+    },
+    {
+      "idx": 107,
+      "version": "7",
+      "when": 1793522720473,
+      "tag": "0107_weekly_top_three_xp_rewards",
+      "breakpoints": true
     }
   ]
 }

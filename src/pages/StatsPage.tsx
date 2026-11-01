@@ -8,7 +8,7 @@ import { useTranslation } from '@/lib/i18n';
 import { getProfileCountry } from '@/lib/profile';
 import { getSessionId } from '@/lib/session';
 import { getStatsPeriod } from '@/lib/stats-period';
-import { fetchWeeklyHallOfFame, fetchWeeklyMostGames, type HallOfFameEntry } from '@/lib/hall-of-fame';
+import { fetchWeeklyHallOfFame, fetchWeeklyMostGames, fetchWeeklyGames24h, type HallOfFameEntry } from '@/lib/hall-of-fame';
 import {
   countryName, countryToFlag, syncCountryRank, syncWeeklyRank, syncTopCountries, fetchMyYearGames, fetchYearRanks,
   type RankInfo, type WeeklyRank, type TopCountry,
@@ -40,6 +40,10 @@ export default function StatsPage() {
       if (!alive) return;
       setRank(yr); setTop(tc); setTopMonth(tm); setYearGames(yg); setWeekly(w); setHof(h); setMost(m); setLoading(false);
       const ids = [...new Set([...h, ...m].map((p) => p.session_id))];
+      const daily = await fetchWeeklyGames24h(ids);
+      if (!alive) return;
+      setHof(h.map(p => ({ ...p, games_24h: daily[p.session_id] ?? null })));
+      setMost(m.map(p => ({ ...p, games_24h: daily[p.session_id] ?? null })));
       if (ids.length) {
         const { data } = await supabase.rpc('get_frames_for_sessions', { p_session_ids: ids });
         if (alive && data) setFrames(Object.fromEntries((data as { session_id: string; frame: string }[]).map((d) => [d.session_id, d.frame])));
@@ -125,7 +129,7 @@ export default function StatsPage() {
           icon={<Trophy className="w-3.5 h-3.5 text-game-gold" />}
           title={t('hofTitle')} subtitle={t('hofSubtitle')}
           rows={hof} loading={loading} mySession={mySession} frames={frames} empty={t('hofEmpty')} loadingText={t('loading')}
-          sub={(p) => `${fmt(p.games_played)} ${t('hofMatches')}`}
+          sub={(p) => <span className="inline-flex flex-wrap gap-x-3"><span>{fmt(p.games_played)} {t('hofMatches')}</span><span><span className="text-muted-foreground/70">24h</span> {p.games_24h == null ? '—' : fmt(p.games_24h)}</span></span>}
           value={(p) => fmt(p.best_score)}
         />
 
@@ -135,6 +139,7 @@ export default function StatsPage() {
           rows={most} loading={loading} mySession={mySession} frames={frames} empty={t('hofEmpty')} loadingText={t('loading')}
           sub={(p) => `${t('hofBestShort')} ${fmt(p.best_score)}`}
           value={(p) => fmt(p.games_played)}
+          dailyColumn
         />
 
         <CountryList title={t('topCountriesYearTitle', { year })} rows={top} loading={loading} myCountry={myCountry} lang={lang} loadingText={t('loading')} />
@@ -164,10 +169,10 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
   );
 }
 
-function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, empty, loadingText, sub, value }: {
+function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, empty, loadingText, sub, value, dailyColumn = false }: {
   icon: React.ReactNode; title: string; subtitle: string; rows: HallOfFameEntry[]; loading: boolean;
   mySession: string; frames: Record<string, string>; empty: string; loadingText: string;
-  sub: (p: HallOfFameEntry) => string; value: (p: HallOfFameEntry) => string;
+  sub: (p: HallOfFameEntry) => React.ReactNode; value: (p: HallOfFameEntry) => string; dailyColumn?: boolean;
 }) {
   return (
     <section className="space-y-2">
@@ -194,8 +199,12 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
             </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{p.name}</p>
-              <p className="text-[11px] text-muted-foreground">{sub(p)}</p>
+              <div className="text-[11px] text-muted-foreground">{sub(p)}</div>
             </div>
+            {dailyColumn && <div className="w-9 shrink-0 text-right tabular-nums">
+              <p className="text-[10px] text-muted-foreground">24h</p>
+              <p className="font-display font-bold text-base text-foreground">{p.games_24h == null ? '—' : p.games_24h.toLocaleString()}</p>
+            </div>}
             <div className="text-right shrink-0">
               <p className="font-display font-bold text-lg tabular-nums text-primary">{value(p)}</p>
               {i < 3 && <p className="text-[10px] font-semibold text-game-gold">{3 - i} XP</p>}

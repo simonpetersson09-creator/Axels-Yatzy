@@ -11,6 +11,17 @@ export interface HallOfFameEntry {
   country: string | null;
   best_score: number;
   games_played: number;
+  games_24h?: number | null;
+}
+
+/** Counts accepted completed-match reports, independent of weekly ranking. */
+export async function fetchWeeklyGames24h(sessionIds: string[]): Promise<Record<string, number | null>> {
+  if (!sessionIds.length) return {};
+  try {
+    const { data, error } = await supabase.rpc('get_weekly_games_24h', { p_session_ids: sessionIds });
+    if (error || !data) return {};
+    return Object.fromEntries((data as { session_id: string; games_24h: number | null }[]).map(row => [row.session_id, row.games_24h]));
+  } catch { return {}; }
 }
 
 export const HOF_SIZE = 10;

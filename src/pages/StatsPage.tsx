@@ -188,9 +188,11 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
         {rows.map((p, i) => (
           <div
             key={p.session_id}
-            className={`flex items-center gap-3 px-4 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${p.session_id === mySession ? 'bg-primary/10' : ''}`}
+            className={`flex items-center gap-2.5 px-3 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${p.session_id === mySession ? 'bg-primary/10' : i < 3 ? 'bg-game-gold/5' : ''} ${i === 2 ? 'border-b-2 border-game-gold/30' : ''}`}
           >
-            <span className={`w-6 text-center font-display font-bold tabular-nums ${i < 3 ? 'text-game-gold' : 'text-muted-foreground'}`}>{i + 1}</span>
+            <span className="w-7 shrink-0 text-center font-display font-bold tabular-nums text-muted-foreground" aria-label={`${i + 1}`}>
+              {i < 3 ? <span className="text-2xl" aria-hidden="true">{['🥇', '🥈', '🥉'][i]}</span> : i + 1}
+            </span>
             <span className="relative w-7 h-7 shrink-0 flex items-center justify-center">
               <AvatarFrame id={frames[p.session_id]} inset={1} />
               <span className="relative w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-sm font-bold">
@@ -199,6 +201,7 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
             </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{p.name}</p>
+              {i < 3 && <p className="flex items-center gap-1 text-xs font-bold text-game-gold"><Trophy className="h-3 w-3 shrink-0" aria-hidden="true" />{3 - i} XP</p>}
               <div className="text-[11px] text-muted-foreground">{sub(p)}</div>
             </div>
             {dailyColumn && <div className="w-9 shrink-0 text-right tabular-nums">
@@ -207,7 +210,6 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
             </div>}
             <div className="text-right shrink-0">
               <p className="font-display font-bold text-lg tabular-nums text-primary">{value(p)}</p>
-              {i < 3 && <p className="text-[10px] font-semibold text-game-gold">{3 - i} XP</p>}
             </div>
           </div>
         ))}

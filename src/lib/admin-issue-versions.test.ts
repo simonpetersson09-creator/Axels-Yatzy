@@ -28,7 +28,6 @@ describe.skipIf(!url)('admin issues latest two releases (isolated SQL)', () => {
       for (const definition of [releaseParser, statsFunction]) {
         await sql.unsafe(definition.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       }
-      await sql.unsafe(optimization.replace(/public\.admin_/g, 'pg_temp.admin_'));
       for (const version of sessions) {
         await sql`insert into pg_temp.analytics_sessions values ('device', 'ios', now(), now(), ${version})`;
       }

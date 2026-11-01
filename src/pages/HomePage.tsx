@@ -205,7 +205,7 @@ export default function HomePage() {
     setShowAndroidNews(false);
   };
 
-  // Ask for a rating once the player has finished 5 matches.
+  // Ask after five completed matches; postponements wait ten, then twenty more.
   useEffect(() => {
     if (showRatePrompt) return;
     if (shouldShowRatePrompt(stats.gamesPlayed)) {

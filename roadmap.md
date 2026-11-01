@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Recensionsfråga – 1 november
-- [ ] Första frågan efter fem matcher utan vinst-/Yatzykrav; Senare väntar tio, sedan tjugo ytterligare matcher, därefter stopp. Befintligt Ge betyg-stopp bevaras.
-- [ ] Verifiera intervall och beständig lagring utan riktiga recensioner.
+- [x] Första frågan efter fem matcher utan vinst-/Yatzykrav; Senare väntar tio, sedan tjugo ytterligare matcher, därefter stopp. Befintligt Ge betyg-stopp bevaras.
+- [x] Sex regeltester och sju mätningstester godkända; körande webbläsarprov verifierar 5 → 15 → 35 och sparat stopp efter omladdning utan riktiga recensioner. Bygge OK; gäller nästa appversion, ingen publicering.
 - [x] 10 XP för recension införs inte: Apples regler förbjuder belönade recensioner och faktisk inlämning kan inte bekräftas.
 
 ## Veckolistor – lika poäng/matcher

@@ -7,6 +7,7 @@ import AdminLineChart from "@/components/AdminLineChart";
 import AdminAdDiagnostics from "@/components/AdminAdDiagnostics";
 import {
   adminRecordIndexes,
+  adminRollingMean,
   buildRibbon,
   type AdminColumnKey,
   type AdminDayRow as DayRow,
@@ -17,8 +18,8 @@ const ADMIN_KEY_STORAGE = "lovable.admin.key";
 
 const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "devices", label: "Aktiva enheter" },
-  { key: "ios", label: "iPhone / Android" },
   { key: "played", label: "Enheter som spelade" },
+  { key: "ios", label: "iPhone / Android" },
   { key: "avg_app_age_days", label: "Medelappålder (dagar)" },
   { key: "total", label: "Färdiga matcher totalt" },
   { key: "cpu_finished", label: "Mot datorn" },
@@ -43,6 +44,14 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(adminKey));
   const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
+  const means = useMemo(() => Object.fromEntries((rows ?? []).map((row) => [row.day,
+    Object.fromEntries([...COLUMNS.map((column) => column.key), "android" as const].map((key) =>
+      [key, adminRollingMean(rows ?? [], row.day, key)])),
+  ])), [rows]);
+  const meanText = (day: string, key: AdminColumnKey) => {
+    const value = means[day]?.[key];
+    return value == null ? "—" : value.toLocaleString("sv-SE", { maximumFractionDigits: 1 });
+  };
   const wrapRef = useRef<HTMLDivElement>(null);
   const [lines, setLines] = useState<{ gold: StarPoint[]; red: StarPoint[]; w: number; h: number }>({
     gold: [],
@@ -182,7 +191,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         <div>
           <h1 className="text-xl font-semibold">{diagram ? "Linjediagram – 1 augusti och hit" : "1 augusti och hit, per dag"}</h1>
           <p className="text-sm text-muted-foreground">
-            Svensk tid, bara appen (iPhone/Android). Dagens rad är inte komplett.
+            Svensk tid, bara appen (iPhone/Android). Dagens rad är inte komplett. Parentes: dagsmedel för 30 dagar till och med radens datum; — när ett helt underlag saknas.
           </p>
         </div>
         <div className="flex gap-2">
@@ -267,7 +276,10 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                   <td key={c.key} className="px-3 py-1.5 whitespace-nowrap">
                     <span className="flex items-baseline justify-end gap-1 tabular-nums">
                       <span className="text-right">
-                        {c.key === "avg_app_age_days" ? r[c.key] == null ? "—" : Number(r[c.key]).toLocaleString("sv-SE", { maximumFractionDigits: 0 }) : c.key === "ios" ? `${r.ios} / ${r.android}` : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
+                        {c.key === "ios" ? <>{r.ios} <span className="text-muted-foreground">({meanText(r.day, "ios")})</span> / {r.android} <span className="text-muted-foreground">({meanText(r.day, "android")})</span></> : <>
+                          {c.key === "avg_app_age_days" ? r[c.key] == null ? "—" : Number(r[c.key]).toLocaleString("sv-SE", { maximumFractionDigits: 0 }) : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
+                          {" "}<span className="text-muted-foreground">({meanText(r.day, c.key)})</span>
+                        </>}
                       </span>
                       <span className="w-7 h-5 flex items-center justify-center" aria-hidden="true">
                         {records[c.key] === i && (

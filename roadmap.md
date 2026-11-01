@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Admin – ordning och 30-dagarsmedel
+- [ ] Flytta spelande direkt efter aktiva och visa löpande 30-dagarsmedel efter dagsvärden utan ändrade grundsiffror.
+- [ ] Testa beräkningen och kontrollera tabellvisningen.
+
 ## Godkänt notisutskick – 1 november
 - [x] Rättat adminpåverkan: 168 utskicksloggar omklassade till server med mottagarplattform i metadata; riktiga spelhändelser orörda. Fem tester godkända, driftsatt loggning; noll utskicksloggar räknas längre som appaktivitet.
 - [x] ”Dags för en Yatzy?”: godkänt engångsutskick klart för 84 appenheter med aktiva notisregistreringar och spelpåminnelser påslagna. Intern behörighet, dedupe och alla 40 språk; tre urvalstester godkända. HTTP 200: 84 accepterade av notistjänsterna, 0 fel; faktisk visning på telefoner ej verifierad. Återkommande påminnelser oförändrade.

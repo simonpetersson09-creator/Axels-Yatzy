@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Recensionsfråga – 1 november
+- [ ] Första frågan efter fem matcher utan vinst-/Yatzykrav; Senare väntar tio, sedan tjugo ytterligare matcher, därefter stopp. Befintligt Ge betyg-stopp bevaras.
+- [ ] Verifiera intervall och beständig lagring utan riktiga recensioner.
+- [x] 10 XP för recension införs inte: Apples regler förbjuder belönade recensioner och faktisk inlämning kan inte bekräftas.
+
 ## Veckolistor – lika poäng/matcher
 - [x] Hall of Fame: lika poäng skiljs med flest matcher; flitigaste: lika matcher skiljs med högst poäng (redan befintlig regel). Samma ordning i Hall of Fame-rank/notiser och priser; migration 0110 driftsatt.
 - [x] Tio isolerade SQL-tester godkända inklusive två konkreta skiljeregel-/prisprov. Serverlistorna verifierade: 329 poäng/170 matcher före 329/6; 89 matcher/326 poäng före 89/298. Bygge OK; inga testutdelningar eller ändrade matchtotaler.

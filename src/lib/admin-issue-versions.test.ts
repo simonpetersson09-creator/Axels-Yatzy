@@ -6,6 +6,7 @@ const url = process.env.SUPABASE_DB_URL;
 const db = url ? postgres(url, { max: 1, prepare: false }) : null;
 const migration = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8');
 const optimization = readFileSync('drizzle/migrations/0104_admin_issue_release_lookup_distinct.sql', 'utf8');
+const exclusion = readFileSync('drizzle/migrations/0105_admin_exclude_stat_devices.sql', 'utf8');
 afterAll(async () => { if (db) await db.end(); });
 
 type Event = { version: string | null; platform?: string; name?: string; yesterday?: boolean };
@@ -20,10 +21,12 @@ describe.skipIf(!url)('admin issues latest two releases (isolated SQL)', () => {
         CREATE TEMP TABLE game_players(game_id text, session_id text, is_bot boolean, player_index integer) ON COMMIT DROP;
         CREATE TEMP TABLE session_owners(session_id text, device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE dice_roll_log(game_id text, player_index integer, created_at timestamptz) ON COMMIT DROP;
+        CREATE TEMP TABLE excluded_stat_devices(device_id text) ON COMMIT DROP;
       `);
-      const definitions = migration.match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/g);
-      if (definitions?.length !== 2) throw new Error('Expected both production functions');
-      for (const definition of definitions) {
+      const releaseParser = migration.match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/g)?.[0];
+      const statsFunction = exclusion.match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/g)?.[0];
+      if (!releaseParser || !statsFunction) throw new Error('Expected both production functions');
+      for (const definition of [releaseParser, statsFunction]) {
         await sql.unsafe(definition.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       }
       await sql.unsafe(optimization.replace(/public\.admin_/g, 'pg_temp.admin_'));

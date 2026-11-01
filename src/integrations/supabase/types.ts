@@ -193,6 +193,24 @@ export type Database = {
           },
         ]
       }
+      excluded_stat_devices: {
+        Row: {
+          created_at: string
+          device_id: string
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          label?: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          label?: string
+        }
+        Relationships: []
+      }
       friend_match_results: {
         Row: {
           created_at: string

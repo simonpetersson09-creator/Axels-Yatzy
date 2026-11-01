@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Uteslut admin-enhet från statistik – 1 november
-- [ ] Undersök hur admin-enheten identifieras och var enhets-/spelarantal räknas (pågår: två läsagenter).
-- [ ] Uteslut Simons egen enhet från admin-statistikens enheter/spelare; övriga mått oförändrade.
+- [x] Simons bekräftade enhet (b051f4b1) ligger i excluded_stat_devices; admin_daily_stats_v3/v4/v5 utesluter den från aktiva enheter, spelade enheter, appålder och problemhändelser. Matchräknare oförändrade.
+- [x] Migration 0105 driftsatt, enheten registrerad, 35 isolerade tester godkända (5 nya uteslutningsprov), bygge OK. Verifierat mot livedata: enheten var 1 av 13 aktiva idag.
 
 ## Appstartsannonser under spel
 - [x] Kontrollera båda plattformarna: permanent kallstartsavbrott på lämnad Home, central Home-spärr och separat lås för redan skickad native-presentation över båda spelrutter; övriga annonser bevaras.

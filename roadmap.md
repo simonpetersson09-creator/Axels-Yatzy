@@ -1,7 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Hall of Fame – återställ poängvisning
-- [ ] Återställ bästa poäng som huvudsiffra och matcher under namnet; behåll 24h-kolumnens placering och pristexter. Kontrollera båda listorna.
+- [x] Återställt bästa poäng som huvudsiffra och matcher under namnet; 24h-kolumn och pristexter bevarade. Körande bildprov visar 301 poäng/123 matcher i Hall of Fame; flitigaste kvar med 123 matcher. Bygge OK.
 
 ## Veckolistornas linjer, 24h och pristext
 - [x] Diskreta likadana avdelare; fasta 24h-/veckokolumner på samma ställe i båda listorna; uttrycklig översatt text om topp tres XP-vinst vid veckoslut. Bästa poäng kvar under namnet i Hall of Fame, rankning oförändrad.

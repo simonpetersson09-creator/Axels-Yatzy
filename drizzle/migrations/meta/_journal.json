@@ -778,6 +778,13 @@
       "when": 1793524050735,
       "tag": "0110_weekly_ranking_tiebreakers",
       "breakpoints": true
+    },
+    {
+      "idx": 111,
+      "version": "7",
+      "when": 1793531811687,
+      "tag": "0111_migration",
+      "breakpoints": true
     }
   ]
 }

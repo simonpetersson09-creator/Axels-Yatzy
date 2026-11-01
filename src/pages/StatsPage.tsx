@@ -188,7 +188,7 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
       <p className="text-xs text-game-gold px-2 leading-relaxed">{prize.podium}</p>
       <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
         <div className="flex justify-end gap-3 px-3 pt-2 pb-1 text-[10px] text-muted-foreground">
-          <span className="w-9 text-right">24h</span>
+          <span className="w-14 text-right">24h</span>
           <span className="w-12 text-right">{valueLabel}</span>
         </div>
         {loading && <div className="p-4 text-sm text-muted-foreground">{loadingText}</div>}
@@ -213,7 +213,7 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
               <div className="text-[11px] text-muted-foreground">{sub(p)}</div>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              <p className="w-9 text-right font-display font-bold text-base tabular-nums text-foreground">{p.games_24h == null ? '—' : p.games_24h.toLocaleString(lang)}</p>
+              <p className="w-14 text-right whitespace-nowrap font-display font-bold text-base tabular-nums text-game-gold-light">{p.games_24h == null ? '—' : `+ ${p.games_24h.toLocaleString(lang)}`}</p>
             <div className="w-12 text-right shrink-0">
               <p className="font-display font-bold text-lg tabular-nums text-primary">{value(p)}</p>
             </div>

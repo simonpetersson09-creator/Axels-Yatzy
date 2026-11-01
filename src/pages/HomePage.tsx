@@ -73,7 +73,13 @@ function installResumeAdWatcher() {
   void (async () => {
     const { App } = await import('@capacitor/app');
     await App.addListener('appStateChange', ({ isActive }) => {
-      if (!isActive) { resumeHomeEpoch++; backgroundedAt = Date.now(); void preloadAppOpenAd('background'); return; }
+      if (!isActive) {
+        resumeHomeEpoch++;
+        backgroundedAt = Date.now();
+        // Visibility may already be hidden; only the page at departure matters.
+        if (window.location.pathname === '/') void preloadAppOpenAd('background');
+        return;
+      }
       const away = backgroundedAt ? Date.now() - backgroundedAt : 0;
       backgroundedAt = 0;
       if (away < RESUME_AD_MIN_AWAY_MS) return;

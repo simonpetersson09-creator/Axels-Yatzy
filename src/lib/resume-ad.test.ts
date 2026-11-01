@@ -25,6 +25,22 @@ async function harness() {
 }
 afterEach(() => { vi.useRealTimers(); });
 describe('return-away Home lifecycle', () => {
+  it('preloads when leaving Home even if visibility is already hidden', async () => {
+    const h = await harness(); h.document.visibilityState = 'hidden'; h.state(false);
+    expect(h.preload).toHaveBeenCalledExactlyOnceWith('background');
+    expect(h.show).not.toHaveBeenCalled();
+  });
+  it.each(['/game', '/multiplayer-game', '/waiting-room', '/settings', '/admin'])('does not preload when backgrounded from %s', async path => {
+    const h = await harness(); h.window.location.pathname = path; h.state(false);
+    expect(h.preload).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(40_000); h.state(true);
+    expect(h.show).not.toHaveBeenCalled();
+  });
+  it('only preloads on the next departure from Home after an in-game departure', async () => {
+    const h = await harness(); h.window.location.pathname = '/game'; h.state(false);
+    h.state(true); h.window.location.pathname = '/'; h.state(false);
+    expect(h.preload).toHaveBeenCalledExactlyOnceWith('background');
+  });
   it('cold-start Home cleanup permanently cancels its pending show even after returning', async () => {
     const block = home.slice(home.indexOf('    if (startupAdChecked) return;'), home.indexOf('  }, []);', home.indexOf('    if (startupAdChecked) return;')));
     let allowed: () => boolean = () => false;

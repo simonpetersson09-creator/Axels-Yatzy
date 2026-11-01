@@ -1,6 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Godkänt notisutskick – 1 november
+- [x] Rättat adminpåverkan: 168 utskicksloggar omklassade till server med mottagarplattform i metadata; riktiga spelhändelser orörda. Fem tester godkända, driftsatt loggning; noll utskicksloggar räknas längre som appaktivitet.
 - [x] ”Dags för en Yatzy?”: godkänt engångsutskick klart för 84 appenheter med aktiva notisregistreringar och spelpåminnelser påslagna. Intern behörighet, dedupe och alla 40 språk; tre urvalstester godkända. HTTP 200: 84 accepterade av notistjänsterna, 0 fel; faktisk visning på telefoner ej verifierad. Återkommande påminnelser oförändrade.
 - [x] Rättat ofullständigt urval: inställningsläsning begränsad till pushenheter för att undvika 1000-radstaket. Fyra tester godkända. Komplettering HTTP 200: 82 accepterade, 2 Unregistered avstängda, 84 tidigare mottagare hoppades över; totalt 166 accepterade av 168 försök. Simons enhet accepterad 19:54:58 svensk tid; faktisk telefonvisning ej verifierad.
 

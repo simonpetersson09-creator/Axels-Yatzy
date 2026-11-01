@@ -12,6 +12,8 @@ import { SentInvitesCards } from '@/components/SentInvitesCards';
 import { cancelLobby } from '@/lib/friend-requests';
 import { FriendRequestNotice } from '@/components/FriendRequestNotice';
 import { HofRankNotice } from '@/components/HofRankNotice';
+import { WeeklyRewardNotice } from '@/components/WeeklyRewardNotice';
+import { fetchWeeklyRewards, type WeeklyReward } from '@/lib/weekly-rewards';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -138,6 +140,36 @@ export default function HomePage() {
   const langPickerRef = useRef<HTMLDivElement>(null);
   const [showRatePrompt, setShowRatePrompt] = useState(false);
   const [showOnlineNews, setShowOnlineNews] = useState(false);
+  const [weeklyRewards, setWeeklyRewards] = useState<WeeklyReward[]>([]);
+  useEffect(() => {
+    let alive = true;
+    let reading = false;
+    const sync = async () => {
+      if (reading || document.visibilityState !== 'visible') return;
+      reading = true;
+      const rewards = await fetchWeeklyRewards();
+      reading = false;
+      if (alive && rewards) setWeeklyRewards(rewards);
+    };
+    // Schedule one read at the actual Stockholm reset, not constant polling.
+    const nextMonday = new Date(Date.now() + 7 * 86_400_000);
+    const stockholmDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Stockholm', year: 'numeric', month: '2-digit', day: '2-digit' }).format(nextMonday);
+    const monday = new Date(`${stockholmDay}T12:00:00Z`);
+    monday.setUTCDate(monday.getUTCDate() - (monday.getUTCDay() + 6) % 7);
+    const offsetLabel = new Intl.DateTimeFormat('en', { timeZone: 'Europe/Stockholm', timeZoneName: 'longOffset' }).formatToParts(monday).find(part => part.type === 'timeZoneName')?.value ?? 'GMT+01:00';
+    const resetAt = Date.parse(`${monday.toISOString().slice(0, 10)}T00:00:00${offsetLabel.replace('GMT', '')}`);
+    const resetTimer = setTimeout(() => { void sync(); }, Math.max(0, resetAt - Date.now()) + 1000);
+    const timer = setTimeout(() => { void sync(); }, 1800);
+    const onActive = () => { void sync(); };
+    window.addEventListener('focus', onActive);
+    document.addEventListener('visibilitychange', onActive);
+    return () => {
+      alive = false;
+      clearTimeout(resetTimer); clearTimeout(timer);
+      window.removeEventListener('focus', onActive);
+      document.removeEventListener('visibilitychange', onActive);
+    };
+  }, []);
 
   // One-time announcement of online quick match for existing players.
   useEffect(() => {
@@ -531,6 +563,8 @@ export default function HomePage() {
 
 
   const homePrompt = getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk });
+  const rewardWeek = weeklyRewards[0]?.week_start;
+  const showWeeklyReward = !homePrompt && !showQuickMatch && !onlineSearch && !waitingEntryOpen && !showAdsConsent && !!rewardWeek;
 
   return (
     <div
@@ -576,7 +610,7 @@ export default function HomePage() {
 
         <div className="home-pending-stack home-card-stack w-full mt-8 sm:mt-10">
           <FriendRequestNotice />
-          <HofRankNotice />
+          <HofRankNotice blocked={!!homePrompt || showWeeklyReward} />
           <SentInvitesCards />
           {openLobbies.map((lb) => (
             <div
@@ -1054,6 +1088,13 @@ export default function HomePage() {
           <NotificationAskPrompt onYes={() => closeNotifAsk(true)} onLater={() => closeNotifAsk(false)} />
         )}
       </AnimatePresence>
+      {showWeeklyReward && (
+        <WeeklyRewardNotice
+          key={rewardWeek}
+          rewards={weeklyRewards.filter(reward => reward.week_start === rewardWeek)}
+          onAcknowledged={week => setWeeklyRewards(rewards => rewards.filter(reward => reward.week_start !== week))}
+        />
+      )}
     </div>
 
   );

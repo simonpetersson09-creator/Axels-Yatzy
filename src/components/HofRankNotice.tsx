@@ -7,13 +7,13 @@ import { useTranslation } from '@/lib/i18n';
 import { useBackHandler } from '@/lib/back-handler';
 
 /** Popup shown on app start when someone has passed the player in this week's top 10. */
-export function HofRankNotice() {
+export function HofRankNotice({ blocked = false }: { blocked?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [notices, setNotices] = useState<Array<{ rank: number | null; mostGames?: boolean }>>([]);
   const dropped = notices[0];
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const open = dropped !== undefined;
+  const open = dropped !== undefined && !blocked;
   const close = () => setNotices(queue => queue.slice(1));
   useBackHandler(open, close);
 
@@ -33,7 +33,7 @@ export function HofRankNotice() {
     return () => { dialog.close(); };
   }, [open]);
 
-  if (!dropped) return null;
+  if (!dropped || blocked) return null;
   const show = () => { setNotices([]); navigate('/stats'); };
   return createPortal(
     <dialog ref={dialogRef} aria-labelledby="hof-drop-title"

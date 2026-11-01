@@ -1102,6 +1102,66 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_reward_periods: {
+        Row: {
+          settled_at: string
+          week_start: string
+        }
+        Insert: {
+          settled_at?: string
+          week_start: string
+        }
+        Update: {
+          settled_at?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
+      weekly_xp_rewards: {
+        Row: {
+          acknowledged_at: string | null
+          awarded_at: string
+          list: string
+          rank: number
+          session_id: string
+          week_start: string
+          xp: number
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          awarded_at?: string
+          list: string
+          rank: number
+          session_id: string
+          week_start: string
+          xp: number
+        }
+        Update: {
+          acknowledged_at?: string | null
+          awarded_at?: string
+          list?: string
+          rank?: number
+          session_id?: string
+          week_start?: string
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_xp_rewards_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "player_xp"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "weekly_xp_rewards_week_start_fkey"
+            columns: ["week_start"]
+            isOneToOne: false
+            referencedRelation: "weekly_reward_periods"
+            referencedColumns: ["week_start"]
+          },
+        ]
+      }
       world_leaders_cache: {
         Row: {
           data: Json
@@ -1146,6 +1206,14 @@ export type Database = {
       accept_invite: {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
+      }
+      ack_weekly_xp_rewards: {
+        Args: {
+          p_device_id: string
+          p_session_id: string
+          p_week_start: string
+        }
+        Returns: boolean
       }
       admin_daily_stats: {
         Args: { _days?: number }
@@ -1374,6 +1442,10 @@ export type Database = {
           token: string
         }[]
       }
+      get_weekly_xp_rewards: {
+        Args: { p_device_id: string; p_session_id: string }
+        Returns: Json
+      }
       get_world_leader: { Args: never; Returns: Json }
       get_world_leaders: { Args: never; Returns: Json }
       get_world_rank: { Args: { p_session_id: string }; Returns: Json }
@@ -1408,6 +1480,7 @@ export type Database = {
         Returns: undefined
       }
       internal_secret_matches: { Args: { p_secret: string }; Returns: boolean }
+      internal_settle_weekly_rewards: { Args: never; Returns: undefined }
       internal_snapshot_perf: { Args: never; Returns: number }
       internal_tier_for: { Args: { p_n: number }; Returns: string }
       internal_tier_rank: { Args: { p_tier: string }; Returns: number }

@@ -176,6 +176,7 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
         <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em]">{title}</p>
       </div>
       <p className="text-[11px] text-muted-foreground/70 px-2 -mt-1">{subtitle}</p>
+      <p className="text-[11px] text-game-gold px-2">🥇 3 XP · 🥈 2 XP · 🥉 1 XP</p>
       <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
         {loading && <div className="p-4 text-sm text-muted-foreground">{loadingText}</div>}
         {!loading && rows.length === 0 && <div className="p-4 text-sm text-muted-foreground">{empty}</div>}
@@ -195,7 +196,10 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
               <p className="text-sm font-semibold truncate">{p.name}</p>
               <p className="text-[11px] text-muted-foreground">{sub(p)}</p>
             </div>
-            <p className="font-display font-bold text-lg tabular-nums text-primary">{value(p)}</p>
+            <div className="text-right shrink-0">
+              <p className="font-display font-bold text-lg tabular-nums text-primary">{value(p)}</p>
+              {i < 3 && <p className="text-[10px] font-semibold text-game-gold">{3 - i} XP</p>}
+            </div>
           </div>
         ))}
       </div>

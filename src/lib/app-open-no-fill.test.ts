@@ -36,6 +36,37 @@ beforeEach(() => {
 afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
 
 describe('iOS App Open no-fill recovery', () => {
+  it.each(['ios', 'android'])('%s retains valid unused cache after presentation failure without a replacement request', async platform => {
+    sdk.platform = platform;
+    const m = await import('./admob'); await m.preloadAppOpenAd('startup');
+    sdk.show.mockRejectedValueOnce(new Error('presentation_failed'));
+    expect(await m.showAppOpenAd(() => true, 'resume')).toBe(false);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(sdk.loaded).toBe(true); expect(sdk.load).toHaveBeenCalledTimes(1);
+    expect(await m.showAppOpenAd(() => true, 'resume')).toBe(true);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(sdk.show).toHaveBeenCalledTimes(2); expect(sdk.load).toHaveBeenCalledTimes(2);
+  });
+  it.each(['ios', 'android'])('%s retains unused cache after a timed-out presentation later fails', async platform => {
+    sdk.platform = platform;
+    const m = await import('./admob'); await m.preloadAppOpenAd('startup');
+    const pending = deferred(); sdk.show.mockReturnValueOnce(pending.promise);
+    const attempt = m.showAppOpenAd(() => true, 'resume');
+    await vi.advanceTimersByTimeAsync(8_000); expect(await attempt).toBe(true);
+    expect(sdk.load).toHaveBeenCalledTimes(1);
+    pending.reject(new Error('presentation_failed')); await vi.advanceTimersByTimeAsync(0);
+    expect(sdk.loaded).toBe(true); expect(sdk.load).toHaveBeenCalledTimes(1);
+    const { isAppOpenPresentationPending } = await import('./app-open-presentation');
+    expect(isAppOpenPresentationPending()).toBe(false);
+  });
+  it.each(['ios', 'android'])('%s replaces an ad only when a failed presentation leaves no valid cache', async platform => {
+    sdk.platform = platform;
+    const m = await import('./admob'); await m.preloadAppOpenAd('startup');
+    sdk.show.mockImplementationOnce(async () => { sdk.loaded = false; throw new Error('presentation_failed'); });
+    expect(await m.showAppOpenAd(() => true, 'resume')).toBe(false);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(sdk.load).toHaveBeenCalledTimes(2); expect(sdk.loaded).toBe(true);
+  });
   it('stops the reproduced cold-start A → B → C no-fill chain', async () => {
     sdk.load.mockRejectedValue(noFill());
     const m = await import('./admob');

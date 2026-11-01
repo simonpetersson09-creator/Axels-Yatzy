@@ -19,10 +19,13 @@ Deno.serve(async req => {
   if (!body || body.campaign !== CAMPAIGN || typeof body.dry_run !== 'boolean') return json({error:'Invalid campaign'},400);
   // Closed window prevents future invocations from contacting newly registered players.
   if (Date.now() > Date.parse('2026-11-01T23:00:00Z')) return json({error:'Campaign closed'},410);
-  const [{data:tokens,error:te},{data:prefs,error:pe}] = await Promise.all([
-    db.from('push_tokens').select('device_id,token,platform,enabled').order('updated_at',{ascending:false}).range(0,9999),
-    db.from('notification_preferences').select('device_id,play_reminders,lang').range(0,9999),
-  ]);
+  const {data:tokens,error:te} = await db.from('push_tokens').select('device_id,token,platform,enabled').order('updated_at',{ascending:false}).range(0,999);
+  if (te || !tokens || tokens.length === 1000) return json({error:'Audience unavailable'},500);
+  const ids = [...new Set(tokens.map(t => t.device_id))];
+  if (!ids.length) return json({campaign:CAMPAIGN,targets:0,accepted:0,failed:0,skipped:0});
+  // Restrict the preference lookup to push devices: range alone cannot bypass
+  // the hosted 1000-row cap on the much larger preferences table.
+  const {data:prefs,error:pe} = await db.from('notification_preferences').select('device_id,play_reminders,lang').in('device_id',ids).range(0,999);
   if (te || pe) return json({error:'Audience unavailable'},500);
   const targets = recipients(tokens ?? [],prefs ?? []);
   if (body.dry_run) return json({campaign:CAMPAIGN,targets:targets.length});

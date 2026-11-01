@@ -1,7 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Godkänt notisutskick – 1 november
-- [ ] Skicka ”Dags för en Yatzy?” en gång till appenheter med notiser och spelpåminnelser påslagna, med översatt text och leveransresultat.
+- [x] ”Dags för en Yatzy?”: godkänt engångsutskick startat för 84 appenheter med aktiva notisregistreringar och spelpåminnelser påslagna. Intern behörighet, dedupe och alla 40 språk; tre urvalstester godkända. Leveransresultat kontrolleras efter avslutat utskick.
 
 ## Överhoppade annonstillfällen – 1 november
 - [x] Appstart/återkomst och matchutgång mäts med säkra orsaker och beständiga händelse-ID:n; även kort återkomst/utanför Home. Annonsregler och laddning oförändrade, webben utesluten.

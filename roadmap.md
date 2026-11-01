@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Överhoppade annonstillfällen – 1 november
+- [x] Appstart/återkomst och matchutgång mäts med säkra orsaker och beständiga händelse-ID:n; även kort återkomst/utanför Home. Annonsregler och laddning oförändrade, webben utesluten.
+- [x] Riktade annons-/leveransprov godkända; mätningen kräver nästa appbygge. Ingen publicering.
+
 ## Recensionsfråga – 1 november
 - [x] Första frågan efter fem matcher utan vinst-/Yatzykrav; Senare väntar tio, sedan tjugo ytterligare matcher, därefter stopp. Befintligt Ge betyg-stopp bevaras.
 - [x] Sex regeltester och sju mätningstester godkända; körande webbläsarprov verifierar 5 → 15 → 35 och sparat stopp efter omladdning utan riktiga recensioner. Bygge OK; gäller nästa appversion, ingen publicering.

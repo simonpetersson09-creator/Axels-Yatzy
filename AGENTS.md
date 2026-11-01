@@ -25,7 +25,7 @@
 - Local match identities persist per game slot and rotate only on replay; commit stats and an untrimmed dedupe ledger atomically before marking multiplayer results recorded, so restarts cannot double-count future matches.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
 - DiceInfoSheet: safe scroll, portaled celebrations, inline frames; receipts use portals/useBackHandler; ownedOnly reuses previews.
-- Home/replay share usePostMatchExit: skip unready ads, await dismissal before key rotation; unlock on new match. Keep IDs/no XP/suppression. Logs link exit/key to shared load IDs, skips/reuse/results; no UMP data.
+- Home/replay usePostMatchExit: skip unready ads, await dismissal before key rotation; unlock on new match. Keep IDs/no XP/suppression. Durable ad_opportunity records coarse outcomes, no UMP data; gates unchanged.
 - Friend list/detail require server-accepted IDs; history/aliases never grant consent. Use get_accepted_friend_matches.
 - Shop XP/prices/ownership are server-owned; designs need a catalog entry and dice_designs row.
 - Banners serialize/reload; measured search portal; useGameBanner only in local games.

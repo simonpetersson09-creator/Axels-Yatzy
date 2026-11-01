@@ -139,6 +139,11 @@ function initFailureReason(err: unknown): AdSkipReason {
 }
 
 /** Silent diagnostics so failing ads (e.g. on iPad) show up in analytics. */
+export function trackAdOpportunity(kind: 'appOpen' | 'postMatch', source: string, result: 'skipped' | 'shown' | 'failed', reason?: string, attemptId?: string): void {
+  if (!adPlatform()) return;
+  try { trackEvent('ad_opportunity', { kind, source, result, ...(reason ? { reason } : {}), ...(attemptId ? { attempt_id: attemptId } : {}) }); } catch { /* Never affect ads. */ }
+}
+
 function reportAd(kind: 'appOpen' | 'optional' | 'postMatch' | 'banner' | 'interstitial', result: string, startedAt: number, reason?: string, context?: Record<string, unknown>) {
   try {
     trackEvent('ad_result', {
@@ -568,7 +573,12 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
   const generation = adGeneration;
   const startedAt = Date.now();
   const details = { ...context, loadId: interstitialLoadId, cacheAgeMs: preparedAt ? Date.now() - preparedAt : null };
+  const opportunityId = kind === 'postMatch' ? crypto.randomUUID() : undefined;
+  const opportunity = (result: 'skipped' | 'shown' | 'failed', reason?: string) => {
+    if (kind === 'postMatch') trackAdOpportunity(kind, context?.action ?? 'exit', result, reason, opportunityId);
+  };
   const skip = (result: ShowAdResult, reason: string) => {
+    opportunity('skipped', reason);
     if (kind === 'postMatch') reportAd(kind, 'skipped', startedAt, reason, details);
     return result;
   };
@@ -605,11 +615,13 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
       await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
     }
     const result = await closed;
+    opportunity(result === 'shown' ? 'shown' : 'failed', result === 'shown' ? undefined : 'sdk_show_failed');
     // Dismissed/FailedToShow owns cache consumption. Do not clear a replacement
     // load that the global dismissal listener may already have completed.
     reportAd(kind, result === 'shown' ? 'shown' : 'show_failed', startedAt, lastShowError, details);
     return result;
   } catch (err) {
+    opportunity('failed', 'sdk_show_failed');
     if (adAllowed(generation) && interstitialLoadId === shownLoadId) preparedAt = 0;
     reportAd(kind, 'show_failed', startedAt, reasonOf(err), details);
     return 'failed';
@@ -987,6 +999,14 @@ export function preloadAppOpenAd(source: AppOpenLoadSource = 'preload'): Promise
  */
 export async function showAppOpenAd(canShow: () => boolean = () => true, source: AppOpenLoadSource = 'startup'): Promise<boolean> {
   const generation = adGeneration;
+  const opportunityId = crypto.randomUUID();
+  let opportunityRecorded = false;
+  const outcome = (result: 'skipped' | 'shown' | 'failed', reason?: string) => {
+    if (opportunityRecorded) return;
+    opportunityRecorded = true;
+    trackAdOpportunity('appOpen', source, result, reason, opportunityId);
+  };
+  const skip = (reason: string) => { outcome('skipped', reason); return false; };
   // Fail closed outside Home, even if a caller omits its navigation guard.
   // Once an opportunity becomes invalid, later Home visits cannot revive it.
   const callerCanShow = canShow;
@@ -999,21 +1019,21 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
     }
     return true;
   };
-  if (!canShow()) return false;
+  if (!canShow()) return skip('left_home');
   // Return opportunities never initiate or await consent/initialization.
   const readyModule = source === 'resume' ? initializedModule : null;
   if (source === 'resume' && (!initialized || !readyModule || initializationPromise || consentPending ||
-    (adPlatform() === 'ios' && !trackingSettled))) return false;
-  if (!adAllowed(generation)) { reportSkip('appOpen', 'ads_not_ready'); return false; }
+    (adPlatform() === 'ios' && !trackingSettled))) return skip('initialization_not_ready');
+  if (!adAllowed(generation)) { reportSkip('appOpen', 'ads_not_ready'); return skip('ads_not_ready'); }
   // New players get one complete match before any startup/resume App Open ad.
-  if (getRankedGames() < 1) { reportSkip('appOpen', 'first_match_pending'); return false; }
+  if (getRankedGames() < 1) { reportSkip('appOpen', 'first_match_pending'); return skip('first_match_pending'); }
   const { waitingRoomAdBlocked } = await import('./waiting-room');
-  if (waitingRoomAdBlocked()) { reportSkip('appOpen', 'waiting_room'); return false; }
+  if (waitingRoomAdBlocked()) { reportSkip('appOpen', 'waiting_room'); return skip('waiting_room'); }
   const adId = adUnitId('appOpen');
-  if (!isAdMobAvailable() || !adId) { reportSkip('appOpen', 'unavailable'); return false; }
-  if (appOpenShowing || showing || rewardedShowing) { reportSkip('appOpen', 'other_ad_showing'); return false; }
+  if (!isAdMobAvailable() || !adId) { reportSkip('appOpen', 'unavailable'); return skip('unavailable'); }
+  if (appOpenShowing || showing || rewardedShowing) { reportSkip('appOpen', 'other_ad_showing'); return skip('other_ad_showing'); }
   // Never show the start ad right after the player returns from the rewarded ad.
-  if (Date.now() < suppressAppOpenUntil) { reportSkip('appOpen', 'rewarded_suppression'); return false; }
+  if (Date.now() < suppressAppOpenUntil) { reportSkip('appOpen', 'rewarded_suppression'); return skip('recent_fullscreen_ad'); }
   appOpenShowing = true;
   const startedAt = Date.now();
   let release = true;
@@ -1027,21 +1047,21 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
       throw err;
     }
     attachAppOpenRevenue(mod);
-    if (!adAllowed(generation) || !canShow()) return false;
+    if (!adAllowed(generation) || !canShow()) return skip(adAllowed(generation) ? 'left_home' : 'ads_state_changed');
     // A preload already running (started at cold start) is awaited, not doubled.
     if (source !== 'resume' && appOpenPreload) await withTimeout(appOpenPreload, APP_OPEN_LOAD_TIMEOUT_MS, 'preload').catch(() => {});
     const pre = await mod.AdMob.isAppOpenLoaded();
-    if (!adAllowed(generation)) return false;
+    if (!adAllowed(generation)) return skip('ads_state_changed');
     if (!pre.value) {
-      if (source === 'resume') { reportAd('appOpen', 'not_loaded', startedAt); return false; }
-      if (!canShow() || waitingRoomAdBlocked()) return false;
+      if (source === 'resume') { reportAd('appOpen', 'not_loaded', startedAt); return skip(appOpenNativeLoad ? 'still_loading' : 'not_loaded'); }
+      if (!canShow() || waitingRoomAdBlocked()) return skip(opportunityEnded ? 'left_home' : 'waiting_room');
       await loadAppOpenOnce(mod, adId, APP_OPEN_LOAD_TIMEOUT_MS, 'load', source, generation);
     }
     const { value } = source === 'resume' ? pre : await mod.AdMob.isAppOpenLoaded();
-    if (!adAllowed(generation)) return false;
-    if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return false; }
+    if (!adAllowed(generation)) return skip('ads_state_changed');
+    if (!value) { reportAd('appOpen', 'not_loaded', startedAt); return skip('not_loaded'); }
     // Loaded too late (player already left the start screen): never cover a game.
-    if (getRankedGames() < 1 || !canShow() || waitingRoomAdBlocked()) { reportAd('appOpen', 'skipped_left_home', startedAt); return false; }
+    if (getRankedGames() < 1 || !canShow() || waitingRoomAdBlocked()) { reportAd('appOpen', 'skipped_left_home', startedAt); return skip(getRankedGames() < 1 ? 'first_match_pending' : opportunityEnded ? 'left_home' : 'waiting_room'); }
     presentationAttempted = true;
     // Close the JS → native queue race: gameplay cannot mount while a
     // dispatched presentation is unresolved, even after our caller times out.
@@ -1049,14 +1069,15 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
     const showP = mod.AdMob.showAppOpen();
     try {
       await withTimeout(showP, SHOW_TIMEOUT_MS, 'show');
+      outcome('shown');
       reportAd('appOpen', pre.value ? 'shown_preloaded' : 'shown', startedAt);
     } catch (err) {
       if (reasonOf(err) !== 'show_timeout') throw err;
       // Slow to confirm: the ad may still be on screen — wait for the real outcome.
       release = false;
       showP.then(
-        () => reportAd('appOpen', 'shown_late', startedAt),
-        (e) => reportAd('appOpen', 'failed', startedAt, reasonOf(e)),
+        () => { outcome('shown'); reportAd('appOpen', 'shown_late', startedAt); },
+        (e) => { outcome('failed', 'sdk_show_failed'); reportAd('appOpen', 'failed', startedAt, reasonOf(e)); },
       ).finally(() => { setAppOpenPresentationPending(false); appOpenShowing = false; void preloadAppOpenAd('after_presentation'); });
       return true;
     }
@@ -1064,6 +1085,7 @@ export async function showAppOpenAd(canShow: () => boolean = () => true, source:
   } catch (err) {
     // Free SDK error messages never belong in App Open diagnostics.
     const reason = reasonOf(err);
+    outcome('failed', ['load_timeout', 'preload_timeout', 'init_timeout', 'app_open_retry_paused'].includes(reason) ? reason : presentationAttempted ? 'sdk_show_failed' : 'not_ready_or_load_failed');
     reportAd('appOpen', 'failed', startedAt, ['load_timeout', 'preload_timeout', 'init_timeout', 'app_open_retry_paused'].includes(reason) ? reason : 'sdk_failed');
     return false;
   } finally {

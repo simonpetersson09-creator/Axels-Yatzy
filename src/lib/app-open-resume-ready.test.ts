@@ -8,7 +8,8 @@ vi.mock('@capacitor/core', () => ({ Capacitor: { getPlatform: () => sdk.platform
   isNativePlatform: () => true, isPluginAvailable: () => true } }));
 vi.mock('./local-stats', () => ({ getRankedGames: () => sdk.games }));
 vi.mock('./waiting-room', () => ({ waitingRoomAdBlocked: () => sdk.blocked }));
-vi.mock('./analytics', () => ({ trackEvent: vi.fn() }));
+const telemetry = vi.hoisted(() => ({ trackEvent: vi.fn() }));
+vi.mock('./analytics', () => ({ trackEvent: telemetry.trackEvent }));
 vi.mock('@capacitor-community/admob', () => ({
   AdmobConsentStatus: { REQUIRED: 'REQUIRED' },
   AppOpenAdPluginEvents: { AdImpression: 'paid' },
@@ -30,6 +31,7 @@ describe.each(['ios', 'android'])('%s ready-only resume', platform => {
   beforeEach(() => {
     vi.resetModules(); vi.useFakeTimers(); sdk.platform = platform; sdk.loaded = false; sdk.games = 1; sdk.blocked = false;
     window.history.replaceState(null, '', '/');
+    telemetry.trackEvent.mockClear();
     sdk.consent.mockReset().mockResolvedValue({ canRequestAds: true });
     for (const fn of [sdk.init, sdk.load, sdk.show, sdk.check]) fn.mockReset().mockResolvedValue(undefined);
   });
@@ -68,6 +70,18 @@ describe.each(['ios', 'android'])('%s ready-only resume', platform => {
     const m = await import('./admob');
     expect(await m.showAppOpenAd(() => true, 'resume')).toBe(false);
     expect(sdk.consent).not.toHaveBeenCalled(); expect(sdk.init).not.toHaveBeenCalled(); expect(sdk.load).not.toHaveBeenCalled();
+    expect(telemetry.trackEvent).toHaveBeenCalledWith('ad_opportunity', expect.objectContaining({ kind: 'appOpen', source: 'resume', result: 'skipped', reason: 'initialization_not_ready' }));
+    expect(telemetry.trackEvent.mock.calls.filter(([name]) => name === 'ad_opportunity')).toHaveLength(1);
+  });
+  it('records only coarse app outcomes and ignores browsers', async () => {
+    const m = await import('./admob');
+    m.trackAdOpportunity('appOpen', 'resume', 'skipped', 'not_loaded', 'temporary-attempt');
+    expect(telemetry.trackEvent).toHaveBeenCalledExactlyOnceWith('ad_opportunity', {
+      kind: 'appOpen', source: 'resume', result: 'skipped', reason: 'not_loaded', attempt_id: 'temporary-attempt',
+    });
+    sdk.platform = 'web';
+    m.trackAdOpportunity('appOpen', 'resume', 'skipped', 'not_loaded');
+    expect(telemetry.trackEvent).toHaveBeenCalledTimes(1);
   });
   it('does not await pending initialization; late preload is cached without presentation', async () => {
     const gate = deferred(); sdk.init.mockReturnValueOnce(gate.promise);
@@ -81,6 +95,7 @@ describe.each(['ios', 'android'])('%s ready-only resume', platform => {
     const m = await import('./admob'); await m.preloadAppOpenAd(); sdk.loaded = false; sdk.load.mockClear();
     expect(await m.showAppOpenAd(() => true, 'resume')).toBe(false);
     expect(sdk.load).not.toHaveBeenCalled(); expect(sdk.show).not.toHaveBeenCalled();
+    expect(telemetry.trackEvent).toHaveBeenCalledWith('ad_opportunity', expect.objectContaining({ source: 'resume', result: 'skipped', reason: 'not_loaded' }));
   });
   it('does not await pending load; saves late result for the next return only', async () => {
     const m = await import('./admob'); await m.preloadAppOpenAd(); sdk.loaded = false;
@@ -88,6 +103,7 @@ describe.each(['ios', 'android'])('%s ready-only resume', platform => {
     const preload = m.preloadAppOpenAd('background'); await vi.advanceTimersByTimeAsync(0);
     expect(await m.showAppOpenAd(() => true, 'resume')).toBe(false);
     expect(sdk.load).toHaveBeenCalledTimes(2); gate.resolve(); expect(await preload).toBe(true);
+    expect(telemetry.trackEvent).toHaveBeenCalledWith('ad_opportunity', expect.objectContaining({ source: 'resume', result: 'skipped', reason: 'still_loading' }));
     expect(sdk.show).not.toHaveBeenCalled(); expect(sdk.loaded).toBe(true);
     expect(await m.showAppOpenAd(() => true, 'resume')).toBe(true); expect(sdk.show).toHaveBeenCalledOnce();
   });

@@ -56,7 +56,7 @@ function getPlatform(): string {
 
 const queue: QueuedEvent[] = [];
 const DIAGNOSTIC_KEY = 'yatzy_play_diagnostics_pending_v1';
-const isDiagnosticName = (name: string) => name.startsWith('play_') || name === 'post_match_exit' || name === 'ios_app_open_diag' || name === 'stats_opened';
+const isDiagnosticName = (name: string) => name.startsWith('play_') || name === 'post_match_exit' || name === 'ios_app_open_diag' || name === 'stats_opened' || name === 'ad_opportunity';
 const isDiagnostic = (e: QueuedEvent) => isDiagnosticName(e.event_name);
 function persistDiagnostics(): void {
   try { localStorage.setItem(DIAGNOSTIC_KEY, JSON.stringify(queue.filter(isDiagnostic).slice(-200))); } catch { /* Storage is best-effort. */ }

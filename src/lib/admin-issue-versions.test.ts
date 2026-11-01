@@ -6,6 +6,7 @@ const url = process.env.SUPABASE_DB_URL;
 const db = url ? postgres(url, { max: 1, prepare: false }) : null;
 const migration = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8');
 const optimization = readFileSync('drizzle/migrations/0104_admin_issue_release_lookup_distinct.sql', 'utf8');
+const exclusion = readFileSync('drizzle/migrations/0105_admin_exclude_stat_devices.sql', 'utf8');
 afterAll(async () => { if (db) await db.end(); });
 
 type Event = { version: string | null; platform?: string; name?: string; yesterday?: boolean };

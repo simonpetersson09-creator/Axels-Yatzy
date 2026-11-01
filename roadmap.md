@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Tydlig prispall i veckolistor
+- [x] Medaljer för placering 1–3 och framhävd möjlig vinst 3/2/1 XP vid spelarnamnet i båda listorna; utdelning och rankning oförändrade.
+- [ ] Kontrollera listornas utseende och textutrymme i körande app.
+
 ## Veckolistor – senaste 24h
 - [x] Rullande 24h av accepterade färdigmatchrapporter, separat tidslogg med enhetsradering; veckototaler/rankning oförändrade. Ingen säker äldre dygnshistorik finns: visar — tills 24h samlats från 1 nov 08:49 UTC.
 - [x] 24h bredvid veckototal i båda listor; 13 tester godkända, fyra isolerade SQL-prov. Båda listor med 17 senaste 24h/123 veckomatcher verifierade och bildgranskade med avskilda svar. Bygge OK; når telefonerna med nästa appbygge.

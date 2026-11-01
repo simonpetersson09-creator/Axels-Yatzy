@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Veckolistornas linjer, 24h och pristext
+- [x] Diskreta likadana avdelare; fasta 24h-/veckokolumner på samma ställe i båda listorna; uttrycklig översatt text om topp tres XP-vinst vid veckoslut. Bästa poäng kvar under namnet i Hall of Fame, rankning oförändrad.
+- [x] Båda listorna bildgranskade på telefon och kontrollerade på stor skärm med avskilda svar; 24h och veckotal i samma lodräta kolumner. Tre belöningstester godkända; bygge OK, inga riktiga statistikändringar eller publicering.
+
 ## Tydlig prispall i veckolistor
 - [x] Medaljer för placering 1–3 och framhävd möjlig vinst 3/2/1 XP vid spelarnamnet i båda listorna; utdelning och rankning oförändrade.
 - [x] Båda listorna bildgranskade på 393 px och kontrollerade på stor skärm med avskilda provsvar; medaljer/priser synliga utan textspill. Tre befintliga belöningstester godkända; bygge OK. Ingen publicering; når telefonerna med nästa appbygge.

@@ -8,6 +8,7 @@ import { useTranslation } from '@/lib/i18n';
 import { getProfileCountry } from '@/lib/profile';
 import { getSessionId } from '@/lib/session';
 import { getStatsPeriod } from '@/lib/stats-period';
+import { weeklyRewardCopy } from '@/lib/weekly-reward-copy';
 import { fetchWeeklyHallOfFame, fetchWeeklyMostGames, fetchWeeklyGames24h, type HallOfFameEntry } from '@/lib/hall-of-fame';
 import {
   countryName, countryToFlag, syncCountryRank, syncWeeklyRank, syncTopCountries, fetchMyYearGames, fetchYearRanks,
@@ -129,8 +130,8 @@ export default function StatsPage() {
           icon={<Trophy className="w-3.5 h-3.5 text-game-gold" />}
           title={t('hofTitle')} subtitle={t('hofSubtitle')}
           rows={hof} loading={loading} mySession={mySession} frames={frames} empty={t('hofEmpty')} loadingText={t('loading')}
-          sub={(p) => <span className="inline-flex flex-wrap gap-x-3"><span>{fmt(p.games_played)} {t('hofMatches')}</span><span><span className="text-muted-foreground/70">24h</span> {p.games_24h == null ? '—' : fmt(p.games_24h)}</span></span>}
-          value={(p) => fmt(p.best_score)}
+          sub={(p) => `${t('hofBestShort')} ${fmt(p.best_score)}`}
+          value={(p) => fmt(p.games_played)}
         />
 
         <HofSection
@@ -139,7 +140,6 @@ export default function StatsPage() {
           rows={most} loading={loading} mySession={mySession} frames={frames} empty={t('hofEmpty')} loadingText={t('loading')}
           sub={(p) => `${t('hofBestShort')} ${fmt(p.best_score)}`}
           value={(p) => fmt(p.games_played)}
-          dailyColumn
         />
 
         <CountryList title={t('topCountriesYearTitle', { year })} rows={top} loading={loading} myCountry={myCountry} lang={lang} loadingText={t('loading')} />
@@ -169,11 +169,13 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
   );
 }
 
-function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, empty, loadingText, sub, value, dailyColumn = false }: {
+function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, empty, loadingText, sub, value }: {
   icon: React.ReactNode; title: string; subtitle: string; rows: HallOfFameEntry[]; loading: boolean;
   mySession: string; frames: Record<string, string>; empty: string; loadingText: string;
-  sub: (p: HallOfFameEntry) => React.ReactNode; value: (p: HallOfFameEntry) => string; dailyColumn?: boolean;
+  sub: (p: HallOfFameEntry) => React.ReactNode; value: (p: HallOfFameEntry) => string;
 }) {
+  const { t, lang } = useTranslation();
+  const prize = weeklyRewardCopy(lang);
   return (
     <section className="space-y-2">
       <div className="px-2 flex items-center gap-1.5">
@@ -181,14 +183,18 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
         <p className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em]">{title}</p>
       </div>
       <p className="text-[11px] text-muted-foreground/70 px-2 -mt-1">{subtitle}</p>
-      <p className="text-[11px] text-game-gold px-2">🥇 3 XP · 🥈 2 XP · 🥉 1 XP</p>
+      <p className="text-xs text-game-gold px-2 leading-relaxed">{prize.podium}</p>
       <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
+        <div className="flex justify-end gap-3 px-3 pt-2 pb-1 text-[10px] text-muted-foreground">
+          <span className="w-9 text-right">24h</span>
+          <span className="w-12 text-right">{t('hofMatches')}</span>
+        </div>
         {loading && <div className="p-4 text-sm text-muted-foreground">{loadingText}</div>}
         {!loading && rows.length === 0 && <div className="p-4 text-sm text-muted-foreground">{empty}</div>}
         {rows.map((p, i) => (
           <div
             key={p.session_id}
-            className={`flex items-center gap-2.5 px-3 py-2 ${i > 0 ? 'border-t border-border/30' : ''} ${p.session_id === mySession ? 'bg-primary/10' : i < 3 ? 'bg-game-gold/5' : ''} ${i === 2 ? 'border-b-2 border-game-gold/30' : ''}`}
+            className={`flex items-center gap-2.5 px-3 py-2 ${i > 0 ? 'border-t border-border/20' : ''} ${p.session_id === mySession ? 'bg-primary/10' : i < 3 ? 'bg-game-gold/5' : ''}`}
           >
             <span className="w-7 shrink-0 text-center font-display font-bold tabular-nums text-muted-foreground" aria-label={`${i + 1}`}>
               {i < 3 ? <span className="text-2xl" aria-hidden="true">{['🥇', '🥈', '🥉'][i]}</span> : i + 1}
@@ -201,15 +207,14 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
             </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold truncate">{p.name}</p>
-              {i < 3 && <p className="flex items-center gap-1 text-xs font-bold text-game-gold"><Trophy className="h-3 w-3 shrink-0" aria-hidden="true" />{3 - i} XP</p>}
+              {i < 3 && <p className="text-[11px] font-bold text-game-gold">{prize.title.replace(/[!！]/g, '')}: {3 - i} XP</p>}
               <div className="text-[11px] text-muted-foreground">{sub(p)}</div>
             </div>
-            {dailyColumn && <div className="w-9 shrink-0 text-right tabular-nums">
-              <p className="text-[10px] text-muted-foreground">24h</p>
-              <p className="font-display font-bold text-base text-foreground">{p.games_24h == null ? '—' : p.games_24h.toLocaleString()}</p>
-            </div>}
-            <div className="text-right shrink-0">
+            <div className="flex items-center gap-3 shrink-0">
+              <p className="w-9 text-right font-display font-bold text-base tabular-nums text-foreground">{p.games_24h == null ? '—' : p.games_24h.toLocaleString(lang)}</p>
+            <div className="w-12 text-right shrink-0">
               <p className="font-display font-bold text-lg tabular-nums text-primary">{value(p)}</p>
+            </div>
             </div>
           </div>
         ))}

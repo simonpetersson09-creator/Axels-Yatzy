@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { trackStatsOpened } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { AvatarFrame } from '@/components/AvatarFrame';
 import { useNavigate } from 'react-router-dom';
@@ -30,8 +31,13 @@ export default function StatsPage() {
   const [frames, setFrames] = useState<Record<string, string>>({});
   const myCountry = getProfileCountry();
   const mySession = getSessionId();
+  const visitTracked = useRef(false);
 
   useEffect(() => {
+    if (!visitTracked.current) {
+      visitTracked.current = true;
+      trackStatsOpened();
+    }
     let alive = true;
     (async () => {
       // Same sync as the home screen, so both screens always show the same numbers.

@@ -9,8 +9,8 @@ vi.mock('@/lib/app-version', () => ({ appVersionReady: Promise.resolve('5.4'), g
 
 describe('diagnostics delivery', () => {
   beforeEach(() => { vi.useFakeTimers(); vi.resetModules(); localStorage.clear(); mocks.rpc.mockReset(); });
-  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
-  it.each(['play_network_exit', 'ios_app_open_diag'])('retains %s on failure and retries with the same event ID', async (event) => {
+  afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); });
+  it.each(['play_network_exit', 'ios_app_open_diag', 'stats_opened'])('retains %s on failure and retries with the same event ID', async (event) => {
     mocks.rpc.mockResolvedValueOnce({ error: { message: 'offline' } }).mockResolvedValue({ error: null });
     const { trackEvent } = await import('./analytics');
     trackEvent(event, { reason: 'screen_left' });
@@ -34,5 +34,24 @@ describe('diagnostics delivery', () => {
     await vi.advanceTimersByTimeAsync(1500);
     expect(mocks.rpc.mock.calls[0][1].p_events[0]).toEqual(expect.objectContaining({ app_version: '5.3', platform: 'ios', metadata: { event_id: 'saved-id', occurred_at: '2026-10-30T10:00:00Z' } }));
     expect(JSON.parse(localStorage.getItem('yatzy_play_diagnostics_pending_v1') ?? '[]')).toEqual([]);
+  });
+  it.each(['ios', 'android'])('records a statistics visit on %s without page or player data', async (platform) => {
+    vi.stubGlobal('Capacitor', { getPlatform: () => platform });
+    mocks.rpc.mockResolvedValue({ error: null });
+    const { trackStatsOpened } = await import('./analytics');
+    trackStatsOpened();
+    await vi.advanceTimersByTimeAsync(1500);
+    const events = mocks.rpc.mock.calls[0][1].p_events;
+    expect(events).toHaveLength(1);
+    expect(events[0]).toEqual(expect.objectContaining({ event_name: 'stats_opened', platform, game_id: null, game_mode: null }));
+    expect(Object.keys(events[0].metadata).sort()).toEqual(['event_id', 'occurred_at']);
+  });
+  it('does not record browser statistics visits', async () => {
+    vi.stubGlobal('Capacitor', { getPlatform: () => 'web' });
+    const { trackStatsOpened } = await import('./analytics');
+    trackStatsOpened();
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(localStorage.getItem('yatzy_play_diagnostics_pending_v1')).toBeNull();
   });
 });

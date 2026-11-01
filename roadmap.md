@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Veckolistor – lika poäng/matcher
-- [ ] Hall of Fame: lika poäng skiljs med flest matcher; flitigaste: lika matcher skiljs med högst poäng. Samma ordning i notiser/priser.
-- [ ] Isolerade regeltester och kontroll av serverlistor.
+- [x] Hall of Fame: lika poäng skiljs med flest matcher; flitigaste: lika matcher skiljs med högst poäng (redan befintlig regel). Samma ordning i Hall of Fame-rank/notiser och priser; migration 0110 driftsatt.
+- [x] Tio isolerade SQL-tester godkända inklusive två konkreta skiljeregel-/prisprov. Serverlistorna verifierade: 329 poäng/170 matcher före 329/6; 89 matcher/326 poäng före 89/298. Bygge OK; inga testutdelningar eller ändrade matchtotaler.
 
 ## Gemensamma spelarnamn i veckolistor
 - [x] Namndubbletter kontrolleras över samma veckounderlag före topptio-urvalet i båda listorna; poäng/rankning och sparade namn oförändrade. Migration 0109 driftsatt.

@@ -2,9 +2,8 @@
  * In-app rating prompt.
  *
  * Rules:
- * - Only asked right after a happy moment (the player won or scored a Yatzy),
- *   and only once the player has finished at least 3 matches.
- * - "Senare" waits for 5 more finished matches + a new happy moment.
+ * - Asked once the player has finished at least 5 matches, regardless of outcome.
+ * - "Senare" waits for 10, then 20 more finished matches.
  * - At most 3 asks in total; "Ge betyg" ends it for good.
  * - Rating itself uses Apple's native in-app review sheet (no app switch).
  */
@@ -17,9 +16,9 @@ const LATER_COUNT_KEY = 'mrbyatzy_rate_later_count';
 const HAPPY_KEY = 'mrbyatzy_rate_happy_pending';
 
 /** Number of finished matches required before the first prompt. */
-export const RATE_PROMPT_THRESHOLD = 3;
+export const RATE_PROMPT_THRESHOLD = 5;
 /** Extra matches required after the user postponed. */
-const SNOOZE_STEP = 5;
+const SNOOZE_STEPS = [10, 20];
 /** "Senare" this many times → never ask again. */
 const MAX_LATER = 3;
 
@@ -31,12 +30,12 @@ export function markHappyMoment(): void {
 export function shouldShowRatePrompt(gamesPlayed: number): boolean {
   try {
     if (localStorage.getItem(DONE_KEY) === '1') return false;
-    if (localStorage.getItem(HAPPY_KEY) !== '1') return false;
     const laters = parseInt(localStorage.getItem(LATER_COUNT_KEY) || '0', 10) || 0;
     if (laters >= MAX_LATER) return false;
     const asked = parseInt(localStorage.getItem(ASKED_AT_KEY) || '0', 10) || 0;
-    if (asked === 0) return gamesPlayed >= RATE_PROMPT_THRESHOLD;
-    return gamesPlayed >= asked + SNOOZE_STEP;
+    if (laters === 0) return gamesPlayed >= RATE_PROMPT_THRESHOLD;
+    const step = SNOOZE_STEPS[laters - 1];
+    return step !== undefined && gamesPlayed >= asked + step;
   } catch {
     return false;
   }

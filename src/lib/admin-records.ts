@@ -23,6 +23,19 @@ export function adminCellValue(row: AdminDayRow, key: AdminColumnKey): number {
   return Number(row[key] ?? 0);
 }
 
+/** Calendar-day mean ending on the row's Stockholm date; incomplete windows stay unknown. */
+export function adminRollingMean(rows: AdminDayRow[], day: string, key: AdminColumnKey): number | null {
+  const end = Date.parse(`${day}T00:00:00Z`);
+  const start = end - 29 * 86_400_000;
+  const window = rows.filter((row) => {
+    const time = Date.parse(`${row.day}T00:00:00Z`);
+    return time >= start && time <= end;
+  });
+  if (new Set(window.map((row) => row.day)).size !== 30) return null;
+  if (window.some((row) => key === "avg_app_age_days" && row[key] == null)) return null;
+  return window.reduce((sum, row) => sum + adminCellValue(row, key), 0) / 30;
+}
+
 /**
  * Row index holding the column record (highest number) for each column.
  * Rows arrive newest day first, so ties go to the most recent day.

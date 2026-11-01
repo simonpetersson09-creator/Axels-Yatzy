@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Veckolistor – senaste 24h
+- [x] Rullande 24h av accepterade färdigmatchrapporter, separat tidslogg med enhetsradering; veckototaler/rankning oförändrade. Ingen säker äldre dygnshistorik finns: visar — tills 24h samlats från 1 nov 08:49 UTC.
+- [x] 24h bredvid veckototal i båda listor; 13 tester godkända, fyra isolerade SQL-prov. Båda listor med 17 senaste 24h/123 veckomatcher verifierade och bildgranskade med avskilda svar. Bygge OK; når telefonerna med nästa appbygge.
+
 ## Veckopriser – 1 november
 - [x] Serverstyrd utdelning: 3/2/1 XP för topp tre i båda listorna, separat och atomiskt per vecka. Första vecka 26 oktober; två söndagskörningar täcker Stockholm vinter/sommartid. Serverläsning verifierad, inga retroaktiva priser.
 - [x] Beständig enhetskontrollerad vinstpopup på startsidan, samordnad med andra notiser, synliga priser i listorna. XP tilldelas även offline; popup väntar till nästa startsidesbesök och kvitteras på servern.

@@ -3,7 +3,7 @@
 - Serialize Home news/prizes. Weekly XP: atomic per-list/week settlement, device-bound durable receipts, wallet-delete cascade (no double pay/privacy).
 - WebGate in App.tsx blocks public gameplay with the App Store page; /join, /legal, /admin stay open; preview/localhost remain playable.
 - Dice colour rules (tiers, temp gold) live server-side in dice_progress/referral_rewards; the client reads get_gold_dice/get_dice_skins and reports matches via record_local_yatzy_match. Unlocked tiers are selectable; select_dice_design validates rank.
-- Icon source: resources/icon.png (1024px, opaque). `npm run icons` regenerates native/public copies; never edit outputs.
+- Icon: resources/icon.png (1024px opaque); `npm run icons` regenerates native/public; never edit outputs.
 - Admin: protected SQL; issues: latest 2 numeric app releases from sessions/events, builds ignored. Finished: null forfeits; played: starts/active/completed/own rolls. Full-history age; key validates/logout clears.
 - admob.ts: platform-specific IDs (null disables; never cross platforms); fitGameAboveBanner reserves banner space. rewarded-pair/RewardedXpHost pay confirmed SDK rewards once; clear legacy partial bundles, never auto-chain. Preserve App Open suppression. Raw fullscreen load owners survive wait timeouts; native patch after privacy coalesces per-unit, guards generation/owner before SDK/results, never clears newer slots. XP reload only after presentation; interstitial Dismissed owns reload. Rewarded attemptId events prevent overlap/unearned XP.
 - Store links: getStoreLinks; hide Play until PLAY_STORE_LIVE.
@@ -20,7 +20,7 @@
 - Game layout resets only on orientationchange, preserving state/ads. Tablet CSS uses shared tokens and stable classes (never text sizes/DOM position; tablet-layout.test.ts); online keeps 20 rows, names above centred dice and turn in roll button.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
-- Weekly lists use server ranks; most-games notices compare before/after reporting with a Stockholm-week cache. Score reporting trims names and caps scores server-side.
+- Weekly server ranks; most-games notices compare before/after reports with Stockholm-week cache; server trims names/caps scores.
 - Forfeits affect no statistics: recordGameResult(completed=false) is a no-op; preserve all pre-existing totals rather than recalculating history.
 - Local match identities persist per game slot and rotate only on replay; commit stats and an untrimmed dedupe ledger atomically before marking multiplayer results recorded, so restarts cannot double-count future matches.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.
@@ -32,9 +32,9 @@
 
 - Ad privacy: sync patches UMP/readers/cache bridge. UMP errors/timeouts read native canRequestAds; only true allows ads. Changes block ads/discard caches before+after UMP; reject stale loads, fail closed without bridge. Never reset UMP/interrupt ads/store consent/log choices or errors. OBTAINED isn't acceptance.
 - Deletion: device-bound delete_player_data RPC, then local/native cleanup; retain anonymous shared outcomes and opponents' data. Web ad privacy explains native-only consent.
-- Period labels use shared Stockholm formatting for server boundaries.
+- Period labels share Stockholm server-boundary formatting.
 - Finished analytics dedupe persistently; completion requires committed stats. PlayJourneyHost tracks coarse actions/screens and first/last activity; network exits imply correlation, not cause. No names, inputs, admin or consent; retries retain event IDs.
-- Rank ties: matches, created_at, session_id; totals unchanged.
+- Rank ties: matches/created_at/session_id; totals unchanged. 24h uses a separate accepted-report log, owner-delete cascade, no guessed history.
 - - Waiting room: device-checked seats, single lock/server countdown, public revision only. recall_until governs nonready deadlines; deprecated expires_at never expires solo seats. Reuse maintenance cron. Push: immutable seat, dedupe/expiry, durable tap, App Open guard.
 - WR pushes reserve a device-scoped rate_limits key (internal_waiting_room_take_push); suppressed recalls are consumed and delivery uses the same device, so churn cannot bypass cooldown; no other category shares it.
 - WR quick chat uses the game's ephemeral broadcast approach with fixed translated phrase IDs and current present seat IDs, not names or free text; it never mutates ready or game state.

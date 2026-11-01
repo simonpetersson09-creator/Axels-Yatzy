@@ -1045,6 +1045,47 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_game_completions: {
+        Row: {
+          completed_at: string
+          id: number
+          session_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: never
+          session_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: never
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_game_completions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_owners"
+            referencedColumns: ["session_id"]
+          },
+        ]
+      }
+      weekly_game_tracking: {
+        Row: {
+          id: number
+          started_at: string
+        }
+        Insert: {
+          id: number
+          started_at?: string
+        }
+        Update: {
+          id?: number
+          started_at?: string
+        }
+        Relationships: []
+      }
       weekly_hall_of_fame: {
         Row: {
           best_at: string
@@ -1429,6 +1470,7 @@ export type Database = {
         Args: { p_limit?: number; p_period?: string }
         Returns: Json
       }
+      get_weekly_games_24h: { Args: { p_session_ids: string[] }; Returns: Json }
       get_weekly_hall_of_fame: { Args: { p_limit?: number }; Returns: Json }
       get_weekly_most_games: { Args: { p_limit?: number }; Returns: Json }
       get_weekly_rank: { Args: { p_session_id: string }; Returns: Json }

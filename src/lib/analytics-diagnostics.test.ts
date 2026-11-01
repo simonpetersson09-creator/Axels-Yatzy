@@ -10,7 +10,7 @@ vi.mock('@/lib/app-version', () => ({ appVersionReady: Promise.resolve('5.4'), g
 describe('diagnostics delivery', () => {
   beforeEach(() => { vi.useFakeTimers(); vi.resetModules(); localStorage.clear(); mocks.rpc.mockReset(); });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); });
-  it.each(['play_network_exit', 'ios_app_open_diag', 'stats_opened'])('retains %s on failure and retries with the same event ID', async (event) => {
+  it.each(['play_network_exit', 'ios_app_open_diag', 'stats_opened', 'ad_opportunity'])('retains %s on failure and retries with the same event ID', async (event) => {
     mocks.rpc.mockResolvedValueOnce({ error: { message: 'offline' } }).mockResolvedValue({ error: null });
     const { trackEvent } = await import('./analytics');
     trackEvent(event, { reason: 'screen_left' });

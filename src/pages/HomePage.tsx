@@ -40,7 +40,7 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, getCachedRankInfo, countryToFlag, countryName, type RankInfo } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
-import { isAdMobAvailable, preloadRewarded, subscribeRewardedState, getRewardedState, showAppOpenAd, preloadAppOpenAd } from '@/lib/admob';
+import { isAdMobAvailable, preloadRewarded, subscribeRewardedState, getRewardedState, showAppOpenAd, preloadAppOpenAd, trackAdOpportunity } from '@/lib/admob';
 import { optionalAdPair } from '@/lib/rewarded-pair';
 import { OptionalAdsDialog } from '@/components/OptionalAdsDialog';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
@@ -64,7 +64,7 @@ let resumeHomeEpoch = 0;
 let resumeWatcherInstalled = false;
 const onStartScreen = () => window.location.pathname === '/' && document.visibilityState === 'visible';
 async function tryShowResumeAd() {
-  if (!onStartScreen()) return;
+  if (!onStartScreen()) { trackAdOpportunity('appOpen', 'resume', 'skipped', 'not_on_home'); return; }
   const epoch = resumeHomeEpoch;
   if (await showAppOpenAd(() => epoch === resumeHomeEpoch && onStartScreen(), 'resume')) trackEvent('resume_ad');
 }
@@ -84,7 +84,7 @@ function installResumeAdWatcher() {
       }
       const away = backgroundedAt ? Date.now() - backgroundedAt : 0;
       backgroundedAt = 0;
-      if (away < RESUME_AD_MIN_AWAY_MS) return;
+      if (away < RESUME_AD_MIN_AWAY_MS) { if (away > 0) trackAdOpportunity('appOpen', 'resume', 'skipped', 'away_too_short'); return; }
       void tryShowResumeAd();
     });
   })();

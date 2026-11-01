@@ -1,6 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Admin – ordning och 30-dagarsmedel
+- [x] Aktiva enheter och iPhone/Android minimerade från början; egna pilar fäller ut/minimerar oberoende. Rekordlinjer mäts om och medel/grundsiffror bevaras; körande avskilt visningsprov, bildgranskning och 17 tester godkända. Bygge OK, ingen publicering.
 - [x] Spelande direkt efter aktiva; löpande 30 kalenderdagars dagsmedel i parentes, separat för iOS/Android. Grundsiffror oförändrade; ofullständigt underlag visas som —.
 - [x] 17 tester godkända; avskild admininloggning/tabell verifierad och bildgranskad. Bygge OK; inga ändrade livedata eller publicering.
 

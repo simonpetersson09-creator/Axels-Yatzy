@@ -5,6 +5,7 @@ import postgres from 'postgres';
 const url = process.env.SUPABASE_DB_URL;
 const db = url ? postgres(url, { max: 1, prepare: false }) : null;
 const migration = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8');
+const optimization = readFileSync('drizzle/migrations/0104_admin_issue_release_lookup_distinct.sql', 'utf8');
 afterAll(async () => { if (db) await db.end(); });
 
 type Event = { version: string | null; platform?: string; name?: string; yesterday?: boolean };
@@ -25,6 +26,7 @@ describe.skipIf(!url)('admin issues latest two releases (isolated SQL)', () => {
       for (const definition of definitions) {
         await sql.unsafe(definition.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       }
+      await sql.unsafe(optimization.replace(/public\.admin_/g, 'pg_temp.admin_'));
       for (const version of sessions) {
         await sql`insert into pg_temp.analytics_sessions values ('device', 'ios', now(), now(), ${version})`;
       }

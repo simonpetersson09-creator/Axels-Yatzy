@@ -20,7 +20,7 @@
 - Game layout resets only on orientationchange, preserving state/ads. Tablet CSS uses shared tokens and stable classes (never text sizes/DOM position; tablet-layout.test.ts); online keeps 20 rows, names above centred dice and turn in roll button.
 - accept_invite merges crossed invites (A→B, B→A) into one game via a pair lock.
 - "Use white dice" is stored server-side (set_dice_prefer_white → prefer_white in get_gold_dice/get_dice_profiles); it changes only dice colour, never tiers — opponents see it too.
-- Weekly server ranks; most-games notices compare before/after reports with Stockholm-week cache; server trims names/caps scores.
+- Weekly ranks/notices use Stockholm weeks; trim names/cap scores. Missing country uses player_country_stats; keep ranks/totals.
 - Forfeits affect no statistics: recordGameResult(completed=false) is a no-op; preserve all pre-existing totals rather than recalculating history.
 - Local match identities persist per game slot and rotate only on replay; commit stats and an untrimmed dedupe ledger atomically before marking multiplayer results recorded, so restarts cannot double-count future matches.
 - Shop extras (cel_*/frame_*) use dice_designs/select_cosmetic; buy_dice_design checks available_until.

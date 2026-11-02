@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Veckolistor – saknad landsflagga
+- [x] Båda listorna och framtida rapporter återanvänder registrerat spelarland när veckoposten saknar land; migration 0112 driftsatt, poäng/matcher/placeringar bevarade.
+- [x] 15 tester godkända; riktiga serverlistor visar Maxence med FR, 265 poäng och 3 matcher i båda. Inga testdata i spelarstatistiken; bygge OK.
+
 ## Admin – ordning och 30-dagarsmedel
 - [x] Aktiva enheter och iPhone/Android minimerade från början; egna pilar fäller ut/minimerar oberoende. Rekordlinjer mäts om och medel/grundsiffror bevaras; körande avskilt visningsprov, bildgranskning och 17 tester godkända. Bygge OK, ingen publicering.
 - [x] Spelande direkt efter aktiva; löpande 30 kalenderdagars dagsmedel i parentes, separat för iOS/Android. Grundsiffror oförändrade; ofullständigt underlag visas som —.

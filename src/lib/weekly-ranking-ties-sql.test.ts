@@ -9,6 +9,7 @@ describe.skipIf(!db)('weekly tie rules — isolated copies of deployed functions
     await db.begin(async sql => {
       await sql.unsafe(`
         CREATE TEMP TABLE weekly_hall_of_fame(session_id text,first_name text,country text,week_start date,best_score integer,games_played integer,best_at timestamptz,updated_at timestamptz) ON COMMIT DROP;
+        CREATE TEMP TABLE player_country_stats(session_id text PRIMARY KEY,country text) ON COMMIT DROP;
         CREATE TEMP TABLE weekly_reward_periods(week_start date) ON COMMIT DROP;
         CREATE TEMP TABLE player_xp(session_id text PRIMARY KEY,xp integer DEFAULT 0,updated_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE weekly_xp_rewards(session_id text,week_start date,list text,rank integer,xp integer) ON COMMIT DROP;

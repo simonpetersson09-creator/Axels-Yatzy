@@ -785,6 +785,13 @@
       "when": 1793531811687,
       "tag": "0111_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 112,
+      "version": "7",
+      "when": 1793647756158,
+      "tag": "0112_weekly_country_fallback",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,7 @@ import { getRankedGames } from './local-stats';
 import { trackEvent } from './analytics';
 import { recordAppOpenDiagnostic } from './app-open-diagnostics';
 import { setAppOpenPresentationPending } from './app-open-presentation';
+import { recordAdLoadDiagnostic } from './ad-load-diagnostics';
 
 /* ------------------------------------------------------------------ */
 /* Central konfiguration                                               */
@@ -80,6 +81,15 @@ type AdMobModule = typeof import('@capacitor-community/admob');
 
 let modulePromise: Promise<AdMobModule> | null = null;
 let diagnosticListener: Promise<unknown> | null = null;
+let loadDiagnosticListener: Promise<unknown> | null = null;
+function attachLoadDiagnostics(mod: AdMobModule): void {
+  if (!adPlatform() || loadDiagnosticListener) return;
+  try {
+    const native = mod.AdMob as unknown as { addListener(name: string, callback: (data: Record<string, unknown>) => void): Promise<unknown> };
+    loadDiagnosticListener = native.addListener('adLoadDiagnostic', recordAdLoadDiagnostic)
+      .catch(() => { loadDiagnosticListener = null; });
+  } catch { /* Older native builds remain playable. */ }
+}
 function attachIOSDiagnostics(mod: AdMobModule): void {
   if (adPlatform() !== 'ios' || diagnosticListener) return;
   try {
@@ -470,6 +480,7 @@ async function ensureInitialized(): Promise<AdMobModule> {
 async function initializeAds(generation: number): Promise<AdMobModule> {
   const mod = await loadModule();
   // Samtycke först: inga annonser begärs innan spelaren svarat i EU.
+  attachLoadDiagnostics(mod);
   let canRequest = await ensureConsent(mod);
   // Eligibility reads after timeout do not mean a pending UMP UI has ended.
   // Keep the shared initialization parked; caller deadlines leave gameplay free.

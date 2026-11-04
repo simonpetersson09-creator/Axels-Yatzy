@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Matchannons – tidigare förladdning och leveransdiagnostik
+- [x] Förladda från runda 13 lokalt/online; pågående/cachelagrad annons återanvänds, ingen ändrad visningsregel.
+- [x] Säkra SDK-feldomäner/koder och aggregerad svarsinformation för banner/interstitial på iOS/Android; båda patchkedjorna verifierade upprepade gånger.
+- [x] 139 regressionstester godkända; isolerat körande flöde verifierar runda 12→13 utan visning, färdig match→hem efter stängningsbesked samt filtrerad diagnostik. Bygge OK; ingen publicering eller live-testdata.
+- [ ] Riktig SDK-kompilering och fysisk verifiering kräver nya signerade iOS-/Android-byggen och testtelefoner; se docs/post-match-preload-diagnostics.md.
+
 ## Kast – tidsdiagnostik
 - [x] Migration 0113 returnerar serverbehandling utan extra kast/skrivningar; långsamma/misslyckade klientanrop mäter enhetskontroll och övrig väntan med gemensamt försöks-ID. Behörigheter och kast-/återhämtningsregler bevarade.
 - [x] 30 tester godkända, inklusive isolerat SQL-prov utan riktiga matcher/spelaruppgifter. Bygge OK; telefonmätningen kräver nästa appbygge, ingen publicering.

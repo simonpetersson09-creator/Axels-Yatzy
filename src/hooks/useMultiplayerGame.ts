@@ -970,6 +970,7 @@ export function useMultiplayerGame() {
     }
 
     const rollStartedAt = Date.now();
+    const rollAttemptId = crypto.randomUUID();
     // Scoring stays blocked until the server has confirmed this roll (or the
     // real state has been reloaded after a failure).
     rollConfirmedRef.current = false;
@@ -1003,7 +1004,7 @@ export function useMultiplayerGame() {
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
         withTimeout(directRpc('client_roll', 'roll-dice', {
           p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
-        }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked })).then(
+        }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId })).then(
           (res) => finish(() => resolve(res as RollRes)),
           (err) => { invokeFailed = err ?? new Error('timeout'); },
         );
@@ -1017,7 +1018,7 @@ export function useMultiplayerGame() {
                 .select('dice, rolls_left, round, current_player_index')
                 .eq('id', gid).maybeSingle()), 5_000);
               if (g && g.round === expect.round && g.current_player_index === expect.player && g.rolls_left === expect.rollsLeft) {
-                reportMpIssue('roll_recovered', gid, { ms: Date.now() - rollStartedAt });
+                reportMpIssue('roll_recovered', gid, { ms: Date.now() - rollStartedAt, attempt_id: rollAttemptId });
                 finish(() => resolve({ data: { success: true, dice: g.dice, rolls_left: g.rolls_left }, error: null }));
                 return;
               }
@@ -1039,9 +1040,9 @@ export function useMultiplayerGame() {
       const rollMs = Date.now() - rollStartedAt;
       const ok = !error && Array.isArray(data?.dice) && data.dice.length === 5 && typeof data?.rolls_left === 'number';
       if (error && (error as Error)?.message !== 'lock-unconfirmed') {
-        reportMpIssue('roll_error', latest.gameId, { ms: rollMs, err: errText(error) });
+        reportMpIssue('roll_error', latest.gameId, { ms: rollMs, err: errText(error), attempt_id: rollAttemptId });
       } else if (ok && rollMs > MP_SLOW_MS) {
-        reportMpIssue('roll_slow', latest.gameId, { ms: rollMs });
+        reportMpIssue('roll_slow', latest.gameId, { ms: rollMs, attempt_id: rollAttemptId });
       }
       serverDoneAt = Date.now();
       if (ok) {

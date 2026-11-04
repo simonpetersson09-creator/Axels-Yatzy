@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Kast – tidsdiagnostik
+- [ ] Mät serverbehandling, enhetskontroll och total väntan med gemensamt försöks-ID; behåll kast-/återhämtningsregler och behörigheter.
+- [ ] Kör isolerade server-/klienttester och verifiera mätning utan riktiga spelaruppgifter; telefonmätningen kräver nästa appbygge.
+
 ## Veckolistor – saknad landsflagga
 - [x] Båda listorna och framtida rapporter återanvänder registrerat spelarland när veckoposten saknar land; migration 0112 driftsatt, poäng/matcher/placeringar bevarade.
 - [x] 15 tester godkända; riktiga serverlistor visar Maxence med FR, 265 poäng och 3 matcher i båda. Inga testdata i spelarstatistiken; bygge OK.

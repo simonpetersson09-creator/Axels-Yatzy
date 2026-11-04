@@ -25,6 +25,7 @@ describe('verify-admob-patches', () => {
 
   it('accepts complete iOS and Android sources (all required AdMob pieces present)', async () => {
     const iosSource = [
+      'MRB_AD_LOAD_DIAGNOSTICS', '"adLoadDiagnostic"', 'GADErrorUserInfoKeyResponseInfo', 'reportLoadFailure(error, kind:',
       'CAPPluginMethod(name: "noteAppOpenDiagnostic", returnType: CAPPluginReturnPromise)',
       '@objc func noteAppOpenDiagnostic(_ call: CAPPluginCall)',
       'diagnosticAttemptId', 'adDidRecordImpression', 'diagnostic("load_requested")',
@@ -53,6 +54,7 @@ describe('verify-admob-patches', () => {
       'call.reject(message, nil, nil, details)',
     ].join('\n');
     const androidSource = [
+      'MRB_AD_LOAD_DIAGNOSTICS', '"adLoadDiagnostic"', 'getAdapterResponses()', 'reportLoadFailure(adError);', 'reportLoadFailure(error);',
       '@PluginMethod public void getStoredConsentChoices(final PluginCall call)',
       '@PluginMethod public void getConsentEligibility(final PluginCall call)',
       '@PluginMethod public void discardPrivacyCaches(final PluginCall call)',

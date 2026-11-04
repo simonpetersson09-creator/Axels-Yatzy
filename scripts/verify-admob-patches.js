@@ -13,6 +13,12 @@ const ios = 'ios/Sources/AdMobPlugin/';
 const rewardedAndroid = 'android/src/main/java/com/getcapacitor/community/admob/rewarded/';
 const checks = {
   ios: [
+    ...['Banner/BannerExecutor.swift', 'Interstitial/AdInterstitialExecutor.swift'].map(file => [ios + file, [
+      ['MRB_AD_LOAD_DIAGNOSTICS', 'strukturerad annonsladdningsdiagnostik'],
+      ['"adLoadDiagnostic"', 'annonsdiagnostikhändelse'],
+      ['GADErrorUserInfoKeyResponseInfo', 'SDK-svarsinformation'],
+      ['reportLoadFailure(error, kind:', 'SDK-felkoppling'],
+    ]]),
     [ios + 'AdMobPlugin.swift', [
       ['CAPPluginMethod(name: "noteAppOpenDiagnostic", returnType: CAPPluginReturnPromise)', 'registrering av noteAppOpenDiagnostic'],
       ['@objc func noteAppOpenDiagnostic(_ call: CAPPluginCall)', 'implementation av noteAppOpenDiagnostic'],
@@ -58,6 +64,12 @@ const checks = {
     ]],
   ],
   android: [
+    ...['banner/BannerExecutor.java', 'interstitial/AdInterstitialExecutor.java'].map(file => ['android/src/main/java/com/getcapacitor/community/admob/' + file, [
+      ['MRB_AD_LOAD_DIAGNOSTICS', 'strukturerad annonsladdningsdiagnostik'],
+      ['"adLoadDiagnostic"', 'annonsdiagnostikhändelse'],
+      ['getAdapterResponses()', 'SDK-svarsinformation'],
+      [file.startsWith('banner') ? 'reportLoadFailure(adError);' : 'reportLoadFailure(error);', 'SDK-felkoppling'],
+    ]]),
     ...['interstitial/AdInterstitialExecutor.java', 'rewarded/AdRewardExecutor.java'].map(file => ['android/src/main/java/com/getcapacitor/community/admob/' + file, [
       ['public void discardPrivacyCache()', 'cacherensning för helskärmsannons'],
       ['MRB_FULLSCREEN_LOAD_OWNER', 'SDK-laddningsägarskap'],

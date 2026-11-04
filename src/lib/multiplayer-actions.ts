@@ -22,7 +22,7 @@ export async function directRpc(
       trackEvent('play_roll_timing', {
         event_id: crypto.randomUUID(), attempt_id: attemptId,
         occurred_at: new Date().toISOString(), ok,
-        response_received: requested !== null,
+        request_dispatched: requested !== null,
         ...rollTiming(ended - started, (requested ?? ended) - started, requested === null ? 0 : ended - requested, serverMs),
       }, { gameId: typeof args.p_game_id === 'string' ? args.p_game_id : null, gameMode: 'multiplayer' });
     } catch { /* Diagnostics never affect a roll. */ }

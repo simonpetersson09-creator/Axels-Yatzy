@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Kast – tidsdiagnostik
-- [ ] Mät serverbehandling, enhetskontroll och total väntan med gemensamt försöks-ID; behåll kast-/återhämtningsregler och behörigheter.
-- [ ] Kör isolerade server-/klienttester och verifiera mätning utan riktiga spelaruppgifter; telefonmätningen kräver nästa appbygge.
+- [x] Migration 0113 returnerar serverbehandling utan extra kast/skrivningar; långsamma/misslyckade klientanrop mäter enhetskontroll och övrig väntan med gemensamt försöks-ID. Behörigheter och kast-/återhämtningsregler bevarade.
+- [x] 30 tester godkända, inklusive isolerat SQL-prov utan riktiga matcher/spelaruppgifter. Bygge OK; telefonmätningen kräver nästa appbygge, ingen publicering.
 
 ## Veckolistor – saknad landsflagga
 - [x] Båda listorna och framtida rapporter återanvänder registrerat spelarland när veckoposten saknar land; migration 0112 driftsatt, poäng/matcher/placeringar bevarade.

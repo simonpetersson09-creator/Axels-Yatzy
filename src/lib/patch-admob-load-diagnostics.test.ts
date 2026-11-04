@@ -26,8 +26,11 @@ describe('SDK load diagnostic patch', () => {
       const patched = files.map(({ file, before }) => {
         const after = readFileSync(file, 'utf8');
         expect(after).toContain('MRB_AD_LOAD_DIAGNOSTICS');
-        const helper = after.slice(after.indexOf('// MRB_AD_LOAD_DIAGNOSTICS'), after.indexOf('reportLoadFailure(error, kind:') > 0
-          ? after.indexOf('reportLoadFailure(error, kind:') : undefined);
+        const helperStart = after.indexOf('    // MRB_AD_LOAD_DIAGNOSTICS');
+        const helperEnd = platform === 'ios' ? after.indexOf('\n    func ', helperStart)
+          : file.endsWith('banner/BannerExecutor.java') ? after.indexOf('\n\n    public BannerExecutor(', helperStart)
+          : after.indexOf('\n    public ', helperStart);
+        const helper = after.slice(helperStart, helperEnd);
         expect(helper).not.toContain('responseIdentifier');
         expect(helper).not.toContain('getResponseId()');
         // All existing control-flow code is preserved once instrumentation is removed.

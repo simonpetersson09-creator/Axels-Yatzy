@@ -381,7 +381,7 @@ export default function GamePage() {
     `local:${localMatchKeyRef.current}`, gameState?.gameOver === true, handleBackToMenu,
   );
   usePostMatchPreload(`local:${localMatchKeyRef.current}`,
-    !!gameState && !gameState.gameOver && gameState.round >= 13);
+    gameState?.round, !!gameState && !gameState.gameOver);
 
   if (!gameState) return null;
 

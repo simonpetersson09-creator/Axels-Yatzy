@@ -435,7 +435,7 @@ export default function MultiplayerGamePage() {
       })
     );
   usePostMatchPreload(gameId ? `online:${gameId}` : null,
-    status === 'playing' && !!gameState && gameState.round >= 13 &&
+    gameState?.round, status === 'playing' && !!gameState &&
     !gameState.forfeitedBy && !gameState.forfeitedBySessionId);
   const [finishFallback, setFinishFallback] = useState(false);
   useEffect(() => {

@@ -6,15 +6,19 @@ import { usePostMatchPreload } from './usePostMatchPreload';
 beforeEach(() => ads.preloadInterstitial.mockClear());
 afterEach(cleanup);
 it('preloads only at the end and once per match, including repeated turns', () => {
-  const { rerender } = renderHook(({ key, end }) => usePostMatchPreload(key, end), { initialProps: { key: 'a', end: false } });
+  const { rerender } = renderHook(({ key, round }) => usePostMatchPreload(key, round, true), { initialProps: { key: 'a', round: 12 } });
   expect(ads.preloadInterstitial).not.toHaveBeenCalled();
-  rerender({ key: 'a', end: true });
-  rerender({ key: 'a', end: false }); rerender({ key: 'a', end: true });
+  rerender({ key: 'a', round: 13 });
+  rerender({ key: 'a', round: 14 }); rerender({ key: 'a', round: 15 });
   expect(ads.preloadInterstitial).toHaveBeenCalledOnce();
-  rerender({ key: 'b', end: true });
+  rerender({ key: 'b', round: 13 });
   expect(ads.preloadInterstitial).toHaveBeenCalledTimes(2);
 });
 it('never requests inventory without a match identity', () => {
-  renderHook(() => usePostMatchPreload(null, true));
+  renderHook(() => usePostMatchPreload(null, 13, true));
+  expect(ads.preloadInterstitial).not.toHaveBeenCalled();
+});
+it('does not preload for inactive or forfeited matches even in round 15', () => {
+  renderHook(() => usePostMatchPreload('forfeit', 15, false));
   expect(ads.preloadInterstitial).not.toHaveBeenCalled();
 });

@@ -336,6 +336,7 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
   // Never release a native delegate or reward lifecycle while it may present.
   if (privacyChanging || showing || rewardedShowing || appOpenShowing) return false;
   if (adPlatform() === 'ios' && (consentPending || trackingAsked && !trackingSettled)) return false;
+  let failed = false;
   privacyChanging = true;
   privacyBlocked = true;
   adGeneration++;
@@ -358,12 +359,22 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
     privacyBlocked = !eligible;
     return true;
   } catch {
-    // Fail closed, including on old native builds missing the cache bridge.
-    // Never log choices or privacy-form error payloads.
+    // Re-read current UMP eligibility; only explicit true lifts the temporary
+    // block, otherwise fail closed (incl. missing bridge). Lifting never shows
+    // an ad by itself. Never log choices or privacy-form error payloads.
+    failed = true;
+    try {
+      const mod = await loadModule();
+      const native = mod.AdMob as typeof mod.AdMob & { getConsentEligibility(): Promise<{ canRequestAds: boolean }> };
+      const current = await withTimeout(native.getConsentEligibility(), 5_000, 'consent_eligibility');
+      privacyBlocked = current?.canRequestAds !== true;
+    } catch {
+      privacyBlocked = true;
+    }
     return false;
   } finally {
     privacyChanging = false;
-    if (!privacyBlocked && bannerWanted) void showGameBanner(shownPlacement);
+    if (!failed && !privacyBlocked && bannerWanted) void showGameBanner(shownPlacement);
   }
 }
 

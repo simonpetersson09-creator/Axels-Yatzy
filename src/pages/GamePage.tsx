@@ -31,6 +31,7 @@ import { getPlayerName } from '@/lib/session';
 import { toast } from 'sonner';
 import { useGameBanner } from '@/hooks/useGameBanner';
 import { usePostMatchExit } from '@/hooks/usePostMatchExit';
+import { usePostMatchPreload } from '@/hooks/usePostMatchPreload';
 
 export default function GamePage() {
 
@@ -379,6 +380,8 @@ export default function GamePage() {
   const { leaving, leave } = usePostMatchExit(
     `local:${localMatchKeyRef.current}`, gameState?.gameOver === true, handleBackToMenu,
   );
+  usePostMatchPreload(`local:${localMatchKeyRef.current}`,
+    !!gameState && !gameState.gameOver && gameState.round >= 13);
 
   if (!gameState) return null;
 

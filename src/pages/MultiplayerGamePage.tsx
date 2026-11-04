@@ -40,6 +40,7 @@ import { QuickMatchTakeover } from '@/components/multiplayer/QuickMatchTakeover'
 import { useGameBanner } from '@/hooks/useGameBanner';
 import { getForfeitError } from '@/lib/forfeit-copy';
 import { usePlayNetworkDiagnostics } from '@/hooks/usePlayNetworkDiagnostics';
+import { usePostMatchPreload } from '@/hooks/usePostMatchPreload';
 
 const DEBUG = false;
 
@@ -433,6 +434,9 @@ export default function MultiplayerGamePage() {
         return v !== undefined && v !== null;
       })
     );
+  usePostMatchPreload(gameId ? `online:${gameId}` : null,
+    status === 'playing' && !!gameState && gameState.round >= 13 &&
+    !gameState.forfeitedBy && !gameState.forfeitedBySessionId);
   const [finishFallback, setFinishFallback] = useState(false);
   useEffect(() => {
     if (status === 'finished') return;

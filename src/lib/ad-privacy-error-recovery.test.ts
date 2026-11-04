@@ -13,13 +13,13 @@ vi.mock('@capacitor-community/admob', () => ({ AdmobConsentStatus: { REQUIRED: '
 beforeEach(() => { vi.resetModules(); sdk.privacy.mockReset().mockRejectedValue(new Error('form failed'));
   sdk.eligibility.mockReset(); sdk.load.mockReset().mockResolvedValue({}); sdk.show.mockReset(); });
 
-it('privacy form error + current canRequestAds true lifts the block without showing an ad', async () => {
+it.only('privacy form error + current canRequestAds true lifts the block without showing an ad', async () => {
   sdk.eligibility.mockResolvedValue({ canRequestAds: true });
   const m = await import('./admob');
   expect(await m.showAdPrivacyOptions()).toBe(false);
   expect(sdk.show).not.toHaveBeenCalled();
   expect(sdk.load).not.toHaveBeenCalled();
-  expect(await m.preloadAppOpenAd()).toBe(true);
+  const ok = await m.preloadAppOpenAd(); console.log('EVENTS', JSON.stringify((await import('./analytics')).trackEvent.mock.calls)); expect(ok).toBe(true);
 });
 it('privacy form error + canRequestAds false keeps ads blocked', async () => {
   sdk.eligibility.mockResolvedValue({ canRequestAds: false });

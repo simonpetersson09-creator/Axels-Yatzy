@@ -13,18 +13,15 @@
 import { readFile, writeFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
+import { permissionCopy, permissionKeys } from './ios-permission-copy.js';
+import { writePermissionLocalizations } from './ios-permission-localizations.js';
 
 const PLIST_PATH = resolve(process.cwd(), 'ios/App/App/Info.plist');
 
 /** key → string value that must be present in Info.plist. */
 const REQUIRED_STRING_KEYS = {
   GADApplicationIdentifier: 'ca-app-pub-7448540924654868~6494873071',
-  NSCameraUsageDescription:
-    'Kameran används endast för att skanna QR-koder när du ansluter till en väns spel.',
-  NSPhotoLibraryUsageDescription:
-    'Bildbiblioteket används endast om du vill välja en egen profilbild.',
-  NSUserTrackingUsageDescription:
-    'Ditt svar används bara för att visa annonser som passar dig bättre. Spelet är gratis tack vare annonserna.',
+  ...Object.fromEntries(permissionKeys.map((key, index) => [key, permissionCopy.sv[index]])),
 };
 
 /**
@@ -141,6 +138,7 @@ async function main() {
     content = upsertStringKey(content, key, value);
   }
   content = upsertSkAdNetworks(content);
+  await writePermissionLocalizations(resolve(process.cwd(), 'ios/App'));
   await writeFile(PLIST_PATH, content, 'utf-8');
 
   // Verify — a silently-failed regex replace must not pass unnoticed.
@@ -153,6 +151,7 @@ async function main() {
     process.exit(1);
   }
   console.log('[iOS plist] All required keys present.');
+  console.log('[iOS plist] Permission prompts localized in all 40 app languages.');
 }
 
 main().catch((err) => {

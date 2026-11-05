@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## iPhones behörighetsfrågor – översättningar
+- [x] Spårning, kamera och bildbibliotek översatta till appens 40 språk; native-texterna genereras och registreras vid varje iOS-sync utan ändrade behörighets-/annonsregler.
+- [x] Sju tester godkända: språktäckning, resursregistrering, idempotens och återgenerering i båda isolerade Capacitor-projektmallarna. Bygge OK; ingen publicering eller live-testdata.
+- [ ] Verklig språkupplösning i iPhones systemrutor kräver nytt signerat iOS-bygge och en iPhone.
+
 ## Matchannons – tidigare förladdning och leveransdiagnostik
 - [x] Förladda från runda 13 lokalt/online; pågående/cachelagrad annons återanvänds, ingen ändrad visningsregel.
 - [x] Säkra SDK-feldomäner/koder och aggregerad svarsinformation för banner/interstitial på iOS/Android; båda patchkedjorna verifierade upprepade gånger.

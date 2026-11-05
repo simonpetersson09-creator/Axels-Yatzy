@@ -12,6 +12,7 @@ function run(body: string) {
   const cwd = mkdtempSync(resolve(tmpdir(), 'plist-'));
   const file = resolve(cwd, 'ios/App/App/Info.plist');
   mkdirSync(resolve(cwd, 'ios/App/App'), { recursive: true });
+  execFileSync('tar', ['-xzf', resolve('node_modules/@capacitor/cli/assets/ios-pods-template.tar.gz'), '-C', resolve(cwd, 'ios')]);
   writeFileSync(file, head + body + tail);
   const exec = () => { execFileSync(process.execPath, [script], { cwd }); return readFileSync(file, 'utf8'); };
   return { exec, done: () => rmSync(cwd, { recursive: true, force: true }) };

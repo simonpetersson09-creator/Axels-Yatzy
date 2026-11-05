@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Veckolistans notiser och enstaka knappar – översättningar
+- [ ] Översätt kvarvarande engelska inträdes-/klättringsnotiser på alla appens språk och rätta identifierade knapptexter; spelregler, juridiksida och butikssida oförändrade.
+- [ ] Kontrollera språk och platshållare samt visning utan att skriva testdata i spelarstatistiken.
+
 ## iPhones behörighetsfrågor – översättningar
 - [x] Spårning, kamera och bildbibliotek översatta till appens 40 språk; native-texterna genereras och registreras vid varje iOS-sync utan ändrade behörighets-/annonsregler.
 - [x] Sju tester godkända: språktäckning, resursregistrering, idempotens och återgenerering i båda isolerade Capacitor-projektmallarna. Bygge OK; ingen publicering eller live-testdata.

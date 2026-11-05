@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## iPhones behörighetsfrågor – översättningar
-- [ ] Översätt spårning, kamera och bildbibliotek till appens 40 språk; generera och registrera native-texterna vid varje iOS-sync utan ändrade behörighets-/annonsregler.
-- [ ] Verifiera språktäckning, resursregistrering, idempotens och återgenerering i isolerade projektmallar.
+- [x] Spårning, kamera och bildbibliotek översatta till appens 40 språk; native-texterna genereras och registreras vid varje iOS-sync utan ändrade behörighets-/annonsregler.
+- [x] Sju tester godkända: språktäckning, resursregistrering, idempotens och återgenerering i båda isolerade Capacitor-projektmallarna. Bygge OK; ingen publicering eller live-testdata.
 - [ ] Verklig språkupplösning i iPhones systemrutor kräver nytt signerat iOS-bygge och en iPhone.
 
 ## Matchannons – tidigare förladdning och leveransdiagnostik

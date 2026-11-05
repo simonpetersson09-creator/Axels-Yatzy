@@ -21,7 +21,7 @@ beforeEach(() => {
   m.rpc.mockReset().mockImplementation(async (name: string) => ({ data: name === 'validate_game_session' ? { valid: true, player_index: 0 } : true, error: null }));
   m.from.mockReset().mockImplementation((table: string) => {
     const response = () => Promise.resolve(failReads ? { data: null, error: { message: 'offline' } } : { data: table === 'games' ? { ...game } : players, error: null });
-    const q = { select: () => q, eq: () => q, order: response, single: response, maybeSingle: () => Promise.resolve(failReads ? { data: null, error: { message: 'offline' } } : { data: players[0], error: null }) }; return q;
+    const q = { select: () => q, eq: () => q, order: response, single: response, maybeSingle: () => Promise.resolve(failReads ? { data: null, error: { message: 'offline' } } : { data: table === 'games' ? { ...game } : players[0], error: null }) }; return q;
   });
   m.roll.mockReset(); m.action.mockReset();
 });

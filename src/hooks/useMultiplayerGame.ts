@@ -34,6 +34,13 @@ export function isActionable(s: { status: string; gameState: { gameOver?: boolea
 function errText(e: unknown): string {
   return String((e as Error)?.message ?? e ?? '').slice(0, 200);
 }
+/** True when the call died on the network itself ("Load failed" on iOS,
+ * "Failed to fetch" elsewhere) rather than on a server answer or a timeout. */
+function isNetworkDrop(e: unknown): boolean {
+  const msg = errText(e).toLowerCase();
+  return msg.includes('load failed') || msg.includes('failed to fetch')
+    || msg.includes('networkerror') || msg.includes('network request failed');
+}
 
 
 type RollDicePart = { dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number };
@@ -1001,13 +1008,17 @@ export function useMultiplayerGame() {
       return new Promise<RollRes>((resolve, reject) => {
         let settled = false;
         let invokeFailed: unknown = null;
+        let resent = false;
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
-        withTimeout(directRpc('client_roll', 'roll-dice', {
-          p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
-        }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId })).then(
-          (res) => finish(() => resolve(res as RollRes)),
-          (err) => { invokeFailed = err ?? new Error('timeout'); },
-        );
+        const invokeRoll = () => {
+          withTimeout(directRpc('client_roll', 'roll-dice', {
+            p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
+          }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId })).then(
+            (res) => finish(() => resolve(res as RollRes)),
+            (err) => { invokeFailed = err ?? new Error('timeout'); },
+          );
+        };
+        invokeRoll();
         const poll = async () => {
           await new Promise((r) => setTimeout(r, ROLL_RECOVER_AFTER_MS));
           while (!settled && Date.now() - rollStartedAt < ROLL_RECOVER_DEADLINE_MS) {
@@ -1024,6 +1035,17 @@ export function useMultiplayerGame() {
               }
               // Turn moved on or the roll can no longer happen: stop waiting.
               if (g && (g.round !== expect.round || g.current_player_index !== expect.player || g.rolls_left < expect.rollsLeft)) break;
+              // The connection dropped before the roll reached the server —
+              // the read above proves rolls_left is unchanged, so sending the
+              // same roll once more cannot spend an extra roll.
+              if (!resent && invokeFailed && isNetworkDrop(invokeFailed) && g
+                && g.round === expect.round && g.current_player_index === expect.player
+                && g.rolls_left > expect.rollsLeft) {
+                resent = true;
+                invokeFailed = null;
+                reportMpIssue('roll_resent', gid, { ms: Date.now() - rollStartedAt, attempt_id: rollAttemptId });
+                invokeRoll();
+              }
             } catch { /* keep trying until the deadline */ }
             if (invokeFailed && Date.now() - rollStartedAt > ROLL_RECOVER_DEADLINE_MS) break;
             await new Promise((r) => setTimeout(r, ROLL_RECOVER_POLL_MS));

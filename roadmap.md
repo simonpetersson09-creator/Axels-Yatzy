@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Veckolistans notiser och enstaka knappar – översättningar
-- [ ] Översätt kvarvarande engelska inträdes-/klättringsnotiser på alla appens språk och rätta identifierade knapptexter; spelregler, juridiksida och butikssida oförändrade.
-- [ ] Kontrollera språk och platshållare samt visning utan att skriva testdata i spelarstatistiken.
+- [x] Inträdes-/klättringsnotiser översatta på de 33 kvarvarande språken; svenska Omatch, italienska Inizio och nederländska Later beoordelen rättade. Spelregler, juridiksida och butikssida oförändrade.
+- [x] Alla 40 språk kontrollerade i körande app med korrekta placeringar; fransk inträdesnotis → Afficher → Statistik och telugisk klättringsnotis bildgranskade på telefonmått utan runtimefel eller live-teststatistik. Tolv befintliga tester godkända, bygge OK. Installerade appar behöver nästa appversion.
 
 ## iPhones behörighetsfrågor – översättningar
 - [x] Spårning, kamera och bildbibliotek översatta till appens 40 språk; native-texterna genereras och registreras vid varje iOS-sync utan ändrade behörighets-/annonsregler.

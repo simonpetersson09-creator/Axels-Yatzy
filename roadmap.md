@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## iPhones behörighetsfrågor – översättningar
+- [ ] Översätt spårning, kamera och bildbibliotek till appens 40 språk; generera och registrera native-texterna vid varje iOS-sync utan ändrade behörighets-/annonsregler.
+- [ ] Verifiera språktäckning, resursregistrering, idempotens och återgenerering i isolerade projektmallar.
+- [ ] Verklig språkupplösning i iPhones systemrutor kräver nytt signerat iOS-bygge och en iPhone.
+
 ## Matchannons – tidigare förladdning och leveransdiagnostik
 - [x] Förladda från runda 13 lokalt/online; pågående/cachelagrad annons återanvänds, ingen ändrad visningsregel.
 - [x] Säkra SDK-feldomäner/koder och aggregerad svarsinformation för banner/interstitial på iOS/Android; båda patchkedjorna verifierade upprepade gånger.

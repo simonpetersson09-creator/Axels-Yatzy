@@ -25,6 +25,7 @@ import { getAnonNumber, reservePlayerName } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { getAdConsentChoices, isAdPrivacyOptionsRequired, showAdPrivacyOptions } from '@/lib/admob';
 import { readAdConsentChoices } from '@/lib/ad-consent';
+import { AdConsentSummary } from '@/components/AdConsentSummary';
 import { ShieldCheck } from 'lucide-react';
 import { getNotificationPrefs, setNotificationPrefs } from '@/lib/notifications';
 import { toast } from 'sonner';
@@ -490,22 +491,7 @@ export default function SettingsPage() {
               </Button>
               {adPrivacyOpen && <div id="saved-ad-choices" className="border-t border-border/40">
               {webPreview ? <p className="px-3 py-3 text-sm text-muted-foreground">{t('adPrivacyWeb')}</p> : <>
-              <div className="px-3 py-3" aria-live="polite">
-                <p className="text-xs font-semibold text-muted-foreground">{t('adPrivacySaved')}</p>
-                <p className="text-xs text-muted-foreground mt-1 mb-3">{t('adPrivacySource')}</p>
-                <dl className="space-y-3">
-                  {([
-                    ['adPrivacyStorage', adChoices.storage],
-                    ['adPrivacyProfile', adChoices.adProfile],
-                    ['adPrivacyUseProfile', adChoices.useAdProfile],
-                  ] as const).map(([label, choice]) => (
-                    <div key={label} className="flex items-start gap-3">
-                      <dt className="flex-1 min-w-0 text-sm text-foreground">{t(label)}</dt>
-                      <dd className={`max-w-[40%] text-right text-sm font-semibold ${choice === 'allowed' ? 'text-primary' : 'text-muted-foreground'}`}>{t(choice === 'allowed' ? 'adPrivacyAllowed' : choice === 'denied' ? 'adPrivacyDenied' : 'adPrivacyUnknown')}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
+              <AdConsentSummary choices={adChoices} />
               <Button variant="ghost" disabled={adPrivacyBusy} onClick={() => void changeAdPrivacy()}
                 className="h-auto w-full min-h-11 justify-start px-3 py-2.5 text-left border-t border-border/40 rounded-none">
                 <ShieldCheck className="w-4 h-4 text-primary" />

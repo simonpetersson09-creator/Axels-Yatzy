@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Onlinekast – automatiskt omförsök vid bruten anslutning
+- [x] Kast som dör på nätverket ("Load failed"/"Failed to fetch") skickas en gång till automatiskt, först efter att en serveravläsning bevisat att kastet aldrig nådde fram (oförändrat antal kast kvar) — aldrig blint, så inget extra kast kan spenderas. Timeout och serverfel får inget omförsök.
+- [x] 16 tester godkända, inklusive nytt: omförsök vid bruten anslutning och aldrig omförsök när kastet redan nått servern. Bygge OK; ingen publicering — syns i installerade appar först med nästa appversion.
+
 ## Veckolistans notiser och enstaka knappar – översättningar
 - [x] Inträdes-/klättringsnotiser översatta på de 33 kvarvarande språken; svenska Omatch, italienska Inizio och nederländska Later beoordelen rättade. Spelregler, juridiksida och butikssida oförändrade.
 - [x] Alla 40 språk kontrollerade i körande app med korrekta placeringar; fransk inträdesnotis → Afficher → Statistik och telugisk klättringsnotis bildgranskade på telefonmått utan runtimefel eller live-teststatistik. Tolv befintliga tester godkända, bygge OK. Installerade appar behöver nästa appversion.

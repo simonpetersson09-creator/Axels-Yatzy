@@ -1008,13 +1008,17 @@ export function useMultiplayerGame() {
       return new Promise<RollRes>((resolve, reject) => {
         let settled = false;
         let invokeFailed: unknown = null;
+        let resent = false;
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
-        withTimeout(directRpc('client_roll', 'roll-dice', {
-          p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
-        }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId })).then(
-          (res) => finish(() => resolve(res as RollRes)),
-          (err) => { invokeFailed = err ?? new Error('timeout'); },
-        );
+        const invokeRoll = () => {
+          withTimeout(directRpc('client_roll', 'roll-dice', {
+            p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
+          }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId })).then(
+            (res) => finish(() => resolve(res as RollRes)),
+            (err) => { invokeFailed = err ?? new Error('timeout'); },
+          );
+        };
+        invokeRoll();
         const poll = async () => {
           await new Promise((r) => setTimeout(r, ROLL_RECOVER_AFTER_MS));
           while (!settled && Date.now() - rollStartedAt < ROLL_RECOVER_DEADLINE_MS) {

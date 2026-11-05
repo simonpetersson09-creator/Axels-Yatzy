@@ -331,8 +331,8 @@ export const te: Partial<typeof sv> = {
   hofGamesSubtitle: "ఈ వారం అత్యధిక మ్యాచ్‌లు ఆడినవారు",
 
   hofBestShort: "అత్యుత్తమం",
-  hofEntered: "You made this week's top 10 – #{rank}!",
-  hofClimbed: "You climbed to #{rank} in this week's top 10!",
+  hofEntered: "మీరు ఈ వారం అగ్ర 10లో చేరారు – స్థానం {rank}!",
+  hofClimbed: "మీరు ఈ వారం అగ్ర 10లో స్థానం {rank}కి ఎదిగారు!",
   hofShow: 'చూపించు',
   hofDropped: 'మీరు ఈ వారం టాప్ 10లో #{rank}కు పడిపోయారు',
   hofDroppedOut: 'మీరు ఈ వారం టాప్ 10 నుండి బయటపడ్డారు',

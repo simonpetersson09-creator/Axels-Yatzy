@@ -331,8 +331,8 @@ export const kn: Partial<typeof sv> = {
   hofGamesSubtitle: "ಈ ವಾರ ಅತಿ ಹೆಚ್ಚು ಆಟಗಳನ್ನು ಆಡಿದವರು",
 
   hofBestShort: "ಅತ್ಯುತ್ತಮ",
-  hofEntered: "You made this week's top 10 – #{rank}!",
-  hofClimbed: "You climbed to #{rank} in this week's top 10!",
+  hofEntered: "ನೀವು ಈ ವಾರದ ಅಗ್ರ 10ರಲ್ಲಿ ಸ್ಥಾನ ಪಡೆದಿದ್ದೀರಿ – ಸ್ಥಾನ {rank}!",
+  hofClimbed: "ನೀವು ಈ ವಾರದ ಅಗ್ರ 10ರಲ್ಲಿ ಸ್ಥಾನ {rank}ಕ್ಕೆ ಏರಿದ್ದೀರಿ!",
   hofShow: 'ನೋಡಿ',
   hofDropped: 'ನೀವು ಈ ವಾರದ ಟಾಪ್ 10 ನಲ್ಲಿ #{rank} ಗೆ ಇಳಿದಿದ್ದೀರಿ',
   hofDroppedOut: 'ನೀವು ಈ ವಾರದ ಟಾಪ್ 10 ರಿಂದ ಹೊರಬಿದ್ದಿದ್ದೀರಿ',

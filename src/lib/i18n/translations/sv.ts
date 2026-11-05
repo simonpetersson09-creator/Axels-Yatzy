@@ -165,7 +165,7 @@ export const sv = {
   playerWins: '{name} vinner!',
   finalResult: 'Slutresultat',
   playAgain: 'Spela igen',
-  rematch: 'Rematch',
+  rematch: "Omatch",
   newMatch: 'Ny match',
   toHome: 'Till startsidan',
   matchEnded: 'Match avslutad',

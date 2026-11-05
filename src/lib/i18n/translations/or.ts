@@ -331,8 +331,8 @@ export const or: Partial<typeof sv> = {
   hofGamesSubtitle: "ଏହି ସପ୍ତାହରେ ସର୍ବାଧିକ ମ୍ୟାଚ୍ ଖେଳିଥିବା ଖେଳାଳି",
 
   hofBestShort: "ସର୍ବଶ୍ରେଷ୍ଠ",
-  hofEntered: "You made this week's top 10 – #{rank}!",
-  hofClimbed: "You climbed to #{rank} in this week's top 10!",
+  hofEntered: "ଆପଣ ଏହି ସପ୍ତାହର ଶ୍ରେଷ୍ଠ ୧୦ରେ ପହଞ୍ଚିଲେ – ସ୍ଥାନ {rank}!",
+  hofClimbed: "ଆପଣ ଏହି ସପ୍ତାହର ଶ୍ରେଷ୍ଠ ୧୦ରେ ସ୍ଥାନ {rank}କୁ ଉଠିଲେ!",
   hofShow: 'ଦେଖନ୍ତୁ',
   hofDropped: 'ଆପଣ ଏହି ସପ୍ତାହର ଟପ୍ 10 ରେ #{rank} କୁ ଓହ୍ଲାଇଛନ୍ତି',
   hofDroppedOut: 'ଆପଣ ଏହି ସପ୍ତାହର ଟପ୍ 10 ରୁ ବାହାରି ଯାଇଛନ୍ତି',

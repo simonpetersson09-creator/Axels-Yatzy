@@ -1035,6 +1035,17 @@ export function useMultiplayerGame() {
               }
               // Turn moved on or the roll can no longer happen: stop waiting.
               if (g && (g.round !== expect.round || g.current_player_index !== expect.player || g.rolls_left < expect.rollsLeft)) break;
+              // The connection dropped before the roll reached the server —
+              // the read above proves rolls_left is unchanged, so sending the
+              // same roll once more cannot spend an extra roll.
+              if (!resent && invokeFailed && isNetworkDrop(invokeFailed) && g
+                && g.round === expect.round && g.current_player_index === expect.player
+                && g.rolls_left > expect.rollsLeft) {
+                resent = true;
+                invokeFailed = null;
+                reportMpIssue('roll_resent', gid, { ms: Date.now() - rollStartedAt, attempt_id: rollAttemptId });
+                invokeRoll();
+              }
             } catch { /* keep trying until the deadline */ }
             if (invokeFailed && Date.now() - rollStartedAt > ROLL_RECOVER_DEADLINE_MS) break;
             await new Promise((r) => setTimeout(r, ROLL_RECOVER_POLL_MS));

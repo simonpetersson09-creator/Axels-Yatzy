@@ -34,6 +34,13 @@ export function isActionable(s: { status: string; gameState: { gameOver?: boolea
 function errText(e: unknown): string {
   return String((e as Error)?.message ?? e ?? '').slice(0, 200);
 }
+/** True when the call died on the network itself ("Load failed" on iOS,
+ * "Failed to fetch" elsewhere) rather than on a server answer or a timeout. */
+function isNetworkDrop(e: unknown): boolean {
+  const msg = errText(e).toLowerCase();
+  return msg.includes('load failed') || msg.includes('failed to fetch')
+    || msg.includes('networkerror') || msg.includes('network request failed');
+}
 
 
 type RollDicePart = { dice: number[]; lockedDice: boolean[]; isRolling: boolean; rollsLeft: number };

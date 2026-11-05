@@ -81,7 +81,7 @@ export const nl: Partial<typeof sv> = {
   joinSteps: "Open Mr.B. Yatzy, tik op Speel met een vriend en voer de code hierboven in.",
   joinPlayWeb: "Speel liever in de browser",
   shareInviteText: "Speel Yatzy met mij! 🎲 Code: {code}",
-  rateLater: "Later",
+  rateLater: "Later beoordelen",
 
   newGame: 'Nieuw spel',
   playerCount: 'Aantal spelers',
@@ -330,8 +330,8 @@ export const nl: Partial<typeof sv> = {
   hofGamesSubtitle: "Meeste wedstrijden gespeeld deze week",
 
   hofBestShort: "beste",
-  hofEntered: "You made this week's top 10 – #{rank}!",
-  hofClimbed: "You climbed to #{rank} in this week's top 10!",
+  hofEntered: "Je staat in de top 10 van deze week – plaats {rank}!",
+  hofClimbed: "Je bent gestegen naar plaats {rank} in de top 10 van deze week!",
   hofShow: 'Tonen',
   hofDropped: 'Je bent gezakt naar plek {rank} in de top 10 van deze week',
   hofDroppedOut: 'Je bent uit de top 10 van deze week gevallen',

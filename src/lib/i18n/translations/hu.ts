@@ -331,8 +331,8 @@ export const hu: Partial<typeof sv> = {
   hofGamesSubtitle: "A héten játszott legtöbb meccs",
 
   hofBestShort: "legjobb",
-  hofEntered: "You made this week's top 10 – #{rank}!",
-  hofClimbed: "You climbed to #{rank} in this week's top 10!",
+  hofEntered: "Bekerültél a heti top 10-be – {rank}. hely!",
+  hofClimbed: "Feljöttél a {rank}. helyre a heti top 10-ben!",
   hofShow: 'Megtekintés',
   hofDropped: 'A hét top 10-es listáján a(z) {rank}. helyre csúsztál',
   hofDroppedOut: 'Kiestél a hét top 10-es listájából',

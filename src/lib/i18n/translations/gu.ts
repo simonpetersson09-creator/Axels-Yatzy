@@ -331,8 +331,8 @@ export const gu: Partial<typeof sv> = {
   hofGamesSubtitle: "આ અઠવાડિયે સૌથી વધુ રમેલી મેચો",
 
   hofBestShort: "શ્રેષ્ઠ",
-  hofEntered: "You made this week's top 10 – #{rank}!",
-  hofClimbed: "You climbed to #{rank} in this week's top 10!",
+  hofEntered: "તમે આ અઠવાડિયાના ટોચના 10માં આવ્યા – સ્થાન {rank}!",
+  hofClimbed: "તમે આ અઠવાડિયાના ટોચના 10માં સ્થાન {rank} પર આગળ વધ્યા!",
   hofShow: 'જુઓ',
   hofDropped: 'તમે આ અઠવાડિયાની ટોપ 10 માં #{rank} પર નીચે આવ્યા',
   hofDroppedOut: 'તમે આ અઠવાડિયાની ટોપ 10 માંથી બહાર આવ્યા',

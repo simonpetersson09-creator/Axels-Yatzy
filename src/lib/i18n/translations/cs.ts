@@ -331,8 +331,8 @@ export const cs: Partial<typeof sv> = {
   hofGamesSubtitle: "Nejvíce odehraných zápasů tento týden",
 
   hofBestShort: "nejlepší",
-  hofEntered: "You made this week's top 10 – #{rank}!",
-  hofClimbed: "You climbed to #{rank} in this week's top 10!",
+  hofEntered: "Jsi v první desítce tohoto týdne – místo {rank}!",
+  hofClimbed: "Posouváš se na místo {rank} v první desítce tohoto týdne!",
   hofShow: 'Zobrazit',
   hofDropped: 'Klesl jsi na {rank}. místo v žebříčku týdne',
   hofDroppedOut: 'Vypadl jsi z desítky nejlepších tento týden',

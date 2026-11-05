@@ -66,6 +66,27 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.getPossibleScores()?.yatzy).toBe(50);
     expect(m.roll).toHaveBeenCalledTimes(1);
   });
+  it('resends the roll once when the connection drops before the server saw it', async () => {
+    const { result } = await joined();
+    m.roll.mockRejectedValueOnce(new Error('Load failed'))
+      .mockResolvedValue({ data: { success: true, dice: [2, 3, 4, 5, 6], rolls_left: 2 }, error: null });
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(10); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(4500); });
+    expect(m.roll).toHaveBeenCalledTimes(2);
+    expect(result.current.gameState?.dice).toEqual([2, 3, 4, 5, 6]);
+    expect(result.current.gameState?.rollsLeft).toBe(2);
+    expect(result.current.error).toBeNull();
+  });
+  it('never resends when the dropped roll already reached the server', async () => {
+    const { result } = await joined();
+    m.roll.mockRejectedValue(new Error('Load failed'));
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(10); });
+    game = { ...game, rolls_left: 2, dice: [6, 6, 6, 6, 6] };
+    await act(async () => { await vi.advanceTimersByTimeAsync(4500); });
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    expect(result.current.gameState?.dice).toEqual([6, 6, 6, 6, 6]);
+    expect(result.current.gameState?.rollsLeft).toBe(2);
+  });
   it('forfeit stays on playing state until acceptance and rejects duplicate taps', async () => {
     const { result } = await joined();
     let resolve: (value: unknown) => void = () => {};

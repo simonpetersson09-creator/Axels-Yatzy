@@ -554,6 +554,7 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
       : original(selector));
     vi.stubGlobal('innerHeight', 700);
     const m = await import('./admob');
+    m.ADMOB_CONFIG.useTestAds = false;
     expect(m.BANNER_IDS[platform as 'ios' | 'android']).toBe(platform === 'ios'
       ? 'ca-app-pub-7448540924654868/7786182090' : 'ca-app-pub-7448540924654868/2816751438');
     const search = m.showGameBanner('search'); await vi.advanceTimersByTimeAsync(100); await search;

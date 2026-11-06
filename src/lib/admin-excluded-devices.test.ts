@@ -34,6 +34,15 @@ describe.skipIf(!url)('admin excluded devices (isolated SQL)', () => {
         CREATE TEMP TABLE dice_roll_log(game_id text, player_index integer, created_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE excluded_stat_devices(device_id text) ON COMMIT DROP;
       `);
+      const [current] = await sql`select pg_get_functiondef('public.admin_daily_stats_v3(date)'::regprocedure) definition`;
+      const original = readFileSync('drizzle/migrations/0106_admin_stats_v3_fast_release_lookup.sql','utf8');
+      const definition = original.match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
+      if (!current || !definition) throw new Error('Missing fixture function');
+      // Install the base first: SQL validates v4/v5 dependencies at creation.
+      const parser = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql','utf8').match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
+      if (!parser) throw new Error('Missing release parser');
+      await sql.unsafe(parser.replace(/public\.admin_/g,'pg_temp.admin_').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
+      await sql.unsafe(definition.replace(/public\.admin_/g,'pg_temp.admin_').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
       for (const file of FILES) {
         for (const def of definitions(file)) {
           // Pooled backends can retain pg_temp functions from earlier runs, so every create must be idempotent.

@@ -20,9 +20,9 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
         CREATE TEMP TABLE session_owners(session_id text, device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE dice_roll_log(game_id text, player_index integer, created_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE excluded_stat_devices(device_id text) ON COMMIT DROP;
-        CREATE TEMP TABLE admin_match_archive(game_id text,activity_at timestamptz,status text,forfeited_by text,forfeited_by_session_id text,source text) ON COMMIT DROP;
-        CREATE TEMP TABLE admin_match_archive_players(game_id text,session_id text) ON COMMIT DROP;
-        CREATE TEMP TABLE admin_activity_archive(device_id text,day date,played boolean) ON COMMIT DROP;
+        CREATE TEMP TABLE admin_match_archive(game_id text PRIMARY KEY,activity_at timestamptz,status text,forfeited_by text,forfeited_by_session_id text,source text) ON COMMIT DROP;
+        CREATE TEMP TABLE admin_match_archive_players(game_id text,session_id text, PRIMARY KEY(game_id,session_id)) ON COMMIT DROP;
+        CREATE TEMP TABLE admin_activity_archive(device_id text,day date,played boolean, PRIMARY KEY(device_id,day)) ON COMMIT DROP;
       `);
       const helper = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8').match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
       if (!helper) throw new Error('Missing isolated release parser');

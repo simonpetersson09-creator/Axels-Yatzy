@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Admin – från 1 november
+- [x] Tabellen, diagrammet och deras beräkningar begränsas till 1 november 2026 och framåt utan att radera lagrade uppgifter.
+
 ## Admin – skydda historiken från matchstädning
 - [x] Skyddade match- och aktivitetsposter sparas atomärt före rensning; enhetsradering tar bort identiteter/aktivitet, anonymiserade avhoppsmarkörer och uteslutna testenheter bevaras.
 - [x] Verifierbar delhistorik återställd utan dubbelräkning; † markerar ofullständiga dagar, medel/summor/rekord/diagram gissar inte. Exakt äldre historik kräver en säkerhetskopia före rensningen som inte finns tillgänglig här.

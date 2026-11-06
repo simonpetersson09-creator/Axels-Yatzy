@@ -5,6 +5,7 @@ import { ArrowLeft, ChartLine, ChevronLeft, ChevronRight, LogOut, RefreshCw } fr
 import { Button } from "@/components/ui/button";
 import AdminLineChart from "@/components/AdminLineChart";
 import AdminAdDiagnostics from "@/components/AdminAdDiagnostics";
+import { adminVisibleDays } from "@/lib/admin-period";
 import {
   adminRecordIndexes,
   adminRollingMean,
@@ -132,7 +133,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         setRows(null);
         return;
       }
-      setRows((data as { days: DayRow[] }).days);
+      setRows(adminVisibleDays((data as { days: DayRow[] }).days));
       try { localStorage.setItem(ADMIN_KEY_STORAGE, key); } catch { /* ignore */ }
     } catch (e) {
       setError(String(e));
@@ -191,7 +192,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
     <div className="min-h-screen max-h-screen overflow-y-auto overscroll-contain bg-background text-foreground p-4 md:p-8">
       <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-semibold">{diagram ? "Linjediagram – 1 augusti och hit" : "1 augusti och hit, per dag"}</h1>
+          <h1 className="text-xl font-semibold">{diagram ? "Linjediagram – 1 november och hit" : "1 november och hit, per dag"}</h1>
           <p className="text-sm text-muted-foreground">
             Svensk tid, bara appen (iPhone/Android). Dagens rad är inte komplett. Parentes: dagsmedel för 30 dagar till och med radens datum; — när ett helt underlag saknas.
           </p>
@@ -302,7 +303,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                           <span
                             data-star={c.key}
                             data-day={r.day}
-                            title={WORST_COLUMNS.includes(c.key) ? "Flest sedan 1 augusti" : "Rekord sedan 1 augusti"}
+                            title={WORST_COLUMNS.includes(c.key) ? "Flest sedan 1 november" : "Rekord sedan 1 november"}
                             className={`inline-block leading-none text-xl scale-150 ${WORST_COLUMNS.includes(c.key) ? "text-destructive" : "text-primary"}`}
                           >
                             ★
@@ -337,7 +338,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         Appålder: dagar sedan första registrerade appaktiviteten för dagens unika aktiva enhets-ID:n, inte verifierad nedladdningsdag. Ominstallation kan ge ett nytt ID.
       </p>
       <p className="text-xs text-muted-foreground mt-3">
-        ★ = högsta värdet i kolumnen sedan 1 augusti. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.
+        ★ = högsta värdet i kolumnen sedan 1 november. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.
         Linjerna binder samman stjärnorna kolumn för kolumn från vänster till höger: guldlinje för rekord, röd linje för avhopp och problem.
         Snabbspel mot datorn räknar alla startade, även ej färdiga. Enhetssummor visas inte eftersom samma enhet spelar flera dagar.
       </p>

@@ -1,4 +1,4 @@
-/** Android App Open cache expiry (four hours); reapplied before every native sync. */
+/** Android App Open cache expiry (45 minutes); reapplied before every native sync. */
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
@@ -10,9 +10,9 @@ if (!source.includes(marker)) {
     if (!source.includes(anchor)) throw new Error(`Android App Open expiry anchor missing: ${anchor}`);
     source = source.replace(anchor, replacement);
   };
-  replace('    private var appOpenAd: AppOpenAd? = null', `    // ${marker}: Google App Open ads expire after four hours.
+  replace('    private var appOpenAd: AppOpenAd? = null', `    // ${marker}: App policy: cached App Open ads expire after 45 minutes.
     private var loadedAt: Long = 0L
-    private val maxAdAgeMs: Long = 4L * 60L * 60L * 1000L
+    private val maxAdAgeMs: Long = 45L * 60L * 1000L
 
     private fun discardExpiredAd() {
         // Never release an ad that is on screen.
@@ -31,8 +31,11 @@ if (!source.includes(marker)) {
   replace('        if (appOpenAd == null || isShowingAd) {', '        discardExpiredAd()\n        if (appOpenAd == null || isShowingAd) {');
   source = source.replaceAll('                appOpenAd = null\n                isShowingAd = false', '                appOpenAd = null\n                loadedAt = 0L\n                isShowingAd = false');
 }
-for (const required of [marker, 'age >= maxAdAgeMs', 'loadedAt = System.currentTimeMillis()', 'discardExpiredAd()\n        if (appOpenAd != null)', 'discardExpiredAd()\n        if (appOpenAd == null || isShowingAd)', 'discardExpiredAd()\n            return appOpenAd != null']) {
+// Upgrade existing expiry patches without replacing privacy or load ownership.
+source = source.replace('private val maxAdAgeMs: Long = 4L * 60L * 60L * 1000L', 'private val maxAdAgeMs: Long = 45L * 60L * 1000L')
+  .replace('Google App Open ads expire after four hours.', 'App policy: cached App Open ads expire after 45 minutes.');
+for (const required of [marker, 'private val maxAdAgeMs: Long = 45L * 60L * 1000L', 'age >= maxAdAgeMs', 'loadedAt = System.currentTimeMillis()', 'discardExpiredAd()\n        if (appOpenAd != null)', 'discardExpiredAd()\n        if (appOpenAd == null || isShowingAd)', 'discardExpiredAd()\n            return appOpenAd != null']) {
   if (!source.includes(required)) throw new Error(`Android App Open expiry verification failed: ${required}`);
 }
 await writeFile(path, source);
-console.log('Patched Android App Open expiry (four hours)');
+console.log('Patched Android App Open expiry (45 minutes)');

@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Startannons och tomma banners
+- [ ] App Open: 45 min giltighet i båda telefonversionerna, inklusive uppgradering av befintliga nativepatchar och tester.
+- [ ] Undersök bannerlivscykeln och förklara säkra möjliga förbättringar utan att ändra banners.
+
 ## Admin – från 1 november
 - [x] Tabellen, diagrammet och deras beräkningar begränsas till 1 november 2026 och framåt utan att radera lagrade uppgifter.
 

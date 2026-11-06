@@ -10,16 +10,16 @@ describe('verify-admob-patches', () => {
     expect(missing.some(m => m.includes('registrering av getStoredConsentChoices'))).toBe(true);
   });
 
-  it('stops the iOS build when the App Open four-hour expiry patch is missing', async () => {
+  it('stops the iOS build when the App Open 45-minute expiry patch is missing', async () => {
     const missing: string[] = await verify('ios', async () => 'func discardPrivacyCache()');
-    expect(missing.some(m => m.includes('4-timmarsutgång'))).toBe(true);
-    expect(missing.some(m => m.includes('4-timmarsgräns'))).toBe(true);
+    expect(missing.some(m => m.includes('45-minutersutgång'))).toBe(true);
+    expect(missing.some(m => m.includes('45-minutersgräns'))).toBe(true);
     expect(missing.some(m => m.includes('rensning av för gammal appstartsannons'))).toBe(true);
   });
 
-  it('stops the Android build when the App Open four-hour expiry patch is missing', async () => {
+  it('stops the Android build when the App Open 45-minute expiry patch is missing', async () => {
     const missing: string[] = await verify('android', async () => 'public void discardPrivacyCaches(final PluginCall call)');
-    expect(missing.some(m => m.includes('4-timmarsutgång'))).toBe(true);
+    expect(missing.some(m => m.includes('45-minutersutgång'))).toBe(true);
     expect(missing.some(m => m.includes('rensning av för gammal appstartsannons'))).toBe(true);
   });
 
@@ -48,7 +48,7 @@ describe('verify-admob-patches', () => {
       'func discardPrivacyCache()',
       'MRB_FULLSCREEN_LOAD_OWNER', 'self.pendingLoads[adUnitID] === owner', 'pending.calls.append(call)',
       'MRB_APP_OPEN_EXPIRY',
-      'maxAdAge',
+      'private let maxAdAge: TimeInterval = 45 * 60',
       'discardExpiredAd',
       'MRB_APP_OPEN_DIAGNOSTICS_V2', '"load_no_fill"', 'noteCachedAd("presentation_requested")',
       'call.reject(message, nil, nil, details)',
@@ -63,7 +63,7 @@ describe('verify-admob-patches', () => {
       'discardExpiredAd',
       'public void discardPrivacyCache()', 'MRB_FULLSCREEN_LOAD_OWNER', 'pendingLoads.get(id) != owner',
       'pending.calls.add(call)', 'final int generation = privacyGeneration',
-      'age >= maxAdAgeMs', '4L * 60L * 60L * 1000L',
+      'age >= maxAdAgeMs', '45L * 60L * 1000L',
       'discardExpiredAd()\n        if (appOpenAd != null)',
       'discardExpiredAd()\n        if (appOpenAd == null || isShowingAd)',
       'discardExpiredAd()\n            return appOpenAd != null',

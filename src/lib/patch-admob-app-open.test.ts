@@ -45,11 +45,11 @@ function withPatch(check: (source: string, run: () => string) => void) {
   } finally { rmSync(cwd, { recursive: true, force: true }); }
 }
 
-it('expires at four hours and checks all native cache entry points', () => {
+it('expires at 45 minutes and checks all native cache entry points', () => {
   withPatch(source => {
-    const duration = source.match(/maxAdAge: TimeInterval = (\d+) \* (\d+) \* (\d+)/);
+    const duration = source.match(/maxAdAge: TimeInterval = (\d+) \* (\d+)/);
     expect(duration).not.toBeNull();
-    expect(duration?.slice(1).reduce((a, b) => a * Number(b), 1)).toBe(14_400);
+    expect(duration?.slice(1).reduce((a, b) => a * Number(b), 1)).toBe(2_700);
     expect(source).toContain('age >= maxAdAge');
     for (const next of ['if appOpenAd != nil', 'guard let ad = appOpenAd', 'return appOpenAd != nil']) {
       expect(source).toContain(`discardExpiredAd()\n        ${next}`);

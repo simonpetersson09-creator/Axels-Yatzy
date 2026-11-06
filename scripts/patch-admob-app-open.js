@@ -10,9 +10,9 @@ if (!source.includes(marker)) {
     if (!source.includes(anchor)) throw new Error(`App Open expiry anchor missing: ${anchor}`);
     source = source.replace(anchor, replacement);
   };
-  replace('    private var appOpenAd: AppOpenAd?', `    // ${marker}: Google App Open ads expire after four hours.
+  replace('    private var appOpenAd: AppOpenAd?', `    // ${marker}: App policy: cached App Open ads expire after 45 minutes.
     private var loadedAt: Date?
-    private let maxAdAge: TimeInterval = 4 * 60 * 60
+    private let maxAdAge: TimeInterval = 45 * 60
 
     private func discardExpiredAd() {
         // Never release the delegate's owner while an ad is on screen.
@@ -36,10 +36,13 @@ if (!source.includes(marker)) {
   // Reset the timestamp whenever the consumed/failed ad is released.
   source = source.replaceAll('        appOpenAd = nil\n        isShowingAd = false', '        appOpenAd = nil\n        loadedAt = nil\n        isShowingAd = false');
 }
+// Upgrade previously patched installations without disturbing owner/diagnostic patches.
+source = source.replace('private let maxAdAge: TimeInterval = 4 * 60 * 60', 'private let maxAdAge: TimeInterval = 45 * 60')
+  .replace('Google App Open ads expire after four hours.', 'App policy: cached App Open ads expire after 45 minutes.');
 // Diagnostics V2 observes reuse between expiry checking and the return.
 const verifiedSource = source.replace('        if appOpenAd != nil { noteCachedAd("cache_reused") }\n', '');
-for (const required of [marker, 'age >= maxAdAge', 'self.loadedAt = Date()', 'discardExpiredAd()\n        if appOpenAd', 'discardExpiredAd()\n        guard let ad', 'discardExpiredAd()\n        return appOpenAd']) {
+for (const required of [marker, 'private let maxAdAge: TimeInterval = 45 * 60', 'age >= maxAdAge', 'self.loadedAt = Date()', 'discardExpiredAd()\n        if appOpenAd', 'discardExpiredAd()\n        guard let ad', 'discardExpiredAd()\n        return appOpenAd']) {
   if (!verifiedSource.includes(required)) throw new Error(`App Open expiry verification failed: ${required}`);
 }
 await writeFile(path, source);
-console.log('Patched iOS App Open expiry (four hours)');
+console.log('Patched iOS App Open expiry (45 minutes)');

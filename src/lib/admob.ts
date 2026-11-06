@@ -1167,7 +1167,8 @@ function scheduleBannerRetry() {
     if (owner.stale() || !bannerFailed || document.visibilityState !== 'visible') return;
     bannerRetryUsed = true;
     reportBanner('retry_requested', 'load_failed');
-    void queueBannerOperation(() => showBannerForScreen(owner.stale, owner.placement));
+    const stale = () => owner.stale() || document.visibilityState !== 'visible';
+    void queueBannerOperation(() => showBannerForScreen(stale, owner.placement));
   }, BANNER_RETRY_DELAY_MS);
 }
 function queueBannerOperation(action: () => Promise<void>): Promise<void> {

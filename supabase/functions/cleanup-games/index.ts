@@ -18,16 +18,33 @@ Deno.serve(async (req) => {
     });
 
   // Internal-only: cron/scheduler must supply the shared secret.
-  const expectedSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET");
-  if (!expectedSecret || req.headers.get("x-internal-secret") !== expectedSecret) {
+  // Same two-step check as the sibling notify functions: the env secret first,
+  // then the vault-backed internal_secret_matches() fallback. The scheduled job
+  // reads its copy from the vault, and the vault copy and the env copy can
+  // drift apart — with only the env check this endpoint rejected every run.
+  const expectedSecret = (Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "").trim();
+  const providedSecret = (req.headers.get("x-internal-secret") ?? "").trim();
+  if (!providedSecret) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  );
+
+  let authorized = Boolean(expectedSecret) && providedSecret === expectedSecret;
+  if (!authorized) {
+    const { data: vaultMatch } = await supabase.rpc("internal_secret_matches", {
+      p_secret: providedSecret,
+    });
+    authorized = vaultMatch === true;
+  }
+  if (!authorized) {
     return json({ error: "Unauthorized" }, 401);
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
 
     // Cleanup criteria:
     //  - waiting games older than 7 hours (lobbies stay open 6 h, see cleanup_unjoined_lobbies)
@@ -58,12 +75,15 @@ Deno.serve(async (req) => {
 
     // 2) Now fetch everything safe to delete: old waiting + old finished.
     //    FK game_players.game_id ON DELETE CASCADE handles player rows.
+    //    Explicit range: a plain select caps at 1000 rows and the backlog is
+    //    larger, so everything past row 1000 would never be reached.
     const { data: staleGames, error: fetchErr } = await supabase
       .from("games")
       .select("id")
       .or(
         `and(status.eq.waiting,created_at.lt.${oneHourAgo}),and(status.eq.finished,updated_at.lt.${oneDayAgo})`
-      );
+      )
+      .range(0, 4999);
 
     if (fetchErr) {
       console.error("Failed to fetch stale games:", fetchErr);
@@ -75,32 +95,47 @@ Deno.serve(async (req) => {
 
     const ids = staleGames.map((g) => g.id);
 
-    // M-NEW-3: Mark any linked game_invites as 'expired' before deleting the
-    // games they reference. The FK from game_invites.game_id is ON DELETE SET
-    // NULL (or similar), so without this step those invite rows would survive
-    // pointing at a deleted game. Doing this BEFORE the games delete keeps the
-    // status consistent in case a client is mid-read.
-    const { error: invErr } = await supabase
-      .from("game_invites")
-      .update({ status: "expired" })
-      .in("game_id", ids)
-      .neq("status", "expired");
-    if (invErr) {
-      console.warn("Failed to expire linked invites:", invErr.message);
+    // The id list travels as a query string, so one .in() over the whole
+    // backlog blows past the request-size limit and PostgREST answers "Bad
+    // Request" — which is why nothing was ever deleted. Work in batches.
+    const BATCH = 200;
+    let cleaned = 0;
+
+    for (let i = 0; i < ids.length; i += BATCH) {
+      const batch = ids.slice(i, i + BATCH);
+
+      // M-NEW-3: Mark any linked game_invites as 'expired' before deleting the
+      // games they reference. The FK from game_invites.game_id is ON DELETE SET
+      // NULL (or similar), so without this step those invite rows would survive
+      // pointing at a deleted game. Doing this BEFORE the games delete keeps the
+      // status consistent in case a client is mid-read.
+      const { error: invErr } = await supabase
+        .from("game_invites")
+        .update({ status: "expired" })
+        .in("game_id", batch)
+        .neq("status", "expired");
+      if (invErr) {
+        console.warn("Failed to expire linked invites:", invErr.message);
+      }
+
+      const { error: delGamesErr } = await supabase
+        .from("games")
+        .delete()
+        .in("id", batch);
+
+      if (delGamesErr) {
+        console.error("Failed to delete games:", delGamesErr);
+        return json({
+          error: "Failed to delete games",
+          details: delGamesErr.message,
+          attempted: cleaned + batch.length,
+        }, 500);
+      }
+
+      cleaned += batch.length;
     }
 
-    const { error: delGamesErr } = await supabase
-      .from("games")
-      .delete()
-      .in("id", ids);
-
-    if (delGamesErr) {
-      console.error("Failed to delete games:", delGamesErr);
-      return json({ error: "Failed to delete games", details: delGamesErr.message, attempted: ids.length }, 500);
-    }
-
-
-    return json({ cleaned: ids.length, finalized: finalizedCount });
+    return json({ cleaned, finalized: finalizedCount });
   } catch (err) {
     console.error("Cleanup error:", err);
     return json({ error: "Cleanup failed" }, 500);

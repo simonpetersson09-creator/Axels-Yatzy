@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Städjobbet för gamla matcher – körs igen
+- [x] Timjobbet `cleanup-games-hourly` nekdades varje timme (HTTP 401) sedan det skapades: funktionen jämförde bara sitt interna lösenord mot miljövariabeln, medan schemaläggaren skickar kopian från valvet. Samma tvåstegskoll som syskonfunktionerna (miljövariant, annars valvkontroll via `internal_secret_matches`) har lagts till, och själva rensningen körs i omgångar om 200 matcher åt gången eftersom en enda förfrågan med hela högen blev för stor och nekades (400).
+- [x] 1 475 avslutade matcher från 5 juni till 5 november togs bort (1 489 → 14, de 14 är färskare än ett dygn); spelpåminnelsejobbet kördes som vanligt. Statistik, kompislistor, veckolistor, matchresultat och tärningslogg är orörda (2 722 statistikrader, 731 kompisresultat, 442 veckolistposter). Körande app verifierad: startsida, kompislista och en riktig match med kast fungerar utan sidfel.
+
 ## Onlinekast – automatiskt omförsök vid bruten anslutning
 - [x] Kast som dör på nätverket ("Load failed"/"Failed to fetch") skickas en gång till automatiskt, först efter att en serveravläsning bevisat att kastet aldrig nådde fram (oförändrat antal kast kvar) — aldrig blint, så inget extra kast kan spenderas. Timeout och serverfel får inget omförsök.
 - [x] 16 tester godkända, inklusive nytt: omförsök vid bruten anslutning och aldrig omförsök när kastet redan nått servern. Bygge OK; ingen publicering — syns i installerade appar först med nästa appversion.

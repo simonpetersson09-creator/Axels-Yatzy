@@ -20,6 +20,9 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
         CREATE TEMP TABLE session_owners(session_id text, device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE dice_roll_log(game_id text, player_index integer, created_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE excluded_stat_devices(device_id text) ON COMMIT DROP;
+        CREATE TEMP TABLE admin_match_archive(game_id text,activity_at timestamptz,status text,forfeited_by text,forfeited_by_session_id text,source text) ON COMMIT DROP;
+        CREATE TEMP TABLE admin_match_archive_players(game_id text,session_id text) ON COMMIT DROP;
+        CREATE TEMP TABLE admin_activity_archive(device_id text,day date,played boolean) ON COMMIT DROP;
       `);
       const helper = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8').match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
       if (!helper) throw new Error('Missing isolated release parser');
@@ -38,7 +41,18 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
       }
       if (event) await sql`insert into pg_temp.analytics_events values ('device-0', ${platform}, now(), ${event}, 'single_player', '5.4 (1)')`;
       if (rollPlayer !== null) await sql`insert into pg_temp.dice_roll_log values ('fixture', ${rollPlayer}, now())`;
+      const [before] = await sql`select * from pg_temp.admin_daily_stats_v3((now() at time zone 'Europe/Stockholm')::date)`;
+      const [archiveTrigger] = await sql`select pg_get_functiondef('public.internal_archive_admin_game()'::regprocedure) definition`;
+      await sql.unsafe(archiveTrigger.definition.replace('public.internal_archive_admin_game','pg_temp.internal_archive_admin_game').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
+      await sql.unsafe('CREATE TRIGGER archive_fixture BEFORE DELETE ON pg_temp.games FOR EACH ROW EXECUTE FUNCTION pg_temp.internal_archive_admin_game()');
+      await sql`delete from pg_temp.games where id='fixture'`;
+      await sql`delete from pg_temp.game_players where game_id='fixture'`;
+      await sql`delete from pg_temp.dice_roll_log where game_id='fixture'`;
       const [row] = await sql`select * from pg_temp.admin_daily_stats_v3((now() at time zone 'Europe/Stockholm')::date)`;
+      expect(row.devices).toBe(before.devices);
+      expect(row.played).toBe(before.played);
+      expect(row.online_finished).toBe(before.online_finished);
+      expect(row.forfeits).toBe(before.forfeits);
       return Number(row[metric]);
     });
   }

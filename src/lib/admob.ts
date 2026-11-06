@@ -357,6 +357,7 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
     appOpenPreload = null;
   }
   bannerGen++;
+  cancelBannerRetry();
   try {
     const mod = await loadModule();
     await queueBannerOperation(() => discardPrivacyCaches(mod));
@@ -1149,6 +1150,26 @@ let bannerFailed = false;
 let bannerRequestAt = 0;
 let bannerListeners: Promise<void> | null = null;
 let bannerOperations: Promise<void> = Promise.resolve();
+export const BANNER_RETRY_DELAY_MS = 60_000;
+let bannerRetryTimer: ReturnType<typeof setTimeout> | undefined;
+let bannerRetryUsed = false;
+let bannerLoadOwner: { stale: () => boolean; placement: BannerPlacement } | null = null;
+function cancelBannerRetry() {
+  clearTimeout(bannerRetryTimer);
+  bannerRetryTimer = undefined;
+  bannerLoadOwner = null;
+}
+function scheduleBannerRetry() {
+  const owner = bannerLoadOwner;
+  if (!owner || owner.stale() || bannerRetryUsed || bannerRetryTimer !== undefined) return;
+  bannerRetryTimer = setTimeout(() => {
+    bannerRetryTimer = undefined;
+    if (owner.stale() || !bannerFailed || document.visibilityState !== 'visible') return;
+    bannerRetryUsed = true;
+    reportBanner('retry_requested', 'load_failed');
+    void queueBannerOperation(() => showBannerForScreen(owner.stale, owner.placement));
+  }, BANNER_RETRY_DELAY_MS);
+}
 function queueBannerOperation(action: () => Promise<void>): Promise<void> {
   const next = bannerOperations.then(action);
   bannerOperations = next.catch(() => {});
@@ -1173,6 +1194,8 @@ function ensureBannerListeners(mod: AdMobModule): Promise<void> {
     const handles: Array<{ remove: () => Promise<void> }> = [];
     try {
       handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.Loaded, () => {
+        clearTimeout(bannerRetryTimer);
+        bannerRetryTimer = undefined;
         bannerLoaded = true;
         bannerFailed = false;
         reportBanner('loaded');
@@ -1187,6 +1210,7 @@ function ensureBannerListeners(mod: AdMobModule): Promise<void> {
         shownMargin = -1;
         parkedMargin = -1;
         clearTimeout(bannerParkTimer);
+        scheduleBannerRetry();
       }));
       handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.AdImpression, () => reportBanner('impression')));
       handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.SizeChanged, (size) => {
@@ -1415,6 +1439,8 @@ function bannerUnitId(placement: BannerPlacement): string | null {
 let bannerGen = 0;
 
 export async function showGameBanner(placement: BannerPlacement = 'game'): Promise<void> {
+  cancelBannerRetry();
+  bannerRetryUsed = false;
   bannerWanted = true;
   shownPlacement = placement;
   if (privacyChanging || privacyBlocked) return;
@@ -1492,6 +1518,7 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
     bannerFailed = false;
     bannerRequestAt = Date.now();
     reportBanner('load_requested', undefined, { margin });
+    bannerLoadOwner = { stale, placement };
     await mod.AdMob.showBanner({
       adId,
       adSize: placement === 'search' ? mod.BannerAdSize.MEDIUM_RECTANGLE : mod.BannerAdSize.BANNER,
@@ -1527,6 +1554,7 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
 
 /** Döljer bannern (t.ex. när matchen lämnas eller en helskärmsannons visas). */
 export async function hideGameBanner(): Promise<void> {
+  cancelBannerRetry();
   bannerWanted = false;
   bannerGen++;
   setBannerSpace(false);

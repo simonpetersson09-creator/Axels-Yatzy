@@ -20,6 +20,9 @@ vi.mock('@capacitor-community/admob', () => ({
     loadAppOpen: async () => { await native.loadAppOpen(); native.appOpenLoaded = true; },
     showAppOpen: async () => {},
     showBanner: native.banner.show, hideBanner: native.banner.hide, resumeBanner: native.banner.resume, removeBanner: native.banner.remove,
+    showPrivacyOptionsForm: async () => { throw new Error('privacy form failed'); },
+    discardPrivacyCaches: async () => ({ privacyCacheVersion: 1 }),
+    getConsentEligibility: async () => ({ canRequestAds: false }),
     addListener: async (event: string, handler: () => void) => {
       const handlers = native.handlers.get(event) ?? new Set();
       handlers.add(handler);
@@ -546,6 +549,74 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     Object.values(native.banner).forEach((f) => { f.mockReset(); f.mockResolvedValue(undefined); });
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); native.platform = 'ios'; });
+
+  const failBanner = () => native.handlers.get('b_failed')?.forEach(h =>
+    (h as (d: unknown) => void)({ code: 3, message: 'No fill' }));
+
+  it('retries a confirmed failed load once after 60 seconds, never chains retries', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    failBanner(); failBanner();
+    await vi.advanceTimersByTimeAsync(59_999);
+    expect(native.banner.show).toHaveBeenCalledOnce();
+    await vi.advanceTimersByTimeAsync(15_001);
+    expect(native.banner.show).toHaveBeenCalledTimes(2);
+    failBanner();
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(native.banner.show).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not retry command completion without a confirmed load failure', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(native.banner.show).toHaveBeenCalledOnce();
+  });
+
+  it('cancels a pending retry when the screen is left', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    failBanner(); await m.hideGameBanner();
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(native.banner.show).toHaveBeenCalledOnce();
+  });
+
+  it('cancels a pending retry when a new screen owns the banner', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    failBanner();
+    const next = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await next;
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(native.banner.show).toHaveBeenCalledTimes(2);
+  });
+
+  it('cancels a pending retry when the SDK reports a successful load', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    failBanner(); emit('b_loaded');
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(native.banner.show).toHaveBeenCalledOnce();
+  });
+
+  it('skips a background retry without deferring it until foreground', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    failBanner();
+    const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    await vi.advanceTimersByTimeAsync(120_000);
+    visibility.mockRestore();
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(native.banner.show).toHaveBeenCalledOnce();
+  });
+
+  it('cancels a pending retry at the privacy boundary and stays blocked on failure', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    failBanner();
+    expect(await m.showAdPrivacyOptions()).toBe(false);
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(native.banner.show).toHaveBeenCalledOnce();
+  });
 
   it('uses the dedicated iOS search unit and preserves game and Android units', async () => {
     const original = document.querySelector.bind(document);

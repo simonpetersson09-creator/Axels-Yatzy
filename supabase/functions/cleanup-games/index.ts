@@ -18,8 +18,12 @@ Deno.serve(async (req) => {
     });
 
   // Internal-only: cron/scheduler must supply the shared secret.
-  const expectedSecret = Deno.env.get("INTERNAL_NOTIFY_SECRET");
-  if (!expectedSecret || req.headers.get("x-internal-secret") !== expectedSecret) {
+  // Compared trimmed, exactly like the sibling notify functions: pg_cron reads
+  // the value from the vault and it can arrive with surrounding whitespace,
+  // which a strict !== would reject as "Unauthorized".
+  const expectedSecret = (Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "").trim();
+  const providedSecret = (req.headers.get("x-internal-secret") ?? "").trim();
+  if (!expectedSecret || providedSecret !== expectedSecret) {
     return json({ error: "Unauthorized" }, 401);
   }
 

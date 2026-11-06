@@ -553,8 +553,8 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
       ? { getBoundingClientRect: () => ({ width: 300, height: 250, top: 350, bottom: 600 }) } as unknown as Element
       : original(selector));
     vi.stubGlobal('innerHeight', 700);
+    vi.stubEnv('DEV', false);
     const m = await import('./admob');
-    m.ADMOB_CONFIG.useTestAds = false;
     expect(m.BANNER_IDS[platform as 'ios' | 'android']).toBe(platform === 'ios'
       ? 'ca-app-pub-7448540924654868/7786182090' : 'ca-app-pub-7448540924654868/2816751438');
     const search = m.showGameBanner('search'); await vi.advanceTimersByTimeAsync(100); await search;
@@ -570,6 +570,7 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
       adSize: 'BANNER',
     }));
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   it('logs SDK loading and impressions separately, with one listener across matches', async () => {

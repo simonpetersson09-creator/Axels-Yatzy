@@ -2,7 +2,8 @@
 
 ## Söksidans egen iPhone-annonsenhet
 - [x] Nytt iOS-banner-ID enbart för söksidans 300×250-annons; matchbanner, Android, samtycke och visningsregler oförändrade.
-- [ ] Kör riktade annonstester; riktig leverans kräver nästa iPhone-bygge och telefon.
+- [x] 91 annons-/samtyckestester godkända, inklusive söksida → match på båda plattformarna med konkreta ID:n. Ingen publicering.
+- [ ] Riktig annonsleverans kräver nästa iPhone-bygge och telefon.
 
 ## Städjobbet för gamla matcher – körs igen
 - [x] Timjobbet `cleanup-games-hourly` nekdades varje timme (HTTP 401) sedan det skapades: funktionen jämförde bara sitt interna lösenord mot miljövariabeln, medan schemaläggaren skickar kopian från valvet. Samma tvåstegskoll som syskonfunktionerna (miljövariant, annars valvkontroll via `internal_secret_matches`) har lagts till, och själva rensningen körs i omgångar om 200 matcher åt gången eftersom en enda förfrågan med hela högen blev för stor och nekades (400).

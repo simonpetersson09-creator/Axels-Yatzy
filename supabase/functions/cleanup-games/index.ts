@@ -18,23 +18,33 @@ Deno.serve(async (req) => {
     });
 
   // Internal-only: cron/scheduler must supply the shared secret.
-  // Compared trimmed, exactly like the sibling notify functions: pg_cron reads
-  // the value from the vault and it can arrive with surrounding whitespace,
-  // which a strict !== would reject as "Unauthorized".
+  // Same two-step check as the sibling notify functions: the env secret first,
+  // then the vault-backed internal_secret_matches() fallback. The scheduled job
+  // reads its copy from the vault, and the vault copy and the env copy can
+  // drift apart — with only the env check this endpoint rejected every run.
   const expectedSecret = (Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "").trim();
   const providedSecret = (req.headers.get("x-internal-secret") ?? "").trim();
-  if (!expectedSecret) {
-    return json({ error: "secret_not_configured" }, 501);
+  if (!providedSecret) {
+    return json({ error: "Unauthorized" }, 401);
   }
-  if (providedSecret !== expectedSecret) {
+
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  );
+
+  let authorized = Boolean(expectedSecret) && providedSecret === expectedSecret;
+  if (!authorized) {
+    const { data: vaultMatch } = await supabase.rpc("internal_secret_matches", {
+      p_secret: providedSecret,
+    });
+    authorized = vaultMatch === true;
+  }
+  if (!authorized) {
     return json({ error: "Unauthorized" }, 401);
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
 
     // Cleanup criteria:
     //  - waiting games older than 7 hours (lobbies stay open 6 h, see cleanup_unjoined_lobbies)

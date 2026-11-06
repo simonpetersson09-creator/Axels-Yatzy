@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
-import { adminCellValue, type AdminDayRow, type AdminColumnKey } from "@/lib/admin-records";
+import { adminCellValue, adminValueIncomplete, type AdminDayRow, type AdminColumnKey } from "@/lib/admin-records";
 
 const SERIES: { key: AdminColumnKey; label: string; token: string }[] = [
   { key: "devices", label: "Aktiva enheter", token: "admin-chart-devices" },
@@ -45,7 +45,10 @@ export default function AdminLineChart({ rows }: { rows: AdminDayRow[] }) {
       ...r,
       total: adminCellValue(r, "total"),
     })) as Record<string, unknown>[];
-    SERIES.forEach((s) => addTrend(sorted, s.key));
+    SERIES.forEach((s) => {
+      sorted.forEach((d,index) => { if (adminValueIncomplete([...rows].sort((a,b) => a.day.localeCompare(b.day))[index],s.key)) d[s.key] = null; });
+      addTrend(sorted, s.key);
+    });
     return sorted;
   }, [rows]);
 

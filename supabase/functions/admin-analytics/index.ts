@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     return json({ diagnostics: diagnosticRows(data ?? []), limit: 600 });
   }
   // App devices only (ios/android), Stockholm days; computed in SQL so no row caps apply.
-  const { data, error } = await supabase.rpc("admin_daily_stats_v5", { _start: "2026-08-01" });
+  const { data, error } = await supabase.rpc("admin_daily_stats_v6", { _start: "2026-08-01" });
   if (error) return json({ error: error.message }, 500);
   return json({ days: data ?? [] });
 });

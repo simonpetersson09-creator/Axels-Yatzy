@@ -8,6 +8,7 @@ import AdminAdDiagnostics from "@/components/AdminAdDiagnostics";
 import {
   adminRecordIndexes,
   adminRollingMean,
+  adminValueIncomplete,
   buildRibbon,
   type AdminColumnKey,
   type AdminDayRow as DayRow,
@@ -184,7 +185,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
     );
   }
 
-  const sum = (k: keyof DayRow) => k === "total" ? sum("cpu_finished") + sum("online_finished") : rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
+  const sum = (k: keyof DayRow): number | string => rows.some((r) => adminValueIncomplete(r, k)) ? "—" : k === "total" ? rows.reduce((a,r) => a + r.cpu_finished + r.online_finished, 0) : rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
 
   return (
     <div className="min-h-screen max-h-screen overflow-y-auto overscroll-contain bg-background text-foreground p-4 md:p-8">
@@ -221,6 +222,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         </div>
       </div>
       {error && <p className="text-sm text-destructive mb-2">{error}</p>}
+      {rows.some((r) => r.incomplete_columns?.length) && <p className="text-sm text-muted-foreground mb-3">† Ofullständigt underlag efter matchstädningen den 6 november. Äldre onlinematcher är delvis återställda; dagfördelningen kan avvika. Medel, summor och rekord visas inte där fullständig historik saknas. Appåldern kan även påverkas framåt.</p>}
       <AdminAdDiagnostics adminKey={adminKey} />
       {diagram ? <AdminLineChart rows={rows} /> : <>
       <div ref={wrapRef} className="relative overflow-x-auto rounded-lg border border-border">
@@ -289,8 +291,9 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                     {!collapsedColumns.includes(c.key) &&
                     <span className="flex items-baseline justify-end gap-1 tabular-nums">
                       <span className="text-right">
-                        {c.key === "ios" ? <>{r.ios} <span className="text-muted-foreground">({meanText(r.day, "ios")})</span> / {r.android} <span className="text-muted-foreground">({meanText(r.day, "android")})</span></> : <>
+                        {c.key === "ios" ? <>{r.ios}{adminValueIncomplete(r,"ios") ? "†" : ""} <span className="text-muted-foreground">({meanText(r.day, "ios")})</span> / {r.android}{adminValueIncomplete(r,"android") ? "†" : ""} <span className="text-muted-foreground">({meanText(r.day, "android")})</span></> : <>
                           {c.key === "avg_app_age_days" ? r[c.key] == null ? "—" : Number(r[c.key]).toLocaleString("sv-SE", { maximumFractionDigits: 0 }) : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
+                          {adminValueIncomplete(r,c.key) ? "†" : ""}
                           {" "}<span className="text-muted-foreground">({meanText(r.day, c.key)})</span>
                         </>}
                       </span>

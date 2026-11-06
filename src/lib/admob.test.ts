@@ -547,22 +547,30 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); native.platform = 'ios'; });
 
-  it('uses native medium rectangle only for search and preserves platform banner IDs', async () => {
+  it('uses the dedicated iOS search unit and preserves game and Android units', async () => {
     const original = document.querySelector.bind(document);
     vi.spyOn(document, 'querySelector').mockImplementation((selector) => selector === '[data-search-ad-slot]'
       ? { getBoundingClientRect: () => ({ width: 300, height: 250, top: 350, bottom: 600 }) } as unknown as Element
       : original(selector));
     vi.stubGlobal('innerHeight', 700);
+    vi.stubEnv('DEV', false);
     const m = await import('./admob');
     expect(m.BANNER_IDS[platform as 'ios' | 'android']).toBe(platform === 'ios'
       ? 'ca-app-pub-7448540924654868/7786182090' : 'ca-app-pub-7448540924654868/2816751438');
     const search = m.showGameBanner('search'); await vi.advanceTimersByTimeAsync(100); await search;
-    expect(native.banner.show).toHaveBeenLastCalledWith(expect.objectContaining({ adSize: 'MEDIUM_RECTANGLE', margin: 100 }));
+    expect(native.banner.show).toHaveBeenLastCalledWith(expect.objectContaining({
+      adId: platform === 'ios' ? 'ca-app-pub-7448540924654868/1041815937' : 'ca-app-pub-7448540924654868/2816751438',
+      adSize: 'MEDIUM_RECTANGLE', margin: 100,
+    }));
     await m.hideGameBanner();
     const game = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await game;
     expect(native.banner.resume).not.toHaveBeenCalled();
-    expect(native.banner.show).toHaveBeenLastCalledWith(expect.objectContaining({ adSize: 'BANNER' }));
+    expect(native.banner.show).toHaveBeenLastCalledWith(expect.objectContaining({
+      adId: platform === 'ios' ? 'ca-app-pub-7448540924654868/7786182090' : 'ca-app-pub-7448540924654868/2816751438',
+      adSize: 'BANNER',
+    }));
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   it('logs SDK loading and impressions separately, with one listener across matches', async () => {

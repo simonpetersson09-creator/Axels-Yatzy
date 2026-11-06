@@ -1125,6 +1125,12 @@ export const BANNER_IDS: Record<'ios' | 'android', string | null> = {
   android: 'ca-app-pub-7448540924654868/2816751438',
 };
 
+/** Search uses its own iOS unit; Android keeps its existing unit until replaced. */
+export const SEARCH_BANNER_IDS: Record<'ios' | 'android', string | null> = {
+  ios: 'ca-app-pub-7448540924654868/1041815937',
+  android: BANNER_IDS.android,
+};
+
 const GOOGLE_TEST_BANNER: Record<'ios' | 'android', string> = {
   ios: 'ca-app-pub-3940256099942544/2934735716',
   android: 'ca-app-pub-3940256099942544/6300978111',
@@ -1398,11 +1404,11 @@ async function previewBanner(on: boolean, isStale: () => boolean = () => false, 
   document.body.appendChild(d);
 }
 
-function bannerUnitId(): string | null {
+function bannerUnitId(placement: BannerPlacement): string | null {
   const p = adPlatform();
   if (!p || !ADMOB_IDS[p].appId) return null;
   if (ADMOB_CONFIG.useTestAds) return GOOGLE_TEST_BANNER[p];
-  return BANNER_IDS[p];
+  return placement === 'search' ? SEARCH_BANNER_IDS[p] : BANNER_IDS[p];
 }
 
 /** Visar bannern längst ner. Kastar aldrig. */
@@ -1422,7 +1428,7 @@ export async function showGameBanner(placement: BannerPlacement = 'game'): Promi
 async function showBannerForScreen(stale: () => boolean, placement: BannerPlacement): Promise<void> {
   if (stale()) return;
   if (bannerPreview) { await previewBanner(true, stale, placement); return; }
-  const adId = bannerUnitId();
+  const adId = bannerUnitId(placement);
   if (!isAdMobAvailable() || !adId) {
     if (Capacitor.isNativePlatform()) reportBanner('unavailable', !adId ? 'missing_unit_id' : 'plugin_unavailable');
     return;

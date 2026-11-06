@@ -17,11 +17,11 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
         CREATE TEMP TABLE analytics_events(device_id text, platform text, created_at timestamptz, event_name text, game_mode text, app_version text) ON COMMIT DROP;
         CREATE TEMP TABLE games(id text, updated_at timestamptz, status text, forfeited_by text, forfeited_by_session_id text) ON COMMIT DROP;
         CREATE TEMP TABLE game_players(game_id text, session_id text, is_bot boolean, player_index integer) ON COMMIT DROP;
-        CREATE TEMP TABLE session_owners(session_id text, device_id text) ON COMMIT DROP;
+        CREATE TEMP TABLE session_owners(session_id text PRIMARY KEY, device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE dice_roll_log(game_id text, player_index integer, created_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE excluded_stat_devices(device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE admin_match_archive(game_id text PRIMARY KEY,activity_at timestamptz,status text,forfeited_by text,forfeited_by_session_id text,source text) ON COMMIT DROP;
-        CREATE TEMP TABLE admin_match_archive_players(game_id text,session_id text, PRIMARY KEY(game_id,session_id)) ON COMMIT DROP;
+        CREATE TEMP TABLE admin_match_archive_players(game_id text,session_id text REFERENCES pg_temp.session_owners(session_id) ON DELETE CASCADE, PRIMARY KEY(game_id,session_id)) ON COMMIT DROP;
         CREATE TEMP TABLE admin_activity_archive(device_id text,day date,played boolean, PRIMARY KEY(device_id,day)) ON COMMIT DROP;
       `);
       const helper = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8').match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
@@ -46,6 +46,9 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
       await sql.unsafe(archiveTrigger.definition.replace('public.internal_archive_admin_game','pg_temp.internal_archive_admin_game').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
       await sql.unsafe('CREATE TRIGGER archive_fixture BEFORE DELETE ON pg_temp.games FOR EACH ROW EXECUTE FUNCTION pg_temp.internal_archive_admin_game()');
       await sql`delete from pg_temp.games where id='fixture'`;
+      const [archived] = await sql`select forfeited_by,forfeited_by_session_id from pg_temp.admin_match_archive where game_id='fixture'`;
+      expect(archived.forfeited_by).toBe(marker === null ? null : 'marked');
+      expect(archived.forfeited_by_session_id).toBe(sessionMarker === null ? null : 'marked');
       await sql`delete from pg_temp.game_players where game_id='fixture'`;
       await sql`delete from pg_temp.dice_roll_log where game_id='fixture'`;
       const [row] = await sql`select * from pg_temp.admin_daily_stats_v3((now() at time zone 'Europe/Stockholm')::date)`;
@@ -53,6 +56,14 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
       expect(row.played).toBe(before.played);
       expect(row.online_finished).toBe(before.online_finished);
       expect(row.forfeits).toBe(before.forfeits);
+      const [deletion] = await sql`select pg_get_functiondef('public.internal_delete_admin_activity()'::regprocedure) definition`;
+      await sql.unsafe(deletion.definition.replace('public.internal_delete_admin_activity','pg_temp.internal_delete_admin_activity').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
+      await sql.unsafe('CREATE TRIGGER delete_activity_fixture AFTER DELETE ON pg_temp.session_owners FOR EACH ROW EXECUTE FUNCTION pg_temp.internal_delete_admin_activity()');
+      await sql`delete from pg_temp.session_owners where session_id='session-0'`;
+      const [remaining] = await sql`select count(*) n from pg_temp.admin_activity_archive where device_id='device-0'`;
+      const [identities] = await sql`select count(*) n from pg_temp.admin_match_archive_players where session_id='session-0'`;
+      expect(Number(remaining.n)).toBe(0);
+      expect(Number(identities.n)).toBe(0);
       return Number(row[metric]);
     });
   }

@@ -1,9 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Admin – skydda historiken från matchstädning
-- [ ] Spara skyddade match- och aktivitetsposter före rensning; bevara enhetsradering och uteslutna testenheter.
-- [ ] Återställ verifierbart underlag utan dubbelräkning och märk äldre ofullständig historik tydligt, inklusive medel och rekord.
-- [ ] Kör isolerade SQL- och administratörstester samt kontrollera sidan med riktiga svar.
+- [x] Skyddade match- och aktivitetsposter sparas atomärt före rensning; enhetsradering tar bort identiteter/aktivitet, anonymiserade avhoppsmarkörer och uteslutna testenheter bevaras.
+- [x] Verifierbar delhistorik återställd utan dubbelräkning; † markerar ofullständiga dagar, medel/summor/rekord/diagram gissar inte. Exakt äldre historik kräver en säkerhetskopia före rensningen som inte finns tillgänglig här.
+- [x] Isolerade SQL- och administratörstester körda; riktig admininloggning, 98 dagsrader, uppdatering och diagram kontrollerade utan sidfel. Serversidan driftsatt, webbändringen inte publicerad.
 
 ## Söksidans egen iPhone-annonsenhet
 - [x] Nytt iOS-banner-ID enbart för söksidans 300×250-annons; matchbanner, Android, samtycke och visningsregler oförändrade.
@@ -12,7 +12,7 @@
 
 ## Städjobbet för gamla matcher – körs igen
 - [x] Timjobbet `cleanup-games-hourly` nekdades varje timme (HTTP 401) sedan det skapades: funktionen jämförde bara sitt interna lösenord mot miljövariabeln, medan schemaläggaren skickar kopian från valvet. Samma tvåstegskoll som syskonfunktionerna (miljövariant, annars valvkontroll via `internal_secret_matches`) har lagts till, och själva rensningen körs i omgångar om 200 matcher åt gången eftersom en enda förfrågan med hela högen blev för stor och nekades (400).
-- [x] 1 475 avslutade matcher från 5 juni till 5 november togs bort (1 489 → 14, de 14 är färskare än ett dygn); spelpåminnelsejobbet kördes som vanligt. Statistik, kompislistor, veckolistor, matchresultat och tärningslogg är orörda (2 722 statistikrader, 731 kompisresultat, 442 veckolistposter). Körande app verifierad: startsida, kompislista och en riktig match med kast fungerar utan sidfel.
+- [x] 1 475 avslutade matcher från 5 juni till 5 november togs bort (1 489 → 14). Spelarstatistik och kompisresultat bevarades, men äldre adminunderlag och matchbundna kastloggar försvann; tidigare påstående om orörda kastloggar var felaktigt. Adminrättning och begränsad återställning beskrivs ovan.
 
 ## Onlinekast – automatiskt omförsök vid bruten anslutning
 - [x] Kast som dör på nätverket ("Load failed"/"Failed to fetch") skickas en gång till automatiskt, först efter att en serveravläsning bevisat att kastet aldrig nådde fram (oförändrat antal kast kvar) — aldrig blint, så inget extra kast kan spenderas. Timeout och serverfel får inget omförsök.

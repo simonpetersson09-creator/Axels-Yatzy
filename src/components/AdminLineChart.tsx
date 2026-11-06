@@ -41,12 +41,13 @@ export default function AdminLineChart({ rows }: { rows: AdminDayRow[] }) {
   const [visible, setVisible] = useState<AdminColumnKey[]>(DEFAULT_VISIBLE);
   const [showTrend, setShowTrend] = useState(true);
   const data = useMemo(() => {
-    const sorted = [...rows].sort((a, b) => a.day.localeCompare(b.day)).map((r) => ({
+    const ordered = [...rows].sort((a, b) => a.day.localeCompare(b.day));
+    const sorted = ordered.map((r) => ({
       ...r,
       total: adminCellValue(r, "total"),
     })) as Record<string, unknown>[];
     SERIES.forEach((s) => {
-      sorted.forEach((d,index) => { if (adminValueIncomplete([...rows].sort((a,b) => a.day.localeCompare(b.day))[index],s.key)) d[s.key] = null; });
+      sorted.forEach((d,index) => { if (adminValueIncomplete(ordered[index],s.key)) d[s.key] = null; });
       addTrend(sorted, s.key);
     });
     return sorted;

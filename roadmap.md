@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Admin – skydda historiken från matchstädning
+- [ ] Spara skyddade match- och aktivitetsposter före rensning; bevara enhetsradering och uteslutna testenheter.
+- [ ] Återställ verifierbart underlag utan dubbelräkning och märk äldre ofullständig historik tydligt, inklusive medel och rekord.
+- [ ] Kör isolerade SQL- och administratörstester samt kontrollera sidan med riktiga svar.
+
 ## Söksidans egen iPhone-annonsenhet
 - [x] Nytt iOS-banner-ID enbart för söksidans 300×250-annons; matchbanner, Android, samtycke och visningsregler oförändrade.
 - [x] 91 annons-/samtyckestester godkända, inklusive söksida → match på båda plattformarna med konkreta ID:n. Ingen publicering.

@@ -11,9 +11,14 @@ export interface AdminDayRow {
   online_finished: number;
   forfeits: number;
   issues: number;
+  incomplete_columns?: string[];
 }
 
 export type AdminColumnKey = keyof AdminDayRow;
+
+export function adminValueIncomplete(row: AdminDayRow, key: AdminColumnKey): boolean {
+  return row.incomplete_columns?.includes(key) === true;
+}
 
 /** The number a column actually shows for a day. */
 export function adminCellValue(row: AdminDayRow, key: AdminColumnKey): number {
@@ -32,7 +37,7 @@ export function adminRollingMean(rows: AdminDayRow[], day: string, key: AdminCol
     return time >= start && time <= end;
   });
   if (new Set(window.map((row) => row.day)).size !== 30) return null;
-  if (window.some((row) => key === "avg_app_age_days" && row[key] == null)) return null;
+  if (window.some((row) => adminValueIncomplete(row, key) || (key === "avg_app_age_days" && row[key] == null))) return null;
   return window.reduce((sum, row) => sum + adminCellValue(row, key), 0) / 30;
 }
 
@@ -44,6 +49,7 @@ export function adminRollingMean(rows: AdminDayRow[], day: string, key: AdminCol
 export function adminRecordIndexes(rows: AdminDayRow[], keys: AdminColumnKey[]): Partial<Record<AdminColumnKey, number>> {
   const out: Partial<Record<AdminColumnKey, number>> = {};
   for (const key of keys) {
+    if (rows.some((row) => adminValueIncomplete(row, key))) { out[key] = -1; continue; }
     let best = -1;
     let bestValue = 0;
     rows.forEach((row, index) => {

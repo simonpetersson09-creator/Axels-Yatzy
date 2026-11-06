@@ -799,6 +799,20 @@
       "when": 1793818555653,
       "tag": "0113_client_roll_processing_duration",
       "breakpoints": true
+    },
+    {
+      "idx": 114,
+      "version": "7",
+      "when": 1793978454720,
+      "tag": "0114_admin_history_survives_cleanup",
+      "breakpoints": true
+    },
+    {
+      "idx": 115,
+      "version": "7",
+      "when": 1793978619874,
+      "tag": "0115_admin_archive_anonymous_forfeit_markers",
+      "breakpoints": true
     }
   ]
 }

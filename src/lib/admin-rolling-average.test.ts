@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adminRollingMean, type AdminDayRow } from "./admin-records";
+import { adminRollingMean, adminRecordIndexes, type AdminDayRow } from "./admin-records";
 
 const rows: AdminDayRow[] = Array.from({ length: 31 }, (_, index) => ({
   day: new Date(Date.UTC(2026, 9, 1 + index)).toISOString().slice(0, 10),
@@ -9,6 +9,13 @@ const rows: AdminDayRow[] = Array.from({ length: 31 }, (_, index) => ({
 }));
 
 describe("admin trailing 30 calendar days", () => {
+  it("does not turn damaged online history into a mean or a record", () => {
+    const damaged = rows.map(r => ({...r, incomplete_columns: r.day === "2026-10-05" ? ["online_finished", "total", "forfeits"] : []}));
+    expect(adminRollingMean(damaged,"2026-10-31","online_finished")).toBeNull();
+    expect(adminRollingMean(damaged,"2026-10-31","total")).toBeNull();
+    expect(adminRecordIndexes(damaged,["online_finished"]).online_finished).toBe(-1);
+    expect(adminRollingMean(damaged,"2026-10-31","cpu_finished")).toBe(3);
+  });
   it("includes the selected day and excludes days older than 29 days", () => {
     expect(adminRollingMean(rows, "2026-10-31", "devices")).toBe(16.5);
   });

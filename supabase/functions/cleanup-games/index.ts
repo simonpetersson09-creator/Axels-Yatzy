@@ -23,7 +23,10 @@ Deno.serve(async (req) => {
   // which a strict !== would reject as "Unauthorized".
   const expectedSecret = (Deno.env.get("INTERNAL_NOTIFY_SECRET") ?? "").trim();
   const providedSecret = (req.headers.get("x-internal-secret") ?? "").trim();
-  if (!expectedSecret || providedSecret !== expectedSecret) {
+  if (!expectedSecret) {
+    return json({ error: "secret_not_configured" }, 501);
+  }
+  if (providedSecret !== expectedSecret) {
     return json({ error: "Unauthorized" }, 401);
   }
 

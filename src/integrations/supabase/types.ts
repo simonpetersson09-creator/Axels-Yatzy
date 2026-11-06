@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_activity_archive: {
+        Row: {
+          day: string
+          device_id: string
+          played: boolean
+        }
+        Insert: {
+          day: string
+          device_id: string
+          played?: boolean
+        }
+        Update: {
+          day?: string
+          device_id?: string
+          played?: boolean
+        }
+        Relationships: []
+      }
+      admin_match_archive: {
+        Row: {
+          activity_at: string
+          forfeited_by: string | null
+          forfeited_by_session_id: string | null
+          game_id: string
+          source: string
+          status: string
+        }
+        Insert: {
+          activity_at: string
+          forfeited_by?: string | null
+          forfeited_by_session_id?: string | null
+          game_id: string
+          source: string
+          status: string
+        }
+        Update: {
+          activity_at?: string
+          forfeited_by?: string | null
+          forfeited_by_session_id?: string | null
+          game_id?: string
+          source?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      admin_match_archive_players: {
+        Row: {
+          game_id: string
+          session_id: string
+        }
+        Insert: {
+          game_id: string
+          session_id: string
+        }
+        Update: {
+          game_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_match_archive_players_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "admin_match_archive"
+            referencedColumns: ["game_id"]
+          },
+          {
+            foreignKeyName: "admin_match_archive_players_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_owners"
+            referencedColumns: ["session_id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           app_version: string | null
@@ -1324,6 +1399,23 @@ export type Database = {
           day: string
           devices: number
           forfeits: number
+          ios: number
+          issues: number
+          median_app_age_days: number
+          online_finished: number
+          played: number
+        }[]
+      }
+      admin_daily_stats_v6: {
+        Args: { _start?: string }
+        Returns: {
+          android: number
+          avg_app_age_days: number
+          cpu_finished: number
+          day: string
+          devices: number
+          forfeits: number
+          incomplete_columns: string[]
           ios: number
           issues: number
           median_app_age_days: number

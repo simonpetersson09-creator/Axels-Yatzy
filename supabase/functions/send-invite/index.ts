@@ -21,6 +21,8 @@ Deno.serve(async (req) => {
     if (from_session_id === to_session_id) {
       return json({ error: "Du kan inte bjuda in dig själv" }, 400);
     }
+    const idOk = (v: unknown) => typeof v === "string" && /^[A-Za-z0-9-]{8,64}$/.test(v);
+    if (!idOk(from_session_id) || !idOk(to_session_id)) return json({ error: "Ogiltig spelare" }, 400);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -62,11 +64,10 @@ Deno.serve(async (req) => {
     // and the sender name shown to the recipient comes from the server.
     const senderGames = senderGamesRes.data ?? [];
     const senderGameIds = senderGames.map((r: { game_id: string }) => r.game_id);
-    if (senderGameIds.length === 0) return json({ error: "Ni har inte spelat tillsammans" }, 403);
-
     const nowIso = new Date().toISOString();
-    const [sharedRes, existingRes] = await Promise.all([
-      supabase
+    // Accepted friends may always invite (old shared games are cleaned up after a day).
+    const [sharedRes, existingRes, friendRes, nameRes] = await Promise.all([
+      senderGameIds.length === 0 ? Promise.resolve({ data: null }) : supabase
         .from("game_players")
         .select("game_id")
         .eq("session_id", to_session_id)
@@ -81,9 +82,17 @@ Deno.serve(async (req) => {
         .eq("status", "pending")
         .gt("expires_at", nowIso)
         .maybeSingle(),
+      supabase
+        .from("friend_requests")
+        .select("id")
+        .eq("status", "accepted")
+        .or(`and(from_session_id.eq.${from_session_id},to_session_id.eq.${to_session_id}),and(from_session_id.eq.${to_session_id},to_session_id.eq.${from_session_id})`)
+        .limit(1)
+        .maybeSingle(),
+      supabase.from("player_names").select("name").eq("session_id", from_session_id).maybeSingle(),
     ]);
-    if (!sharedRes.data) return json({ error: "Ni har inte spelat tillsammans" }, 403);
-    const serverName = String(senderGames[0]?.player_name ?? "")
+    if (!sharedRes.data && !friendRes.data) return json({ error: "Ni har inte spelat tillsammans" }, 403);
+    const serverName = String(senderGames[0]?.player_name ?? nameRes.data?.name ?? "")
       .replace(/[\u0000-\u001F\u007F<>]/g, "").trim().slice(0, 20) || "En vän";
 
     // Block if sender already has 3 active games (distinct game_ids)

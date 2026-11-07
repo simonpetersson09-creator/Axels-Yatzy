@@ -44,7 +44,7 @@ describe('authoritative multiplayer recovery', () => {
       return q;
     });
     m.roll.mockImplementation(async (name: string, _fallback: string, args: { p_locked: boolean[] }) => {
-      if (name === 'client_set_locks') {
+      if (name === 'client_set_locks_guarded') {
         if (previousLockApplied) game = { ...game, locked_dice: args.p_locked };
         return { data: null, error: new TypeError('Load failed') };
       }

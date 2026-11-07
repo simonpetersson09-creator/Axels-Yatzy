@@ -1,9 +1,10 @@
 # Roadmap – Snabbspel online
 
 ## Adminprestanda och sena låsanrop – 7 november
-- [ ] Optimera adminhämtningen med oförändrade siffror, historik och integritetsskydd.
-- [ ] Reproducera och skydda mot äldre låsanrop efter ett nytt kast; bevara äldre appversioners stöd.
-- [ ] Komplettera tidsdiagnostik, kör riktade tester och kontrollera adminflödet.
+- [x] Versionsurval materialiseras före versionsparsning: isolerad jämförelse 8,4 s → 0,6 s med identiska räknare/åldrar/ofullständighetsmarkörer. Admin hämtar endast synliga dagar från 1 november; fullhistorik för appålder bevarad. Serversidan driftsatt.
+- [x] Isolerat SQL-prov visar att ett gammalt låsanrop avvisas efter nytt kast eller ny tur utan att röra nyare markeringar. Ny klient skickar runda/spelare/kast kvar till radlåst RPC; äldre RPC:er orörda. Samma-kastordning använder befintlig klientkö, inget nytt beständigt sekvenssystem.
+- [x] Gemensamt försöks-ID och server-/klienttider även för långsamma/misslyckade låsningar, utan namn/enhets-ID/tärningsvärden. 94 tester godkända; riktig admininloggning HTTP 200, 7 dagsrader, uppdatering och diagram, inga sidfel. Bygge OK.
+- [ ] Låsskydd och utökad tidsdiagnostik på installerad telefon kräver nästa appversion; ingen webb-/butikspublicering gjord.
 
 ## Låsningsfel – riktad kontroll 7 november
 - [x] Två nya isolerade fall godkända (18 hooktester totalt): nästa kast skickar exakt hela den synliga låsningen även när föregående låsning misslyckats och avläsningen väntar. Servern applicerar fullbatchen atomärt före omkast. Ingen beteendeändring eller publicering.

@@ -1,5 +1,6 @@
 import { isStaleSnapshot } from '@/lib/snapshot-order';
 import { directRpc, invokeDeviceAction } from '@/lib/multiplayer-actions';
+import { measureRecoveryRead } from '@/lib/multiplayer-recovery-diagnostics';
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, requireClaimedDevice } from '@/lib/session';
@@ -1009,11 +1010,12 @@ export function useMultiplayerGame() {
         let settled = false;
         let invokeFailed: unknown = null;
         let resent = false;
+        let readIndex = 0;
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
         const invokeRoll = () => {
           withTimeout(directRpc('client_roll', 'roll-dice', {
             p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
-          }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId })).then(
+          }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId, timeoutAfterMs: NETWORK_TIMEOUT_MS })).then(
             (res) => finish(() => resolve(res as RollRes)),
             (err) => { invokeFailed = err ?? new Error('timeout'); },
           );
@@ -1025,9 +1027,9 @@ export function useMultiplayerGame() {
             try {
               // Hard timeout on each read: a hanging SELECT must not hold the
               // roll past the recovery deadline.
-              const { data: g } = await withTimeout(Promise.resolve(supabase.from('games')
+              const { data: g } = await measureRecoveryRead(() => withTimeout(Promise.resolve(supabase.from('games')
                 .select('dice, rolls_left, round, current_player_index')
-                .eq('id', gid).maybeSingle()), 5_000);
+                .eq('id', gid).maybeSingle()), 5_000), { gameId: gid, attemptId: rollAttemptId, readIndex: ++readIndex });
               if (g && g.round === expect.round && g.current_player_index === expect.player && g.rolls_left === expect.rollsLeft) {
                 reportMpIssue('roll_recovered', gid, { ms: Date.now() - rollStartedAt, attempt_id: rollAttemptId });
                 finish(() => resolve({ data: { success: true, dice: g.dice, rolls_left: g.rolls_left }, error: null }));
@@ -1094,7 +1096,7 @@ export function useMultiplayerGame() {
       return { ok: false } as const;
     }).catch((err) => {
       console.error('Roll dice failed:', err);
-      reportMpIssue('roll_failed', latest.gameId, { ms: Date.now() - rollStartedAt, err: errText(err) });
+      reportMpIssue('roll_failed', latest.gameId, { ms: Date.now() - rollStartedAt, err: errText(err), attempt_id: rollAttemptId });
       serverDoneAt = Date.now();
       setDiceAwait(false);
       const msg = (err as Error)?.message === 'timeout'
@@ -1208,7 +1210,7 @@ export function useMultiplayerGame() {
             p_game_id: gameId, p_session_id: sessionId, p_locked: locks,
             p_expected_round: pending.round, p_expected_rolls_left: pending.rollsLeft,
             p_expected_player_index: pending.playerIndex,
-          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }, { attemptId: lockAttemptId })), RETRY_TIMEOUT_MS);
+          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }, { attemptId: lockAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS })), RETRY_TIMEOUT_MS);
           if (error) {
             console.error('Toggle lock error:', error);
             reportMpIssue(data?.stale_command ? 'lock_stale' : 'lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error), attempt_id: lockAttemptId });

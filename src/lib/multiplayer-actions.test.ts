@@ -41,6 +41,7 @@ it('records a slow raw response with the same attempt ID, including after UI rec
     expect((await pending).data.dice).toEqual([1,2,3,4,5]);
     expect(mocks.rpc).toHaveBeenCalledTimes(1);
     expect(mocks.track).toHaveBeenCalledWith('play_roll_timing', expect.objectContaining({ attempt_id: 'attempt', ok: true, total_ms: 3400, server_ms: 100, outside_server_ms: 3300 }), { gameId: 'game', gameMode: 'multiplayer' });
+    expect(mocks.rpc).toHaveBeenCalledWith('client_roll_diagnosed', { p_game_id: 'game', p_device_id: 'device', p_attempt_id: 'attempt' });
   } finally { vi.useRealTimers(); }
 });
 it('does not log fast successes or create a diagnostic server request', async () => {
@@ -57,6 +58,7 @@ it('records lock duration and correlation without lock values or identities', as
     const pending = directRpc('client_set_locks_guarded', 'toggle-lock', { p_game_id: 'game', p_session_id: 'private-player', p_locked: [true,false,false,false,false] }, {}, { attemptId: 'lock-attempt' });
     await vi.advanceTimersByTimeAsync(3500);
     expect((await pending).error).toBeNull();
+    expect(mocks.rpc).toHaveBeenCalledWith('client_set_locks_diagnosed', expect.objectContaining({ p_attempt_id: 'lock-attempt', p_device_id: 'private-device' }));
     expect(mocks.track).toHaveBeenCalledWith('play_lock_timing', expect.objectContaining({ attempt_id: 'lock-attempt', total_ms: 3500, server_ms: 150, outside_server_ms: 3350 }), { gameId: 'game', gameMode: 'multiplayer' });
     const metadata = mocks.track.mock.calls[0]?.[1];
     expect(metadata).not.toHaveProperty('p_locked');
@@ -71,4 +73,46 @@ it('preserves a stale lock response so the caller refreshes instead of confirmin
   expect(result.data.stale_command).toBe(true);
   expect(result.error).toBeInstanceOf(Error);
   expect(mocks.rpc).toHaveBeenCalledTimes(1);
+});
+it('logs a missing response at the deadline, then correlates a late answer without resending', async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('device');
+    let release: (value: unknown) => void = () => {};
+    mocks.rpc.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    const pending = directRpc('client_roll', 'roll-dice', { p_game_id: 'game' }, {}, { attemptId: 'missing', timeoutAfterMs: 8000 });
+    await vi.advanceTimersByTimeAsync(7999);
+    expect(mocks.track).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(mocks.track).toHaveBeenCalledWith('play_roll_timing', expect.objectContaining({ attempt_id: 'missing', stage: 'deadline', total_ms: 8000, response_received: false, server_ms: null }), expect.anything());
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    release({ data: { success: true, server_ms: 1 }, error: null });
+    await pending;
+    expect(mocks.track).toHaveBeenLastCalledWith('play_roll_timing', expect.objectContaining({ attempt_id: 'missing', stage: 'response', response_received: true, server_ms: 1 }), expect.anything());
+    await vi.advanceTimersByTimeAsync(16000);
+    expect(mocks.track).toHaveBeenCalledTimes(2);
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});
+it('clears the deadline observer on a fast lock response', async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('device');
+    await directRpc('client_set_locks_guarded', 'toggle-lock', {}, {}, { attemptId: 'fast', timeoutAfterMs: 12000 });
+    await vi.advanceTimersByTimeAsync(12000);
+    expect(mocks.track).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});
+it('records a claim stalled at the deadline without saying the request was dispatched', async () => {
+  vi.useFakeTimers();
+  try {
+    let release: (value: string) => void = () => {};
+    mocks.claim.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    const pending = directRpc('client_roll', 'roll-dice', {}, {}, { attemptId: 'claim', timeoutAfterMs: 8000 });
+    await vi.advanceTimersByTimeAsync(8000);
+    expect(mocks.track).toHaveBeenCalledWith('play_roll_timing', expect.objectContaining({ stage: 'deadline', request_dispatched: false, claim_ms: 8000, request_ms: 0 }), expect.anything());
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    release('device'); await pending;
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
 });

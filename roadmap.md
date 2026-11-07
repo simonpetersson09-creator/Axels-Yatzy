@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Kompletterad feldiagnostik – 7 november
+- [x] Återhämtningsläsningar mäts; passerad tidsgräns och sena svar registreras separat med samma försöks-ID, utan extra spelanrop.
+- [x] Skyddade serverkvitton driftsatta, oberoende av matchstädning, med 30 dagars rensning och ägarradering. Inga namn/tärningsvärden/anslutningsuppgifter. Hosted anropsloggars retention går inte att ändra med tillgängliga Cloud-kontroller; transaktionsavbrott kan inte lämna serverkvitto.
+- [x] Körande isolerat prov: ett kastanrop, uteblivet svar loggat, sent korrekt svar, inga sidfel; ingen publicering.
+- [ ] Verkliga telefonmätningar kräver nästa signerade appversion och telefon; nya serverkvitton används bara av den nya klienten.
+
 ## Adminprestanda och sena låsanrop – 7 november
 - [x] Versionsurval materialiseras före versionsparsning: isolerad jämförelse 8,4 s → 0,6 s med identiska räknare/åldrar/ofullständighetsmarkörer. Admin hämtar endast synliga dagar från 1 november; fullhistorik för appålder bevarad. Serversidan driftsatt.
 - [x] Isolerat SQL-prov visar att ett gammalt låsanrop avvisas efter nytt kast eller ny tur utan att röra nyare markeringar. Ny klient skickar runda/spelare/kast kvar till radlåst RPC; äldre RPC:er orörda. Samma-kastordning använder befintlig klientkö, inget nytt beständigt sekvenssystem.

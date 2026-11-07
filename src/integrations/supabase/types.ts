@@ -574,6 +574,44 @@ export type Database = {
           },
         ]
       }
+      multiplayer_request_timings: {
+        Row: {
+          attempt_id: string
+          operation: string
+          recorded_at: string
+          request_id: string
+          server_ms: number
+          session_id: string
+          success: boolean
+        }
+        Insert: {
+          attempt_id: string
+          operation: string
+          recorded_at?: string
+          request_id?: string
+          server_ms: number
+          session_id: string
+          success: boolean
+        }
+        Update: {
+          attempt_id?: string
+          operation?: string
+          recorded_at?: string
+          request_id?: string
+          server_ms?: number
+          session_id?: string
+          success?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "multiplayer_request_timings_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_owners"
+            referencedColumns: ["session_id"]
+          },
+        ]
+      }
       notification_log: {
         Row: {
           delivered: boolean
@@ -1477,9 +1515,32 @@ export type Database = {
         }
         Returns: Json
       }
+      client_roll_diagnosed: {
+        Args: {
+          p_attempt_id: string
+          p_device_id: string
+          p_game_id: string
+          p_locked: boolean[]
+          p_session_id: string
+        }
+        Returns: Json
+      }
       client_set_locks: {
         Args: {
           p_device_id: string
+          p_game_id: string
+          p_locked: boolean[]
+          p_session_id: string
+        }
+        Returns: Json
+      }
+      client_set_locks_diagnosed: {
+        Args: {
+          p_attempt_id: string
+          p_device_id: string
+          p_expected_player_index: number
+          p_expected_rolls_left: number
+          p_expected_round: number
           p_game_id: string
           p_locked: boolean[]
           p_session_id: string
@@ -1623,6 +1684,16 @@ export type Database = {
       internal_is_valid_timezone: { Args: { _tz: string }; Returns: boolean }
       internal_record_friend_match: {
         Args: { p_game_id: string }
+        Returns: undefined
+      }
+      internal_record_request_timing: {
+        Args: {
+          p_attempt_id: string
+          p_device_id: string
+          p_operation: string
+          p_result: Json
+          p_session_id: string
+        }
         Returns: undefined
       }
       internal_secret_matches: { Args: { p_secret: string }; Returns: boolean }

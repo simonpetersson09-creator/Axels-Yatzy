@@ -8,6 +8,8 @@ import AdminAdDiagnostics from "@/components/AdminAdDiagnostics";
 import { adminVisibleDays } from "@/lib/admin-period";
 import {
   adminRecordIndexes,
+  adminOnlineOutcomes,
+  adminForfeitShare,
   adminRollingMean,
   adminValueIncomplete,
   buildRibbon,
@@ -21,6 +23,7 @@ const ADMIN_KEY_STORAGE = "lovable.admin.key";
 const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "devices", label: "Aktiva enheter" },
   { key: "played", label: "Enheter som spelade" },
+  { key: "new_players", label: "Nya spelare (första registrerade spel)" },
   { key: "ios", label: "iPhone / Android" },
   { key: "avg_app_age_days", label: "Medelappålder (dagar)" },
   { key: "total", label: "Färdiga matcher totalt" },
@@ -28,6 +31,7 @@ const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "online_finished", label: "Online (inkl. Snabbspel)" },
   { key: "forfeits", label: "Avhopp online" },
   { key: "issues", label: "Problemhändelser (2 senaste versionerna)" },
+  { key: "post_match_shown", label: "Matchannonser visade / tillfällen" },
 ];
 
 /** Columns where the highest number is a bad day rather than an achievement. */
@@ -48,7 +52,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   const [collapsedColumns, setCollapsedColumns] = useState<AdminColumnKey[]>([]);
   const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
   const means = useMemo(() => Object.fromEntries((rows ?? []).map((row) => [row.day,
-    Object.fromEntries([...COLUMNS.map((column) => column.key), "android" as const].map((key) =>
+    Object.fromEntries([...COLUMNS.map((column) => column.key), "android" as const, "issue_devices" as const, "post_match_opportunities" as const].map((key) =>
       [key, adminRollingMean(rows ?? [], row.day, key)])),
   ])), [rows]);
   const meanText = (day: string, key: AdminColumnKey) => {
@@ -293,9 +297,12 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                     <span className="flex items-baseline justify-end gap-1 tabular-nums">
                       <span className="text-right">
                         {c.key === "ios" ? <>{r.ios}{adminValueIncomplete(r,"ios") ? "†" : ""} <span className="text-muted-foreground">({meanText(r.day, "ios")})</span> / {r.android}{adminValueIncomplete(r,"android") ? "†" : ""} <span className="text-muted-foreground">({meanText(r.day, "android")})</span></> : <>
-                          {c.key === "avg_app_age_days" ? r[c.key] == null ? "—" : Number(r[c.key]).toLocaleString("sv-SE", { maximumFractionDigits: 0 }) : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key]}
+                          {c.key === "avg_app_age_days" ? r[c.key] == null ? "—" : Number(r[c.key]).toLocaleString("sv-SE", { maximumFractionDigits: 0 }) : c.key === "total" ? Number(r.cpu_finished ?? 0) + Number(r.online_finished ?? 0) : r[c.key] ?? "—"}
                           {adminValueIncomplete(r,c.key) ? "†" : ""}
                           {" "}<span className="text-muted-foreground">({meanText(r.day, c.key)})</span>
+                          {c.key === "issues" && <><br /><span className="text-muted-foreground">{r.issue_devices ?? "—"} enheter ({meanText(r.day, "issue_devices")})</span></>}
+                          {c.key === "post_match_shown" && <> / {r.post_match_opportunities ?? "—"} <span className="text-muted-foreground">({meanText(r.day, "post_match_opportunities")})</span></>}
+                          {c.key === "forfeits" && <><br /><span className="text-muted-foreground">av {adminOnlineOutcomes(r)} · {adminForfeitShare(r) == null ? "—" : `${adminForfeitShare(r)?.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} %`}</span></>}
                         </>}
                       </span>
                       <span className="w-7 h-5 flex items-center justify-center" aria-hidden="true">
@@ -324,7 +331,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                   {!collapsedColumns.includes(c.key) &&
                   <span className="flex items-baseline justify-end gap-1 tabular-nums">
                     <span className="text-right">
-                      {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "avg_app_age_days" ? "—" : sum(c.key)}
+                      {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "avg_app_age_days" ? "—" : c.key === "post_match_shown" ? `${sum(c.key)} / ${sum("post_match_opportunities")}` : c.key === "forfeits" ? `${sum(c.key)} av ${rows.reduce((n, r) => n + adminOnlineOutcomes(r), 0)}` : sum(c.key)}
                     </span>
                     <span className="w-0" aria-hidden="true" />
                   </span>}
@@ -336,6 +343,9 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
       </div>
       <p className="text-xs text-muted-foreground mt-3">
         Appålder: dagar sedan första registrerade appaktiviteten för dagens unika aktiva enhets-ID:n, inte verifierad nedladdningsdag. Ominstallation kan ge ett nytt ID.
+      </p>
+      <p className="text-xs text-muted-foreground mt-3">
+        Nya spelare: första registrerade spel per appenhet i tillgänglig historik, inte verifierade nya personer. Matchannonser: bekräftad visning / första registrerade utgången från ett färdigt matchresultat per enhet och match; inte alla färdiga matcher eller AdMobs exponeringar. Saknade telefonloggar kan ge lägre antal. Avhoppsandel: avhopp / (färdigspelade onlinematcher + avhopp), inte pågående matcher. Problemens enheter använder samma två senaste versioner som händelserna och summeras inte mellan dagar.
       </p>
       <p className="text-xs text-muted-foreground mt-3">
         ★ = högsta värdet i kolumnen sedan 1 november. För Avhopp online och Problemhändelser är röd stjärna den sämsta dagen.

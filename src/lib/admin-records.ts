@@ -13,10 +13,23 @@ export interface AdminDayRow {
   online_finished: number;
   forfeits: number;
   issues: number;
+  issue_devices?: number;
+  new_players?: number;
+  post_match_shown?: number;
+  post_match_opportunities?: number;
   incomplete_columns?: string[];
 }
 
 export type AdminColumnKey = keyof AdminDayRow;
+
+export function adminOnlineOutcomes(row: AdminDayRow): number {
+  return Number(row.online_finished ?? 0) + Number(row.forfeits ?? 0);
+}
+
+export function adminForfeitShare(row: AdminDayRow): number | null {
+  const outcomes = adminOnlineOutcomes(row);
+  return outcomes ? row.forfeits / outcomes * 100 : null;
+}
 
 export function adminValueIncomplete(row: AdminDayRow, key: AdminColumnKey): boolean {
   return row.incomplete_columns?.includes(key) === true;

@@ -16,12 +16,18 @@ export interface AdminDayRow {
   issue_devices?: number;
   new_players?: number;
   referral_new_players?: number;
+  returning_played?: number;
   post_match_shown?: number;
   post_match_opportunities?: number;
   incomplete_columns?: string[];
 }
 
 export type AdminColumnKey = keyof AdminDayRow;
+
+export function adminReturningShare(row: AdminDayRow): number | null {
+  if (row.returning_played == null || row.played <= 0 || adminValueIncomplete(row, "played") || adminValueIncomplete(row, "returning_played")) return null;
+  return row.returning_played / row.played * 100;
+}
 
 export function adminOnlineOutcomes(row: AdminDayRow): number {
   return Number(row.online_finished ?? 0) + Number(row.forfeits ?? 0);
@@ -56,7 +62,7 @@ export function adminRollingMean(rows: AdminDayRow[], day: string, key: AdminCol
     return time >= start && time <= end;
   });
   if (new Set(window.map((row) => row.day)).size !== expected) return null;
-  if (window.some((row) => adminValueIncomplete(row, key) || (key === "avg_app_age_days" && row[key] == null))) return null;
+  if (window.some((row) => adminValueIncomplete(row, key) || ((key === "avg_app_age_days" || key === "returning_played") && row[key] == null))) return null;
   return window.reduce((sum, row) => sum + adminCellValue(row, key), 0) / expected;
 }
 

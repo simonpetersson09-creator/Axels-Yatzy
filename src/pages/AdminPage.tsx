@@ -10,6 +10,7 @@ import {
   adminRecordIndexes,
   adminOnlineOutcomes,
   adminForfeitShare,
+  adminReturningShare,
   adminRollingMean,
   adminValueIncomplete,
   buildRibbon,
@@ -23,6 +24,7 @@ const ADMIN_KEY_STORAGE = "lovable.admin.key";
 const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "devices", label: "Aktiva enheter" },
   { key: "played", label: "Enheter som spelade" },
+  { key: "returning_played", label: "Spelade även igår (antal / andel)" },
   { key: "new_players", label: "Nya spelare (första registrerade spel)" },
   { key: "referral_new_players", label: "Varav via inbjudan" },
   { key: "ios", label: "iPhone / Android" },
@@ -302,6 +304,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                           {adminValueIncomplete(r,c.key) ? "†" : ""}
                           {" "}<span className="text-muted-foreground">({meanText(r.day, c.key)})</span>
                           {c.key === "issues" && <><br /><span className="text-muted-foreground">{r.issue_devices ?? "—"} enheter ({meanText(r.day, "issue_devices")})</span></>}
+                          {c.key === "returning_played" && <><br /><span className="text-muted-foreground">{adminReturningShare(r) == null ? "—" : `${adminReturningShare(r)?.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} %`} av {r.played}</span></>}
                           {c.key === "post_match_shown" && <> / {r.post_match_opportunities ?? "—"} <span className="text-muted-foreground">({meanText(r.day, "post_match_opportunities")})</span></>}
                           {c.key === "forfeits" && <><br /><span className="text-muted-foreground">av {adminOnlineOutcomes(r)} · {adminForfeitShare(r) == null ? "—" : `${adminForfeitShare(r)?.toLocaleString("sv-SE", { maximumFractionDigits: 1 })} %`}</span></>}
                         </>}
@@ -332,7 +335,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                   {!collapsedColumns.includes(c.key) &&
                   <span className="flex items-baseline justify-end gap-1 tabular-nums">
                     <span className="text-right">
-                      {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "avg_app_age_days" ? "—" : c.key === "post_match_shown" ? `${sum(c.key)} / ${sum("post_match_opportunities")}` : c.key === "forfeits" ? `${sum(c.key)} av ${rows.reduce((n, r) => n + adminOnlineOutcomes(r), 0)}` : sum(c.key)}
+                      {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "returning_played" || c.key === "avg_app_age_days" ? "—" : c.key === "post_match_shown" ? `${sum(c.key)} / ${sum("post_match_opportunities")}` : c.key === "forfeits" ? `${sum(c.key)} av ${rows.reduce((n, r) => n + adminOnlineOutcomes(r), 0)}` : sum(c.key)}
                     </span>
                     <span className="w-0" aria-hidden="true" />
                   </span>}

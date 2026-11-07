@@ -32,6 +32,39 @@ async function joined() {
   return hook;
 }
 describe('authoritative multiplayer recovery', () => {
+  it.each([false, true])('roll carries the displayed full lock batch after Load failed while refresh is delayed (previous lock applied: %s)', async (previousLockApplied) => {
+    game = { ...game, rolls_left: 2, dice: [6, 2, 3, 4, 5] };
+    const { result } = await joined();
+    let releaseRead: (value: unknown) => void = () => {};
+    const delayedRead = new Promise(resolve => { releaseRead = resolve; });
+    const normalFrom = m.from.getMockImplementation();
+    m.from.mockImplementation((table: string) => {
+      if (table !== 'games') return normalFrom?.(table);
+      const q = { select: () => q, eq: () => q, single: () => delayedRead };
+      return q;
+    });
+    m.roll.mockImplementation(async (name: string, _fallback: string, args: { p_locked: boolean[] }) => {
+      if (name === 'client_set_locks') {
+        if (previousLockApplied) game = { ...game, locked_dice: args.p_locked };
+        return { data: null, error: new TypeError('Load failed') };
+      }
+      game = { ...game, locked_dice: args.p_locked, dice: [6, 3, 4, 5, 6], rolls_left: 1 };
+      return { data: { success: true, dice: game.dice, rolls_left: 1 }, error: null };
+    });
+    await act(async () => {
+      result.current.toggleLock(0);
+      await vi.advanceTimersByTimeAsync(250);
+    });
+    expect(result.current.locksPending).toBe(false);
+    expect(result.current.gameState?.lockedDice).toEqual([true, false, false, false, false]);
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(2200); });
+    const rollCalls = m.roll.mock.calls.filter(([name]) => name === 'client_roll');
+    expect(rollCalls).toHaveLength(1);
+    expect(rollCalls[0]?.[2].p_locked).toEqual([true, false, false, false, false]);
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.gameState?.dice).toEqual([6, 3, 4, 5, 6]);
+    await act(async () => { releaseRead({ data: { ...game }, error: null }); });
+  });
   it('failed first roll restores three rolls and never permits scoring', async () => {
     m.roll.mockResolvedValue({ data: null, error: new Error('Load failed') });
     const { result } = await joined();

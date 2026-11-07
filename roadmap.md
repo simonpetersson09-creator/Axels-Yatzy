@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Låsningsfel – riktad kontroll 7 november
+- [x] Två nya isolerade fall godkända (18 hooktester totalt): nästa kast skickar exakt hela den synliga låsningen även när föregående låsning misslyckats och avläsningen väntar. Servern applicerar fullbatchen atomärt före omkast. Ingen beteendeändring eller publicering.
+- [x] Separat risk identifierad i kodgranskning: äldre låsanrop saknar versions-/kastvakt och kan ersätta nyare markeringar inom samma tur; inget bevis att detta inträffade idag. Kräver egen reproduktion före eventuell ändring. Långsam adminhämtning inte optimerad i denna testuppgift.
+
 ## Startannons och tomma banners
 - [x] Ett enda banneromförsök efter 60 s vid bekräftat laddningsfel; stopp vid sidbyte, bakgrund och ändrade annonsval. 108 annons-/integritetstester godkända på iOS/Android. Riktig annonsleverans måste verifieras i nästa appversion på telefon; inget publicerat.
 - [x] App Open: 45 min giltighet i båda telefonversionerna, inklusive uppgradering av befintliga nativepatchar. 49 tester och båda nativekontrollerna godkända; bygge OK. Installerade appar behöver nästa appversion.

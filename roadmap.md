@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Admin – fyra nya mått
+- [ ] Visa problemhändelsernas unika appenheter, första spel per appenhet, visade matchannonser/tillfällen och avhopp/avslutade onlinematcher.
+- [ ] Kontrollera räkneregler, tester och verklig adminvisning utan publicering.
+
 ## Kompletterad feldiagnostik – 7 november
 - [x] Återhämtningsläsningar mäts; passerad tidsgräns och sena svar registreras separat med samma försöks-ID, utan extra spelanrop.
 - [x] Skyddade serverkvitton driftsatta, oberoende av matchstädning, med 30 dagars rensning och ägarradering. Inga namn/tärningsvärden/anslutningsuppgifter. Hosted anropsloggars retention går inte att ändra med tillgängliga Cloud-kontroller; transaktionsavbrott kan inte lämna serverkvitto.

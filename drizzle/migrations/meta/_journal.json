@@ -848,6 +848,20 @@
       "when": 1794068717075,
       "tag": "0120_admin_app_age_app_only_and_complete_from_nov1",
       "breakpoints": true
+    },
+    {
+      "idx": 121,
+      "version": "7",
+      "when": 1794069095632,
+      "tag": "0121_durable_online_player_scores",
+      "breakpoints": true
+    },
+    {
+      "idx": 122,
+      "version": "7",
+      "when": 1794069104765,
+      "tag": "0122_online_scores_archive_humans_only",
+      "breakpoints": true
     }
   ]
 }

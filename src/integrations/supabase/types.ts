@@ -684,6 +684,44 @@ export type Database = {
         }
         Relationships: []
       }
+      online_match_scores: {
+        Row: {
+          finished_at: string
+          game_id: string
+          players: number
+          session_id: string
+          source: string
+          top: number
+          total: number
+        }
+        Insert: {
+          finished_at: string
+          game_id: string
+          players: number
+          session_id: string
+          source: string
+          top: number
+          total: number
+        }
+        Update: {
+          finished_at?: string
+          game_id?: string
+          players?: number
+          session_id?: string
+          source?: string
+          top?: number
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "online_match_scores_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_owners"
+            referencedColumns: ["session_id"]
+          },
+        ]
+      }
       perf_snapshots: {
         Row: {
           calls: number
@@ -1696,6 +1734,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      internal_score_total: { Args: { p: Json }; Returns: number }
       internal_secret_matches: { Args: { p_secret: string }; Returns: boolean }
       internal_settle_weekly_rewards: { Args: never; Returns: undefined }
       internal_snapshot_perf: { Args: never; Returns: number }

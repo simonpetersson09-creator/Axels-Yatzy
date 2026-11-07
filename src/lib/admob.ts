@@ -1150,7 +1150,7 @@ let bannerFailed = false;
 let bannerRequestAt = 0;
 let bannerListeners: Promise<void> | null = null;
 let bannerOperations: Promise<void> = Promise.resolve();
-export const BANNER_RETRY_DELAY_MS = 60_000;
+export const BANNER_RETRY_DELAY_MS = 30_000;
 let bannerRetryTimer: ReturnType<typeof setTimeout> | undefined;
 let bannerRetryUsed = false;
 let bannerLoadOwner: { stale: () => boolean; placement: BannerPlacement } | null = null;

@@ -553,11 +553,12 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
   const failBanner = () => native.handlers.get('b_failed')?.forEach(h =>
     (h as (d: unknown) => void)({ code: 3, message: 'No fill' }));
 
-  it('retries a confirmed failed load once after 60 seconds, never chains retries', async () => {
+  it('retries a confirmed failed load once after 30 seconds, never chains retries', async () => {
     const m = await import('./admob');
+    expect(m.BANNER_RETRY_DELAY_MS).toBe(30_000);
     const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
     failBanner(); failBanner();
-    await vi.advanceTimersByTimeAsync(59_999);
+    await vi.advanceTimersByTimeAsync(29_999);
     expect(native.banner.show).toHaveBeenCalledOnce();
     await vi.advanceTimersByTimeAsync(15_001);
     expect(native.banner.show).toHaveBeenCalledTimes(2);

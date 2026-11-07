@@ -50,7 +50,7 @@ describe.skipIf(!db)('admin extra counters in connection-local fixtures', () => 
       const source = readFileSync('drizzle/migrations/0123_admin_daily_extended_metrics.sql','utf8').split('REVOKE ALL')[0];
       const parser = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql','utf8').split('REVOKE ALL')[0];
       await sql.unsafe(parser.replace('public.admin_issue_release','pg_temp.admin_issue_release').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
-      await sql.unsafe(source.replace('public.admin_daily_extra_stats','pg_temp.admin_daily_extra_stats').replace('public.admin_issue_release','pg_temp.admin_issue_release').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+      await sql.unsafe(source.replace('public.admin_daily_extra_stats','pg_temp.admin_daily_extra_stats').replace(/public\.admin_issue_release/g,'pg_temp.admin_issue_release').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       const [row] = await sql`select * from pg_temp.admin_daily_extra_stats('2026-11-07') where day='2026-11-07'`;
       return row;
     });

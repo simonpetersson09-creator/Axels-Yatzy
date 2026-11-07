@@ -21,6 +21,8 @@ Deno.serve(async (req) => {
     if (from_session_id === to_session_id) {
       return json({ error: "Du kan inte bjuda in dig själv" }, 400);
     }
+    const idOk = (v: unknown) => typeof v === "string" && /^[A-Za-z0-9-]{8,64}$/.test(v);
+    if (!idOk(from_session_id) || !idOk(to_session_id)) return json({ error: "Ogiltig spelare" }, 400);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,

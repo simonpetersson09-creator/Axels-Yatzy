@@ -15,6 +15,7 @@ export interface AdminDayRow {
   issues: number;
   issue_devices?: number;
   new_players?: number;
+  referral_new_players?: number;
   post_match_shown?: number;
   post_match_opportunities?: number;
   incomplete_columns?: string[];

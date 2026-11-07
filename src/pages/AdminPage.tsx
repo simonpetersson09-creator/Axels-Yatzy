@@ -24,6 +24,7 @@ const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "devices", label: "Aktiva enheter" },
   { key: "played", label: "Enheter som spelade" },
   { key: "new_players", label: "Nya spelare (första registrerade spel)" },
+  { key: "referral_new_players", label: "Varav via inbjudan" },
   { key: "ios", label: "iPhone / Android" },
   { key: "avg_app_age_days", label: "Medelappålder (dagar)" },
   { key: "total", label: "Färdiga matcher totalt" },

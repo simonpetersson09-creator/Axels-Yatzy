@@ -33,7 +33,7 @@ describe('return-away Home lifecycle', () => {
   it.each(['/game', '/multiplayer-game', '/waiting-room', '/settings', '/admin'])('does not preload when backgrounded from %s', async path => {
     const h = await harness(); h.window.location.pathname = path; h.state(false);
     expect(h.preload).not.toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(40_000); h.state(true);
+    await vi.advanceTimersByTimeAsync(20_000); h.state(true);
     expect(h.show).not.toHaveBeenCalled();
   });
   it('only preloads on the next departure from Home after an in-game departure', async () => {
@@ -54,15 +54,15 @@ describe('return-away Home lifecycle', () => {
     stop(); startScreen.mockReturnValue(false); expect(allowed()).toBe(false);
     startScreen.mockReturnValue(true); expect(allowed()).toBe(false);
   });
-  it('retains the 40-second threshold, not 39,999 ms', async () => {
-    const h = await harness(); h.state(false); await vi.advanceTimersByTimeAsync(39_999); h.state(true);
+  it('requires 20 seconds away, not 19,999 ms', async () => {
+    const h = await harness(); h.state(false); await vi.advanceTimersByTimeAsync(19_999); h.state(true);
     expect(h.show).not.toHaveBeenCalled();
     expect(h.opportunity).toHaveBeenCalledExactlyOnceWith('appOpen', 'resume', 'skipped', 'away_too_short');
-    h.state(false); await vi.advanceTimersByTimeAsync(40_000); h.state(true); await vi.advanceTimersByTimeAsync(0);
+    h.state(false); await vi.advanceTimersByTimeAsync(20_000); h.state(true); await vi.advanceTimersByTimeAsync(0);
     expect(h.show).toHaveBeenCalledOnce(); expect(h.show.mock.calls[0][1]).toBe('resume');
   });
   it('drops returns outside Home and never defers to a later Home visit', async () => {
-    const h = await harness(); h.state(false); await vi.advanceTimersByTimeAsync(40_000);
+    const h = await harness(); h.state(false); await vi.advanceTimersByTimeAsync(20_000);
     h.window.location.pathname = '/game'; h.state(true); h.window.location.pathname = '/';
     await vi.advanceTimersByTimeAsync(60_000); h.state(true);
     expect(h.show).not.toHaveBeenCalled(); expect(h.preload).toHaveBeenCalledWith('background');
@@ -71,14 +71,14 @@ describe('return-away Home lifecycle', () => {
   it('permanently invalidates an in-flight return when Home unmounts, even after coming back', async () => {
     const h = await harness(); let permitted: () => boolean = () => false;
     h.show.mockImplementation(async allowed => { permitted = allowed; return false; });
-    h.state(false); await vi.advanceTimersByTimeAsync(40_000); h.state(true); await vi.advanceTimersByTimeAsync(0);
+    h.state(false); await vi.advanceTimersByTimeAsync(20_000); h.state(true); await vi.advanceTimersByTimeAsync(0);
     expect(permitted()).toBe(true); h.window.location.pathname = '/game'; h.leaveHome();
     h.window.location.pathname = '/'; expect(permitted()).toBe(false);
   });
   it('backgrounding also permanently invalidates the previous return', async () => {
     const h = await harness(); let permitted: () => boolean = () => false;
     h.show.mockImplementation(async allowed => { permitted = allowed; return false; });
-    h.state(false); await vi.advanceTimersByTimeAsync(40_000); h.state(true); await vi.advanceTimersByTimeAsync(0);
+    h.state(false); await vi.advanceTimersByTimeAsync(20_000); h.state(true); await vi.advanceTimersByTimeAsync(0);
     expect(permitted()).toBe(true); h.state(false); expect(permitted()).toBe(false);
   });
 });

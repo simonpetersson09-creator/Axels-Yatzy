@@ -1,3 +1,5 @@
+import { ADMIN_START_DAY } from "./admin-period";
+
 export interface AdminDayRow {
   day: string;
   devices: number;
@@ -31,14 +33,17 @@ export function adminCellValue(row: AdminDayRow, key: AdminColumnKey): number {
 /** Calendar-day mean ending on the row's Stockholm date; incomplete windows stay unknown. */
 export function adminRollingMean(rows: AdminDayRow[], day: string, key: AdminColumnKey): number | null {
   const end = Date.parse(`${day}T00:00:00Z`);
-  const start = end - 29 * 86_400_000;
+  // The window never reaches before the admin start day; early days average what exists.
+  const start = Math.max(end - 29 * 86_400_000, Date.parse(`${ADMIN_START_DAY}T00:00:00Z`));
+  if (start > end) return null;
+  const expected = Math.round((end - start) / 86_400_000) + 1;
   const window = rows.filter((row) => {
     const time = Date.parse(`${row.day}T00:00:00Z`);
     return time >= start && time <= end;
   });
-  if (new Set(window.map((row) => row.day)).size !== 30) return null;
+  if (new Set(window.map((row) => row.day)).size !== expected) return null;
   if (window.some((row) => adminValueIncomplete(row, key) || (key === "avg_app_age_days" && row[key] == null))) return null;
-  return window.reduce((sum, row) => sum + adminCellValue(row, key), 0) / 30;
+  return window.reduce((sum, row) => sum + adminCellValue(row, key), 0) / expected;
 }
 
 /**

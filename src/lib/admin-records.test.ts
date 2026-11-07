@@ -169,3 +169,12 @@ describe("buildRibbon", () => {
     expect(buildRibbon([])).toBe("");
   });
 });
+
+describe("rolling mean from the admin start day", async () => {
+  const { adminRollingMean } = await import("./admin-records");
+  const row = (day: string, devices: number) => ({ day, devices, ios: devices, android: 0, played: 0, total: 0, cpu_finished: 0, online_finished: 0, forfeits: 0, issues: 0, incomplete_columns: [] });
+  it("averages only the days since 1 November", () => {
+    const rows = [row("2026-11-03", 30), row("2026-11-02", 20), row("2026-11-01", 10)];
+    expect(adminRollingMean(rows, "2026-11-03", "devices")).toBe(20);
+  });
+});

@@ -841,6 +841,13 @@
       "when": 1794068557784,
       "tag": "0119_admin_archive_forfeit_players_by_device",
       "breakpoints": true
+    },
+    {
+      "idx": 120,
+      "version": "7",
+      "when": 1794068717075,
+      "tag": "0120_admin_app_age_app_only_and_complete_from_nov1",
+      "breakpoints": true
     }
   ]
 }

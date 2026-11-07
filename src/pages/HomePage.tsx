@@ -58,7 +58,7 @@ import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/
 let startupAdChecked = false;
 /** Module-level so it survives HomePage remounts while the app is in background. */
 let backgroundedAt = 0;
-const RESUME_AD_MIN_AWAY_MS = 40_000;
+const RESUME_AD_MIN_AWAY_MS = 20_000;
 /** Leaving Home or backgrounding permanently invalidates the current return. */
 let resumeHomeEpoch = 0;
 let resumeWatcherInstalled = false;
@@ -268,7 +268,7 @@ export default function HomePage() {
     return () => { cancelled = true; clearTimeout(timer); };
   }, []);
 
-  // Resume ad: away ≥ 40 s, only at the actual return on Home; never deferred.
+  // Resume ad: away ≥ 20 s, only at the actual return on Home; never deferred.
   useLayoutEffect(() => () => { resumeHomeEpoch++; }, []);
   useEffect(() => {
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;

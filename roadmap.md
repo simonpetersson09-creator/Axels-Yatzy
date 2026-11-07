@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Låsningsfel – riktad kontroll 7 november
+- [ ] Testa nästa kast efter Load failed med fördröjd serveravläsning, både registrerad och oregistrerad föregående låsning; kontrollera serverns atomära fullbatchkontrakt innan beteendet ändras.
+
 ## Startannons och tomma banners
 - [x] Ett enda banneromförsök efter 60 s vid bekräftat laddningsfel; stopp vid sidbyte, bakgrund och ändrade annonsval. 108 annons-/integritetstester godkända på iOS/Android. Riktig annonsleverans måste verifieras i nästa appversion på telefon; inget publicerat.
 - [x] App Open: 45 min giltighet i båda telefonversionerna, inklusive uppgradering av befintliga nativepatchar. 49 tester och båda nativekontrollerna godkända; bygge OK. Installerade appar behöver nästa appversion.

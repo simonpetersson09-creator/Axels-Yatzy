@@ -9,7 +9,7 @@ const fn = (file: string, name: string) => {
   const src = readFileSync(`drizzle/migrations/${file}`, 'utf8');
   const m = src.match(new RegExp(`CREATE OR REPLACE FUNCTION public\\.${name}\\([\\s\\S]*?\\$(function)?\\$;`));
   if (!m) throw new Error(`Missing ${name}`);
-  return m[0].replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'");
+  return m[0].replace(/public\./g, 'pg_temp.').replace(/(?<!\.)internal_score_total\(/g, 'pg_temp.internal_score_total(').replace('FUNCTION pg_temp.pg_temp.', 'FUNCTION pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'");
 };
 
 it.skipIf(!db)('player card keeps online results after cleanup deletes the finished game', async () => {

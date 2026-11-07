@@ -1418,6 +1418,13 @@ export type Database = {
           referral_new_players: number
         }[]
       }
+      admin_daily_returning_players: {
+        Args: { _start?: string }
+        Returns: {
+          day: string
+          returning_played: number
+        }[]
+      }
       admin_daily_stats: {
         Args: { _days?: number }
         Returns: {
@@ -1530,6 +1537,29 @@ export type Database = {
           post_match_opportunities: number
           post_match_shown: number
           referral_new_players: number
+        }[]
+      }
+      admin_daily_stats_v8: {
+        Args: { _start?: string }
+        Returns: {
+          android: number
+          avg_app_age_days: number
+          cpu_finished: number
+          day: string
+          devices: number
+          forfeits: number
+          incomplete_columns: string[]
+          ios: number
+          issue_devices: number
+          issues: number
+          median_app_age_days: number
+          new_players: number
+          online_finished: number
+          played: number
+          post_match_opportunities: number
+          post_match_shown: number
+          referral_new_players: number
+          returning_played: number
         }[]
       }
       admin_issue_release: { Args: { _version: string }; Returns: number[] }

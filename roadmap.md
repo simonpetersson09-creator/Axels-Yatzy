@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Adminprestanda och sena låsanrop – 7 november
+- [ ] Optimera adminhämtningen med oförändrade siffror, historik och integritetsskydd.
+- [ ] Reproducera och skydda mot äldre låsanrop efter ett nytt kast; bevara äldre appversioners stöd.
+- [ ] Komplettera tidsdiagnostik, kör riktade tester och kontrollera adminflödet.
+
 ## Låsningsfel – riktad kontroll 7 november
 - [x] Två nya isolerade fall godkända (18 hooktester totalt): nästa kast skickar exakt hela den synliga låsningen även när föregående låsning misslyckats och avläsningen väntar. Servern applicerar fullbatchen atomärt före omkast. Ingen beteendeändring eller publicering.
 - [x] Separat risk identifierad i kodgranskning: äldre låsanrop saknar versions-/kastvakt och kan ersätta nyare markeringar inom samma tur; inget bevis att detta inträffade idag. Kräver egen reproduktion före eventuell ändring. Långsam adminhämtning inte optimerad i denna testuppgift.

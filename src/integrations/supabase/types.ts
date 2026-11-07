@@ -1415,6 +1415,7 @@ export type Database = {
           new_players: number
           post_match_opportunities: number
           post_match_shown: number
+          referral_new_players: number
         }[]
       }
       admin_daily_stats: {
@@ -1528,6 +1529,7 @@ export type Database = {
           played: number
           post_match_opportunities: number
           post_match_shown: number
+          referral_new_players: number
         }[]
       }
       admin_issue_release: { Args: { _version: string }; Returns: number[] }

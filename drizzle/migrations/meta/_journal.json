@@ -869,6 +869,13 @@
       "when": 1794071692625,
       "tag": "0123_admin_daily_extended_metrics",
       "breakpoints": true
+    },
+    {
+      "idx": 124,
+      "version": "7",
+      "when": 1794075811619,
+      "tag": "0124_admin_referral_new_players",
+      "breakpoints": true
     }
   ]
 }

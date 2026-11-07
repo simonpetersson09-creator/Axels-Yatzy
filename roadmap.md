@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Kompletterad feldiagnostik – 7 november
+- [ ] Mät återhämtningsläsningar och registrera passerad tidsgräns även när originalanropet aldrig svarar; bevara korrelations-ID och spelregler.
+- [ ] Kontrollera längre serverloggning och säker beständig lagring utan namn, tärningsvärden eller anslutningsuppgifter.
+- [ ] Kör riktade tester och verifiera utan publicering; telefonmätning kräver nästa appversion.
+
 ## Adminprestanda och sena låsanrop – 7 november
 - [x] Versionsurval materialiseras före versionsparsning: isolerad jämförelse 8,4 s → 0,6 s med identiska räknare/åldrar/ofullständighetsmarkörer. Admin hämtar endast synliga dagar från 1 november; fullhistorik för appålder bevarad. Serversidan driftsatt.
 - [x] Isolerat SQL-prov visar att ett gammalt låsanrop avvisas efter nytt kast eller ny tur utan att röra nyare markeringar. Ny klient skickar runda/spelare/kast kvar till radlåst RPC; äldre RPC:er orörda. Samma-kastordning använder befintlig klientkö, inget nytt beständigt sekvenssystem.

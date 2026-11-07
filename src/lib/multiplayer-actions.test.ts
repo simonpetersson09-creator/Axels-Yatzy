@@ -41,6 +41,7 @@ it('records a slow raw response with the same attempt ID, including after UI rec
     expect((await pending).data.dice).toEqual([1,2,3,4,5]);
     expect(mocks.rpc).toHaveBeenCalledTimes(1);
     expect(mocks.track).toHaveBeenCalledWith('play_roll_timing', expect.objectContaining({ attempt_id: 'attempt', ok: true, total_ms: 3400, server_ms: 100, outside_server_ms: 3300 }), { gameId: 'game', gameMode: 'multiplayer' });
+    expect(mocks.rpc).toHaveBeenCalledWith('client_roll_diagnosed', { p_game_id: 'game', p_device_id: 'device', p_attempt_id: 'attempt' });
   } finally { vi.useRealTimers(); }
 });
 it('does not log fast successes or create a diagnostic server request', async () => {
@@ -57,6 +58,7 @@ it('records lock duration and correlation without lock values or identities', as
     const pending = directRpc('client_set_locks_guarded', 'toggle-lock', { p_game_id: 'game', p_session_id: 'private-player', p_locked: [true,false,false,false,false] }, {}, { attemptId: 'lock-attempt' });
     await vi.advanceTimersByTimeAsync(3500);
     expect((await pending).error).toBeNull();
+    expect(mocks.rpc).toHaveBeenCalledWith('client_set_locks_diagnosed', expect.objectContaining({ p_attempt_id: 'lock-attempt', p_device_id: 'private-device' }));
     expect(mocks.track).toHaveBeenCalledWith('play_lock_timing', expect.objectContaining({ attempt_id: 'lock-attempt', total_ms: 3500, server_ms: 150, outside_server_ms: 3350 }), { gameId: 'game', gameMode: 'multiplayer' });
     const metadata = mocks.track.mock.calls[0]?.[1];
     expect(metadata).not.toHaveProperty('p_locked');

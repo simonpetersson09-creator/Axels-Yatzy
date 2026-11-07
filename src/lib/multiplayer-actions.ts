@@ -39,7 +39,12 @@ export async function directRpc(
   catch { record(false); return { data: null, error: new Error(t('errGeneric')) }; }
   requested = performance.now();
   let response;
-  try { response = await (supabase.rpc as any)(rpc, { ...args, p_device_id: deviceId }); }
+  const measuredRpc = diagnostic && rpc === 'client_roll' ? 'client_roll_diagnosed'
+    : diagnostic && rpc === 'client_set_locks_guarded' ? 'client_set_locks_diagnosed' : rpc;
+  try { response = await (supabase.rpc as any)(measuredRpc, {
+    ...args, p_device_id: deviceId,
+    ...(measuredRpc !== rpc ? { p_attempt_id: attemptId } : {}),
+  }); }
   catch (error) { record(false); throw error; }
   const { data, error } = response;
   const result = data as { success?: boolean; error?: string; server_ms?: number; stale_command?: boolean } | null;

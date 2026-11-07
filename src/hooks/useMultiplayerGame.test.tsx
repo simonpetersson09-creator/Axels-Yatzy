@@ -32,6 +32,21 @@ async function joined() {
   return hook;
 }
 describe('authoritative multiplayer recovery', () => {
+  it('sends the exact turn and roll guard and refreshes a stale rejection', async () => {
+    game = { ...game, rolls_left: 2 };
+    const { result } = await joined();
+    m.roll.mockImplementation(async () => {
+      game = { ...game, rolls_left: 1, locked_dice: [false,true,false,false,false], updated_at: '2026-10-24T12:01:00Z' };
+      return { data: { success: false, stale_command: true }, error: new Error('stale lock command') };
+    });
+    await act(async () => { result.current.toggleLock(0); await vi.advanceTimersByTimeAsync(300); });
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    expect(m.roll.mock.calls[0]?.[0]).toBe('client_set_locks_guarded');
+    expect(m.roll.mock.calls[0]?.[2]).toMatchObject({ p_expected_round: 1, p_expected_rolls_left: 2, p_expected_player_index: 0 });
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.gameState?.lockedDice).toEqual([false,true,false,false,false]);
+    expect(result.current.locksPending).toBe(false);
+  });
   it.each([false, true])('roll carries the displayed full lock batch after Load failed while refresh is delayed (previous lock applied: %s)', async (previousLockApplied) => {
     game = { ...game, rolls_left: 2, dice: [6, 2, 3, 4, 5] };
     const { result } = await joined();

@@ -24,6 +24,9 @@ describe.skipIf(!db)('admin extra counters in connection-local fixtures', () => 
         CREATE TEMP TABLE admin_activity_archive(device_id text,day date,played boolean) ON COMMIT DROP;
         CREATE TEMP TABLE online_match_scores(session_id text,finished_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE session_owners(session_id text,device_id text) ON COMMIT DROP;
+        CREATE TEMP TABLE referral_credits(invitee_session_id text) ON COMMIT DROP;
+        INSERT INTO pg_temp.session_owners VALUES ('sb','b');
+        INSERT INTO pg_temp.referral_credits VALUES ('sb');
         CREATE TEMP TABLE dice_roll_log(game_id text,player_index int,created_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE game_players(game_id text,player_index int,session_id text,is_bot boolean) ON COMMIT DROP;
         INSERT INTO pg_temp.analytics_sessions VALUES ('a','ios','5.6 (2)'),('b','android','5.5 (1)'),('old','ios','5.4 (1)'),('excluded','ios','5.6 (2)');
@@ -47,7 +50,9 @@ describe.skipIf(!db)('admin extra counters in connection-local fixtures', () => 
         ('16','a','ios','5.6 (2)','2026-11-07T08:05Z','post_match_exit','{"matchKey":"m3","completed":false,"result":"clicked"}'),
         ('17','a','ios','5.6 (2)','2026-11-07T08:06Z','ad_opportunity','{"kind":"appOpen","result":"shown"}');
       `);
-      const source = readFileSync('drizzle/migrations/0123_admin_daily_extended_metrics.sql','utf8').split('REVOKE ALL')[0];
+      const source = readFileSync('drizzle/migrations/0124_admin_referral_new_players.sql','utf8')
+        .split('\n').filter(line => !line.startsWith('DROP FUNCTION')).join('\n').split('REVOKE ALL')[0]
+        .replace('CREATE FUNCTION public.admin_daily_extra_stats', 'CREATE OR REPLACE FUNCTION public.admin_daily_extra_stats');
       const parser = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql','utf8').split('REVOKE ALL')[0];
       await sql.unsafe(parser.replace('public.admin_issue_release','pg_temp.admin_issue_release').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       await sql.unsafe(source.replace('public.admin_daily_extra_stats','pg_temp.admin_daily_extra_stats').replace(/public\.admin_issue_release/g,'pg_temp.admin_issue_release').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
@@ -60,6 +65,11 @@ describe.skipIf(!db)('admin extra counters in connection-local fixtures', () => 
   });
   it('counts first recorded play from full history on Stockholm days, excluding web', async () => {
     expect(Number((await fixture()).new_players)).toBe(1);
+  });
+  it('counts newcomers whose session has a referral credit as invited', async () => {
+    const row = await fixture();
+    expect(Number(row.new_players)).toBe(1);
+    expect(Number(row.referral_new_players)).toBe(1);
   });
   it('counts shown versus completed-result exits once per device and match', async () => {
     const row = await fixture();

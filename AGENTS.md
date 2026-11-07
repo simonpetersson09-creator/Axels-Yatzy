@@ -46,3 +46,4 @@
 - WR reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
 - iOS lifecycle patch follows diagnostics: UMP/ATT locks survive caller timeouts; ATT waits for active main-thread presenter/notDetermined. Android Rewarded uses Kotlin getters.
+- Online player-card stats and referral 'already played' checks must read online_match_scores/admin archives too: cleanup deletes finished games after 24h, so live game tables are not history.

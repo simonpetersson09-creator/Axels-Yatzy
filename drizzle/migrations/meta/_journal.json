@@ -834,6 +834,13 @@
       "when": 1794068539888,
       "tag": "0118_admin_archive_backfill_online_forfeits",
       "breakpoints": true
+    },
+    {
+      "idx": 119,
+      "version": "7",
+      "when": 1794068557784,
+      "tag": "0119_admin_archive_forfeit_players_by_device",
+      "breakpoints": true
     }
   ]
 }

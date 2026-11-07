@@ -45,7 +45,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   const [rows, setRows] = useState<DayRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(adminKey));
-  const [collapsedColumns, setCollapsedColumns] = useState<AdminColumnKey[]>(["devices", "ios"]);
+  const [collapsedColumns, setCollapsedColumns] = useState<AdminColumnKey[]>([]);
   const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
   const means = useMemo(() => Object.fromEntries((rows ?? []).map((row) => [row.day,
     Object.fromEntries([...COLUMNS.map((column) => column.key), "android" as const].map((key) =>
@@ -261,10 +261,10 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         <table className="relative z-10 w-full text-sm">
           <thead className="bg-card">
             <tr>
-              <th className="text-left px-3 py-2 font-medium">Datum</th>
+              <th className="text-left px-2 py-1.5 font-medium align-bottom">Datum</th>
               {COLUMNS.map((c) => (
-                <th key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-3"} py-2 font-medium whitespace-nowrap`}>
-                  <span className="flex items-baseline justify-end gap-1">
+                <th key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-2"} py-1.5 font-medium align-bottom leading-tight max-w-[7.5rem]`}>
+                  <span className="flex items-end justify-end gap-0.5 text-right">
                     {collapsedColumns.includes(c.key) ? (c.key === "devices" ? "Aktiva" : "iOS/Android") : c.label}
                     {(c.key === "devices" || c.key === "ios") && <Button
                       variant="ghost"
@@ -277,7 +277,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                     >
                       {collapsedColumns.includes(c.key) ? <ChevronRight /> : <ChevronLeft />}
                     </Button>}
-                    {!collapsedColumns.includes(c.key) && <span className="w-7" aria-hidden="true" />}
+                    {!collapsedColumns.includes(c.key) && <span className="w-0" aria-hidden="true" />}
                   </span>
                 </th>
               ))}
@@ -286,9 +286,9 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
           <tbody>
             {rows.map((r, i) => (
               <tr key={r.day} className="border-t border-border">
-                <td className="px-3 py-1.5 whitespace-nowrap">{fmtDay(r.day)}</td>
+                <td className="px-2 py-1 whitespace-nowrap">{fmtDay(r.day)}</td>
                 {COLUMNS.map((c) => (
-                  <td key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-3"} py-1.5 whitespace-nowrap`}>
+                  <td key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-2"} py-1 whitespace-nowrap`}>
                     {!collapsedColumns.includes(c.key) &&
                     <span className="flex items-baseline justify-end gap-1 tabular-nums">
                       <span className="text-right">
@@ -320,13 +320,13 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
             <tr className="border-t border-border">
               <td className="px-3 py-2">Summa</td>
               {COLUMNS.map((c) => (
-                <td key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-3"} py-2 whitespace-nowrap`}>
+                <td key={c.key} className={`${collapsedColumns.includes(c.key) ? "px-1" : "px-2"} py-1.5 whitespace-nowrap`}>
                   {!collapsedColumns.includes(c.key) &&
                   <span className="flex items-baseline justify-end gap-1 tabular-nums">
                     <span className="text-right">
                       {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "avg_app_age_days" ? "—" : sum(c.key)}
                     </span>
-                    <span className="w-7" aria-hidden="true" />
+                    <span className="w-0" aria-hidden="true" />
                   </span>}
                 </td>
               ))}

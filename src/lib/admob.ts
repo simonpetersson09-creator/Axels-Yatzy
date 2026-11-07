@@ -1151,8 +1151,9 @@ let bannerRequestAt = 0;
 let bannerListeners: Promise<void> | null = null;
 let bannerOperations: Promise<void> = Promise.resolve();
 export const BANNER_RETRY_DELAY_MS = 30_000;
+export const BANNER_MAX_RETRIES = 3;
 let bannerRetryTimer: ReturnType<typeof setTimeout> | undefined;
-let bannerRetryUsed = false;
+let bannerRetryCount = 0;
 let bannerLoadOwner: { stale: () => boolean; placement: BannerPlacement } | null = null;
 function cancelBannerRetry() {
   clearTimeout(bannerRetryTimer);
@@ -1161,11 +1162,11 @@ function cancelBannerRetry() {
 }
 function scheduleBannerRetry() {
   const owner = bannerLoadOwner;
-  if (!owner || owner.stale() || bannerRetryUsed || bannerRetryTimer !== undefined) return;
+  if (!owner || owner.stale() || bannerRetryCount >= BANNER_MAX_RETRIES || bannerRetryTimer !== undefined) return;
   bannerRetryTimer = setTimeout(() => {
     bannerRetryTimer = undefined;
     if (owner.stale() || !bannerFailed || document.visibilityState !== 'visible') return;
-    bannerRetryUsed = true;
+    bannerRetryCount += 1;
     reportBanner('retry_requested', 'load_failed');
     const stale = () => owner.stale() || document.visibilityState !== 'visible';
     void queueBannerOperation(() => showBannerForScreen(stale, owner.placement));
@@ -1441,7 +1442,7 @@ let bannerGen = 0;
 
 export async function showGameBanner(placement: BannerPlacement = 'game'): Promise<void> {
   cancelBannerRetry();
-  bannerRetryUsed = false;
+  bannerRetryCount = 0;
   bannerWanted = true;
   shownPlacement = placement;
   if (privacyChanging || privacyBlocked) return;

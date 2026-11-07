@@ -553,16 +553,30 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
   const failBanner = () => native.handlers.get('b_failed')?.forEach(h =>
     (h as (d: unknown) => void)({ code: 3, message: 'No fill' }));
 
-  it('retries a confirmed failed load once after 30 seconds, never chains retries', async () => {
+  it('allows exactly three retries, each 30 seconds after a confirmed failure', async () => {
     const m = await import('./admob');
     expect(m.BANNER_RETRY_DELAY_MS).toBe(30_000);
+    expect(m.BANNER_MAX_RETRIES).toBe(3);
     const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
-    failBanner(); failBanner();
-    await vi.advanceTimersByTimeAsync(29_999);
-    expect(native.banner.show).toHaveBeenCalledOnce();
-    await vi.advanceTimersByTimeAsync(15_001);
-    expect(native.banner.show).toHaveBeenCalledTimes(2);
+    for (let retry = 1; retry <= 3; retry += 1) {
+      failBanner(); failBanner();
+      await vi.advanceTimersByTimeAsync(29_999);
+      expect(native.banner.show).toHaveBeenCalledTimes(retry);
+      await vi.advanceTimersByTimeAsync(15_001);
+      expect(native.banner.show).toHaveBeenCalledTimes(retry + 1);
+    }
     failBanner();
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(native.banner.show).toHaveBeenCalledTimes(4);
+  });
+
+  it('does not spend further retries after a successful first retry', async () => {
+    const m = await import('./admob');
+    const first = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await first;
+    failBanner();
+    await vi.advanceTimersByTimeAsync(45_000);
+    expect(native.banner.show).toHaveBeenCalledTimes(2);
+    emit('b_loaded');
     await vi.advanceTimersByTimeAsync(120_000);
     expect(native.banner.show).toHaveBeenCalledTimes(2);
   });

@@ -23,7 +23,7 @@ it.skipIf(!db)('rejects a delayed lock after a roll or turn changes without touc
     await sql`INSERT INTO pg_temp.games VALUES (${id},'playing',1,2,0,ARRAY[false,false,false,false,false])`;
     await sql`INSERT INTO pg_temp.game_players VALUES (${id},'player',0,now(),false)`;
     const call = async (round: number, rolls: number, player = 0, device = 'valid-device', locks = [true,false,false,false,false]) => {
-      const [row] = await sql`SELECT pg_temp.client_set_locks_guarded(${id}::uuid,'player',${device},${locks}::boolean[],${round},${rolls},${player}) result`;
+      const [row] = await sql`SELECT pg_temp.client_set_locks_guarded(${id}::uuid,'player',${device},${sql.array(locks,16)}::boolean[],${round},${rolls},${player}) result`;
       return row.result;
     };
     expect(await call(1,2)).toMatchObject({ success: true, locked_dice: [true,false,false,false,false] });

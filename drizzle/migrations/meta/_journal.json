@@ -876,6 +876,13 @@
       "when": 1794075811619,
       "tag": "0124_admin_referral_new_players",
       "breakpoints": true
+    },
+    {
+      "idx": 125,
+      "version": "7",
+      "when": 1794076787912,
+      "tag": "0125_admin_returning_playing_devices",
+      "breakpoints": true
     }
   ]
 }

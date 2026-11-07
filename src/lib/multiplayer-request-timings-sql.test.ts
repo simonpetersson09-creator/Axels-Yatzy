@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { readFileSync } from 'node:fs';
 import { afterAll, expect, it } from 'vitest';
 const db = process.env.SUPABASE_DB_URL ? postgres(process.env.SUPABASE_DB_URL, { max: 1, prepare: false }) : null;
 afterAll(async () => { await db?.end(); });
@@ -33,11 +34,13 @@ it.skipIf(!db)('durable receipts preserve one action, reject another device and 
     expect((await sql`SELECT count(*)::int AS n FROM pg_temp.multiplayer_request_timings`)[0].n).toBe(0);
   });
 });
-it.skipIf(!db)('server receipts are private and purged daily after 30 days', async () => {
+it.skipIf(!db)('server receipts are private', async () => {
   if (!db) throw new Error('Missing test connection');
   const [access] = await db`SELECT has_table_privilege('anon','public.multiplayer_request_timings','SELECT') AS anon,has_table_privilege('authenticated','public.multiplayer_request_timings','INSERT') AS authenticated,has_table_privilege('service_role','public.multiplayer_request_timings','SELECT') AS service`;
   expect(access).toMatchObject({ anon: false, authenticated: false, service: true });
-  const [job] = await db`SELECT schedule,command,active FROM cron.job WHERE jobname='purge-multiplayer-request-timings'`;
-  expect(job).toMatchObject({ schedule: '23 3 * * *', active: true });
-  expect(job.command).toBe("DELETE FROM public.multiplayer_request_timings WHERE recorded_at < now() - interval '30 days'");
+});
+it('schedules bounded receipt retention, not frequent keep-warm work', () => {
+  const migration = readFileSync('drizzle/migrations/0117_durable_multiplayer_request_timings.sql', 'utf8');
+  expect(migration).toContain("cron.schedule('purge-multiplayer-request-timings','23 3 * * *'");
+  expect(migration).toContain("DELETE FROM public.multiplayer_request_timings WHERE recorded_at < now() - interval '30 days'");
 });

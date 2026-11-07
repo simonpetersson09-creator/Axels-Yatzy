@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Admin – fyra nya mått
+- [x] Visa problemhändelsernas unika appenheter, första registrerade spel från full tillgänglig apphistorik, visade matchannonser/registrerade resultatutgångar och avhopp/avslutade onlinematcher. Befintliga grundräknare bevarade; enhetsundantag och två senaste problemversionerna används även för nya mått.
+- [x] 25 tester godkända inklusive isolerade SQL-prov, dubbla matchutgångar, webbexkludering, historik före visningsgränsen och skyddade behörigheter. Verklig admininloggning/uppdatering HTTP 200, telefon/dator bildgranskade utan sidfel; inga testspelaruppgifter eller publicering. Nya spelare betyder första observerade appenhets-ID, inte verifierade nya personer; telefonloggar är inte AdMobs exponeringsrapport.
+
 ## Kompletterad feldiagnostik – 7 november
 - [x] Återhämtningsläsningar mäts; passerad tidsgräns och sena svar registreras separat med samma försöks-ID, utan extra spelanrop.
 - [x] Skyddade serverkvitton driftsatta, oberoende av matchstädning, med 30 dagars rensning och ägarradering. Inga namn/tärningsvärden/anslutningsuppgifter. Hosted anropsloggars retention går inte att ändra med tillgängliga Cloud-kontroller; transaktionsavbrott kan inte lämna serverkvitto.

@@ -862,6 +862,13 @@
       "when": 1794069104765,
       "tag": "0122_online_scores_archive_humans_only",
       "breakpoints": true
+    },
+    {
+      "idx": 123,
+      "version": "7",
+      "when": 1794071692625,
+      "tag": "0123_admin_daily_extended_metrics",
+      "breakpoints": true
     }
   ]
 }

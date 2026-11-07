@@ -1407,6 +1407,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      admin_daily_extra_stats: {
+        Args: { _start?: string }
+        Returns: {
+          day: string
+          issue_devices: number
+          new_players: number
+          post_match_opportunities: number
+          post_match_shown: number
+        }[]
+      }
       admin_daily_stats: {
         Args: { _days?: number }
         Returns: {
@@ -1497,6 +1507,27 @@ export type Database = {
           median_app_age_days: number
           online_finished: number
           played: number
+        }[]
+      }
+      admin_daily_stats_v7: {
+        Args: { _start?: string }
+        Returns: {
+          android: number
+          avg_app_age_days: number
+          cpu_finished: number
+          day: string
+          devices: number
+          forfeits: number
+          incomplete_columns: string[]
+          ios: number
+          issue_devices: number
+          issues: number
+          median_app_age_days: number
+          new_players: number
+          online_finished: number
+          played: number
+          post_match_opportunities: number
+          post_match_shown: number
         }[]
       }
       admin_issue_release: { Args: { _version: string }; Returns: number[] }

@@ -72,3 +72,45 @@ it('preserves a stale lock response so the caller refreshes instead of confirmin
   expect(result.error).toBeInstanceOf(Error);
   expect(mocks.rpc).toHaveBeenCalledTimes(1);
 });
+it('logs a missing response at the deadline, then correlates a late answer without resending', async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('device');
+    let release: (value: unknown) => void = () => {};
+    mocks.rpc.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    const pending = directRpc('client_roll', 'roll-dice', { p_game_id: 'game' }, {}, { attemptId: 'missing', timeoutAfterMs: 8000 });
+    await vi.advanceTimersByTimeAsync(7999);
+    expect(mocks.track).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(mocks.track).toHaveBeenCalledWith('play_roll_timing', expect.objectContaining({ attempt_id: 'missing', stage: 'deadline', total_ms: 8000, response_received: false, server_ms: null }), expect.anything());
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    release({ data: { success: true, server_ms: 1 }, error: null });
+    await pending;
+    expect(mocks.track).toHaveBeenLastCalledWith('play_roll_timing', expect.objectContaining({ attempt_id: 'missing', stage: 'response', response_received: true, server_ms: 1 }), expect.anything());
+    await vi.advanceTimersByTimeAsync(16000);
+    expect(mocks.track).toHaveBeenCalledTimes(2);
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});
+it('clears the deadline observer on a fast lock response', async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('device');
+    await directRpc('client_set_locks_guarded', 'toggle-lock', {}, {}, { attemptId: 'fast', timeoutAfterMs: 12000 });
+    await vi.advanceTimersByTimeAsync(12000);
+    expect(mocks.track).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});
+it('records a claim stalled at the deadline without saying the request was dispatched', async () => {
+  vi.useFakeTimers();
+  try {
+    let release: (value: string) => void = () => {};
+    mocks.claim.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    const pending = directRpc('client_roll', 'roll-dice', {}, {}, { attemptId: 'claim', timeoutAfterMs: 8000 });
+    await vi.advanceTimersByTimeAsync(8000);
+    expect(mocks.track).toHaveBeenCalledWith('play_roll_timing', expect.objectContaining({ stage: 'deadline', request_dispatched: false, claim_ms: 8000, request_ms: 0 }), expect.anything());
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    release('device'); await pending;
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});

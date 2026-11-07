@@ -168,7 +168,7 @@ export function useMultiplayerGame() {
   // Buffer for server dice/roll fields received during a local roll animation.
   // Applied at end of ROLL_ANIM_MS so dice never change mid-spin.
   const pendingRollUpdateRef = useRef<RollDicePart | null>(null);
-  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[]; seq: number; playerIndex: number; round: number } | null>(null);
+  const pendingLockRef = useRef<{ gameId: string; lockedDice: boolean[]; seq: number; playerIndex: number; round: number; rollsLeft: number } | null>(null);
   const pendingLockSeqRef = useRef(0);
   const pendingLockPromisesRef = useRef<Set<Promise<boolean>>>(new Set());
   const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1150,7 +1150,7 @@ export function useMultiplayerGame() {
     const baseLocks = getPendingLockForTurn(gameId, gs.currentPlayerIndex, gs.round) ?? gs.lockedDice;
     const optimisticLocks = [...baseLocks];
     optimisticLocks[index] = !optimisticLocks[index];
-    pendingLockRef.current = { gameId, lockedDice: optimisticLocks, seq, playerIndex: gs.currentPlayerIndex, round: gs.round };
+    pendingLockRef.current = { gameId, lockedDice: optimisticLocks, seq, playerIndex: gs.currentPlayerIndex, round: gs.round, rollsLeft: gs.rollsLeft };
     if (lockTimerRef.current) clearTimeout(lockTimerRef.current);
     setState(prev => prev.gameState ? {
       ...prev,
@@ -1161,7 +1161,7 @@ export function useMultiplayerGame() {
     // LOCK_BATCH_MS after the last tap. Avoids queuing one call per die.
     let batch = lockBatchRef.current;
     if (!batch || batch.gameId !== gameId) {
-      let resolve!: (ok: boolean) => void;
+      let resolve: (ok: boolean) => void = () => {};
       const promise = new Promise<boolean>((r) => { resolve = r; });
       batch = { gameId, timer: null, promise, resolve };
       lockBatchRef.current = batch;
@@ -1188,7 +1188,11 @@ export function useMultiplayerGame() {
         const pending = pendingLockRef.current;
         const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
         const locks = pending?.gameId === gameId ? pending.lockedDice : null;
-        if (!locks) { skip(); return; }
+        if (!locks || !pending) { skip(); return; }
+        const live = stateRef.current.gameState;
+        if (!live || live.round !== pending.round || live.currentPlayerIndex !== pending.playerIndex || live.rollsLeft !== pending.rollsLeft) {
+          skip(); return;
+        }
         // The match ended while the taps were batched: never send them.
         if (!isActionable(stateRef.current)) { pendingLockRef.current = null; skip(); return; }
         // Queued calls read the latest locks; if the previous call already sent
@@ -1197,22 +1201,24 @@ export function useMultiplayerGame() {
         if (last && last.gameId === gameId && last.seq === sendSeq) { skip(); return; }
         lastSentLocksRef.current = { gameId, seq: sendSeq };
         const lockStartedAt = Date.now();
+        const lockAttemptId = crypto.randomUUID();
         try {
-          // Straight to the database (client_set_locks also marks us active).
-          // Setting the full lock array is safe to repeat → one automatic retry.
-          const { error } = await withTimeout(withOneRetry(() => directRpc('client_set_locks', 'toggle-lock', {
+          // The row-locked turn guard rejects a delayed request from an older roll.
+          const { data, error } = await withTimeout(withOneRetry(() => directRpc('client_set_locks_guarded', 'toggle-lock', {
             p_game_id: gameId, p_session_id: sessionId, p_locked: locks,
-          }, { game_id: gameId, session_id: sessionId, locked_dice: locks })), RETRY_TIMEOUT_MS);
+            p_expected_round: pending.round, p_expected_rolls_left: pending.rollsLeft,
+            p_expected_player_index: pending.playerIndex,
+          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }, { attemptId: lockAttemptId })), RETRY_TIMEOUT_MS);
           if (error) {
             console.error('Toggle lock error:', error);
-            reportMpIssue('lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error) });
+            reportMpIssue(data?.stale_command ? 'lock_stale' : 'lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error), attempt_id: lockAttemptId });
             if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq) pendingLockRef.current = null;
             refreshGameStateRef.current?.(gameId);
             current.resolve(false);
             return;
           }
           const lockMs = Date.now() - lockStartedAt;
-          if (lockMs > MP_SLOW_MS) reportMpIssue('lock_slow', gameId, { ms: lockMs });
+          if (lockMs > MP_SLOW_MS) reportMpIssue('lock_slow', gameId, { ms: lockMs, attempt_id: lockAttemptId });
           lockTimerRef.current = setTimeout(() => {
             if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq && sameArray(pendingLockRef.current.lockedDice, locks)) {
               pendingLockRef.current = null;
@@ -1221,7 +1227,7 @@ export function useMultiplayerGame() {
           current.resolve(true);
         } catch (err) {
           console.error('Toggle lock failed:', err);
-          reportMpIssue('lock_failed', gameId, { ms: Date.now() - lockStartedAt, err: errText(err) });
+          reportMpIssue('lock_failed', gameId, { ms: Date.now() - lockStartedAt, err: errText(err), attempt_id: lockAttemptId });
           if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq) pendingLockRef.current = null;
           refreshGameStateRef.current?.(gameId);
           current.resolve(false);

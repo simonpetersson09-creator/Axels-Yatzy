@@ -10,7 +10,7 @@ beforeEach(() => {
   mocks.invoke.mockReset().mockResolvedValue({ data: { success: true }, error: null });
   mocks.track.mockReset();
 });
-it.each(['client_roll', 'client_set_locks', 'client_submit_score', 'client_start_game'] as const)('%s sends nothing until registration succeeds', async rpc => {
+it.each(['client_roll', 'client_set_locks', 'client_set_locks_guarded', 'client_submit_score', 'client_start_game'] as const)('%s sends nothing until registration succeeds', async rpc => {
   let release: (value: string) => void = () => {};
   mocks.claim.mockImplementation(() => new Promise(resolve => { release = resolve; }));
   const result = directRpc(rpc, 'fallback', { p_game_id: 'game', p_session_id: 'player' }, {});
@@ -47,5 +47,28 @@ it('does not log fast successes or create a diagnostic server request', async ()
   mocks.claim.mockResolvedValue('device');
   await directRpc('client_roll', 'roll-dice', {}, {});
   expect(mocks.track).not.toHaveBeenCalled();
+  expect(mocks.rpc).toHaveBeenCalledTimes(1);
+});
+it('records lock duration and correlation without lock values or identities', async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('private-device');
+    mocks.rpc.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ data: { success: true, server_ms: 150 }, error: null }), 3500)));
+    const pending = directRpc('client_set_locks_guarded', 'toggle-lock', { p_game_id: 'game', p_session_id: 'private-player', p_locked: [true,false,false,false,false] }, {}, { attemptId: 'lock-attempt' });
+    await vi.advanceTimersByTimeAsync(3500);
+    expect((await pending).error).toBeNull();
+    expect(mocks.track).toHaveBeenCalledWith('play_lock_timing', expect.objectContaining({ attempt_id: 'lock-attempt', total_ms: 3500, server_ms: 150, outside_server_ms: 3350 }), { gameId: 'game', gameMode: 'multiplayer' });
+    const metadata = mocks.track.mock.calls[0]?.[1];
+    expect(metadata).not.toHaveProperty('p_locked');
+    expect(JSON.stringify(metadata)).not.toContain('private-device');
+    expect(JSON.stringify(metadata)).not.toContain('private-player');
+  } finally { vi.useRealTimers(); }
+});
+it('preserves a stale lock response so the caller refreshes instead of confirming it', async () => {
+  mocks.claim.mockResolvedValue('device');
+  mocks.rpc.mockResolvedValue({ data: { success: false, stale_command: true, error: 'stale lock command', server_ms: 2 }, error: null });
+  const result = await directRpc('client_set_locks_guarded', 'toggle-lock', {}, {});
+  expect(result.data.stale_command).toBe(true);
+  expect(result.error).toBeInstanceOf(Error);
   expect(mocks.rpc).toHaveBeenCalledTimes(1);
 });

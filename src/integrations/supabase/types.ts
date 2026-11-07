@@ -1486,6 +1486,18 @@ export type Database = {
         }
         Returns: Json
       }
+      client_set_locks_guarded: {
+        Args: {
+          p_device_id: string
+          p_expected_player_index: number
+          p_expected_rolls_left: number
+          p_expected_round: number
+          p_game_id: string
+          p_locked: boolean[]
+          p_session_id: string
+        }
+        Returns: Json
+      }
       client_start_game: {
         Args: { p_device_id: string; p_game_id: string; p_session_id: string }
         Returns: Json

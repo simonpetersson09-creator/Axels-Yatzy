@@ -6,7 +6,7 @@ import { rollTiming } from '@/lib/roll-timing';
 
 /** Both the direct and function paths wait for a confirmed device binding. */
 export async function directRpc(
-  rpc: 'client_roll' | 'client_set_locks' | 'client_submit_score' | 'client_start_game',
+  rpc: 'client_roll' | 'client_set_locks' | 'client_set_locks_guarded' | 'client_submit_score' | 'client_start_game',
   _fallbackFn: string,
   args: Record<string, unknown>,
   _fallbackBody: Record<string, unknown>,
@@ -17,9 +17,9 @@ export async function directRpc(
   const attemptId = diagnostic?.attemptId ?? crypto.randomUUID();
   const record = (ok: boolean, serverMs?: unknown) => {
     const ended = performance.now();
-    if (rpc !== 'client_roll' || (ok && ended - started <= 3000)) return;
+    if (!['client_roll', 'client_set_locks_guarded'].includes(rpc) || (ok && ended - started <= 3000)) return;
     try {
-      trackEvent('play_roll_timing', {
+      trackEvent(rpc === 'client_roll' ? 'play_roll_timing' : 'play_lock_timing', {
         event_id: crypto.randomUUID(), attempt_id: attemptId,
         occurred_at: new Date().toISOString(), ok,
         request_dispatched: requested !== null,
@@ -35,10 +35,10 @@ export async function directRpc(
   try { response = await (supabase.rpc as any)(rpc, { ...args, p_device_id: deviceId }); }
   catch (error) { record(false); throw error; }
   const { data, error } = response;
-  const result = data as { success?: boolean; error?: string; server_ms?: number } | null;
+  const result = data as { success?: boolean; error?: string; server_ms?: number; stale_command?: boolean } | null;
   record(!error && result?.success === true, result?.server_ms);
   if (error) return { data: null, error };
-  if (!result?.success) return { data: null, error: new Error(result?.error ?? 'rpc failed') };
+  if (!result?.success) return { data: result?.stale_command ? result : null, error: new Error(result?.error ?? 'rpc failed') };
   return { data: result, error: null };
 }
 

@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Admin – återvändande spelare
+- [ ] Visa antal och andel av dagens spelande appenheter som också spelade igår, med samma underlag som spelandekolumnen och svensk dygnsgräns.
+- [ ] Testa deduplicering, webb/undantag, gårdagen före visningsgränsen och tomma dagar; verifiera siffror och adminvisning utan publicering.
+
 ## Admin – fyra nya mått
 - [x] Visa problemhändelsernas unika appenheter, första registrerade spel från full tillgänglig apphistorik, visade matchannonser/registrerade resultatutgångar och avhopp/avslutade onlinematcher. Befintliga grundräknare bevarade; enhetsundantag och två senaste problemversionerna används även för nya mått.
 - [x] 25 tester godkända inklusive isolerade SQL-prov, dubbla matchutgångar, webbexkludering, historik före visningsgränsen och skyddade behörigheter. Verklig admininloggning/uppdatering HTTP 200, telefon/dator bildgranskade utan sidfel; inga testspelaruppgifter eller publicering. Nya spelare betyder första observerade appenhets-ID, inte verifierade nya personer; telefonloggar är inte AdMobs exponeringsrapport.

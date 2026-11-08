@@ -111,6 +111,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
               </span>
             </div>
           </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

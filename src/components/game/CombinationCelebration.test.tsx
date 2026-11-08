@@ -1,14 +1,18 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { CombinationCelebration } from './CombinationCelebration';
-import { I18nProvider } from '@/lib/i18n';
+
+const LABELS: Record<string, string> = {
+  celeb_fourOfAKind: 'Fyrtal!',
+  celeb_fullHouse: 'Kåk!',
+};
+
+vi.mock('@/lib/i18n', () => ({
+  useTranslation: () => ({ t: (k: string) => LABELS[k] ?? k, lang: 'sv' }),
+}));
 
 function renderCelebration(type: Parameters<typeof CombinationCelebration>[0]['type']) {
-  return render(
-    <I18nProvider>
-      <CombinationCelebration type={type} />
-    </I18nProvider>,
-  );
+  return render(<CombinationCelebration type={type} />);
 }
 
 describe('CombinationCelebration', () => {

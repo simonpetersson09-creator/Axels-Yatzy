@@ -36,13 +36,14 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
       {config && type && (
         <motion.div
           key={type}
-          className="absolute inset-0 z-[90] pointer-events-none flex items-center justify-center"
+          className="absolute inset-0 z-[90] pointer-events-none flex justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          {/* Round gold medal in the roll button's design — smooth fade/scale-in, hold, soft fade-out */}
+          {/* Round gold medal in the roll button's design — centered on the scoreboard at the lower section's height */}
+          <div className="absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2">
           <motion.div
             className="relative"
             initial={{ scale: 0.85, opacity: 0, y: 4 }}

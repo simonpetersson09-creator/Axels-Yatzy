@@ -21,33 +21,33 @@ describe('CombinationCelebration', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('shows the combination name on a gold pill in the roll button design', () => {
+  it('shows the combination name on a round gold medal in the roll button design', () => {
     renderCelebration('fourOfAKind');
     const label = screen.getByText('Fyrtal!');
-    const pill = label.closest('div.rounded-full');
-    expect(pill).not.toBeNull();
-    expect(pill!.className).toContain('bg-gradient-to-b');
-    expect(pill!.className).toContain('from-primary');
-    expect(pill!.className).toContain('to-game-gold-dark');
+    const medal = label.closest('div.rounded-full');
+    expect(medal).not.toBeNull();
+    expect(medal!.className).toContain('border-game-gold-light');
+    expect(medal!.className).toContain('backdrop-blur-sm');
     expect(label.className).toContain('text-primary-foreground');
   });
 
-  it('is a compact centered pill, not a full-width band', () => {
+  it('is a compact centered circle, not a full-width band', () => {
     renderCelebration('fullHouse');
     const label = screen.getByText('Kåk!');
-    const pill = label.closest('div.rounded-full')!;
-    expect(pill.className).not.toContain('w-full');
+    const medal = label.closest('div.rounded-full')!;
+    expect(medal.className).toContain('h-32');
+    expect(medal.className).toContain('w-32');
     expect(label.className).toContain('whitespace-nowrap');
-    expect(label.className).toContain('text-lg');
+    expect(label.className).toContain('text-xl');
   });
 
-  it('decorates the label with a star on each side', () => {
+  it('decorates the label with stars above and below', () => {
     renderCelebration('fourOfAKind');
     const label = screen.getByText('Fyrtal!');
-    const pill = label.closest('div.rounded-full')!;
-    const stars = pill.querySelectorAll('span[aria-hidden="true"]');
+    const medal = label.closest('div.rounded-full')!;
+    const stars = medal.querySelectorAll('span[aria-hidden="true"]');
     expect(stars).toHaveLength(2);
-    expect(stars[0].textContent).toBe('★');
+    expect(stars[0].textContent).toContain('★');
     expect(stars[1].textContent).toBe('★');
   });
 });

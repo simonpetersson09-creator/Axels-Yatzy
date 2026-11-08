@@ -38,7 +38,7 @@ describe('CombinationCelebration', () => {
     const pill = label.closest('div.rounded-full')!;
     expect(pill.className).not.toContain('w-full');
     expect(label.className).toContain('whitespace-nowrap');
-    expect(label.className).toContain('text-sm');
+    expect(label.className).toContain('text-lg');
   });
 
   it('decorates the label with a star on each side', () => {

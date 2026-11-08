@@ -42,9 +42,9 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          {/* Gold pill in the roll button's design — smooth fade/scale-in, hold, soft fade-out */}
+          {/* Round gold badge in the roll button's design — smooth fade/scale-in, hold, soft fade-out */}
           <motion.div
-            className="relative flex items-center gap-2.5 rounded-full bg-gradient-to-b from-primary to-game-gold-dark px-6 py-2.5 shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]"
+            className="relative flex h-28 w-28 sm:h-32 sm:w-32 flex-col items-center justify-center gap-1 rounded-full border border-game-gold-light/50 bg-gradient-to-b from-primary/85 to-game-gold-dark/85 backdrop-blur-sm shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]"
             initial={{ scale: 0.85, opacity: 0, y: 4 }}
             animate={{
               scale: config.bounce ? [0.85, 1.06, 1, 1, 1] : [0.92, 1.02, 1, 1, 1],
@@ -63,13 +63,13 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
               ],
             }}
           >
-            <span aria-hidden="true" className="text-primary-foreground/85 text-xs leading-none">
+            <span aria-hidden="true" className="text-primary-foreground/85 text-[10px] leading-none">
               ★
             </span>
             <span className="font-display font-bold text-primary-foreground text-lg sm:text-xl tracking-wide whitespace-nowrap leading-none">
               {t(config.labelKey)}
             </span>
-            <span aria-hidden="true" className="text-primary-foreground/85 text-xs leading-none">
+            <span aria-hidden="true" className="text-primary-foreground/85 text-[10px] leading-none">
               ★
             </span>
           </motion.div>

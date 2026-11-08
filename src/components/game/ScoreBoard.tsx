@@ -110,10 +110,10 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
       {canSelect && !isAiChosen && possibleScore === 0 && (
         <span
           aria-hidden
-          className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5] ui-glow-pulse-fast"
+          className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5] ui-glow-pulse"
           style={{
-            border: '2px solid hsl(0 78% 58%)',
-            boxShadow: '0 0 8px hsl(0 78% 58% / 0.6), inset 0 0 5px hsl(0 78% 58% / 0.35)',
+            border: '1.5px solid hsl(0 78% 58%)',
+            boxShadow: '0 0 6px hsl(0 78% 58% / 0.55), inset 0 0 4px hsl(0 78% 58% / 0.25)',
           }}
         />
       )}
@@ -415,6 +415,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     );
   };
 
+  const leaderTotal = players.reduce((m, p) => Math.max(m, getTotalScore(p.scores)), 0);
   const renderSumRow = (label: string, getValue: (p: Player) => string | number, isTotalRow?: boolean) => (
     <div className={cn(
       'flex',
@@ -431,12 +432,23 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         const player = players[i];
         const isCurrent = i === currentPlayerIndex;
         const bg = cellBg(i);
+        const leads = !!isTotalRow && !!player && leaderTotal > 0 && getTotalScore(player.scores) === leaderTotal;
         return (
-          <div key={i} className={cn('border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', ROW_H, COL_W, bg.className)} style={bg.style}>
+          <div key={i} className={cn('relative border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center transition-all duration-500 ease-out', ROW_H, COL_W, bg.className)} style={bg.style}>
+            {leads && (
+              <span
+                aria-hidden
+                className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5]"
+                style={{
+                  border: '1.5px solid hsl(145 60% 40%)',
+                  boxShadow: '0 0 6px hsl(145 60% 40% / 0.55), inset 0 0 4px hsl(145 60% 40% / 0.25)',
+                }}
+              />
+            )}
             <span className={cn(
-              'tabular-nums leading-none',
+              'relative tabular-nums leading-none',
               isTotalRow ? 'text-[13px] sb-fs-m font-normal' : 'text-[12px] sb-fs-m font-normal',
-              player && isCurrent ? 'text-yatzy-text' : player ? 'text-yatzy-text/40' : 'text-yatzy-text/10',
+              player && (isCurrent || isTotalRow) ? 'text-yatzy-text' : player ? 'text-yatzy-text/40' : 'text-yatzy-text/10',
             )}>
               {player ? getValue(player) : '–'}
             </span>

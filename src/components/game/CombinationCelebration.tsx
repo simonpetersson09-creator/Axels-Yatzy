@@ -42,9 +42,9 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          {/* Round gold badge in the roll button's design — smooth fade/scale-in, hold, soft fade-out */}
+          {/* Round gold medal in the roll button's design — smooth fade/scale-in, hold, soft fade-out */}
           <motion.div
-            className="relative flex h-28 w-28 sm:h-32 sm:w-32 flex-col items-center justify-center gap-1 rounded-full border border-game-gold-light/50 bg-gradient-to-b from-primary/85 to-game-gold-dark/85 backdrop-blur-sm shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]"
+            className="relative"
             initial={{ scale: 0.85, opacity: 0, y: 4 }}
             animate={{
               scale: config.bounce ? [0.85, 1.06, 1, 1, 1] : [0.92, 1.02, 1, 1, 1],
@@ -63,15 +63,52 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
               ],
             }}
           >
-            <span aria-hidden="true" className="text-primary-foreground/85 text-[10px] leading-none">
-              ★
-            </span>
-            <span className="font-display font-bold text-primary-foreground text-lg sm:text-xl tracking-wide whitespace-nowrap leading-none">
-              {t(config.labelKey)}
-            </span>
-            <span aria-hidden="true" className="text-primary-foreground/85 text-[10px] leading-none">
-              ★
-            </span>
+            {/* Soft halo behind the medal */}
+            <div
+              aria-hidden="true"
+              className="absolute -inset-6 rounded-full"
+              style={{
+                background:
+                  'radial-gradient(circle, hsl(42 88% 55% / 0.35) 0%, hsl(42 88% 55% / 0.12) 45%, transparent 70%)',
+              }}
+            />
+            <div
+              className="relative flex h-32 w-32 sm:h-36 sm:w-36 flex-col items-center justify-center gap-1 overflow-hidden rounded-full border border-game-gold-light/60 backdrop-blur-sm"
+              style={{
+                background:
+                  'radial-gradient(circle at 32% 26%, hsl(45 92% 74% / 0.95) 0%, hsl(42 88% 60% / 0.55) 32%, transparent 58%), linear-gradient(to bottom, hsl(var(--primary) / 0.88), hsl(var(--game-gold-dark) / 0.88))',
+                boxShadow:
+                  '0 10px 36px -4px hsl(42 88% 52% / 0.5), 0 4px 16px -2px hsl(0 0% 0% / 0.45), inset 0 0 0 4px hsl(36 78% 55% / 0.35), inset 0 2px 6px hsl(45 95% 80% / 0.5), inset 0 -8px 14px hsl(28 75% 32% / 0.35)',
+              }}
+            >
+              {/* Sheen sweep across the medal on intro */}
+              <motion.div
+                aria-hidden="true"
+                className="absolute inset-y-0 w-1/2"
+                style={{
+                  background:
+                    'linear-gradient(105deg, transparent 0%, hsl(48 100% 88% / 0.55) 50%, transparent 100%)',
+                }}
+                initial={{ left: '-60%' }}
+                animate={{ left: ['-60%', '110%', '110%'] }}
+                transition={{ duration: TOTAL, times: [0, INTRO / TOTAL, 1], ease: 'easeInOut' }}
+              />
+              <span
+                aria-hidden="true"
+                className="text-primary-foreground/80 text-[11px] leading-none tracking-[0.3em]"
+              >
+                ★ ★ ★
+              </span>
+              <span
+                className="font-display font-black text-primary-foreground text-xl sm:text-2xl tracking-wide whitespace-nowrap leading-none"
+                style={{ textShadow: '0 1px 0 hsl(45 95% 75% / 0.35), 0 -1px 2px hsl(28 75% 30% / 0.35)' }}
+              >
+                {t(config.labelKey)}
+              </span>
+              <span aria-hidden="true" className="text-primary-foreground/80 text-[10px] leading-none">
+                ★
+              </span>
+            </div>
           </motion.div>
         </motion.div>
       )}

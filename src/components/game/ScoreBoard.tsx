@@ -212,7 +212,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, aiChosenPlayerIndex, selectionDisabled }: ScoreBoardProps) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, aiChosenPlayerIndex, selectionDisabled, seenKey, myIndex }: ScoreBoardProps & { seenKey?: string; myIndex?: number }) {
   const { t } = useTranslation();
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({
@@ -252,12 +252,34 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
     players.forEach((p, i) => CATEGORIES.forEach((c) => {
       if (p.scores[c.id] !== undefined && p.scores[c.id] !== null) now.add(`${i}:${c.id}`);
     }));
-    const prev = prevScoresRef.current;
+    let prev = prevScoresRef.current;
     prevScoresRef.current = now;
+    // Online matches remember what this device last saw, so a placement made
+    // while the app was backgrounded or closed is still highlighted on return.
+    const storeKey = seenKey ? `yatzy_seen_scores:${seenKey}` : null;
+    if (storeKey) {
+      try {
+        if (!prev) {
+          const raw = localStorage.getItem(storeKey);
+          if (raw) prev = new Set(JSON.parse(raw) as string[]);
+        }
+        localStorage.setItem(storeKey, JSON.stringify([...now]));
+      } catch { /* storage unavailable */ }
+    }
     if (!prev) return; // first render / reopened match: nothing "new"
-    const added = [...now].filter((k) => !prev.has(k));
-    if (added.length !== 1) return; // only a single fresh placement, never a bulk reload
-    setLastPlaced(added[0]);
+    const added = [...now].filter((k) => !prev!.has(k));
+    if (added.length === 1) { setLastPlaced(added[0]); return; }
+    if (!storeKey || added.length === 0) return; // never highlight a bulk reload in local games
+    // Several placements were missed: show the most recent opponent's one
+    // (the seat just before whoever is to play now).
+    const n = players.length;
+    for (let step = 1; step <= n; step++) {
+      const seat = (currentPlayerIndex - step + n) % n;
+      if (seat === myIndex) continue;
+      const hit = added.filter((k) => k.startsWith(`${seat}:`));
+      if (hit.length === 1) { setLastPlaced(hit[0]); return; }
+      if (hit.length > 1) return;
+    }
   }, [players]);
   useEffect(() => {
     if (!lastPlaced) return;

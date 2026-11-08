@@ -621,6 +621,14 @@
   animation: kasta-pulse-shadow 2.4s ease-in-out infinite;
 }
 
+@keyframes pick-dice-hint-pulse-shadow {
+  0%, 100% { box-shadow: 0 0 4px hsl(var(--game-gold) / 0.3); }
+  50% { box-shadow: 0 0 16px hsl(var(--game-gold) / 0.65); }
+}
+.pick-dice-hint-pulse {
+  animation: pick-dice-hint-pulse-shadow 1.6s ease-in-out infinite;
+}
+
 @layer utilities {
   .app-screen {
     min-height: 100svh;

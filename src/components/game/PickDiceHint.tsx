@@ -21,15 +21,14 @@ export function PickDiceHint({ show, className, text }: PickDiceHintProps) {
       aria-hidden={!show}
       className={cn(
         'pointer-events-none select-none rounded-full px-2 py-0.5 text-center whitespace-pre-line',
-        'text-[10px] font-medium tracking-wide leading-tight',
+        'text-[10px] font-bold tracking-wide leading-tight',
         'transition-opacity duration-300',
-        show ? 'opacity-70' : 'opacity-0',
+        show ? 'opacity-100 pick-dice-hint-pulse' : 'opacity-0',
         className,
       )}
       style={{
-        color: 'hsl(var(--game-gold))',
-        border: '1px solid hsl(var(--game-gold) / 0.35)',
-        background: 'hsl(var(--game-gold) / 0.08)',
+        color: 'hsl(var(--primary-foreground))',
+        background: 'linear-gradient(to bottom, hsl(var(--primary)), hsl(var(--game-gold-dark)))',
       }}
     >
       {text ?? t('pickDiceHint')}

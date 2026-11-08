@@ -66,14 +66,14 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
             {/* Soft halo behind the medal */}
             <div
               aria-hidden="true"
-              className="absolute -inset-6 rounded-full"
+              className="absolute -inset-4 rounded-full"
               style={{
                 background:
                   'radial-gradient(circle, hsl(42 88% 55% / 0.35) 0%, hsl(42 88% 55% / 0.12) 45%, transparent 70%)',
               }}
             />
             <div
-              className="relative flex h-32 w-32 sm:h-36 sm:w-36 flex-col items-center justify-center gap-1 overflow-hidden rounded-full border border-game-gold-light/60 backdrop-blur-sm"
+              className="relative flex h-24 w-24 sm:h-28 sm:w-28 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-full border border-game-gold-light/60 backdrop-blur-sm"
               style={{
                 background:
                   'radial-gradient(circle at 32% 26%, hsl(45 92% 74% / 0.95) 0%, hsl(42 88% 60% / 0.55) 32%, transparent 58%), linear-gradient(to bottom, hsl(var(--primary) / 0.88), hsl(var(--game-gold-dark) / 0.88))',
@@ -95,17 +95,17 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
               />
               <span
                 aria-hidden="true"
-                className="text-primary-foreground/80 text-[11px] leading-none tracking-[0.3em]"
+                className="text-primary-foreground/80 text-[9px] leading-none tracking-[0.3em]"
               >
                 ★ ★ ★
               </span>
               <span
-                className="font-display font-black text-primary-foreground text-xl sm:text-2xl tracking-wide whitespace-nowrap leading-none"
+                className="font-display font-black text-primary-foreground text-base sm:text-lg tracking-wide whitespace-nowrap leading-none"
                 style={{ textShadow: '0 1px 0 hsl(45 95% 75% / 0.35), 0 -1px 2px hsl(28 75% 30% / 0.35)' }}
               >
                 {t(config.labelKey)}
               </span>
-              <span aria-hidden="true" className="text-primary-foreground/80 text-[10px] leading-none">
+              <span aria-hidden="true" className="text-primary-foreground/80 text-[9px] leading-none">
                 ★
               </span>
             </div>

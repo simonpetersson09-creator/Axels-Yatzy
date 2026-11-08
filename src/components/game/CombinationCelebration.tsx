@@ -44,7 +44,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
         >
           {/* Gold pill in the roll button's design — smooth fade/scale-in, hold, soft fade-out */}
           <motion.div
-            className="relative flex items-center gap-2 rounded-full bg-gradient-to-b from-primary to-game-gold-dark px-4 py-1.5 shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]"
+            className="relative flex items-center gap-2.5 rounded-full bg-gradient-to-b from-primary to-game-gold-dark px-6 py-2.5 shadow-[0_8px_32px_-4px_hsl(42_88%_52%/0.45),0_4px_16px_-2px_hsl(0_0%_0%/0.45)]"
             initial={{ scale: 0.85, opacity: 0, y: 4 }}
             animate={{
               scale: config.bounce ? [0.85, 1.06, 1, 1, 1] : [0.92, 1.02, 1, 1, 1],
@@ -63,13 +63,13 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
               ],
             }}
           >
-            <span aria-hidden="true" className="text-primary-foreground/85 text-[10px] leading-none">
+            <span aria-hidden="true" className="text-primary-foreground/85 text-xs leading-none">
               ★
             </span>
-            <span className="font-display font-bold text-primary-foreground text-sm sm:text-base tracking-wide whitespace-nowrap leading-none">
+            <span className="font-display font-bold text-primary-foreground text-lg sm:text-xl tracking-wide whitespace-nowrap leading-none">
               {t(config.labelKey)}
             </span>
-            <span aria-hidden="true" className="text-primary-foreground/85 text-[10px] leading-none">
+            <span aria-hidden="true" className="text-primary-foreground/85 text-xs leading-none">
               ★
             </span>
           </motion.div>

@@ -35,10 +35,10 @@ describe('CombinationCelebration', () => {
     renderCelebration('fullHouse');
     const label = screen.getByText('Kåk!');
     const medal = label.closest('div.rounded-full')!;
-    expect(medal.className).toContain('h-32');
-    expect(medal.className).toContain('w-32');
+    expect(medal.className).toContain('h-24');
+    expect(medal.className).toContain('w-24');
     expect(label.className).toContain('whitespace-nowrap');
-    expect(label.className).toContain('text-xl');
+    expect(label.className).toContain('text-base');
   });
 
   it('decorates the label with stars above and below', () => {

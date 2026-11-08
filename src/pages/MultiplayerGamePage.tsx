@@ -738,6 +738,8 @@ export default function MultiplayerGamePage() {
               <ScoreBoard
                 players={gameState.players}
                 currentPlayerIndex={gameState.currentPlayerIndex}
+                seenKey={gameId ? `${gameId}:${myPlayerIndex}` : undefined}
+                myIndex={myPlayerIndex}
                 possibleScores={possibleScores}
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}

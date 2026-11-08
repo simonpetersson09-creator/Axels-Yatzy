@@ -21,7 +21,7 @@ export function PickDiceHint({ show, className, text }: PickDiceHintProps) {
       aria-hidden={!show}
       className={cn(
         'pointer-events-none select-none rounded-full px-2 py-0.5 text-center whitespace-pre-line',
-        'text-[10px] font-bold tracking-wide leading-tight',
+        'text-[10px] font-display font-normal tracking-wide leading-tight',
         'transition-opacity duration-300',
         show ? 'opacity-100 pick-dice-hint-pulse' : 'opacity-0',
         className,

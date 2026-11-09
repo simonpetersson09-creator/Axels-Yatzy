@@ -828,28 +828,9 @@ export default function MultiplayerGamePage() {
               })}
             </div>
 
-            {/* Waiting indicator — own row above the dice, never overlapping them */}
-            <div
-              aria-live="polite"
-              className="mp-waiting-indicator flex h-9 flex-col items-center justify-center gap-1 text-center text-primary"
-            >
-              {!isMyTurn && !gameState.gameOver && gameState.rollsLeft === 3 && !(remoteRolling || gameState.isRolling) && (
-                <>
-                  <div className="w-full truncate px-1 text-[12px] font-semibold leading-tight">
-                    {t('waitingForOpponent', { name: gameState.players[gameState.currentPlayerIndex]?.name ?? '' })}
-                  </div>
-                  <div aria-hidden className="flex gap-1">
-                    {[0, 1, 2].map((i) => (
-                      <span key={i} className="h-[5px] w-[5px] rounded-full bg-primary animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-
             {/* Dice — tapping the opponent's dice shows their level */}
             <div
-              className="mp-dice-column relative mt-1"
+              className="mp-dice-column relative mt-2"
               onClick={!isMyTurn ? () => { setInfoIndex(gameState.currentPlayerIndex); trackEvent('dice_info_opened', { from: 'dice' }); } : undefined}
             >
               <PickDiceHint
@@ -876,6 +857,18 @@ export default function MultiplayerGamePage() {
                 skin={profileSkin(diceProfiles.get(gameState.currentPlayerIndex))}
                 className="mt-0"
               />
+              {!isMyTurn && !gameState.gameOver && gameState.rollsLeft === 3 && !(remoteRolling || gameState.isRolling) && (
+                <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex flex-col items-center justify-center gap-2.5 text-center text-primary">
+                  <div className="px-1 text-[15px] font-semibold leading-tight break-words">
+                    {t('waitingForOpponent', { name: gameState.players[gameState.currentPlayerIndex]?.name ?? '' })}
+                  </div>
+                  <div aria-hidden className="flex gap-1.5">
+                    {[0, 1, 2].map((i) => (
+                      <span key={i} className="h-[7px] w-[7px] rounded-full bg-primary animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Quick Chat */}

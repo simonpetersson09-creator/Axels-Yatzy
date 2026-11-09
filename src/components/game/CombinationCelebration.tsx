@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLayoutEffect, useRef } from 'react';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
 
 export type CombinationType = 'threeOfAKind' | 'fourOfAKind' | 'smallStraight' | 'largeStraight' | 'fullHouse';
@@ -25,6 +26,45 @@ const TOTAL = INTRO + HOLD + OUTRO;
 
 interface CombinationCelebrationProps {
   type: CombinationType | null;
+}
+
+function FittedCombinationLabel({ label }: { label: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    let disposed = false;
+    const fit = () => {
+      if (disposed) return;
+      // Start at the existing design size, then fit the complete translation
+      // into the circle's safe central rectangle, including multi-line scripts.
+      element.style.removeProperty('font-size');
+      let size = parseFloat(getComputedStyle(element).fontSize);
+      while (size > 1 && (element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight)) {
+        size -= 0.5;
+        element.style.fontSize = `${size}px`;
+      }
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(element);
+    void document.fonts?.ready.then(fit);
+    return () => {
+      disposed = true;
+      observer.disconnect();
+    };
+  }, [label]);
+
+  return (
+    <span
+      ref={ref}
+      className="block h-[48%] w-[76%] shrink-0 content-center whitespace-normal [overflow-wrap:anywhere] text-center font-display font-black text-primary-foreground text-base sm:text-lg leading-tight"
+      style={{ textShadow: '0 1px 0 hsl(45 95% 75% / 0.35), 0 -1px 2px hsl(28 75% 30% / 0.35)' }}
+    >
+      {label}
+    </span>
+  );
 }
 
 export function CombinationCelebration({ type }: CombinationCelebrationProps) {
@@ -100,12 +140,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
               >
                 ★ ★ ★
               </span>
-              <span
-                className="font-display font-black text-primary-foreground text-base sm:text-lg tracking-wide whitespace-nowrap leading-none"
-                style={{ textShadow: '0 1px 0 hsl(45 95% 75% / 0.35), 0 -1px 2px hsl(28 75% 30% / 0.35)' }}
-              >
-                {t(config.labelKey)}
-              </span>
+              <FittedCombinationLabel label={t(config.labelKey)} />
               <span aria-hidden="true" className="text-primary-foreground/80 text-[9px] leading-none">
                 ★
               </span>

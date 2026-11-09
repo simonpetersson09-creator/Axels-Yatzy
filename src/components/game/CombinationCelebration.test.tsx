@@ -2,6 +2,11 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { CombinationCelebration } from './CombinationCelebration';
 
+vi.stubGlobal('ResizeObserver', class {
+  observe() {}
+  disconnect() {}
+});
+
 const LABELS: Record<string, string> = {
   celeb_fourOfAKind: 'Fyrtal!',
   celeb_fullHouse: 'Kåk!',
@@ -26,25 +31,25 @@ describe('CombinationCelebration', () => {
     const label = screen.getByText('Fyrtal!');
     const medal = label.closest('div.rounded-full');
     expect(medal).not.toBeNull();
-    expect(medal!.className).toContain('border-game-gold-light');
-    expect(medal!.className).toContain('backdrop-blur-sm');
+    expect(medal?.className).toContain('border-game-gold-light');
+    expect(medal?.className).toContain('backdrop-blur-sm');
     expect(label.className).toContain('text-primary-foreground');
   });
 
   it('is a compact centered circle, not a full-width band', () => {
     renderCelebration('fullHouse');
     const label = screen.getByText('Kåk!');
-    const medal = label.closest('div.rounded-full')!;
-    expect(medal.className).toContain('h-24');
-    expect(medal.className).toContain('w-24');
-    expect(label.className).toContain('whitespace-nowrap');
+    const medal = label.closest('div.rounded-full');
+    expect(medal?.className).toContain('h-24');
+    expect(medal?.className).toContain('w-24');
     expect(label.className).toContain('text-base');
   });
 
   it('decorates the label with stars above and below', () => {
     renderCelebration('fourOfAKind');
     const label = screen.getByText('Fyrtal!');
-    const medal = label.closest('div.rounded-full')!;
+    const medal = label.closest('div.rounded-full');
+    if (!medal) throw new Error('Missing medal');
     const stars = medal.querySelectorAll('span[aria-hidden="true"]');
     expect(stars).toHaveLength(2);
     expect(stars[0].textContent).toContain('★');

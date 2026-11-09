@@ -1,7 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Veckolistor – 9 november
-- [ ] Dölj 24h enbart i Hall of Fame; behåll Veckans flitigaste och kontrollera visningen.
+- [x] Döljt 24h enbart i Hall of Fame; riktiga listor bildgranskade på telefon utan sidfel, 16 befintliga tester godkända, bygge OK. Ingen publicering.
 - [x] Föregående veckas topp tre i båda listorna har var sitt sparat 3/2/1 XP-kvitto från måndag 00:00 svensk tid; fyra kvitterade, två vinstbesked väntar. Ingen extra utdelning.
 
 ## Admin – återvändande spelare

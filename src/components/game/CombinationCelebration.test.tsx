@@ -2,6 +2,11 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { CombinationCelebration } from './CombinationCelebration';
 
+vi.stubGlobal('ResizeObserver', class {
+  observe() {}
+  disconnect() {}
+});
+
 const LABELS: Record<string, string> = {
   celeb_fourOfAKind: 'Fyrtal!',
   celeb_fullHouse: 'Kåk!',

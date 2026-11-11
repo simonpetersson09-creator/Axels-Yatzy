@@ -124,7 +124,7 @@ export default function ResultsPage() {
       return;
     }
     toast.success(t('rematchSentTo', { name: rematchOpponent.name }));
-    navigate('/');
+    leave();
   };
 
 

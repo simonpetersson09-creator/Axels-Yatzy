@@ -123,6 +123,11 @@ export default function ResultsPage() {
       toast.error(res.error ?? t('errSendInvite'));
       return;
     }
+    if (res.mergedGameId) {
+      const gid = res.mergedGameId;
+      leave(() => navigate(`/multiplayer-game?gameId=${gid}`));
+      return;
+    }
     toast.success(t('rematchSentTo', { name: rematchOpponent.name }));
     leave();
   };

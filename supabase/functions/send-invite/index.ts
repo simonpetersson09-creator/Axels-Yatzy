@@ -101,6 +101,39 @@ Deno.serve(async (req) => {
       return json({ error: "Du har redan 3 aktiva spel. Avsluta något först." }, 400);
     }
 
+    // Crossed invites: if the recipient already invited the sender, accept
+    // that invite instead of sending a second one, so both land in one game.
+    // accept_invite takes a pair lock, so simultaneous taps also merge.
+    const { data: reverse } = await supabase
+      .from("game_invites")
+      .select("id")
+      .eq("from_session_id", to_session_id)
+      .eq("to_session_id", from_session_id)
+      .eq("status", "pending")
+      .gt("expires_at", nowIso)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (reverse) {
+      const { data: acc, error: accErr } = await supabase.rpc("accept_invite", {
+        p_invite_id: reverse.id,
+        p_session_id: from_session_id,
+      });
+      const res = acc as { success?: boolean; game_id?: string } | null;
+      if (!accErr && res?.success && res.game_id) {
+        const pushLater = pushToSession(supabase, to_session_id, {
+          title: "Inbjudan accepterad 🎲",
+          body: `${serverName} hoppade in i spelet`,
+          data: { kind: "invite_accepted", game_id: res.game_id, invite_id: reverse.id },
+        }).catch((e) => console.warn("send-invite merge push failed", e));
+        // deno-lint-ignore no-explicit-any
+        const rt0 = (globalThis as any).EdgeRuntime;
+        if (rt0?.waitUntil) rt0.waitUntil(pushLater); else await pushLater;
+        return json({ success: true, invite_id: reverse.id, merged: true, game_id: res.game_id });
+      }
+      // Fall through to a normal invite if the merge was not possible.
+    }
+
     // Rate limits (per device, sender and recipient) — checked only after the
     // request is otherwise valid so rejected calls don't burn the window.
     const [devOk, fromOk, toOk] = await Promise.all([

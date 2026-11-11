@@ -147,6 +147,11 @@ export function FriendsList() {
       toast.error(res.error ?? t('errSendInvite'));
       return;
     }
+    if (res.mergedGameId) {
+      setPendingInvite(null);
+      navigate(`/multiplayer-game?gameId=${res.mergedGameId}`);
+      return;
+    }
     const inviteId = res.inviteId;
     setPendingInvite((cur) => (cur ? { ...cur, inviteId } : cur));
     void askNotificationsFor('invite', opponentName);

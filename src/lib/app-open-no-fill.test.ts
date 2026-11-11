@@ -84,11 +84,11 @@ describe('iOS App Open no-fill recovery', () => {
     expect(sdk.load).toHaveBeenCalledTimes(1);
     expect(sdk.notes).toHaveBeenCalledWith(expect.objectContaining({ stage: 'retry_paused', source }));
   });
-  it('allows a new trigger at 60 seconds, not at 59,999 ms, with no scheduled retry', async () => {
+  it('allows a new trigger at 20 seconds, not at 19,999 ms, with no scheduled retry', async () => {
     sdk.load.mockRejectedValueOnce(noFill());
     const m = await import('./admob'); await m.preloadAppOpenAd();
-    expect(m.APP_OPEN_NO_FILL_RETRY_MS).toBe(60_000);
-    await vi.advanceTimersByTimeAsync(59_999);
+    expect(m.APP_OPEN_NO_FILL_RETRY_MS).toBe(20_000);
+    await vi.advanceTimersByTimeAsync(19_999);
     expect(await m.preloadAppOpenAd()).toBe(false);
     expect(sdk.load).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(1);

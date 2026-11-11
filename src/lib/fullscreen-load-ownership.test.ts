@@ -41,6 +41,16 @@ describe.each(['ios', 'android'])('%s fullscreen SDK load ownership', platform =
   });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
 
+  it('replaces an unused match-end ad once when it expires after 45 minutes, never in a loop', async () => {
+    const m = await import('./admob');
+    expect(await m.preloadInterstitial()).toBe(true);
+    expect(n.interstitial).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(45 * 60_000 + 1000);
+    expect(n.interstitial).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(3 * 45 * 60_000);
+    expect(n.interstitial).toHaveBeenCalledTimes(2);
+  });
+
   describe.each(['interstitial', 'rewarded'] as const)('%s', format => {
     const timeout = () => format === 'rewarded' && platform === 'android' ? 20_000 : 10_000;
     const load = async () => {

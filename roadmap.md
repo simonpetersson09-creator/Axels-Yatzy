@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Direktinbjudningar till skapat spel – 11 november
+- [ ] Värden väljer flera godkända vänner och skickar till samma lobby; servern skyddar identitet, lediga platser och dubbla tryck.
+- [ ] Acceptera ansluter till befintligt spel utan automatisk start; visa väntande svar och anslutna spelare, behåll koddelning.
+- [ ] Kör riktade regeltester och avskilt flödesprov utan riktiga inbjudningar eller publicering.
+
 ## Väntetext utan överlappning – 11 november
 - [x] Väntetext kräver avslutad tur, motståndarens första kast kvar och tom tärningsyta efter befintlig utanimation; omstart med synliga tärningar visar ingen text. Tärningsbeteendet orört.
 - [x] 18 riktade tester godkända, bygge OK. Avskilt körande prov med riktiga tärningar visar text först efter utanimation, ingen text mellan kast eller efter omladdning med synliga tärningar; inga sidfel eller ändrade livematcher. Fysisk tvåtelefonkontroll kräver nästa appversion; inget publicerat.

@@ -2,7 +2,7 @@
 
 ## Väntetext utan överlappning – 11 november
 - [x] Väntetext kräver avslutad tur, motståndarens första kast kvar och tom tärningsyta efter befintlig utanimation; omstart med synliga tärningar visar ingen text. Tärningsbeteendet orört.
-- [ ] Kör riktade tester och kontrollera visningen; ingen publicering.
+- [x] 18 riktade tester godkända, bygge OK. Avskilt körande prov med riktiga tärningar visar text först efter utanimation, ingen text mellan kast eller efter omladdning med synliga tärningar; inga sidfel eller ändrade livematcher. Fysisk tvåtelefonkontroll kräver nästa appversion; inget publicerat.
 
 ## Veckolistor – 9 november
 - [x] Döljt 24h enbart i Hall of Fame; riktiga listor bildgranskade på telefon utan sidfel, 16 befintliga tester godkända, bygge OK. Ingen publicering.

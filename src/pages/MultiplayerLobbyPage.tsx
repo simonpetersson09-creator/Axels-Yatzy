@@ -53,6 +53,7 @@ export default function MultiplayerLobbyPage() {
   if (inLobby) {
     return (
       <LobbyWaitingRoom
+        gameId={gameId ?? ''}
         gameCode={gameCode}
         players={gameState.players}
         myPlayerIndex={myPlayerIndex}

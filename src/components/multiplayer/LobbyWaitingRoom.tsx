@@ -10,15 +10,17 @@ import type { Player } from '@/types/yatzy';
 import { useTranslation } from '@/lib/i18n';
 import { PUBLIC_WEB_ORIGIN } from '@/lib/app-links';
 import { trackEvent } from '@/lib/analytics';
+import { LobbyFriendInvites } from './LobbyFriendInvites';
 
 interface LobbyWaitingRoomProps {
+  gameId: string;
   gameCode: string;
   players: Player[];
   myPlayerIndex: number | null;
   onStart: () => void;
 }
 
-export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: LobbyWaitingRoomProps) {
+export function LobbyWaitingRoom({ gameId, gameCode, players, myPlayerIndex, onStart }: LobbyWaitingRoomProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
@@ -85,6 +87,8 @@ export function LobbyWaitingRoom({ gameCode, players, myPlayerIndex, onStart }: 
           </button>
           <h1 className="text-2xl font-display font-bold">{t('waitingForPlayers')}</h1>
         </div>
+
+        {isHost && gameId && <LobbyFriendInvites gameId={gameId} players={players} />}
 
         {/* Game code */}
         <div className="glass-card p-6 text-center space-y-3">

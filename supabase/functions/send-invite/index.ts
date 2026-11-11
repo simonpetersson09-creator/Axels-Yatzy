@@ -14,7 +14,25 @@ Deno.serve(async (req) => {
     new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   try {
-    const { from_session_id, from_name, to_session_id, to_name, device_id } = await req.json();
+    const { from_session_id, from_name, to_session_id, to_name, device_id, game_id, to_session_ids } = await req.json();
+    if (game_id) {
+      const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+      if (typeof from_session_id !== 'string' || typeof device_id !== 'string' || !Array.isArray(to_session_ids) || to_session_ids.some(id => typeof id !== 'string')) {
+        return json({ error: 'Ogiltig inbjudan' }, 400);
+      }
+      const { data, error } = await supabase.rpc('internal_send_lobby_invites', {
+        p_game_id: game_id, p_session_id: from_session_id, p_device_id: device_id, p_recipients: to_session_ids,
+      });
+      if (error || !data?.success) return json({ success: false, error: data?.error ?? 'Kunde inte skicka inbjudningar' });
+      const background = Promise.all((data.invites ?? []).map((invite: { id: string; to_session_id: string; from_name: string }) =>
+        pushToSession(supabase, invite.to_session_id, {
+          title: `${invite.from_name} utmanar dig 🎲`, body: 'Tryck för att spela Yatzy',
+          data: { kind: 'invite', invite_id: invite.id },
+        }).catch(() => undefined)));
+      const rt = (globalThis as unknown as { EdgeRuntime?: { waitUntil: (p: Promise<unknown>) => void } }).EdgeRuntime;
+      if (rt) rt.waitUntil(background); else await background;
+      return json({ success: true });
+    }
     if (!from_session_id || !from_name || !to_session_id || !to_name) {
       return json({ error: "from_session_id, from_name, to_session_id, to_name required" }, 400);
     }
@@ -80,6 +98,7 @@ Deno.serve(async (req) => {
         .eq("from_session_id", from_session_id)
         .eq("to_session_id", to_session_id)
         .eq("status", "pending")
+        .eq("lobby_invite", false)
         .gt("expires_at", nowIso)
         .maybeSingle(),
       supabase
@@ -110,6 +129,7 @@ Deno.serve(async (req) => {
       .eq("from_session_id", to_session_id)
       .eq("to_session_id", from_session_id)
       .eq("status", "pending")
+      .eq("lobby_invite", false)
       .gt("expires_at", nowIso)
       .order("created_at", { ascending: false })
       .limit(1)

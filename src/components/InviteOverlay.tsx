@@ -194,6 +194,8 @@ export default function InviteOverlay() {
           if (!g) { seenOutbound.delete(key); continue; }
           markOutboundHandled(key);
           if (g.status === 'finished') continue;
+          // Lobby guests join without pulling the host away from their lobby.
+          if (row.lobby_invite && g.status === 'waiting') continue;
           // Only skip navigation when we're already inside *this* match —
           // being on another game screen must not swallow the new match.
           const params = new URLSearchParams(window.location.search);

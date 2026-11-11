@@ -375,6 +375,7 @@ export type Database = {
           from_session_id: string
           game_id: string | null
           id: string
+          lobby_invite: boolean
           responded_at: string | null
           status: Database["public"]["Enums"]["invite_status"]
           to_name: string
@@ -387,6 +388,7 @@ export type Database = {
           from_session_id: string
           game_id?: string | null
           id?: string
+          lobby_invite?: boolean
           responded_at?: string | null
           status?: Database["public"]["Enums"]["invite_status"]
           to_name: string
@@ -399,6 +401,7 @@ export type Database = {
           from_session_id?: string
           game_id?: string | null
           id?: string
+          lobby_invite?: boolean
           responded_at?: string | null
           status?: Database["public"]["Enums"]["invite_status"]
           to_name?: string
@@ -1799,6 +1802,15 @@ export type Database = {
       }
       internal_score_total: { Args: { p: Json }; Returns: number }
       internal_secret_matches: { Args: { p_secret: string }; Returns: boolean }
+      internal_send_lobby_invites: {
+        Args: {
+          p_device_id: string
+          p_game_id: string
+          p_recipients: string[]
+          p_session_id: string
+        }
+        Returns: Json
+      }
       internal_settle_weekly_rewards: { Args: never; Returns: undefined }
       internal_snapshot_perf: { Args: never; Returns: number }
       internal_tier_for: { Args: { p_n: number }; Returns: string }
@@ -1828,6 +1840,7 @@ export type Database = {
           from_session_id: string
           game_id: string | null
           id: string
+          lobby_invite: boolean
           responded_at: string | null
           status: Database["public"]["Enums"]["invite_status"]
           to_name: string

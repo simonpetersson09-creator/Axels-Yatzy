@@ -15,6 +15,17 @@ export interface InviteRow {
   created_at: string;
   expires_at: string;
   responded_at: string | null;
+  lobby_invite?: boolean;
+}
+
+export async function sendLobbyInvites(gameId: string, recipientIds: string[]): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const deviceId = await requireClaimedDevice();
+    const { data, error } = await supabase.functions.invoke('send-invite', {
+      body: { game_id: gameId, to_session_ids: recipientIds, from_session_id: getSessionId(), device_id: deviceId },
+    });
+    return { ok: !error && data?.success === true, error: error?.message ?? data?.error };
+  } catch { return { ok: false, error: t('errSendInvite') }; }
 }
 
 export async function sendInvite(opts: {

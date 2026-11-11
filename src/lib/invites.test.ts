@@ -18,4 +18,10 @@ it('failed registration blocks both sending and replying', async () => {
   expect((await sendInvite({ toSessionId: 'friend', toName: 'Friend' })).ok).toBe(false);
   expect((await respondInvite({ inviteId: 'invite', action: 'decline' })).ok).toBe(false);
   expect(mocks.invoke).not.toHaveBeenCalled();
+});it('crossed invite: sending to someone who already invited you returns the shared game', async () => {
+  mocks.claim.mockResolvedValue('device');
+  mocks.invoke.mockResolvedValue({ data: { success: true, invite_id: 'theirs', merged: true, game_id: 'g1' } });
+  expect((await sendInvite({ toSessionId: 'friend', toName: 'Friend' })).mergedGameId).toBe('g1');
+  mocks.invoke.mockResolvedValue({ data: { success: true, invite_id: 'mine' } });
+  expect((await sendInvite({ toSessionId: 'friend', toName: 'Friend' })).mergedGameId).toBeUndefined();
 });

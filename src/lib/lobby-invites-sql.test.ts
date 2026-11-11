@@ -69,3 +69,15 @@ it.skipIf(!db)('expired, started or deleted lobby never falls back to creating a
     const [count] = await sql`SELECT count(*)::int AS n FROM pg_temp.games`; expect(count.n).toBe(1);
   });
 });
+it.skipIf(!db)('ordinary crossed invites do not consume a pending created-lobby invitation', async () => {
+  await scenario(async sql => {
+    const [sent] = await sql`SELECT pg_temp.internal_send_lobby_invites(${game},'host','host-device',ARRAY['one']) AS result`;
+    const lobbyId = sent.result.invites[0].id;
+    const [ordinary] = await sql`INSERT INTO pg_temp.game_invites(from_session_id,from_name,to_session_id,to_name) VALUES('one','One','host','Host') RETURNING id`;
+    const [accepted] = await sql`SELECT pg_temp.accept_invite(${ordinary.id},'host') AS result`;
+    expect(accepted.result.success).toBe(true);
+    expect(accepted.result.game_id).not.toBe(game);
+    const [preserved] = await sql`SELECT status,game_id FROM pg_temp.game_invites WHERE id=${lobbyId}`;
+    expect(preserved).toEqual({ status: 'pending', game_id: game });
+  });
+});

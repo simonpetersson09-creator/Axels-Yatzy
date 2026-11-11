@@ -13,7 +13,7 @@ async function scenario(check: (sql: postgres.TransactionSql) => Promise<void>) 
       CREATE TEMP TABLE friend_requests (LIKE public.friend_requests INCLUDING DEFAULTS) ON COMMIT DROP;
       CREATE TEMP TABLE session_owners (LIKE public.session_owners INCLUDING DEFAULTS) ON COMMIT DROP;
       CREATE TEMP TABLE player_names (LIKE public.player_names INCLUDING DEFAULTS) ON COMMIT DROP;
-      CREATE FUNCTION pg_temp.check_rate_limit(text,integer) RETURNS boolean LANGUAGE sql AS $$SELECT true$$;
+      CREATE OR REPLACE FUNCTION pg_temp.check_rate_limit(text,integer) RETURNS boolean LANGUAGE sql AS $$SELECT true$$;
     `);
     const definitions = await sql`SELECT pg_get_functiondef(oid) AS def FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname IN ('internal_send_lobby_invites','accept_invite','join_game')`;
     for (const row of definitions) await sql.unsafe(row.def.replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp', 'public'"));

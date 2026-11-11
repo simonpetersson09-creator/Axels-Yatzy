@@ -38,7 +38,8 @@ export function LobbyFriendInvites({ gameId, players }: { gameId: string; player
         ]);
         if (!cancelled && !result.error) setInvites(((result.data ?? []) as InviteRow[]).filter(i => i.game_id === gameId && i.lobby_invite));
         if (!cancelled && !seats.error) setSeated((seats.data ?? []).map(p => p.session_id));
-      } finally { loading = false; }
+      } catch { /* Keep confirmed status on a temporary connection failure. */ }
+      finally { loading = false; }
     };
     refresh.current = load;
     void load();
@@ -63,7 +64,8 @@ export function LobbyFriendInvites({ gameId, players }: { gameId: string; player
       setInvites(cur => [...cur, ...availableSelected.map(id => ({ id: `sending:${id}`, game_id: gameId, lobby_invite: true, from_session_id: getSessionId(), from_name: '', to_session_id: id, to_name: friends.find(f => f.otherId === id)?.otherName ?? '', status: 'pending' as const, created_at: new Date().toISOString(), expires_at: new Date(Date.now() + 60000).toISOString(), responded_at: null }))]);
       setSelected([]);
       await refresh.current();
-    } finally { busyRef.current = false; if (alive.current) setBusy(false); }
+    } catch { if (alive.current) setError(t('errSendInvite')); }
+    finally { busyRef.current = false; if (alive.current) setBusy(false); }
   };
   return (
     <section className="space-y-3">

@@ -98,6 +98,7 @@ export default function MultiplayerGamePage() {
   // 3 s say the connection is slow so it never looks like the app froze.
   const waitingServer = (rollPending || locksPending) && isMyTurn;
   const [slowServer, setSlowServer] = useState(false);
+  const [diceTableEmpty, setDiceTableEmpty] = useState(false);
   const [showWait, setShowWait] = useState(false);
   useEffect(() => {
     if (!waitingServer) { setSlowServer(false); setShowWait(false); return; }
@@ -846,6 +847,7 @@ export default function MultiplayerGamePage() {
                 className="mp-dice-hint mx-auto mb-1"
               />
               <DiceArea
+                onTableEmptyChange={setDiceTableEmpty}
                 dice={gameState.dice}
                 lockedDice={gameState.lockedDice}
                 rollsLeft={gameState.rollsLeft}
@@ -857,7 +859,7 @@ export default function MultiplayerGamePage() {
                 skin={profileSkin(diceProfiles.get(gameState.currentPlayerIndex))}
                 className="mt-0"
               />
-              {!isMyTurn && !gameState.gameOver && gameState.rollsLeft === 3 && !(remoteRolling || gameState.isRolling) && (
+              {diceTableEmpty && !isMyTurn && !gameState.gameOver && gameState.rollsLeft === 3 && !(localRolling || remoteRolling || gameState.isRolling) && (
                 <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex flex-col items-center justify-center gap-2.5 text-center text-primary">
                   <div className="px-1 text-[15px] font-semibold leading-tight break-words">
                     {t('waitingForOpponent', { name: gameState.players[gameState.currentPlayerIndex]?.name ?? '' })}

@@ -1,7 +1,7 @@
 import type { Language } from '@/lib/profile';
 
 const rows: Record<Language, readonly [string, string]> = {
-  sv: ['Bjud in vänner', 'Skicka inbjudningar'], en: ['Invite friends', 'Send invitations'],
+  sv: ['Bjud in från din vänlista', 'Skicka inbjudningar'], en: ['Invite friends', 'Send invitations'],
   no: ['Inviter venner', 'Send invitasjoner'], da: ['Inviter venner', 'Send invitationer'],
   fi: ['Kutsu ystäviä', 'Lähetä kutsut'], es: ['Invitar amigos', 'Enviar invitaciones'],
   fr: ['Inviter des amis', 'Envoyer les invitations'], it: ['Invita amici', 'Invia inviti'],

@@ -15,7 +15,7 @@ import { LobbyFriendInvites } from './LobbyFriendInvites';
 beforeEach(() => { mock.rpc.mockResolvedValue({ data: [] }); mock.seats.mockResolvedValue({ data: [{ session_id: 'host' }] }); mock.send.mockReset().mockResolvedValue({ ok: true }); });
 it('selects two accepted friends in one batch, excluding pending friendship', async () => {
   render(<LobbyFriendInvites gameId="created" players={[{ id: 'seat-host', name: 'Host', scores: {} }]} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Bjud in vänner' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Bjud in från din vänlista' }));
   expect(screen.queryByLabelText('Pending')).toBeNull();
   fireEvent.click(screen.getByLabelText('One')); fireEvent.click(screen.getByLabelText('Two'));
   fireEvent.click(screen.getByRole('button', { name: 'Skicka inbjudningar (2)' }));
@@ -23,14 +23,14 @@ it('selects two accepted friends in one batch, excluding pending friendship', as
 });
 it('one free place only allows one selected friend', async () => {
   render(<LobbyFriendInvites gameId="created" players={[0,1,2].map(i => ({ id: `seat-${i}`, name: `Player ${i}`, scores: {} }))} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Bjud in vänner' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Bjud in från din vänlista' }));
   fireEvent.click(screen.getByLabelText('One'));
   expect(screen.getByLabelText('Two')).toBeDisabled();
 });
 it('already seated friends are filtered by server session ID, not seat-row ID', async () => {
   mock.seats.mockResolvedValue({ data: [{ session_id: 'host' }, { session_id: 'one' }] });
   render(<LobbyFriendInvites gameId="created" players={[{ id: 'different-seat-row-id', name: 'One', scores: {} }]} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Bjud in vänner' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Bjud in från din vänlista' }));
   await waitFor(() => expect(screen.queryByLabelText('One')).toBeNull());
   expect(screen.getByLabelText('Two')).toBeEnabled();
 });

@@ -54,7 +54,6 @@ export default function MultiplayerLobbyPage() {
     return (
       <LobbyWaitingRoom
         gameId={gameId ?? ''}
-        maxPlayers={gameState.maxPlayers}
         gameCode={gameCode}
         players={gameState.players}
         myPlayerIndex={myPlayerIndex}

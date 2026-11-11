@@ -596,6 +596,10 @@ export async function preloadInterstitial(): Promise<boolean> {
 
 export type ShowAdResult = 'shown' | 'unavailable' | 'failed' | 'busy';
 
+let lastInterstitialShownAt = 0;
+/** When an interstitial last closed after being shown (0 = not this session). */
+export function getLastInterstitialShownAt(): number { return lastInterstitialShownAt; }
+
 /**
  * Visar en interstitial efter tryck på "Frivillig reklam".
  */
@@ -654,6 +658,7 @@ async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matc
       await withTimeout(mod.AdMob.showInterstitial(), SHOW_TIMEOUT_MS, 'show');
     }
     const result = await closed;
+    if (result === 'shown') lastInterstitialShownAt = Date.now();
     opportunity(result === 'shown' ? 'shown' : 'failed', result === 'shown' ? undefined : 'sdk_show_failed');
     // Dismissed/FailedToShow owns cache consumption. Do not clear a replacement
     // load that the global dismissal listener may already have completed.

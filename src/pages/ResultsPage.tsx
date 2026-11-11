@@ -12,6 +12,7 @@ import { HeadToHeadStats } from '@/components/game/HeadToHeadStats';
 import { getKnownFriends } from '@/lib/known-friends';
 import { sendFriendRequest } from '@/lib/friend-requests';
 import { usePostMatchExit } from '@/hooks/usePostMatchExit';
+import { markForfeitAd } from '@/lib/forfeit-ad';
 
 interface PlayerResult {
   name: string;
@@ -37,9 +38,12 @@ export default function ResultsPage() {
   const gameId: string | undefined = location.state?.gameId;
   const playerNames: string[] = results.map(r => r.name);
   const [inviting, setInviting] = useState(false);
+  const forfeitAd: boolean = forfeit && !isMultiplayer && location.state?.forfeitAd === true;
   const { leaving, leave } = usePostMatchExit(
-    `online:${gameId ?? location.key}`, !forfeit && !timedOut && results.length > 0, () => navigate('/'),
+    `online:${gameId ?? location.key}`, (!forfeit && !timedOut && results.length > 0) || forfeitAd, () => navigate('/'),
   );
+  // The forfeit ad's 10-minute spacing starts when one is offered.
+  useEffect(() => { if (forfeitAd) markForfeitAd(); }, [forfeitAd]);
   // Online quick match: human opponents that can be added as friends.
   const [quickMatch, setQuickMatch] = useState<null | Array<{ id: string; name: string; index: number }>>(null);
   const [requested, setRequested] = useState<Set<string>>(() => new Set());

@@ -3,7 +3,7 @@ const mocks = vi.hoisted(() => ({ claim: vi.fn(), invoke: vi.fn() }));
 vi.mock('@/lib/session', () => ({ requireClaimedDevice: mocks.claim, getSessionId: () => 'player', getPlayerName: () => 'Simon' }));
 vi.mock('@/lib/i18n', () => ({ t: () => 'Connection failed' }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: { functions: { invoke: mocks.invoke } } }));
-import { sendInvite, respondInvite } from './invites';
+import { sendInvite, respondInvite, sendLobbyInvites } from './invites';
 beforeEach(() => { mocks.claim.mockReset(); mocks.invoke.mockReset().mockResolvedValue({ data: { success: true, game_id: 'game' } }); });
 it('invite reply waits for a confirmed device before accepting', async () => {
   let release: (value: string) => void = () => {};
@@ -12,6 +12,18 @@ it('invite reply waits for a confirmed device before accepting', async () => {
   expect(mocks.invoke).not.toHaveBeenCalled(); release('device');
   expect(await pending).toEqual({ ok: true, gameId: 'game' });
   expect(mocks.invoke).toHaveBeenCalledWith('respond-invite', { body: { invite_id: 'invite', session_id: 'player', action: 'accept', device_id: 'device' } });
+});
+it('sends two friends in one device-checked request to the created game', async () => {
+  mocks.claim.mockResolvedValue('device');
+  expect((await sendLobbyInvites('created-game', ['friend-one', 'friend-two'])).ok).toBe(true);
+  expect(mocks.invoke).toHaveBeenCalledExactlyOnceWith('send-invite', { body: {
+    game_id: 'created-game', to_session_ids: ['friend-one', 'friend-two'], from_session_id: 'player', device_id: 'device',
+  } });
+});
+it('does not send lobby invitations when device verification fails', async () => {
+  mocks.claim.mockRejectedValue(new Error('offline'));
+  expect((await sendLobbyInvites('created-game', ['friend-one'])).ok).toBe(false);
+  expect(mocks.invoke).not.toHaveBeenCalled();
 });
 it('failed registration blocks both sending and replying', async () => {
   mocks.claim.mockRejectedValue(new Error('offline'));

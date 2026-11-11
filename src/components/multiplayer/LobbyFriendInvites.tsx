@@ -17,6 +17,7 @@ export function LobbyFriendInvites({ gameId, players }: { gameId: string; player
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [invites, setInvites] = useState<InviteRow[]>([]);
+  const [seated, setSeated] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const busyRef = useRef(false);
@@ -31,8 +32,12 @@ export function LobbyFriendInvites({ gameId, players }: { gameId: string; player
       if (loading || document.hidden) return;
       loading = true;
       try {
-        const { data, error } = await supabase.rpc('list_invites_for_session', { p_session_id: getSessionId() });
-        if (!cancelled && !error) setInvites(((data ?? []) as InviteRow[]).filter(i => i.game_id === gameId && i.lobby_invite));
+        const [result, seats] = await Promise.all([
+          supabase.rpc('list_invites_for_session', { p_session_id: getSessionId() }),
+          supabase.from('game_players').select('session_id').eq('game_id', gameId),
+        ]);
+        if (!cancelled && !result.error) setInvites(((result.data ?? []) as InviteRow[]).filter(i => i.game_id === gameId && i.lobby_invite));
+        if (!cancelled && !seats.error) setSeated((seats.data ?? []).map(p => p.session_id));
       } finally { loading = false; }
     };
     refresh.current = load;
@@ -41,10 +46,10 @@ export function LobbyFriendInvites({ gameId, players }: { gameId: string; player
     window.addEventListener('focus', load);
     document.addEventListener('visibilitychange', load);
     return () => { cancelled = true; alive.current = false; clearInterval(timer); window.removeEventListener('focus', load); document.removeEventListener('visibilitychange', load); };
-  }, [gameId]);
-  const pending = invites.filter(i => i.status === 'pending' && Date.parse(i.expires_at) > Date.now() && !players.some(p => p.id === i.to_session_id));
+  }, [gameId, players.length]);
+  const pending = invites.filter(i => i.status === 'pending' && Date.parse(i.expires_at) > Date.now() && !seated.includes(i.to_session_id));
   const pendingIds = new Set(pending.map(i => i.to_session_id));
-  const friends = requests.filter(r => r.status === 'accepted' && !players.some(p => p.id === r.otherId));
+  const friends = requests.filter(r => r.status === 'accepted' && !seated.includes(r.otherId));
   const free = Math.max(0, 4 - players.length - pendingIds.size);
   const availableSelected = selected.filter(id => friends.some(f => f.otherId === id) && !pendingIds.has(id)).slice(0, free);
   const send = async () => {

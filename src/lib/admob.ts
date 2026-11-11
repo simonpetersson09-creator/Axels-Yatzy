@@ -115,6 +115,20 @@ let dismissListenerAttached = false;
 let lastPrepareError: string | undefined;
 
 const PREPARED_TTL_MS = 45 * 60 * 1000; // AdMob-annonser blir inaktuella efter ~1h
+/** One background replacement per loaded interstitial when it expires unused, so a match end finds a fresh ad. Never chains. */
+let interstitialRefreshTimer: ReturnType<typeof setTimeout> | null = null;
+let interstitialRefreshUsed = false;
+function scheduleInterstitialRefresh(loadedAt: number) {
+  if (interstitialRefreshTimer) clearTimeout(interstitialRefreshTimer);
+  interstitialRefreshTimer = null;
+  if (interstitialRefreshUsed) return;
+  interstitialRefreshTimer = setTimeout(() => {
+    interstitialRefreshTimer = null;
+    if (preparedAt !== loadedAt || showing || preparing) return;
+    interstitialRefreshUsed = true;
+    void preloadInterstitial();
+  }, PREPARED_TTL_MS + 1000);
+}
 
 /** Never let a native ad call hang the UI (seen on iPad: no reply at all). */
 function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
@@ -508,6 +522,7 @@ async function initializeAds(generation: number): Promise<AdMobModule> {
       void mod.AdMob.addListener(mod.InterstitialAdPluginEvents.Dismissed, () => {
         showing = false;
         preparedAt = 0;
+        interstitialRefreshUsed = false;
         void preloadInterstitial();
       });
       void mod.AdMob.addListener(mod.InterstitialAdPluginEvents.FailedToShow, () => {
@@ -558,6 +573,7 @@ export async function preloadInterstitial(): Promise<boolean> {
       });
       if (!adAllowed(generation)) { log('load_discarded', 'ads_state_changed'); return false; }
       preparedAt = Date.now();
+      scheduleInterstitialRefresh(preparedAt);
       log('loaded');
       return true;
     } catch (err) {
@@ -915,8 +931,8 @@ export async function showOptionalRewarded(options: { waitForCompletion?: boolea
 
 /** Laddas annonsen inte inom denna tid (12 s) visas den inte alls denna start. */
 const APP_OPEN_LOAD_TIMEOUT_MS = 12_000;
-/** One minute avoids burst retries without a timer or changing presentation eligibility. iOS only. */
-export const APP_OPEN_NO_FILL_RETRY_MS = 60_000;
+/** 20 s avoids burst retries without a timer or changing presentation eligibility, yet lets the next start/return retry. iOS only. */
+export const APP_OPEN_NO_FILL_RETRY_MS = 20_000;
 export type AppOpenLoadSource = 'startup' | 'resume' | 'background' | 'preload' | 'after_presentation';
 let appOpenRetryAfter = 0;
 

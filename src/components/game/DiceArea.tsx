@@ -2,6 +2,7 @@ import type { DiceLook } from '@/lib/dice-skin';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { DiceSet } from '@/components/dice-engine';
+import { useDiceTableEmpty } from './useDiceTableEmpty';
 
 interface DiceAreaProps {
   dice: number[];
@@ -17,6 +18,7 @@ interface DiceAreaProps {
   skin?: DiceLook;
   /** Presentation spacing in die-width units; defaults preserve local games. */
   spacing?: number;
+  onTableEmptyChange?: (empty: boolean) => void;
 }
 
 type Five<T> = [T, T, T, T, T];
@@ -40,6 +42,7 @@ export function DiceArea({
   playerIndex = 0,
   skin = 'white',
   spacing: spacingOverride,
+  onTableEmptyChange,
 }: DiceAreaProps) {
   const hasRolled = rollsLeft < 3;
   // --dice-scale (index.css) shrinks the column when the ad banner needs room.
@@ -79,7 +82,12 @@ export function DiceArea({
     resetKeyRef.current += 1;
   }
   const resetKey = resetKeyRef.current;
-
+  const cleared = !hasRolled && !isRolling && resetKey > 0;
+  const tableEmpty = useDiceTableEmpty(cleared, resetKey);
+  useEffect(() => {
+    onTableEmptyChange?.(tableEmpty);
+    return () => onTableEmptyChange?.(false);
+  }, [tableEmpty, onTableEmptyChange]);
 
   const handleDieClick = useCallback(
     (index: number) => {
@@ -116,7 +124,7 @@ export function DiceArea({
             held={toFive(lockedDice, false)}
             rolling={isRolling}
             resetKey={resetKey}
-            cleared={!hasRolled && !isRolling && resetKey > 0}
+            cleared={cleared}
             onRollComplete={() => {
               /* The game state owns roll timing; nothing to do here. */
             }}

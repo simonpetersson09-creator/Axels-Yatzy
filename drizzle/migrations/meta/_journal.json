@@ -883,6 +883,13 @@
       "when": 1794076787912,
       "tag": "0125_admin_returning_playing_devices",
       "breakpoints": true
+    },
+    {
+      "idx": 126,
+      "version": "7",
+      "when": 1794432770255,
+      "tag": "0126_created_lobby_friend_invites",
+      "breakpoints": true
     }
   ]
 }

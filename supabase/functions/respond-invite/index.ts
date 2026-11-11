@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
       await later(pushToSession(supabase, invite.from_session_id, {
         title: "Inbjudan accepterad 🎲",
         body: `${invite.to_name} hoppade in i spelet`,
-        data: { kind: "invite_accepted", game_id: res.game_id ?? "", invite_id },
+          data: { kind: invite.lobby_invite ? "lobby_join" : "invite_accepted", game_id: res.game_id ?? "", game_code: res.game_code ?? "", invite_id },
       }));
       return json({ success: true, action, game_id: res.game_id, game_code: res.game_code });
     }

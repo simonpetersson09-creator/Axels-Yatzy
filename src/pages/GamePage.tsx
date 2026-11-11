@@ -14,7 +14,9 @@ import { getFrame } from '@/lib/cosmetics';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame, newLocalGameId } from '@/lib/active-game';
-import { recordGameResult } from '@/lib/local-stats';
+import { recordGameResult, getRankedGames } from '@/lib/local-stats';
+import { forfeitAdAllowed, getLastForfeitAdAt } from '@/lib/forfeit-ad';
+import { getLastInterstitialShownAt } from '@/lib/admob';
 import { getLocalMatchKey, startNextLocalMatch } from '@/lib/local-match-key';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
@@ -332,6 +334,14 @@ export default function GamePage() {
         forfeit: true,
         forfeitPlayerName: gameState.players[0].name,
         aiPlayers,
+        forfeitAd: !gameState.gameOver && !aiPlayers.includes(0) && forfeitAdAllowed({
+          score: getTotalScore(gameState.players[0].scores),
+          vsComputer: aiPlayers.length > 0,
+          completedGames: getRankedGames(),
+          now: Date.now(),
+          lastForfeitAdAt: getLastForfeitAdAt(),
+          lastAdShownAt: getLastInterstitialShownAt(),
+        }),
       },
     });
   }, [gameState, navigate, aiPlayers, localGameId]);

@@ -20,7 +20,7 @@ export interface InviteRow {
 export async function sendInvite(opts: {
   toSessionId: string;
   toName: string;
-}): Promise<{ ok: boolean; inviteId?: string; error?: string; pushDelivered?: boolean }> {
+}): Promise<{ ok: boolean; inviteId?: string; error?: string; pushDelivered?: boolean; mergedGameId?: string }> {
   const fromName = getPlayerName() || 'Spelare';
   let deviceId: string;
   try { deviceId = await requireClaimedDevice(); }
@@ -35,9 +35,13 @@ export async function sendInvite(opts: {
     },
   });
   if (error) return { ok: false, error: error.message };
-  const res = data as { success?: boolean; invite_id?: string; error?: string; push_delivered?: boolean };
+  const res = data as { success?: boolean; invite_id?: string; error?: string; push_delivered?: boolean; merged?: boolean; game_id?: string };
   if (!res?.success) return { ok: false, error: res?.error ?? 'Kunde inte skicka inbjudan' };
-  return { ok: true, inviteId: res.invite_id, pushDelivered: res.push_delivered };
+  return {
+    ok: true, inviteId: res.invite_id, pushDelivered: res.push_delivered,
+    // The recipient had already invited us: the server accepted theirs.
+    mergedGameId: res.merged && res.game_id ? res.game_id : undefined,
+  };
 }
 
 

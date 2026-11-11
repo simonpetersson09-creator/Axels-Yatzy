@@ -69,8 +69,8 @@ export function LobbyFriendInvites({ gameId, players }: { gameId: string; player
   };
   return (
     <section className="space-y-3">
-      <Button variant="secondary" className="w-full" onClick={() => setOpen(v => !v)} aria-expanded={open}>
-        <UserPlus />{copy.invite}
+      <Button className="w-full min-h-12 h-auto py-3 whitespace-normal font-display font-bold text-base" onClick={() => setOpen(v => !v)} aria-expanded={open}>
+        <UserPlus className="!size-5" /><span className="min-w-0">{copy.invite}</span>
       </Button>
       {pending.length > 0 && <ul className="space-y-2">{pending.map(i => <li key={i.id} className="flex items-center justify-between gap-2 text-sm"><span className="min-w-0 truncate">{i.to_name}</span><span className="text-xs text-muted-foreground">{t('friendRequestPending')}</span></li>)}</ul>}
       {open && <div className="space-y-3">

@@ -861,7 +861,7 @@ export default function MultiplayerGamePage() {
               />
               {diceTableEmpty && !isMyTurn && !gameState.gameOver && gameState.rollsLeft === 3 && !(localRolling || remoteRolling || gameState.isRolling) && (
                 <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex flex-col items-center justify-center gap-2.5 text-center text-primary">
-                  <div className="px-1 text-[15px] font-semibold leading-tight break-words">
+                  <div className="px-1 text-[13px] font-semibold leading-tight break-words">
                     {t('waitingForOpponent', { name: gameState.players[gameState.currentPlayerIndex]?.name ?? '' })}
                   </div>
                   <div aria-hidden className="flex gap-1.5">

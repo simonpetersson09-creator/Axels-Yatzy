@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Mjukare spelstart – 12 november
-- [ ] Förbered och återanvänd tärningarnas form under ledig tid på startsidan; behåll utseende, kasttider, spelregler och annonser.
-- [ ] Kör regressionstester och jämför samma spelstart före/efter; fysisk iPhone-mätning kräver nytt appbygge och telefon.
+- [x] Förbered och återanvänd storlekscache av exakt samma tärningsform under ledig tid på startsidan, utan extra WebGL-kontext; behåll utseende, kasttider, spelregler och annonser. Delad geometri skyddad mot automatisk avmonteringsradering.
+- [x] 33 regressionstester godkända, bildgranskad riktig lokal match med synliga tärningar. Samma laboratorieprov: största bildpaus 517 → 467 ms; normalberäkning av fem kroppar borta ur CPU-toppen, men grafik-/shaderuppstart fortfarande märkbar. Ingen garanti om hackfri telefon; inget publicerat.
+- [ ] Fysisk iPhone-mätning kräver nytt appbygge och telefon; fortsatt GPU-uppstart kan inte bekräftas på telefon här.
 
 ## Genomgång av gårdagens ändringar – 12 november
 - [x] 86 tester godkända: direktinbjudningar till samma lobby, identitet/godkända vänner/platser/dubbeltryck, väntetextens tomma tärningsyta och återhämtning, samt fem nya isolerade prov av driftsatt tvåtimmarsregel. Sync/away förlänger inte, heartbeat ger 7200 s, fler spelare ger 120 s redo. Ingen ändrad spelregel eller live-testdata.

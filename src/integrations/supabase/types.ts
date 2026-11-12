@@ -1138,6 +1138,7 @@ export type Database = {
           recall_until: string | null
           seat: number
           session_id: string
+          solo_until: string | null
         }
         Insert: {
           expires_at?: string
@@ -1154,6 +1155,7 @@ export type Database = {
           recall_until?: string | null
           seat: number
           session_id: string
+          solo_until?: string | null
         }
         Update: {
           expires_at?: string
@@ -1170,6 +1172,7 @@ export type Database = {
           recall_until?: string | null
           seat?: number
           session_id?: string
+          solo_until?: string | null
         }
         Relationships: [
           {

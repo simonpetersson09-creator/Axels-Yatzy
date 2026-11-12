@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Genomgång av gårdagens ändringar – 12 november
+- [ ] Kontrollera direktinbjudningar, väntetext och tvåtimmarsgräns med isolerade serverprov och körande app; påverka inte riktiga spelare/notiser.
+- [ ] Telefonnotiser och fysiskt tvåtelefonflöde kräver signerat nytt appbygge och anslutna telefoner.
+
 ## Direktinbjudningar till skapat spel – 11 november
 - [x] Värden väljer flera godkända vänner och skickar till samma lobby; servern skyddar identitet, lediga platser och dubbla tryck. Serversidan driftsatt, vanliga korsade inbjudningar hålls separata.
 - [x] Acceptera ansluter till befintligt spel utan automatisk start; väntande svar och anslutna spelare visas, koddelning bevarad. Raderad lobby skapar aldrig ny match vid acceptans.

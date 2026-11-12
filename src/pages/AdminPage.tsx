@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, ChartLine, ChevronLeft, ChevronRight, LogOut, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminLineChart from "@/components/AdminLineChart";
+import AdminBestTimes from "@/components/AdminBestTimes";
 import AdminAdDiagnostics from "@/components/AdminAdDiagnostics";
 import { adminVisibleDays } from "@/lib/admin-period";
 import {
@@ -232,7 +233,14 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
       {error && <p className="text-sm text-destructive mb-2">{error}</p>}
       {rows.some((r) => r.incomplete_columns?.length) && <p className="text-sm text-muted-foreground mb-3">† Ofullständigt underlag efter matchstädningen den 6 november. Äldre onlinematcher är delvis återställda; dagfördelningen kan avvika. Medel, summor och rekord visas inte där fullständig historik saknas. Appåldern kan även påverkas framåt.</p>}
       <AdminAdDiagnostics adminKey={adminKey} />
-      {diagram ? <AdminLineChart rows={rows} /> : <>
+      {diagram ? (
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
+          <AdminBestTimes adminKey={adminKey} />
+          <div className="flex-1 min-w-0 w-full">
+            <AdminLineChart rows={rows} />
+          </div>
+        </div>
+      ) : <>
       <div ref={wrapRef} className="relative overflow-x-auto rounded-lg border border-border">
         <svg
           className="pointer-events-none absolute left-0 top-0 z-0"

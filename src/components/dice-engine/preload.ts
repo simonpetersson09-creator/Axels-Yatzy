@@ -13,7 +13,11 @@ export function preloadDiceEngine(): void {
   if (started || typeof window === "undefined") return;
   started = true;
   const run = () => {
-    void import("./DiceSet");
+    // Importing alone does not prepare geometry: the engine is already eagerly
+    // imported by gameplay. Prepare its shared body during idle on Home.
+    void import("./body-geometry").then(({ getDiceBodyGeometry }) => {
+      if (window.location.pathname === '/' && !document.hidden) getDiceBodyGeometry();
+    }).catch(() => { /* Gameplay can still prepare it on demand. */ });
   };
   const ric = (window as unknown as {
     requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;

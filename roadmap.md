@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Genomgång av gårdagens ändringar – 12 november
+- [x] 86 tester godkända: direktinbjudningar till samma lobby, identitet/godkända vänner/platser/dubbeltryck, väntetextens tomma tärningsyta och återhämtning, samt fem nya isolerade prov av driftsatt tvåtimmarsregel. Sync/away förlänger inte, heartbeat ger 7200 s, fler spelare ger 120 s redo. Ingen ändrad spelregel eller live-testdata.
+- [x] Körande startsida utan sidfel; Spela med vän → Skapa spel → Anna/Erik → ett utskick → två väntande svar bildgranskat i telefon/dator med avskilda svar. Värden stannar i lobbyn. Städning aktiv var femte minut och vid väntrumsanrop; inga annonser/notiser/publicering.
+- [ ] Telefonnotiser och fysiskt tvåtelefonflöde kräver signerat nytt appbygge och anslutna telefoner.
+
 ## Direktinbjudningar till skapat spel – 11 november
 - [x] Värden väljer flera godkända vänner och skickar till samma lobby; servern skyddar identitet, lediga platser och dubbla tryck. Serversidan driftsatt, vanliga korsade inbjudningar hålls separata.
 - [x] Acceptera ansluter till befintligt spel utan automatisk start; väntande svar och anslutna spelare visas, koddelning bevarad. Raderad lobby skapar aldrig ny match vid acceptans.

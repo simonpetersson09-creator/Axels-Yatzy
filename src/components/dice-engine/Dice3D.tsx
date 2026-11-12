@@ -8,7 +8,7 @@ import { designFromLook, paintDesignFace, type DiceDesign } from '@/lib/dice-des
  * shared by every die instance, keeping GPU state changes and memory low.
  */
 import { forwardRef, memo, useEffect, useMemo, useRef } from "react";
-import { RoundedBox } from "@react-three/drei";
+import { getDiceBodyGeometry } from './body-geometry';
 import {
   CanvasTexture,
   DoubleSide,
@@ -479,12 +479,9 @@ function Dice3DImpl({
           <group position={[0, held ? -size * 0.06 : 0, 0]} rotation={[tiltJitter, 0, rollJitter]}>
             <group ref={pressRef}>
               <group ref={groupRef} onPointerDown={handleClick}>
-                <RoundedBox
-                  args={[size, size, size]}
-                  radius={size * 0.2}
-                  smoothness={10}
-                  bevelSegments={8}
-                  creaseAngle={0.5}
+                <mesh
+                  geometry={getDiceBodyGeometry(size)}
+                  dispose={null}
                   material={design ? designMaterial(design, held) : platMat ? (held ? platMat.held : platMat.body) : skin && skin !== 'white' && skin in SKIN_MATERIALS ? (held ? SKIN_MATERIALS[skin as keyof typeof SKIN_MATERIALS].held : SKIN_MATERIALS[skin as keyof typeof SKIN_MATERIALS].body) : held ? heldMaterial : bodyMaterial}
                 />
                 {FACES.map((face) => (

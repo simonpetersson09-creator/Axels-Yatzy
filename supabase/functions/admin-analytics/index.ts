@@ -42,6 +42,11 @@ Deno.serve(async (req) => {
     if (error) return json({ error: 'Diagnostics unavailable' }, 500);
     return json({ diagnostics: diagnosticRows(data ?? []), limit: 600 });
   }
+  if (body.view === 'best-times') {
+    const { data, error } = await supabase.rpc("admin_best_times", { _start: "2026-11-01" });
+    if (error) return json({ error: error.message }, 500);
+    return json({ best: data ?? null });
+  }
   // App devices only (ios/android), Stockholm days; computed in SQL so no row caps apply.
   const { data, error } = await supabase.rpc("admin_daily_stats_v8", { _start: "2026-11-01" });
   if (error) return json({ error: error.message }, 500);

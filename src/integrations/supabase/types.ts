@@ -1413,6 +1413,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      admin_best_times: { Args: { _start: string }; Returns: Json }
       admin_daily_extra_stats: {
         Args: { _start?: string }
         Returns: {

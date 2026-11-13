@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Djupfelsökning – åtta problemhändelser, 13 november
+- [x] Granskat åtta händelser från tre iPhones 5.7 (1), fyra avslutade matcher, telefonernas verkliga tidsstämplar, serverkvitton och kastloggar. Tre långsamma handlingar tog 0/1/5 ms i spelfunktionen; två misslyckade låsningar saknar serverkvitto. Poängen sparades före rapporterat poängfel. Ett separat uteblivet kastsvar och upprepade sidutgångar finns utanför de åtta mp_issue-raderna. 34 problemrapporterande appenheter/299 händelser senaste 30 kalenderdagarna, webb och undantagna enheter borttagna.
+- [x] Tre isolerade reproduktionsprov och befintliga klienttester: 41 godkända. Bekräftat dubbla låsanrop utan avläsning, kastomförsök i dold dokumentvy samt tillfällig poängåterställning/fel trots sparad poäng. Ingen ändrad spelkod, server eller publicering. Utredning i docs/multiplayer-investigation-2026-11-13.md.
+- [ ] Exakt transport-/telefonorsak kräver nät-/livscykelspårning på fysisk iPhone; tillgängliga centrala HTTP-/databasloggar gav inga rader och kan inte utesluta serverns anslutningslager. Installerad 5.7 (1) är inte bevis på att dagens ännu opublicerade återanslutningsändringar ingår.
+
 ## Onlineåteranslutning – 13 november
 - [x] Samordnad närvaro med ägarskap för väntande anrop, ett närvaroanrop vid återkomst och inga periodiska närvaroanrop i bakgrunden. Lås-/poängåterförsök kräver förgrund, aktuell handling och ej passerad tidsgräns; serverkontroller och spelregler bevarade.
 - [x] 38 riktade tester godkända, inklusive fem nya prov för bakgrund, sen kontroll, återkomst och väntande närvaro. Isolerat körande prov återansluter samma match med oförändrade tärningar och exakt ett närvaroanrop, utan sidfel; bygge OK, ingen publicering. Orsaken till dagens fel är fortfarande inte bevisad.

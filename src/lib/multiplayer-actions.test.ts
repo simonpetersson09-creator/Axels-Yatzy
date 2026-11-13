@@ -116,3 +116,18 @@ it('records a claim stalled at the deadline without saying the request was dispa
     release('device'); await pending;
   } finally { vi.clearAllTimers(); vi.useRealTimers(); }
 });
+it('correlates a lost score response with dispatch time and visibility changes, without score or dice values', async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('device');
+    mocks.rpc.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ data: null, error: new TypeError('Load failed') }), 4500)));
+    const pending = directRpc('client_submit_score', 'submit-score', { p_game_id: 'game', p_expected_dice: [4,4,4,2,1] }, {}, { attemptId: 'score-attempt', timeoutAfterMs: 12000 });
+    await vi.advanceTimersByTimeAsync(1);
+    document.dispatchEvent(new Event('visibilitychange'));
+    await vi.advanceTimersByTimeAsync(4499);
+    expect((await pending).error).toBeInstanceOf(TypeError);
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.track).toHaveBeenCalledWith('play_score_timing', expect.objectContaining({ attempt_id: 'score-attempt', request_dispatched: true, requested_at: expect.any(String), response_at: expect.any(String), visibility_changes: 1, server_timing_available: false }), expect.anything());
+    expect(mocks.track.mock.calls[0]?.[1]).not.toHaveProperty('p_expected_dice');
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});

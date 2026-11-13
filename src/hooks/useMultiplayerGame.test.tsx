@@ -78,12 +78,12 @@ describe('authoritative multiplayer recovery', () => {
     expect(m.rpc.mock.calls.filter(([name]) => name === 'heartbeat')).toHaveLength(1);
     unmount();
   });
-  it('still retries a current lock once after four foreground seconds', async () => {
+  it('keeps the original current lock request without overlapping a retry after four seconds', async () => {
     game = { ...game, rolls_left: 2 };
     const { result, unmount } = await joined();
     m.roll.mockImplementation(() => new Promise(() => {}));
     await act(async () => { result.current.toggleLock(0); await vi.advanceTimersByTimeAsync(4250); });
-    expect(m.roll).toHaveBeenCalledTimes(2);
+    expect(m.roll).toHaveBeenCalledTimes(1);
     unmount();
   });
   it('sends the exact turn and roll guard and refreshes a stale rejection', async () => {

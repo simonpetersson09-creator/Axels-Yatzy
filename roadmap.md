@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Rätta bevisade onlineföljdfel – 13 november
+- [x] Inga automatiska parallella lås-/poängomförsök. Låskön behåller verkligt anrop efter 12 s skärmgräns; kaståterhämtning kräver aktuell monterad förgrundsvy och kontrollerar igen efter avläsning. Sparad poäng kontrolleras före fel/återställning med samordnad, tidsbegränsad läsning.
+- [x] 63 riktade tester godkända, inklusive fem rättningsprov och tidsmätning för poäng. Dispatch/svar/visibilitetsövergångar och native aktiv-status mäts utan spelvärden/personuppgifter; inga nya serveranrop för mätning. Avskilt körande onlinespel: Fyror → server sparar 12 → tappat svar → 12 syns i protokollet och totalen, motståndarens tur, exakt ett poänganrop och inga sidfel. Bygge OK; inget publicerat.
+- [ ] Fysisk iPhone-kontroll kräver signerat appbygge och telefon; transportens grundorsak är ännu okänd.
+
 ## Djupfelsökning – åtta problemhändelser, 13 november
 - [x] Granskat åtta händelser från tre iPhones 5.7 (1), fyra avslutade matcher, telefonernas verkliga tidsstämplar, serverkvitton och kastloggar. Tre långsamma handlingar tog 0/1/5 ms i spelfunktionen; två misslyckade låsningar saknar serverkvitto. Poängen sparades före rapporterat poängfel. Ett separat uteblivet kastsvar och upprepade sidutgångar finns utanför de åtta mp_issue-raderna. 34 problemrapporterande appenheter/299 händelser senaste 30 kalenderdagarna, webb och undantagna enheter borttagna.
 - [x] Tre isolerade reproduktionsprov och befintliga klienttester: 41 godkända. Bekräftat dubbla låsanrop utan avläsning, kastomförsök i dold dokumentvy samt tillfällig poängåterställning/fel trots sparad poäng. Ingen ändrad spelkod, server eller publicering. Utredning i docs/multiplayer-investigation-2026-11-13.md.

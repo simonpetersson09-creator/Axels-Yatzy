@@ -14,16 +14,27 @@ export async function directRpc(
 ): Promise<{ data: any; error: any }> {
   const started = performance.now();
   let requested: number | null = null;
+  let requestedAt: string | null = null;
+  const visibilityAtStart = document.visibilityState;
+  let visibilityChanges = 0;
+  const changed = () => { visibilityChanges++; };
+  document.addEventListener('visibilitychange', changed);
   const attemptId = diagnostic?.attemptId ?? crypto.randomUUID();
   const record = (ok: boolean, serverMs?: unknown, stage: 'response' | 'deadline' = 'response', responseReceived = false) => {
     const ended = performance.now();
-    if (!['client_roll', 'client_set_locks_guarded'].includes(rpc) || (ok && ended - started <= 3000)) return;
+    if (!['client_roll', 'client_set_locks_guarded', 'client_submit_score'].includes(rpc) || (ok && ended - started <= 3000)) return;
     try {
-      trackEvent(rpc === 'client_roll' ? 'play_roll_timing' : 'play_lock_timing', {
+      trackEvent(rpc === 'client_roll' ? 'play_roll_timing' : rpc === 'client_submit_score' ? 'play_score_timing' : 'play_lock_timing', {
         event_id: crypto.randomUUID(), attempt_id: attemptId,
         occurred_at: new Date().toISOString(), ok, stage,
         response_received: responseReceived,
         request_dispatched: requested !== null,
+        requested_at: requestedAt,
+        response_at: stage === 'response' ? new Date().toISOString() : null,
+        visibility_at_start: visibilityAtStart,
+        visibility_at_end: document.visibilityState,
+        visibility_changes: visibilityChanges,
+        online_hint: navigator.onLine,
         ...rollTiming(ended - started, (requested ?? ended) - started, requested === null ? 0 : ended - requested, serverMs),
       }, { gameId: typeof args.p_game_id === 'string' ? args.p_game_id : null, gameMode: 'multiplayer' });
     } catch { /* Diagnostics never affect a roll. */ }
@@ -38,6 +49,7 @@ export async function directRpc(
   try { deviceId = await requireClaimedDevice(); }
   catch { record(false); return { data: null, error: new Error(t('errGeneric')) }; }
   requested = performance.now();
+  requestedAt = new Date().toISOString();
   let response;
   const measuredRpc = diagnostic && rpc === 'client_roll' ? 'client_roll_diagnosed'
     : diagnostic && rpc === 'client_set_locks_guarded' ? 'client_set_locks_diagnosed' : rpc;
@@ -53,6 +65,7 @@ export async function directRpc(
   if (!result?.success) return { data: result?.stale_command ? result : null, error: new Error(result?.error ?? 'rpc failed') };
   return { data: result, error: null };
   } finally {
+    document.removeEventListener('visibilitychange', changed);
     if (timer !== null) clearTimeout(timer);
   }
 }

@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Extra kontroll av problemhändelser – 13 november
+- [ ] Kontrollera förlust/dubbletter/datum i rapporteringen och sena låsanrop efter säkerhetsgränsen; endast felsökning, inga speländringar.
+
 ## Rätta bevisade onlineföljdfel – 13 november
 - [x] Inga automatiska parallella lås-/poängomförsök. Låskön behåller verkligt anrop efter 12 s skärmgräns; kaståterhämtning kräver aktuell monterad förgrundsvy och kontrollerar igen efter avläsning. Sparad poäng kontrolleras före fel/återställning med samordnad, tidsbegränsad läsning.
 - [x] 63 riktade tester godkända, inklusive fem rättningsprov och tidsmätning för poäng. Dispatch/svar/visibilitetsövergångar och native aktiv-status mäts utan spelvärden/personuppgifter; inga nya serveranrop för mätning. Avskilt körande onlinespel: Fyror → server sparar 12 → tappat svar → 12 syns i protokollet och totalen, motståndarens tur, exakt ett poänganrop och inga sidfel. Bygge OK; inget publicerat.

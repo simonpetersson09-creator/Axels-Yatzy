@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Onlineåteranslutning – 13 november
+- [ ] Samordna närvaro vid återkomst och stoppa nya lås-/poängåterförsök i bakgrunden eller efter tidsgränsen; behåll serverkontroller och spelregler.
+- [ ] Kör riktade återkomst-/nätfelstester och verifiera ett isolerat spelflöde; ingen publicering.
+- [ ] Fysisk bakgrund/återkomst kräver nästa signerade appversion och telefon.
+
 ## Mjukare spelstart – 12 november
 - [x] Förbered och återanvänd storlekscache av exakt samma tärningsform under ledig tid på startsidan, utan extra WebGL-kontext; behåll utseende, kasttider, spelregler och annonser. Delad geometri skyddad mot automatisk avmonteringsradering.
 - [x] 33 regressionstester godkända, bildgranskad riktig lokal match med synliga tärningar. Samma laboratorieprov: största bildpaus 517 → 467 ms; normalberäkning av fem kroppar borta ur CPU-toppen, men grafik-/shaderuppstart fortfarande märkbar. Ingen garanti om hackfri telefon; inget publicerat.

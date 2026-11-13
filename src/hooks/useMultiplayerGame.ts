@@ -107,19 +107,21 @@ const RETRY_TIMEOUT_MS = 12_000;
 function withOneRetry(
   call: () => Promise<{ data: any; error: any }>,
   check?: () => Promise<{ data: any; error: any } | null>,
+  canRetry: () => boolean = () => true,
 ): Promise<{ data: any; error: any }> {
+  const deadline = Date.now() + RETRY_TIMEOUT_MS;
   return new Promise((resolve) => {
     let done = false;
     const finish = (r: { data: any; error: any }) => { if (!done) { done = true; clearTimeout(t); resolve(r); } };
     const first = call();
     first.then(finish, (e) => finish({ data: null, error: e }));
     const t = setTimeout(async () => {
-      if (done) return;
+      if (done || Date.now() >= deadline || !canRetry()) return;
       try {
         const already = check ? await check() : null;
         if (already) return finish(already);
       } catch { /* fall through to resend */ }
-      if (done) return;
+      if (done || Date.now() >= deadline || !canRetry()) return;
       call().then(
         (r) => { if (!r.error) finish(r); else first.then(finish, () => finish(r)); },
         (e) => first.then(finish, () => finish({ data: null, error: e })),
@@ -149,6 +151,8 @@ export function useMultiplayerGame() {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // A real request retains ownership even when presence timers are restarted.
+  const presenceRequestsRef = useRef(new Map<string, Promise<unknown>>());
   const inactiveCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const rollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const remoteRollingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -602,16 +606,25 @@ export function useMultiplayerGame() {
     }, 100);
   }, []);
 
+  const sendPresence = useCallback((gameId: string) => {
+    if (!mountedRef.current || document.visibilityState !== 'visible') return;
+    if (presenceRequestsRef.current.has(gameId)) return;
+    const request = Promise.resolve(supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }))
+      .then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e))
+      .finally(() => { presenceRequestsRef.current.delete(gameId); });
+    presenceRequestsRef.current.set(gameId, request);
+  }, [sessionId]);
+
   // Start heartbeat (all players) — inactive polling is managed separately
   const startPresence = useCallback((gameId: string) => {
     // Heartbeat: update last_active_at every 15s
     if (heartbeatRef.current) clearInterval(heartbeatRef.current);
     // Send immediately
-    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
+    sendPresence(gameId);
     heartbeatRef.current = setInterval(() => {
-      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
+      sendPresence(gameId);
     }, HEARTBEAT_INTERVAL_MS);
-  }, [sessionId]);
+  }, [sendPresence]);
 
   // Auto-skip vid inaktivitet är AVSTÄNGT.
   // Vänspel pausas i stället tills spelaren kommer tillbaka — ingen AI eller
@@ -1210,7 +1223,9 @@ export function useMultiplayerGame() {
             p_game_id: gameId, p_session_id: sessionId, p_locked: locks,
             p_expected_round: pending.round, p_expected_rolls_left: pending.rollsLeft,
             p_expected_player_index: pending.playerIndex,
-          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }, { attemptId: lockAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS })), RETRY_TIMEOUT_MS);
+          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }, { attemptId: lockAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS }), undefined,
+          () => mountedRef.current && document.visibilityState === 'visible' && isActionable(stateRef.current)
+            && pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq), RETRY_TIMEOUT_MS);
           if (error) {
             console.error('Toggle lock error:', error);
             reportMpIssue(data?.stale_command ? 'lock_stale' : 'lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error), attempt_id: lockAttemptId });
@@ -1373,7 +1388,9 @@ export function useMultiplayerGame() {
     };
     withTimeout(withOneRetry(() => directRpc('client_submit_score', 'submit-score', {
       p_game_id: gameId, p_session_id: sessionId, p_category_id: categoryId, p_expected_dice: shownDice,
-    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }), checkSaved), RETRY_TIMEOUT_MS)
+    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }), checkSaved,
+    () => mountedRef.current && document.visibilityState === 'visible' && stateRef.current.gameId === gameId
+      && stateRef.current.status === 'playing' && pendingSubmitRef.current?.gameId === gameId), RETRY_TIMEOUT_MS)
       .then(({ data, error }) => {
         const submitMs = Date.now() - submitStartedAt;
         if (!error) {
@@ -1556,11 +1573,7 @@ export function useMultiplayerGame() {
       subscribeToGame(gameId);
       // Pull latest state
       refreshGameStateRef.current?.(gameId);
-      // Refresh presence
-      supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId })
-        .then(({ error }) => {
-          if (error) console.warn('[multiplayer] foreground heartbeat failed', error);
-        });
+      // subscribeToGame already starts one coalesced presence request.
     };
 
     const markAway = () => {
@@ -1569,7 +1582,10 @@ export function useMultiplayerGame() {
     };
 
     const handleForeground = () => {
-      if (document.visibilityState === 'hidden') { markAway(); return; }
+      if (document.visibilityState === 'hidden') {
+        if (coalesceTimer) { clearTimeout(coalesceTimer); coalesceTimer = null; }
+        markAway(); return;
+      }
       // Skip if we just ran (another resume event firing back-to-back)
       if (Date.now() - lastRunAt < 1000) return;
       if (coalesceTimer) return;

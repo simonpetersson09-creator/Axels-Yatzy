@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ChartLine, ChevronLeft, ChevronRight, LogOut, RefreshCw } from "lucide-react";
+import { ArrowLeft, ChartLine, ChevronLeft, ChevronRight, ExternalLink, LogOut, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminLineChart from "@/components/AdminLineChart";
 import AdminBestTimes from "@/components/AdminBestTimes";
@@ -205,7 +205,12 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
             Svensk tid, bara appen (iPhone/Android). Dagens rad är inte komplett. Parentes: dagsmedel för 30 dagar till och med radens datum; — när ett helt underlag saknas.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+        <Button asChild size="sm">
+          <a href="https://mrbludo.lovable.app/admin" target="_blank" rel="noopener noreferrer">
+            <ExternalLink />Mr B Ludo
+          </a>
+        </Button>
         <Button asChild variant="outline" size="sm">
           <Link to={diagram ? "/admin" : "/admin/diagram"}>
             {diagram ? <ArrowLeft /> : <ChartLine />}{diagram ? "Till tabellen" : "Diagram"}

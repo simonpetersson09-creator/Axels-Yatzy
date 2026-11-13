@@ -13,6 +13,8 @@ import { trackEvent } from '@/lib/analytics';
 import { getMultiplayerActiveGames, MAX_ACTIVE_MULTIPLAYER_GAMES } from '@/lib/active-game';
 import { t } from '@/lib/i18n';
 import { clearGameNotifications } from '@/lib/notifications';
+import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 
 // Online-spelets felrapportering: skickas tyst som 'mp_issue' i analytics så
 // vi kan se fel, långsamma anrop och skillnader mellan skärm och server.
@@ -101,7 +103,7 @@ const RETRY_TIMEOUT_MS = 12_000;
 /**
  * Runs a safe-to-repeat call; if it hasn't answered after RETRY_AFTER_MS,
  * first asks `check` whether it already took effect (returns that result),
- * otherwise sends it once more. Whichever try answers first wins.
+ * otherwise keeps waiting for the original request. Never overlaps mutations.
  * Never use for rolls — a repeat would spend an extra roll.
  */
 function withOneRetry(
@@ -122,10 +124,8 @@ function withOneRetry(
         if (already) return finish(already);
       } catch { /* fall through to resend */ }
       if (done || Date.now() >= deadline || !canRetry()) return;
-      call().then(
-        (r) => { if (!r.error) finish(r); else first.then(finish, () => finish(r)); },
-        (e) => first.then(finish, () => finish({ data: null, error: e })),
-      );
+      // A missing confirmation is not evidence that the mutation failed.
+      // The original request retains ownership; no concurrent resend.
     }, RETRY_AFTER_MS);
   });
 }
@@ -166,6 +166,20 @@ export function useMultiplayerGame() {
   // the new one. The layout effect runs synchronously after commit so all
   // user-triggered async work starts with mountedRef === true.
   const mountedRef = useRef(false);
+  const nativeActiveRef = useRef(true);
+  const isForeground = () => document.visibilityState === 'visible' && nativeActiveRef.current;
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    let disposed = false;
+    let remove: (() => void) | undefined;
+    void App.addListener('appStateChange', ({ isActive }) => {
+      nativeActiveRef.current = isActive;
+    }).then(handle => {
+      if (disposed) void handle.remove();
+      else remove = () => { void handle.remove(); };
+    }).catch(() => { nativeActiveRef.current = false; });
+    return () => { disposed = true; remove?.(); };
+  }, []);
   // localStorage read once per hook lifetime instead of on every render.
   const sessionId = useMemo(() => getSessionId(), []);
   // Use ref to avoid stale closure in debouncedRefresh
@@ -1037,6 +1051,11 @@ export function useMultiplayerGame() {
         const poll = async () => {
           await new Promise((r) => setTimeout(r, ROLL_RECOVER_AFTER_MS));
           while (!settled && Date.now() - rollStartedAt < ROLL_RECOVER_DEADLINE_MS) {
+            if (!mountedRef.current || stateRef.current.gameId !== gid) break;
+            if (!isForeground()) {
+              await new Promise((r) => setTimeout(r, ROLL_RECOVER_POLL_MS));
+              continue;
+            }
             try {
               // Hard timeout on each read: a hanging SELECT must not hold the
               // roll past the recovery deadline.
@@ -1053,7 +1072,9 @@ export function useMultiplayerGame() {
               // The connection dropped before the roll reached the server —
               // the read above proves rolls_left is unchanged, so sending the
               // same roll once more cannot spend an extra roll.
-              if (!resent && invokeFailed && isNetworkDrop(invokeFailed) && g
+              if (!settled && mountedRef.current && isForeground() && stateRef.current.gameId === gid
+                && Date.now() - rollStartedAt < ROLL_RECOVER_DEADLINE_MS
+                && !resent && invokeFailed && isNetworkDrop(invokeFailed) && g
                 && g.round === expect.round && g.current_player_index === expect.player
                 && g.rolls_left > expect.rollsLeft) {
                 resent = true;
@@ -1219,13 +1240,14 @@ export function useMultiplayerGame() {
         const lockAttemptId = crypto.randomUUID();
         try {
           // The row-locked turn guard rejects a delayed request from an older roll.
-          const { data, error } = await withTimeout(withOneRetry(() => directRpc('client_set_locks_guarded', 'toggle-lock', {
+          const request = directRpc('client_set_locks_guarded', 'toggle-lock', {
             p_game_id: gameId, p_session_id: sessionId, p_locked: locks,
             p_expected_round: pending.round, p_expected_rolls_left: pending.rollsLeft,
             p_expected_player_index: pending.playerIndex,
-          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }, { attemptId: lockAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS }), undefined,
-          () => mountedRef.current && document.visibilityState === 'visible' && isActionable(stateRef.current)
-            && pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq), RETRY_TIMEOUT_MS);
+          }, { game_id: gameId, session_id: sessionId, locked_dice: locks }, { attemptId: lockAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS });
+          // Keep later lock batches behind the REAL request, even after the UI deadline.
+          lockChainRef.current = request.catch(() => undefined);
+          const { data, error } = await withTimeout(request, RETRY_TIMEOUT_MS);
           if (error) {
             console.error('Toggle lock error:', error);
             reportMpIssue(data?.stale_command ? 'lock_stale' : 'lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error), attempt_id: lockAttemptId });
@@ -1341,9 +1363,6 @@ export function useMultiplayerGame() {
       },
     } : prev);
 
-    // Send heartbeat on action
-    supabase.rpc('heartbeat', { p_game_id: gameId, p_session_id: sessionId }).then(({ error }) => { if (error) console.warn('heartbeat failed', error.message); }, (e) => console.warn('heartbeat failed', e));
-
     // Keep optimistic results guarded until the bounded request completes.
     const releaseOptimistic = () => {
       if (submitTimerRef.current) { clearTimeout(submitTimerRef.current); submitTimerRef.current = null; }
@@ -1363,6 +1382,7 @@ export function useMultiplayerGame() {
     }, SUBMIT_ANIM_MS);
 
     const submitStartedAt = Date.now();
+    const submitAttemptId = crypto.randomUUID();
     const shownDice = [...gs.dice];
     const rollbackSubmit = () => {
       // A failed read must never leave the optimistic last cell looking final.
@@ -1379,22 +1399,44 @@ export function useMultiplayerGame() {
     // One automatic retry; before resending, check whether the first try
     // already saved the score so it can never be saved twice.
     const checkSaved = async () => {
-      const { data: pl } = await supabase.from('game_players').select('scores')
-        .eq('game_id', gameId).eq('session_id', sessionId).maybeSingle();
+      const { data: pl, error } = await withTimeout(Promise.resolve(supabase.from('game_players').select('scores')
+        .eq('game_id', gameId).eq('session_id', sessionId).maybeSingle()), 5_000);
+      if (error) return null;
       const saved = (pl?.scores as Record<string, unknown> | undefined)?.[categoryId];
       if (saved === undefined || saved === null) return null;
-      const { data: g } = await supabase.from('games').select('status').eq('id', gameId).maybeSingle();
-      return { data: { success: true, score: Number(saved), category_id: categoryId, game_over: g?.status === 'finished' }, error: null };
+      return { data: { success: true, score: Number(saved), category_id: categoryId }, error: null };
+    };
+    let checking: ReturnType<typeof checkSaved> | null = null;
+    const sharedCheck = () => {
+      if (checking) return checking;
+      const request = checkSaved();
+      checking = request;
+      void request.finally(() => { if (checking === request) checking = null; }).catch(() => {});
+      return request;
+    };
+    const recoverSubmit = async (err: unknown) => {
+      let saved = null;
+      try { saved = await sharedCheck(); } catch { /* Unknown is never treated as saved. */ }
+      if (!mountedRef.current || stateRef.current.gameId !== gameId || pendingSubmitRef.current?.gameId !== gameId) return;
+      if (saved) {
+        reportMpIssue('submit_recovered', gameId, { ms: Date.now() - submitStartedAt, attempt_id: submitAttemptId });
+        releaseOptimistic();
+        void refreshGameStateRef.current?.(gameId);
+        return;
+      }
+      reportMpIssue('submit_failed', gameId, { ms: Date.now() - submitStartedAt, err: errText(err), attempt_id: submitAttemptId });
+      setState(prev => ({ ...prev, error: t(errText(err) === 'timeout' ? 'errTimeout' : 'errSubmitScore') }));
+      rollbackSubmit();
     };
     withTimeout(withOneRetry(() => directRpc('client_submit_score', 'submit-score', {
       p_game_id: gameId, p_session_id: sessionId, p_category_id: categoryId, p_expected_dice: shownDice,
-    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }), checkSaved,
-    () => mountedRef.current && document.visibilityState === 'visible' && stateRef.current.gameId === gameId
+    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }, { attemptId: submitAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS }), sharedCheck,
+    () => mountedRef.current && isForeground() && stateRef.current.gameId === gameId
       && stateRef.current.status === 'playing' && pendingSubmitRef.current?.gameId === gameId), RETRY_TIMEOUT_MS)
       .then(({ data, error }) => {
         const submitMs = Date.now() - submitStartedAt;
         if (!error) {
-          if (submitMs > MP_SLOW_MS) reportMpIssue('submit_slow', gameId, { ms: submitMs, category: categoryId });
+          if (submitMs > MP_SLOW_MS) reportMpIssue('submit_slow', gameId, { ms: submitMs, category: categoryId, attempt_id: submitAttemptId });
           if (typeof data?.score === 'number' && data.score !== optimisticScore) {
             reportMpIssue('score_mismatch', gameId, { category: categoryId, shown: shownDice, shownScore: optimisticScore, serverScore: data.score, ms: submitMs });
           }
@@ -1402,17 +1444,10 @@ export function useMultiplayerGame() {
           refreshGameStateRef.current?.(gameId);
           return;
         }
-        console.error('Submit score error:', error);
-        reportMpIssue('submit_error', gameId, { ms: submitMs, category: categoryId, err: errText(error) });
-        if (mountedRef.current) setState(prev => ({ ...prev, error: t('errSubmitScore') }));
-        rollbackSubmit();
+        return recoverSubmit(error);
       })
       .catch((err) => {
-        console.error('Submit score failed:', err);
-        reportMpIssue('submit_failed', gameId, { ms: Date.now() - submitStartedAt, category: categoryId, err: errText(err) });
-        const msg = (err as Error)?.message === 'timeout' ? t('errTimeout') : t('errSubmitScore');
-        if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
-        rollbackSubmit();
+        return recoverSubmit(err);
       });
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 

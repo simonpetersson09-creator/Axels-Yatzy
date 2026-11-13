@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Onlineåteranslutning – 13 november
-- [ ] Samordna närvaro vid återkomst och stoppa nya lås-/poängåterförsök i bakgrunden eller efter tidsgränsen; behåll serverkontroller och spelregler.
-- [ ] Kör riktade återkomst-/nätfelstester och verifiera ett isolerat spelflöde; ingen publicering.
+- [x] Samordnad närvaro med ägarskap för väntande anrop, ett närvaroanrop vid återkomst och inga periodiska närvaroanrop i bakgrunden. Lås-/poängåterförsök kräver förgrund, aktuell handling och ej passerad tidsgräns; serverkontroller och spelregler bevarade.
+- [x] 38 riktade tester godkända, inklusive fem nya prov för bakgrund, sen kontroll, återkomst och väntande närvaro. Isolerat körande prov återansluter samma match med oförändrade tärningar och exakt ett närvaroanrop, utan sidfel; bygge OK, ingen publicering. Orsaken till dagens fel är fortfarande inte bevisad.
 - [ ] Fysisk bakgrund/återkomst kräver nästa signerade appversion och telefon.
 
 ## Mjukare spelstart – 12 november

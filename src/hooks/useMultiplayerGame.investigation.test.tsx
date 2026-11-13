@@ -48,7 +48,7 @@ describe('November 13 fault investigation — observed behavior, not fixes', () 
       return { data: null, error: new TypeError('Load failed') };
     });
     await act(async () => { void result.current.selectCategory('fours'); await vi.advanceTimersByTimeAsync(1); });
-    expect(players[0].scores.fours).toBe(12);
+    expect((players[0].scores as Record<string, number>).fours).toBe(12);
     expect(result.current.error).toBe('errSubmitScore');
     expect(result.current.gameState?.players[0].scores.fours).toBeUndefined();
     expect(result.current.rollPending).toBe(true);

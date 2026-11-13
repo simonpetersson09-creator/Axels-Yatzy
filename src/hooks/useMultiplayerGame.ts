@@ -95,18 +95,18 @@ function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T
   });
 }
 
-/** Wait this long for a lock/score answer before checking and sending again. */
+/** Wait this long for a score answer before checking committed state. */
 const RETRY_AFTER_MS = 4_000;
 /** Outer limit for a call that may be retried once. */
 const RETRY_TIMEOUT_MS = 12_000;
 
 /**
- * Runs a safe-to-repeat call; if it hasn't answered after RETRY_AFTER_MS,
+ * Runs one mutation; if it hasn't answered after RETRY_AFTER_MS,
  * first asks `check` whether it already took effect (returns that result),
  * otherwise keeps waiting for the original request. Never overlaps mutations.
  * Never use for rolls — a repeat would spend an extra roll.
  */
-function withOneRetry(
+function withConfirmationCheck(
   call: () => Promise<{ data: any; error: any }>,
   check?: () => Promise<{ data: any; error: any } | null>,
   canRetry: () => boolean = () => true,
@@ -174,6 +174,7 @@ export function useMultiplayerGame() {
     let remove: (() => void) | undefined;
     void App.addListener('appStateChange', ({ isActive }) => {
       nativeActiveRef.current = isActive;
+      if (stateRef.current.gameId) trackEvent('play_mp_lifecycle', { active: isActive, source: 'native' }, { gameId: stateRef.current.gameId, gameMode: 'multiplayer' });
     }).then(handle => {
       if (disposed) void handle.remove();
       else remove = () => { void handle.remove(); };
@@ -1396,8 +1397,7 @@ export function useMultiplayerGame() {
     // expected_dice: the server refuses the score if its dice differ from what
     // the player saw, instead of silently scoring the wrong dice (e.g. 0).
     // The "your turn" push is sent by the database itself (client_submit_score).
-    // One automatic retry; before resending, check whether the first try
-    // already saved the score so it can never be saved twice.
+    // Observe committed state without resending a still-live mutation.
     const checkSaved = async () => {
       const { data: pl, error } = await withTimeout(Promise.resolve(supabase.from('game_players').select('scores')
         .eq('game_id', gameId).eq('session_id', sessionId).maybeSingle()), 5_000);
@@ -1428,7 +1428,7 @@ export function useMultiplayerGame() {
       setState(prev => ({ ...prev, error: t(errText(err) === 'timeout' ? 'errTimeout' : 'errSubmitScore') }));
       rollbackSubmit();
     };
-    withTimeout(withOneRetry(() => directRpc('client_submit_score', 'submit-score', {
+    withTimeout(withConfirmationCheck(() => directRpc('client_submit_score', 'submit-score', {
       p_game_id: gameId, p_session_id: sessionId, p_category_id: categoryId, p_expected_dice: shownDice,
     }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }, { attemptId: submitAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS }), sharedCheck,
     () => mountedRef.current && isForeground() && stateRef.current.gameId === gameId

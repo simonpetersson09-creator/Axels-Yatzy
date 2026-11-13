@@ -1,7 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Extra kontroll av problemhändelser – 13 november
-- [ ] Kontrollera förlust/dubbletter/datum i rapporteringen och sena låsanrop efter säkerhetsgränsen; endast felsökning, inga speländringar.
+- [x] 54 tester godkända. Återskapat att mp_issue försvinner vid misslyckad leverans (saknar beständig kö/event-ID) och att 15 s säkerhetsreset släpper låsköns verkliga anropsägarskap så en ny låsning överlappar. Den tidigare rättningen täcker 12 s men inte denna senare reset; ingen spelkod ändrad i granskningen.
+- [x] Driftsatt log_analytics_events har ingen event-ID-deduplicering. 310 app-mp_issue-rader senaste rullande 30 dygnen saknar event-ID; tidsdiagnostik har ID. Beständig mp_issue får därför inte slås på ensam: leverans som sparas men tappar svar kan annars dubbelräknas. Problemhändelser inkluderar långsamhet/återhämtningar, inte bara misslyckade handlingar. Bygge OK, inget publicerat.
 
 ## Rätta bevisade onlineföljdfel – 13 november
 - [x] Inga automatiska parallella lås-/poängomförsök. Låskön behåller verkligt anrop efter 12 s skärmgräns; kaståterhämtning kräver aktuell monterad förgrundsvy och kontrollerar igen efter avläsning. Sparad poäng kontrolleras före fel/återställning med samordnad, tidsbegränsad läsning.

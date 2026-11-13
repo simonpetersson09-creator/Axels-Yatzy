@@ -33,6 +33,17 @@ async function joined() {
   return hook;
 }
 describe('November 13 fault investigation — regression fixes', () => {
+  it('investigation: the 15 second safety reset drops real-request ownership and permits a new overlapping lock', async () => {
+    game = { ...game, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    m.roll.mockImplementation(() => new Promise(() => {}));
+    await act(async () => { result.current.toggleLock(0); await vi.advanceTimersByTimeAsync(250); });
+    await act(async () => { result.current.toggleLock(1); await vi.advanceTimersByTimeAsync(16000); });
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    await act(async () => { result.current.toggleLock(2); await vi.advanceTimersByTimeAsync(250); });
+    expect(m.roll).toHaveBeenCalledTimes(2);
+    unmount();
+  });
   it('a saved score with a lost answer stays visible without a false error or rollback', async () => {
     game = { ...game, rolls_left: 0, dice: [4,4,4,2,1] };
     const { result, unmount } = await joined();

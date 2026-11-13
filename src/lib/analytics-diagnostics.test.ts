@@ -10,6 +10,16 @@ vi.mock('@/lib/app-version', () => ({ appVersionReady: Promise.resolve('5.4'), g
 describe('diagnostics delivery', () => {
   beforeEach(() => { vi.useFakeTimers(); vi.resetModules(); localStorage.clear(); mocks.rpc.mockReset(); });
   afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); });
+  it('investigation: mp_issue is not durable and is dropped after a failed delivery', async () => {
+    mocks.rpc.mockResolvedValue({ error: { message: 'offline' } });
+    const { trackEvent } = await import('./analytics');
+    trackEvent('mp_issue', { kind: 'lock_failed' });
+    expect(localStorage.getItem('yatzy_play_diagnostics_pending_v1')).toBeNull();
+    await vi.advanceTimersByTimeAsync(1500);
+    await vi.advanceTimersByTimeAsync(15000);
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(localStorage.getItem('yatzy_play_diagnostics_pending_v1') ?? '[]')).toEqual([]);
+  });
   it.each(['play_network_exit', 'ios_app_open_diag', 'stats_opened', 'ad_opportunity'])('retains %s on failure and retries with the same event ID', async (event) => {
     mocks.rpc.mockResolvedValueOnce({ error: { message: 'offline' } }).mockResolvedValue({ error: null });
     const { trackEvent } = await import('./analytics');

@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Rätta bevisade onlineföljdfel – 13 november
-- [ ] Stoppa överlappande lås-/poängomförsök, stoppa kastomförsök i bakgrunden och kontrollera sparad poäng före fel/återställning.
-- [ ] Komplettera tids-/livscykelmätning utan personuppgifter; kör regressioner och ett avskilt onlineflöde.
+- [x] Inga automatiska parallella lås-/poängomförsök. Låskön behåller verkligt anrop efter 12 s skärmgräns; kaståterhämtning kräver aktuell monterad förgrundsvy och kontrollerar igen efter avläsning. Sparad poäng kontrolleras före fel/återställning med samordnad, tidsbegränsad läsning.
+- [x] 63 riktade tester godkända, inklusive fem rättningsprov och tidsmätning för poäng. Dispatch/svar/visibilitetsövergångar och native aktiv-status mäts utan spelvärden/personuppgifter; inga nya serveranrop för mätning. Avskilt körande onlinespel: Fyror → server sparar 12 → tappat svar → 12 syns i protokollet och totalen, motståndarens tur, exakt ett poänganrop och inga sidfel. Bygge OK; inget publicerat.
 - [ ] Fysisk iPhone-kontroll kräver signerat appbygge och telefon; transportens grundorsak är ännu okänd.
 
 ## Djupfelsökning – åtta problemhändelser, 13 november

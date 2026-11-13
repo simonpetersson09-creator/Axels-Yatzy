@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Onlineåteranslutning – 13 november
+- [x] Samordnad närvaro med ägarskap för väntande anrop, ett närvaroanrop vid återkomst och inga periodiska närvaroanrop i bakgrunden. Lås-/poängåterförsök kräver förgrund, aktuell handling och ej passerad tidsgräns; serverkontroller och spelregler bevarade.
+- [x] 38 riktade tester godkända, inklusive fem nya prov för bakgrund, sen kontroll, återkomst och väntande närvaro. Isolerat körande prov återansluter samma match med oförändrade tärningar och exakt ett närvaroanrop, utan sidfel; bygge OK, ingen publicering. Orsaken till dagens fel är fortfarande inte bevisad.
+- [ ] Fysisk bakgrund/återkomst kräver nästa signerade appversion och telefon.
+
 ## Mjukare spelstart – 12 november
 - [x] Förbered och återanvänd storlekscache av exakt samma tärningsform under ledig tid på startsidan, utan extra WebGL-kontext; behåll utseende, kasttider, spelregler och annonser. Delad geometri skyddad mot automatisk avmonteringsradering.
 - [x] 33 regressionstester godkända, bildgranskad riktig lokal match med synliga tärningar. Samma laboratorieprov: största bildpaus 517 → 467 ms; normalberäkning av fem kroppar borta ur CPU-toppen, men grafik-/shaderuppstart fortfarande märkbar. Ingen garanti om hackfri telefon; inget publicerat.

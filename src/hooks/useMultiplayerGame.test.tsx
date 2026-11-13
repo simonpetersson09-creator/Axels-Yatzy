@@ -16,6 +16,7 @@ let failReads = false;
 const players = [{ id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false, session_id: 'me' }, { id: 'p2', player_name: 'Other', player_index: 1, scores: {}, is_bot: false, session_id: 'other' }];
 beforeEach(() => {
   vi.useFakeTimers(); failReads = false;
+  vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
   players[0] = { id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false, session_id: 'me' };
   game = { id: 'game', game_code: 'ABCDEF', status: 'playing', current_player_index: 0, dice: [1,1,1,1,1], locked_dice: [false,false,false,false,false], rolls_left: 3, round: 1, updated_at: '2026-10-24T12:00:00Z' };
   m.rpc.mockReset().mockImplementation(async (name: string) => ({ data: name === 'validate_game_session' ? { valid: true, player_index: 0 } : true, error: null }));
@@ -25,13 +26,66 @@ beforeEach(() => {
   });
   m.roll.mockReset(); m.action.mockReset();
 });
-afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
+afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); });
 async function joined() {
   const hook = renderHook(() => useMultiplayerGame());
   await act(async () => { await hook.result.current.rejoinGame('game'); });
   return hook;
 }
 describe('authoritative multiplayer recovery', () => {
+  it('does not retry a pending lock after the app enters background', async () => {
+    game = { ...game, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    m.roll.mockImplementation(() => new Promise(() => {}));
+    await act(async () => { result.current.toggleLock(0); await vi.advanceTimersByTimeAsync(250); });
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    await act(async () => { document.dispatchEvent(new Event('visibilitychange')); await vi.advanceTimersByTimeAsync(4500); });
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    unmount();
+  });
+  it('does not retry a score after a slow check passes the 12 second deadline', async () => {
+    game = { ...game, rolls_left: 0, dice: [6,6,6,6,6] };
+    const { result, unmount } = await joined();
+    m.roll.mockImplementation(() => new Promise(() => {}));
+    const normalFrom = m.from.getMockImplementation();
+    let releaseCheck: (value: unknown) => void = () => {};
+    m.from.mockImplementation((table: string) => {
+      const q = { select: (columns: string) => columns === 'scores' ? q : normalFrom?.(table).select(columns), eq: () => q,
+        maybeSingle: () => new Promise(resolve => { releaseCheck = resolve; }) };
+      return table === 'game_players' ? q : normalFrom?.(table);
+    });
+    await act(async () => { void result.current.selectCategory('yatzy'); await vi.advanceTimersByTimeAsync(4000); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(8100); releaseCheck({ data: { scores: {} }, error: null }); });
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    unmount();
+  });
+  it('sends one presence request for coalesced resume events and suppresses hidden intervals', async () => {
+    const { unmount } = await joined();
+    m.rpc.mockClear();
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    await act(async () => { document.dispatchEvent(new Event('visibilitychange')); await vi.advanceTimersByTimeAsync(15000); });
+    expect(m.rpc.mock.calls.filter(([name]) => name === 'heartbeat')).toHaveLength(0);
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
+    await act(async () => { document.dispatchEvent(new Event('visibilitychange')); window.dispatchEvent(new Event('pageshow')); await vi.advanceTimersByTimeAsync(200); });
+    expect(m.rpc.mock.calls.filter(([name]) => name === 'heartbeat')).toHaveLength(1);
+    unmount();
+  });
+  it('keeps a pending presence request owned across reconnect and interval ticks', async () => {
+    m.rpc.mockImplementation((name: string) => name === 'heartbeat' ? new Promise(() => {})
+      : Promise.resolve({ data: name === 'validate_game_session' ? { valid: true, player_index: 0 } : true, error: null }));
+    const { unmount } = await joined();
+    await act(async () => { window.dispatchEvent(new Event('pageshow')); await vi.advanceTimersByTimeAsync(16000); });
+    expect(m.rpc.mock.calls.filter(([name]) => name === 'heartbeat')).toHaveLength(1);
+    unmount();
+  });
+  it('still retries a current lock once after four foreground seconds', async () => {
+    game = { ...game, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    m.roll.mockImplementation(() => new Promise(() => {}));
+    await act(async () => { result.current.toggleLock(0); await vi.advanceTimersByTimeAsync(4250); });
+    expect(m.roll).toHaveBeenCalledTimes(2);
+    unmount();
+  });
   it('sends the exact turn and roll guard and refreshes a stale rejection', async () => {
     game = { ...game, rolls_left: 2 };
     const { result } = await joined();

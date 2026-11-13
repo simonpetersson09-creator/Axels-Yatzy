@@ -27,9 +27,12 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
       const helper = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql', 'utf8').match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
       if (!helper) throw new Error('Missing isolated release parser');
       await sql.unsafe(helper.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+      const [activityHelper] = await sql`select pg_get_functiondef('public.admin_is_app_activity_event(text)'::regprocedure) definition`;
+      await sql.unsafe(activityHelper.definition.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       const isolatedDefinition = source.definition
         .replace('public.admin_daily_stats_v3', 'pg_temp.admin_daily_stats_v3')
         .replace(/public\.admin_issue_release/g, 'pg_temp.admin_issue_release')
+        .replace(/public\.admin_is_app_activity_event/g, 'pg_temp.admin_is_app_activity_event')
         .replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'");
       if (isolatedDefinition === source.definition || isolatedDefinition.includes("SET search_path TO 'public'")) throw new Error('Isolation failed');
       await sql.unsafe(isolatedDefinition);

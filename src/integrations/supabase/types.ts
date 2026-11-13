@@ -1569,6 +1569,10 @@ export type Database = {
           returning_played: number
         }[]
       }
+      admin_is_app_activity_event: {
+        Args: { _event: string }
+        Returns: boolean
+      }
       admin_issue_release: { Args: { _version: string }; Returns: number[] }
       admin_mean_app_age: {
         Args: { _day: string; _first_days: string[] }

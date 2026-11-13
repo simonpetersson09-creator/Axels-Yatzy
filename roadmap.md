@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Spelpåminnelser och adminaktivitet – 13 november
+- [x] Serverutsända spel-/tur-/matchpåminnelser och utskick räknas inte som appaktivitet eller appålder. Leveransloggar och utskick bevarade; spelandemått oförändrade. Driftsatt gemensamt SQL-filter, 35 tester godkända, bygge OK. Riktig admininloggning och bildgranskning: dagens Androidantal 1 (tidigare 2), aktiva totalt 31; ingen webb-/butikspublicering.
+
 ## Extra kontroll av problemhändelser – 13 november
 - [x] 54 tester godkända. Återskapat att mp_issue försvinner vid misslyckad leverans (saknar beständig kö/event-ID) och att 15 s säkerhetsreset släpper låsköns verkliga anropsägarskap så en ny låsning överlappar. Den tidigare rättningen täcker 12 s men inte denna senare reset; ingen spelkod ändrad i granskningen.
 - [x] Driftsatt log_analytics_events har ingen event-ID-deduplicering. 310 app-mp_issue-rader senaste rullande 30 dygnen saknar event-ID; tidsdiagnostik har ID. Beständig mp_issue får därför inte slås på ensam: leverans som sparas men tappar svar kan annars dubbelräknas. Problemhändelser inkluderar långsamhet/återhämtningar, inte bara misslyckade handlingar. Bygge OK, inget publicerat.

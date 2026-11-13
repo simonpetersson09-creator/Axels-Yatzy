@@ -49,7 +49,7 @@ describe.skipIf(!db)('returning device SQL with isolated tables', () => {
         INSERT INTO dice_roll_log VALUES ('g',0,'2026-10-31T12:00Z'),('g',0,'2026-11-01T12:00Z'),('g',1,'2026-10-31T12:00Z'),('g',1,'2026-11-01T12:00Z');
       `);
       const source = readFileSync('drizzle/migrations/0125_admin_returning_playing_devices.sql','utf8').split('REVOKE ALL')[0];
-      await sql.unsafe(source.replace('public.admin_daily_returning_players','pg_temp.admin_daily_returning_players').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+      await sql.unsafe(source.replace('CREATE FUNCTION','CREATE OR REPLACE FUNCTION').replace('public.admin_daily_returning_players','pg_temp.admin_daily_returning_players').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       return sql`SELECT day::text,returning_played FROM pg_temp.admin_daily_returning_players('2026-11-01') WHERE day <= '2026-11-02' ORDER BY day`;
     });
   }

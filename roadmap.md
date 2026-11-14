@@ -1,7 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Säker problemrapportering – 14 november
-- [ ] Flödessvep: verifiera poängkvittons operation-check; stäng äldre servervägars timeout-omförsök och överlappande manuellt avhoppsförsök.
+- [x] Flödessvep: poängkvittons CHECK tillåter nu score (tidigare slukades kvittot av exception-skyddet); äldre servervägars timeout-omförsök borttagna, tappade poängsvar läses tillbaka och manuella avhoppsförsök överlappar inte levande anrop. Två funktioner driftsatta, 63 riktade tester godkända. Gamla resultat/kvitton oförändrade.
 - [x] mp_issue sparas genom offline/omstart med samma event-ID; nya leveranser dedupliceras per enhet/händelse utan ändrad äldre historik. Driftsatt kolumn/index/funktion verifierade.
 - [x] Verkligt låsanropsägarskap bevaras även efter 15 sekunder; poängens servermätning kopplas till samma försöks-ID och befintlig enhetskontroll.
 - [x] 60 riktade tester godkända, inklusive fyra avskilda SQL-prov. Körande app: misslyckad leverans → omstart → samma rapport-ID → rensas först efter mottaget svar. Inga live-testdata; bygge OK. AGENTS.md-regel kunde inte sparas på grund av skyddad storleksgräns.

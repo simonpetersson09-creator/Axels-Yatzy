@@ -31,21 +31,29 @@ interface Props {
 export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch, onCancel }: Props) {
   const { t } = useTranslation();
   const doneRef = useRef(false);
+  const stoppedRef = useRef(false);
   const cbRef = useRef({ onMatched, onNoMatch });
   cbRef.current = { onMatched, onNoMatch };
   const [searching, setSearching] = useState(1);
   const [found, setFound] = useState<string | null>(null);
   // Android back = Avbryt (otherwise the app minimizes while still searching).
-  useBackHandler(true, onCancel);
+  const cancel = () => {
+    stoppedRef.current = true;
+    onCancel();
+  };
+  useBackHandler(true, cancel);
 
   useGameBanner(true, 'search');
   useEffect(() => {
+    stoppedRef.current = false;
+    let disposed = false;
+    const stopped = () => disposed || stoppedRef.current;
     const sessionId = getSessionId();
     let timer: number | undefined;
     const started = Date.now();
 
     const finish = (fn: () => void) => {
-      if (doneRef.current) return;
+      if (doneRef.current || stopped()) return;
       doneRef.current = true;
       window.clearTimeout(timer);
       fn();
@@ -58,11 +66,13 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
 
     // Show who you are playing for a moment, so it is clear it's a real person.
     const announce = async (id: string) => {
+      if (stopped()) return;
       try {
         const { data } = await supabase
           .from('game_players')
           .select('player_name, session_id, is_bot')
           .eq('game_id', id);
+        if (stopped()) return;
         const names = (data ?? [])
           .filter((p) => !p.is_bot && p.session_id !== sessionId)
           .map((p) => p.player_name);
@@ -71,19 +81,20 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
           await new Promise((r) => window.setTimeout(r, FOUND_MS));
         }
       } catch { /* open the match anyway */ }
-      cbRef.current.onMatched(id);
+      if (!stopped()) cbRef.current.onMatched(id);
     };
 
     const poll = async () => {
-      if (doneRef.current) return;
+      if (doneRef.current || stopped()) return;
       try {
         await requireClaimedDevice();
-        if (doneRef.current) return;
+        if (doneRef.current || stopped()) return;
         const { data, error } = await supabase.rpc('find_or_join_match', {
           p_session_id: sessionId,
           p_player_name: playerName,
           p_players: players,
         });
+        if (stopped()) return;
         if (error) throw error;
         const res = data as { status?: string; game_id?: string; searching?: number } | null;
         if (res?.status === 'matched' && res.game_id) {
@@ -96,11 +107,12 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
         // No connection / server trouble → play against the computer right away.
         return finish(() => cbRef.current.onNoMatch());
       }
-      if (doneRef.current) return;
+      if (doneRef.current || stopped()) return;
       if (Date.now() - started >= SEARCH_MS) {
         let matchedId: string | null = null;
         try {
           const { data } = await supabase.rpc('finalize_matchmaking', { p_session_id: sessionId });
+          if (stopped()) return;
           const r = data as { status?: string; game_id?: string } | null;
           if (r?.status === 'matched' && r.game_id) matchedId = r.game_id;
         } catch { /* ignore */ }
@@ -111,6 +123,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
     void poll();
 
     return () => {
+      disposed = true;
       window.clearTimeout(timer);
       if (!doneRef.current) {
         doneRef.current = true;
@@ -163,7 +176,7 @@ export function QuickMatchSearch({ playerName, players = 2, onMatched, onNoMatch
           />
         </motion.div>
         <Button
-          onClick={onCancel}
+          onClick={cancel}
           variant="secondary"
           className="w-full h-11 font-semibold"
         >

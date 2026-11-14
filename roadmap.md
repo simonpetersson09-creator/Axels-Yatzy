@@ -1,7 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Korrekt utskicksmätning – 14 november
-- [ ] Skilj enhetskontroll och klientens förberedelser från det verkliga fetch-anropet för kast, markering och poäng. Bevara total väntan, sena svar, anropsägarskap och historik; verifiera avskilt utan produktionsmatcher.
+- [x] Kast, markering och poäng skiljer nu enhetskontroll, klientförberedelser och fetch-start. Total väntan och sena svar bevaras; inga historik-, behörighets- eller serverinställningsändringar. 72 tester godkända; avskilt browserprov visar 3501 ms före fetch och 100 ms efter, exakt ett anrop, ingen produktionsmatch. Bygge OK. Fysisk telefonkontroll kräver nästa signerade appversion; ursprunglig fördröjningsorsak fortfarande okänd. Arkitektur dokumenterad i docs/online-diagnostic-flow-sweep.md; root AGENTS.md saknar utrymme.
 
 ## Sena svar – utökat flödessvep 14 november
 - [x] Återskapade tre överlappningsfel: dubbel namnkontroll/create+join, parallella datorövertagandeläsningar och sent datoranrop efter lämnad match. Spärrar omfattar nu förberedande läsningar och avmontering; 67 tester godkända. Avskilt telefonprov: långsam namnkontroll → ett skapa-anrop → synligt svar; inga riktiga matcher skapade. Bygge OK. Grundorsaken till dagens nät-/svarsväntan är fortfarande okänd; fysisk telefonkontroll kräver nytt signerat bygge.

@@ -16,11 +16,14 @@ beforeEach(() => {
 afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); });
 it.each(['button', 'back', 'unmount'])('does not open a late matched game after cancellation via %s', async method => {
   const matched = vi.fn(); const cancelled = vi.fn();
+  let releaseRead: ((value: unknown) => void) | undefined;
+  if (method === 'button') m.read.mockImplementationOnce(() => new Promise(resolve => { releaseRead = resolve; }));
   const view = render(<QuickMatchSearch playerName="Test" onMatched={matched} onNoMatch={vi.fn()} onCancel={cancelled} />);
   await act(async () => { await vi.advanceTimersByTimeAsync(1); });
   if (method === 'button') fireEvent.click(screen.getByRole('button', { name: 'cancelSearch' }));
   else if (method === 'back') act(() => { m.back?.(); });
   else view.unmount();
+  await act(async () => { releaseRead?.({ data: [{ session_id: 'other', player_name: 'Other', is_bot: false }] }); });
   await act(async () => { await vi.advanceTimersByTimeAsync(2500); });
   expect(matched).not.toHaveBeenCalled();
   if (method !== 'unmount') expect(cancelled).toHaveBeenCalledTimes(1);

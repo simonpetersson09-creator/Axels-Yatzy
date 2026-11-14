@@ -48,3 +48,7 @@ Rule: total observed waiting remains real, but a client session check must not b
 - Analytics persists opaque metadata and original IDs; admin table/diagram count issues, not transport duration. Server receipts, cleanup, deletion, notifications and scheduled jobs remain unchanged. No settled records, permissions, settings or example data are rewritten.
 
 Physical signed iPhone/Android verification and the original latency root cause remain unverified.
+
+## Slow-response lifecycle follow-up
+
+Reread create/join/name validation, host start, roll/lock/score and recovery, presence/resume, forfeit and results backfill, matchmaking/announcement, takeover and server bot sweep, waiting-room commands/reads, legacy handlers, receipts/analytics/admin and cleanup. Existing ordering and confirmation guards remain unchanged except matchmaking: a matched announcement could call `onMatched` after cancellation/unmount. Request-local disposal and synchronous cancellation now suppress late UI/callbacks after each awaited step, without aborting or repeating mutations, leaving accepted games and history untouched. Button/back/unmount/late-response regressions cover the defect. The 750ms roll landing and 3s/4s recovery starts are deliberate presentation/recovery delays, not proof of the original latency cause.

@@ -1,11 +1,17 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-const mocks = vi.hoisted(() => ({ claim: vi.fn(), rpc: vi.fn(), invoke: vi.fn(), track: vi.fn() }));
+const mocks = vi.hoisted(() => ({ claim: vi.fn(), rpc: vi.fn(), invoke: vi.fn(), track: vi.fn(), prepareMs: 0 }));
 vi.mock('@/lib/analytics', () => ({ trackEvent: mocks.track }));
 vi.mock('@/lib/session', () => ({ requireClaimedDevice: mocks.claim }));
 vi.mock('@/lib/i18n', () => ({ t: () => 'Connection failed' }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: { rpc: mocks.rpc, functions: { invoke: mocks.invoke } } }));
+vi.mock('@/lib/observed-rpc', () => ({ observedRpc: async (rpc: string, args: Record<string, unknown>, dispatched: () => void) => {
+  if (mocks.prepareMs) await new Promise(resolve => setTimeout(resolve, mocks.prepareMs));
+  dispatched();
+  return mocks.rpc(rpc, args);
+} }));
 import { directRpc, invokeDeviceAction } from './multiplayer-actions';
 beforeEach(() => {
+  mocks.prepareMs = 0;
   mocks.claim.mockReset(); mocks.rpc.mockReset().mockResolvedValue({ data: { success: true }, error: null });
   mocks.invoke.mockReset().mockResolvedValue({ data: { success: true }, error: null });
   mocks.track.mockReset();
@@ -142,5 +148,30 @@ it('correlates a successful slow score with its server duration without a second
     expect((await pending).error).toBeNull();
     expect(mocks.rpc).toHaveBeenCalledTimes(1);
     expect(mocks.track).toHaveBeenCalledWith('play_score_timing', expect.objectContaining({ attempt_id: 'score-server', server_ms: 20, outside_server_ms: 3480 }), expect.anything());
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});
+it.each(['client_roll', 'client_set_locks_guarded', 'client_submit_score'] as const)('%s separates 3500ms preparation from 100ms after fetch entry', async rpc => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('device');
+    mocks.prepareMs = 3500;
+    mocks.rpc.mockImplementation(async () => {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      return { data: { success: true, server_ms: 1 }, error: null };
+    });
+    const pending = directRpc(rpc, 'unused', {}, {}, { attemptId: 'boundary', timeoutAfterMs: 3000 });
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(mocks.track).toHaveBeenLastCalledWith(expect.any(String), expect.objectContaining({
+      request_dispatched: false, requested_at: null, claim_ms: 0, client_prepare_ms: 3000, request_ms: 0,
+    }), expect.anything());
+    expect(mocks.rpc).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(600);
+    expect((await pending).error).toBeNull();
+    expect(mocks.track).toHaveBeenLastCalledWith(expect.any(String), expect.objectContaining({
+      total_ms: 3600, claim_ms: 0, client_prepare_ms: 3500, pre_dispatch_ms: 3500,
+      request_ms: 100, server_ms: 1, outside_server_ms: 99, timing_version: 2,
+      request_dispatched: true, dispatch_boundary: 'fetch_entry',
+    }), expect.anything());
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
   } finally { vi.clearAllTimers(); vi.useRealTimers(); }
 });

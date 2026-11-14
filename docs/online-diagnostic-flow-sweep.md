@@ -36,3 +36,15 @@ Two independently implemented paths violated ownership before the mutation:
 The server bot handler's existing idle validation and sequential turn loop, as well as scheduled sweep, were read; no server or cron behavior was changed in this follow-up. These client overlap defects are not proven causes of the reported iPhone waits. No new transport polling, settings, permissions or historical mutations were introduced.
 
 Three regression cases failed before the correction and passed afterwards. The full targeted run passed 67 tests. An isolated 393 × 706 browser flow verified a three-second name check with both entry buttons disabled, exactly one create request and no join request, followed by a visible controlled response. Screenshots were inspected. Physical native and production two-device verification remain unavailable. Root architecture guidance is at its protected size budget, so no new root rule was saved.
+
+## Fetch-boundary timing correction
+
+Rule: total observed waiting remains real, but a client session check must not be labelled a dispatched request or attributed to server reception.
+
+- Roll, full-batch lock and score in both friend and quick games share `directRpc`; all now observe fetch entry through request-local `observedRpc`. The existing client's session supplies authorization; the observer creates no independent auth/refresh lifecycle, patches no global fetch, and adds no resend or cancellation.
+- Version 2 records separate claim, client preparation and post-fetch-entry elapsed time, plus the original total. Deadlines before fetch entry keep `request_dispatched=false` and `requested_at=null`; late responses retain the same attempt ID. Fetch entry does not prove bytes left the device or reached the server; post-entry duration includes browser transport scheduling and response processing.
+- Recovery reads report whole `read_ms` with `cause_confirmed=false`, not server-only time; unchanged. Start/create/join, presence/resume, forfeit, results backfill and takeover make no dispatch-timing assertion; unchanged.
+- Legacy roll/toggle/full-lock/score handlers measure the handler/database segment only. Their `cold` flag describes first handler use, not measured cold-start duration. Existing `server_ms` receipts measure the game function, excluding later receipt insertion/commit; none prove the full request/response duration.
+- Analytics persists opaque metadata and original IDs; admin table/diagram count issues, not transport duration. Server receipts, cleanup, deletion, notifications and scheduled jobs remain unchanged. No settled records, permissions, settings or example data are rewritten.
+
+Physical signed iPhone/Android verification and the original latency root cause remain unverified.

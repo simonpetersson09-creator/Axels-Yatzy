@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Sena svar – utökat flödessvep 14 november
+- [ ] Kontrollera spärrar före långsamma förberedande läsningar vid lobbyinträde och datorövertagande; återskapa och rätta överlappningar utan ändrade spelregler eller tidigare resultat.
+
 ## Problemhändelser i admin – 14 november, räknarkontroll
 - [x] Genomgång av onlinehändelser, beständig leverans/mottagning, tabell, summa, medel, rekord, diagram, serverräknare, rensning och enhetsradering. Händelser är inte antal misslyckade handlingar; 41 riktade tester godkända. Inget bevisat nytt räknarfel, ingen beteendeändring eller historikomskrivning. Se docs/admin-issue-count-audit.md.
 

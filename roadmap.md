@@ -1,7 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Sena svar – sökningens livscykel
-- [ ] Verifiera att Avbryt, bakåt och lämnad sökning aldrig öppnar en match från ett sent svar; bevara accepterade matcher och övriga inställningar.
+- [x] Återskapade och rättade sena matchöppningar efter Avbryt/bakåt/avmontering; kontroller efter väntade steg stoppar gamla callbacks utan omsändning eller historikändring. 68 tester godkända över sökning, lobby, övertagande, vänt rum, spel och mätningar; bygge OK. Ursprunglig latensorsak fortfarande obevisad. Arkitektur dokumenterad i docs/online-diagnostic-flow-sweep.md; root AGENTS.md saknar utrymme.
 
 ## Korrekt utskicksmätning – 14 november
 - [x] Kast, markering och poäng skiljer nu enhetskontroll, klientförberedelser och fetch-start. Total väntan och sena svar bevaras; inga historik-, behörighets- eller serverinställningsändringar. 72 tester godkända; avskilt browserprov visar 3501 ms före fetch och 100 ms efter, exakt ett anrop, ingen produktionsmatch. Bygge OK. Fysisk telefonkontroll kräver nästa signerade appversion; ursprunglig fördröjningsorsak fortfarande okänd. Arkitektur dokumenterad i docs/online-diagnostic-flow-sweep.md; root AGENTS.md saknar utrymme.

@@ -13,7 +13,7 @@ it.each(['client_roll_diagnosed', 'client_set_locks_diagnosed', 'client_submit_s
     await new Promise(resolve => setTimeout(resolve, 3500));
     return { data: { session: null } };
   });
-  const fetch = vi.fn(async () => {
+  const fetch = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => {
     await new Promise(resolve => setTimeout(resolve, 100));
     return new Response(JSON.stringify({ success: true, server_ms: 1 }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   });

@@ -14,14 +14,15 @@ export function observedRpc(
     import.meta.env.VITE_SUPABASE_URL,
     import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     {
-      accessToken: async () => {
-        const { data } = await supabase.auth.getSession();
-        return data.session?.access_token ?? null;
-      },
+      // This transport has no independent auth state or refresh lifecycle.
+      accessToken: async () => null,
       global: {
-        fetch: (input, init) => {
+        fetch: async (input, init) => {
+          const { data } = await supabase.auth.getSession();
+          const headers = new Headers(init?.headers);
+          headers.set('Authorization', `Bearer ${data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`);
           try { onFetchStarted(); } catch { /* Measurement cannot block play. */ }
-          return globalThis.fetch(input, init);
+          return globalThis.fetch(input, { ...init, headers });
         },
       },
     },

@@ -1,0 +1,22 @@
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { beforeEach, expect, it, vi } from 'vitest';
+const m = vi.hoisted(() => ({ reserve: vi.fn() }));
+vi.mock('@/lib/session', () => ({ getPlayerName: () => 'Simon', setPlayerName: vi.fn(), reservePlayerName: m.reserve }));
+vi.mock('@/lib/i18n', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+vi.mock('./QRScanner', () => ({ QRScanner: () => null }));
+import { LobbyJoinForm } from './LobbyJoinForm';
+beforeEach(() => { m.reserve.mockReset(); });
+it('shares one entry guard across create and join during name validation', async () => {
+  let finish: ((value: string) => void) | undefined;
+  m.reserve.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+  const create = vi.fn(); const join = vi.fn();
+  render(<MemoryRouter><LobbyJoinForm loading={false} error={null} onCreateGame={create} onJoinGame={join} /></MemoryRouter>);
+  fireEvent.change(screen.getByPlaceholderText('ABC123'), { target: { value: 'ABC123' } });
+  fireEvent.click(screen.getByRole('button', { name: 'createGame' }));
+  fireEvent.click(screen.getByRole('button', { name: 'joinGame' }));
+  expect(m.reserve).toHaveBeenCalledTimes(1);
+  await act(async () => { finish?.('ok'); });
+  expect(create).toHaveBeenCalledExactlyOnceWith('Simon');
+  expect(join).not.toHaveBeenCalled();
+});

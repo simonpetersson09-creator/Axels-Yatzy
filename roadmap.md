@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Sena svar – utökat flödessvep 14 november
+- [x] Återskapade tre överlappningsfel: dubbel namnkontroll/create+join, parallella datorövertagandeläsningar och sent datoranrop efter lämnad match. Spärrar omfattar nu förberedande läsningar och avmontering; 67 tester godkända. Avskilt telefonprov: långsam namnkontroll → ett skapa-anrop → synligt svar; inga riktiga matcher skapade. Bygge OK. Grundorsaken till dagens nät-/svarsväntan är fortfarande okänd; fysisk telefonkontroll kräver nytt signerat bygge.
+
 ## Problemhändelser i admin – 14 november, räknarkontroll
 - [x] Genomgång av onlinehändelser, beständig leverans/mottagning, tabell, summa, medel, rekord, diagram, serverräknare, rensning och enhetsradering. Händelser är inte antal misslyckade handlingar; 41 riktade tester godkända. Inget bevisat nytt räknarfel, ingen beteendeändring eller historikomskrivning. Se docs/admin-issue-count-audit.md.
 

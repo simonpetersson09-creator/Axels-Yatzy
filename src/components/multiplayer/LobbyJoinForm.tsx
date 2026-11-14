@@ -15,8 +15,8 @@ const NAME_REGEX = /^[\p{L}\p{N}\s\-_.!]+$/u;
 interface LobbyJoinFormProps {
   loading: boolean;
   error: string | null;
-  onCreateGame: (name: string) => void;
-  onJoinGame: (code: string, name: string) => void;
+  onCreateGame: (name: string) => unknown | Promise<unknown>;
+  onJoinGame: (code: string, name: string) => unknown | Promise<unknown>;
 }
 
 function sanitizeName(raw: string): string {
@@ -37,6 +37,10 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     return params.get('code')?.toUpperCase() ?? '';
   });
   const [scannerOpen, setScannerOpen] = useState(false);
+  const entryPendingRef = useRef(false);
+  const [entryPending, setEntryPending] = useState(false);
+  const mountedRef = useRef(true);
+  useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
 
   // Typed names must be globally unique; default "Player N" names are not reserved.
   const ensureName = async (fallback: string): Promise<string | null> => {
@@ -49,15 +53,22 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     return typed;
   };
 
-  const handleCreate = async () => {
-    const name = await ensureName(t('playerN', { n: 1 }));
-    if (name) onCreateGame(name);
+  const enter = async (create: boolean, code = joinCode, savedName?: string) => {
+    if (entryPendingRef.current || loading) return;
+    entryPendingRef.current = true;
+    setEntryPending(true);
+    try {
+      const name = savedName ?? await ensureName(t('playerN', { n: create ? 1 : 2 }));
+      if (!name || !mountedRef.current) return;
+      if (create) await onCreateGame(name);
+      else await onJoinGame(code.toUpperCase(), name);
+    } finally {
+      entryPendingRef.current = false;
+      if (mountedRef.current) setEntryPending(false);
+    }
   };
-
-  const handleJoin = async () => {
-    const name = await ensureName(t('playerN', { n: 2 }));
-    if (name) onJoinGame(joinCode.toUpperCase(), name);
-  };
+  const handleCreate = () => enter(true);
+  const handleJoin = () => enter(false);
 
   // Gold card "Invite" on Home: behave exactly like pressing "Create game".
   const autoCreatedRef = useRef(false);
@@ -81,7 +92,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
     if (!savedName) return; // let the user type their name first
     if (loading) return;
     autoJoinedRef.current = true;
-    onJoinGame(code, savedName);
+    void enter(false, code, savedName);
   }, [loading, onJoinGame]);
 
   const handleOpenScanner = async () => {
@@ -163,7 +174,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             </div>
             <motion.button
               onClick={handleCreate}
-              disabled={loading}
+              disabled={loading || entryPending}
               className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-display font-bold text-lg game-shadow disabled:opacity-50"
               whileTap={{ scale: 0.97 }}
             >
@@ -206,7 +217,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
               />
               <motion.button
                 onClick={handleOpenScanner}
-                disabled={loading}
+                disabled={loading || entryPending}
                 className="px-3 py-2 rounded-xl bg-secondary text-foreground border border-border/50 hover:bg-accent transition-colors disabled:opacity-50 flex flex-col items-center justify-center gap-0.5"
                 whileTap={{ scale: 0.95 }}
               >
@@ -216,7 +227,7 @@ export function LobbyJoinForm({ loading, error, onCreateGame, onJoinGame }: Lobb
             </div>
             <motion.button
               onClick={handleJoin}
-              disabled={loading || joinCode.length < 6}
+              disabled={loading || entryPending || joinCode.length < 6}
               className={`w-full py-3.5 rounded-xl font-display font-bold text-lg transition-colors ${joinCode.length >= 6 ? 'bg-game-info text-white game-shadow' : 'bg-secondary text-muted-foreground border border-border/50'} disabled:opacity-60`}
               whileTap={{ scale: 0.97 }}
             >

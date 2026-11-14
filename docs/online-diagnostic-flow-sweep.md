@@ -23,3 +23,16 @@ Rule: a pending action must not be duplicated because its reply is late; problem
 | delete_player_data / session owner cascade | Existing device-bound deletion removes analytics (including delivery IDs); timing receipts cascade with owner. No extra retained identity ledger. |
 
 Validation: 64 targeted tests passed, including isolated SQL contracts, timeout overlap tests and stable-ID delivery tests. Running-browser delivery exercise: failed delivery → reload → same ID → accepted response → queue cleared. No production test reports written. Physical iPhone/Android checks still require signed builds and devices; the original transport delay cause is not established.
+
+## Additional slow-response sweep
+
+Reread the central create/join/start, presence/resume/realtime, lock chain, score reconciliation and forfeit flows, their action helper and diagnostic wrappers, as well as legacy roll/score/lock/forfeit handlers. Their previously corrected mutation rules remain in place; no evidence establishes the root cause of today's 3–11 second transport waits.
+
+Two independently implemented paths violated ownership before the mutation:
+
+- `LobbyJoinForm`: name validation occurred before loading blocked subsequent entry taps. A shared synchronous entry guard now covers name validation and the awaited create/join callback for manual and automatic entry. Leaving before name validation returns prevents a new dispatch.
+- `QuickMatchTakeover`: ownership began only after both reads. A slow first read allowed interval ticks to overlap; a late read after unmount could still start a bot turn. Ownership now covers the entire tick, and stopped checks follow both reads.
+
+The server bot handler's existing idle validation and sequential turn loop, as well as scheduled sweep, were read; no server or cron behavior was changed in this follow-up. These client overlap defects are not proven causes of the reported iPhone waits. No new transport polling, settings, permissions or historical mutations were introduced.
+
+Three regression cases failed before the correction and passed afterwards. The full targeted run passed 67 tests. An isolated 393 × 706 browser flow verified a three-second name check with both entry buttons disabled, exactly one create request and no join request, followed by a visible controlled response. Screenshots were inspected. Physical native and production two-device verification remain unavailable. Root architecture guidance is at its protected size budget, so no new root rule was saved.

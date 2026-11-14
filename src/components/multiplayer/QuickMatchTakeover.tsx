@@ -34,13 +34,16 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
 
     const tick = async () => {
       if (stopped || busyRef.current) return;
+      busyRef.current = true;
       try {
         const { data: game } = await supabase.from('games').select('*').eq('id', gameId).maybeSingle();
+        if (stopped) return;
         if (!game || !game.is_quick_match || game.status !== 'playing') { setBotFor(null); return; }
         const { data: players } = await supabase
           .from('game_players')
           .select('player_index, player_name, scores, session_id, last_active_at, is_bot')
           .eq('game_id', gameId);
+        if (stopped) return;
         const list = players ?? [];
         // Detect opponents who were away (computer played for them) and are now back.
         for (const p of list) {
@@ -72,7 +75,6 @@ export function QuickMatchTakeover({ gameId }: { gameId: string | null }) {
           return;
         }
 
-        busyRef.current = true;
         setBotFor(current.is_bot ? null : current.player_name);
         if (!current.is_bot && !notifiedRef.current) notifiedRef.current = true;
         // Bot seats and idle humans both use server-owned rolls/actions.

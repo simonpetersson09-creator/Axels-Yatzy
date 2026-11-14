@@ -3,6 +3,7 @@ import { requireClaimedDevice } from '@/lib/session';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { rollTiming } from '@/lib/roll-timing';
+import { observedRpc } from '@/lib/observed-rpc';
 
 /** Both the direct and function paths wait for a confirmed device binding. */
 export async function directRpc(
@@ -13,6 +14,7 @@ export async function directRpc(
   diagnostic?: { attemptId: string; timeoutAfterMs?: number },
 ): Promise<{ data: any; error: any }> {
   const started = performance.now();
+  let claimEnded: number | null = null;
   let requested: number | null = null;
   let requestedAt: string | null = null;
   const visibilityAtStart = document.visibilityState;
@@ -29,13 +31,17 @@ export async function directRpc(
         occurred_at: new Date().toISOString(), ok, stage,
         response_received: responseReceived,
         request_dispatched: requested !== null,
+        timing_version: 2,
+        dispatch_boundary: 'fetch_entry',
+        client_prepare_ms: Math.round(claimEnded === null ? 0 : (requested ?? ended) - claimEnded),
+        pre_dispatch_ms: Math.round((requested ?? ended) - started),
         requested_at: requestedAt,
         response_at: stage === 'response' ? new Date().toISOString() : null,
         visibility_at_start: visibilityAtStart,
         visibility_at_end: document.visibilityState,
         visibility_changes: visibilityChanges,
         online_hint: navigator.onLine,
-        ...rollTiming(ended - started, (requested ?? ended) - started, requested === null ? 0 : ended - requested, serverMs),
+        ...rollTiming(ended - started, (claimEnded ?? ended) - started, requested === null ? 0 : ended - requested, serverMs),
       }, { gameId: typeof args.p_game_id === 'string' ? args.p_game_id : null, gameMode: 'multiplayer' });
     } catch { /* Diagnostics never affect a roll. */ }
   };
@@ -48,15 +54,18 @@ export async function directRpc(
   let deviceId: string;
   try { deviceId = await requireClaimedDevice(); }
   catch { record(false); return { data: null, error: new Error(t('errGeneric')) }; }
-  requested = performance.now();
-  requestedAt = new Date().toISOString();
+  claimEnded = performance.now();
   let response;
   const measuredRpc = diagnostic && rpc === 'client_roll' ? 'client_roll_diagnosed'
     : diagnostic && rpc === 'client_set_locks_guarded' ? 'client_set_locks_diagnosed'
     : diagnostic && rpc === 'client_submit_score' ? 'client_submit_score_diagnosed' : rpc;
-  try { response = await (supabase.rpc as any)(measuredRpc, {
+  try { response = await observedRpc(measuredRpc, {
     ...args, p_device_id: deviceId,
     ...(measuredRpc !== rpc ? { p_attempt_id: attemptId } : {}),
+  }, () => {
+    if (requested !== null) return;
+    requested = performance.now();
+    requestedAt = new Date().toISOString();
   }); }
   catch (error) { record(false); throw error; }
   const { data, error } = response;

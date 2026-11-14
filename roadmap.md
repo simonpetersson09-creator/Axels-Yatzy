@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Korrekt utskicksmätning – 14 november
+- [ ] Skilj enhetskontroll och klientens förberedelser från det verkliga fetch-anropet för kast, markering och poäng. Bevara total väntan, sena svar, anropsägarskap och historik; verifiera avskilt utan produktionsmatcher.
+
 ## Sena svar – utökat flödessvep 14 november
 - [x] Återskapade tre överlappningsfel: dubbel namnkontroll/create+join, parallella datorövertagandeläsningar och sent datoranrop efter lämnad match. Spärrar omfattar nu förberedande läsningar och avmontering; 67 tester godkända. Avskilt telefonprov: långsam namnkontroll → ett skapa-anrop → synligt svar; inga riktiga matcher skapade. Bygge OK. Grundorsaken till dagens nät-/svarsväntan är fortfarande okänd; fysisk telefonkontroll kräver nytt signerat bygge.
 

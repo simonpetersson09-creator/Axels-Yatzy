@@ -4,6 +4,10 @@ vi.mock('@/lib/analytics', () => ({ trackEvent: mocks.track }));
 vi.mock('@/lib/session', () => ({ requireClaimedDevice: mocks.claim }));
 vi.mock('@/lib/i18n', () => ({ t: () => 'Connection failed' }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: { rpc: mocks.rpc, functions: { invoke: mocks.invoke } } }));
+vi.mock('@/lib/observed-rpc', () => ({ observedRpc: (rpc: string, args: Record<string, unknown>, dispatched: () => void) => {
+  dispatched();
+  return mocks.rpc(rpc, args);
+} }));
 import { directRpc, invokeDeviceAction } from './multiplayer-actions';
 beforeEach(() => {
   mocks.claim.mockReset(); mocks.rpc.mockReset().mockResolvedValue({ data: { success: true }, error: null });

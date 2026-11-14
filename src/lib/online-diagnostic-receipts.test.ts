@@ -16,8 +16,8 @@ describe.skipIf(!db)('online diagnostic server contracts in isolated temporary t
         CREATE TEMP TABLE analytics_events(event_name text,session_id text,device_id text,local_user_id text,auth_user_id text,game_id text,game_mode text,metadata jsonb,platform text,app_version text,delivery_event_id text,UNIQUE(device_id,event_name,delivery_event_id)) ON COMMIT DROP;
         INSERT INTO pg_temp.session_owners VALUES ('test-device'),('other-device');
         CREATE TEMP TABLE score_calls(attempt_id uuid,operation text,result jsonb) ON COMMIT DROP;
-        CREATE FUNCTION pg_temp.client_submit_score(uuid,text,text,text,integer[]) RETURNS jsonb LANGUAGE sql AS 'SELECT jsonb_build_object(''success'',true,''score'',12)';
-        CREATE FUNCTION pg_temp.internal_record_request_timing(uuid,text,text,text,jsonb) RETURNS void LANGUAGE sql AS 'INSERT INTO pg_temp.score_calls VALUES ($1,$4,$5)';
+        CREATE OR REPLACE FUNCTION pg_temp.client_submit_score(uuid,text,text,text,integer[]) RETURNS jsonb LANGUAGE sql AS 'SELECT jsonb_build_object(''success'',true,''score'',12)';
+        CREATE OR REPLACE FUNCTION pg_temp.internal_record_request_timing(uuid,text,text,text,jsonb) RETURNS void LANGUAGE sql AS 'INSERT INTO pg_temp.score_calls VALUES ($1,$4,$5)';
       `);
       for (const fn of functions) await sql.unsafe(fn.replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'").replace('(SELECT auth.uid()::text)', 'NULL::text'));
       await run(sql);
@@ -27,8 +27,8 @@ describe.skipIf(!db)('online diagnostic server contracts in isolated temporary t
     await fixture(async sql => {
       const event = { event_name: 'mp_issue', metadata: { event_id: 'same-id', kind: 'lock_failed' }, platform: 'ios' };
       const batch = JSON.stringify([event,event]);
-      await sql`select pg_temp.log_analytics_events('test-device',${batch}::jsonb)`;
-      await sql`select pg_temp.log_analytics_events('test-device',${batch}::jsonb)`;
+      await sql.unsafe(`select pg_temp.log_analytics_events('test-device','${batch}'::jsonb)`);
+      await sql.unsafe(`select pg_temp.log_analytics_events('test-device','${batch}'::jsonb)`);
       const [row] = await sql`select count(*)::int n from pg_temp.analytics_events`;
       expect(row.n).toBe(1);
     });
@@ -36,7 +36,7 @@ describe.skipIf(!db)('online diagnostic server contracts in isolated temporary t
   it('does not merge different devices, event kinds or legacy reports without IDs', async () => {
     await fixture(async sql => {
       for (const [device,event] of [['test-device','mp_issue'],['other-device','mp_issue'],['test-device','play_roll_timing']]) {
-        await sql`select pg_temp.log_analytics_events(${device},${JSON.stringify([{event_name:event,metadata:{event_id:'same-id'}}])}::jsonb)`;
+        await sql.unsafe(`select pg_temp.log_analytics_events('${device}','${JSON.stringify([{event_name:event,metadata:{event_id:'same-id'}}])}'::jsonb)`);
       }
       await sql`select pg_temp.log_analytics_events('test-device','[{"event_name":"mp_issue"},{"event_name":"mp_issue"}]'::jsonb)`;
       const [row] = await sql`select count(*)::int n from pg_temp.analytics_events`;

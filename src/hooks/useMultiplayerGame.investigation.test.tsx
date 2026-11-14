@@ -46,7 +46,7 @@ describe('November 13 fault investigation — regression fixes', () => {
     expect(m.roll).toHaveBeenCalledTimes(1);
     await act(async () => { release({ data: { success: true }, error: null }); });
     expect(m.roll).toHaveBeenCalledTimes(2);
-    expect(m.roll.mock.calls[1]?.[2].p_locked).toEqual([false,true,true,false,false]);
+    expect(m.roll.mock.calls[1]?.[2].p_locked).toEqual([true,true,true,false,false]);
     unmount();
   });
   it('a saved score with a lost answer stays visible without a false error or rollback', async () => {

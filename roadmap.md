@@ -1,5 +1,13 @@
 # Roadmap – Snabbspel online
 
+## Säker problemrapportering – 14 november
+- [x] Flödessvep: poängkvittons CHECK tillåter nu score (tidigare slukades kvittot av exception-skyddet); äldre servervägars timeout-omförsök borttagna, tappade poängsvar läses tillbaka och manuella avhoppsförsök överlappar inte levande anrop. Två funktioner driftsatta, 63 riktade tester godkända. Gamla resultat/kvitton oförändrade.
+- [x] Även värdens Starta spel skyddas mot överlappande tryck; 64 tester godkända och bygge OK. Genomgång av skärmar, klientvägar, äldre funktioner, rapportmottagning, admin, städning och radering dokumenterad i docs/online-diagnostic-flow-sweep.md.
+- [x] mp_issue sparas genom offline/omstart med samma event-ID; nya leveranser dedupliceras per enhet/händelse utan ändrad äldre historik. Driftsatt kolumn/index/funktion verifierade.
+- [x] Verkligt låsanropsägarskap bevaras även efter 15 sekunder; poängens servermätning kopplas till samma försöks-ID och befintlig enhetskontroll.
+- [x] 60 riktade tester godkända, inklusive fyra avskilda SQL-prov. Körande app: misslyckad leverans → omstart → samma rapport-ID → rensas först efter mottaget svar. Inga live-testdata; bygge OK. AGENTS.md-regel kunde inte sparas på grund av skyddad storleksgräns.
+- [ ] Fysisk iPhone/Android-verifiering kräver signerat appbygge och telefon; transportens grundorsak är fortfarande inte bevisad.
+
 ## Spelpåminnelser och adminaktivitet – 13 november
 - [x] Serverutsända spel-/tur-/matchpåminnelser och utskick räknas inte som appaktivitet eller appålder. Leveransloggar och utskick bevarade; spelandemått oförändrade. Driftsatt gemensamt SQL-filter, 35 tester godkända, bygge OK. Riktig admininloggning och bildgranskning: dagens Androidantal 1 (tidigare 2), aktiva totalt 31; ingen webb-/butikspublicering.
 

@@ -918,6 +918,20 @@
       "when": 1794593853743,
       "tag": "0130_admin_exclude_server_reminders",
       "breakpoints": true
+    },
+    {
+      "idx": 131,
+      "version": "7",
+      "when": 1794688433702,
+      "tag": "0131_durable_online_issue_receipts_and_score_timing",
+      "breakpoints": true
+    },
+    {
+      "idx": 132,
+      "version": "7",
+      "when": 1794688686467,
+      "tag": "0132_allow_correlated_score_receipts",
+      "breakpoints": true
     }
   ]
 }

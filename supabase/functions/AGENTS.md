@@ -3,7 +3,7 @@
 - One-time play broadcasts require internal authorization, per-device dedupe, a closed campaign window and enabled play_reminders — preserve opt-outs and prevent later resends.
 - Server-originated broadcast delivery logs use platform server and store recipient platform in metadata — sending a push must not count as player activity in admin.
 - APNs provider JWTs are cached per function instance (getCachedApnsJwt in _shared/apns.ts, 40 min) — Apple rejects pushes with 429 TooManyProviderTokenUpdates when a new token is signed per send.
-- Score and lock edge functions call the database via _shared/rpc-retry.ts (abandon after 2.5 s, retry once; score confirms a lost first try from stored scores); rolls are never retried server-side because a repeat would use an extra roll.
+- Score and lock edge functions keep one mutation via _shared/rpc-retry.ts; transport timeout never proves server cancellation, so no resend; scores reconcile stored values. Rolls are never retried server-side.
 - Rolls, locks, scores and game start in new app versions go straight to client_* RPCs (device-checked in the database); client_submit_score queues the turn push in turn_push_queue and pings notify-after-score itself, so the push never depends on the app staying open — skips the slow server-function hop.
 - No keep-warm: the 20 s warm cron and warm triggers were removed because frequent pg_cron jobs caused "job startup timeout" stalls that froze game calls for up to 100 s; do not re-add frequent cron pings.
 - Lobby joins: a game_players insert trigger queues lobby_join_queue and pings notify-lobby-join, which only drains the queue and pushes the host (kind 'lobby_join') — no secret in the trigger, so pings are harmless; in the app LobbyJoinNotice shows it instead.

@@ -94,6 +94,7 @@ export type Database = {
           app_version: string | null
           auth_user_id: string | null
           created_at: string
+          delivery_event_id: string | null
           device_id: string | null
           event_name: string
           game_id: string | null
@@ -108,6 +109,7 @@ export type Database = {
           app_version?: string | null
           auth_user_id?: string | null
           created_at?: string
+          delivery_event_id?: string | null
           device_id?: string | null
           event_name: string
           game_id?: string | null
@@ -122,6 +124,7 @@ export type Database = {
           app_version?: string | null
           auth_user_id?: string | null
           created_at?: string
+          delivery_event_id?: string | null
           device_id?: string | null
           event_name?: string
           game_id?: string | null
@@ -1677,6 +1680,17 @@ export type Database = {
       }
       client_submit_score: {
         Args: {
+          p_category_id: string
+          p_device_id: string
+          p_expected_dice: number[]
+          p_game_id: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
+      client_submit_score_diagnosed: {
+        Args: {
+          p_attempt_id: string
           p_category_id: string
           p_device_id: string
           p_expected_dice: number[]

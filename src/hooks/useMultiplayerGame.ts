@@ -211,16 +211,11 @@ export function useMultiplayerGame() {
   // True while a lock tap is still unconfirmed by the server — the roll button
   // waits so the server never rolls a die the player believes is held.
   const [locksPending, setLocksPending] = useState(false);
-  // Safety net: never leave the board locked on "slow connection". If lock
-  // confirmation hangs past every timeout, drop the queue and resync.
+  // Observe stuck confirmation without abandoning a still-live request.
+  // A UI deadline does not release mutation ownership or queued lock batches.
   useEffect(() => {
     if (!locksPending) return;
     const t = setTimeout(() => {
-      pendingLockPromisesRef.current.clear();
-      lockBatchRef.current = null;
-      lockChainRef.current = Promise.resolve();
-      pendingLockRef.current = null;
-      setLocksPending(false);
       const id = stateRef.current.gameId;
       if (id) {
         reportMpIssue('lock_stuck_reset', id, {});
@@ -239,6 +234,8 @@ export function useMultiplayerGame() {
   const [forfeitError, setForfeitError] = useState(false);
   const unconfirmedForfeitRef = useRef<string | null>(null);
   const confirmedForfeitsRef = useRef(new Set<string>());
+  const liveForfeitsRef = useRef(new Set<string>());
+  const liveStartsRef = useRef(new Set<string>());
   useEffect(() => {
     setForfeitError(false);
     if (unconfirmedForfeitRef.current !== state.gameId) unconfirmedForfeitRef.current = null;
@@ -891,8 +888,10 @@ export function useMultiplayerGame() {
   const startGame = useCallback(async () => {
     const latest = stateRef.current;
     const gameId = latest.gameId;
-    if (!gameId || latest.myPlayerIndex !== 0) return;
+    if (!gameId || latest.myPlayerIndex !== 0 || liveStartsRef.current.has(gameId)) return;
+    liveStartsRef.current.add(gameId);
 
+    try {
     const { data, error } = await directRpc('client_start_game', 'start-game',
       { p_game_id: gameId, p_session_id: sessionId },
       { game_id: gameId, session_id: sessionId });
@@ -904,6 +903,7 @@ export function useMultiplayerGame() {
     } else {
       trackEvent('game_started', undefined, { gameId, gameMode: 'multiplayer' });
     }
+    } finally { liveStartsRef.current.delete(gameId); }
   }, [sessionId]);
 
   // Roll dice — calls server-side Edge Function. Animation timing is client-driven
@@ -1215,8 +1215,7 @@ export function useMultiplayerGame() {
       const prev = lockChainRef.current;
       const send = (async () => {
         await prev.catch(() => undefined); // keep calls in order
-        // Skipped batches must also leave the pending set, otherwise Kasta
-        // stays disabled until the 15 s lock_stuck_reset safety net fires.
+        // Skipped batches must also leave the pending set.
         const skip = () => {
           pendingLockPromisesRef.current.delete(current.promise);
           current.resolve(true);
@@ -1514,9 +1513,12 @@ export function useMultiplayerGame() {
         if (outcome === 'accepted' || outcome === 'ended') return;
         if (outcome !== 'running') throw new Error('forfeit_unconfirmed');
       }
+      // A read showing "playing" cannot cancel a still-live prior request.
+      if (liveForfeitsRef.current.has(gameId)) throw new Error('forfeit_unconfirmed');
+      liveForfeitsRef.current.add(gameId);
       const request = invokeDeviceAction('forfeit-game', {
         game_id: gameId, session_id: sessionId,
-      });
+      }).finally(() => { liveForfeitsRef.current.delete(gameId); });
       // Timeout does not cancel the request: a late success still confirms
       // this match, without resending or attributing it to another match.
       void request.then(({ data, error }) => {

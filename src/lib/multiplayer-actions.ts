@@ -52,7 +52,8 @@ export async function directRpc(
   requestedAt = new Date().toISOString();
   let response;
   const measuredRpc = diagnostic && rpc === 'client_roll' ? 'client_roll_diagnosed'
-    : diagnostic && rpc === 'client_set_locks_guarded' ? 'client_set_locks_diagnosed' : rpc;
+    : diagnostic && rpc === 'client_set_locks_guarded' ? 'client_set_locks_diagnosed'
+    : diagnostic && rpc === 'client_submit_score' ? 'client_submit_score_diagnosed' : rpc;
   try { response = await (supabase.rpc as any)(measuredRpc, {
     ...args, p_device_id: deviceId,
     ...(measuredRpc !== rpc ? { p_attempt_id: attemptId } : {}),

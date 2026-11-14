@@ -33,15 +33,20 @@ async function joined() {
   return hook;
 }
 describe('November 13 fault investigation — regression fixes', () => {
-  it('investigation: the 15 second safety reset drops real-request ownership and permits a new overlapping lock', async () => {
+  it('preserves real-request ownership beyond the 15 second safety observation', async () => {
     game = { ...game, rolls_left: 2 };
     const { result, unmount } = await joined();
-    m.roll.mockImplementation(() => new Promise(() => {}));
+    let release: (value: unknown) => void = () => {};
+    m.roll.mockImplementationOnce(() => new Promise(resolve => { release = resolve; }))
+      .mockResolvedValue({ data: { success: true }, error: null });
     await act(async () => { result.current.toggleLock(0); await vi.advanceTimersByTimeAsync(250); });
     await act(async () => { result.current.toggleLock(1); await vi.advanceTimersByTimeAsync(16000); });
     expect(m.roll).toHaveBeenCalledTimes(1);
     await act(async () => { result.current.toggleLock(2); await vi.advanceTimersByTimeAsync(250); });
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    await act(async () => { release({ data: { success: true }, error: null }); });
     expect(m.roll).toHaveBeenCalledTimes(2);
+    expect(m.roll.mock.calls[1]?.[2].p_locked).toEqual([true,true,true,false,false]);
     unmount();
   });
   it('a saved score with a lost answer stays visible without a false error or rollback', async () => {

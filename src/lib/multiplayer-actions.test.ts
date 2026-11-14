@@ -128,6 +128,19 @@ it('correlates a lost score response with dispatch time and visibility changes, 
     expect((await pending).error).toBeInstanceOf(TypeError);
     expect(mocks.rpc).toHaveBeenCalledTimes(1);
     expect(mocks.track).toHaveBeenCalledWith('play_score_timing', expect.objectContaining({ attempt_id: 'score-attempt', request_dispatched: true, requested_at: expect.any(String), response_at: expect.any(String), visibility_changes: 1, server_timing_available: false }), expect.anything());
+    expect(mocks.rpc).toHaveBeenCalledWith('client_submit_score_diagnosed', expect.objectContaining({ p_attempt_id: 'score-attempt' }));
     expect(mocks.track.mock.calls[0]?.[1]).not.toHaveProperty('p_expected_dice');
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});
+it('correlates a successful slow score with its server duration without a second mutation', async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('device');
+    mocks.rpc.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ data: { success: true, server_ms: 20 }, error: null }), 3500)));
+    const pending = directRpc('client_submit_score', 'submit-score', { p_game_id: 'game' }, {}, { attemptId: 'score-server' });
+    await vi.advanceTimersByTimeAsync(3500);
+    expect((await pending).error).toBeNull();
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.track).toHaveBeenCalledWith('play_score_timing', expect.objectContaining({ attempt_id: 'score-server', server_ms: 20, outside_server_ms: 3480 }), expect.anything());
   } finally { vi.clearAllTimers(); vi.useRealTimers(); }
 });

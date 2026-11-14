@@ -1,6 +1,5 @@
-// Calls a database function with a time limit. If the database path hangs
-// (seen as 20–70 s stalls), the first try is abandoned after `timeoutMs` and
-// one fresh attempt is made. Only use for calls that are safe to repeat.
+// A transport abort does not prove the database stopped executing.
+// Keep the legacy API, but never start a second mutation after a timeout.
 // deno-lint-ignore no-explicit-any
 export async function rpcWithRetry(supabase: any, fn: string, args: Record<string, unknown>, timeoutMs = 2500) {
   const attempt = async (limit: number | null) => {
@@ -17,6 +16,5 @@ export async function rpcWithRetry(supabase: any, fn: string, args: Record<strin
   };
   const first = await attempt(timeoutMs);
   if (!first.timedOut) return { data: first.data, error: first.error, retried: false };
-  const second = await attempt(null);
-  return { data: second.data, error: second.error, retried: true };
+  return { data: first.data, error: first.error ?? new Error('timeout'), retried: false };
 }

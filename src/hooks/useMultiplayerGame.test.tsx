@@ -278,6 +278,17 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.status).toBe('finished');
     expect(result.current.gameState?.forfeitedBySessionId).toBe('me');
   });
+  it('manual forfeit retry never overlaps a still-live request after its UI timeout', async () => {
+    const { result } = await joined();
+    let release: (value: unknown) => void = () => {};
+    m.action.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    await act(async () => { void result.current.forfeitGame(); await vi.advanceTimersByTimeAsync(8000); });
+    expect(result.current.forfeitError).toBe(true);
+    await act(async () => { await result.current.forfeitGame(); });
+    expect(m.action).toHaveBeenCalledTimes(1);
+    await act(async () => { release({data:{success:true},error:null}); });
+    expect(result.current.status).toBe('finished');
+  });
   it('preserves another player’s server-confirmed forfeit instead of attributing it to me', async () => {
     const { result } = await joined();
     m.action.mockImplementation(async () => {

@@ -234,6 +234,7 @@ export function useMultiplayerGame() {
   const [forfeitError, setForfeitError] = useState(false);
   const unconfirmedForfeitRef = useRef<string | null>(null);
   const confirmedForfeitsRef = useRef(new Set<string>());
+  const liveForfeitsRef = useRef(new Set<string>());
   useEffect(() => {
     setForfeitError(false);
     if (unconfirmedForfeitRef.current !== state.gameId) unconfirmedForfeitRef.current = null;
@@ -1508,9 +1509,12 @@ export function useMultiplayerGame() {
         if (outcome === 'accepted' || outcome === 'ended') return;
         if (outcome !== 'running') throw new Error('forfeit_unconfirmed');
       }
+      // A read showing "playing" cannot cancel a still-live prior request.
+      if (liveForfeitsRef.current.has(gameId)) throw new Error('forfeit_unconfirmed');
+      liveForfeitsRef.current.add(gameId);
       const request = invokeDeviceAction('forfeit-game', {
         game_id: gameId, session_id: sessionId,
-      });
+      }).finally(() => { liveForfeitsRef.current.delete(gameId); });
       // Timeout does not cancel the request: a late success still confirms
       // this match, without resending or attributing it to another match.
       void request.then(({ data, error }) => {

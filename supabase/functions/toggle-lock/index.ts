@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
       if (!pre.ok) return json({ error: pre.error }, 403);
       // Device check runs inside the same database call as the locks.
       const dbStart = performance.now();
-      // Setting the full lock array is safe to repeat, so a hung call is retried.
+      // Never resend a timed-out batch: its first call may still be executing.
       const { data, error } = await rpcWithRetry(supabase, "perform_set_locks_authed", {
         p_game_id: game_id,
         p_session_id: session_id,

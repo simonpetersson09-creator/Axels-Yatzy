@@ -15,7 +15,7 @@ describe.skipIf(!db)('online diagnostic server contracts in isolated temporary t
         CREATE TEMP TABLE session_owners(device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE analytics_events(event_name text,session_id text,device_id text,local_user_id text,auth_user_id text,game_id text,game_mode text,metadata jsonb,platform text,app_version text,delivery_event_id text,UNIQUE(device_id,event_name,delivery_event_id)) ON COMMIT DROP;
         INSERT INTO pg_temp.session_owners VALUES ('test-device'),('other-device');
-        CREATE TEMP TABLE score_calls(attempt_id uuid,operation text,result jsonb) ON COMMIT DROP;
+        CREATE TEMP TABLE score_calls(attempt_id uuid,operation text CHECK(operation IN ('roll','lock','score')),result jsonb) ON COMMIT DROP;
         CREATE OR REPLACE FUNCTION pg_temp.client_submit_score(uuid,text,text,text,integer[]) RETURNS jsonb LANGUAGE sql AS 'SELECT jsonb_build_object(''success'',true,''score'',12)';
         CREATE OR REPLACE FUNCTION pg_temp.internal_record_request_timing(uuid,text,text,text,jsonb) RETURNS void LANGUAGE sql AS 'INSERT INTO pg_temp.score_calls VALUES ($1,$4,$5)';
       `);

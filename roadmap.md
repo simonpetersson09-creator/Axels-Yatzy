@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Problemhändelser i admin – 14 november, räknarkontroll
+- [x] Genomgång av onlinehändelser, beständig leverans/mottagning, tabell, summa, medel, rekord, diagram, serverräknare, rensning och enhetsradering. Händelser är inte antal misslyckade handlingar; 41 riktade tester godkända. Inget bevisat nytt räknarfel, ingen beteendeändring eller historikomskrivning. Se docs/admin-issue-count-audit.md.
+
 ## Säker problemrapportering – 14 november
 - [x] Flödessvep: poängkvittons CHECK tillåter nu score (tidigare slukades kvittot av exception-skyddet); äldre servervägars timeout-omförsök borttagna, tappade poängsvar läses tillbaka och manuella avhoppsförsök överlappar inte levande anrop. Två funktioner driftsatta, 63 riktade tester godkända. Gamla resultat/kvitton oförändrade.
 - [x] Även värdens Starta spel skyddas mot överlappande tryck; 64 tester godkända och bygge OK. Genomgång av skärmar, klientvägar, äldre funktioner, rapportmottagning, admin, städning och radering dokumenterad i docs/online-diagnostic-flow-sweep.md.

@@ -1,0 +1,2 @@
+ALTER TABLE public.multiplayer_request_timings DROP CONSTRAINT multiplayer_request_timings_operation_check;
+ALTER TABLE public.multiplayer_request_timings ADD CONSTRAINT multiplayer_request_timings_operation_check CHECK(operation IN ('roll','lock','score'));

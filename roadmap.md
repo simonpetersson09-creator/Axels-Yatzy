@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Säker problemrapportering – 14 november
+- [ ] Bevara mp_issue genom offline/omstart med samma event-ID; deduplicera nya leveranser server-side utan att ändra äldre historik.
+- [ ] Bevara verkligt låsanropsägarskap även efter 15 sekunder; koppla poänganropets servermätning till samma försöks-ID.
+- [ ] Kör riktade tester och verifiera driftsatt mottagning; fysisk iPhone/Android kräver signerat appbygge och telefon.
+
 ## Spelpåminnelser och adminaktivitet – 13 november
 - [x] Serverutsända spel-/tur-/matchpåminnelser och utskick räknas inte som appaktivitet eller appålder. Leveransloggar och utskick bevarade; spelandemått oförändrade. Driftsatt gemensamt SQL-filter, 35 tester godkända, bygge OK. Riktig admininloggning och bildgranskning: dagens Androidantal 1 (tidigare 2), aktiva totalt 31; ingen webb-/butikspublicering.
 

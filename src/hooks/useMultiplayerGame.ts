@@ -211,16 +211,11 @@ export function useMultiplayerGame() {
   // True while a lock tap is still unconfirmed by the server — the roll button
   // waits so the server never rolls a die the player believes is held.
   const [locksPending, setLocksPending] = useState(false);
-  // Safety net: never leave the board locked on "slow connection". If lock
-  // confirmation hangs past every timeout, drop the queue and resync.
+  // Observe stuck confirmation without abandoning a still-live request.
+  // A UI deadline does not release mutation ownership or queued lock batches.
   useEffect(() => {
     if (!locksPending) return;
     const t = setTimeout(() => {
-      pendingLockPromisesRef.current.clear();
-      lockBatchRef.current = null;
-      lockChainRef.current = Promise.resolve();
-      pendingLockRef.current = null;
-      setLocksPending(false);
       const id = stateRef.current.gameId;
       if (id) {
         reportMpIssue('lock_stuck_reset', id, {});
@@ -1215,8 +1210,7 @@ export function useMultiplayerGame() {
       const prev = lockChainRef.current;
       const send = (async () => {
         await prev.catch(() => undefined); // keep calls in order
-        // Skipped batches must also leave the pending set, otherwise Kasta
-        // stays disabled until the 15 s lock_stuck_reset safety net fires.
+        // Skipped batches must also leave the pending set.
         const skip = () => {
           pendingLockPromisesRef.current.delete(current.promise);
           current.resolve(true);

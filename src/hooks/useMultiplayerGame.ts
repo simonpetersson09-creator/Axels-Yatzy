@@ -235,6 +235,7 @@ export function useMultiplayerGame() {
   const unconfirmedForfeitRef = useRef<string | null>(null);
   const confirmedForfeitsRef = useRef(new Set<string>());
   const liveForfeitsRef = useRef(new Set<string>());
+  const liveStartsRef = useRef(new Set<string>());
   useEffect(() => {
     setForfeitError(false);
     if (unconfirmedForfeitRef.current !== state.gameId) unconfirmedForfeitRef.current = null;
@@ -887,8 +888,10 @@ export function useMultiplayerGame() {
   const startGame = useCallback(async () => {
     const latest = stateRef.current;
     const gameId = latest.gameId;
-    if (!gameId || latest.myPlayerIndex !== 0) return;
+    if (!gameId || latest.myPlayerIndex !== 0 || liveStartsRef.current.has(gameId)) return;
+    liveStartsRef.current.add(gameId);
 
+    try {
     const { data, error } = await directRpc('client_start_game', 'start-game',
       { p_game_id: gameId, p_session_id: sessionId },
       { game_id: gameId, session_id: sessionId });
@@ -900,6 +903,7 @@ export function useMultiplayerGame() {
     } else {
       trackEvent('game_started', undefined, { gameId, gameMode: 'multiplayer' });
     }
+    } finally { liveStartsRef.current.delete(gameId); }
   }, [sessionId]);
 
   // Roll dice — calls server-side Edge Function. Animation timing is client-driven

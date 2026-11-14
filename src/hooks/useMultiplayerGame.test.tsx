@@ -200,6 +200,14 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.status).toBe('finished');
     expect(result.current.gameState?.forfeitedBySessionId).toBe('me');
   });
+  it('duplicate host start taps send exactly one live start request', async () => {
+    const { result } = await joined();
+    let release: (value: unknown) => void = () => {};
+    m.roll.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    await act(async () => { void result.current.startGame(); void result.current.startGame(); });
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    await act(async () => { release({data:{success:true},error:null}); });
+  });
   it('failed forfeit never presents a finished match', async () => {
     m.action.mockRejectedValue(new Error('offline'));
     const { result } = await joined();

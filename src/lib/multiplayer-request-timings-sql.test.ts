@@ -18,7 +18,7 @@ it.skipIf(!db)('durable receipts preserve one action, reject another device and 
         INSERT INTO pg_temp.action_calls VALUES('lock'); RETURN '{"success":false,"stale_command":true,"server_ms":3}'::jsonb;
       END $$;
     `);
-    for (const signature of ['internal_record_request_timing(uuid,text,text,text,jsonb)', 'client_roll_diagnosed(uuid,text,text,boolean[],uuid)', 'client_set_locks_diagnosed(uuid,text,text,boolean[],integer,integer,integer,uuid)']) {
+    for (const signature of ['internal_record_request_timing(uuid,text,text,text,jsonb)', 'client_roll_diagnosed(uuid,text,text,boolean[],uuid,integer)', 'client_set_locks_diagnosed(uuid,text,text,boolean[],integer,integer,integer,uuid)']) {
       const [row] = await sql`SELECT pg_get_functiondef(('public.' || ${signature})::regprocedure) AS definition`;
       await sql.unsafe(row.definition.replace('CREATE FUNCTION', 'CREATE OR REPLACE FUNCTION').replace(/public\./g, 'pg_temp.').replace(/pg_temp\.client_roll\(/g, 'pg_temp.receipt_test_roll(').replace(/pg_temp\.client_set_locks_guarded\(/g, 'pg_temp.receipt_test_lock(').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
     }

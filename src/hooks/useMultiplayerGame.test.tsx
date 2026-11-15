@@ -33,6 +33,20 @@ async function joined() {
   return hook;
 }
 describe('authoritative multiplayer recovery', () => {
+  it('aborts a lock-wait roll after same-game resubscription', async () => {
+    game = { ...game, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    let release!: (value: unknown) => void;
+    m.roll.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    await act(async () => { void result.current.toggleLock(0); await vi.advanceTimersByTimeAsync(250); });
+    let rolling!: Promise<boolean>;
+    await act(async () => { rolling = result.current.roll(); });
+    await act(async () => { await result.current.rejoinGame('game'); });
+    await act(async () => { release({ data: { success: true }, error: null }); await vi.advanceTimersByTimeAsync(10); });
+    expect(m.roll.mock.calls.filter(call => call[0] === 'client_roll')).toHaveLength(0);
+    await expect(rolling).resolves.toBe(false);
+    unmount();
+  });
   it('does not retry a pending lock after the app enters background', async () => {
     game = { ...game, rolls_left: 2 };
     const { result, unmount } = await joined();
@@ -176,6 +190,19 @@ describe('authoritative multiplayer recovery', () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(4500); });
     expect(m.roll).toHaveBeenCalledTimes(2);
     expect(result.current.gameState?.dice).toEqual([2, 3, 4, 5, 6]);
+    expect(result.current.gameState?.rollsLeft).toBe(2);
+    expect(result.current.error).toBeNull();
+  });
+  it('a resent roll names its roll count and lands on the original when the server already rolled', async () => {
+    const { result } = await joined();
+    m.roll.mockRejectedValueOnce(new Error('Load failed'))
+      .mockResolvedValue({ data: { success: false, stale_command: true, stale_roll: true, dice: [4, 4, 4, 4, 4], rolls_left: 2, round: 1, current_player_index: 0 }, error: new Error('roll already applied') });
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(10); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(4500); });
+    expect(m.roll).toHaveBeenCalledTimes(2);
+    expect(m.roll.mock.calls[0][2]).not.toHaveProperty('p_expected_rolls_left');
+    expect(m.roll.mock.calls[1][2]).toMatchObject({ p_expected_rolls_left: 3 });
+    expect(result.current.gameState?.dice).toEqual([4, 4, 4, 4, 4]);
     expect(result.current.gameState?.rollsLeft).toBe(2);
     expect(result.current.error).toBeNull();
   });

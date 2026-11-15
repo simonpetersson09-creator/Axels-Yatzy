@@ -125,6 +125,23 @@ describe.each(['ios', 'android'])('%s privacy cache boundary', platform => {
     expect(await m.preloadRewarded()).toBe(false);
   });
 
+  it.each(['before', 'after', 'form_error'])('keeps ads blocked when cache clearing fails %s the form despite UMP allowing requests', async phase => {
+    n.eligibility.mockResolvedValue({ canRequestAds: true });
+    if (phase === 'before') n.clear.mockRejectedValueOnce(new Error('cache unavailable'));
+    else n.clear.mockResolvedValueOnce({ privacyCacheVersion: 1 }).mockRejectedValueOnce(new Error('cache unavailable'));
+    if (phase === 'form_error') n.form.mockRejectedValueOnce(new Error('form failed'));
+    const m = await import('./admob');
+    await m.preloadInterstitial();
+    expect(await m.showAdPrivacyOptions()).toBe(false);
+    expect(await m.preloadInterstitial()).toBe(false);
+    expect(await m.preloadRewarded()).toBe(false);
+    expect(await m.preloadAppOpenAd()).toBe(false);
+    expect(await m.showPostMatchInterstitial()).toBe('busy');
+    expect(n.show).not.toHaveBeenCalled();
+    expect(await m.showAdPrivacyOptions()).toBe(true);
+    expect(await m.preloadInterstitial()).toBe(true);
+  });
+
   it('does not interpret denied personalization as denied ad eligibility', async () => {
     n.form.mockImplementation(async () => { n.eligible = true; });
     const m = await import('./admob');

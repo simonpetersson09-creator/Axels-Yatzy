@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Två bekräftade fel – 15 november
+- [ ] Behåll annonsspärren vid misslyckad cacherensning före/efter annonsval; bevara UMP:s aktuella besked efter rena formulärfel.
+- [ ] Behåll pågående spel och tidigare status vid misslyckad spel-/spelarhämtning på startsidan; bekräftat tomma svar får fortsatt städa.
+- [ ] Återskapa fel, kör riktade tester och kontrollera startsidans nätfel/återhämtning utan livedata.
+
 ## Medaljernas placering – 15 november
 - [x] Kombinationsmedaljer förankrade vid verkliga mitten av Nedre sektionen med storleksbevakning i gemensamma ScoreBoard; tidigare 60 procent hamnade 67 px för långt ner. Spelregler, översättningar och Yatzy-firande oförändrade.
 - [x] Alla fem medaljer mätta i avskilt körande lokalt spel över 375×667, 393×706, 430×932, 768×1024 och 1024×768: sidled 0 px, höjdavvikelse 0,5 px; bilder granskade. 17 tester godkända, bygge OK. Online återanvänder samma placering men dess fulla flöde inte separat provat; installerad app kräver nästa appversion. Root AGENTS.md vid skyddad storleksgräns.

@@ -66,7 +66,7 @@ describe('online dice sync', () => {
     const { result, unmount } = await joined();
     m.roll.mockResolvedValue({ data: null, error: { message: 'canceling statement due to statement timeout' } });
     holdReads = true;
-    await act(async () => { void result.current.rollDice(); await vi.advanceTimersByTimeAsync(100); });
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(100); });
     expect(diceAwait.active).toBe(true);
     await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
     expect(diceAwait.active).toBe(true);

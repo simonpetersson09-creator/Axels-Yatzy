@@ -36,6 +36,8 @@ function reportMpIssue(kind: string, gameId: string | null | undefined, meta: Re
 const DICE_ISSUE_CAP = 2;
 const DICE_SLOW_RESULT_MS = 3000;
 const diceIssueCounts = new Map<string, number>();
+/** Test hook: forget per-match diagnostic counts. */
+export function resetDiceIssueCounts() { diceIssueCounts.clear(); }
 function reportDiceIssue(kind: string, gameId: string | null | undefined, meta: Record<string, unknown> = {}) {
   const key = `${gameId ?? '-'}:${kind}`;
   const n = diceIssueCounts.get(key) ?? 0;

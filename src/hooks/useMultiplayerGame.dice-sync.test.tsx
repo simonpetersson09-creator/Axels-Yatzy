@@ -28,7 +28,7 @@ const players = [
   { id: 'p2', player_name: 'Other', player_index: 1, scores: {}, is_bot: false, session_id: 'other' },
 ];
 beforeEach(() => {
-  vi.useFakeTimers(); holdReads = false; held = [];
+  resetDiceIssueCounts(); vi.useFakeTimers(); holdReads = false; held = [];
   m.track.mockClear(); m.handlers = {}; players[0].scores = {}; players[1].scores = {};
   vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
   game = { id: 'game', game_code: 'ABCDEF', status: 'playing', current_player_index: 0, dice: [2,3,4,5,6], locked_dice: [false,false,false,false,false], rolls_left: 3, round: 1, updated_at: '2026-11-15T12:00:00Z' };
@@ -148,7 +148,7 @@ describe('online dice sync', () => {
   });
 
   it('logs an ignored old-round throw at most twice per match', async () => {
-    game = { ...game, id: 'game-log', current_player_index: 1, rolls_left: 3, round: 2 };
+    game = { ...game, current_player_index: 1, rolls_left: 3, round: 2 };
     const { unmount } = await joined();
     for (let i = 0; i < 4; i++) {
       await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });

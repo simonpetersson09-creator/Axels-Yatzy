@@ -29,3 +29,19 @@ it('keeps a pending invite on returned and thrown network errors, then honors a 
   await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
   expect(screen.queryByText(/Anna/)).not.toBeInTheDocument();
 });
+it('removes an expired invite during network failure but retains a still valid invite', async () => {
+  vi.useFakeTimers();
+  const now = Date.now();
+  const row = { from_session_id: 'friend', to_session_id: 'me', status: 'pending', created_at: new Date(now).toISOString() };
+  mocks.rpc.mockResolvedValue({ data: [
+    { ...row, id: 'expired-next', from_name: 'Anna', expires_at: new Date(now + 4000).toISOString() },
+    { ...row, id: 'still-valid', from_name: 'Erik', expires_at: new Date(now + 60000).toISOString() },
+  ], error: null });
+  render(<MemoryRouter><InviteOverlay /></MemoryRouter>);
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+  expect(screen.getByText(/Anna/)).toBeInTheDocument();
+  mocks.rpc.mockRejectedValue(new Error('offline'));
+  await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+  expect(screen.queryByText(/Anna/)).not.toBeInTheDocument();
+  expect(screen.getByText(/Erik/)).toBeInTheDocument();
+});

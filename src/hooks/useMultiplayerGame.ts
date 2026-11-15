@@ -374,7 +374,7 @@ export function useMultiplayerGame() {
   const refreshGameState = useCallback(async (gameId: string, attempt = 0) => {
     const [gameRes, playersRes] = await Promise.all([
       supabase.from('games').select('*').eq('id', gameId).single(),
-      supabase.from('game_players').select('id, game_id, player_name, player_index, scores, is_bot').eq('game_id', gameId).order('player_index'),
+      supabase.from('game_players').select('id, game_id, player_name, player_index, scores, is_bot, session_id').eq('game_id', gameId).order('player_index'),
     ]);
 
     if (gameRes.error || playersRes.error) {

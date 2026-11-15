@@ -16,7 +16,7 @@ vi.mock('@/lib/multiplayer-actions', () => ({ directRpc: m.roll, invokeDeviceAct
 vi.mock('@/lib/i18n', () => ({ t: (key: string) => key }));
 vi.mock('@/lib/analytics', () => ({ trackEvent: m.track }));
 vi.mock('@/lib/notifications', () => ({ clearGameNotifications: vi.fn() }));
-import { useMultiplayerGame } from './useMultiplayerGame';
+import { useMultiplayerGame, resetDiceIssueCounts } from './useMultiplayerGame';
 import { diceAwait } from '@/components/dice-engine/await-store';
 
 let game: Record<string, unknown>;

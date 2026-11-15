@@ -1,0 +1,48 @@
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, afterEach, it, expect, vi } from 'vitest';
+import { useYatzyGame } from '@/hooks/useYatzyGame';
+import { CATEGORIES, type GameState } from '@/types/yatzy';
+import { getLocalActiveGames, loadGameState, clearLocalActiveGame } from './active-game';
+import { getLocalStats, recordGameResult, getPendingResultReports } from './local-stats';
+vi.mock('./result-delivery', () => ({ flushResultReports: vi.fn() }));
+const scores = Object.fromEntries(CATEGORIES.filter(c => c.id !== 'chance').map(c => [c.id, 0]));
+const state: GameState = { players: [{ id: 'p0', name: 'Me', scores }], currentPlayerIndex: 0, dice: [6,6,6,6,6], lockedDice: [false,false,false,false,false], rollsLeft: 0, isRolling: false, gameOver: false, round: 15 };
+beforeEach(() => localStorage.clear());
+afterEach(() => vi.restoreAllMocks());
+it('retains the final score through a failed stats write and restart, then counts exactly once', () => {
+  localStorage.setItem('yatzy_saved_game:slot', JSON.stringify(state));
+  const game = renderHook(() => useYatzyGame('slot'));
+  act(() => game.result.current.selectCategory('chance'));
+  expect(loadGameState<GameState>('slot')?.players[0].scores.chance).toBe(30);
+  expect(loadGameState<GameState>('slot')?.gameOver).toBe(true);
+  const original = Storage.prototype.setItem;
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function(this: Storage, key, value) {
+    if (key === 'yatzy-player-stats') throw new Error('full');
+    original.call(this, key, value);
+  });
+  expect(recordGameResult(30, true, 0, 'match')).toBe(false);
+  game.unmount();
+  const restored = renderHook(() => useYatzyGame('slot'));
+  expect(restored.result.current.gameState?.gameOver).toBe(true);
+  expect(restored.result.current.gameState?.players[0].scores.chance).toBe(30);
+  vi.restoreAllMocks();
+  expect(recordGameResult(30, true, 0, 'match')).toBe(true);
+  clearLocalActiveGame('slot');
+  expect(recordGameResult(30, true, 0, 'match')).toBe(false);
+  expect(getLocalStats().gamesPlayed).toBe(1);
+  expect(getPendingResultReports()).toHaveLength(1);
+  restored.unmount();
+});
+it.each(['yatzy_active_game', 'yatzy_active_games'])('migrates %s without dropping scores, names, AI or last roll time', key => {
+  const entry = { type: 'local', timestamp: 12, lastRollTime: 10 };
+  localStorage.setItem(key, JSON.stringify(key.endsWith('games') ? [entry] : entry));
+  localStorage.setItem('yatzy_saved_game', JSON.stringify(state));
+  localStorage.setItem('yatzy-ai-players', '[1]');
+  localStorage.setItem('yatzy-player-names', '["Me","AI"]');
+  const games = getLocalActiveGames();
+  expect(games[0]).toMatchObject({ gameId: 'local-legacy', lastRollTime: 10 });
+  expect(loadGameState<GameState>(games[0].gameId)?.players[0].scores).toEqual(scores);
+  expect(localStorage.getItem('yatzy-ai-players:local-legacy')).toBe('[1]');
+  expect(localStorage.getItem('yatzy-player-names:local-legacy')).toBe('["Me","AI"]');
+  expect(getLocalActiveGames()[0].gameId).toBe('local-legacy');
+});

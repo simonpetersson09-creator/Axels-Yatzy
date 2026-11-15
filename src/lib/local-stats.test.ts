@@ -4,6 +4,7 @@ import { getLocalMatchKey, startNextLocalMatch } from './local-match-key';
 
 vi.mock('./country-rank', () => ({ syncCountryRank: vi.fn() }));
 vi.mock('./hall-of-fame', () => ({ reportWeeklyScore: vi.fn() }));
+vi.mock('./result-delivery', () => ({ flushResultReports: vi.fn() }));
 
 beforeEach(() => {
   localStorage.clear();

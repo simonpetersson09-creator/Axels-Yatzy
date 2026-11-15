@@ -46,4 +46,3 @@
 - WR reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
 - iOS lifecycle patch follows diagnostics: UMP/ATT locks survive caller timeouts; ATT waits for active main-thread presenter/notDetermined. Android Rewarded uses Kotlin getters.
-- anon statement_timeout is 8 s (online actions run as anon).

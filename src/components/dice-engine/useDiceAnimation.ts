@@ -116,6 +116,7 @@ export function useDiceAnimation({
       duration,
       delay: 0,
       animating: false,
+      rollActive: false,
       /** How far off-screen (to the right) the die starts. */
       entry: 0,
       /** Value the die is currently resting on (-1 = never settled). */
@@ -207,6 +208,7 @@ export function useDiceAnimation({
     state.sweepDistance = size * 11;
     state.settling = false;
     state.animating = false;
+    state.rollActive = false;
     state.pendingRoll = false;
     state.sweeping = true;
     state.settledValue = value;
@@ -221,6 +223,7 @@ export function useDiceAnimation({
     if (!group) return;
 
     if (!rolling || held) {
+      if (!rolling) state.rollActive = false;
       // If a queued first roll ended while frames were suspended, the game
       // now owns valid dice. Restore them, but keep a genuinely cleared table
       // hidden until its next roll. A held die must never wait for a new flight.
@@ -260,6 +263,21 @@ export function useDiceAnimation({
       return;
     }
 
+    // A late correction belongs to the current roll, even if its flight has
+    // already landed. Never throw it offscreen again without a new roll edge.
+    if (state.rollActive && !state.animating && !state.pendingRoll) {
+      if (state.rollValue !== value) {
+        getFaceQuaternion(value, randomInt(0, 3), state.target);
+        state.rollValue = value;
+        state.settledValue = value;
+        state.settleFrom.copy(group.quaternion);
+        state.settleT = 0;
+        state.settling = true;
+        setDieFlying(index, true);
+      }
+      return;
+    }
+
     // The dice values for a remote player arrive from the server *after* the
     // roll has already started locally. That must only re-aim the landing
     // face — restarting the flight would teleport the die back off-screen and
@@ -278,6 +296,7 @@ export function useDiceAnimation({
     }
 
     getFaceQuaternion(value, randomInt(0, 3), state.target);
+    state.rollActive = true;
     randomAxis(state.axisA);
     randomAxis(state.axisB);
     state.corr.identity();

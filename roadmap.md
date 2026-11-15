@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Rättningar efter djupdykning – 15 november 21:12 UTC
+- [ ] Stoppa extra inkast vid sen värdekorrigering och säkerställ separat animation för köade kast.
+- [ ] Bevara köade resultat vid sena startmeddelanden; hantera sparade rader/full läsning likadant som kastmeddelanden och stoppa gamla timeoutbuffertar.
+- [ ] Isolera animationer vid matchbyte och kör regressionstester samt avskilt spelprov.
+- [ ] Verifiera verkligt flyt på två fysiska telefoner; kräver signerad appversion och telefoner.
+
 ## Sista tärningskontroll – 15 november 20:51 UTC
 - [x] Rättat återskapat tappat nästa motståndarkast när startmeddelandet saknas under föregående landning. Nytt regressionstest misslyckades före rättningen, godkänt efter; 121 riktade prov i 15 filer godkända, bygge OK. Inget ytterligare bekräftat synkfel hittat.
 - [x] Tre kast med låsning och hela spelplanen kontrollerade på 393×706, 768×1024 och 1024×768 utan live-testdata eller runtimefel. Bildpauser cirka 67–83 ms i SwiftShader (simulerad GPU); detta bevisar inte telefonens prestanda. Kaströrelse, grafikdetalj och upplösning oförändrade för att undvika en omätt telefonregression.

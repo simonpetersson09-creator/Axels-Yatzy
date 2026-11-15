@@ -262,6 +262,12 @@ export function useMultiplayerGame() {
   const remoteRollingGuardRef = useRef(false);
   /** When the opponent's numbers arrived (0 = still waiting). */
   const remoteResultAtRef = useRef(0);
+  // A second opponent throw that arrives while the first one is still
+  // landing is queued and replayed afterwards instead of being dropped.
+  const queuedRemoteRef = useRef<{ gameId: string; lockedDice: boolean[]; rollsLeft: number; result: RollDicePart | null } | null>(null);
+  const startRemoteRollingRef = useRef<((d?: RollDicePart, h?: { lockedDice: boolean[]; rollsLeft: number }) => void) | null>(null);
+  const applyRemoteResultRef = useRef<((p: RollDicePart, s?: 'roll_result' | 'saved_row') => void) | null>(null);
+  const animResolveRef = useRef<(() => void) | null>(null);
   const remoteLockHintRef = useRef<boolean[] | null>(null);
   // Pending category surfaces an `aiChosenCategory`-style highlight while the
   // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
@@ -357,6 +363,12 @@ export function useMultiplayerGame() {
       flushPendingRoll();
       remoteRollingGuardRef.current = false;
       setRemoteRolling(false);
+      const queued = queuedRemoteRef.current;
+      queuedRemoteRef.current = null;
+      if (queued && queued.gameId === stateRef.current.gameId && mountedRef.current) {
+        startRemoteRollingRef.current?.(undefined, { lockedDice: queued.lockedDice, rollsLeft: queued.rollsLeft });
+        if (queued.result) applyRemoteResultRef.current?.(queued.result);
+      }
     };
     remoteRollingTimerRef.current = setTimeout(finish, ROLL_ANIM_MS);
   }, [flushPendingRoll, getPendingLockForTurn]);
@@ -386,6 +398,8 @@ export function useMultiplayerGame() {
     } : prev);
     setDiceAwait(false);
   }, [getPendingLockForTurn]);
+  startRemoteRollingRef.current = startRemoteRolling;
+  applyRemoteResultRef.current = applyRemoteResult;
 
   const waitForPendingLocks = useCallback(async () => {
     // Snapshot the pending promises ONCE on entry. If we re-read the live ref
@@ -434,7 +448,7 @@ export function useMultiplayerGame() {
       // the match showing stale dice/scores.
       if (attempt < 3) {
         setTimeout(() => {
-          if (mountedRef.current) void refreshGameStateRef.current?.(gameId, attempt + 1);
+          if (mountedRef.current && (!stateRef.current.gameId || stateRef.current.gameId === gameId)) void refreshGameStateRef.current?.(gameId, attempt + 1);
         }, 2000 * (attempt + 1));
       } else if (mountedRef.current) {
         // A failed roll/score is waiting for the real match state: keep
@@ -442,7 +456,7 @@ export function useMultiplayerGame() {
         if (failedRollReconcileRef.current === gameId) {
           reportMpIssue('reconcile_retry', gameId, { attempt });
           setTimeout(() => {
-            if (mountedRef.current) void refreshGameStateRef.current?.(gameId, attempt + 1);
+            if (mountedRef.current && (!stateRef.current.gameId || stateRef.current.gameId === gameId)) void refreshGameStateRef.current?.(gameId, attempt + 1);
           }, 5000);
         }
         // Retries exhausted: never leave the match stuck on a spinner — show a
@@ -455,6 +469,8 @@ export function useMultiplayerGame() {
     const game = gameRes.data;
     const dbPlayers = playersRes.data;
     if (!game || !dbPlayers || !mountedRef.current) return;
+    // A slow read for a game this view has already left must never replace it.
+    if (stateRef.current.gameId && stateRef.current.gameId !== gameId) return;
     // The exiting player's accepted forfeit is terminal locally, including
     // a quick-match seat handed to a bot. Late reads must not reopen it.
     if (confirmedForfeitsRef.current.has(gameId)) return;
@@ -746,6 +762,14 @@ export function useMultiplayerGame() {
         if (typeof payload?.rollsLeft === 'number' && payload.rollsLeft >= prevGS.rollsLeft) {
           reportDiceIssue('dice_msg_ignored', gameId, { msg: 'start', reason: 'already_shown' }); return;
         }
+        if (
+          remoteRollingGuardRef.current && remoteResultAtRef.current !== 0 && !rollingGuardRef.current
+          && payload?.lockedDice?.length === 5 && payload.lockedDice.every(v => typeof v === 'boolean')
+          && typeof payload.rollsLeft === 'number'
+        ) {
+          queuedRemoteRef.current = { gameId, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, result: null };
+          return;
+        }
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
         if (
           payload?.dice?.length === 5 &&
@@ -796,6 +820,9 @@ export function useMultiplayerGame() {
         if (remoteRollingGuardRef.current) {
           // Result already applied (e.g. via postgres_changes) — don't extend the spin.
           if (remoteResultAtRef.current === 0) applyRemoteResult(part);
+          else if (queuedRemoteRef.current?.gameId === gameId && queuedRemoteRef.current.rollsLeft === payload.rollsLeft) {
+            queuedRemoteRef.current.result = part;
+          }
         }
         else if (payload.rollsLeft < prevGS.rollsLeft) { // missed roll_started
           reportDiceIssue('dice_result_fallback', gameId, { via: 'result_without_start' });
@@ -1235,6 +1262,13 @@ export function useMultiplayerGame() {
         reportMpIssue('roll_slow', latest.gameId, { ms: rollMs, attempt_id: rollAttemptId });
       }
       serverDoneAt = Date.now();
+      if (ok && stateRef.current.gameId !== latest.gameId) {
+        // The view moved to another game: never put this game's dice there.
+        rollConfirmedRef.current = true;
+        setDiceAwait(false);
+        if (mountedRef.current) setRollPending(false);
+        return { ok: false } as const;
+      }
       if (ok) {
         const part = { dice: data.dice as number[], lockedDice: optimisticLocked, rollsLeft: data.rolls_left as number, isRolling: false };
         pendingRollUpdateRef.current = part;
@@ -1279,7 +1313,8 @@ export function useMultiplayerGame() {
     // have had time to land after the server answered.
     if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
     const animPromise = new Promise<void>((resolve) => {
-      rollingTimerRef.current = setTimeout(() => resolve(), ROLL_ANIM_MS);
+      animResolveRef.current = resolve;
+      rollingTimerRef.current = setTimeout(() => { animResolveRef.current = null; resolve(); }, ROLL_ANIM_MS);
     });
     const done = Promise.all([animPromise, rpcPromise]).then(async ([, result]) => {
       const landLeft = serverDoneAt + ROLL_LAND_MS - Date.now();
@@ -1775,6 +1810,16 @@ export function useMultiplayerGame() {
       cleanupChannel();
       cleanupTimers();
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
+      // Let an in-flight roll() finish its cleanup instead of hanging forever.
+      animResolveRef.current?.(); animResolveRef.current = null;
+      queuedRemoteRef.current = null;
+      // A batched lock tap must never be sent after the player left the match.
+      if (lockBatchRef.current?.timer) {
+        clearTimeout(lockBatchRef.current.timer);
+        lockBatchRef.current.resolve(true);
+        pendingLockPromisesRef.current.delete(lockBatchRef.current.promise);
+        lockBatchRef.current = null;
+      }
       if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
       if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
       if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; }

@@ -95,6 +95,11 @@ export function getUpperBonusDifference(scores: Record<string, number | null>): 
   }, 0);
 }
 
+/** True once the upper section is complete with at least 63 points, i.e. the 50-point bonus is secured. */
+export function isUpperBonusSecured(scores: Record<string, number | null>): boolean {
+  return getUpperSectionTotal(scores) >= 63;
+}
+
 export function getTotalScore(scores: Record<string, number | null>): number {
   const upperTotal = getUpperSectionTotal(scores);
   const bonus = upperTotal >= 63 ? 50 : 0;

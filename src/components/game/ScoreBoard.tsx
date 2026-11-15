@@ -534,6 +534,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
       {renderSumRow(t('sum'), (p) => `${getUpperSectionTotal(p.scores)}`)}
       {renderSumRow(t('bonus'), (p) => {
+        if (isUpperBonusSecured(p.scores)) return '+ 50';
         const difference = getUpperBonusDifference(p.scores);
         return difference > 0 ? `+ ${difference}` : difference < 0 ? `− ${Math.abs(difference)}` : '0';
       })}

@@ -33,6 +33,20 @@ async function joined() {
   return hook;
 }
 describe('authoritative multiplayer recovery', () => {
+  it('aborts a lock-wait roll after same-game resubscription', async () => {
+    game = { ...game, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    let release!: (value: unknown) => void;
+    m.roll.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    await act(async () => { void result.current.toggleLock(0); await vi.advanceTimersByTimeAsync(250); });
+    let rolling!: Promise<boolean>;
+    await act(async () => { rolling = result.current.roll(); });
+    await act(async () => { await result.current.rejoinGame('game'); });
+    await act(async () => { release({ data: { success: true }, error: null }); await vi.advanceTimersByTimeAsync(10); });
+    expect(m.roll.mock.calls.filter(call => call[0] === 'client_roll')).toHaveLength(0);
+    await expect(rolling).resolves.toBe(false);
+    unmount();
+  });
   it('does not retry a pending lock after the app enters background', async () => {
     game = { ...game, rolls_left: 2 };
     const { result, unmount } = await joined();

@@ -269,6 +269,7 @@ export function useMultiplayerGame() {
   // The game this hook is currently entering/showing; async work for any other game is dropped.
   const activeGameIdRef = useRef<string | null>(null);
   const animationGenerationRef = useRef(0);
+  const subscriptionGenerationRef = useRef(0);
   const startRemoteRollingRef = useRef<((d?: RollDicePart, h?: { lockedDice: boolean[]; rollsLeft: number }) => void) | null>(null);
   const applyRemoteResultRef = useRef<((p: RollDicePart, s?: 'roll_result' | 'saved_row') => void) | null>(null);
   const animResolveRef = useRef<(() => void) | null>(null);
@@ -309,6 +310,9 @@ export function useMultiplayerGame() {
   // If omitted, we only show the visual spin and rely on postgres_changes.
   const startRemoteRolling = useCallback((dicePart?: RollDicePart, lockHint?: { lockedDice: boolean[]; rollsLeft: number }) => {
     const prevGS = stateRef.current.gameState;
+    if (prevGS && (dicePart || lockHint)) {
+      stateRef.current = { ...stateRef.current, gameState: { ...prevGS, ...(dicePart ?? lockHint) } };
+    }
     if (dicePart) {
       const visibleDicePart = {
         ...dicePart,
@@ -478,12 +482,12 @@ export function useMultiplayerGame() {
   }, []);
 
   const refreshGameState = useCallback(async (gameId: string, attempt = 0) => {
-    const generation = animationGenerationRef.current;
+    const generation = subscriptionGenerationRef.current;
     const [gameRes, playersRes] = await Promise.all([
       supabase.from('games').select('*').eq('id', gameId).single(),
       supabase.from('game_players').select('id, game_id, player_name, player_index, scores, is_bot, session_id').eq('game_id', gameId).order('player_index'),
     ]);
-    if (!mountedRef.current || generation !== animationGenerationRef.current ||
+    if (!mountedRef.current || generation !== subscriptionGenerationRef.current ||
         (activeGameIdRef.current && activeGameIdRef.current !== gameId)) return;
 
     if (gameRes.error || playersRes.error) {
@@ -496,7 +500,7 @@ export function useMultiplayerGame() {
       // the match showing stale dice/scores.
       if (attempt < 3) {
         setTimeout(() => {
-          if (mountedRef.current && (!activeGameIdRef.current || activeGameIdRef.current === gameId)) void refreshGameStateRef.current?.(gameId, attempt + 1);
+          if (mountedRef.current && generation === subscriptionGenerationRef.current && activeGameIdRef.current === gameId) void refreshGameStateRef.current?.(gameId, attempt + 1);
         }, 2000 * (attempt + 1));
       } else if (mountedRef.current) {
         // A failed roll/score is waiting for the real match state: keep
@@ -504,7 +508,7 @@ export function useMultiplayerGame() {
         if (failedRollReconcileRef.current === gameId) {
           reportMpIssue('reconcile_retry', gameId, { attempt });
           setTimeout(() => {
-            if (mountedRef.current && (!activeGameIdRef.current || activeGameIdRef.current === gameId)) void refreshGameStateRef.current?.(gameId, attempt + 1);
+            if (mountedRef.current && generation === subscriptionGenerationRef.current && activeGameIdRef.current === gameId) void refreshGameStateRef.current?.(gameId, attempt + 1);
           }, 5000);
         }
         // Retries exhausted: never leave the match stuck on a spinner — show a
@@ -808,6 +812,9 @@ export function useMultiplayerGame() {
 
   // Subscribe to realtime changes (single channel for both lobby + game)
   const subscribeToGame = useCallback((gameId: string) => {
+    // Every (re)subscription invalidates async reads and lock-wait rolls that
+    // started before it, even for the same game; queued results stay intact.
+    subscriptionGenerationRef.current += 1;
     if (activeGameIdRef.current !== gameId) {
       animationGenerationRef.current += 1;
       if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
@@ -1153,6 +1160,7 @@ export function useMultiplayerGame() {
     if (rollingGuardRef.current || failedRollReconcileRef.current || submittingRef.current || forfeitingRef.current) return false;
     // M9: read latest state from ref so stale closures (after rapid renders)
     // don't gate the roll against an outdated snapshot.
+    const initialSubscription = subscriptionGenerationRef.current;
     const initial = stateRef.current;
     if (!initial.gameId || !initial.gameState || !isActionable(initial)) return false;
     const initialGs = initial.gameState;
@@ -1192,6 +1200,13 @@ export function useMultiplayerGame() {
     // normally invisible; if confirmation fails we resync instead of rolling.
     if (pendingLockPromisesRef.current.size > 0) {
       const locksOk = await waitForPendingLocks();
+      if (!mountedRef.current || initialSubscription !== subscriptionGenerationRef.current || activeGameIdRef.current !== initial.gameId) {
+        // The match was left/reopened while locks confirmed: this tap's roll
+        // is abandoned, so it must not hold the guard or the await spin.
+        rollingGuardRef.current = false;
+        setDiceAwait(false);
+        return false;
+      }
       if (!locksOk) {
         reportMpIssue('roll_lock_unconfirmed', initial.gameId, {});
         rollingGuardRef.current = false;
@@ -1906,6 +1921,8 @@ export function useMultiplayerGame() {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      subscriptionGenerationRef.current += 1;
+      rollingGuardRef.current = false;
       // The await flag is shared by every dice view; never leave it on.
       setDiceAwait(false);
     };

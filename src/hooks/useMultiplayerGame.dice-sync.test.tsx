@@ -51,6 +51,35 @@ async function joined() {
 }
 
 describe('online dice sync', () => {
+  it('rejects an older result batched with a newer start', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    const locks = [true,false,false,false,false];
+    await act(async () => {
+      m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 1, lockedDice: locks } });
+      m.handlers.roll_result({ payload: { player: 1, round: 1, rollsLeft: 2, dice: [6,6,6,6,6], lockedDice: [false,false,false,false,false] } });
+    });
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.gameState?.lockedDice).toEqual(locks);
+    expect(diceAwait.active).toBe(true);
+    unmount();
+  });
+
+  it('drops a refresh started before same-game resubscription', async () => {
+    game = { ...game, current_player_index: 1 };
+    const { result, unmount } = await joined();
+    holdReads = true;
+    let pending!: Promise<void>;
+    await act(async () => { pending = result.current.retryConnection(); });
+    holdReads = false;
+    await act(async () => { await result.current.rejoinGame('game'); });
+    game = { ...game, dice: [6,6,6,6,6], rolls_left: 2 };
+    await act(async () => { releaseRead(); await pending; });
+    expect(result.current.gameState?.rollsLeft).toBe(3);
+    expect(result.current.remoteRolling).toBe(false);
+    unmount();
+  });
+
   it('preserves a received next throw across same-game resubscription with a stale read', async () => {
     game = { ...game, current_player_index: 1 };
     const { result, unmount } = await joined();

@@ -210,6 +210,30 @@ describe('online dice sync', () => {
     expect(m.roll).not.toHaveBeenCalled();
   });
 
+  it('drops a queued opponent throw when they score before it is replayed', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [1,1,2,3,4], lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,true,false,false,false], rollsLeft: 1, round: 1 } }); });
+    await act(async () => { m.handlers.games({ new: { ...game, current_player_index: 1, round: 2, rolls_left: 3, dice: [1,1,1,1,1], locked_dice: [false,false,false,false,false], updated_at: '2026-11-15T12:00:01Z' } }); });
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 2 } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [6,5,4,3,2], lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 2 } }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.gameState?.dice).toEqual([6,5,4,3,2]);
+    expect(result.current.gameState?.rollsLeft).toBe(2);
+    expect(result.current.remoteRolling).toBe(false);
+    unmount();
+  });
+
+  it('opens a different match from the same view', async () => {
+    const { result, unmount } = await joined();
+    game = { ...game, id: 'game2', game_code: 'GHIJKL' };
+    await act(async () => { await result.current.rejoinGame('game2'); });
+    expect(result.current.gameId).toBe('game2');
+    unmount();
+  });
+
   it("holds the opponent's kept dice still from the start of their roll", async () => {
     game = { ...game, current_player_index: 1, rolls_left: 2 };
     const { result, unmount } = await joined();

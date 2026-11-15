@@ -16,7 +16,7 @@ vi.mock('@/lib/multiplayer-actions', () => ({ directRpc: m.roll, invokeDeviceAct
 vi.mock('@/lib/i18n', () => ({ t: (key: string) => key }));
 vi.mock('@/lib/analytics', () => ({ trackEvent: m.track }));
 vi.mock('@/lib/notifications', () => ({ clearGameNotifications: vi.fn() }));
-import { useMultiplayerGame } from './useMultiplayerGame';
+import { useMultiplayerGame, resetDiceIssueCounts } from './useMultiplayerGame';
 import { diceAwait } from '@/components/dice-engine/await-store';
 
 let game: Record<string, unknown>;
@@ -28,7 +28,7 @@ const players = [
   { id: 'p2', player_name: 'Other', player_index: 1, scores: {}, is_bot: false, session_id: 'other' },
 ];
 beforeEach(() => {
-  vi.useFakeTimers(); holdReads = false; held = [];
+  resetDiceIssueCounts(); vi.useFakeTimers(); holdReads = false; held = [];
   m.track.mockClear(); m.handlers = {}; players[0].scores = {}; players[1].scores = {};
   vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
   game = { id: 'game', game_code: 'ABCDEF', status: 'playing', current_player_index: 0, dice: [2,3,4,5,6], locked_dice: [false,false,false,false,false], rolls_left: 3, round: 1, updated_at: '2026-11-15T12:00:00Z' };
@@ -144,6 +144,17 @@ describe('online dice sync', () => {
     await act(async () => { release({ data: { success: true, score: 12 }, error: null }); });
     expect(result.current.gameState?.currentPlayerIndex).toBe(1);
     expect(result.current.gameState?.rollsLeft).toBe(3);
+    unmount();
+  });
+
+  it('logs an ignored old-round throw at most twice per match', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3, round: 2 };
+    const { unmount } = await joined();
+    for (let i = 0; i < 4; i++) {
+      await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    }
+    const logged = m.track.mock.calls.filter(c => c[0] === 'mp_issue' && c[1]?.kind === 'dice_msg_ignored' && c[1]?.reason === 'old_round');
+    expect(logged).toHaveLength(2);
     unmount();
   });
 

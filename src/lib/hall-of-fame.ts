@@ -118,20 +118,25 @@ async function syncMostGamesRank(): Promise<void> {
 }
 
 /** Reports a finished match to this week's Hall of Fame and celebrates entering/climbing the top 10. */
-export async function reportWeeklyScore(score: number): Promise<void> {
+export async function reportWeeklyScore(score: number, matchKey?: string, completedAt?: string): Promise<boolean> {
   try {
     const gamesBefore = await readMostGamesRank();
     const deviceId = await initDeviceId();
-    const { data, error } = await supabase.rpc('report_weekly_score_ranked', {
+    const { data, error } = matchKey && completedAt ? await supabase.rpc('report_weekly_score_receipted', {
+      p_session_id: getSessionId(), p_device_id: deviceId, p_match_key: matchKey,
+      p_name: getProfileName() || '', p_score: Math.round(score),
+      p_completed_at: completedAt, p_country: getProfileCountry() ?? undefined,
+    }) : await supabase.rpc('report_weekly_score_ranked', {
       p_session_id: getSessionId(),
       p_device_id: deviceId,
       p_name: getProfileName() || '',
       p_score: Math.round(score),
       p_country: getProfileCountry() ?? undefined,
     });
-    if (error || !data) return;
-    const res = data as { ok?: boolean; before?: number | null; after?: number | null };
-    if (!res.ok) return;
+    if (error || !data) return false;
+    const res = data as { ok?: boolean; before?: number | null; after?: number | null; duplicate?: boolean; current_week?: boolean };
+    if (!res.ok) return false;
+    if (res.duplicate || res.current_week === false) return true;
     const after = inTop(res.after) ? res.after : null;
     cacheRank(after);
     const before = inTop(res.before) ? res.before : null;
@@ -143,7 +148,8 @@ export async function reportWeeklyScore(score: number): Promise<void> {
         celebrateRank(gamesBefore, gamesAfter, true, scoreNotice ? 9000 : 2500);
       }
     }
-  } catch { /* best effort */ }
+    return true;
+  } catch { return false; }
 }
 
 /** Refreshes my current rank (others may have passed me) and tells me if I dropped. */

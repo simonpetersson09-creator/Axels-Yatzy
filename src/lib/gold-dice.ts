@@ -52,57 +52,51 @@ function readPending(): string[] {
   } catch { return []; }
 }
 
-function queuePending(matchKey: string) {
+function queuePending(matchKey: string): boolean {
   const list = readPending();
   if (!list.includes(matchKey)) {
     list.push(matchKey);
-    try { localStorage.setItem(PENDING_KEY, JSON.stringify(list.slice(-20))); } catch { /* noop */ }
+    try { localStorage.setItem(PENDING_KEY, JSON.stringify(list)); } catch { return false; }
   }
+  return true;
 }
 
 async function sendReport(matchKey: string): Promise<boolean> {
   // Device id and session ownership must be ready, or the server rejects the report.
   const device = await initDeviceId().catch(() => getDeviceIdSync());
   if (!device) return false;
-  await claimSession();
-  const { error } = await supabase.rpc('record_local_yatzy_match', {
+  if (!await claimSession()) return false;
+  const { data, error } = await supabase.rpc('record_local_yatzy_match', {
     p_session_id: getSessionId(), p_device_id: device, p_match_key: `sp:${matchKey}`,
   });
-  return !error;
+  return !error && !!data && typeof data === 'object' && !Array.isArray(data) && data.ok === true;
 }
 
 /** Report a finished match vs the computer that had a Yatzy (server dedupes per match). */
-export async function reportLocalYatzyMatch(matchKey: string): Promise<void> {
-  try {
-    if (await sendReport(matchKey)) {
-      await fetchGoldStatus(); // refresh cache so Home shows new progress
-    } else {
-      queuePending(matchKey); // no network right now: try again later
-    }
-  } catch {
-    queuePending(matchKey);
-  }
+export async function reportLocalYatzyMatch(matchKey: string): Promise<boolean> {
+  if (!queuePending(matchKey)) return false;
+  await flushPendingYatzyMatches();
+  return !readPending().includes(matchKey);
 }
 
 /** Retries matches that could not be reported earlier (e.g. offline at game end). */
+let pendingFlight: Promise<void> | null = null;
 async function flushPendingYatzyMatches(): Promise<void> {
-  const list = readPending();
-  if (!list.length) return;
-  const left: string[] = [];
-  for (const key of list) {
-    try {
-      if (!(await sendReport(key))) left.push(key);
-    } catch { left.push(key); }
-  }
-  try {
-    if (left.length) localStorage.setItem(PENDING_KEY, JSON.stringify(left));
-    else localStorage.removeItem(PENDING_KEY);
-  } catch { /* noop */ }
+  if (pendingFlight) return pendingFlight;
+  pendingFlight = (async () => {
+    for (const key of readPending()) {
+      if (!await sendReport(key)) break;
+      // Read current contents, not an old snapshot: another match may have
+      // joined the queue while the request was pending.
+      localStorage.setItem(PENDING_KEY, JSON.stringify(readPending().filter(k => k !== key)));
+    }
+  })().catch(() => {}).finally(() => { pendingFlight = null; });
+  return pendingFlight;
 }
 
 export function goldDaysLeft(s: GoldStatus): number {
-  if (!isGoldActive(s)) return 0;
-  return Math.max(1, Math.ceil((Date.parse(s.goldUntil!) - Date.now()) / 86_400_000));
+  if (!isGoldActive(s) || !s.goldUntil) return 0;
+  return Math.max(1, Math.ceil((Date.parse(s.goldUntil) - Date.now()) / 86_400_000));
 }
 
 export async function fetchGoldStatus(): Promise<GoldStatus> {
@@ -148,10 +142,10 @@ export function useGoldStatus(): GoldStatus {
  * Marks the period as seen.
  */
 export function consumeNewGold(s: GoldStatus): boolean {
-  if (!isGoldActive(s)) return false;
+  if (!isGoldActive(s) || !s.goldUntil) return false;
   const seen = localStorage.getItem(SEEN_KEY);
-  if (seen && Date.parse(seen) >= Date.parse(s.goldUntil!) - 60_000) return false;
-  localStorage.setItem(SEEN_KEY, s.goldUntil!);
+  if (seen && Date.parse(seen) >= Date.parse(s.goldUntil) - 60_000) return false;
+  localStorage.setItem(SEEN_KEY, s.goldUntil);
   return true;
 }
 

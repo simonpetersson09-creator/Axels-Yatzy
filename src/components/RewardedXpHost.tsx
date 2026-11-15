@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { optionalAdPair } from '@/lib/rewarded-pair';
-import { awardAdXp } from '@/lib/dice-shop';
-import { trackEvent } from '@/lib/analytics';
+import { flushAdRewardReceipts } from '@/lib/ad-reward-delivery';
+import { flushResultReports } from '@/lib/result-delivery';
+import { initDeviceId } from '@/lib/device';
 import { useTranslation } from '@/lib/i18n';
-
-const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 /**
  * App-wide receiver: one SDK-confirmed completed ad requests one server XP.
@@ -17,22 +16,22 @@ export default function RewardedXpHost() {
   const tRef = useRef(t);
   tRef.current = t;
   useEffect(() => {
-    optionalAdPair.setRewardHandler(() => {
-      void (async () => {
-        for (let attempt = 1; attempt <= 3; attempt += 1) {
-          try {
-            const r = await awardAdXp();
-            trackEvent('ad_xp_result', { ok: r.ok, late: true, reason: r.ok === false ? r.reason : undefined, attempt });
-            if (r.ok) { toast.success(tRef.current('xpEarned', { n: r.xp }), { duration: 6000 }); return; }
-            // Cooldown means the XP was already granted recently — not worth retrying.
-            if (r.ok === false && r.reason === 'cooldown') return;
-          } catch { /* retry below */ }
-          if (attempt < 3) await wait(1500 * attempt);
-        }
-        toast.error(tRef.current('errGeneric'));
-      })();
-    });
-    return () => optionalAdPair.setRewardHandler(null);
+    const flush = () => {
+      if (document.visibilityState === 'hidden' || localStorage.getItem('mrb_data_deletion_cleanup') === '1') return;
+      void initDeviceId().then(() => flushAdRewardReceipts(xp => toast.success(tRef.current('xpEarned', { n: xp }), { duration: 6000 })));
+      void flushResultReports();
+    };
+    optionalAdPair.setRewardHandler(flush);
+    flush();
+    const timer = setInterval(flush, 15_000);
+    window.addEventListener('online', flush);
+    document.addEventListener('visibilitychange', flush);
+    return () => {
+      optionalAdPair.setRewardHandler(null);
+      clearInterval(timer);
+      window.removeEventListener('online', flush);
+      document.removeEventListener('visibilitychange', flush);
+    };
   }, []);
   return null;
 }

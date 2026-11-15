@@ -199,6 +199,26 @@ describe('online dice sync', () => {
     unmount();
   });
 
+  it('plays a newer opponent result during landing even when its start was lost', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    holdReads = true; // A later refresh must not conceal a dropped broadcast.
+    const locks = [true,false,false,false,false];
+    await act(async () => {
+      m.handlers.roll_started({ payload: { player: 1, round: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2 } });
+      m.handlers.roll_result({ payload: { player: 1, round: 1, dice: [1,2,3,4,5], lockedDice: [false,false,false,false,false], rollsLeft: 2 } });
+      m.handlers.roll_result({ payload: { player: 1, round: 1, dice: [1,6,6,6,6], lockedDice: locks, rollsLeft: 1 } });
+    });
+    expect(result.current.gameState?.dice).toEqual([1,2,3,4,5]);
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.gameState?.dice).toEqual([1,6,6,6,6]);
+    expect(result.current.gameState?.lockedDice).toEqual(locks);
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.remoteRolling).toBe(false);
+    expect(diceAwait.active).toBe(false);
+    unmount();
+  });
+
   it('never sends a batched lock tap after leaving the match', async () => {
     game = { ...game, rolls_left: 2 };
     const { result, unmount } = await joined();

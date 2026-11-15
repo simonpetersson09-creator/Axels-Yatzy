@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Sista tärningskontroll – 15 november 20:51 UTC
+- [ ] Rätta återskapat tappat nästa motståndarkast när startmeddelandet saknas under föregående landning; regression och befintliga prov.
+- [ ] Mät bildtider och kontrollera kast/lås på telefon- och iPadmått utan live-testdata.
+- [ ] Verifiera flyt och verklig onlinesynkning på fysiska telefoner; kräver signerad appversion och två telefoner.
+
 ## Ytterligare tärningskontroll – 15 november 19:09
 - [x] Rättat gamla kastsvar inom turen och landning efter full återhämtningsläsning; två nya regressionstester. 72 riktade och 831 tester i 134 filer godkända. Körande avskilt prov visar bevarat lås/kast vid gammalt svar och korrekt landning efter läsning, utan sidfel; bygge OK.
 - [x] Återstående lucka återskapad i separat prov: samma spelare/kastnummer från en tidigare runda accepteras under ny runda eftersom broadcast saknar kontrollerad rundidentitet. Rapporteras för separat rättning; inte bevisad orsak i Alicia-matchen. Sena egna kastsvar och läsningar saknar även genomgående matchlivstidsägare (kodrisk, ej återskapad här).

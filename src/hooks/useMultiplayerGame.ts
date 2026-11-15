@@ -956,25 +956,6 @@ export function useMultiplayerGame() {
           && next.round === prevGS.round) {
           receiveRemoteResult({ dice: next.dice, lockedDice: next.locked_dice, rollsLeft: next.rolls_left, isRolling: false }, 'saved_row');
         }
-        /* Result delivery is centralized above; handoffs remain independent. */
-        if (false && opponentRolled) {
-          startRemoteRolling({
-            dice: next.dice,
-            lockedDice: next.locked_dice,
-            rollsLeft: next.rolls_left,
-            isRolling: !!next.is_rolling,
-          });
-        } else if (
-          // Fallback when roll_result was missed: the saved roll lands the
-          // dice that are already spinning.
-          prevGS && myIdx !== null && remoteRollingGuardRef.current && remoteResultAtRef.current === 0 &&
-          next.dice?.length === 5 && next.locked_dice && typeof next.rolls_left === 'number' &&
-          next.current_player_index === prevGS.currentPlayerIndex && myIdx !== next.current_player_index &&
-          next.round === prevGS.round && next.rolls_left <= prevGS.rollsLeft
-        ) {
-          applyRemoteResult({ dice: next.dice, lockedDice: next.locked_dice, rollsLeft: next.rolls_left, isRolling: false }, 'saved_row');
-        }
-
         // Turn hand-off (the opponent scored): apply the turn change straight
         // from the realtime payload instead of waiting for the debounced
         // refresh round-trip. Otherwise the dice sweep-out only started

@@ -51,6 +51,34 @@ async function joined() {
 }
 
 describe('online dice sync', () => {
+  it('lands a remote roll from a full read when both result notifications are lost', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,false,false,false,false], rollsLeft: 1 } }); });
+    game = { ...game, rolls_left: 1, dice: [2,6,6,6,6], locked_dice: [true,false,false,false,false], updated_at: '2026-11-15T12:00:01Z' };
+    await act(async () => { await result.current.retryConnection(); });
+    expect(diceAwait.active).toBe(false);
+    expect(result.current.gameState?.dice).toEqual([2,6,6,6,6]);
+    expect(result.current.gameState?.lockedDice).toEqual([true,false,false,false,false]);
+    await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
+    expect(result.current.remoteRolling).toBe(false);
+    unmount();
+  });
+
+  it('rejects an earlier result during the next remote throw', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,false,false,false,false], rollsLeft: 1 } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [2,3,4,5,6], lockedDice: [false,false,false,false,false], rollsLeft: 2 } }); });
+    expect(diceAwait.active).toBe(true);
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.gameState?.lockedDice).toEqual([true,false,false,false,false]);
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [2,6,6,6,6], lockedDice: [true,false,false,false,false], rollsLeft: 1 } }); });
+    expect(diceAwait.active).toBe(false);
+    expect(result.current.gameState?.dice).toEqual([2,6,6,6,6]);
+    unmount();
+  });
+
   it('lands from the saved server roll when roll_result is lost after a lock hint', async () => {
     game = { ...game, current_player_index: 1, rolls_left: 2 };
     const { result, unmount } = await joined();

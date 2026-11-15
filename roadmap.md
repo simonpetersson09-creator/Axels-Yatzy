@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Bonusläge på spelbrickan
+- [x] Varje spelares bonusruta visar + / − mot tre av varje sort i redan ifyllda övre rutor; tomma rutor räknas inte, strukna räknas. Faktisk bonus och totalpoäng oförändrade.
+- [x] Åtta tester godkända och bygge OK; avskilt körande spel med Anna +3 och Erik −3 bildkontrollerat på telefon/dator utan livedata. Installerad app behöver nästa appversion.
+
 ## Ett startsideskort per skapat spel
 - [x] Samlat väntande inbjudningar på spelets kort med mottagarnas namn; vanliga väninbjudningar behåller egna kort. Befintliga översättningar återanvänds.
 - [x] Stäng drar tillbaka tillhörande inbjudningar med bekräftade svar innan befintlig serverstängning; fel behåller kontroller för återförsök. Dubbeltryck spärrade och cache uppdaterad.

@@ -24,7 +24,8 @@ import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { QuickChat } from '@/components/game/QuickChat';
-import { playTurnHaptic } from '@/lib/haptics';
+const WAITING_TEXT_DELAY_MS = 2500;
+import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { motion } from 'framer-motion';
@@ -155,6 +156,7 @@ export default function MultiplayerGamePage() {
   useEffect(() => { setInfoIndex(null); }, [gameState?.currentPlayerIndex]);
   const statsRecordedRef = useRef(false);
   const rejoinCalledRef = useRef<string | null>(null);
+  const [showTurnTransition, setShowTurnTransition] = useState(false);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const autoRollRef = useRef<string | null>(null);
   const autoRollPendingRef = useRef<string | null>(null);
@@ -412,9 +414,7 @@ export default function MultiplayerGamePage() {
 
     if (prev === null) return; // first observation — skip
     if (current === myPlayerIndex && prev !== myPlayerIndex) {
-      // No full-screen "Din tur" overlay: in fast play it flashed between
-      // every throw. The glowing roll button and haptic signal the turn.
-      playTurnHaptic().catch(() => {});
+      setShowTurnTransition(true);
       setGlowActive(true);
       if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
       glowTimerRef.current = setTimeout(() => setGlowActive(false), 2600);
@@ -611,6 +611,17 @@ export default function MultiplayerGamePage() {
     }
   }, [status, gameState, myPlayerIndex, navigate, finishFallback]);
 
+  // "Väntar på …" only appears after a short pause, so it never flashes
+  // in the dice area between throws when players play quickly.
+  const waitingCandidate = !!gameState && diceTableEmpty && !isMyTurn && !gameState.gameOver
+    && gameState.rollsLeft === 3 && !(localRolling || remoteRolling || gameState.isRolling);
+  const [showWaitingText, setShowWaitingText] = useState(false);
+  useEffect(() => {
+    if (!waitingCandidate) { setShowWaitingText(false); return; }
+    const id = setTimeout(() => setShowWaitingText(true), WAITING_TEXT_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [waitingCandidate]);
+
   if (error) {
     return (
       <div className="app-screen flex items-center justify-center px-6 safe-top safe-bottom">
@@ -727,6 +738,10 @@ export default function MultiplayerGamePage() {
         show={showYatzyCelebration}
         celebrationId={gameState ? diceProfiles.get(gameState.currentPlayerIndex)?.celebration : null}
         onComplete={() => setShowYatzyCelebration(false)}
+      />
+      <TurnTransition
+        trigger={showTurnTransition}
+        onDismiss={() => setShowTurnTransition(false)}
       />
       <motion.div
         className="ios-game-card mp-game relative flex w-full flex-col gap-2"
@@ -867,7 +882,7 @@ export default function MultiplayerGamePage() {
                 skin={profileSkin(diceProfiles.get(gameState.currentPlayerIndex))}
                 className="mt-0"
               />
-              {diceTableEmpty && !isMyTurn && !gameState.gameOver && gameState.rollsLeft === 3 && !(localRolling || remoteRolling || gameState.isRolling) && (
+              {showWaitingText && (
                 <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex flex-col items-center justify-center gap-2.5 text-center text-primary">
                   <div className="px-1 text-[13px] font-semibold leading-tight break-words">
                     {t('waitingForOpponent', { name: gameState.players[gameState.currentPlayerIndex]?.name ?? '' })}

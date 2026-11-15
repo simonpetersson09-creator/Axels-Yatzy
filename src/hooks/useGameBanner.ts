@@ -1,9 +1,11 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { hideGameBanner, showGameBanner } from '@/lib/admob';
 
 /** Visar den stående annonsbannern längst ner så länge spelskärmen är öppen. */
 export function useGameBanner(active = true, placement: 'game' | 'search' = 'game') {
-  useEffect(() => {
+  // Layouteffekt: bannerns plats reserveras före första bildrutan, så
+  // spelplanen aldrig hoppar när bannern dyker upp eller försvinner.
+  useLayoutEffect(() => {
     if (!active) {
       // Clear a banner and its layout reservation left by the previous screen.
       void hideGameBanner();

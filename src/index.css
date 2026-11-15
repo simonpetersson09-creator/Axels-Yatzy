@@ -796,8 +796,9 @@ html:not(.admin-route) #root *::-webkit-scrollbar {
   display: none;
 }
 
-/* Stående annonsbanner (320×50) under matcher: klassen sätts bara när en
-   banner faktiskt visas, så utan annons används hela skärmen som förut. */
+/* Stående annonsbanner (320×50) under matcher: klassen sätts direkt när
+   spelskärmen öppnas och ligger kvar hela matchen, så layouten aldrig
+   hoppar när bannern laddas klart, misslyckas eller laddas om. */
 html.ad-banner-on {
   --game-top-gap: calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) + 12px);
   --game-top-gap-mp: calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) + 8px);

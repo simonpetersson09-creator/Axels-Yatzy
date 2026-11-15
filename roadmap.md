@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Ett startsideskort per skapat spel
+- [ ] Samla väntande inbjudningar på spelets kort; vanliga väninbjudningar behåller egna kort.
+- [ ] Stäng spelet med befintlig bekräftad serverstängning och uppdatera tillhörande inbjudningskort.
+- [ ] Kontrollera gruppering, stängningsfel och telefon-/datorvisning utan livedata.
+
 ## Databas och admin – uppföljning 15 november
 - [x] Databasfelet kunde inte återskapas: 0007 och 0133 har identiska parameternamn; gammal → ny funktion verifieras nu uttryckligen i isolerade SQL-prov. Veckolandets tre tester godkända även före ändring. Tidigare uppgift om tabellordning/parameternamn var felaktig; inga schema- eller livedataändringar behövdes. Fullständig återuppbyggnad av hela databasen inte verifierad.
 - [x] Adminprovet saknade den nya aktivitetshjälparen och jämförde mot föråldrade regler från 0114. Samma aktuella funktioner jämförs nu med/utan materialisering inom en gemensam läsögonblicksbild; alla synliga dagar matchar. Inga adminsiffror eller behörigheter ändrade.

@@ -32,6 +32,18 @@ function reportMpIssue(kind: string, gameId: string | null | undefined, meta: Re
     trackEvent('mp_issue', { kind, ...ctx, ...meta }, { gameId: gameId ?? undefined, gameMode: 'multiplayer' });
   } catch { /* never throw */ }
 }
+/** Dice diagnostics: technical reasons only, at most two of each kind per match. */
+const DICE_ISSUE_CAP = 2;
+const DICE_SLOW_RESULT_MS = 3000;
+const diceIssueCounts = new Map<string, number>();
+function reportDiceIssue(kind: string, gameId: string | null | undefined, meta: Record<string, unknown> = {}) {
+  const key = `${gameId ?? '-'}:${kind}`;
+  const n = diceIssueCounts.get(key) ?? 0;
+  if (n >= DICE_ISSUE_CAP) return;
+  diceIssueCounts.set(key, n + 1);
+  if (diceIssueCounts.size > 200) diceIssueCounts.clear();
+  reportMpIssue(kind, gameId, meta);
+}
 /** Only a running match whose screen is not already over accepts actions. */
 export function isActionable(s: { status: string; gameState: { gameOver?: boolean } | null }): boolean {
   return s.status === 'playing' && !!s.gameState && !s.gameState.gameOver;
@@ -308,6 +320,7 @@ export function useMultiplayerGame() {
       // The roll carries the opponent's final locks (taps not yet synced
       // travel with it). Hold those dice still from the first frame, so a
       // kept die never starts spinning and "slides in" when numbers arrive.
+      remoteLockHintRef.current = lockHint?.lockedDice ?? null;
       if (lockHint) {
         setState(prev => prev.gameState ? {
           ...prev,
@@ -330,6 +343,13 @@ export function useMultiplayerGame() {
       const landLeft = remoteResultAtRef.current ? remoteResultAtRef.current + ROLL_LAND_MS - Date.now() : 0;
       if (landLeft > 0) { remoteRollingTimerRef.current = setTimeout(finish, landLeft); return; }
       remoteRollingTimerRef.current = null;
+      if (!dicePart) {
+        const waitedMs = (remoteResultAtRef.current || Date.now()) - startedAt;
+        if (waitedMs > DICE_SLOW_RESULT_MS) {
+          reportDiceIssue('dice_slow_result', stateRef.current.gameId, { waitedMs, resolvedBy: remoteResultAtRef.current ? 'result' : 'timeout' });
+        }
+      }
+      remoteLockHintRef.current = null;
       setDiceAwait(false);
       flushPendingRoll();
       remoteRollingGuardRef.current = false;
@@ -339,12 +359,22 @@ export function useMultiplayerGame() {
   }, [flushPendingRoll, getPendingLockForTurn]);
 
   // The opponent's server-rolled numbers arrived while their dice spin.
-  const applyRemoteResult = useCallback((part: RollDicePart) => {
+  const applyRemoteResult = useCallback((part: RollDicePart, source: 'roll_result' | 'saved_row' = 'roll_result') => {
     const prevGS = stateRef.current.gameState;
     const visible = {
       ...part,
       lockedDice: getPendingLockForTurn(stateRef.current.gameId, prevGS?.currentPlayerIndex, prevGS?.round) ?? part.lockedDice,
     };
+    const gid = stateRef.current.gameId;
+    if (source === 'saved_row') reportDiceIssue('dice_result_fallback', gid, { via: 'saved_row' });
+    const hint = remoteLockHintRef.current;
+    if (hint && hint.some((v, i) => v !== visible.lockedDice[i])) {
+      reportDiceIssue('dice_lock_moved', gid, { changed: hint.filter((v, i) => v !== visible.lockedDice[i]).length });
+    }
+    if (prevGS && prevGS.dice.length === 5) {
+      const jumped = visible.lockedDice.filter((held, i) => held && prevGS.lockedDice[i] && prevGS.dice[i] !== visible.dice[i]).length;
+      if (jumped > 0) reportDiceIssue('dice_value_jump', gid, { jumped });
+    }
     pendingRollUpdateRef.current = visible;
     remoteResultAtRef.current = Date.now();
     setState(prev => prev.gameState ? {
@@ -706,9 +736,13 @@ export function useMultiplayerGame() {
         if (typeof payload?.player === 'number' && payload.player === myIdx) return;
         if (typeof payload?.player === 'number' && payload.player !== prevGS.currentPlayerIndex) return;
         // A late start from an earlier round must never touch this round's dice.
-        if (typeof payload?.round === 'number' && payload.round !== prevGS.round) return;
+        if (typeof payload?.round === 'number' && payload.round !== prevGS.round) {
+          reportDiceIssue('dice_msg_ignored', gameId, { msg: 'start', reason: 'old_round' }); return;
+        }
         // A late start for a roll already displayed must never start a new flight.
-        if (typeof payload?.rollsLeft === 'number' && payload.rollsLeft >= prevGS.rollsLeft) return;
+        if (typeof payload?.rollsLeft === 'number' && payload.rollsLeft >= prevGS.rollsLeft) {
+          reportDiceIssue('dice_msg_ignored', gameId, { msg: 'start', reason: 'already_shown' }); return;
+        }
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
         if (
           payload?.dice?.length === 5 &&
@@ -745,18 +779,25 @@ export function useMultiplayerGame() {
         if (typeof payload.player === 'number' && payload.player === myIdx) return;
         if (typeof payload.player === 'number' && payload.player !== prevGS.currentPlayerIndex) return;
         // A delayed result from an earlier round must never land on this round.
-        if (typeof payload.round === 'number' && payload.round !== prevGS.round) return;
+        if (typeof payload.round === 'number' && payload.round !== prevGS.round) {
+          reportDiceIssue('dice_msg_ignored', gameId, { msg: 'result', reason: 'old_round' }); return;
+        }
         if (rollingGuardRef.current) return;
         if (payload.dice?.length !== 5 || payload.lockedDice?.length !== 5 || typeof payload.rollsLeft !== 'number') return;
         // A delayed result for an earlier throw must not release the waiting
         // spin or restore its old locks/roll count during the next throw.
-        if (payload.rollsLeft > prevGS.rollsLeft) return;
+        if (payload.rollsLeft > prevGS.rollsLeft) {
+          reportDiceIssue('dice_msg_ignored', gameId, { msg: 'result', reason: 'older_throw' }); return;
+        }
         const part = { dice: payload.dice, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, isRolling: false };
         if (remoteRollingGuardRef.current) {
           // Result already applied (e.g. via postgres_changes) — don't extend the spin.
           if (remoteResultAtRef.current === 0) applyRemoteResult(part);
         }
-        else if (payload.rollsLeft < prevGS.rollsLeft) startRemoteRolling(part); // missed roll_started
+        else if (payload.rollsLeft < prevGS.rollsLeft) { // missed roll_started
+          reportDiceIssue('dice_result_fallback', gameId, { via: 'result_without_start' });
+          startRemoteRolling(part);
+        }
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
         const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number; updated_at?: string };
@@ -808,7 +849,7 @@ export function useMultiplayerGame() {
           next.current_player_index === prevGS.currentPlayerIndex && myIdx !== next.current_player_index &&
           next.round === prevGS.round && next.rolls_left <= prevGS.rollsLeft
         ) {
-          applyRemoteResult({ dice: next.dice, lockedDice: next.locked_dice, rollsLeft: next.rolls_left, isRolling: false });
+          applyRemoteResult({ dice: next.dice, lockedDice: next.locked_dice, rollsLeft: next.rolls_left, isRolling: false }, 'saved_row');
         }
 
         // Turn hand-off (the opponent scored): apply the turn change straight

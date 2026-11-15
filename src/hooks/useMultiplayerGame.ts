@@ -1386,21 +1386,6 @@ export function useMultiplayerGame() {
       if (i !== gs.currentPlayerIndex) return p;
       return { ...p, scores: { ...p.scores, [categoryId]: optimisticScore } };
     });
-    const allDone = updatedPlayers.every(p =>
-      CATEGORIES.every(cat => p.scores[cat.id] !== undefined && p.scores[cat.id] !== null)
-    );
-    let nextPlayerIndex = (gs.currentPlayerIndex + 1) % gs.players.length;
-    if (!allDone) {
-      for (let i = 0; i < gs.players.length; i++) {
-        const candidate = (gs.currentPlayerIndex + 1 + i) % gs.players.length;
-        const hasOpen = CATEGORIES.some(cat =>
-          updatedPlayers[candidate].scores[cat.id] === undefined ||
-          updatedPlayers[candidate].scores[cat.id] === null
-        );
-        if (hasOpen) { nextPlayerIndex = candidate; break; }
-      }
-    }
-
     pendingSubmitRef.current = { key: `${gs.currentPlayerIndex}:${categoryId}`, gameId };
     setPendingCategory(categoryId);
     setPendingPlayerIndex(gs.currentPlayerIndex);

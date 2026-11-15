@@ -29,4 +29,11 @@ describe('running upper bonus difference', () => {
     expect(getTotalScore(scores)).toBe(113);
     expect(getTotalScore({ ...scores, sixes: 12 })).toBe(57);
   });
+
+  it('secures the bonus only at 63+ with the full upper section filled', () => {
+    const exact = { ones: 3, twos: 6, threes: 9, fours: 12, fives: 15, sixes: 18 };
+    expect(isUpperBonusSecured(exact)).toBe(true);
+    expect(isUpperBonusSecured({ ...exact, sixes: 17 })).toBe(false);
+    expect(isUpperBonusSecured({ ones: 5, twos: 10, threes: 15, fours: 20, sixes: null })).toBe(false);
+  });
 });

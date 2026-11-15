@@ -30,7 +30,7 @@ vi.mock('@capacitor-community/admob', () => ({
 
 describe.each(['ios', 'android'])('%s privacy cache boundary', platform => {
   beforeEach(() => {
-    vi.resetModules(); vi.useFakeTimers(); vi.clearAllMocks(); n.handlers.clear();
+    vi.resetModules(); vi.useFakeTimers(); vi.resetAllMocks(); n.handlers.clear();
     n.platform = platform; n.eligible = true;
     n.info.mockImplementation(async () => ({ canRequestAds: n.eligible }));
     n.eligibility.mockResolvedValue({ canRequestAds: false });

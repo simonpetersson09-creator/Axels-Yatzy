@@ -10,6 +10,7 @@ import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
 import { SentInvitesCards } from '@/components/SentInvitesCards';
 import type { OpenLobby } from '@/lib/home-invite-groups';
+import { fetchHomeGameSnapshot } from '@/lib/home-game-snapshot';
 import { FriendRequestNotice } from '@/components/FriendRequestNotice';
 import { HofRankNotice } from '@/components/HofRankNotice';
 import { WeeklyRewardNotice } from '@/components/WeeklyRewardNotice';
@@ -473,12 +474,10 @@ export default function HomePage() {
     let cancelled = false;
     (async () => {
       const sessionId = getSessionId();
-      const ids = mp.map(g => g.gameId!) as string[];
-      const [{ data: games }, { data: players }] = await Promise.all([
-        supabase.from('games').select('id, status, current_player_index, created_at, updated_at').in('id', ids),
-        supabase.from('game_players').select('game_id, session_id, player_index, player_name, last_active_at').in('game_id', ids),
-      ]);
-      if (cancelled) return;
+      const ids = mp.flatMap(g => g.gameId ? [g.gameId] : []);
+      const snapshot = await fetchHomeGameSnapshot(ids);
+      if (cancelled || !snapshot) return;
+      const { games, players } = snapshot;
       const next: Record<string, GameStatus> = {};
       let removed = false;
       let refreshed = false;

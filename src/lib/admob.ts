@@ -361,6 +361,9 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
   if (privacyChanging || showing || rewardedShowing || appOpenShowing) return false;
   if (adPlatform() === 'ios' && (consentPending || trackingAsked && !trackingSettled)) return false;
   let failed = false;
+  let cachesClearedBefore = false;
+  let cachesClearedAfter = false;
+  let finalClearAttempted = false;
   privacyChanging = true;
   privacyBlocked = true;
   adGeneration++;
@@ -375,24 +378,31 @@ export async function showAdPrivacyOptions(): Promise<boolean> {
   try {
     const mod = await loadModule();
     await queueBannerOperation(() => discardPrivacyCaches(mod));
+    cachesClearedBefore = true;
     await mod.AdMob.showPrivacyOptionsForm();
     consentPromise = null;
     const eligible = await ensureConsent(mod);
     // Discard again: a native operation issued before the boundary may have
     // finished while the form was open. Native generations reject late results.
+    finalClearAttempted = true;
     await discardPrivacyCaches(mod);
+    cachesClearedAfter = true;
     privacyBlocked = !eligible;
     return true;
   } catch {
-    // Re-read current UMP eligibility; only explicit true lifts the temporary
-    // block, otherwise fail closed (incl. missing bridge). Lifting never shows
-    // an ad by itself. Never log choices or privacy-form error payloads.
+    // UMP eligibility cannot prove old SDK inventory was discarded. Form
+    // errors may recover only after both cache boundaries succeed.
     failed = true;
     try {
       const mod = await loadModule();
+      if (cachesClearedBefore && !finalClearAttempted) {
+        finalClearAttempted = true;
+        await discardPrivacyCaches(mod);
+        cachesClearedAfter = true;
+      }
       const native = mod.AdMob as typeof mod.AdMob & { getConsentEligibility(): Promise<{ canRequestAds: boolean }> };
       const current = await withTimeout(native.getConsentEligibility(), 5_000, 'consent_eligibility');
-      privacyBlocked = current?.canRequestAds !== true;
+      privacyBlocked = !cachesClearedBefore || !cachesClearedAfter || current?.canRequestAds !== true;
     } catch {
       privacyBlocked = true;
     }

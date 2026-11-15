@@ -1285,11 +1285,26 @@ export function useMultiplayerGame() {
         let resent = false;
         let readIndex = 0;
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
-        const invokeRoll = () => {
+        const invokeRoll = (resend = false) => {
           withTimeout(directRpc('client_roll', 'roll-dice', {
             p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
+            // A resend names the roll count it was made for: if the original
+            // already reached the server, it is rejected instead of rolling twice.
+            ...(resend ? { p_expected_rolls_left: expect.rollsLeft + 1 } : {}),
           }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId, timeoutAfterMs: NETWORK_TIMEOUT_MS })).then(
-            (res) => finish(() => resolve(res as RollRes)),
+            (res) => finish(() => {
+              const r = res as RollRes;
+              const d = r.data;
+              if (resend && d?.stale_roll && d.round === expect.round
+                && d.current_player_index === expect.player && d.rolls_left === expect.rollsLeft
+                && Array.isArray(d.dice)) {
+                // The original roll landed: show it, never spend another.
+                reportMpIssue('roll_resend_deduped', gid, { attempt_id: rollAttemptId });
+                resolve({ data: { success: true, dice: d.dice, rolls_left: d.rolls_left }, error: null });
+                return;
+              }
+              resolve(r);
+            }),
             (err) => { invokeFailed = err ?? new Error('timeout'); },
           );
         };
@@ -1326,7 +1341,7 @@ export function useMultiplayerGame() {
                 resent = true;
                 invokeFailed = null;
                 reportMpIssue('roll_resent', gid, { ms: Date.now() - rollStartedAt, attempt_id: rollAttemptId });
-                invokeRoll();
+                invokeRoll(true);
               }
             } catch { /* keep trying until the deadline */ }
             if (invokeFailed && Date.now() - rollStartedAt > ROLL_RECOVER_DEADLINE_MS) break;

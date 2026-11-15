@@ -4,7 +4,7 @@ vi.mock('@/integrations/supabase/client', () => ({ supabase: {
   from: (table: string) => ({ select: () => ({ in: (_key: string, ids: string[]) => mocks.read(table, ids) }) }),
 } }));
 import { fetchHomeGameSnapshot } from './home-game-snapshot';
-beforeEach(() => mocks.read.mockReset());
+beforeEach(() => { mocks.read.mockReset(); });
 it.each(['games', 'game_players'])('treats a failed %s read as unknown, not deleted', async table => {
   mocks.read.mockImplementation(async (name: string) => name === table
     ? { data: null, error: { message: 'offline' } } : { data: [], error: null });

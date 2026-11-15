@@ -45,3 +45,15 @@ it('removes an expired invite during network failure but retains a still valid i
   expect(screen.queryByText(/Anna/)).not.toBeInTheDocument();
   expect(screen.getByText(/Erik/)).toBeInTheDocument();
 });
+it('expires the displayed invite even when the next network request never completes', async () => {
+  vi.useFakeTimers();
+  mocks.rpc.mockResolvedValue({ data: [{ id: 'hung-expiry', from_session_id: 'other', to_session_id: 'me',
+    status: 'pending', from_name: 'Anna', created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 6000).toISOString() }], error: null });
+  render(<MemoryRouter><InviteOverlay /></MemoryRouter>);
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+  expect(screen.getByText(/Anna/)).toBeInTheDocument();
+  mocks.rpc.mockReturnValue(new Promise(() => {}));
+  await act(async () => { await vi.advanceTimersByTimeAsync(6100); });
+  expect(screen.queryByText(/Anna/)).not.toBeInTheDocument();
+});

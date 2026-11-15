@@ -10,6 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
 import { PickDiceHint } from '@/components/game/PickDiceHint';
+import { getDiceAreaPrompt } from '@/lib/dice-area-prompt';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
@@ -657,11 +658,15 @@ export default function MultiplayerGamePage() {
   const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending && !pendingCategory && !forfeiting;
   // The table stays empty until the player's own Kast 1, so the same in-area
   // slot that shows "Väntar på …" on the opponent's turn tells the player to
-  // start here. Turn ownership already separates the two, and the explicit
-  // !showWaitingText guard keeps them from ever appearing together.
-  const showStartRollHint = diceTableEmpty && isMyTurn && !gameState.gameOver
-    && gameState.rollsLeft === 3 && !(localRolling || remoteRolling || gameState.isRolling)
-    && status === 'playing' && !showWaitingText;
+  // start here. One helper decides which single text the area may carry.
+  const diceAreaPrompt = getDiceAreaPrompt({
+    isMyTurn,
+    tableEmpty: diceTableEmpty,
+    rollsLeft: gameState.rollsLeft,
+    rolling: localRolling || remoteRolling || gameState.isRolling,
+    gameOver: gameState.gameOver,
+    waitingTextShown: showWaitingText,
+  });
 
   const PLAYER_COLORS_HSL = [
     '36 82% 52%', // P1 amber
@@ -879,7 +884,7 @@ export default function MultiplayerGamePage() {
                 skin={profileSkin(diceProfiles.get(gameState.currentPlayerIndex))}
                 className="mt-0"
               />
-              {showWaitingText && (
+              {showWaitingText && diceAreaPrompt === 'waiting' && (
                 <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex flex-col items-center justify-center gap-2.5 text-center text-primary">
                   <div className="px-1 text-[13px] font-semibold leading-tight break-words">
                     {t('waitingForOpponent', { name: gameState.players[gameState.currentPlayerIndex]?.name ?? '' })}
@@ -891,7 +896,7 @@ export default function MultiplayerGamePage() {
                   </div>
                 </div>
               )}
-              {showStartRollHint && (
+              {diceAreaPrompt === 'start' && (
                 <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex items-center justify-center text-center text-primary">
                   <div className="px-1 text-[13px] font-semibold leading-tight break-words">
                     {t('startFirstRollHint')}

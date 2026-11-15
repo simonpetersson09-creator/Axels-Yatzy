@@ -13,7 +13,7 @@ import { AvatarFrame } from '@/components/AvatarFrame';
 import { getFrame } from '@/lib/cosmetics';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
-import { setActiveGame, clearLocalActiveGame, newLocalGameId } from '@/lib/active-game';
+import { setActiveGame, clearLocalActiveGame, removeActiveGame, newLocalGameId } from '@/lib/active-game';
 import { recordGameResult, getRankedGames, isGameResultRecorded } from '@/lib/local-stats';
 import { forfeitAdAllowed, getLastForfeitAdAt } from '@/lib/forfeit-ad';
 import { getLastInterstitialShownAt } from '@/lib/admob';
@@ -147,7 +147,9 @@ export default function GamePage() {
       if (isNewResult && yatzys > 0) void reportLocalYatzyMatch(localMatchKeyRef.current);
       if (isNewResult) trackFinishedEvent(localMatchKeyRef.current, { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
       if (isGameResultRecorded(localMatchKeyRef.current)) {
-        clearLocalActiveGame(localGameId);
+        // Keep the finished snapshot for route reloads; hide only its Home
+        // entry. Replay replaces it together with a fresh match identity.
+        removeActiveGame(localGameId);
         return true;
       }
       return false;

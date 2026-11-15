@@ -264,7 +264,9 @@ export function useMultiplayerGame() {
   const remoteResultAtRef = useRef(0);
   // A second opponent throw that arrives while the first one is still
   // landing is queued and replayed afterwards instead of being dropped.
-  const queuedRemoteRef = useRef<{ gameId: string; lockedDice: boolean[]; rollsLeft: number; result: RollDicePart | null } | null>(null);
+  const queuedRemoteRef = useRef<{ gameId: string; player: number; round: number; lockedDice: boolean[]; rollsLeft: number; result: RollDicePart | null } | null>(null);
+  // The game this hook is currently entering/showing; async work for any other game is dropped.
+  const activeGameIdRef = useRef<string | null>(null);
   const startRemoteRollingRef = useRef<((d?: RollDicePart, h?: { lockedDice: boolean[]; rollsLeft: number }) => void) | null>(null);
   const applyRemoteResultRef = useRef<((p: RollDicePart, s?: 'roll_result' | 'saved_row') => void) | null>(null);
   const animResolveRef = useRef<(() => void) | null>(null);
@@ -365,7 +367,11 @@ export function useMultiplayerGame() {
       setRemoteRolling(false);
       const queued = queuedRemoteRef.current;
       queuedRemoteRef.current = null;
-      if (queued && queued.gameId === stateRef.current.gameId && mountedRef.current) {
+      const nowGS = stateRef.current.gameState;
+      // Replay only into the same turn, and only if the throw is not already on screen.
+      if (queued && queued.gameId === stateRef.current.gameId && mountedRef.current && nowGS
+        && nowGS.currentPlayerIndex === queued.player && nowGS.round === queued.round
+        && queued.rollsLeft < nowGS.rollsLeft) {
         startRemoteRollingRef.current?.(undefined, { lockedDice: queued.lockedDice, rollsLeft: queued.rollsLeft });
         if (queued.result) applyRemoteResultRef.current?.(queued.result);
       }
@@ -448,7 +454,7 @@ export function useMultiplayerGame() {
       // the match showing stale dice/scores.
       if (attempt < 3) {
         setTimeout(() => {
-          if (mountedRef.current && (!stateRef.current.gameId || stateRef.current.gameId === gameId)) void refreshGameStateRef.current?.(gameId, attempt + 1);
+          if (mountedRef.current && (!activeGameIdRef.current || activeGameIdRef.current === gameId)) void refreshGameStateRef.current?.(gameId, attempt + 1);
         }, 2000 * (attempt + 1));
       } else if (mountedRef.current) {
         // A failed roll/score is waiting for the real match state: keep
@@ -456,7 +462,7 @@ export function useMultiplayerGame() {
         if (failedRollReconcileRef.current === gameId) {
           reportMpIssue('reconcile_retry', gameId, { attempt });
           setTimeout(() => {
-            if (mountedRef.current && (!stateRef.current.gameId || stateRef.current.gameId === gameId)) void refreshGameStateRef.current?.(gameId, attempt + 1);
+            if (mountedRef.current && (!activeGameIdRef.current || activeGameIdRef.current === gameId)) void refreshGameStateRef.current?.(gameId, attempt + 1);
           }, 5000);
         }
         // Retries exhausted: never leave the match stuck on a spinner — show a
@@ -470,7 +476,7 @@ export function useMultiplayerGame() {
     const dbPlayers = playersRes.data;
     if (!game || !dbPlayers || !mountedRef.current) return;
     // A slow read for a game this view has already left must never replace it.
-    if (stateRef.current.gameId && stateRef.current.gameId !== gameId) return;
+    if (activeGameIdRef.current && activeGameIdRef.current !== gameId) return;
     // The exiting player's accepted forfeit is terminal locally, including
     // a quick-match seat handed to a bot. Late reads must not reopen it.
     if (confirmedForfeitsRef.current.has(gameId)) return;
@@ -564,6 +570,7 @@ export function useMultiplayerGame() {
         remoteRollingTimerRef.current = null;
       }
       pendingRollUpdateRef.current = null;
+      queuedRemoteRef.current = null;
       remoteRollingGuardRef.current = false;
       setDiceAwait(false);
       setRemoteRolling(false);
@@ -740,6 +747,8 @@ export function useMultiplayerGame() {
 
   // Subscribe to realtime changes (single channel for both lobby + game)
   const subscribeToGame = useCallback((gameId: string) => {
+    activeGameIdRef.current = gameId;
+    queuedRemoteRef.current = null;
     cleanupChannel();
     cleanupTimers();
 
@@ -767,7 +776,7 @@ export function useMultiplayerGame() {
           && payload?.lockedDice?.length === 5 && payload.lockedDice.every(v => typeof v === 'boolean')
           && typeof payload.rollsLeft === 'number'
         ) {
-          queuedRemoteRef.current = { gameId, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, result: null };
+          queuedRemoteRef.current = { gameId, player: prevGS.currentPlayerIndex, round: prevGS.round, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, result: null };
           return;
         }
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
@@ -902,6 +911,7 @@ export function useMultiplayerGame() {
             remoteRollingTimerRef.current = null;
           }
           pendingRollUpdateRef.current = null;
+          queuedRemoteRef.current = null;
           remoteRollingGuardRef.current = false;
           setDiceAwait(false);
           setRemoteRolling(false);
@@ -1262,7 +1272,7 @@ export function useMultiplayerGame() {
         reportMpIssue('roll_slow', latest.gameId, { ms: rollMs, attempt_id: rollAttemptId });
       }
       serverDoneAt = Date.now();
-      if (ok && stateRef.current.gameId !== latest.gameId) {
+      if (ok && activeGameIdRef.current !== latest.gameId) {
         // The view moved to another game: never put this game's dice there.
         rollConfirmedRef.current = true;
         setDiceAwait(false);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getTotalScore, getUpperBonusDifference } from './yatzy-scoring';
+import { getTotalScore, getUpperBonusDifference, isUpperBonusSecured } from './yatzy-scoring';
 
 describe('running upper bonus difference', () => {
   it('starts at zero and ignores unfilled categories', () => {

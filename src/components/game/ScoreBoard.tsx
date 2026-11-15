@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { CATEGORIES, Category, CategoryId, Player } from '@/types/yatzy';
-import { getUpperSectionTotal, getUpperBonusDifference, getTotalScore } from '@/lib/yatzy-scoring';
+import { getUpperSectionTotal, getUpperBonusDifference, isUpperBonusSecured, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playScoreSelectSound } from '@/lib/dice-sounds';

@@ -5,6 +5,11 @@ const mocks = vi.hoisted(() => ({ rpc: vi.fn() }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: { rpc: mocks.rpc } }));
 vi.mock('@/lib/session', () => ({ getSessionId: () => 'me' }));
 vi.mock('@/lib/invites', () => ({ respondInvite: vi.fn() }));
+vi.mock('framer-motion', async () => {
+  const React = await import('react');
+  return { AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
+    motion: { div: ({ children, initial, animate, exit, transition, ...props }: Record<string, unknown>) => React.createElement('div', props, children as React.ReactNode) } };
+});
 import InviteOverlay from './InviteOverlay';
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 it('keeps a pending invite on returned and thrown network errors, then honors a confirmed cancellation', async () => {

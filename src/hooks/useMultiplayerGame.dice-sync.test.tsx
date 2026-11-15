@@ -183,6 +183,33 @@ describe('online dice sync', () => {
     expect(result.current.gameState?.rollsLeft).toBe(3);
     unmount();
   });
+  it('plays a second opponent throw that arrives while the first is still landing', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [1,1,2,3,4], lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,true,false,false,false], rollsLeft: 1, round: 1 } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [1,1,1,1,5], lockedDice: [true,true,false,false,false], rollsLeft: 1, round: 1 } }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.gameState?.dice).toEqual([1,1,1,1,5]);
+    expect(result.current.gameState?.lockedDice).toEqual([true,true,false,false,false]);
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.remoteRolling).toBe(false);
+    expect(diceAwait.active).toBe(false);
+    unmount();
+  });
+
+  it('never sends a batched lock tap after leaving the match', async () => {
+    game = { ...game, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    m.action.mockClear(); m.roll.mockClear();
+    act(() => { result.current.toggleLock(0); });
+    unmount();
+    await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
+    expect(m.action).not.toHaveBeenCalled();
+    expect(m.roll).not.toHaveBeenCalled();
+  });
+
   it("holds the opponent's kept dice still from the start of their roll", async () => {
     game = { ...game, current_player_index: 1, rolls_left: 2 };
     const { result, unmount } = await joined();

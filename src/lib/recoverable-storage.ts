@@ -17,7 +17,9 @@ export function writeRecoverable(key: string, value: string, stage = false): boo
   try {
     localStorage.setItem(key, value);
     pending.delete(key);
-    try { sessionStorage.removeItem(backupKey(key)); } catch { /* retried below */ }
+    try { sessionStorage.removeItem(backupKey(key)); } catch {
+      try { sessionStorage.setItem(backupKey(key), value); } catch { /* both blocked */ }
+    }
     return true;
   } catch {
     try {

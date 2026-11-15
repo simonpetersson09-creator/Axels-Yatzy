@@ -389,8 +389,8 @@ export default function GamePage() {
 
   const handlePlayAgain = useCallback(() => {
     if (!isGameResultRecorded(localMatchKeyRef.current)) { toast.error(t('errGeneric')); return; }
-    localStorage.setItem(namesKey, JSON.stringify(playerNames));
-    localStorage.setItem(aiPlayersKey, JSON.stringify(aiPlayers));
+    writeRecoverable(namesKey, JSON.stringify(playerNames), true);
+    writeRecoverable(aiPlayersKey, JSON.stringify(aiPlayers), true);
     // Every new match needs a fresh dedupe key, otherwise the second and all
     // following games in a row are silently skipped by the stats ledger.
     localMatchKeyRef.current = startNextLocalMatch(localGameId);

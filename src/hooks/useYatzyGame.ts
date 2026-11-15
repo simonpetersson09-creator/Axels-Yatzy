@@ -3,6 +3,7 @@ import { GameState, Player, CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, rollDice } from '@/lib/yatzy-scoring';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { setActiveGame, updateLastRollTime, saveGameState, loadGameState, clearLocalActiveGame } from '@/lib/active-game';
+import { readRecoverable } from '@/lib/recoverable-storage';
 
 function createPlayer(name: string, index: number): Player {
   return {
@@ -122,7 +123,7 @@ export interface AiCatchUpTurn { name: string; category: CategoryId; score: numb
 function fastForwardAi(state: GameState, localId?: string, log?: AiCatchUpTurn[]): GameState {
   let ai: number[] = [];
   try {
-    const raw = localId ? localStorage.getItem(`yatzy-ai-players:${localId}`) : null;
+    const raw = localId ? readRecoverable(`yatzy-ai-players:${localId}`) : null;
     ai = raw ? JSON.parse(raw) : [];
   } catch { ai = []; }
   if (!Array.isArray(ai) || ai.length === 0) return state;
@@ -163,7 +164,7 @@ export function useYatzyGame(localId?: string) {
     // persisted `true` freezes the game (the AI effect bails while rolling).
     const saved = loadGameState<unknown>(localId);
     if (!isValidGameState(saved)) {
-      if (localStorage.getItem(localId ? `yatzy_saved_game:${localId}` : 'yatzy_saved_game') !== null) {
+      if (readRecoverable(localId ? `yatzy_saved_game:${localId}` : 'yatzy_saved_game') !== null) {
         console.warn('Discarding corrupt saved game state');
         clearLocalActiveGame(localId);
       }

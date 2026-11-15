@@ -6,7 +6,8 @@ vi.mock('./session', () => ({ getSessionId: () => 'session-a', claimSession: asy
 import { reportLocalYatzyMatch } from './gold-dice';
 import { flushAdRewardReceipts } from './ad-reward-delivery';
 import { saveAdRewardReceipt, readAdRewardReceipts } from './ad-reward-receipts';
-beforeEach(() => { localStorage.clear(); mocks.rpc.mockReset(); });
+import { forgetRecoverableWrites, retryRecoverableWrites } from './recoverable-storage';
+beforeEach(() => { forgetRecoverableWrites(); localStorage.clear(); sessionStorage.clear(); mocks.rpc.mockReset(); });
 it('retains rejected Yatzy reports and more than 20 offline matches until confirmed', async () => {
   mocks.rpc.mockResolvedValue({ data: { ok: false }, error: null });
   for (let i=0; i<25; i++) expect(await reportLocalYatzyMatch(`match-${i}`)).toBe(false);
@@ -43,4 +44,19 @@ it('never sends a saved reward belonging to another device', async () => {
   await flushAdRewardReceipts();
   expect(mocks.rpc).not.toHaveBeenCalled();
   expect(readAdRewardReceipts()).toHaveLength(1);
+});
+
+it('delivers confirmed 1 XP even with both stores blocked and never replays it after recovery', async () => {
+  const id = 'eaf1264e-0704-40eb-90b9-d8a8257d7ba6';
+  const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('blocked'); });
+  expect(saveAdRewardReceipt(id)).toBe(true);
+  mocks.rpc.mockResolvedValueOnce({ data: null, error: { message: 'offline' } });
+  await flushAdRewardReceipts();
+  expect(readAdRewardReceipts().map(r => r.id)).toEqual([id]);
+  mocks.rpc.mockResolvedValue({ data: { ok: true, xp: 9, earned_today: 2 }, error: null });
+  const paid = vi.fn(); await flushAdRewardReceipts(paid);
+  expect(paid).toHaveBeenCalledExactlyOnceWith(1);
+  spy.mockRestore(); retryRecoverableWrites(); await flushAdRewardReceipts(paid);
+  expect(readAdRewardReceipts()).toEqual([]);
+  expect(mocks.rpc.mock.calls.map(c => c[1].p_attempt_id)).toEqual([id, id]);
 });

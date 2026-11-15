@@ -47,4 +47,3 @@
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
 - iOS lifecycle patch follows diagnostics: UMP/ATT locks survive caller timeouts; ATT waits for active main-thread presenter/notDetermined. Android Rewarded uses Kotlin getters.
 
-- Online: a second opponent throw arriving while the first lands is queued and replayed (queuedRemoteRef); async reads/roll answers for a game the view left are dropped; unmount resolves the roll animation and cancels batched lock sends.

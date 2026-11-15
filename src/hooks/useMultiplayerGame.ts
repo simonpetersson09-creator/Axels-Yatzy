@@ -518,6 +518,17 @@ export function useMultiplayerGame() {
       setRemoteRolling(false);
     }
 
+    // A full read is also a result delivery path. When broadcasts and the
+    // row notification were lost, do not merely buffer these known numbers
+    // until the value-less spin times out.
+    if (!opponentTurnEnded && remoteRollingGuardRef.current && !rollingGuardRef.current &&
+        remoteResultAtRef.current === 0 && prevGSNow &&
+        game.current_player_index === prevGSNow.currentPlayerIndex &&
+        game.current_player_index !== stateRef.current.myPlayerIndex &&
+        game.round === prevGSNow.round && dicePart.rollsLeft <= prevGSNow.rollsLeft) {
+      applyRemoteResult(visibleDicePart);
+    }
+
     // If a local roll animation is in flight, buffer the new dice/roll fields.
     // They will be flushed at the end of ROLL_ANIM_MS so the spin animation
     // never sees its target value change mid-flight.
@@ -630,7 +641,7 @@ export function useMultiplayerGame() {
       rollConfirmedRef.current = true;
       if (mountedRef.current) setRollPending(false);
     }
-  }, [startRemoteRolling, getPendingLockForTurn]);
+  }, [startRemoteRolling, applyRemoteResult, getPendingLockForTurn]);
 
   // Keep ref in sync so debouncedRefresh always calls latest version
   useEffect(() => {
@@ -731,6 +742,9 @@ export function useMultiplayerGame() {
         if (typeof payload.player === 'number' && payload.player !== prevGS.currentPlayerIndex) return;
         if (rollingGuardRef.current) return;
         if (payload.dice?.length !== 5 || payload.lockedDice?.length !== 5 || typeof payload.rollsLeft !== 'number') return;
+        // A delayed result for an earlier throw must not release the waiting
+        // spin or restore its old locks/roll count during the next throw.
+        if (payload.rollsLeft > prevGS.rollsLeft) return;
         const part = { dice: payload.dice, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, isRolling: false };
         if (remoteRollingGuardRef.current) {
           // Result already applied (e.g. via postgres_changes) — don't extend the spin.

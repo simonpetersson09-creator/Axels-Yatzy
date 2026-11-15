@@ -1,5 +1,12 @@
 # Roadmap – Snabbspel online
 
+## Releasegranskning – prioritet 1–4, 15 november
+- [ ] Behåll färdiga lokala resultat tills statistik och rapporteringsunderlag sparats; skydda omspel och återkomst.
+- [ ] Gör lokalt protokoll, tärningar och knappar åtkomliga på små telefoner utan banner; bevara iPad och annonser.
+- [ ] Återställ befintliga och äldre sparade matcher utan nollställning.
+- [ ] Beständig Yatzy-/resultatrapportering och enhetsbundna, idempotenta kvitton för bekräftad annons-XP; ingen dubbelbetalning eller ändrad historik.
+- [ ] Kör riktade tester och avskilda gränssnittsprov; fysisk native-verifiering kräver signerade paket och telefoner.
+
 ## Sena svar – sökningens livscykel
 - [x] Återskapade och rättade sena matchöppningar efter Avbryt/bakåt/avmontering; kontroller efter väntade steg stoppar gamla callbacks utan omsändning eller historikändring. 68 tester godkända över sökning, lobby, övertagande, vänt rum, spel och mätningar; bygge OK. Ursprunglig latensorsak fortfarande obevisad. Arkitektur dokumenterad i docs/online-diagnostic-flow-sweep.md; root AGENTS.md saknar utrymme.
 

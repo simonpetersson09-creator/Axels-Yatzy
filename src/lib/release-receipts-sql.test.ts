@@ -7,11 +7,15 @@ const source = readFileSync('drizzle/migrations/0133_durable_match_and_ad_reward
 const award = readFileSync('drizzle/migrations/0066_award_ad_xp_no_daily_cap.sql','utf8');
 const previousYatzy = readFileSync('drizzle/migrations/0007_permanent_dice_tiers.sql','utf8')
   .match(/CREATE OR REPLACE FUNCTION public\.record_local_yatzy_match[\s\S]*?END \$\$;/)?.[0];
+const isolateHelpers = (definition: string) => definition.replace(
+  /pg_temp\.(claim_session|check_rate_limit|internal_add_yatzy_match|internal_hof_rank|internal_hof_week)\(/g,
+  'pg_temp.receipts_fixture_$1(',
+);
 describe.skipIf(!db)('release receipts — temporary tables only, no production awards', () => {
   async function scenario(check: (sql: postgres.TransactionSql) => Promise<void>) {
     if (!db) throw new Error('Missing test connection');
     await db.begin(async sql => {
-      await sql.unsafe(`
+      await sql.unsafe(isolateHelpers(`
         CREATE TEMP TABLE session_owners(session_id text PRIMARY KEY,device_id text) ON COMMIT DROP;
         CREATE TEMP TABLE player_xp(session_id text PRIMARY KEY,xp integer DEFAULT 0,earned_today integer DEFAULT 0,earned_day date DEFAULT current_date,last_earned_at timestamptz,updated_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE yatzy_match_log(session_id text,match_key text,PRIMARY KEY(session_id,match_key)) ON COMMIT DROP;
@@ -22,16 +26,16 @@ describe.skipIf(!db)('release receipts — temporary tables only, no production 
         CREATE OR REPLACE FUNCTION pg_temp.internal_add_yatzy_match(text,text) RETURNS boolean LANGUAGE plpgsql AS $$ BEGIN INSERT INTO pg_temp.yatzy_match_log VALUES($1,$2) ON CONFLICT DO NOTHING; RETURN FOUND; END $$;
         CREATE OR REPLACE FUNCTION pg_temp.internal_hof_rank(text) RETURNS integer LANGUAGE sql AS $$ SELECT 1 $$;
         CREATE OR REPLACE FUNCTION pg_temp.internal_hof_week() RETURNS date LANGUAGE sql AS $$ SELECT date_trunc('week',now() AT TIME ZONE 'Europe/Stockholm')::date $$;
-      `);
+      `));
       for (const table of source.match(/CREATE TABLE public\.[\s\S]*?\n\);/g) ?? []) {
         await sql.unsafe(table.replace('CREATE TABLE public.','CREATE TEMP TABLE ').replace(/public\./g,'pg_temp.').replace(/\);$/,') ON COMMIT DROP;'));
       }
       // Replay the real existing definition before replacing it: parameter-name
       // incompatibilities must fail here, not be hidden by a fresh function.
       if (!previousYatzy) throw new Error('Missing previous Yatzy definition');
-      await sql.unsafe(previousYatzy.replace(/public\./g,'pg_temp.').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
+      await sql.unsafe(isolateHelpers(previousYatzy.replace(/public\./g,'pg_temp.').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'")));
       for (const fn of (award+'\n'+source).match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/g) ?? []) {
-        await sql.unsafe(fn.replace(/public\./g,'pg_temp.').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
+        await sql.unsafe(isolateHelpers(fn.replace(/public\./g,'pg_temp.').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'")));
       }
       await sql.unsafe("INSERT INTO pg_temp.session_owners VALUES('me','device-a'); INSERT INTO pg_temp.player_xp(session_id,xp) VALUES('me',7);");
       await check(sql);

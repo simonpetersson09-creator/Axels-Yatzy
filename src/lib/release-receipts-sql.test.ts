@@ -22,10 +22,10 @@ describe.skipIf(!db)('release receipts — temporary tables only, no production 
         CREATE OR REPLACE FUNCTION pg_temp.internal_hof_week() RETURNS date LANGUAGE sql AS $$ SELECT date_trunc('week',now() AT TIME ZONE 'Europe/Stockholm')::date $$;
       `);
       for (const table of source.match(/CREATE TABLE public\.[\s\S]*?\n\);/g) ?? []) {
-        await sql.unsafe(table.replace('CREATE TABLE public.','CREATE TEMP TABLE ').replaceAll('public.','pg_temp.').replace(/\);$/,') ON COMMIT DROP;'));
+        await sql.unsafe(table.replace('CREATE TABLE public.','CREATE TEMP TABLE ').replace(/public\./g,'pg_temp.').replace(/\);$/,') ON COMMIT DROP;'));
       }
       for (const fn of (award+'\n'+source).match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/g) ?? []) {
-        await sql.unsafe(fn.replaceAll('public.','pg_temp.').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
+        await sql.unsafe(fn.replace(/public\./g,'pg_temp.').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
       }
       await sql.unsafe("INSERT INTO pg_temp.session_owners VALUES('me','device-a'); INSERT INTO pg_temp.player_xp(session_id,xp) VALUES('me',7);");
       await check(sql);

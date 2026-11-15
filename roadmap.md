@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Databas och admin – uppföljning 15 november
+- [x] Databasfelet kunde inte återskapas: 0007 och 0133 har identiska parameternamn; gammal → ny funktion verifieras nu uttryckligen i isolerade SQL-prov. Veckolandets tre tester godkända även före ändring. Tidigare uppgift om tabellordning/parameternamn var felaktig; inga schema- eller livedataändringar behövdes. Fullständig återuppbyggnad av hela databasen inte verifierad.
+- [x] Adminprovet saknade den nya aktivitetshjälparen och jämförde mot föråldrade regler från 0114. Samma aktuella funktioner jämförs nu med/utan materialisering inom en gemensam läsögonblicksbild; alla synliga dagar matchar. Inga adminsiffror eller behörigheter ändrade.
+- [x] 103 tester godkända i 18 filer, bygge OK. Före release återstår risk för sen kallstartsannons och fysiska iPhone-/Androidprov med signerade paket; dessa ingår inte i denna rättning. Onlineväntans grundorsak fortsatt obevisad.
+
 ## Releasegranskning – skadade sparningar och delad förstaplats
 - [x] Avvisar ogiltiga index, tärningar, lås, kast/rundor, kategoripoäng och felaktigt färdigstatus kontrollerat; andra sparningar och historik bevarade.
 - [x] Lokala och separata resultat visar Oavgjort och delade placeringar (1/1/3); oavgjort ger fortsatt ingen vinst. Befintlig översättning finns på alla 40 språk.

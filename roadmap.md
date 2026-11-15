@@ -1,9 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Ett startsideskort per skapat spel
-- [ ] Samla väntande inbjudningar på spelets kort; vanliga väninbjudningar behåller egna kort.
-- [ ] Stäng spelet med befintlig bekräftad serverstängning och uppdatera tillhörande inbjudningskort.
-- [ ] Kontrollera gruppering, stängningsfel och telefon-/datorvisning utan livedata.
+- [x] Samlat väntande inbjudningar på spelets kort med mottagarnas namn; vanliga väninbjudningar behåller egna kort. Befintliga översättningar återanvänds.
+- [x] Stäng drar tillbaka tillhörande inbjudningar med bekräftade svar innan befintlig serverstängning; fel behåller kontroller för återförsök. Dubbeltryck spärrade och cache uppdaterad.
+- [x] 12 tester godkända; isolerat körande prov på 393×706 och 1280×1800 visar ett spelkort för Anna/Erik och separat Lisa-inbjudan, stängning i rätt ordning och bevarad Lisa efter omladdning, inga runtimefel. Bygge OK; inga livedata eller publicering. Root AGENTS.md vid skyddad storleksgräns.
 
 ## Databas och admin – uppföljning 15 november
 - [x] Databasfelet kunde inte återskapas: 0007 och 0133 har identiska parameternamn; gammal → ny funktion verifieras nu uttryckligen i isolerade SQL-prov. Veckolandets tre tester godkända även före ändring. Tidigare uppgift om tabellordning/parameternamn var felaktig; inga schema- eller livedataändringar behövdes. Fullständig återuppbyggnad av hela databasen inte verifierad.

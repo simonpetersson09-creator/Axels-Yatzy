@@ -25,6 +25,7 @@ import { recordGameResult } from '@/lib/local-stats';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { QuickChat } from '@/components/game/QuickChat';
 const WAITING_TEXT_DELAY_MS = 2500;
+const AUTO_FIRST_ROLL = false;
 import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
@@ -313,8 +314,10 @@ export default function MultiplayerGamePage() {
     };
   }, []);
 
-  // Auto-roll "Kast 1" on my turn — the player's first tap is therefore "Kast 2".
+  // Kast 1 is always rolled by the player (no auto-roll); this effect is kept
+  // disabled so turns start on an empty table with the button at "Kast 1".
   useEffect(() => {
+    if (!AUTO_FIRST_ROLL) return;
     if (!gameState || status !== 'playing') return;
     if (!isMyTurn) return;
     if (gameState.rollsLeft !== 3) return;

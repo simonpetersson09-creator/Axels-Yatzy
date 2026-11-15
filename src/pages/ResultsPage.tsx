@@ -43,7 +43,7 @@ export default function ResultsPage() {
   const [inviting, setInviting] = useState(false);
   const forfeitAd: boolean = forfeit && !isMultiplayer && location.state?.forfeitAd === true;
   const { leaving, leave } = usePostMatchExit(
-    `online:${gameId ?? location.key}`, (!forfeit && !timedOut && results.length > 0) || forfeitAd, () => navigate('/'),
+    `online:${gameId ?? location.key}`, (!timedOut && results.length > 0 && (!forfeit || isMultiplayer)) || forfeitAd, () => navigate('/'),
   );
   // The forfeit ad's 10-minute spacing starts when one is offered.
   useEffect(() => { if (forfeitAd) markForfeitAd(); }, [forfeitAd]);

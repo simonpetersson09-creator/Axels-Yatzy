@@ -1,11 +1,11 @@
 import { beforeEach, afterEach, expect, it, vi } from 'vitest';
-import { readRecoverable, writeRecoverable, retryRecoverableWrites, forgetRecoverableWrites } from './recoverable-storage';
+import { readRecoverable, writeRecoverable, retryRecoverableWrites, forgetRecoverableWrites, removeRecoverable, resumeRecoverableWrites } from './recoverable-storage';
 import { recordGameResult, getLocalStats } from './local-stats';
 import { saveGameState, loadGameState, getLocalActiveGames } from './active-game';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { act, renderHook } from '@testing-library/react';
 vi.mock('./result-delivery', () => ({ flushResultReports: vi.fn() }));
-beforeEach(() => { forgetRecoverableWrites(); localStorage.clear(); sessionStorage.clear(); });
+beforeEach(() => { resumeRecoverableWrites(); forgetRecoverableWrites(); localStorage.clear(); sessionStorage.clear(); });
 afterEach(() => vi.restoreAllMocks());
 
 it('keeps a playable local match and final 30 points when local writes fail, then restores it', () => {
@@ -54,4 +54,27 @@ it('retains staged snapshots until both stores recover and clears them on deleti
   writeRecoverable('mrb_receipt', 'reward', true);
   forgetRecoverableWrites(); vi.restoreAllMocks(); retryRecoverableWrites();
   expect(readRecoverable('mrb_receipt')).toBeNull();
+});
+
+it('does not restore removed saves when storage removal initially fails', () => {
+  writeRecoverable('yatzy_saved_game:a', '30');
+  const spy = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => { throw new Error('blocked'); });
+  removeRecoverable('yatzy_saved_game:a');
+  expect(readRecoverable('yatzy_saved_game:a')).toBeNull();
+  spy.mockRestore(); retryRecoverableWrites();
+  expect(localStorage.getItem('yatzy_saved_game:a')).toBeNull();
+});
+
+it('never overwrites a newer committed value with another tabs stale backup', () => {
+  localStorage.setItem('yatzy-player-stats', 'old');
+  const original = Storage.prototype.setItem;
+  const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function(key, value) {
+    if (this === localStorage) throw new Error('full');
+    original.call(this, key, value);
+  });
+  writeRecoverable('yatzy-player-stats', 'backup'); spy.mockRestore();
+  localStorage.setItem('yatzy-player-stats', 'newer');
+  expect(readRecoverable('yatzy-player-stats')).toBe('newer');
+  retryRecoverableWrites();
+  expect(localStorage.getItem('yatzy-player-stats')).toBe('newer');
 });

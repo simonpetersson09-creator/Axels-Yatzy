@@ -31,10 +31,10 @@ function readList(): ActiveGame[] {
     // Stable destination makes an interrupted migration safe to repeat.
     const gameId = 'local-legacy';
     const raw = readRecoverable(SAVED_GAME_KEY);
-    if (raw && !localStorage.getItem(savedKey(gameId))) localStorage.setItem(savedKey(gameId), raw);
+    if (raw && !readRecoverable(savedKey(gameId))) writeRecoverable(savedKey(gameId), raw, true);
     for (const key of ['yatzy-player-names', 'yatzy-ai-players']) {
-      const value = localStorage.getItem(key);
-      if (value && !localStorage.getItem(`${key}:${gameId}`)) localStorage.setItem(`${key}:${gameId}`, value);
+      const value = readRecoverable(key);
+      if (value && !readRecoverable(`${key}:${gameId}`)) writeRecoverable(`${key}:${gameId}`, value, true);
     }
     return { ...g, gameId, lastRollTime: g.lastRollTime ?? g.timestamp };
   };

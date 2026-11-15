@@ -17,21 +17,57 @@ function createPlayer(name: string, index: number): Player {
  * an older/newer schema. Anything that fails this check is discarded rather
  * than handed to the UI, which indexes `players` unconditionally.
  */
+function isValidSavedScore(category: string, value: unknown): boolean {
+  if (value === null) return true;
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) return false;
+  if (!CATEGORIES.some(c => c.id === category)) return false;
+  if (value === 0) return true;
+  const face = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].indexOf(category) + 1;
+  if (face > 0) return value % face === 0 && value <= face * 5;
+  switch (category) {
+    case 'pair': return value % 2 === 0 && value <= 12;
+    case 'twoPairs': return value % 2 === 0 && value >= 6 && value <= 22;
+    case 'threeOfAKind': return value % 3 === 0 && value <= 18;
+    case 'fourOfAKind': return value % 4 === 0 && value <= 24;
+    case 'smallStraight': return value === 15;
+    case 'largeStraight': return value === 20;
+    case 'yatzy': return value === 50;
+    case 'chance': return value >= 5 && value <= 30;
+    case 'fullHouse':
+      for (let three = 1; three <= 6; three++) {
+        for (let pair = 1; pair <= 6; pair++) {
+          if (three !== pair && value === three * 3 + pair * 2) return true;
+        }
+      }
+      return false;
+    default: return false;
+  }
+}
+
 function isValidGameState(value: unknown): value is GameState {
   if (!value || typeof value !== 'object') return false;
   const s = value as Partial<GameState>;
-  if (!Array.isArray(s.players) || s.players.length === 0) return false;
+  if (!Array.isArray(s.players) || s.players.length === 0 || s.players.length > 4) return false;
   const playersOk = s.players.every(
     p => p && typeof p === 'object' && typeof p.id === 'string' &&
-      typeof p.name === 'string' && p.scores && typeof p.scores === 'object',
+      typeof p.name === 'string' && p.scores && typeof p.scores === 'object' &&
+      !Array.isArray(p.scores) && Object.entries(p.scores).every(([key, score]) =>
+        CATEGORIES.some(c => c.id === key) && isValidSavedScore(key, score)),
   );
   if (!playersOk) return false;
-  if (typeof s.currentPlayerIndex !== 'number' ||
+  if (new Set(s.players.map(p => p.id)).size !== s.players.length) return false;
+  if (typeof s.currentPlayerIndex !== 'number' || !Number.isInteger(s.currentPlayerIndex) ||
       s.currentPlayerIndex < 0 || s.currentPlayerIndex >= s.players.length) return false;
-  if (!Array.isArray(s.dice) || s.dice.length !== 5) return false;
-  if (!Array.isArray(s.lockedDice) || s.lockedDice.length !== 5) return false;
-  if (typeof s.rollsLeft !== 'number' || typeof s.round !== 'number') return false;
+  if (!Array.isArray(s.dice) || s.dice.length !== 5 ||
+      !s.dice.every(d => Number.isInteger(d) && d >= 1 && d <= 6)) return false;
+  if (!Array.isArray(s.lockedDice) || s.lockedDice.length !== 5 ||
+      !s.lockedDice.every(d => typeof d === 'boolean')) return false;
+  if (typeof s.rollsLeft !== 'number' || !Number.isInteger(s.rollsLeft) || s.rollsLeft < 0 || s.rollsLeft > 3) return false;
+  if (typeof s.round !== 'number' || !Number.isInteger(s.round) || s.round < 1 || s.round > CATEGORIES.length) return false;
+  if (s.isRolling !== undefined && typeof s.isRolling !== 'boolean') return false;
   if (typeof s.gameOver !== 'boolean') return false;
+  const allDone = s.players.every(p => CATEGORIES.every(c => p.scores[c.id] != null));
+  if (s.gameOver !== allDone) return false;
   return true;
 }
 
@@ -127,7 +163,7 @@ export function useYatzyGame(localId?: string) {
     // persisted `true` freezes the game (the AI effect bails while rolling).
     const saved = loadGameState<unknown>(localId);
     if (!isValidGameState(saved)) {
-      if (saved) {
+      if (localStorage.getItem(localId ? `yatzy_saved_game:${localId}` : 'yatzy_saved_game') !== null) {
         console.warn('Discarding corrupt saved game state');
         clearLocalActiveGame(localId);
       }

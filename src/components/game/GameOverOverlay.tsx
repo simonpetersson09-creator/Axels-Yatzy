@@ -4,6 +4,7 @@ import { Trophy, RotateCcw, Home } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { fireWinConfetti, tryHapticWin } from '@/lib/confetti';
 import { playWinSound } from '@/lib/win-sound';
+import { getMatchStandings } from '@/lib/match-standings';
 
 interface PlayerResult {
   name: string;
@@ -22,8 +23,8 @@ interface GameOverOverlayProps {
 
 export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackToMenu, leaving = false }: GameOverOverlayProps) {
   const { t } = useTranslation();
-  const sorted = [...players].sort((a, b) => b.score - a.score);
-  const winner = sorted[0];
+  const standings = getMatchStandings(players);
+  const winner = standings[0]?.player;
   const isHumanPlayer = players.length > 0 && !aiPlayers.includes(0);
   // Compare by score/index — not by name — and require a *sole* top scorer so
   // this matches exactly how the win is recorded in the statistics (a tie is
@@ -95,7 +96,7 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                {humanWon ? t('youWin') : t('playerWins', { name: winner?.name ?? '' })}
+                {topCount > 1 ? t('friendsDraw') : humanWon ? t('youWin') : t('playerWins', { name: winner?.name ?? '' })}
               </motion.h2>
             </div>
 
@@ -103,11 +104,11 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider text-center mb-3">
                 {t('finalResult')}
               </p>
-              {sorted.map((player, i) => {
-                const isWinner = i === 0;
+              {standings.map(({ player, rank, index: i }) => {
+                const isWinner = rank === 1;
                 return (
                   <motion.div
-                    key={player.name}
+                    key={`${player.name}-${i}`}
                     className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-all ${
                       isWinner ? 'bg-primary/10 ring-1 ring-primary/25' : 'bg-secondary/50'
                     }`}
@@ -119,7 +120,7 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
                       <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 ${
                         isWinner ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                       }`}>
-                        {i + 1}
+                        {rank}
                       </span>
                       <span className={`text-sm font-semibold truncate ${
                         isWinner ? 'text-foreground' : 'text-muted-foreground'

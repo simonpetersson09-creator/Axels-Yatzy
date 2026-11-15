@@ -13,6 +13,7 @@ import { getKnownFriends } from '@/lib/known-friends';
 import { sendFriendRequest } from '@/lib/friend-requests';
 import { usePostMatchExit } from '@/hooks/usePostMatchExit';
 import { markForfeitAd } from '@/lib/forfeit-ad';
+import { getMatchStandings } from '@/lib/match-standings';
 
 interface PlayerResult {
   name: string;
@@ -107,12 +108,12 @@ export default function ResultsPage() {
     return () => { cancelled = true; };
   }, [isMultiplayer, gameId, results.length]);
 
-  const sorted = [...results].sort((a, b) => b.score - a.score);
-  const winner = sorted[0];
+  const standings = getMatchStandings(results);
+  const winner = standings[0]?.player;
   // Detect a tie at the top so we don't announce a false winner. The server
   // sets winner_id = NULL in this case; the client used to render sorted[0]
   // (the alphabetically/insertion-first player) as the winner.
-  const isDraw = !forfeit && sorted.length > 1 && sorted.filter(p => p.score === winner.score).length > 1;
+  const isDraw = !forfeit && standings.filter(p => p.rank === 1).length > 1;
 
   const forfeitWinner = forfeit && !timedOut && results.length > 1
     ? [...results].filter(r => r.name !== forfeitPlayerName).sort((a, b) => b.score - a.score)[0] ?? null
@@ -176,7 +177,7 @@ export default function ResultsPage() {
             </>
           ) : isDraw ? (
             <h1 className="text-3xl font-display font-black text-gold-gradient">
-              {`${t('gameOver')} – ${winner.score}–${winner.score}`}
+              {t('friendsDraw')}
             </h1>
           ) : (
             <h1 className="text-3xl font-display font-black text-gold-gradient">
@@ -186,11 +187,11 @@ export default function ResultsPage() {
         </div>
 
         <div className="space-y-2">
-          {sorted.map((player, i) => (
+          {standings.map(({ player, rank, index: i }) => (
             <motion.div
               key={`${player.name}-${i}`}
               className={`glass-card p-4 flex items-center justify-between ${
-                i === 0 && !forfeit ? 'ring-1 ring-game-gold/30' : ''
+                rank === 1 && !forfeit ? 'ring-1 ring-game-gold/30' : ''
               } ${forfeit && player.name === forfeitPlayerName ? 'opacity-50' : ''}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -198,9 +199,9 @@ export default function ResultsPage() {
             >
               <div className="flex items-center gap-3 min-w-0">
                 <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
-                  i === 0 && !forfeit ? 'bg-game-gold text-primary-foreground' : 'bg-muted text-muted-foreground'
+                  rank === 1 && !forfeit ? 'bg-game-gold text-primary-foreground' : 'bg-muted text-muted-foreground'
                 }`}>
-                  {i + 1}
+                  {forfeit ? i + 1 : rank}
                 </span>
                 <span className="font-semibold truncate">{player.name}</span>
                 {forfeit && player.name === forfeitPlayerName && (
@@ -208,7 +209,7 @@ export default function ResultsPage() {
                 )}
               </div>
               <span className={`font-display font-bold text-xl flex-shrink-0 ml-2 ${
-                i === 0 && !forfeit ? 'text-game-gold' : 'text-foreground'
+                rank === 1 && !forfeit ? 'text-game-gold' : 'text-foreground'
               }`}>
                 {player.score}
               </span>

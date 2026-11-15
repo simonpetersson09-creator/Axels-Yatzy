@@ -260,6 +260,7 @@ export function useMultiplayerGame() {
   const remoteRollingGuardRef = useRef(false);
   /** When the opponent's numbers arrived (0 = still waiting). */
   const remoteResultAtRef = useRef(0);
+  const remoteLockHintRef = useRef<boolean[] | null>(null);
   // Pending category surfaces an `aiChosenCategory`-style highlight while the
   // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
   // pendingSubmitRef.

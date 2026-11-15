@@ -147,6 +147,17 @@ describe('online dice sync', () => {
     unmount();
   });
 
+  it('logs an ignored old-round throw at most twice per match', async () => {
+    game = { ...game, id: 'game-log', current_player_index: 1, rolls_left: 3, round: 2 };
+    const { unmount } = await joined();
+    for (let i = 0; i < 4; i++) {
+      await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    }
+    const logged = m.track.mock.calls.filter(c => c[0] === 'mp_issue' && c[1]?.kind === 'dice_msg_ignored' && c[1]?.reason === 'old_round');
+    expect(logged).toHaveLength(2);
+    unmount();
+  });
+
   it('accepts a full read that proves a missed own score was committed', async () => {
     game = { ...game, rolls_left: 1 };
     const { result, unmount } = await joined();

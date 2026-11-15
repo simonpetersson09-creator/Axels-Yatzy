@@ -198,12 +198,13 @@ export default function GamePage() {
     };
   }, []);
 
-  // Auto-roll first throw for every player (human and AI) — "Kast 1" happens
-  // automatically, so the button starts at "Kast 2".
+  // Auto-roll the computer's first throw.
   useEffect(() => {
     if (!gameState || gameState.gameOver || gameState.isRolling) return;
     if (gameState.rollsLeft !== 3) return;
     const isAi = aiPlayers.includes(gameState.currentPlayerIndex);
+    // Human players always roll Kast 1 themselves; only the computer auto-rolls.
+    if (!isAi) return;
     const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
     if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
     autoRollPendingRef.current = key;

@@ -82,7 +82,8 @@ export function DiceArea({
     resetKeyRef.current += 1;
   }
   const resetKey = resetKeyRef.current;
-  const cleared = !hasRolled && !isRolling && resetKey > 0;
+  // No dice on the table until the player's own Kast 1, from the very start.
+  const cleared = !hasRolled && !isRolling;
   const tableEmpty = useDiceTableEmpty(cleared, resetKey);
   useEffect(() => {
     onTableEmptyChange?.(tableEmpty);

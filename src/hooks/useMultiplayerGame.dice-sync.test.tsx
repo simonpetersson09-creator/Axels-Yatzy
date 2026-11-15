@@ -269,6 +269,34 @@ describe('online dice sync', () => {
     unmount();
   });
 
+  it('lands a late result that arrives after the waiting spin gave up', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(12000); });
+    expect(result.current.remoteRolling).toBe(false);
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [5,5,5,2,1], lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.gameState?.dice).toEqual([5,5,5,2,1]);
+    expect(result.current.remoteRolling).toBe(false);
+    unmount();
+  });
+
+  it('shows the newest throw when a full read is ahead of the queued one', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [1,1,2,3,4], lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,true,false,false,false], rollsLeft: 1, round: 1 } }); });
+    game = { ...game, rolls_left: 0, dice: [1,1,1,1,1], locked_dice: [true,true,true,true,false], updated_at: '2026-11-15T12:00:03Z' };
+    await act(async () => { await result.current.retryConnection(); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(6000); });
+    expect(result.current.gameState?.dice).toEqual([1,1,1,1,1]);
+    expect(result.current.gameState?.rollsLeft).toBe(0);
+    expect(result.current.remoteRolling).toBe(false);
+    unmount();
+  });
+
   it("holds the opponent's kept dice still from the start of their roll", async () => {
     game = { ...game, current_player_index: 1, rolls_left: 2 };
     const { result, unmount } = await joined();

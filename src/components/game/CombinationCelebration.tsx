@@ -83,7 +83,7 @@ export function CombinationCelebration({ type }: CombinationCelebrationProps) {
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
           {/* Round gold medal in the roll button's design — centered on the scoreboard at the lower section's height */}
-          <div className="absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute left-1/2 top-[var(--combination-center-y,50%)] -translate-x-1/2 -translate-y-1/2">
           <motion.div
             className="relative"
             initial={{ scale: 0.85, opacity: 0, y: 4 }}

@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Medaljernas placering – 15 november
+- [x] Kombinationsmedaljer förankrade vid verkliga mitten av Nedre sektionen med storleksbevakning i gemensamma ScoreBoard; tidigare 60 procent hamnade 67 px för långt ner. Spelregler, översättningar och Yatzy-firande oförändrade.
+- [x] Alla fem medaljer mätta i avskilt körande lokalt spel över 375×667, 393×706, 430×932, 768×1024 och 1024×768: sidled 0 px, höjdavvikelse 0,5 px; bilder granskade. 17 tester godkända, bygge OK. Online återanvänder samma placering men dess fulla flöde inte separat provat; installerad app kräver nästa appversion. Root AGENTS.md vid skyddad storleksgräns.
+
 ## Bonusläge på spelbrickan
 - [x] Varje spelares bonusruta visar + / − mot tre av varje sort i redan ifyllda övre rutor; tomma rutor räknas inte, strukna räknas. Faktisk bonus och totalpoäng oförändrade.
 - [x] Åtta tester godkända och bygge OK; avskilt körande spel med Anna +3 och Erik −3 bildkontrollerat på telefon/dator utan livedata. Installerad app behöver nästa appversion.

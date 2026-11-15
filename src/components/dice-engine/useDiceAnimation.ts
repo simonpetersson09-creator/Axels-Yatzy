@@ -242,8 +242,11 @@ export function useDiceAnimation({
         state.settleFrom.copy(group.quaternion);
         state.settleT = 0;
         state.settling = true;
-        state.settledValue = state.rollValue;
+        if (state.rollValue !== value) getFaceQuaternion(value, randomInt(0, 3), state.target);
+        state.rollValue = value;
+        state.settledValue = value;
         state.animating = false;
+        setDieFlying(index, true);
       }
       // Never re-snap a die that already shows the requested value: doing so
       // would pick a new random yaw and make the number appear to change when
@@ -254,8 +257,15 @@ export function useDiceAnimation({
         getFaceQuaternion(value, 0, state.target);
         state.settledValue = value;
       } else if (state.settledValue !== value) {
-        state.settling = false;
-        settle();
+        if (state.settling) {
+          // A second correction during the interrupted landing retains the
+          // visible pose and continues settling instead of snapping to it.
+          state.settleFrom.copy(group.quaternion);
+          state.settleT = 0;
+          getFaceQuaternion(value, randomInt(0, 3), state.target);
+          state.rollValue = value;
+          state.settledValue = value;
+        } else settle();
       }
 
       state.animating = false;

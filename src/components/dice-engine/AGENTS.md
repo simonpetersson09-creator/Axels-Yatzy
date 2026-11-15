@@ -2,3 +2,4 @@
 - Reset counters are transition events, not persistent visibility state; use explicit cleared state to restore an empty table after canvas recovery. Resume wakes a healthy canvas via DOM/native App events without generating rolls or reconnect requests.
 - Online: roll_started applies broadcast locks before the value-less spin; failed own rolls tumble until reloaded server state applies (capped) — no sliding kept dice or stale landings.
 - A landed roll remains active until its rolling edge ends; late face corrections settle in place instead of starting another entry flight.
+- Interrupted rolls retarget from their current pose and keep the landing signal busy until the corrected face settles; never snap on a simultaneous value/rolling change.

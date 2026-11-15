@@ -8,7 +8,9 @@
 export const diceAwait = { active: false, since: 0 };
 
 /** Safety cap: never tumble forever if a caller forgets to clear the flag. */
-export const DICE_AWAIT_MAX_MS = 12_000;
+// Longer than an own roll's full recovery window (20 s + settle), so a slow
+// but valid answer never lands the dice on old values first.
+export const DICE_AWAIT_MAX_MS = 30_000;
 
 export function setDiceAwait(active: boolean) {
   diceAwait.active = active;

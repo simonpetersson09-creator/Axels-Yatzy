@@ -599,7 +599,12 @@ export function useMultiplayerGame() {
       // back once the real payload arrived.
       const buffered = pendingRollUpdateRef.current;
       const isStale = !!buffered && dicePart.rollsLeft > buffered.rollsLeft;
-      if (!isStale) pendingRollUpdateRef.current = dicePart;
+      const queued = queuedRemoteRef.current;
+      if (queued && queued.gameId === gameId && dicePart.rollsLeft <= queued.rollsLeft) {
+        // This read already shows the queued next throw: hand it to that
+        // throw's own flight instead of landing it at the current boundary.
+        if (dicePart.rollsLeft === queued.rollsLeft && !queued.result) queued.result = dicePart;
+      } else if (!isStale) pendingRollUpdateRef.current = dicePart;
 
       setState(prev => ({
         ...prev,
@@ -777,6 +782,20 @@ export function useMultiplayerGame() {
           && typeof payload.rollsLeft === 'number'
         ) {
           queuedRemoteRef.current = { gameId, player: prevGS.currentPlayerIndex, round: prevGS.round, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, result: null };
+          return;
+        }
+        // A newer throw while the previous spin still has no numbers: move the
+        // spin on to this throw so an older snapshot can no longer land it.
+        if (
+          remoteRollingGuardRef.current && remoteResultAtRef.current === 0 && !rollingGuardRef.current
+          && payload?.lockedDice?.length === 5 && payload.lockedDice.every(v => typeof v === 'boolean')
+          && typeof payload.rollsLeft === 'number' && payload.rollsLeft < prevGS.rollsLeft
+        ) {
+          const hint = { lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft };
+          remoteLockHintRef.current = hint.lockedDice;
+          pendingRollUpdateRef.current = null;
+          setState(prev => prev.gameState ? { ...prev, gameState: { ...prev.gameState, ...hint } } : prev);
+          stateRef.current = { ...stateRef.current, gameState: { ...prevGS, ...hint } };
           return;
         }
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;

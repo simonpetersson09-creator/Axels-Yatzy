@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Skydd för turbyten – 15 november
+- [ ] Stoppa äldre spelmeddelanden före animation/turbyte; behåll egen tur tills poäng bekräftats och kontrollera samma regel vid avläsning.
+- [ ] Registrera stoppade turbyten utan namn eller tärningsvärden; prova gamla meddelanden, poängbekräftelse, tappat svar och motståndarens normala turbyte.
+- [ ] Tvåtelefonprov kräver nästa signerade appversion och fysiska telefoner.
+
 ## Granskningsfynd 17:05 – rättningar
 - [x] Nya reservskrivningar baseras på aktuellt externt värde, inte en ogiltig gammal reserv. Tidigare skydd mot återställning av gamla värden bevarat.
 - [x] Lokal radering fortsätter efter nekad markörskrivning; markerar i minne och båda lagren när möjligt, återförsöker utan ny serverradering och blockerar återställning tills rensning klar.

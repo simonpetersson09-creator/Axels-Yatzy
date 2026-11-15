@@ -1694,6 +1694,7 @@ export type Database = {
         Args: {
           p_attempt_id: string
           p_device_id: string
+          p_expected_rolls_left?: number
           p_game_id: string
           p_locked: boolean[]
           p_session_id: string

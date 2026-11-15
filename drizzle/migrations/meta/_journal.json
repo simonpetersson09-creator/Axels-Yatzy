@@ -953,6 +953,13 @@
       "when": 1794765483691,
       "tag": "0135_raise_anon_statement_timeout",
       "breakpoints": true
+    },
+    {
+      "idx": 136,
+      "version": "7",
+      "when": 1794778883108,
+      "tag": "0136_roll_retry_idempotency",
+      "breakpoints": true
     }
   ]
 }

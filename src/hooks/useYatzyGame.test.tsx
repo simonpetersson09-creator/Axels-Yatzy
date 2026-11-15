@@ -9,7 +9,7 @@ it('rolling an older local slot refreshes only that slot', () => {
   act(() => { result.current.startGame(['Me']); });
   setActiveGame({ type: 'local', gameId: 'newer', timestamp: Date.now() });
   const previous = getActiveGames().find(g => g.gameId === 'newer')?.lastRollTime;
-  vi.advanceTimersByTime(10000);
+  act(() => { vi.advanceTimersByTime(10000); });
   act(() => { result.current.roll(); });
   expect(getActiveGames().find(g => g.gameId === 'older')?.lastRollTime).toBe(Date.now());
   expect(getActiveGames().find(g => g.gameId === 'newer')?.lastRollTime).toBe(previous);

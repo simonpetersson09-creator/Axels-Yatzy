@@ -28,6 +28,15 @@ interface StoredStats extends LocalStats {
   recordedKeys: string[];
   /** Fully played matches only (no forfeits) — used for country/world rank. */
   completedGames: number;
+  pendingReports?: ResultReport[];
+}
+
+export interface ResultReport { key: string; score: number; games: number; yatzy: boolean; completedAt: string }
+export function isGameResultRecorded(key: string): boolean { return readStored().recordedKeys.includes(key); }
+export function getPendingResultReports(): ResultReport[] { return readStored().pendingReports ?? []; }
+export function acknowledgeResultReport(key: string): void {
+  const stored = readStored();
+  localStorage.setItem(STATS_KEY, JSON.stringify({ ...stored, pendingReports: (stored.pendingReports ?? []).filter(r => r.key !== key) }));
 }
 
 const DEFAULT_STATS: LocalStats = {
@@ -64,7 +73,8 @@ function migrate(parsed: any): StoredStats {
   void version;
   // Older records: every match counted so far stays counted.
   const completedGames = typeof parsed?.completedGames === 'number' ? parsed.completedGames : base.gamesPlayed;
-  return { ...base, version: CURRENT_VERSION, recordedKeys, completedGames };
+  const pendingReports = Array.isArray(parsed?.pendingReports) ? parsed.pendingReports : [];
+  return { ...base, version: CURRENT_VERSION, recordedKeys, completedGames, pendingReports };
 }
 
 function readStored(): StoredStats {
@@ -78,8 +88,8 @@ function readStored(): StoredStats {
 }
 
 export function getLocalStats(): LocalStats {
-  const { version, recordedKeys, completedGames, ...rest } = readStored();
-  void version; void recordedKeys; void completedGames;
+  const { version, recordedKeys, completedGames, pendingReports, ...rest } = readStored();
+  void version; void recordedKeys; void completedGames; void pendingReports;
   return rest;
 }
 
@@ -91,7 +101,7 @@ export function getRankedGames(): number {
 export function saveLocalStats(stats: LocalStats): void {
   const prev = readStored();
   const completedGames = Math.max(0, prev.completedGames + (stats.gamesPlayed - prev.gamesPlayed));
-  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys: prev.recordedKeys, completedGames };
+  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys: prev.recordedKeys, completedGames, pendingReports: prev.pendingReports };
   localStorage.setItem(STATS_KEY, JSON.stringify(toStore));
 }
 
@@ -149,16 +159,16 @@ export function recordGameResult(
     : stored.recordedKeys;
 
   const completedGames = stored.completedGames + 1;
-  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys, completedGames };
+  const pendingReports = [...(stored.pendingReports ?? []), { key: matchKey ?? `local:${crypto.randomUUID()}`, score: playerScore, games: completedGames, yatzy: yatzysThisGame > 0 && !matchKey?.startsWith('mp:'), completedAt: new Date().toISOString() }];
+  const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys, completedGames, pendingReports };
   // Stats and their match key commit in one write. Do not report/reward a
   // result that failed to persist; a later attempt may retry it safely.
   try { localStorage.setItem(STATS_KEY, JSON.stringify(toStore)); } catch { return false; }
 
   // Update the player's personal country ranking after every finished match.
   // Lazy import to keep this module free of network deps until needed.
-  void import('./country-rank').then(m => m.syncCountryRank(completedGames)).catch(() => {});
+  void import('./result-delivery').then(m => m.flushResultReports()).catch(() => {});
   // Weekly Hall of Fame: name, matches this week and best score in one match.
   // Only fully played matches count (forfeits are excluded).
-  if (completed) void import('./hall-of-fame').then(m => m.reportWeeklyScore(playerScore)).catch(() => {});
   return true;
 }

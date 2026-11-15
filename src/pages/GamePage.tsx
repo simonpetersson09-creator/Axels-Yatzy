@@ -13,8 +13,8 @@ import { AvatarFrame } from '@/components/AvatarFrame';
 import { getFrame } from '@/lib/cosmetics';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
-import { setActiveGame, clearLocalActiveGame, newLocalGameId } from '@/lib/active-game';
-import { recordGameResult, getRankedGames } from '@/lib/local-stats';
+import { setActiveGame, clearLocalActiveGame, removeActiveGame, newLocalGameId } from '@/lib/active-game';
+import { recordGameResult, getRankedGames, isGameResultRecorded } from '@/lib/local-stats';
 import { forfeitAdAllowed, getLastForfeitAdAt } from '@/lib/forfeit-ad';
 import { getLastInterstitialShownAt } from '@/lib/admob';
 import { getLocalMatchKey, startNextLocalMatch } from '@/lib/local-match-key';
@@ -114,7 +114,7 @@ export default function GamePage() {
   useEffect(() => {
     if (hasStartedRef.current) return;
     hasStartedRef.current = true;
-    if (location.state?.playerNames || !gameState) {
+    if (!gameState) {
       startGame(playerNames);
       trackEvent('game_started', { playerCount: playerNames.length, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
     }
@@ -133,8 +133,8 @@ export default function GamePage() {
   }, [gameState]);
 
   useEffect(() => {
-    if (gameState?.gameOver) {
-      clearLocalActiveGame(localGameId);
+    if (!gameState?.gameOver) return;
+    const commit = () => {
       // Record local stats for human player (index 0)
       const humanScore = getTotalScore(gameState.players[0].scores);
       const allScores = gameState.players.map(p => getTotalScore(p.scores));
@@ -146,7 +146,17 @@ export default function GamePage() {
       const isNewResult = recordGameResult(humanScore, won, yatzys, localMatchKeyRef.current);
       if (isNewResult && yatzys > 0) void reportLocalYatzyMatch(localMatchKeyRef.current);
       if (isNewResult) trackFinishedEvent(localMatchKeyRef.current, { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
-    }
+      if (isGameResultRecorded(localMatchKeyRef.current)) {
+        // Keep the finished snapshot for route reloads; hide only its Home
+        // entry. Replay replaces it together with a fresh match identity.
+        removeActiveGame(localGameId);
+        return true;
+      }
+      return false;
+    };
+    if (commit()) return;
+    const timer = setInterval(() => { if (commit()) clearInterval(timer); }, 1500);
+    return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.gameOver, aiPlayers]);
 
@@ -377,11 +387,14 @@ export default function GamePage() {
   }, [gameState, selectCategory, aiPlayers]);
 
   const handlePlayAgain = useCallback(() => {
+    if (!isGameResultRecorded(localMatchKeyRef.current)) { toast.error(t('errGeneric')); return; }
+    localStorage.setItem(namesKey, JSON.stringify(playerNames));
+    localStorage.setItem(aiPlayersKey, JSON.stringify(aiPlayers));
     // Every new match needs a fresh dedupe key, otherwise the second and all
     // following games in a row are silently skipped by the stats ledger.
     localMatchKeyRef.current = startNextLocalMatch(localGameId);
     startGame(playerNames);
-  }, [startGame, playerNames, localGameId]);
+  }, [startGame, playerNames, aiPlayers, localGameId, namesKey, aiPlayersKey, t]);
 
 
   const handleBackToMenu = useCallback(() => {
@@ -420,7 +433,7 @@ export default function GamePage() {
   return (
     <div
       key={orientationKey}
-      className="ios-game-layout app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none"
+      className="local-game ios-game-layout app-fixed-screen flex items-start justify-center overflow-hidden overscroll-none touch-none"
       style={{
         WebkitOverflowScrolling: 'auto',
         padding: '10px max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left))',

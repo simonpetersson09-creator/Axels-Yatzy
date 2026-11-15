@@ -56,14 +56,17 @@ function getPlatform(): string {
 
 const queue: QueuedEvent[] = [];
 const DIAGNOSTIC_KEY = 'yatzy_play_diagnostics_pending_v1';
-const isDiagnosticName = (name: string) => name === 'mp_issue' || name.startsWith('play_') || name === 'post_match_exit' || name === 'ios_app_open_diag' || name === 'stats_opened' || name === 'ad_opportunity';
+const isDiagnosticName = (name: string) => name === 'game_finished' || name === 'mp_issue' || name.startsWith('play_') || name === 'post_match_exit' || name === 'ios_app_open_diag' || name === 'stats_opened' || name === 'ad_opportunity';
 const isDiagnostic = (e: QueuedEvent) => isDiagnosticName(e.event_name);
 function persistDiagnostics(): void {
-  try { localStorage.setItem(DIAGNOSTIC_KEY, JSON.stringify(queue.filter(isDiagnostic).slice(-200))); } catch { /* Storage is best-effort. */ }
+  try {
+    const durable = queue.filter(isDiagnostic);
+    localStorage.setItem(DIAGNOSTIC_KEY, JSON.stringify([...durable.filter(e => e.event_name === 'game_finished'), ...durable.filter(e => e.event_name !== 'game_finished').slice(-200)]));
+  } catch { /* Storage is best-effort. */ }
 }
 try {
   const saved: unknown = JSON.parse(localStorage.getItem(DIAGNOSTIC_KEY) ?? '[]');
-  if (Array.isArray(saved)) queue.push(...saved.filter((e): e is QueuedEvent => !!e && typeof e.event_name === 'string' && isDiagnostic(e)).slice(-200));
+  if (Array.isArray(saved)) queue.push(...saved.filter((e): e is QueuedEvent => !!e && typeof e.event_name === 'string' && isDiagnostic(e)));
 } catch { /* Corrupt storage must not block play. */ }
 let flushing = false;
 let flushTimer: ReturnType<typeof setTimeout> | null = null;

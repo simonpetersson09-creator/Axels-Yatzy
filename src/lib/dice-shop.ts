@@ -80,19 +80,19 @@ export function useShop(): ShopState {
   return s;
 }
 
-export type AwardResult = { ok: true; xp: number; earnedToday: number } | { ok: false; reason: string; xp?: number };
+export type AwardResult = { ok: true; xp: number; earnedToday: number; duplicate?: boolean } | { ok: false; reason: string; xp?: number };
 
 /** Call only after an optional ad was actually shown. */
-export async function awardAdXp(): Promise<AwardResult> {
+export async function awardAdXp(attemptId: string): Promise<AwardResult> {
   try {
     const dev = await device();
     if (!dev) return { ok: false, reason: 'auth' };
-    const { data, error } = await supabase.rpc('award_ad_xp', { p_session_id: getSessionId(), p_device_id: dev });
+    const { data, error } = await supabase.rpc('award_ad_xp_receipted', { p_session_id: getSessionId(), p_device_id: dev, p_attempt_id: attemptId });
     if (error || !data) return { ok: false, reason: 'error' };
-    const d = data as { ok: boolean; reason?: string; xp?: number; earned_today?: number };
+    const d = data as { ok: boolean; reason?: string; xp?: number; earned_today?: number; duplicate?: boolean };
     if (d.ok) {
       patchShopCache({ xp: Number(d.xp), earnedToday: Number(d.earned_today) });
-      return { ok: true, xp: Number(d.xp), earnedToday: Number(d.earned_today) };
+      return { ok: true, xp: Number(d.xp), earnedToday: Number(d.earned_today), duplicate: d.duplicate };
     }
     if (d.reason === 'cap') patchShopCache({ earnedToday: readCache().dailyCap });
     return { ok: false, reason: d.reason ?? 'error', xp: d.xp };

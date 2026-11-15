@@ -14,6 +14,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_xp_receipts: {
+        Row: {
+          attempt_id: string
+          created_at: string
+          session_id: string
+        }
+        Insert: {
+          attempt_id: string
+          created_at?: string
+          session_id: string
+        }
+        Update: {
+          attempt_id?: string
+          created_at?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_xp_receipts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "player_xp"
+            referencedColumns: ["session_id"]
+          },
+        ]
+      }
       admin_activity_archive: {
         Row: {
           day: string
@@ -544,6 +570,32 @@ export type Database = {
           session_id?: string
         }
         Relationships: []
+      }
+      match_report_receipts: {
+        Row: {
+          created_at: string
+          match_key: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          match_key: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          match_key?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_report_receipts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_owners"
+            referencedColumns: ["session_id"]
+          },
+        ]
       }
       matchmaking_queue: {
         Row: {
@@ -1589,6 +1641,14 @@ export type Database = {
         Args: { p_device_id: string; p_session_id: string }
         Returns: Json
       }
+      award_ad_xp_receipted: {
+        Args: {
+          p_attempt_id: string
+          p_device_id: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
       buy_dice_design: {
         Args: { p_design_id: string; p_device_id: string; p_session_id: string }
         Returns: Json
@@ -2008,6 +2068,18 @@ export type Database = {
         Args: {
           p_country?: string
           p_device_id: string
+          p_name: string
+          p_score: number
+          p_session_id: string
+        }
+        Returns: Json
+      }
+      report_weekly_score_receipted: {
+        Args: {
+          p_completed_at: string
+          p_country?: string
+          p_device_id: string
+          p_match_key: string
           p_name: string
           p_score: number
           p_session_id: string

@@ -1,0 +1,10 @@
+# Release persistence fixes — 15 November 2026
+
+- Completed local state is persisted before result rendering; the Home entry is removed only after the stats/deduplication/outbox write commits. The finished snapshot survives route reload. Replay writes configuration and rotates match identity before replacing state.
+- Existing saves win over original route setup. Legacy unscoped saves migrate to a deterministic slot, retaining timestamps, names and AI settings. Old source keys are retained until a later explicit cleanup rather than deleted during migration.
+- Local scoreboard metrics have an independent phone height budget without a loaded banner. Short/narrow phones use existing dice tokens and tighter columns; an inner scrolling fallback remains available. Tablet and online rules stay separate.
+- Result reporting is an outbox inside the same local statistics write. Weekly reports use device-checked server receipts, retaining completion's Stockholm week. Yatzy reports queue before sending, never trim to twenty, require `ok:true`, serialize delivery and accept already-recorded matches. Previous totals are not reconstructed.
+- A confirmed SDK reward synchronously saves a session/device-bound attempt receipt; skipped/failed ads create none. Delivery retries on startup, foreground, online and every fifteen seconds while foregrounded, without presenting ads. Server locks and private wallet-cascading receipts make ambiguous replies idempotent. Unpaid cooldown responses stay queued. Legacy award RPC remains available to older versions.
+- Finished analytics are queue-first with a stable event ID and durable retry; owner deletion continues to clear local prefixes and server receipt cascades. Tests run only in temporary SQL tables or intercepted browser requests, never live player statistics.
+
+Physical native SDK callbacks, process death and safe areas require signed iOS/Android packages and phones. Root AGENTS.md is at its protected size limit; existing rules were not condensed.

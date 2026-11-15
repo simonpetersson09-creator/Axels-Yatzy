@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRewardedPair } from './rewarded-pair';
 import type { RewardedResult } from './admob';
 vi.mock('./admob', () => ({ showOptionalRewarded: vi.fn() }));
+vi.mock('./ad-reward-receipts', () => ({ saveAdRewardReceipt: () => true }));
 
 describe('one optional video for one XP', () => {
   beforeEach(() => { localStorage.clear(); });

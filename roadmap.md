@@ -1,5 +1,13 @@
 # Roadmap – Snabbspel online
 
+## Releasegranskning – prioritet 1–4, 15 november
+- [x] Färdiga lokala resultat sparas före visning och överlever misslyckad statistikskrivning/omstart; omspel spärras före sparad statistik, återställda resultat dubbelräknas inte.
+- [x] Lokalt protokoll, tärningar och knappar verifierade på 375×667, 360×640, 393×852 samt iPad stående/liggande, även med simulerade säkerhetsmarginaler; ingen banner krävs.
+- [x] Befintliga poäng vinner över ursprungliga startuppgifter; äldre sparningar migrerar till stabilt slot med namn, AI och sista kasttid bevarade.
+- [x] Matchrapportering köas atomiskt med statistik; Yatzy-kön kräver ok:true och kapas inte. Migration 0133 driftsatt: privata enhetsbundna kvitton för veckorapporter och annons-XP, ägarradering kaskaderar; befintliga saldon/totalsiffror orörda.
+- [x] 203 tester godkända, inklusive fyra isolerade SQL-prov; körande sista poängval → skrivfel → omladdning → 30 poäng/exakt en match → omspel → återöppning, samt sparat XP-kvitto → omladdning → saldo 8 verifierade med avskilda svar utan runtimefel. Bygge OK. Arkitektur i docs/release-persistence-fixes.md; root AGENTS.md vid skyddad storleksgräns.
+- [ ] Fysisk native-verifiering kräver signerade iOS-/Androidpaket och telefoner; ingen butikspublicering utförd.
+
 ## Sena svar – sökningens livscykel
 - [x] Återskapade och rättade sena matchöppningar efter Avbryt/bakåt/avmontering; kontroller efter väntade steg stoppar gamla callbacks utan omsändning eller historikändring. 68 tester godkända över sökning, lobby, övertagande, vänt rum, spel och mätningar; bygge OK. Ursprunglig latensorsak fortfarande obevisad. Arkitektur dokumenterad i docs/online-diagnostic-flow-sweep.md; root AGENTS.md saknar utrymme.
 

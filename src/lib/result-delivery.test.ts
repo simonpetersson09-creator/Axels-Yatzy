@@ -1,0 +1,21 @@
+import { beforeEach, it, expect, vi } from 'vitest';
+const mocks = vi.hoisted(() => ({ weekly: vi.fn(), yatzy: vi.fn(), country: vi.fn(), finished: vi.fn() }));
+vi.mock('./hall-of-fame', () => ({ reportWeeklyScore: mocks.weekly }));
+vi.mock('./gold-dice', () => ({ reportLocalYatzyMatch: mocks.yatzy }));
+vi.mock('./country-rank', () => ({ syncCountryRank: mocks.country }));
+vi.mock('./finished-event', () => ({ trackFinishedEvent: mocks.finished }));
+import { recordGameResult, getPendingResultReports, getLocalStats } from './local-stats';
+import { flushResultReports } from './result-delivery';
+beforeEach(() => { localStorage.clear(); vi.clearAllMocks(); });
+it('commits result delivery with statistics and retains it until both reports are accepted', async () => {
+  mocks.weekly.mockResolvedValue(false); mocks.yatzy.mockResolvedValue(false);
+  recordGameResult(250,true,1,'match-a');
+  await flushResultReports();
+  expect(getPendingResultReports()).toHaveLength(1);
+  mocks.weekly.mockResolvedValue(true); mocks.yatzy.mockResolvedValue(true);
+  await flushResultReports();
+  expect(getPendingResultReports()).toHaveLength(0);
+  expect(getLocalStats().gamesPlayed).toBe(1);
+  expect(mocks.weekly.mock.calls[0]).toEqual(mocks.weekly.mock.calls[1]);
+  expect(mocks.weekly.mock.calls[0][0]).toBe(250);
+});

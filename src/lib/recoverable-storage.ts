@@ -64,6 +64,7 @@ export function removeRecoverable(key: string): void {
 
 export function retryRecoverableWrites(): void {
   if (paused || localValue('mrb_data_deletion_cleanup') === '1') return;
+  try { if (sessionStorage.getItem('mrb_data_deletion_cleanup') === '1') return; } catch { /* unavailable */ }
   const entries = new Map(pending);
   try {
     for (const key of Object.keys(sessionStorage)) {

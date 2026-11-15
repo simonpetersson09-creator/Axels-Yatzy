@@ -1,6 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Clock } from 'lucide-react';
+import { Send, Loader2, Clock, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { cancelLobby } from '@/lib/friend-requests';
+import { groupHomeInvites, type OpenLobby } from '@/lib/home-invite-groups';
 import { toast } from 'sonner';
 import { formatTimeRemaining } from '@/lib/active-game';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +19,7 @@ function readCache(myId: string): InviteRow[] {
     const list = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]') as InviteRow[];
     const now = Date.now();
     return Array.isArray(list)
-      ? list.filter((i) => i.from_session_id === myId && new Date(i.expires_at).getTime() > now)
+      ? list.filter((i) => i.from_session_id === myId && i.status === 'pending' && new Date(i.expires_at).getTime() > now)
       : [];
   } catch {
     return [];
@@ -30,22 +34,29 @@ function writeCache(list: InviteRow[]) {
  * Home-screen cards for invitations I have sent that are still waiting for
  * an answer — so a minimized invite doesn't just disappear.
  */
-export function SentInvitesCards() {
+export function SentInvitesCards({ openLobbies = [], onLobbyClosed }: {
+  openLobbies?: OpenLobby[];
+  onLobbyClosed?: (gameId: string) => void;
+}) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const myId = getSessionId();
   // Start from the last known list so the cards are there on first paint and
   // the buttons below don't jump down when the server answers.
   const [invites, setInvites] = useState<InviteRow[]>(() => readCache(myId));
   const [cancelling, setCancelling] = useState<string | null>(null);
+  const cancellingRef = useRef(false);
+  const removedIds = useRef(new Set<string>());
+  const { byLobby, standalone } = groupHomeInvites(invites, openLobbies);
 
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
       const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: myId });
-      if (cancelled || !data) return;
+      if (cancelled || !data || cancellingRef.current) return;
       const now = Date.now();
       const list = (data as InviteRow[]).filter(
-        (i) => i.from_session_id === myId && i.status === 'pending' && new Date(i.expires_at).getTime() > now,
+        (i) => !removedIds.current.has(i.id) && i.from_session_id === myId && i.status === 'pending' && new Date(i.expires_at).getTime() > now,
       );
       writeCache(list);
       setInvites(list);
@@ -56,27 +67,88 @@ export function SentInvitesCards() {
   }, [myId]);
 
   const cancel = async (id: string) => {
-    if (cancelling) return;
+    if (cancellingRef.current) return;
+    cancellingRef.current = true;
     setCancelling(id);
     try {
       const res = await respondInvite({ inviteId: id, action: 'decline' });
       // Only drop the card once the server confirms; otherwise the invite is
       // still live and the friend could accept a "cancelled" invite.
-      if (res.ok) setInvites((cur) => cur.filter((i) => i.id !== id));
+      if (res.ok) {
+        removedIds.current.add(id);
+        setInvites((cur) => {
+          const next = cur.filter((i) => i.id !== id);
+          writeCache(next);
+          return next;
+        });
+      }
       else toast.error(t('errorGeneric'));
     } catch {
       toast.error(t('errorGeneric'));
     } finally {
+      cancellingRef.current = false;
       setCancelling(null);
     }
   };
 
-  if (invites.length === 0) return null;
+  const closeLobby = async (lobby: OpenLobby) => {
+    if (cancellingRef.current) return;
+    cancellingRef.current = true;
+    setCancelling(lobby.gameId);
+    try {
+      // Withdraw invitations first. On failure keep the game and remaining
+      // invitations visible, so the user can retry rather than lose controls.
+      for (const invite of byLobby.get(lobby.gameId) ?? []) {
+        const result = await respondInvite({ inviteId: invite.id, action: 'decline' });
+        if (!result.ok) { toast.error(t('errorGeneric')); return; }
+        removedIds.current.add(invite.id);
+        setInvites(current => {
+          const next = current.filter(row => row.id !== invite.id);
+          writeCache(next);
+          return next;
+        });
+      }
+      if (await cancelLobby(lobby.gameId)) onLobbyClosed?.(lobby.gameId);
+      else toast.error(t('errorGeneric'));
+    } catch {
+      toast.error(t('errorGeneric'));
+    } finally {
+      cancellingRef.current = false;
+      setCancelling(null);
+    }
+  };
+
+  if (invites.length === 0 && openLobbies.length === 0) return null;
 
   return (
     <div className="home-card-stack">
       <AnimatePresence initial={false}>
-        {invites.map((inv) => (
+        {openLobbies.map(lobby => {
+          const names = (byLobby.get(lobby.gameId) ?? []).map(invite => invite.to_name).join(', ');
+          const waiting = names ? t('inviteWaitingTitle', { name: names }) : `${t('waitingShort')}…`;
+          return (
+            <motion.div key={lobby.gameId} className="home-match-card home-match-card-info font-display"
+              initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }}>
+              <Button variant="ghost" disabled={cancelling !== null}
+                onClick={() => navigate('/multiplayer', { state: { rejoinCode: lobby.code } })}
+                className="flex-1 min-w-0 h-full justify-start gap-2 px-0 py-0 text-left hover:bg-transparent">
+                <div className="home-card-chip"><Users /></div>
+                <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
+                  <p className="font-bold text-[11px] leading-none truncate">{t('lobbyOpenCard', { code: lobby.code })}</p>
+                  <p className="flex items-center gap-1 text-[8px] leading-none opacity-90">
+                    <span className="w-1 h-1 rounded-full bg-background/80 animate-pulse flex-shrink-0" />
+                    <span className="truncate" title={waiting}>{waiting}</span>
+                  </p>
+                </div>
+              </Button>
+              <Button variant="ghost" disabled={cancelling !== null} onClick={() => closeLobby(lobby)}
+                className="home-card-pill h-auto">
+                {cancelling === lobby.gameId ? <Loader2 className="w-3 h-3 animate-spin" /> : t('close')}
+              </Button>
+            </motion.div>
+          );
+        })}
+        {standalone.map((inv) => (
           <motion.div
             key={inv.id}
             className="home-match-card home-match-card-info font-display"
@@ -99,13 +171,13 @@ export function SentInvitesCards() {
                 </span>
               </p>
             </div>
-            <button
+            <Button variant="ghost"
               onClick={() => cancel(inv.id)}
-              disabled={cancelling === inv.id}
-              className="home-card-pill"
+              disabled={cancelling !== null}
+              className="home-card-pill h-auto"
             >
               {cancelling === inv.id ? <Loader2 className="w-3 h-3 animate-spin" /> : t('cancel')}
-            </button>
+            </Button>
           </motion.div>
         ))}
       </AnimatePresence>

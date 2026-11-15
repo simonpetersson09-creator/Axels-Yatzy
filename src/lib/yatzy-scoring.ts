@@ -86,6 +86,15 @@ export function getUpperSectionTotal(scores: Record<string, number | null>): num
   return upperCats.reduce((sum, cat) => sum + (scores[cat] ?? 0), 0);
 }
 
+/** Running bonus pace: only committed upper scores count against three of each face. */
+export function getUpperBonusDifference(scores: Record<string, number | null>): number {
+  const upperCats: CategoryId[] = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
+  return upperCats.reduce((difference, cat, index) => {
+    const score = scores[cat];
+    return score == null ? difference : difference + score - 3 * (index + 1);
+  }, 0);
+}
+
 export function getTotalScore(scores: Record<string, number | null>): number {
   const upperTotal = getUpperSectionTotal(scores);
   const bonus = upperTotal >= 63 ? 50 : 0;

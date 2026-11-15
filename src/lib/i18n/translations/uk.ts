@@ -291,6 +291,7 @@ export const uk: Partial<typeof sv> = {
   errSubmitScore: 'Не вдалося зберегти бали',
   pickDiceHint: 'Вибери кості,\nякі залишити',
   rollFirstHint: "Натисни «Кидок»,\nщоб почати",
+  startFirstRollHint: 'Почніть з кидка 1',
   slowConnection: "Повільне з’єднання…",
   searchingOpponent: 'Шукаємо суперника…',
   searchingOpponentHint: 'Якщо нікого не знайдемо, зіграєш із комп’ютером',

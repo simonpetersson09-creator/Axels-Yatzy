@@ -291,6 +291,7 @@ export const th: Partial<typeof sv> = {
   errSubmitScore: 'บันทึกคะแนนไม่ได้',
   pickDiceHint: 'เลือกลูกเต๋า\nที่จะเก็บไว้',
   rollFirstHint: "แตะ ทอย\nเพื่อเริ่ม",
+  startFirstRollHint: 'เริ่มด้วยการทอย 1',
   slowConnection: "การเชื่อมต่อช้า…",
   searchingOpponent: 'กำลังหาคู่แข่ง…',
   searchingOpponentHint: 'ถ้าไม่เจอใคร จะได้เล่นกับคอมพิวเตอร์',

@@ -7,6 +7,7 @@ import { DiceArea } from '@/components/game/DiceArea';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { PickDiceHint } from '@/components/game/PickDiceHint';
+import { getDiceAreaPrompt } from '@/lib/dice-area-prompt';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
 import { AvatarFrame } from '@/components/AvatarFrame';
@@ -44,6 +45,9 @@ export default function GamePage() {
   // Each local match lives in its own slot so several games can run in parallel.
   const [localGameId] = useState<string>(() => location.state?.localGameId ?? newLocalGameId());
   const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame(localGameId);
+  // The dice area carries at most one text; the shared helper decides which,
+  // so the start prompt can never land on top of another text.
+  const [diceTableEmpty, setDiceTableEmpty] = useState(false);
 
 
   const incomingPlayerNames: string[] | undefined = location.state?.playerNames;
@@ -547,6 +551,7 @@ export default function GamePage() {
                 className="mx-auto mb-1"
               />
               <DiceArea
+                onTableEmptyChange={setDiceTableEmpty}
                 dice={gameState.dice}
                 lockedDice={gameState.lockedDice}
                 rollsLeft={gameState.rollsLeft}
@@ -557,6 +562,22 @@ export default function GamePage() {
                 skin={gameState.currentPlayerIndex === HUMAN_INDEX && !isCurrentAi ? mySkin : 'white'}
                 className="mt-0"
               />
+              {/* Same in-area prompt as the online game: the table is empty
+                  until the human throws Kast 1 themselves. */}
+              {getDiceAreaPrompt({
+                isMyTurn: !isCurrentAi,
+                tableEmpty: diceTableEmpty,
+                rollsLeft: gameState.rollsLeft,
+                rolling: gameState.isRolling,
+                gameOver: gameState.gameOver,
+                waitingTextShown: false,
+              }) === 'start' && (
+                <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex items-center justify-center text-center text-primary">
+                  <div className="px-1 text-[13px] font-semibold leading-tight break-words">
+                    {t('startFirstRollHint')}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bottom: Roll + Home + Forfeit */}

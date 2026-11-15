@@ -291,6 +291,7 @@ export const cs: Partial<typeof sv> = {
   errSubmitScore: 'Skóre se nepodařilo uložit',
   pickDiceHint: 'Vyber kostky,\nkteré si necháš',
   rollFirstHint: "Klepni na Hodit\npro začátek",
+  startFirstRollHint: 'Začněte hodem 1',
   slowConnection: "Pomalé připojení…",
   searchingOpponent: 'Hledání soupeře…',
   searchingOpponentHint: 'Když se nikdo nenajde, hraješ proti počítači',

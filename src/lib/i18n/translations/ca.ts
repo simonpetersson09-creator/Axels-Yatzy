@@ -290,6 +290,7 @@ export const ca: Partial<typeof sv> = {
   errSubmitScore: 'No s’ha pogut desar la puntuació',
   pickDiceHint: 'Tria els daus\nque vols guardar',
   rollFirstHint: "Toca Llançar\nper començar",
+  startFirstRollHint: 'Comença amb el tir 1',
   slowConnection: "Connexió lenta…",
   searchingOpponent: 'Buscant rival…',
   searchingOpponentHint: 'Si no trobem ningú, jugaràs contra l’ordinador',

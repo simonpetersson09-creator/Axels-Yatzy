@@ -291,6 +291,7 @@ export const sk: Partial<typeof sv> = {
   errSubmitScore: 'Nepodarilo sa uložiť skóre',
   pickDiceHint: 'Vyber kocky,\nktoré si necháš',
   rollFirstHint: "Ťukni na Hodiť\npre začiatok",
+  startFirstRollHint: 'Začnite hodom 1',
   slowConnection: "Pomalé pripojenie…",
   searchingOpponent: 'Hľadá sa súper…',
   searchingOpponentHint: 'Ak sa nikto nenájde, zahráš si proti počítaču',

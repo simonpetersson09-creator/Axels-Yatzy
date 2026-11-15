@@ -291,6 +291,7 @@ export const ml: Partial<typeof sv> = {
   errSubmitScore: 'സ്കോർ സേവ് ചെയ്യാനായില്ല',
   pickDiceHint: 'സൂക്ഷിക്കേണ്ട ഡൈസ്\nതിരഞ്ഞെടുക്കൂ',
   rollFirstHint: "തുടങ്ങാൻ\nറോൾ അമർത്തുക",
+  startFirstRollHint: 'റോൾ 1 കൊണ്ട് ആരംഭിക്കുക',
   slowConnection: "വേഗം കുറഞ്ഞ കണക്ഷൻ…",
   searchingOpponent: 'എതിരാളിയെ തിരയുന്നു…',
   searchingOpponentHint: 'ആരെയും കിട്ടിയില്ലെങ്കിൽ കമ്പ്യൂട്ടറുമായി കളിക്കാം',

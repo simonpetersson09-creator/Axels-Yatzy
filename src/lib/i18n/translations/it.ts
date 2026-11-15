@@ -286,6 +286,7 @@ export const it: Partial<typeof sv> = {
   errSubmitScore: 'Impossibile salvare il punteggio',
   pickDiceHint: 'Scegli i dadi\nda tenere',
   rollFirstHint: "Tocca Lancia\nper iniziare",
+  startFirstRollHint: 'Inizia con il tiro 1',
   slowConnection: "Connessione lenta…",
   searchingOpponent: 'Cerco avversario…',
   searchingOpponentHint: 'Se non si trova nessuno, giochi contro il computer',

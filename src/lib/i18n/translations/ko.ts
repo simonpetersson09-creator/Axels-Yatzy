@@ -291,6 +291,7 @@ export const ko: Partial<typeof sv> = {
   errSubmitScore: '점수를 저장하지 못했어',
   pickDiceHint: '남길 주사위를\n골라줘',
   rollFirstHint: "굴리기를 눌러\n시작해줘",
+  startFirstRollHint: '1회 굴리기로 시작',
   slowConnection: "연결이 느려…",
   searchingOpponent: '상대 찾는 중…',
   searchingOpponentHint: '상대가 없으면 컴퓨터와 플레이해',

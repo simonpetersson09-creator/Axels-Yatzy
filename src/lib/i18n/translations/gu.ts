@@ -291,6 +291,7 @@ export const gu: Partial<typeof sv> = {
   errSubmitScore: 'સ્કોર સાચવી શકાયો નહીં',
   pickDiceHint: 'રાખવાના પાસા\nપસંદ કરો',
   rollFirstHint: "શરૂ કરવા\nરોલ દબાવો",
+  startFirstRollHint: 'રોલ 1 થી શરૂ કરો',
   slowConnection: "ધીમું કનેક્શન…",
   searchingOpponent: 'હરીફ શોધાય છે…',
   searchingOpponentHint: 'કોઈ નહીં મળે તો કમ્પ્યુટર સામે રમશો',

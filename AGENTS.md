@@ -46,3 +46,5 @@
 - WR reconciliation drops finished-game handoffs, retains active ones and prevents stale redirects. Seats fill bottom (2), top (0), right (1), left (3).
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
 - iOS lifecycle patch follows diagnostics: UMP/ATT locks survive caller timeouts; ATT waits for active main-thread presenter/notDetermined. Android Rewarded uses Kotlin getters.
+- Opponent roll_started applies the broadcast locks/rollsLeft before the value-less spin, and a failed own roll keeps dice tumbling until the reloaded server state is applied (capped) — kept dice never slide in and dice never land on stale values.
+- The anon role's statement_timeout matches authenticated (8 s): online actions run as anon and 3 s cancelled rolls under row-lock contention.

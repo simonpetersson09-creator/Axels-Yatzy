@@ -1,9 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Rättningar efter djupdykning – 15 november 21:12 UTC
-- [ ] Stoppa extra inkast vid sen värdekorrigering och säkerställ separat animation för köade kast.
-- [ ] Bevara köade resultat vid sena startmeddelanden; hantera sparade rader/full läsning likadant som kastmeddelanden och stoppa gamla timeoutbuffertar.
-- [ ] Isolera animationer vid matchbyte och kör regressionstester samt avskilt spelprov.
+- [x] Sena värdekorrigeringar landar på plats; köade kast får en separat bekräftad animationskant.
+- [x] Köade resultat bevaras vid sena startmeddelanden; sparade rader/full läsning använder gemensam resultatordning och gamla timeoutbuffertar avvisas.
+- [x] Matchgeneration isolerar timers, egna kastsvar och felvägar vid matchbyte. Sex nya regressionstester; 77 riktade prov godkända. Ursprungliga isolerade felprov bekräftar rättningarna och tre kast i förhandsvisningen gav inga runtimefel; bygge OK. Grafikbelastning och låg bildfrekvens är inte telefonverifierade och ingen grafikförenkling har införts.
 - [ ] Verifiera verkligt flyt på två fysiska telefoner; kräver signerad appversion och telefoner.
 
 ## Sista tärningskontroll – 15 november 20:51 UTC

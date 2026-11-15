@@ -440,6 +440,7 @@ export function useMultiplayerGame() {
     const timedOut = timedOutThrowRef.current;
     if (part.rollsLeft < gs.rollsLeft || (timedOut?.gameId === gid && timedOut.player === gs.currentPlayerIndex
       && timedOut.round === gs.round && timedOut.rollsLeft === part.rollsLeft)) {
+      reportDiceIssue('dice_result_fallback', gid, { via: timedOut ? 'late_after_timeout' : source === 'saved_row' ? 'saved_row' : 'result_without_start' });
       timedOutThrowRef.current = null;
       startRemoteRolling(part);
     }

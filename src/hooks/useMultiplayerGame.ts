@@ -1202,9 +1202,8 @@ export function useMultiplayerGame() {
       const locksOk = await waitForPendingLocks();
       if (!mountedRef.current || initialSubscription !== subscriptionGenerationRef.current || activeGameIdRef.current !== initial.gameId) {
         // The match was left/reopened while locks confirmed: this tap's roll
-        // is abandoned, so it must not hold the guard or the await spin.
+        // is abandoned, so it must not keep holding the roll guard.
         rollingGuardRef.current = false;
-        setDiceAwait(false);
         return false;
       }
       if (!locksOk) {

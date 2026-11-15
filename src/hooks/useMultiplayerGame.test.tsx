@@ -193,6 +193,19 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.gameState?.rollsLeft).toBe(2);
     expect(result.current.error).toBeNull();
   });
+  it('a resent roll names its roll count and lands on the original when the server already rolled', async () => {
+    const { result } = await joined();
+    m.roll.mockRejectedValueOnce(new Error('Load failed'))
+      .mockResolvedValue({ data: { success: false, stale_command: true, stale_roll: true, dice: [4, 4, 4, 4, 4], rolls_left: 2, round: 1, current_player_index: 0 }, error: new Error('roll already applied') });
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(10); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(4500); });
+    expect(m.roll).toHaveBeenCalledTimes(2);
+    expect(m.roll.mock.calls[0][2]).not.toHaveProperty('p_expected_rolls_left');
+    expect(m.roll.mock.calls[1][2]).toMatchObject({ p_expected_rolls_left: 3 });
+    expect(result.current.gameState?.dice).toEqual([4, 4, 4, 4, 4]);
+    expect(result.current.gameState?.rollsLeft).toBe(2);
+    expect(result.current.error).toBeNull();
+  });
   it('never resends when the dropped roll already reached the server', async () => {
     const { result } = await joined();
     m.roll.mockRejectedValue(new Error('Load failed'));

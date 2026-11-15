@@ -143,15 +143,19 @@ function DiceSceneImpl({
           gl.outputColorSpace = SRGBColorSpace;
           glRef.current = gl as unknown as { getContext: () => WebGLRenderingContext | null };
           const canvas = gl.domElement;
+          const current = glRef.current;
+          // Events from a canvas that was already replaced must not remount
+          // its successor (one loss = one recovery, never a second fly-in).
+          const remountIfCurrent = () => { if (glRef.current === current) remount(); };
           const onLost = (e: Event) => {
             // Preventing the default lets the browser try to restore it, and
             // guarantees a `webglcontextrestored` event.
             e.preventDefault();
             // Remount on the next tick so React is not updated mid-event.
-            setTimeout(remount, 0);
+            setTimeout(remountIfCurrent, 0);
           };
-          canvas.addEventListener("webglcontextlost", onLost as EventListener);
-          canvas.addEventListener("webglcontextrestored", remount);
+          canvas.addEventListener("webglcontextlost", onLost as EventListener, { once: true });
+          canvas.addEventListener("webglcontextrestored", remountIfCurrent, { once: true });
         }}
         style={{ touchAction: "manipulation" }}
       >

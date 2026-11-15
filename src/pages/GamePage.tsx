@@ -344,6 +344,7 @@ export default function GamePage() {
         results,
         forfeit: true,
         forfeitPlayerName: gameState.players[0].name,
+        forfeitPlayerIndex: 0,
         aiPlayers,
         forfeitAd: !gameState.gameOver && !aiPlayers.includes(0) && forfeitAdAllowed({
           score: getTotalScore(gameState.players[0].scores),

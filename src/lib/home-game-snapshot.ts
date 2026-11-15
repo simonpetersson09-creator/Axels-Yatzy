@@ -13,3 +13,20 @@ export async function fetchHomeGameSnapshot(ids: string[]) {
     return null;
   }
 }
+
+/** Serial foreground refreshes; failed reads preserve the previous snapshot. */
+export function watchHomeGameSnapshot(
+  ids: string[],
+  onSnapshot: (snapshot: NonNullable<Awaited<ReturnType<typeof fetchHomeGameSnapshot>>>) => void,
+) {
+  let stopped = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const refresh = async () => {
+    const snapshot = document.hidden ? null : await fetchHomeGameSnapshot(ids);
+    if (stopped) return;
+    if (snapshot) onSnapshot(snapshot);
+    if (!stopped) timer = setTimeout(() => void refresh(), snapshot ? 15_000 : 5000);
+  };
+  void refresh();
+  return () => { stopped = true; if (timer) clearTimeout(timer); };
+}

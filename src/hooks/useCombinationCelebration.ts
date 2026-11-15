@@ -29,17 +29,27 @@ export function useCombinationCelebration(gameState: GameState | null) {
   stateRef.current = gameState;
   const celebratedKeyRef = useRef<string | null>(null);
 
+  // A medal belongs to the landed roll, never the next throw or player's turn.
+  useEffect(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = null;
+    setActiveCelebration(null);
+  }, [gameState?.isRolling, gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft]);
+
   // React the moment the dice have visibly come to rest on screen (the dice
   // engine fires `dice:landed`), never on a timer — so the banner neither
   // beats slow server dice nor lags behind fast ones.
   useEffect(() => {
     const onLanded = () => {
       const gs = stateRef.current;
-      if (!gs || gs.rollsLeft >= 3) return;
+      if (!gs || gs.isRolling || gs.rollsLeft >= 3 || gs.gameOver) return;
       const dice = gs.dice;
       const rollKey = `${gs.currentPlayerIndex}:${gs.round}:${gs.rollsLeft}:${dice.join(',')}`;
       if (celebratedKeyRef.current === rollKey) return;
       celebratedKeyRef.current = rollKey;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+      setActiveCelebration(null);
       const currentPlayer = gs.players[gs.currentPlayerIndex];
       if (!currentPlayer) return;
 

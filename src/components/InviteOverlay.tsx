@@ -221,7 +221,8 @@ export default function InviteOverlay() {
       setQueue((cur) => {
         if (cur.length === 0) return cur;
         const stillPending = new Set(
-          rows.filter((r) => r.to_session_id === sessionId && r.status === 'pending').map((r) => r.id),
+          rows.filter((r) => r.to_session_id === sessionId && r.status === 'pending'
+            && (!r.expires_at || new Date(r.expires_at).getTime() > Date.now())).map((r) => r.id),
         );
         const next = cur.filter((r) => {
           if (stillPending.has(r.id)) return true;

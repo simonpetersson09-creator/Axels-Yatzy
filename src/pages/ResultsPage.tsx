@@ -13,7 +13,7 @@ import { getKnownFriends } from '@/lib/known-friends';
 import { sendFriendRequest } from '@/lib/friend-requests';
 import { usePostMatchExit } from '@/hooks/usePostMatchExit';
 import { markForfeitAd } from '@/lib/forfeit-ad';
-import { getMatchStandings } from '@/lib/match-standings';
+import { getMatchStandings, getForfeitPlayerIndex } from '@/lib/match-standings';
 
 interface PlayerResult {
   name: string;
@@ -33,6 +33,8 @@ export default function ResultsPage() {
   const forfeit: boolean = location.state?.forfeit || false;
   const timedOut: boolean = location.state?.timedOut || false;
   const forfeitPlayerName: string = location.state?.forfeitPlayerName || '';
+  const forfeitPlayerIndex = getForfeitPlayerIndex(results, location.state?.forfeitPlayerIndex, forfeitPlayerName);
+  const forfeitedPlayer = forfeitPlayerIndex === null ? null : results[forfeitPlayerIndex];
   const aiPlayers: number[] = location.state?.aiPlayers || [];
   const isMultiplayer: boolean = location.state?.isMultiplayer || false;
   const rematchOpponent: RematchOpponent | undefined = location.state?.rematchOpponent;
@@ -115,8 +117,8 @@ export default function ResultsPage() {
   // (the alphabetically/insertion-first player) as the winner.
   const isDraw = !forfeit && standings.filter(p => p.rank === 1).length > 1;
 
-  const forfeitWinner = forfeit && !timedOut && results.length > 1
-    ? [...results].filter(r => r.name !== forfeitPlayerName).sort((a, b) => b.score - a.score)[0] ?? null
+  const forfeitWinner = forfeit && !timedOut && forfeitedPlayer && results.length > 1
+    ? results.filter(r => r !== forfeitedPlayer).sort((a, b) => b.score - a.score)[0] ?? null
     : null;
 
   const handleRematch = async () => {
@@ -192,7 +194,7 @@ export default function ResultsPage() {
               key={`${player.name}-${i}`}
               className={`glass-card p-4 flex items-center justify-between ${
                 rank === 1 && !forfeit ? 'ring-1 ring-game-gold/30' : ''
-              } ${forfeit && player.name === forfeitPlayerName ? 'opacity-50' : ''}`}
+              } ${forfeit && player === forfeitedPlayer ? 'opacity-50' : ''}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 + i * 0.1 }}
@@ -204,7 +206,7 @@ export default function ResultsPage() {
                   {forfeit ? i + 1 : rank}
                 </span>
                 <span className="font-semibold truncate">{player.name}</span>
-                {forfeit && player.name === forfeitPlayerName && (
+                {forfeit && player === forfeitedPlayer && (
                   <span className="text-[10px] text-destructive font-medium uppercase tracking-wider flex-shrink-0">{t('forfeitedTag')}</span>
                 )}
               </div>

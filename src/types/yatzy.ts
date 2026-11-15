@@ -36,6 +36,8 @@ export interface PlayerScore {
 
 export interface Player {
   id: string;
+  /** Online seat owner; display names are not identities. */
+  sessionId?: string;
   name: string;
   scores: PlayerScore;
   /** Online only: shown as a small badge on the player's ring instead of in the name. */

@@ -50,16 +50,29 @@ export function SentInvitesCards({ openLobbies = [], onLobbyClosed }: {
   const { byLobby, standalone } = groupHomeInvites(invites, openLobbies);
 
   useEffect(() => {
+    const deadlines = invites.map(row => new Date(row.expires_at).getTime()).filter(Number.isFinite);
+    if (!deadlines.length) return;
+    const timer = setTimeout(() => setInvites(current => {
+      const next = current.filter(row => new Date(row.expires_at).getTime() > Date.now());
+      writeCache(next);
+      return next;
+    }), Math.min(2_147_483_647, Math.max(0, Math.min(...deadlines) - Date.now())));
+    return () => clearTimeout(timer);
+  }, [invites]);
+
+  useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: myId });
-      if (cancelled || !data || cancellingRef.current) return;
+      try {
+      const { data, error } = await supabase.rpc('list_invites_for_session', { p_session_id: myId });
+      if (cancelled || error || !Array.isArray(data) || cancellingRef.current) return;
       const now = Date.now();
       const list = (data as InviteRow[]).filter(
         (i) => !removedIds.current.has(i.id) && i.from_session_id === myId && i.status === 'pending' && new Date(i.expires_at).getTime() > now,
       );
       writeCache(list);
       setInvites(list);
+      } catch { /* preserve valid cached invites; expiry remains independent */ }
     };
     void load();
     const iv = setInterval(load, 5000);

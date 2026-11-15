@@ -450,6 +450,12 @@ export default function MultiplayerGamePage() {
   }, [status, boardComplete, pendingCategory]);
 
   const navigatedToResultsRef = useRef(false);
+  const resultsLifetimeRef = useRef<object | null>(null);
+  useEffect(() => {
+    resultsLifetimeRef.current = {};
+    navigatedToResultsRef.current = false;
+    return () => { resultsLifetimeRef.current = null; };
+  }, [gameId]);
   useEffect(() => {
     const matchDone = status === 'finished' || (finishFallback && boardComplete);
 
@@ -560,6 +566,7 @@ export default function MultiplayerGamePage() {
       // The lookup is best-effort and time-boxed: if the network stalls we still
       // navigate to /results instead of leaving the player on a dead board.
       (async () => {
+        const lifetime = resultsLifetimeRef.current;
         let rematchOpponent: { sessionId: string; name: string } | undefined;
         if (myPlayerIndex !== null && gameState.players.length === 2 && gameId) {
           try {
@@ -578,6 +585,7 @@ export default function MultiplayerGamePage() {
             }
           } catch { /* ignore — rematch button just won't appear */ }
         }
+        if (!lifetime || resultsLifetimeRef.current !== lifetime) return;
         navigate('/results', {
           state: {
             results,

@@ -1,5 +1,13 @@
 # Roadmap – Snabbspel online
 
+## Granskningsfynd 17:05 – rättningar
+- [ ] Bevara nya reservskrivningar efter extern ändring av samma nyckel.
+- [ ] Slutför lokal radering även om raderingsmarkören inte kan skrivas; återförsök utan ny serverradering.
+- [ ] Köa tidig verklig tärningslandning tills aktuellt kast är klart, utan gamla medaljer eller dubbelvisning.
+- [ ] Stoppa sena sidbyten efter lämnad sida och återställ inbjudningsknappar efter kastade nätfel.
+- [ ] Rensa utgångna skickade inbjudningar oberoende av nätanrop.
+- [ ] Verifiera riktade tester, helsvit och tidigare avskilda reproduktioner.
+
 ## Kvarvarande fyra fynd – 15 november
 - [x] Förfallna inbjudningar rensas vid lokal deadline även med hängande nätanrop; giltiga inbjudningar bevaras vid nätfel.
 - [x] Startsidan återförsöker spelstatus seriellt efter nätfel; sena svar efter avmontering ignoreras.

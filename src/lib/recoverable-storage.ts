@@ -27,7 +27,9 @@ export function readRecoverable(key: string): string | null {
 /** False means neither durable store accepted it; only explicitly staged data stays in memory. */
 export function writeRecoverable(key: string, value: string, stage = false): boolean {
   if (paused) return false;
-  const base = readBackup(key)?.base ?? localValue(key);
+  const local = localValue(key);
+  const backup = readBackup(key);
+  const base = backup && (local === backup.base || local === backup.value) ? backup.base : local;
   try {
     localStorage.setItem(key, value);
     pending.delete(key);

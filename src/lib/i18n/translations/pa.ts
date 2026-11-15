@@ -291,6 +291,7 @@ export const pa: Partial<typeof sv> = {
   errSubmitScore: 'ਸਕੋਰ ਸੇਵ ਨਹੀਂ ਹੋ ਸਕਿਆ',
   pickDiceHint: 'ਰੱਖਣ ਲਈ\nਪਾਸੇ ਚੁਣੋ',
   rollFirstHint: "ਸ਼ੁਰੂ ਕਰਨ ਲਈ\nਰੋਲ ਦਬਾਓ",
+  startFirstRollHint: 'ਰੋਲ 1 ਨਾਲ ਸ਼ੁਰੂ ਕਰੋ',
   slowConnection: "ਹੌਲੀ ਕਨੈਕਸ਼ਨ…",
   searchingOpponent: 'ਵਿਰੋਧੀ ਲੱਭ ਰਹੇ…',
   searchingOpponentHint: 'ਕੋਈ ਨਾ ਮਿਲਿਆ ਤਾਂ ਕੰਪਿਊਟਰ ਨਾਲ ਖੇਡੋਗੇ',

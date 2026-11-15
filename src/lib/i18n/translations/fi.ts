@@ -291,6 +291,7 @@ export const fi: Partial<typeof sv> = {
   errSubmitScore: 'Pisteitä ei voitu tallentaa',
   pickDiceHint: 'Valitse nopat\njotka pidät',
   rollFirstHint: "Napauta Heitä\naloittaaksesi",
+  startFirstRollHint: 'Aloita heitolla 1',
   slowConnection: "Hidas yhteys…",
   searchingOpponent: 'Etsitään vastustajaa…',
   searchingOpponentHint: 'Jos ketään ei löydy, pelaat tietokonetta vastaan',

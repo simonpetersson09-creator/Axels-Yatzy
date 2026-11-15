@@ -291,6 +291,7 @@ export const pl: Partial<typeof sv> = {
   errSubmitScore: 'Nie udało się zapisać wyniku',
   pickDiceHint: 'Wybierz kości\ndo zatrzymania',
   rollFirstHint: "Dotknij Rzuć,\naby zacząć",
+  startFirstRollHint: 'Zacznij od rzutu 1',
   slowConnection: "Wolne połączenie…",
   searchingOpponent: 'Szukanie rywala…',
   searchingOpponentHint: 'Jeśli nikt się nie znajdzie, zagrasz z komputerem',

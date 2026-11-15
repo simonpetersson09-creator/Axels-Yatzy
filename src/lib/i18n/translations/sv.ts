@@ -323,6 +323,7 @@ export const sv = {
   errSubmitScore: 'Kunde inte spara poäng',
   pickDiceHint: 'Välj tärningar\natt behålla',
   rollFirstHint: "Tryck på Kasta\nför att börja",
+  startFirstRollHint: 'Börja med kast 1',
   slowConnection: "Långsam anslutning…",
   searchingOpponent: 'Söker motståndare…',
   searchingOpponentHint: 'Hittas ingen spelar du mot datorn',

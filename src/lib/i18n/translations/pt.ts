@@ -291,6 +291,7 @@ export const pt: Partial<typeof sv> = {
   errSubmitScore: 'Não foi possível guardar a pontuação',
   pickDiceHint: 'Escolhe os dados\nque queres guardar',
   rollFirstHint: "Toque em Lançar\npara começar",
+  startFirstRollHint: 'Comece com o lançamento 1',
   slowConnection: "Ligação lenta…",
   searchingOpponent: 'A procurar adversário…',
   searchingOpponentHint: 'Se não houver ninguém, jogas contra o computador',

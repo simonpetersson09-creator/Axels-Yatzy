@@ -286,6 +286,7 @@ export const de: Partial<typeof sv> = {
   errSubmitScore: 'Punktzahl konnte nicht gespeichert werden',
   pickDiceHint: 'Würfel wählen\nzum Behalten',
   rollFirstHint: "Tippe auf Würfeln\nzum Starten",
+  startFirstRollHint: 'Beginne mit Wurf 1',
   slowConnection: "Langsame Verbindung…",
   searchingOpponent: 'Suche Gegner…',
   searchingOpponentHint: 'Wird niemand gefunden, spielst du gegen den Computer',

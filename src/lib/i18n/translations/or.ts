@@ -291,6 +291,7 @@ export const or: Partial<typeof sv> = {
   errSubmitScore: 'ସ୍କୋର୍ ସଞ୍ଚୟ ହେଲାନି',
   pickDiceHint: 'ରଖିବାକୁ ପଶା\nବାଛ',
   rollFirstHint: "ଆରମ୍ଭ କରିବାକୁ\nରୋଲ୍ ଦବାନ୍ତୁ",
+  startFirstRollHint: 'ରୋଲ୍ 1 ରୁ ଆରମ୍ଭ କରନ୍ତୁ',
   slowConnection: "ଧୀର ସଂଯୋଗ…",
   searchingOpponent: 'ପ୍ରତିଦ୍ୱନ୍ଦ୍ୱୀ ଖୋଜୁଛି…',
   searchingOpponentHint: 'କେହି ନ ମିଳିଲେ କମ୍ପ୍ୟୁଟର୍ ସହ ଖେଳିବ',

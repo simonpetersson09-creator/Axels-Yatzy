@@ -291,6 +291,7 @@ export const sl: Partial<typeof sv> = {
   errSubmitScore: 'Rezultata ni bilo mogoče shraniti',
   pickDiceHint: 'Izberi kocke,\nki jih obdržiš',
   rollFirstHint: "Tapni Vrzi\nza začetek",
+  startFirstRollHint: 'Začni z metom 1',
   slowConnection: "Počasna povezava…",
   searchingOpponent: 'Iščemo nasprotnika…',
   searchingOpponentHint: 'Če ne najdemo nikogar, igraš proti računalniku',

@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Inbjudningar och sparfel – ny granskning 15 november
+- [ ] Behåll inkommande inbjudningar vid misslyckade hämtningar och återhämta vid nästa lyckade svar.
+- [ ] Skydda matchsparningen från skrivfel med reservsparning och återförsök utan dubbelräkning.
+- [ ] Behåll SDK-bekräftad annonsbelöning vid kvittoskrivfel; bevara enhets- och raderingsskydd.
+- [ ] Kör regressionstester, avskilda användarflöden och ny skrivskyddad bugggranskning efter rättningarna.
+
 ## Två bekräftade fel – 15 november
 - [x] Annonsspärren behålls vid misslyckad cacherensning före/efter annonsval, även om UMP tillåter annonser. Formulärfel rensar även efteråt och använder aktuellt UMP-besked först efter båda lyckade cachegränser; nästa lyckade ändringsförsök återhämtar.
 - [x] Pågående spel och tidigare status behålls vid misslyckad spel-/spelarhämtning via en gemensam komplett läsögonblicksbild; bekräftat tomma svar får fortsatt städa. Arkitekturregel kunde inte läggas till i root AGENTS.md vid skyddad storleksgräns.

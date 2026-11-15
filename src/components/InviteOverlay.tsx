@@ -46,17 +46,18 @@ function markOutboundHandled(key: string) {
 // the entire lifetime of the app — on iOS that constant JSON parsing + state
 // churn showed up as general stutter. They now share one in-flight request and
 // a short result cache, and they never poll while the app is backgrounded.
-let invitesCache: { at: number; rows: InviteRow[] } = { at: 0, rows: [] };
+let invitesCache: { at: number; rows: InviteRow[]; sessionId?: string } = { at: 0, rows: [] };
 let invitesInFlight: Promise<InviteRow[]> | null = null;
 const INVITES_CACHE_MS = 2500;
 
 async function fetchInvites(sessionId: string, force = false): Promise<InviteRow[]> {
+  if (invitesCache.sessionId !== sessionId) invitesCache = { at: 0, rows: [], sessionId };
   if (!force && Date.now() - invitesCache.at < INVITES_CACHE_MS) return invitesCache.rows;
   if (invitesInFlight) return invitesInFlight;
   invitesInFlight = (async () => {
     try {
-      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
-      invitesCache = { at: Date.now(), rows: (data ?? []) as InviteRow[] };
+      const { data, error } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
+      if (!error && Array.isArray(data)) invitesCache = { at: Date.now(), rows: data as InviteRow[], sessionId };
     } catch {
       /* keep previous rows on a transient failure */
     } finally {
@@ -137,8 +138,7 @@ export default function InviteOverlay() {
       const inviteId = (e as CustomEvent<{ inviteId?: string }>).detail?.inviteId;
       if (!inviteId) return;
       handledRef.current.delete(inviteId);
-      const { data } = await supabase.rpc('list_invites_for_session', { p_session_id: sessionId });
-      const rows = (data ?? []) as InviteRow[];
+      const rows = await fetchInvites(sessionId, true);
       const row = rows.find((r) => r.id === inviteId);
       if (!row || row.to_session_id !== sessionId || row.status !== 'pending') {
         toast.message(t('inviteInactive'));

@@ -10,6 +10,8 @@
  * upgraded in place instead of being overwritten/lost.
  */
 
+import { readRecoverable, writeRecoverable } from './recoverable-storage';
+
 const STATS_KEY = 'yatzy-player-stats';
 const CURRENT_VERSION = 2;
 
@@ -36,7 +38,7 @@ export function isGameResultRecorded(key: string): boolean { return readStored()
 export function getPendingResultReports(): ResultReport[] { return readStored().pendingReports ?? []; }
 export function acknowledgeResultReport(key: string): void {
   const stored = readStored();
-  localStorage.setItem(STATS_KEY, JSON.stringify({ ...stored, pendingReports: (stored.pendingReports ?? []).filter(r => r.key !== key) }));
+  writeRecoverable(STATS_KEY, JSON.stringify({ ...stored, pendingReports: (stored.pendingReports ?? []).filter(r => r.key !== key) }));
 }
 
 const DEFAULT_STATS: LocalStats = {
@@ -79,7 +81,7 @@ function migrate(parsed: any): StoredStats {
 
 function readStored(): StoredStats {
   try {
-    const raw = localStorage.getItem(STATS_KEY);
+    const raw = readRecoverable(STATS_KEY);
     if (!raw) return { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [], completedGames: 0 };
     return migrate(JSON.parse(raw));
   } catch {
@@ -102,13 +104,13 @@ export function saveLocalStats(stats: LocalStats): void {
   const prev = readStored();
   const completedGames = Math.max(0, prev.completedGames + (stats.gamesPlayed - prev.gamesPlayed));
   const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys: prev.recordedKeys, completedGames, pendingReports: prev.pendingReports };
-  localStorage.setItem(STATS_KEY, JSON.stringify(toStore));
+  writeRecoverable(STATS_KEY, JSON.stringify(toStore));
 }
 
 /** Wipe stats *and* the dedupe ledger (used by "reset statistics"). */
 export function resetLocalStats(): void {
   const toStore: StoredStats = { ...DEFAULT_STATS, version: CURRENT_VERSION, recordedKeys: [], completedGames: 0 };
-  localStorage.setItem(STATS_KEY, JSON.stringify(toStore));
+  writeRecoverable(STATS_KEY, JSON.stringify(toStore));
 }
 
 /**
@@ -163,7 +165,7 @@ export function recordGameResult(
   const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys, completedGames, pendingReports };
   // Stats and their match key commit in one write. Do not report/reward a
   // result that failed to persist; a later attempt may retry it safely.
-  try { localStorage.setItem(STATS_KEY, JSON.stringify(toStore)); } catch { return false; }
+  if (!writeRecoverable(STATS_KEY, JSON.stringify(toStore))) return false;
 
   // Update the player's personal country ranking after every finished match.
   // Lazy import to keep this module free of network deps until needed.

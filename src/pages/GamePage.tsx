@@ -34,6 +34,7 @@ import { toast } from 'sonner';
 import { useGameBanner } from '@/hooks/useGameBanner';
 import { usePostMatchExit } from '@/hooks/usePostMatchExit';
 import { usePostMatchPreload } from '@/hooks/usePostMatchPreload';
+import { readRecoverable, writeRecoverable } from '@/lib/recoverable-storage';
 
 export default function GamePage() {
 
@@ -54,7 +55,7 @@ export default function GamePage() {
   const [playerNames, setPlayerNames] = useState<string[]>(() => {
     if (incomingPlayerNames) return incomingPlayerNames;
     try {
-      const saved = localStorage.getItem(namesKey);
+      const saved = readRecoverable(namesKey);
       return saved ? JSON.parse(saved) : [getPlayerName() || t('playerN', { n: 1 })];
     } catch { return [getPlayerName() || t('playerN', { n: 1 })]; }
   });
@@ -62,7 +63,7 @@ export default function GamePage() {
   const [aiPlayers, setAiPlayers] = useState<number[]>(() => {
     if (incomingAiPlayers) return incomingAiPlayers;
     try {
-      const saved = localStorage.getItem(aiPlayersKey);
+      const saved = readRecoverable(aiPlayersKey);
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
@@ -70,11 +71,11 @@ export default function GamePage() {
   useEffect(() => {
     if (incomingPlayerNames) {
       setPlayerNames(incomingPlayerNames);
-      localStorage.setItem(namesKey, JSON.stringify(incomingPlayerNames));
+      writeRecoverable(namesKey, JSON.stringify(incomingPlayerNames), true);
     }
     if (incomingAiPlayers) {
       setAiPlayers(incomingAiPlayers);
-      localStorage.setItem(aiPlayersKey, JSON.stringify(incomingAiPlayers));
+      writeRecoverable(aiPlayersKey, JSON.stringify(incomingAiPlayers), true);
     }
   }, [incomingPlayerNames, incomingAiPlayers]);
 

@@ -55,7 +55,7 @@ it('releases invitation buttons after a rejected response and retries without du
   mocks.reply.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce({ ok: true });
   render(<MemoryRouter><InviteOverlay /></MemoryRouter>);
   await act(async () => { await vi.advanceTimersByTimeAsync(0); });
-  const accept = screen.getByRole('button', { name: /Acceptera/ });
+  const accept = screen.getByRole('button', { name: /Accept/ });
   await act(async () => { accept.click(); accept.click(); });
   expect(mocks.reply).toHaveBeenCalledTimes(1);
   expect(accept).not.toBeDisabled();

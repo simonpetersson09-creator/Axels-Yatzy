@@ -1,5 +1,13 @@
 # Roadmap – Snabbspel online
 
+## Kvarvarande fyra fynd – 15 november
+- [ ] Rensa förfallna inbjudningar även vid nätfel utan att tappa giltiga inbjudningar.
+- [ ] Återförsök startsidans spelstatus efter nätfel, utan överlappande eller sena uppdateringar.
+- [ ] Identifiera avhoppande spelare med plats/identitet, aldrig enbart namn.
+- [ ] Rensa gammal kombinationsmedalj när nästa kast börjar.
+- [ ] Kör riktade tester, hela sviten och avskilda synliga flöden; utred testfelen utan livedataändringar.
+- [ ] Annonsprov på fysiska telefoner väntar på signerad appversion och tillgång till telefoner.
+
 ## Inbjudningar och sparfel – ny granskning 15 november
 - [x] Behåll inkommande inbjudningar vid misslyckade hämtningar och återhämta vid nästa lyckade svar.
 - [x] Matchsparning, aktiva spel och matchidentitet använder reservsparning/återförsök. Slutresultat bär sin egen matchidentitet så avbrutet omspel inte dubbelräknar. Gamla tabbreserver skriver aldrig över senare sparningar; borttagningar återförsöks utan att återställa borttaget spel.

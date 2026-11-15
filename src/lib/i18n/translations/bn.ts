@@ -291,7 +291,7 @@ export const bn: Partial<typeof sv> = {
   errSubmitScore: 'স্কোর সেভ করা যায়নি',
   pickDiceHint: 'রাখার জন্য\nপাশা বাছো',
   rollFirstHint: "শুরু করতে\nরোল চাপুন",
-  startFirstRollHint: 'রোল 1 দিয়ে শুরু করুণ',
+  startFirstRollHint: 'রোল 1 দিয়ে\nশুরু করুণ',
   slowConnection: "ধীর সংযোগ…",
   searchingOpponent: 'প্রতিপক্ষ খোঁজা হচ্ছে…',
   searchingOpponentHint: 'কাউকে না পেলে কম্পিউটারের সাথে খেলবে',

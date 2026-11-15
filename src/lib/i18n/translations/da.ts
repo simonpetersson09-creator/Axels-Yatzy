@@ -291,7 +291,7 @@ export const da: Partial<typeof sv> = {
   errSubmitScore: 'Kunne ikke gemme score',
   pickDiceHint: 'Vælg terninger\nat beholde',
   rollFirstHint: "Tryk på Kast\nfor at starte",
-  startFirstRollHint: 'Begynd med kast 1',
+  startFirstRollHint: 'Begynd med\nkast 1',
   slowConnection: "Langsom forbindelse…",
   searchingOpponent: 'Søger modstander…',
   searchingOpponentHint: 'Findes ingen, spiller du mod computeren',

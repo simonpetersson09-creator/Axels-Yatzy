@@ -286,7 +286,7 @@ export const fr: Partial<typeof sv> = {
   errSubmitScore: 'Impossible d’enregistrer le score',
   pickDiceHint: 'Choisis les dés\nà garder',
   rollFirstHint: "Touchez Lancer\npour commencer",
-  startFirstRollHint: 'Commencez par le lancer 1',
+  startFirstRollHint: 'Commencez par\nle lancer 1',
   slowConnection: "Connexion lente…",
   searchingOpponent: 'Recherche d’un adversaire…',
   searchingOpponentHint: 'Si personne n’est trouvé, vous jouez contre l’ordinateur',

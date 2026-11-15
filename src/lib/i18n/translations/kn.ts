@@ -291,7 +291,7 @@ export const kn: Partial<typeof sv> = {
   errSubmitScore: 'ಅಂಕ ಉಳಿಸಲಾಗಲಿಲ್ಲ',
   pickDiceHint: 'ಉಳಿಸಿಕೊಳ್ಳಲು\nದಾಳ ಆರಿಸು',
   rollFirstHint: "ಪ್ರಾರಂಭಿಸಲು\nರೋಲ್ ಒತ್ತಿ",
-  startFirstRollHint: 'ರೋಲ್ 1 ರೊಂದಿ ಪ್ರಾರಂಭಿಸಿ',
+  startFirstRollHint: 'ರೋಲ್ 1 ರೊಂದಿ\nಪ್ರಾರಂಭಿಸಿ',
   slowConnection: "ನಿಧಾನ ಸಂಪರ್ಕ…",
   searchingOpponent: 'ಎದುರಾಳಿಯನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ…',
   searchingOpponentHint: 'ಯಾರೂ ಸಿಗದಿದ್ದರೆ ಕಂಪ್ಯೂಟರ್ ಜೊತೆ ಆಡುವೆ',

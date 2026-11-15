@@ -291,7 +291,7 @@ export const ta: Partial<typeof sv> = {
   errSubmitScore: 'புள்ளிகளைச் சேமிக்க முடியவில்லை',
   pickDiceHint: 'வைத்துக்கொள்ளும்\nபகடைகளைத் தேர்ந்தெடு',
   rollFirstHint: "தொடங்க\nஉருட்டு அழுத்தவும்",
-  startFirstRollHint: 'ரோல் 1 உடனே தொடங்கு',
+  startFirstRollHint: 'ரோல் 1 உடனே\nதொடங்கு',
   slowConnection: "மெதுவான இணைப்பு…",
   searchingOpponent: 'எதிராளியைத் தேடுகிறோம்…',
   searchingOpponentHint: 'யாரும் கிடைக்காவிட்டால் கணினியுடன் ஆடலாம்',

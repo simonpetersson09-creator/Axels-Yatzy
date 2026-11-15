@@ -291,7 +291,7 @@ export const tr: Partial<typeof sv> = {
   errSubmitScore: 'Puan kaydedilemedi',
   pickDiceHint: 'Tutacağın\nzarları seç',
   rollFirstHint: "Başlamak için\nAt'a dokun",
-  startFirstRollHint: '1. atışla başla',
+  startFirstRollHint: '1. atışla\nbaşla',
   slowConnection: "Yavaş bağlantı…",
   searchingOpponent: 'Rakip aranıyor…',
   searchingOpponentHint: 'Kimse bulunamazsa bilgisayarla oynarsın',

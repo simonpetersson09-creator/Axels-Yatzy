@@ -291,7 +291,7 @@ export const ms: Partial<typeof sv> = {
   errSubmitScore: 'Tak dapat simpan skor',
   pickDiceHint: 'Pilih dadu\nuntuk disimpan',
   rollFirstHint: "Ketik Baling\nuntuk mula",
-  startFirstRollHint: 'Mula dengan balingan 1',
+  startFirstRollHint: 'Mula dengan\nbalingan 1',
   slowConnection: "Sambungan perlahan…",
   searchingOpponent: 'Mencari lawan…',
   searchingOpponentHint: 'Jika tiada pemain ditemui, awak lawan komputer',

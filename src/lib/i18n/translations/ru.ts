@@ -290,7 +290,7 @@ export const ru: Partial<typeof sv> = {
   errSubmitScore: 'Не удалось сохранить счёт',
   pickDiceHint: 'Выбери кости,\nчтобы оставить',
   rollFirstHint: "Нажми «Бросок»,\nчтобы начать",
-  startFirstRollHint: 'Начните с броска 1',
+  startFirstRollHint: 'Начните с\nброска 1',
   slowConnection: "Медленное соединение…",
   searchingOpponent: 'Ищем соперника…',
   searchingOpponentHint: 'Если никого не найдём, сыграешь с компьютером',

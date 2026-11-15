@@ -291,7 +291,7 @@ export const el: Partial<typeof sv> = {
   errSubmitScore: 'Αποτυχία αποθήκευσης σκορ',
   pickDiceHint: 'Διάλεξε ζάρια\nνα κρατήσεις',
   rollFirstHint: "Πάτα Ρίξε\nγια να ξεκινήσεις",
-  startFirstRollHint: 'Ξεκινήστε με την ρίψη 1',
+  startFirstRollHint: 'Ξεκινήστε με\nτην ρίψη 1',
   slowConnection: "Αργή σύνδεση…",
   searchingOpponent: 'Αναζήτηση αντιπάλου…',
   searchingOpponentHint: 'Αν δεν βρεθεί κανείς, παίζεις με τον υπολογιστή',

@@ -291,7 +291,7 @@ export const no: Partial<typeof sv> = {
   errSubmitScore: 'Kunne ikke lagre poeng',
   pickDiceHint: 'Velg terninger\nå beholde',
   rollFirstHint: "Trykk på Kast\nfor å starte",
-  startFirstRollHint: 'Start med kast 1',
+  startFirstRollHint: 'Start med\nkast 1',
   slowConnection: "Treg forbindelse…",
   searchingOpponent: 'Søker motstander…',
   searchingOpponentHint: 'Finnes ingen, spiller du mot datamaskinen',

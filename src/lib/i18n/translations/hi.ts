@@ -291,7 +291,7 @@ export const hi: Partial<typeof sv> = {
   errSubmitScore: 'स्कोर सेव नहीं हुआ',
   pickDiceHint: 'रखने वाले\nपासे चुनो',
   rollFirstHint: "शुरू करने के लिए\nरोल दबाएँ",
-  startFirstRollHint: 'रोल 1 से शुरू करेँ',
+  startFirstRollHint: 'रोल 1 से\nशुरू करेँ',
   slowConnection: "धीमा कनेक्शन…",
   searchingOpponent: 'प्रतिद्वंद्वी ढूँढ रहे हैं…',
   searchingOpponentHint: 'कोई न मिला तो कंप्यूटर से खेलोगे',

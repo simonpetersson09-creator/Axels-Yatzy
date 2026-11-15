@@ -11,13 +11,13 @@ it.skipIf(!db)('rejects a delayed lock after a roll or turn changes without touc
     await sql.unsafe(`
       CREATE TEMP TABLE games(id uuid, status text, round integer, rolls_left integer, current_player_index integer, locked_dice boolean[]) ON COMMIT DROP;
       CREATE TEMP TABLE game_players(game_id uuid, session_id text, player_index integer, last_active_at timestamptz, away boolean) ON COMMIT DROP;
-      CREATE OR REPLACE FUNCTION pg_temp.claim_session(text,text) RETURNS boolean LANGUAGE sql AS $$ SELECT $2='valid-device' $$;
+      CREATE OR REPLACE FUNCTION pg_temp.locks_fixture_claim_session(text,text) RETURNS boolean LANGUAGE sql AS $$ SELECT $2='valid-device' $$;
     `);
     const setter = readFileSync('drizzle/migrations/0014_perform_set_locks.sql', 'utf8').match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/)?.[0];
     const guard = readFileSync('drizzle/migrations/0116_admin_release_materialization_and_guarded_locks.sql', 'utf8').match(/CREATE OR REPLACE FUNCTION public\.client_set_locks_guarded[\s\S]*?\$function\$;/)?.[0];
     if (!setter || !guard) throw new Error('Missing production SQL');
     for (const definition of [setter, guard]) {
-      await sql.unsafe(definition.replace(/public\./g, 'pg_temp.').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+      await sql.unsafe(definition.replace(/public\./g, 'pg_temp.').replace(/pg_temp\.claim_session\(/g, 'pg_temp.locks_fixture_claim_session(').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
     }
     const id = '00000000-0000-0000-0000-000000000001';
     await sql`INSERT INTO pg_temp.games VALUES (${id},'playing',1,2,0,ARRAY[false,false,false,false,false])`;

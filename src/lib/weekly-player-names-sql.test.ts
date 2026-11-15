@@ -11,12 +11,12 @@ describe.skipIf(!db)('consistent weekly names — isolated SQL', () => {
       await sql.unsafe(`
         CREATE TEMP TABLE weekly_hall_of_fame(session_id text, first_name text, country text, week_start date, best_score integer, games_played integer, best_at timestamptz, updated_at timestamptz) ON COMMIT DROP;
         CREATE OR REPLACE FUNCTION pg_temp.internal_hof_week() RETURNS date LANGUAGE sql AS $$ SELECT DATE '2026-11-02' $$;
-        CREATE OR REPLACE FUNCTION pg_temp.internal_anon_number(text) RETURNS text LANGUAGE sql AS $$ SELECT '4867'::text $$;
+        CREATE OR REPLACE FUNCTION pg_temp.names_fixture_anon_number(text) RETURNS text LANGUAGE sql AS $$ SELECT '4867'::text $$;
         INSERT INTO pg_temp.weekly_hall_of_fame VALUES ('target','Spelare','SE','2026-11-02',300,20,now(),now()), ('duplicate','Spelare','SE','2026-11-02',1,100,now(),now());
         INSERT INTO pg_temp.weekly_hall_of_fame SELECT 'other-'||n, 'Name-'||n, 'SE', DATE '2026-11-02', 200+n, 1,now(),now() FROM generate_series(1,9) n;
       `);
       const source = readFileSync('drizzle/migrations/0109_consistent_weekly_player_names.sql', 'utf8');
-      await sql.unsafe(source.replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
+      await sql.unsafe(source.replace(/public\./g, 'pg_temp.').replace(/pg_temp\.internal_anon_number\(/g, 'pg_temp.names_fixture_anon_number(').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
       const rows = await sql.unsafe(`SELECT pg_temp.get_weekly_hall_of_fame(10) AS hof, pg_temp.get_weekly_most_games(10) AS most`);
       const target = (entries: { session_id: string; name: string }[]) => entries.find(p => p.session_id === 'target')?.name;
       expect(target(rows[0].hof)).toBe('Spelare 4867');

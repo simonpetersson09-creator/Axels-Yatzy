@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Medaljernas placering – 15 november
+- [ ] Förankra kombinationsmedaljer vid den verkliga mitten av Nedre sektionen, inte en uppskattad procent av brickan; kontrollera telefon och iPad utan att ändra spelregler.
+
 ## Bonusläge på spelbrickan
 - [x] Varje spelares bonusruta visar + / − mot tre av varje sort i redan ifyllda övre rutor; tomma rutor räknas inte, strukna räknas. Faktisk bonus och totalpoäng oförändrade.
 - [x] Åtta tester godkända och bygge OK; avskilt körande spel med Anna +3 och Erik −3 bildkontrollerat på telefon/dator utan livedata. Installerad app behöver nästa appversion.

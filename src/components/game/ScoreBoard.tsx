@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { CATEGORIES, Category, CategoryId, Player } from '@/types/yatzy';
 import { getUpperSectionTotal, getUpperBonusDifference, isUpperBonusSecured, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
@@ -214,6 +214,25 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 
 export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, aiChosenPlayerIndex, selectionDisabled, seenKey, myIndex }: ScoreBoardProps & { seenKey?: string; myIndex?: number }) {
   const { t } = useTranslation();
+  const boardRef = useRef<HTMLDivElement>(null);
+  const lowerSectionRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const board = boardRef.current;
+    const section = lowerSectionRef.current;
+    const host = board?.parentElement;
+    if (!board || !section || !host) return;
+    const alignCelebration = () => {
+      host.style.setProperty('--combination-center-y', `${board.offsetTop + section.offsetTop + section.offsetHeight / 2}px`);
+    };
+    alignCelebration();
+    const observer = new ResizeObserver(alignCelebration);
+    observer.observe(board);
+    observer.observe(section);
+    return () => {
+      observer.disconnect();
+      host.style.removeProperty('--combination-center-y');
+    };
+  }, []);
   const catName = (id: CategoryId) => t(`cat_${id}` as TranslationKey);
   const lastPointerRef = useRef<{ pointerType: string; clientX: number | null; clientY: number | null }>({
     pointerType: 'unknown',
@@ -460,7 +479,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
   return (
     <div
-      className="bg-yatzy-bg border border-yatzy-line-strong/30 rounded-lg overflow-hidden"
+      ref={boardRef}
+      className="relative bg-yatzy-bg border border-yatzy-line-strong/30 rounded-lg overflow-hidden"
       style={{
         boxShadow: '0 1px 3px hsl(0 0% 0% / 0.08), 0 4px 16px hsl(0 0% 0% / 0.06)',
       }}
@@ -540,7 +560,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       })}
 
       {/* Lower section */}
-      <div className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
+      <div ref={lowerSectionRef} data-score-section="lower" className="border-b border-yatzy-line/30 px-3 flex items-center justify-center h-[20px]" style={{ backgroundColor: 'hsl(195 45% 22% / 0.18)' }}>
         <span className="text-[9px] sb-fs-s font-normal text-black uppercase tracking-[0.15em]">{t('lowerSection')}</span>
       </div>
       {lowerCats.map((cat, idx) => renderRow(cat, idx))}

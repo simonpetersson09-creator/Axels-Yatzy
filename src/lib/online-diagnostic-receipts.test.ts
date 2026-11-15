@@ -16,10 +16,15 @@ describe.skipIf(!db)('online diagnostic server contracts in isolated temporary t
         CREATE TEMP TABLE analytics_events(event_name text,session_id text,device_id text,local_user_id text,auth_user_id text,game_id text,game_mode text,metadata jsonb,platform text,app_version text,delivery_event_id text,UNIQUE(device_id,event_name,delivery_event_id)) ON COMMIT DROP;
         INSERT INTO pg_temp.session_owners VALUES ('test-device'),('other-device');
         CREATE TEMP TABLE score_calls(attempt_id uuid,operation text CHECK(operation IN ('roll','lock','score')),result jsonb) ON COMMIT DROP;
-        CREATE OR REPLACE FUNCTION pg_temp.client_submit_score(uuid,text,text,text,integer[]) RETURNS jsonb LANGUAGE sql AS 'SELECT jsonb_build_object(''success'',true,''score'',12)';
-        CREATE OR REPLACE FUNCTION pg_temp.internal_record_request_timing(uuid,text,text,text,jsonb) RETURNS void LANGUAGE sql AS 'INSERT INTO pg_temp.score_calls VALUES ($1,$4,$5)';
+        CREATE OR REPLACE FUNCTION pg_temp.diagnostic_fixture_submit_score(uuid,text,text,text,integer[]) RETURNS jsonb LANGUAGE sql AS 'SELECT jsonb_build_object(''success'',true,''score'',12)';
+        CREATE OR REPLACE FUNCTION pg_temp.diagnostic_fixture_record_timing(uuid,text,text,text,jsonb) RETURNS void LANGUAGE sql AS 'INSERT INTO pg_temp.score_calls VALUES ($1,$4,$5)';
       `);
-      for (const fn of functions) await sql.unsafe(fn.replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'").replace('(SELECT auth.uid()::text)', 'NULL::text'));
+      // Poolers can reuse a connection's temporary functions across test files.
+      // Give stubs unique names so another fixture's named parameters cannot collide.
+      for (const fn of functions) await sql.unsafe(fn.replace(/public\./g, 'pg_temp.')
+        .replace(/pg_temp\.client_submit_score\(/g, 'pg_temp.diagnostic_fixture_submit_score(')
+        .replace(/pg_temp\.internal_record_request_timing\(/g, 'pg_temp.diagnostic_fixture_record_timing(')
+        .replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'").replace('(SELECT auth.uid()::text)', 'NULL::text'));
       await run(sql);
     });
   }

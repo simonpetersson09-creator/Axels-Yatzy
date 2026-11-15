@@ -13,12 +13,14 @@ describe.skipIf(!db)('weekly country fallback — isolated SQL', () => {
         CREATE TEMP TABLE weekly_hall_of_fame(session_id text,first_name text,country text,week_start date,best_score integer,games_played integer,best_at timestamptz,updated_at timestamptz,PRIMARY KEY(session_id,week_start)) ON COMMIT DROP;
         CREATE OR REPLACE FUNCTION pg_temp.internal_hof_week() RETURNS date LANGUAGE sql AS $$ SELECT DATE '2026-11-02' $$;
         CREATE OR REPLACE FUNCTION pg_temp.internal_anon_number(text) RETURNS text LANGUAGE sql AS $$ SELECT '4867'::text $$;
-        CREATE OR REPLACE FUNCTION pg_temp.claim_session(text,text) RETURNS boolean LANGUAGE sql AS $$ SELECT $2 = 'valid-device' $$;
+        CREATE OR REPLACE FUNCTION pg_temp.country_fixture_claim_session(text,text) RETURNS boolean LANGUAGE sql AS $$ SELECT $2 = 'valid-device' $$;
         INSERT INTO pg_temp.player_country_stats VALUES ('maxence','FR'),('explicit','FR');
         INSERT INTO pg_temp.weekly_hall_of_fame VALUES ('maxence','Maxence',NULL,'2026-11-02',300,20,now(),now()),('explicit','Explicit','SE','2026-11-02',290,10,now(),now()),('unknown','Unknown',NULL,'2026-11-02',280,5,now(),now());
       `);
       const definitions = await sql`SELECT pg_get_functiondef(p.oid) AS definition FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname IN ('get_weekly_hall_of_fame','get_weekly_most_games','report_weekly_score')`;
-      for (const row of definitions) await sql.unsafe(row.definition.replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
+      for (const row of definitions) await sql.unsafe(row.definition.replace(/public\./g, 'pg_temp.')
+        .replace(/pg_temp\.claim_session\(/g, 'pg_temp.country_fixture_claim_session(')
+        .replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
       await check(sql);
     });
   }

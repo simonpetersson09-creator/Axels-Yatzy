@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { CATEGORIES, Category, CategoryId, Player } from '@/types/yatzy';
-import { getUpperSectionTotal, getUpperBonusDifference, getTotalScore } from '@/lib/yatzy-scoring';
+import { getUpperSectionTotal, getUpperBonusDifference, isUpperBonusSecured, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playScoreSelectSound } from '@/lib/dice-sounds';
@@ -534,6 +534,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
 
       {renderSumRow(t('sum'), (p) => `${getUpperSectionTotal(p.scores)}`)}
       {renderSumRow(t('bonus'), (p) => {
+        if (isUpperBonusSecured(p.scores)) return '+ 50';
         const difference = getUpperBonusDifference(p.scores);
         return difference > 0 ? `+ ${difference}` : difference < 0 ? `− ${Math.abs(difference)}` : '0';
       })}

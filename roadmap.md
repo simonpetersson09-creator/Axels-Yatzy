@@ -1,9 +1,10 @@
 # Roadmap – Snabbspel online
 
 ## Ytterligare tärningskontroll – 15 november 19:09
-- [ ] Rätta gamla kastsvar som ersätter ett senare kast och landning efter full återhämtningsläsning; verifiera med regressionstester.
-- [ ] Granska återstående synkningsvägar och redovisa bekräftade fynd separat från risker.
-- [ ] Föreslå mjukare tärningar utan att ändra kaströrelsen i denna rättning.
+- [x] Rättat gamla kastsvar inom turen och landning efter full återhämtningsläsning; två nya regressionstester. 72 riktade och 831 tester i 134 filer godkända. Körande avskilt prov visar bevarat lås/kast vid gammalt svar och korrekt landning efter läsning, utan sidfel; bygge OK.
+- [x] Återstående lucka återskapad i separat prov: samma spelare/kastnummer från en tidigare runda accepteras under ny runda eftersom broadcast saknar kontrollerad rundidentitet. Rapporteras för separat rättning; inte bevisad orsak i Alicia-matchen. Sena egna kastsvar och läsningar saknar även genomgående matchlivstidsägare (kodrisk, ej återskapad här).
+- [x] Smooth-förslag: mät bildtider på telefon, prova färre separata prick-/AO-meshar och något lägre upplösning om grafik är flaskhalsen; därefter jämför färre varv/kortare inflygning i testversion. Ingen grafik/kaströrelse ändrad. Root AGENTS.md saknar utrymme för ny regel.
+- [ ] 16 väntrumsserverprov spärras av skyddet när riktiga spelare väntar; skyddet får inte kringgås. Fysisk grafik-/tvåtelefonverifiering kräver signerad version och telefoner.
 
 ## Fördjupad tärningskontroll – 15 november
 - [x] Granskat ändringarna 13–15 november: rättat tre återskapade fel. Dubbelt försenat roll_started startar inte om kast; serverrad med lika rolls_left levererar resultat efter låshint när roll_result saknas; avslutad motståndartur stänger diceAwait.

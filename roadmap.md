@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Sista tärningskontroll – 15 november 20:51 UTC
+- [x] Rättat återskapat tappat nästa motståndarkast när startmeddelandet saknas under föregående landning. Nytt regressionstest misslyckades före rättningen, godkänt efter; 121 riktade prov i 15 filer godkända, bygge OK. Inget ytterligare bekräftat synkfel hittat.
+- [x] Tre kast med låsning och hela spelplanen kontrollerade på 393×706, 768×1024 och 1024×768 utan live-testdata eller runtimefel. Bildpauser cirka 67–83 ms i SwiftShader (simulerad GPU); detta bevisar inte telefonens prestanda. Kaströrelse, grafikdetalj och upplösning oförändrade för att undvika en omätt telefonregression.
+- [ ] Verifiera flyt och verklig onlinesynkning på fysiska telefoner; kräver signerad appversion och två telefoner.
+
 ## Ytterligare tärningskontroll – 15 november 19:09
 - [x] Rättat gamla kastsvar inom turen och landning efter full återhämtningsläsning; två nya regressionstester. 72 riktade och 831 tester i 134 filer godkända. Körande avskilt prov visar bevarat lås/kast vid gammalt svar och korrekt landning efter läsning, utan sidfel; bygge OK.
 - [x] Återstående lucka återskapad i separat prov: samma spelare/kastnummer från en tidigare runda accepteras under ny runda eftersom broadcast saknar kontrollerad rundidentitet. Rapporteras för separat rättning; inte bevisad orsak i Alicia-matchen. Sena egna kastsvar och läsningar saknar även genomgående matchlivstidsägare (kodrisk, ej återskapad här).

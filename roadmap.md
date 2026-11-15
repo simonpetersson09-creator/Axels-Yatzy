@@ -1,5 +1,13 @@
 # Roadmap – Snabbspel online
 
+## Granskningsfynd 17:05 – rättningar
+- [x] Nya reservskrivningar baseras på aktuellt externt värde, inte en ogiltig gammal reserv. Tidigare skydd mot återställning av gamla värden bevarat.
+- [x] Lokal radering fortsätter efter nekad markörskrivning; markerar i minne och båda lagren när möjligt, återförsöker utan ny serverradering och blockerar återställning tills rensning klar.
+- [x] Tidig landning köas endast för exakt samma spelarplats/runda/kast/tärningar; visas efter logiskt kastslut. Gamla medaljer och återspelsdedupe rensas vid nytt kast.
+- [x] Livstidsägare stoppar sena resultatsidbyten efter Hem eller matchbyte; inbjudningssvar/push/acceptanser kontrollerar livstid efter väntan. Native-lyssnare städas även vid sen registrering; knappar återställs efter kastat fel och dubbeltryck spärras.
+- [x] Skickade inbjudningar rensas lokalt vid deadline även vid hängande/felande nätanrop; själva öppna lobbyn bevaras.
+- [x] 70 riktade tester godkända; full seriell körning 835 godkända/1 överhoppat i 134 filer. Första parallella körningen drabbades av databasanslutningstimeouter, ingen app- eller schemaändring för dessa. Bygge OK. Avskilda tidigare reproduktioner verifierade: ny reserv D läses/sparas, radering med blockerad markör rensar data, medalj visas vid minskad/vanlig rörelse, skickat kort försvinner offline, Hem står kvar efter sent matchresultat. Bilder granskade, inga runtimefel eller livedataändringar. Root AGENTS.md vid skyddad storleksgräns; fysiska annonsprov återstår enligt releasepunkterna.
+
 ## Kvarvarande fyra fynd – 15 november
 - [x] Förfallna inbjudningar rensas vid lokal deadline även med hängande nätanrop; giltiga inbjudningar bevaras vid nätfel.
 - [x] Startsidan återförsöker spelstatus seriellt efter nätfel; sena svar efter avmontering ignoreras.

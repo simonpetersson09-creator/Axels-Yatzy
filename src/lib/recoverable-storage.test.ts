@@ -79,6 +79,20 @@ it('never overwrites a newer committed value with another tabs stale backup', ()
   retryRecoverableWrites();
   expect(localStorage.getItem('yatzy-player-stats')).toBe('newer');
 });
+it('accepts a new fallback write based on a newer external value, not a stale backup base', () => {
+  localStorage.setItem('key', 'A');
+  const original = Storage.prototype.setItem;
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function(key, value) {
+    if (this === localStorage) throw new Error('full');
+    original.call(this, key, value);
+  });
+  writeRecoverable('key', 'B');
+  original.call(localStorage, 'key', 'C');
+  expect(writeRecoverable('key', 'D')).toBe(true);
+  expect(readRecoverable('key')).toBe('D');
+  vi.restoreAllMocks(); retryRecoverableWrites();
+  expect(localStorage.getItem('key')).toBe('D');
+});
 
 it('does not recount an old finished snapshot if replay identity persists before its replacement', () => {
   const first = getLocalMatchKey('slot');

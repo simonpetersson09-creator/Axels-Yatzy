@@ -27,7 +27,9 @@ export function readRecoverable(key: string): string | null {
 /** False means neither durable store accepted it; only explicitly staged data stays in memory. */
 export function writeRecoverable(key: string, value: string, stage = false): boolean {
   if (paused) return false;
-  const base = readBackup(key)?.base ?? localValue(key);
+  const local = localValue(key);
+  const backup = readBackup(key);
+  const base = backup && (local === backup.base || local === backup.value) ? backup.base : local;
   try {
     localStorage.setItem(key, value);
     pending.delete(key);
@@ -62,6 +64,7 @@ export function removeRecoverable(key: string): void {
 
 export function retryRecoverableWrites(): void {
   if (paused || localValue('mrb_data_deletion_cleanup') === '1') return;
+  try { if (sessionStorage.getItem('mrb_data_deletion_cleanup') === '1') return; } catch { /* unavailable */ }
   const entries = new Map(pending);
   try {
     for (const key of Object.keys(sessionStorage)) {

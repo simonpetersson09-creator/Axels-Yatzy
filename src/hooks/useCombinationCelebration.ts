@@ -28,12 +28,22 @@ export function useCombinationCelebration(gameState: GameState | null) {
   const stateRef = useRef<GameState | null>(gameState);
   stateRef.current = gameState;
   const celebratedKeyRef = useRef<string | null>(null);
+  const pendingLandingRef = useRef<string | null>(null);
+  const processLandingRef = useRef<(() => void) | null>(null);
+  const rollKey = (gs: GameState) => `${gs.currentPlayerIndex}:${gs.round}:${gs.rollsLeft}:${gs.dice.join(',')}`;
 
   // A medal belongs to the landed roll, never the next throw or player's turn.
   useEffect(() => {
+    // Timer completion is not a new throw: retain its matching landed event.
+    if (gameState && !gameState.isRolling && pendingLandingRef.current === rollKey(gameState)) {
+      processLandingRef.current?.();
+      return;
+    }
+    pendingLandingRef.current = null;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = null;
     setActiveCelebration(null);
+    if (gameState?.isRolling || gameState?.rollsLeft === 3) celebratedKeyRef.current = null;
   }, [gameState?.isRolling, gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft]);
 
   // React the moment the dice have visibly come to rest on screen (the dice
@@ -42,11 +52,16 @@ export function useCombinationCelebration(gameState: GameState | null) {
   useEffect(() => {
     const onLanded = () => {
       const gs = stateRef.current;
-      if (!gs || gs.isRolling || gs.rollsLeft >= 3 || gs.gameOver) return;
+      if (!gs || gs.rollsLeft >= 3 || gs.gameOver) return;
+      if (gs.isRolling) {
+        pendingLandingRef.current = rollKey(gs);
+        return;
+      }
+      pendingLandingRef.current = null;
       const dice = gs.dice;
-      const rollKey = `${gs.currentPlayerIndex}:${gs.round}:${gs.rollsLeft}:${dice.join(',')}`;
-      if (celebratedKeyRef.current === rollKey) return;
-      celebratedKeyRef.current = rollKey;
+      const key = rollKey(gs);
+      if (celebratedKeyRef.current === key) return;
+      celebratedKeyRef.current = key;
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
       setActiveCelebration(null);
@@ -72,8 +87,9 @@ export function useCombinationCelebration(gameState: GameState | null) {
         break;
       }
     };
+    processLandingRef.current = onLanded;
     window.addEventListener('dice:landed', onLanded);
-    return () => window.removeEventListener('dice:landed', onLanded);
+    return () => { processLandingRef.current = null; window.removeEventListener('dice:landed', onLanded); };
   }, []);
 
   useEffect(() => {

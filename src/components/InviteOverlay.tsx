@@ -74,8 +74,14 @@ export default function InviteOverlay() {
   const [queue, setQueue] = useState<InviteRow[]>([]);
   const [busy, setBusy] = useState(false);
   const handledRef = useRef<Set<string>>(new Set());
+  const actionBusyRef = useRef(false);
+  const lifetimeRef = useRef<object | null>(null);
   const sessionId = getSessionId();
   const incoming = queue[0] ?? null;
+  useEffect(() => {
+    lifetimeRef.current = {};
+    return () => { lifetimeRef.current = null; };
+  }, [sessionId]);
 
   // Expiry is local and must not wait for an offline or hung request.
   useEffect(() => {
@@ -99,7 +105,7 @@ export default function InviteOverlay() {
   useEffect(() => {
     let cancelled = false;
     const load = async (force = false) => {
-      if (!force && document.hidden) return;
+      if (cancelled || (!force && document.hidden)) return;
       const data = await fetchInvites(sessionId, force);
       if (cancelled || !data) return;
       const now = Date.now();
@@ -128,6 +134,7 @@ export default function InviteOverlay() {
         const sub = await App.addListener('appStateChange', ({ isActive }) => {
           if (isActive) void load(true);
         });
+        if (cancelled) { void sub.remove(); return; }
         removeCap = () => { void sub.remove(); };
       } catch {
         /* ignore — web fallback via focus/visibilitychange already covers this */
@@ -145,11 +152,13 @@ export default function InviteOverlay() {
   // Push tap → surface the matching invite immediately (jump it to the front of
   // the queue and fetch it if we haven't polled it yet).
   useEffect(() => {
+    let cancelled = false;
     const handler = async (e: Event) => {
       const inviteId = (e as CustomEvent<{ inviteId?: string }>).detail?.inviteId;
       if (!inviteId) return;
       handledRef.current.delete(inviteId);
       const rows = await fetchInvites(sessionId, true);
+      if (cancelled) return;
       const row = rows.find((r) => r.id === inviteId);
       if (!row || row.to_session_id !== sessionId || row.status !== 'pending') {
         toast.message(t('inviteInactive'));
@@ -165,7 +174,7 @@ export default function InviteOverlay() {
       });
     };
     window.addEventListener('app:invite-tap', handler);
-    return () => window.removeEventListener('app:invite-tap', handler);
+    return () => { cancelled = true; window.removeEventListener('app:invite-tap', handler); };
   }, [sessionId]);
 
 
@@ -176,7 +185,7 @@ export default function InviteOverlay() {
     let cancelled = false;
     const seenOutbound = new Set<string>();
     const poll = async (force = false) => {
-      if (!force && document.hidden) return;
+      if (cancelled || (!force && document.hidden)) return;
       const rows = await fetchInvites(sessionId, force);
       if (cancelled || !rows) return;
 
@@ -197,6 +206,7 @@ export default function InviteOverlay() {
             .select('status')
             .eq('id', row.game_id)
             .maybeSingle();
+          if (cancelled) return;
           // Transient lookup failure: do NOT burn the key — otherwise a single
           // network blip means this accept can never open the match again.
           if (gErr) { seenOutbound.delete(key); continue; }
@@ -263,6 +273,7 @@ export default function InviteOverlay() {
         const sub = await App.addListener('appStateChange', ({ isActive }) => {
           if (isActive) void poll(true);
         });
+        if (cancelled) { void sub.remove(); return; }
         removeCap = () => { void sub.remove(); };
       } catch {
         /* ignore — focus/visibilitychange covers web */
@@ -282,11 +293,15 @@ export default function InviteOverlay() {
 
   const handle = useCallback(
     async (action: 'accept' | 'decline') => {
-      if (!incoming || busy) return;
+      if (!incoming || actionBusyRef.current) return;
+      const lifetime = lifetimeRef.current;
+      if (!lifetime) return;
+      actionBusyRef.current = true;
       setBusy(true);
       const inv = incoming;
+      try {
       const res = await respondInvite({ inviteId: inv.id, action });
-      setBusy(false);
+      if (lifetimeRef.current !== lifetime) return;
       if (!res.ok) {
         // Keep invite in queue so the user can retry after a network hiccup.
         toast.error(res.error === 'max_active_games' ? t('maxActiveGames', { max: 3 }) : (res.error ?? t('errGeneric')));
@@ -298,6 +313,12 @@ export default function InviteOverlay() {
         navigate(`/multiplayer-game?gameId=${res.gameId}`);
       } else if (action === 'decline') {
         toast.message(t('invDeclinedToast', { name: inv.from_name }));
+      }
+      } catch {
+        if (lifetimeRef.current === lifetime) toast.error(t('errGeneric'));
+      } finally {
+        actionBusyRef.current = false;
+        if (lifetimeRef.current === lifetime) setBusy(false);
       }
     },
     [incoming, busy, navigate],

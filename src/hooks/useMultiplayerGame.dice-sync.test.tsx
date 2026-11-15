@@ -20,21 +20,22 @@ import { useMultiplayerGame } from './useMultiplayerGame';
 import { diceAwait } from '@/components/dice-engine/await-store';
 
 let game: Record<string, unknown>;
-let releaseRead: (() => void) | null = null;
+let held: Array<() => void> = [];
+const releaseRead = () => { const h = held; held = []; h.forEach(f => f()); };
 let holdReads = false;
 const players = [
   { id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false, session_id: 'me' },
   { id: 'p2', player_name: 'Other', player_index: 1, scores: {}, is_bot: false, session_id: 'other' },
 ];
 beforeEach(() => {
-  vi.useFakeTimers(); holdReads = false; releaseRead = null;
+  vi.useFakeTimers(); holdReads = false; held = [];
   vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
   game = { id: 'game', game_code: 'ABCDEF', status: 'playing', current_player_index: 0, dice: [2,3,4,5,6], locked_dice: [false,false,false,false,false], rolls_left: 3, round: 1, updated_at: '2026-11-15T12:00:00Z' };
   m.rpc.mockReset().mockImplementation(async (name: string) => ({ data: name === 'validate_game_session' ? { valid: true, player_index: 0 } : true, error: null }));
   m.from.mockReset().mockImplementation((table: string) => {
     const data = () => ({ data: table === 'games' ? { ...game } : players, error: null });
     const response = () => holdReads
-      ? new Promise(resolve => { releaseRead = () => resolve(data()); })
+      ? new Promise(resolve => { held.push(() => resolve(data())); })
       : Promise.resolve(data());
     const q = { select: () => q, eq: () => q, order: response, single: response, maybeSingle: () => Promise.resolve({ data: table === 'games' ? { ...game } : players[0], error: null }) };
     return q;
@@ -70,7 +71,7 @@ describe('online dice sync', () => {
     expect(diceAwait.active).toBe(true);
     await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
     expect(diceAwait.active).toBe(true);
-    await act(async () => { releaseRead?.(); await vi.advanceTimersByTimeAsync(50); });
+    await act(async () => { releaseRead(); await vi.advanceTimersByTimeAsync(50); });
     expect(diceAwait.active).toBe(false);
     expect(result.current.gameState?.dice).toEqual([2,3,4,5,6]);
     expect(result.current.gameState?.rollsLeft).toBe(3);

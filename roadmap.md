@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Fördjupad tärningskontroll – 15 november
+- [x] Granskat ändringarna 13–15 november: rättat tre återskapade fel. Dubbelt försenat roll_started startar inte om kast; serverrad med lika rolls_left levererar resultat efter låshint när roll_result saknas; avslutad motståndartur stänger diceAwait.
+- [x] 79 riktade tester och hela sviten: 845 godkända/1 överhoppat. Tre felvägar samt turbytesvakterna verifierade i avskild körande app utan riktiga matchdata; bygge OK. Root AGENTS.md vid storleksgränsen; kaströrelse, tider och serverregler oförändrade.
+- [ ] Full telefonverifiering och väntans grundorsak kräver signerad version och fysiska telefoner.
+
 ## Skydd för turbyten – 15 november
 - [x] Stoppar äldre spelmeddelanden före animation/turbyte; behåller egen tur och låsta tärningar tills poäng bekräftats. Full avläsning får återhämta en missad poäng endast med sparad kategoripoäng; terminala avhopp och datorövertagande bevaras.
 - [x] Stoppade turbyten registreras via mp_issue utan namn/tärningsvärden. 53 tester godkända; avskilt körande prov visar egen tur/lås kvar efter gamla och obekräftade meddelanden, bekräftad poäng medger turbyte. Bygge OK; ingen riktig match skapad eller ändrad. Root AGENTS.md saknar utrymme för ny arkitekturregel.

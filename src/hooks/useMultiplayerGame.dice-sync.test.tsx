@@ -51,6 +51,35 @@ async function joined() {
 }
 
 describe('online dice sync', () => {
+  it('lands from the saved server roll when roll_result is lost after a lock hint', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,false,false,false,false], rollsLeft: 1 } }); });
+    await act(async () => { m.handlers.games({ new: { ...game, rolls_left: 1, dice: [2,6,6,6,6], locked_dice: [true,false,false,false,false], updated_at: '2026-11-15T12:00:01Z' } }); });
+    expect(diceAwait.active).toBe(false);
+    expect(result.current.gameState?.dice).toEqual([2,6,6,6,6]);
+    unmount();
+  });
+
+  it('does not start a second flight for a delayed duplicate roll_started', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 1 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,false,false,false,false], rollsLeft: 1 } }); });
+    expect(result.current.remoteRolling).toBe(false);
+    expect(diceAwait.active).toBe(false);
+    unmount();
+  });
+
+  it('clears value-less tumbling when the opponent scores before their result arrives', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,false,false,false,false], rollsLeft: 1 } }); });
+    await act(async () => { m.handlers.games({ new: { ...game, current_player_index: 0, round: 2, rolls_left: 3, updated_at: '2026-11-15T12:00:01Z' } }); });
+    expect(result.current.gameState?.currentPlayerIndex).toBe(0);
+    expect(result.current.remoteRolling).toBe(false);
+    expect(diceAwait.active).toBe(false);
+    unmount();
+  });
   it('ignores an older turn notification before it can move or reset dice', async () => {
     game = { ...game, rolls_left: 1, locked_dice: [true,false,true,false,false] };
     const { result, unmount } = await joined();

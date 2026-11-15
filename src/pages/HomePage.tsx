@@ -9,7 +9,7 @@ import { useState, useEffect, useLayoutEffect, useRef, useSyncExternalStore } fr
 import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
 import { SentInvitesCards } from '@/components/SentInvitesCards';
-import { cancelLobby } from '@/lib/friend-requests';
+import type { OpenLobby } from '@/lib/home-invite-groups';
 import { FriendRequestNotice } from '@/components/FriendRequestNotice';
 import { HofRankNotice } from '@/components/HofRankNotice';
 import { WeeklyRewardNotice } from '@/components/WeeklyRewardNotice';
@@ -95,8 +95,6 @@ const item = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0 },
 };
-
-interface OpenLobby { gameId: string; code: string; createdAt: string }
 
 interface GameStatus {
   myTurn?: boolean;
@@ -611,40 +609,8 @@ export default function HomePage() {
         <div className="home-pending-stack home-card-stack w-full mt-8 sm:mt-10">
           <FriendRequestNotice />
           <HofRankNotice blocked={!!homePrompt || showWeeklyReward} />
-          <SentInvitesCards />
-          {openLobbies.map((lb) => (
-            <div
-              key={lb.gameId}
-              className="home-match-card home-match-card-info font-display"
-            >
-              <button
-                onClick={() => navigate('/multiplayer', { state: { rejoinCode: lb.code } })}
-                className="flex-1 min-w-0 flex items-center gap-2 h-full text-left active:scale-[0.98] transition"
-              >
-              <div className="home-card-chip">
-                <Users />
-              </div>
-
-              <div className="match-card-body flex-1 min-w-0 flex flex-col justify-center gap-[3px]">
-                <p className="font-bold text-[11px] leading-none truncate">{t('lobbyOpenCard', { code: lb.code })}</p>
-                <p className="flex items-center gap-1 text-[8px] leading-none opacity-90">
-                  <span className="w-1 h-1 rounded-full bg-background/80 animate-pulse flex-shrink-0" />
-                  <span className="truncate">{t('waitingShort')}…</span>
-                </p>
-              </div>
-              </button>
-              <button
-                onClick={async () => {
-                  const ok = await cancelLobby(lb.gameId);
-                  if (ok) setOpenLobbies((l) => l.filter((x) => x.gameId !== lb.gameId));
-                  else toast.error(t('errGeneric'));
-                }}
-                className="home-card-pill"
-              >
-                {t('close')}
-              </button>
-            </div>
-          ))}
+          <SentInvitesCards openLobbies={openLobbies}
+            onLobbyClosed={gameId => setOpenLobbies(current => current.filter(lobby => lobby.gameId !== gameId))} />
           {activeGames.length > 0 && (
             <motion.div className="home-actions-stack home-card-stack" variants={item} transition={{ duration: 0.45, ease: 'easeOut' }}>
               {[...activeGames].sort((a, b) => {

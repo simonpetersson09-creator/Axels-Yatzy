@@ -270,6 +270,8 @@ export function useMultiplayerGame() {
   const startRemoteRollingRef = useRef<((d?: RollDicePart, h?: { lockedDice: boolean[]; rollsLeft: number }) => void) | null>(null);
   const applyRemoteResultRef = useRef<((p: RollDicePart, s?: 'roll_result' | 'saved_row') => void) | null>(null);
   const animResolveRef = useRef<(() => void) | null>(null);
+  // A value-less remote spin that gave up waiting; its late result may still land.
+  const timedOutThrowRef = useRef<{ gameId: string; player: number; round: number; rollsLeft: number } | null>(null);
   const remoteLockHintRef = useRef<boolean[] | null>(null);
   // Pending category surfaces an `aiChosenCategory`-style highlight while the
   // submit RPC is in flight. Cleared in the same SUBMIT_ANIM_MS window as
@@ -341,6 +343,7 @@ export function useMultiplayerGame() {
       setDiceAwait(true);
     }
     remoteRollingGuardRef.current = true;
+    timedOutThrowRef.current = null;
     setRemoteRolling(true);
     if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
     const startedAt = Date.now();
@@ -354,6 +357,10 @@ export function useMultiplayerGame() {
       const landLeft = remoteResultAtRef.current ? remoteResultAtRef.current + ROLL_LAND_MS - Date.now() : 0;
       if (landLeft > 0) { remoteRollingTimerRef.current = setTimeout(finish, landLeft); return; }
       remoteRollingTimerRef.current = null;
+      if (!dicePart && remoteResultAtRef.current === 0) {
+        const gs = stateRef.current.gameState;
+        if (gs && stateRef.current.gameId) timedOutThrowRef.current = { gameId: stateRef.current.gameId, player: gs.currentPlayerIndex, round: gs.round, rollsLeft: gs.rollsLeft };
+      }
       if (!dicePart) {
         const waitedMs = (remoteResultAtRef.current || Date.now()) - startedAt;
         if (waitedMs > DICE_SLOW_RESULT_MS) {
@@ -603,7 +610,9 @@ export function useMultiplayerGame() {
       if (queued && queued.gameId === gameId && dicePart.rollsLeft <= queued.rollsLeft) {
         // This read already shows the queued next throw: hand it to that
         // throw's own flight instead of landing it at the current boundary.
-        if (dicePart.rollsLeft === queued.rollsLeft && !queued.result) queued.result = dicePart;
+        // An even newer throw (start missed) replaces the queued one.
+        if (dicePart.rollsLeft < queued.rollsLeft) { queued.rollsLeft = dicePart.rollsLeft; queued.lockedDice = dicePart.lockedDice; queued.result = dicePart; }
+        else if (!queued.result) queued.result = dicePart;
       } else if (!isStale) pendingRollUpdateRef.current = dicePart;
 
       setState(prev => ({
@@ -848,9 +857,21 @@ export function useMultiplayerGame() {
         if (remoteRollingGuardRef.current) {
           // Result already applied (e.g. via postgres_changes) — don't extend the spin.
           if (remoteResultAtRef.current === 0) applyRemoteResult(part);
-          else if (queuedRemoteRef.current?.gameId === gameId && queuedRemoteRef.current.rollsLeft === payload.rollsLeft) {
-            queuedRemoteRef.current.result = part;
+          else if (queuedRemoteRef.current?.gameId === gameId && payload.rollsLeft <= queuedRemoteRef.current.rollsLeft) {
+            // Same queued throw, or an even newer one whose start was missed.
+            const q = queuedRemoteRef.current;
+            q.rollsLeft = payload.rollsLeft; q.lockedDice = payload.lockedDice; q.result = part;
           }
+        }
+        else if (
+          payload.rollsLeft === prevGS.rollsLeft && timedOutThrowRef.current
+          && timedOutThrowRef.current.gameId === gameId && timedOutThrowRef.current.player === prevGS.currentPlayerIndex
+          && timedOutThrowRef.current.round === prevGS.round && timedOutThrowRef.current.rollsLeft === payload.rollsLeft
+        ) {
+          // The spin gave up waiting; land the late but real result now.
+          timedOutThrowRef.current = null;
+          reportDiceIssue('dice_result_fallback', gameId, { via: 'late_after_timeout' });
+          startRemoteRolling(part);
         }
         else if (payload.rollsLeft < prevGS.rollsLeft) { // missed roll_started
           reportDiceIssue('dice_result_fallback', gameId, { via: 'result_without_start' });

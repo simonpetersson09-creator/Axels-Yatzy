@@ -1,5 +1,13 @@
 # Roadmap – Snabbspel online
 
+## Fyra kvarvarande kastfel – 15 november 21:28 UTC
+- [x] Bevara mottagna köade kast vid återanslutning till samma match.
+- [x] Stoppa äldre läsningar efter timeout från att återställa kastnummer/lås; serveråterhämtning efter misslyckat eget kast bevarad.
+- [x] Kontrollera matchgeneration efter väntad felåterhämtning i båda felvägarna och efter full matchläsning.
+- [x] Landa mjukt när ett kast avbryts samtidigt som värdet ändras; landningssignalen kvar tills tärningen är stilla.
+- [x] Fem nya felprov misslyckades före rättningen och går igenom efter. 71 befintliga/nya prov godkända. Två lokala kast på 393×706 med synliga tärningar, inga runtimefel; bygge OK. Onlinesekvenser verifierade isolerat utan riktiga matchdata.
+- [ ] Verifiera verkligt flyt och onlinesekvenser på två telefoner; kräver nästa signerade appversion och fysiska telefoner.
+
 ## Rättningar efter djupdykning – 15 november 21:12 UTC
 - [x] Sena värdekorrigeringar landar på plats; köade kast får en separat bekräftad animationskant.
 - [x] Köade resultat bevaras vid sena startmeddelanden; sparade rader/full läsning använder gemensam resultatordning och gamla timeoutbuffertar avvisas.

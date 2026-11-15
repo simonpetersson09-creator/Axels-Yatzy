@@ -51,6 +51,56 @@ async function joined() {
 }
 
 describe('online dice sync', () => {
+  it('preserves a received next throw across same-game resubscription with a stale read', async () => {
+    game = { ...game, current_player_index: 1 };
+    const { result, unmount } = await joined();
+    const locks = [false,false,false,false,false];
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 2, lockedDice: locks } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, round: 1, rollsLeft: 2, dice: [1,2,3,4,5], lockedDice: locks } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, round: 1, rollsLeft: 1, dice: [6,6,6,6,6], lockedDice: locks } }); });
+    await act(async () => { await result.current.rejoinGame('game'); });
+    holdReads = true;
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.gameState?.dice).toEqual([6,6,6,6,6]);
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.remoteRolling).toBe(false);
+    unmount();
+  });
+
+  it('rejects a pre-throw full read after the remote waiting timeout', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    const locks = [true,false,false,false,false];
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 1, lockedDice: locks } }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(12000); });
+    await act(async () => { await result.current.retryConnection(); });
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.gameState?.lockedDice).toEqual(locks);
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, round: 1, rollsLeft: 1, dice: [2,6,6,6,6], lockedDice: locks } }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(2000); });
+    expect(result.current.gameState?.dice).toEqual([2,6,6,6,6]);
+    expect(result.current.remoteRolling).toBe(false);
+    unmount();
+  });
+
+  it.each(['answer', 'rejection'])('does not clear the next match await after old roll recovery: %s', async (failure) => {
+    const { result, unmount } = await joined();
+    if (failure === 'answer') m.roll.mockResolvedValue({ data: null, error: new Error('server failure') });
+    else m.roll.mockRejectedValue(new Error('Failed to fetch'));
+    holdReads = true;
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(failure === 'answer' ? 100 : 22000); });
+    holdReads = false;
+    game = { ...game, id: 'game2', current_player_index: 1 };
+    await act(async () => { await result.current.rejoinGame('game2'); });
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 2, lockedDice: [false,false,false,false,false] } }); });
+    expect(diceAwait.active).toBe(true);
+    await act(async () => { releaseRead(); await vi.advanceTimersByTimeAsync(100); });
+    expect(result.current.gameId).toBe('game2');
+    expect(diceAwait.active).toBe(true);
+    expect(result.current.remoteRolling).toBe(true);
+    unmount();
+  });
+
   it('preserves a queued result when its delayed start arrives afterwards', async () => {
     game = { ...game, current_player_index: 1, rolls_left: 3 };
     const { result, unmount } = await joined(); holdReads = true;

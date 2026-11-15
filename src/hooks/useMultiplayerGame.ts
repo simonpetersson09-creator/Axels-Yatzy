@@ -478,10 +478,13 @@ export function useMultiplayerGame() {
   }, []);
 
   const refreshGameState = useCallback(async (gameId: string, attempt = 0) => {
+    const generation = animationGenerationRef.current;
     const [gameRes, playersRes] = await Promise.all([
       supabase.from('games').select('*').eq('id', gameId).single(),
       supabase.from('game_players').select('id, game_id, player_name, player_index, scores, is_bot, session_id').eq('game_id', gameId).order('player_index'),
     ]);
+    if (!mountedRef.current || generation !== animationGenerationRef.current ||
+        (activeGameIdRef.current && activeGameIdRef.current !== gameId)) return;
 
     if (gameRes.error || playersRes.error) {
       console.warn('[multiplayer] refreshGameState failed', {
@@ -542,6 +545,13 @@ export function useMultiplayerGame() {
     // Several refreshes can be in flight at once; never let an older server
     // snapshot (lower updated_at) overwrite a newer one already applied.
     if (isStaleSnapshot(lastSnapshotRef.current, gameId, (game as { updated_at?: string }).updated_at)) return;
+    // Broadcasts may precede the saved row without advancing updated_at.
+    // Keep their roll identity even after the waiting animation timed out.
+    // A failed OWN roll still needs the server's unchanged count to recover.
+    if (visible.gameId === gameId && visibleGS && game.status === 'playing' &&
+        game.current_player_index !== visible.myPlayerIndex &&
+        game.current_player_index === visibleGS.currentPlayerIndex && game.round === visibleGS.round &&
+        game.rolls_left > visibleGS.rollsLeft) return;
     lastSnapshotRef.current = { gameId, updatedAt: (game as { updated_at?: string }).updated_at ?? '' };
     mpSnapshotAt.set(gameId, Date.now());
     // The match ended on the server: lock the board at once, before any
@@ -807,6 +817,7 @@ export function useMultiplayerGame() {
       animResolveRef.current?.();
       animResolveRef.current = null;
       pendingRollUpdateRef.current = null;
+      queuedRemoteRef.current = null;
       remoteRollingGuardRef.current = false;
       rollingGuardRef.current = false;
       timedOutThrowRef.current = null;
@@ -819,7 +830,6 @@ export function useMultiplayerGame() {
       setRollPending(false);
     }
     activeGameIdRef.current = gameId;
-    queuedRemoteRef.current = null;
     cleanupChannel();
     cleanupTimers();
 
@@ -1370,6 +1380,7 @@ export function useMultiplayerGame() {
       // The roll never reached the server: reload, then land on confirmed dice.
       if (mountedRef.current) setState(prev => ({ ...prev, error: t('errRollDice') }));
       if (latest.gameId) await settleRoll(latest.gameId);
+      if (!mountedRef.current || rollGeneration !== animationGenerationRef.current || activeGameIdRef.current !== latest.gameId) return { ok: false } as const;
       serverDoneAt = Date.now();
       setDiceAwait(false);
       return { ok: false } as const;
@@ -1383,6 +1394,7 @@ export function useMultiplayerGame() {
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
       // Reload the real match state so the screen never stays on guessed dice.
       if (latest.gameId) await settleRoll(latest.gameId);
+      if (!mountedRef.current || rollGeneration !== animationGenerationRef.current || activeGameIdRef.current !== latest.gameId) return { ok: false } as const;
       serverDoneAt = Date.now();
       setDiceAwait(false);
       return { ok: false } as const;

@@ -10,7 +10,7 @@ import { GoldInviteCard } from '@/components/GoldInviteCard';
 import { DiceTierCard } from '@/components/DiceTierCard';
 import { SentInvitesCards } from '@/components/SentInvitesCards';
 import type { OpenLobby } from '@/lib/home-invite-groups';
-import { fetchHomeGameSnapshot } from '@/lib/home-game-snapshot';
+import { watchHomeGameSnapshot } from '@/lib/home-game-snapshot';
 import { FriendRequestNotice } from '@/components/FriendRequestNotice';
 import { HofRankNotice } from '@/components/HofRankNotice';
 import { WeeklyRewardNotice } from '@/components/WeeklyRewardNotice';
@@ -465,18 +465,15 @@ export default function HomePage() {
   activeGamesRef.current = activeGames;
   const mpKey = activeGames
     .filter(g => g.type === 'multiplayer' && g.gameId)
-    .map(g => g.gameId!)
+    .flatMap(g => g.gameId ? [g.gameId] : [])
     .sort()
     .join(',');
   useEffect(() => {
     const mp = activeGamesRef.current.filter(g => g.type === 'multiplayer' && g.gameId);
     if (mp.length === 0) return;
-    let cancelled = false;
-    (async () => {
-      const sessionId = getSessionId();
-      const ids = mp.flatMap(g => g.gameId ? [g.gameId] : []);
-      const snapshot = await fetchHomeGameSnapshot(ids);
-      if (cancelled || !snapshot) return;
+    const sessionId = getSessionId();
+    const ids = mp.flatMap(g => g.gameId ? [g.gameId] : []);
+    return watchHomeGameSnapshot(ids, (snapshot) => {
       const { games, players } = snapshot;
       const next: Record<string, GameStatus> = {};
       let removed = false;
@@ -532,8 +529,7 @@ export default function HomePage() {
       if (removed || refreshed) setActiveGames(getActiveGames());
       setStatuses(next);
 
-    })();
-    return () => { cancelled = true; };
+    });
     // Keyed on the set of match ids (+ focus), not the array itself: list
     // updates (time labels, lastRollTime refresh) must not trigger refetches.
   }, [mpKey, statusTick]);

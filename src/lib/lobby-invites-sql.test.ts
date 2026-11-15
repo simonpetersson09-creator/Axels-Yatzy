@@ -13,10 +13,10 @@ async function scenario(check: (sql: postgres.TransactionSql) => Promise<void>) 
       CREATE TEMP TABLE friend_requests (LIKE public.friend_requests INCLUDING DEFAULTS) ON COMMIT DROP;
       CREATE TEMP TABLE session_owners (LIKE public.session_owners INCLUDING DEFAULTS) ON COMMIT DROP;
       CREATE TEMP TABLE player_names (LIKE public.player_names INCLUDING DEFAULTS) ON COMMIT DROP;
-      CREATE OR REPLACE FUNCTION pg_temp.check_rate_limit(text,integer) RETURNS boolean LANGUAGE sql AS $$SELECT true$$;
+      CREATE OR REPLACE FUNCTION pg_temp.lobby_fixture_check_rate_limit(text,integer) RETURNS boolean LANGUAGE sql AS $$SELECT true$$;
     `);
     const definitions = await sql`SELECT pg_get_functiondef(oid) AS def FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname IN ('internal_send_lobby_invites','accept_invite','join_game')`;
-    for (const row of definitions) await sql.unsafe(row.def.replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp', 'public'"));
+    for (const row of definitions) await sql.unsafe(row.def.replace(/public\./g, 'pg_temp.').replace(/pg_temp\.check_rate_limit\(/g, 'pg_temp.lobby_fixture_check_rate_limit(').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp', 'public'"));
     await sql`INSERT INTO pg_temp.games(id,game_code,status,max_players) VALUES(${game},'ABCDEF','waiting',4)`;
     await sql`INSERT INTO pg_temp.game_players(game_id,player_name,player_index,session_id) VALUES(${game},'Host',0,'host')`;
     await sql.unsafe(`INSERT INTO pg_temp.session_owners(session_id,device_id) VALUES('host','host-device'),('one','one-device'),('two','two-device'),('three','three-device');

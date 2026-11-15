@@ -9,7 +9,7 @@ it.skipIf(!db)('server duration preserves the result and device validation witho
   await db.begin(async sql => {
     await sql.unsafe(`
       CREATE TEMP TABLE roll_calls(n integer) ON COMMIT DROP;
-      CREATE OR REPLACE FUNCTION pg_temp.perform_lock_and_roll_authed(uuid,text,text,boolean[]) RETURNS jsonb LANGUAGE plpgsql AS $$
+      CREATE OR REPLACE FUNCTION pg_temp.roll_fixture_perform(uuid,text,text,boolean[]) RETURNS jsonb LANGUAGE plpgsql AS $$
       BEGIN
         INSERT INTO pg_temp.roll_calls VALUES (1);
         IF $3 <> 'valid-device' THEN RETURN '{"success":false,"auth_failed":true}'::jsonb; END IF;
@@ -18,7 +18,7 @@ it.skipIf(!db)('server duration preserves the result and device validation witho
       END $$;
     `);
     const [definition] = await sql`SELECT pg_get_functiondef('public.client_roll(uuid,text,text,boolean[])'::regprocedure) AS definition`;
-    await sql.unsafe(definition.definition.replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
+    await sql.unsafe(definition.definition.replace(/public\./g, 'pg_temp.').replace(/pg_temp\.perform_lock_and_roll_authed\(/g, 'pg_temp.roll_fixture_perform(').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
     const [ok] = await sql.unsafe("SELECT pg_temp.client_roll('00000000-0000-0000-0000-000000000001','player','valid-device',ARRAY[false,false,false,false,false]) AS result");
     expect(ok.result).toMatchObject({ success: true, dice: [1,2,3,4,5], rolls_left: 2 });
     expect(ok.result.server_ms).toBeGreaterThanOrEqual(20);

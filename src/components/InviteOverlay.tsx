@@ -77,6 +77,17 @@ export default function InviteOverlay() {
   const sessionId = getSessionId();
   const incoming = queue[0] ?? null;
 
+  // Expiry is local and must not wait for an offline or hung request.
+  useEffect(() => {
+    const deadlines = queue.flatMap(row => row.expires_at ? [new Date(row.expires_at).getTime()] : [])
+      .filter(Number.isFinite);
+    if (!deadlines.length) return;
+    const timer = setTimeout(() => setQueue(cur => cur.filter(row =>
+      !row.expires_at || new Date(row.expires_at).getTime() > Date.now(),
+    )), Math.min(2_147_483_647, Math.max(0, Math.min(...deadlines) - Date.now())));
+    return () => clearTimeout(timer);
+  }, [queue]);
+
 
   const enqueue = useCallback((row: InviteRow) => {
     if (handledRef.current.has(row.id)) return;
@@ -221,7 +232,8 @@ export default function InviteOverlay() {
       setQueue((cur) => {
         if (cur.length === 0) return cur;
         const stillPending = new Set(
-          rows.filter((r) => r.to_session_id === sessionId && r.status === 'pending').map((r) => r.id),
+          rows.filter((r) => r.to_session_id === sessionId && r.status === 'pending'
+            && (!r.expires_at || new Date(r.expires_at).getTime() > Date.now())).map((r) => r.id),
         );
         const next = cur.filter((r) => {
           if (stillPending.has(r.id)) return true;

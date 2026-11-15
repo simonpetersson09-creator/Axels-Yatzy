@@ -14,10 +14,10 @@ describe.skipIf(!db)('weekly tie rules — isolated copies of deployed functions
         CREATE TEMP TABLE player_xp(session_id text PRIMARY KEY,xp integer DEFAULT 0,updated_at timestamptz) ON COMMIT DROP;
         CREATE TEMP TABLE weekly_xp_rewards(session_id text,week_start date,list text,rank integer,xp integer) ON COMMIT DROP;
         CREATE OR REPLACE FUNCTION pg_temp.internal_hof_week() RETURNS date LANGUAGE sql AS $$ SELECT DATE '2026-11-02' $$;
-        CREATE OR REPLACE FUNCTION pg_temp.internal_anon_number(text) RETURNS text LANGUAGE sql AS $$ SELECT '4867'::text $$;
+        CREATE OR REPLACE FUNCTION pg_temp.ties_fixture_anon_number(text) RETURNS text LANGUAGE sql AS $$ SELECT '4867'::text $$;
       `);
       const definitions = await sql`SELECT pg_get_functiondef(p.oid) AS definition FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname IN ('get_weekly_hall_of_fame','get_weekly_most_games','internal_hof_rank','internal_settle_weekly_rewards')`;
-      for (const row of definitions) await sql.unsafe(row.definition.replace(/public\./g, 'pg_temp.').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
+      for (const row of definitions) await sql.unsafe(row.definition.replace(/public\./g, 'pg_temp.').replace(/pg_temp\.internal_anon_number\(/g, 'pg_temp.ties_fixture_anon_number(').replace(/SET search_path TO 'public'/g, "SET search_path TO 'pg_temp'"));
       const winnerScore = 300;
       const otherScore = mode === 'score' ? 300 : 290;
       const winnerGames = 20;

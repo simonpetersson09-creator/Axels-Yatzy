@@ -1,5 +1,13 @@
 # Roadmap – Snabbspel online
 
+## Kvarvarande fyra fynd – 15 november
+- [x] Förfallna inbjudningar rensas vid lokal deadline även med hängande nätanrop; giltiga inbjudningar bevaras vid nätfel.
+- [x] Startsidan återförsöker spelstatus seriellt efter nätfel; sena svar efter avmontering ignoreras.
+- [x] Lokalt avhopp skickar spelarplats; online skickar plats från serverns sessionidentitet. Äldre unika namn stöds, dubbla namn gissas aldrig. Systemmarkörer gäller endast utan spelaridentitet.
+- [x] Kombinationsmedalj rensas när nästa kast/ny tur börjar; landningssignal under kast ignoreras.
+- [x] 826 tester godkända i 134 filer, 1 överhoppat; bygge OK. SQL-testernas återanvända anslutningar orsakade parameternamnskrockar i stubbar, nu unika namn. Inga migrations- eller livedataändringar. Avskilt körande prov på 393×706: förfallen inbjudan försvinner offline, spelstatus återhämtar utan fokus/omladdning, medalj försvinner under nästa kast, två Anna ger exakt en avhoppsmarkering och vinnare; inga runtimefel. Root AGENTS.md vid skyddad storleksgräns.
+- [ ] Annonsprov på fysiska telefoner väntar på signerad appversion och tillgång till telefoner.
+
 ## Inbjudningar och sparfel – ny granskning 15 november
 - [x] Behåll inkommande inbjudningar vid misslyckade hämtningar och återhämta vid nästa lyckade svar.
 - [x] Matchsparning, aktiva spel och matchidentitet använder reservsparning/återförsök. Slutresultat bär sin egen matchidentitet så avbrutet omspel inte dubbelräknar. Gamla tabbreserver skriver aldrig över senare sparningar; borttagningar återförsöks utan att återställa borttaget spel.

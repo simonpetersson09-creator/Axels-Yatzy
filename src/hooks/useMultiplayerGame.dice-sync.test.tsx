@@ -51,6 +51,66 @@ async function joined() {
 }
 
 describe('online dice sync', () => {
+  it('preserves a queued result when its delayed start arrives afterwards', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined(); holdReads = true;
+    const locks = [false,false,false,false,false];
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 2, lockedDice: locks } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, round: 1, rollsLeft: 2, dice: [1,2,3,4,5], lockedDice: locks } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, round: 1, rollsLeft: 1, dice: [6,6,6,6,6], lockedDice: locks } }); });
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 1, lockedDice: locks } }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.gameState?.dice).toEqual([6,6,6,6,6]);
+    expect(result.current.remoteRolling).toBe(false); unmount();
+  });
+
+  it('never restores an older roll count and locks from a timeout buffer', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 2 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 1, lockedDice: [true,false,false,false,false] } }); });
+    await act(async () => { await result.current.retryConnection(); }); holdReads = true;
+    await act(async () => { await vi.advanceTimersByTimeAsync(12000); });
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(result.current.gameState?.lockedDice).toEqual([true,false,false,false,false]); unmount();
+  });
+
+  it('queues a newer full-read result even without either broadcast', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    const locks = [false,false,false,false,false];
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 2, lockedDice: locks } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, round: 1, rollsLeft: 2, dice: [1,2,3,4,5], lockedDice: locks } }); });
+    game = { ...game, rolls_left: 1, dice: [6,6,6,6,6], updated_at: '2026-11-15T12:00:02Z' };
+    await act(async () => { await result.current.retryConnection(); });
+    expect(result.current.gameState?.dice).toEqual([1,2,3,4,5]);
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.gameState?.dice).toEqual([6,6,6,6,6]); unmount();
+  });
+
+  it('lands a timed-out saved row directly without a second duplicate flight', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined(); holdReads = true;
+    const locks = [false,false,false,false,false];
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 2, lockedDice: locks } }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(12000); });
+    await act(async () => { m.handlers.games({ new: { ...game, rolls_left: 2, dice: [6,6,6,6,6], updated_at: '2026-11-15T12:00:02Z' } }); });
+    expect(result.current.gameState?.dice).toEqual([6,6,6,6,6]);
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, round: 1, rollsLeft: 2, dice: [6,6,6,6,6], lockedDice: locks } }); });
+    expect(result.current.remoteRolling).toBe(false); unmount();
+  });
+
+  it('drops animation ownership when opening another match mid-flight', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, round: 1, rollsLeft: 2, lockedDice: [false,false,false,false,false] } }); });
+    game = { ...game, id: 'game2', dice: [6,6,6,6,6] };
+    await act(async () => { await result.current.rejoinGame('game2'); });
+    expect(result.current.remoteRolling).toBe(false);
+    await act(async () => { await vi.advanceTimersByTimeAsync(12000); });
+    expect(result.current.gameId).toBe('game2');
+    expect(result.current.gameState?.dice).toEqual([6,6,6,6,6]); unmount();
+  });
   it('lands a remote roll from a full read when both result notifications are lost', async () => {
     game = { ...game, current_player_index: 1, rolls_left: 2 };
     const { result, unmount } = await joined();

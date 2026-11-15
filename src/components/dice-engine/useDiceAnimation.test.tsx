@@ -8,14 +8,14 @@ const frame = vi.hoisted(() => ({ current: (_: unknown, _delta: number) => {} })
 vi.mock('@react-three/fiber', () => ({ useFrame: (fn: typeof frame.current) => { frame.current = fn; } }));
 vi.mock('./await-store', () => ({ isDiceAwaiting: () => false, setDieFlying: vi.fn() }));
 
-type Props = { resetKey: number; rolling: boolean; held: boolean; cleared: boolean };
+type Props = { resetKey: number; rolling: boolean; held: boolean; cleared: boolean; value?: 1 | 2 | 3 | 4 | 5 | 6 };
 const resting: Props = { resetKey: 5, rolling: false, held: false, cleared: false };
 
 function mount(initial: Props = resting) {
   const group = new Group();
   const travel = new Group();
   const hook = renderHook((props: Props) => {
-    const refs = useDiceAnimation({ ...props, value: 6, duration: 1.3, size: 1, index: 0 });
+    const refs = useDiceAnimation({ ...props, value: props.value ?? 6, duration: 1.3, size: 1, index: 0 });
     useLayoutEffect(() => {
       // Emulate Three attaching scene objects before passive animation effects.
       Object.assign(refs.groupRef, { current: group });
@@ -29,6 +29,16 @@ function advance(frames = 80, delta = 1 / 60) {
 }
 
 describe('dice recovery without changing game state', () => {
+  it('corrects a late face without starting an extra flight after landing', () => {
+    const { travel, rerender } = mount({ ...resting, rolling: true, value: 2 });
+    advance(150);
+    expect(travel.position.length()).toBe(0);
+    rerender({ ...resting, rolling: true, value: 6 });
+    advance(1);
+    expect(travel.position.length()).toBe(0);
+    advance(30);
+    expect(travel.position.length()).toBe(0);
+  });
   beforeEach(() => { vi.clearAllMocks(); });
 
   it('does not replay a historical reset when recovering rolled dice', () => {

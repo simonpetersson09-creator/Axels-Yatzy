@@ -15,11 +15,11 @@ describe.skipIf(!db)('release receipts — temporary tables only, no production 
         CREATE TEMP TABLE yatzy_match_log(session_id text,match_key text,PRIMARY KEY(session_id,match_key)) ON COMMIT DROP;
         CREATE TEMP TABLE player_country_stats(session_id text,country text) ON COMMIT DROP;
         CREATE TEMP TABLE weekly_hall_of_fame(session_id text,week_start date,first_name text,country text,best_score integer,games_played integer,best_at timestamptz,updated_at timestamptz,PRIMARY KEY(session_id,week_start)) ON COMMIT DROP;
-        CREATE FUNCTION pg_temp.claim_session(text,text) RETURNS boolean LANGUAGE sql AS $$ SELECT EXISTS(SELECT 1 FROM pg_temp.session_owners WHERE session_id=$1 AND device_id=$2) $$;
-        CREATE FUNCTION pg_temp.check_rate_limit(text,integer) RETURNS boolean LANGUAGE sql AS $$ SELECT true $$;
-        CREATE FUNCTION pg_temp.internal_add_yatzy_match(text,text) RETURNS boolean LANGUAGE plpgsql AS $$ BEGIN INSERT INTO pg_temp.yatzy_match_log VALUES($1,$2) ON CONFLICT DO NOTHING; RETURN FOUND; END $$;
-        CREATE FUNCTION pg_temp.internal_hof_rank(text) RETURNS integer LANGUAGE sql AS $$ SELECT 1 $$;
-        CREATE FUNCTION pg_temp.internal_hof_week() RETURNS date LANGUAGE sql AS $$ SELECT date_trunc('week',now() AT TIME ZONE 'Europe/Stockholm')::date $$;
+        CREATE OR REPLACE FUNCTION pg_temp.claim_session(text,text) RETURNS boolean LANGUAGE sql AS $$ SELECT EXISTS(SELECT 1 FROM pg_temp.session_owners WHERE session_id=$1 AND device_id=$2) $$;
+        CREATE OR REPLACE FUNCTION pg_temp.check_rate_limit(text,integer) RETURNS boolean LANGUAGE sql AS $$ SELECT true $$;
+        CREATE OR REPLACE FUNCTION pg_temp.internal_add_yatzy_match(text,text) RETURNS boolean LANGUAGE plpgsql AS $$ BEGIN INSERT INTO pg_temp.yatzy_match_log VALUES($1,$2) ON CONFLICT DO NOTHING; RETURN FOUND; END $$;
+        CREATE OR REPLACE FUNCTION pg_temp.internal_hof_rank(text) RETURNS integer LANGUAGE sql AS $$ SELECT 1 $$;
+        CREATE OR REPLACE FUNCTION pg_temp.internal_hof_week() RETURNS date LANGUAGE sql AS $$ SELECT date_trunc('week',now() AT TIME ZONE 'Europe/Stockholm')::date $$;
       `);
       for (const table of source.match(/CREATE TABLE public\.[\s\S]*?\n\);/g) ?? []) {
         await sql.unsafe(table.replace('CREATE TABLE public.','CREATE TEMP TABLE ').replaceAll('public.','pg_temp.').replace(/\);$/,') ON COMMIT DROP;'));

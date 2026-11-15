@@ -1,7 +1,7 @@
 # Roadmap – Snabbspel online
 
 ## Inbjudningar och sparfel – ny granskning 15 november
-- [ ] Behåll inkommande inbjudningar vid misslyckade hämtningar och återhämta vid nästa lyckade svar.
+- [x] Behåll inkommande inbjudningar vid misslyckade hämtningar och återhämta vid nästa lyckade svar.
 - [ ] Skydda matchsparningen från skrivfel med reservsparning och återförsök utan dubbelräkning.
 - [ ] Behåll SDK-bekräftad annonsbelöning vid kvittoskrivfel; bevara enhets- och raderingsskydd.
 - [ ] Kör regressionstester, avskilda användarflöden och ny skrivskyddad bugggranskning efter rättningarna.

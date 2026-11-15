@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Fördjupad tärningskontroll – 15 november
-- [ ] Kontrollera ändringarna 13–15 november med gamla/dubbla meddelanden, borttappat kastsvar och avslutad motståndartur under rullning; rätta återskapade fel.
-- [ ] Kör riktade tester och avskilt körande prov utan riktiga matchdata.
+- [x] Granskat ändringarna 13–15 november: rättat tre återskapade fel. Dubbelt försenat roll_started startar inte om kast; serverrad med lika rolls_left levererar resultat efter låshint när roll_result saknas; avslutad motståndartur stänger diceAwait.
+- [x] 79 riktade tester och hela sviten: 845 godkända/1 överhoppat. Tre felvägar samt turbytesvakterna verifierade i avskild körande app utan riktiga matchdata; bygge OK. Root AGENTS.md vid storleksgränsen; kaströrelse, tider och serverregler oförändrade.
 - [ ] Full telefonverifiering och väntans grundorsak kräver signerad version och fysiska telefoner.
 
 ## Skydd för turbyten – 15 november

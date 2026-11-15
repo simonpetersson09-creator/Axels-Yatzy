@@ -1,4 +1,5 @@
 import { readRecoverable, writeRecoverable, removeRecoverable } from './recoverable-storage';
+import { getCurrentLocalMatchKey } from './local-match-key';
 
 const GAMES_KEY = 'yatzy_active_games';
 const SAVED_GAME_KEY = 'yatzy_saved_game';
@@ -188,7 +189,9 @@ export function clearActiveGame() {
 }
 
 export function saveGameState(state: unknown, localId?: string) {
-  return writeRecoverable(savedKey(localId), JSON.stringify(state), true);
+  const snapshot = localId && state && typeof state === 'object'
+    ? { ...state, matchKey: getCurrentLocalMatchKey(localId) } : state;
+  return writeRecoverable(savedKey(localId), JSON.stringify(snapshot), true);
 }
 
 export function loadGameState<T>(localId?: string): T | null {

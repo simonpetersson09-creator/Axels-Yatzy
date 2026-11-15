@@ -3,6 +3,7 @@ import { readRecoverable, writeRecoverable, retryRecoverableWrites, forgetRecove
 import { recordGameResult, getLocalStats } from './local-stats';
 import { saveGameState, loadGameState, getLocalActiveGames } from './active-game';
 import { useYatzyGame } from '@/hooks/useYatzyGame';
+import { getLocalMatchKey, startNextLocalMatch } from './local-match-key';
 import { act, renderHook } from '@testing-library/react';
 vi.mock('./result-delivery', () => ({ flushResultReports: vi.fn() }));
 beforeEach(() => { resumeRecoverableWrites(); forgetRecoverableWrites(); localStorage.clear(); sessionStorage.clear(); });
@@ -77,4 +78,17 @@ it('never overwrites a newer committed value with another tabs stale backup', ()
   expect(readRecoverable('yatzy-player-stats')).toBe('newer');
   retryRecoverableWrites();
   expect(localStorage.getItem('yatzy-player-stats')).toBe('newer');
+});
+
+it('does not recount an old finished snapshot if replay identity persists before its replacement', () => {
+  const first = getLocalMatchKey('slot');
+  saveGameState({ gameOver: true, players: [] }, 'slot');
+  expect(recordGameResult(30, true, 0, first)).toBe(true);
+  const next = startNextLocalMatch('slot');
+  expect(next).not.toBe(first);
+  expect(getLocalMatchKey('slot')).toBe(first);
+  expect(recordGameResult(30, true, 0, getLocalMatchKey('slot'))).toBe(false);
+  saveGameState({ gameOver: false, players: [] }, 'slot');
+  expect(getLocalMatchKey('slot')).toBe(next);
+  expect(getLocalStats().gamesPlayed).toBe(1);
 });

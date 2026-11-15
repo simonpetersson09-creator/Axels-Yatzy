@@ -19,6 +19,8 @@ import { App } from '@capacitor/app';
 // Online-spelets felrapportering: skickas tyst som 'mp_issue' i analytics så
 // vi kan se fel, långsamma anrop och skillnader mellan skärm och server.
 const MP_SLOW_MS = 3000;
+/** Longest a failed roll keeps tumbling while the confirmed state reloads. */
+const FAILED_ROLL_SETTLE_MAX_MS = 5000;
 // When each match's server snapshot was last applied, and what the screen
 // believed (turn/round/rolls) — attached to every issue for event ordering.
 const mpSnapshotAt = new Map<string, number>();
@@ -275,7 +277,7 @@ export function useMultiplayerGame() {
   // final dice/rolls_left before the rolling pulse, so Dice.tsx spins toward
   // the real target from frame 0 instead of landing on old values and snapping.
   // If omitted, we only show the visual spin and rely on postgres_changes.
-  const startRemoteRolling = useCallback((dicePart?: RollDicePart) => {
+  const startRemoteRolling = useCallback((dicePart?: RollDicePart, lockHint?: { lockedDice: boolean[]; rollsLeft: number }) => {
     const prevGS = stateRef.current.gameState;
     if (dicePart) {
       const visibleDicePart = {
@@ -300,6 +302,15 @@ export function useMultiplayerGame() {
       // Broadcast path — the server is still rolling. Spin without a value
       // (diceAwait) until roll_result / postgres_changes delivers the numbers.
       remoteResultAtRef.current = 0;
+      // The roll carries the opponent's final locks (taps not yet synced
+      // travel with it). Hold those dice still from the first frame, so a
+      // kept die never starts spinning and "slides in" when numbers arrive.
+      if (lockHint) {
+        setState(prev => prev.gameState ? {
+          ...prev,
+          gameState: { ...prev.gameState, lockedDice: lockHint.lockedDice, rollsLeft: lockHint.rollsLeft },
+        } : prev);
+      }
       setDiceAwait(true);
     }
     remoteRollingGuardRef.current = true;
@@ -672,8 +683,17 @@ export function useMultiplayerGame() {
           });
           return;
         }
-        // Legacy/fallback path: visual-only spin; the authoritative dice arrive
-        // via postgres_changes and are applied once known.
+        // Server-rolled path: spin without numbers; the authoritative dice
+        // arrive via roll_result/postgres_changes. Locks apply immediately.
+        if (
+          payload?.lockedDice?.length === 5
+          && payload.lockedDice.every(v => typeof v === 'boolean')
+          && typeof payload.rollsLeft === 'number'
+          && payload.rollsLeft < prevGS.rollsLeft
+        ) {
+          startRemoteRolling(undefined, { lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft });
+          return;
+        }
         startRemoteRolling();
       })
       .on('broadcast', { event: 'roll_result' }, (msg) => {
@@ -1016,7 +1036,12 @@ export function useMultiplayerGame() {
       failedRollReconcileRef.current = gid;
       // Only an applied server snapshot can confirm recovery. Failed reads
       // must not make optimistic dice selectable.
-      void Promise.resolve(refreshGameStateRef.current?.(gid)).catch(() => {});
+      // Keep the dice tumbling until the confirmed match state is on screen
+      // (capped), so they never land on guessed or old values first.
+      return Promise.race([
+        Promise.resolve(refreshGameStateRef.current?.(gid)).catch(() => {}),
+        new Promise<void>((r) => setTimeout(r, FAILED_ROLL_SETTLE_MAX_MS)),
+      ]).then(() => {});
     };
     let serverDoneAt = 0;
     const rpcPromise = locksPromise.then(async (locksConfirmed) => {
@@ -1095,7 +1120,7 @@ export function useMultiplayerGame() {
         };
         void poll();
       });
-    }).then(({ data, error }) => {
+    }).then(async ({ data, error }) => {
       if (error) console.error('Roll dice error:', error);
       const rollMs = Date.now() - rollStartedAt;
       const ok = !error && Array.isArray(data?.dice) && data.dice.length === 5 && typeof data?.rolls_left === 'number';
@@ -1125,22 +1150,23 @@ export function useMultiplayerGame() {
         if (mountedRef.current) setRollPending(false);
         return { ok: true } as const;
       }
-      // The roll never reached the server: land on the old dice and reload.
-      setDiceAwait(false);
+      // The roll never reached the server: reload, then land on confirmed dice.
       if (mountedRef.current) setState(prev => ({ ...prev, error: t('errRollDice') }));
-      if (latest.gameId) settleRoll(latest.gameId);
-      return { ok: false } as const;
-    }).catch((err) => {
-      console.error('Roll dice failed:', err);
-      reportMpIssue('roll_failed', latest.gameId, { ms: Date.now() - rollStartedAt, err: errText(err), attempt_id: rollAttemptId });
+      if (latest.gameId) await settleRoll(latest.gameId);
       serverDoneAt = Date.now();
       setDiceAwait(false);
+      return { ok: false } as const;
+    }).catch(async (err) => {
+      console.error('Roll dice failed:', err);
+      reportMpIssue('roll_failed', latest.gameId, { ms: Date.now() - rollStartedAt, err: errText(err), attempt_id: rollAttemptId });
       const msg = (err as Error)?.message === 'timeout'
         ? t('errTimeout')
         : t('errRollDice');
       if (mountedRef.current) setState(prev => ({ ...prev, error: msg }));
       // Reload the real match state so the screen never stays on guessed dice.
-      if (latest.gameId) settleRoll(latest.gameId);
+      if (latest.gameId) await settleRoll(latest.gameId);
+      serverDoneAt = Date.now();
+      setDiceAwait(false);
       return { ok: false } as const;
     });
 

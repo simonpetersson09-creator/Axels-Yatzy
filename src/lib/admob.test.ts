@@ -553,6 +553,28 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
   const failBanner = () => native.handlers.get('b_failed')?.forEach(h =>
     (h as (d: unknown) => void)({ code: 3, message: 'No fill' }));
 
+  it('reserves the banner space immediately and keeps it after a failed load', async () => {
+    const m = await import('./admob');
+    native.banner.show.mockRejectedValueOnce(new Error('No fill'));
+    const first = m.showGameBanner();
+    // Platsen reserveras synkront, innan bannern hunnit laddas.
+    expect(document.documentElement.classList.contains('ad-banner-on')).toBe(true);
+    await vi.advanceTimersByTimeAsync(15_000); await first;
+    // Ett misslyckat laddningsförsök frigör inte platsen medan skärmen är öppen.
+    expect(document.documentElement.classList.contains('ad-banner-on')).toBe(true);
+    await m.hideGameBanner();
+    expect(document.documentElement.classList.contains('ad-banner-on')).toBe(false);
+  });
+
+  it('never reserves game space for the search banner', async () => {
+    const m = await import('./admob');
+    const search = m.showGameBanner('search');
+    expect(document.documentElement.classList.contains('ad-banner-on')).toBe(false);
+    await vi.advanceTimersByTimeAsync(15_000); await search;
+    expect(document.documentElement.classList.contains('ad-banner-on')).toBe(false);
+    await m.hideGameBanner();
+  });
+
   it('allows exactly three retries, each 30 seconds after a confirmed failure', async () => {
     const m = await import('./admob');
     expect(m.BANNER_RETRY_DELAY_MS).toBe(30_000);

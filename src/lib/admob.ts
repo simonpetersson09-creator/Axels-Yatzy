@@ -1476,6 +1476,10 @@ export async function showGameBanner(placement: BannerPlacement = 'game'): Promi
   bannerRetryCount = 0;
   bannerWanted = true;
   shownPlacement = placement;
+  // Reservera bannerns plats direkt när spelskärmen öppnas och behåll den
+  // hela matchen, så layouten aldrig hoppar när bannern laddas klart,
+  // misslyckas eller laddas om. Utgå från att bannern alltid finns.
+  if (placement === 'game') setBannerSpace(true);
   if (privacyChanging || privacyBlocked) return;
   // Varje sidbyte får ett eget nummer; ett äldre anrop som fortfarande väntar
   // avbryts, så att två sidor aldrig visar varsin banner.
@@ -1576,7 +1580,9 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
       scheduleParkedRemoval();
     }
   } catch (err) {
-    setBannerSpace(false);
+    // Misslyckad laddning frigör inte platsen medan spelskärmen är öppen:
+    // ett omförsök ska aldrig få layouten att hoppa.
+    setBannerSpace(bannerWanted && placement === 'game');
     bannerShown = false;
     bannerParked = false;
     bannerLoaded = false;

@@ -898,7 +898,7 @@ export default function MultiplayerGamePage() {
               )}
               {diceAreaPrompt === 'start' && (
                 <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex items-center justify-center text-center text-primary">
-                  <div className="px-1 text-[13px] font-semibold leading-tight break-words">
+                  <div className="whitespace-pre-line px-1 text-[13px] font-semibold leading-tight break-words">
                     {t('startFirstRollHint')}
                   </div>
                 </div>

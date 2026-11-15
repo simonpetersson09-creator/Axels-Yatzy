@@ -857,10 +857,16 @@ export function useMultiplayerGame() {
         if (remoteRollingGuardRef.current) {
           // Result already applied (e.g. via postgres_changes) — don't extend the spin.
           if (remoteResultAtRef.current === 0) applyRemoteResult(part);
-          else if (queuedRemoteRef.current?.gameId === gameId && payload.rollsLeft <= queuedRemoteRef.current.rollsLeft) {
-            // Same queued throw, or an even newer one whose start was missed.
+          else if (payload.rollsLeft < prevGS.rollsLeft) {
+            // A valid newer result also creates its own queue entry if its
+            // start was lost while the previous throw was still landing.
             const q = queuedRemoteRef.current;
-            q.rollsLeft = payload.rollsLeft; q.lockedDice = payload.lockedDice; q.result = part;
+            if (!q || payload.rollsLeft <= q.rollsLeft) {
+              queuedRemoteRef.current = {
+                gameId, player: prevGS.currentPlayerIndex, round: prevGS.round,
+                lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, result: part,
+              };
+            }
           }
         }
         else if (

@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Releasegranskning – skadade sparningar och delad förstaplats
+- [ ] Avvisa ogiltiga lokala spelvärden kontrollerat utan att ändra andra sparningar eller historik.
+- [ ] Visa oavgjort och delade placeringar konsekvent; bevara statistikens regel att oavgjort inte är vinst.
+- [ ] Återskapa felen, kör regressionstester och verifiera spel-/resultatflödet i körande app.
+
 ## Releasegranskning – prioritet 1–4, 15 november
 - [x] Färdiga lokala resultat sparas före visning och överlever misslyckad statistikskrivning/omstart; omspel spärras före sparad statistik, återställda resultat dubbelräknas inte.
 - [x] Lokalt protokoll, tärningar och knappar verifierade på 375×667, 360×640, 393×852 samt iPad stående/liggande, även med simulerade säkerhetsmarginaler; ingen banner krävs.

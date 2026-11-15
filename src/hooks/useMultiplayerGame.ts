@@ -514,6 +514,7 @@ export function useMultiplayerGame() {
       }
       pendingRollUpdateRef.current = null;
       remoteRollingGuardRef.current = false;
+      setDiceAwait(false);
       setRemoteRolling(false);
     }
 
@@ -690,6 +691,9 @@ export function useMultiplayerGame() {
         if (stateRef.current.gameId !== gameId || prevGS.currentPlayerIndex === myIdx) return;
         // Only react to opponent broadcasts; ignore our own echo.
         if (typeof payload?.player === 'number' && payload.player === myIdx) return;
+        if (typeof payload?.player === 'number' && payload.player !== prevGS.currentPlayerIndex) return;
+        // A late start for a roll already displayed must never start a new flight.
+        if (typeof payload?.rollsLeft === 'number' && payload.rollsLeft >= prevGS.rollsLeft) return;
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
         if (
           payload?.dice?.length === 5 &&
@@ -724,6 +728,7 @@ export function useMultiplayerGame() {
         if (!prevGS || myIdx === null || !payload) return;
         if (stateRef.current.gameId !== gameId || prevGS.currentPlayerIndex === myIdx) return;
         if (typeof payload.player === 'number' && payload.player === myIdx) return;
+        if (typeof payload.player === 'number' && payload.player !== prevGS.currentPlayerIndex) return;
         if (rollingGuardRef.current) return;
         if (payload.dice?.length !== 5 || payload.lockedDice?.length !== 5 || typeof payload.rollsLeft !== 'number') return;
         const part = { dice: payload.dice, lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft, isRolling: false };
@@ -781,7 +786,7 @@ export function useMultiplayerGame() {
           prevGS && myIdx !== null && remoteRollingGuardRef.current && remoteResultAtRef.current === 0 &&
           next.dice?.length === 5 && next.locked_dice && typeof next.rolls_left === 'number' &&
           next.current_player_index === prevGS.currentPlayerIndex && myIdx !== next.current_player_index &&
-          next.round === prevGS.round && next.rolls_left < prevGS.rollsLeft
+          next.round === prevGS.round && next.rolls_left <= prevGS.rollsLeft
         ) {
           applyRemoteResult({ dice: next.dice, lockedDice: next.locked_dice, rollsLeft: next.rolls_left, isRolling: false });
         }
@@ -807,6 +812,7 @@ export function useMultiplayerGame() {
           }
           pendingRollUpdateRef.current = null;
           remoteRollingGuardRef.current = false;
+          setDiceAwait(false);
           setRemoteRolling(false);
           setState(prev => prev.gameState ? {
             ...prev,

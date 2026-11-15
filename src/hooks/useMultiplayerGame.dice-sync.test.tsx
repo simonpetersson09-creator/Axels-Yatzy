@@ -1,11 +1,11 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-const m = vi.hoisted(() => ({ rpc: vi.fn(), from: vi.fn(), action: vi.fn(), roll: vi.fn(), handlers: {} as Record<string, (msg: unknown) => void> }));
+const m = vi.hoisted(() => ({ rpc: vi.fn(), from: vi.fn(), action: vi.fn(), roll: vi.fn(), track: vi.fn(), handlers: {} as Record<string, (msg: unknown) => void> }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: {
   rpc: m.rpc, from: m.from, removeChannel: vi.fn(),
   channel: () => {
     const c = {
-      on: (_type: string, filter: { event?: string }, cb: (msg: unknown) => void) => { if (filter?.event) m.handlers[filter.event] = cb; return c; },
+      on: (type: string, filter: { event?: string; table?: string }, cb: (msg: unknown) => void) => { if (filter?.event) m.handlers[type === 'postgres_changes' ? String(filter.table) : filter.event] = cb; return c; },
       subscribe: () => c, send: vi.fn(),
     };
     return c;
@@ -14,7 +14,7 @@ vi.mock('@/integrations/supabase/client', () => ({ supabase: {
 vi.mock('@/lib/session', () => ({ getSessionId: () => 'me', requireClaimedDevice: async () => 'device' }));
 vi.mock('@/lib/multiplayer-actions', () => ({ directRpc: m.roll, invokeDeviceAction: m.action }));
 vi.mock('@/lib/i18n', () => ({ t: (key: string) => key }));
-vi.mock('@/lib/analytics', () => ({ trackEvent: vi.fn() }));
+vi.mock('@/lib/analytics', () => ({ trackEvent: m.track }));
 vi.mock('@/lib/notifications', () => ({ clearGameNotifications: vi.fn() }));
 import { useMultiplayerGame } from './useMultiplayerGame';
 import { diceAwait } from '@/components/dice-engine/await-store';
@@ -29,6 +29,7 @@ const players = [
 ];
 beforeEach(() => {
   vi.useFakeTimers(); holdReads = false; held = [];
+  m.track.mockClear(); m.handlers = {}; players[0].scores = {}; players[1].scores = {};
   vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
   game = { id: 'game', game_code: 'ABCDEF', status: 'playing', current_player_index: 0, dice: [2,3,4,5,6], locked_dice: [false,false,false,false,false], rolls_left: 3, round: 1, updated_at: '2026-11-15T12:00:00Z' };
   m.rpc.mockReset().mockImplementation(async (name: string) => ({ data: name === 'validate_game_session' ? { valid: true, player_index: 0 } : true, error: null }));
@@ -50,6 +51,70 @@ async function joined() {
 }
 
 describe('online dice sync', () => {
+  it('ignores an older turn notification before it can move or reset dice', async () => {
+    game = { ...game, rolls_left: 1, locked_dice: [true,false,true,false,false] };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.games({ new: { ...game, current_player_index: 1, rolls_left: 3, updated_at: '2026-11-15T11:59:59Z' } }); });
+    expect(result.current.gameState?.currentPlayerIndex).toBe(0);
+    expect(result.current.gameState?.lockedDice).toEqual([true,false,true,false,false]);
+    expect(m.track).toHaveBeenCalledWith('mp_issue', expect.objectContaining({ kind: 'turn_change_blocked', reason: 'stale_snapshot' }), expect.anything());
+    unmount();
+  });
+
+  it('rejects an unconfirmed handoff from both realtime and its follow-up read', async () => {
+    game = { ...game, rolls_left: 1 };
+    const { result, unmount } = await joined();
+    game = { ...game, current_player_index: 1, rolls_left: 3, updated_at: '2026-11-15T12:00:01Z' };
+    await act(async () => { m.handlers.games({ new: game }); await vi.advanceTimersByTimeAsync(200); });
+    expect(result.current.gameState?.currentPlayerIndex).toBe(0);
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(m.track).toHaveBeenCalledWith('mp_issue', expect.objectContaining({ source: 'refresh', reason: 'score_unconfirmed' }), expect.anything());
+    unmount();
+  });
+
+  it('keeps own held dice and turn until the score answer confirms the handoff', async () => {
+    game = { ...game, rolls_left: 1, dice: [4,4,4,2,1], locked_dice: [true,true,true,false,false] };
+    const { result, unmount } = await joined();
+    let release: (value: unknown) => void = () => {};
+    m.roll.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    await act(async () => { await result.current.selectCategory('fours'); });
+    expect(result.current.gameState?.currentPlayerIndex).toBe(0);
+    expect(result.current.gameState?.lockedDice).toEqual([true,true,true,false,false]);
+    expect(result.current.gameState?.players[0].scores.fours).toBe(12);
+    game = { ...game, current_player_index: 1, rolls_left: 3, updated_at: '2026-11-15T12:00:01Z' };
+    await act(async () => { m.handlers.games({ new: game }); await vi.advanceTimersByTimeAsync(200); });
+    expect(result.current.gameState?.currentPlayerIndex).toBe(0);
+    await act(async () => { release({ data: { success: true, score: 12 }, error: null }); });
+    expect(result.current.gameState?.currentPlayerIndex).toBe(1);
+    expect(result.current.gameState?.rollsLeft).toBe(3);
+    unmount();
+  });
+
+  it('accepts a full read that proves a missed own score was committed', async () => {
+    game = { ...game, rolls_left: 1 };
+    const { result, unmount } = await joined();
+    players[0].scores = { fours: 12 };
+    game = { ...game, current_player_index: 1, rolls_left: 3, updated_at: '2026-11-15T12:00:01Z' };
+    await act(async () => { m.handlers.games({ new: game }); await vi.advanceTimersByTimeAsync(200); });
+    expect(result.current.gameState?.currentPlayerIndex).toBe(1);
+    expect(result.current.gameState?.players[0].scores.fours).toBe(12);
+    unmount();
+  });
+
+  it('applies a current opponent handoff and rejects their delayed roll broadcasts on my turn', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 1 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.games({ new: { ...game, current_player_index: 0, round: 2, rolls_left: 3, updated_at: '2026-11-15T12:00:01Z' } }); });
+    expect(result.current.gameState?.currentPlayerIndex).toBe(0);
+    expect(result.current.gameState?.round).toBe(2);
+    await act(async () => {
+      m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,false,true,false,false], rollsLeft: 0 } });
+      m.handlers.roll_result({ payload: { player: 1, dice: [6,6,6,6,6], lockedDice: [true,false,true,false,false], rollsLeft: 0 } });
+    });
+    expect(result.current.remoteRolling).toBe(false);
+    expect(result.current.gameState?.rollsLeft).toBe(3);
+    unmount();
+  });
   it("holds the opponent's kept dice still from the start of their roll", async () => {
     game = { ...game, current_player_index: 1, rolls_left: 2 };
     const { result, unmount } = await joined();

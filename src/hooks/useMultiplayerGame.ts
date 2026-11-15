@@ -202,6 +202,7 @@ export function useMultiplayerGame() {
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
   // reset dice) isn't briefly overwritten by a stale server snapshot.
   const pendingSubmitRef = useRef<{ key: string; gameId: string } | null>(null);
+  const confirmedScoreTurnRef = useRef<{ gameId: string; playerIndex: number; round: number } | null>(null);
 
   // Client-driven dice spin for the *opponent* — server.is_rolling stays false,
   // so we synthesize a rolling pulse when realtime delivers fresh dice for the
@@ -422,6 +423,25 @@ export function useMultiplayerGame() {
     // The exiting player's accepted forfeit is terminal locally, including
     // a quick-match seat handed to a bot. Late reads must not reopen it.
     if (confirmedForfeitsRef.current.has(gameId)) return;
+
+    // A full read can confirm a score whose answer was lost, including a bot
+    // takeover. A turn-only notification cannot prove that our turn ended.
+    const visible = stateRef.current;
+    const visibleGS = visible.gameState;
+    if (visible.gameId === gameId && visible.status === 'playing' && visibleGS &&
+        visible.myPlayerIndex === visibleGS.currentPlayerIndex && game.status === 'playing' &&
+        (game.current_player_index !== visibleGS.currentPlayerIndex || game.round !== visibleGS.round)) {
+      const confirmation = confirmedScoreTurnRef.current;
+      const confirmedHere = confirmation?.gameId === gameId &&
+        confirmation.playerIndex === visibleGS.currentPlayerIndex && confirmation.round === visibleGS.round;
+      const savedScores = dbPlayers.find(p => p.player_index === visible.myPlayerIndex)?.scores as Record<string, unknown> | undefined;
+      const shownScores = visibleGS.players[visibleGS.currentPlayerIndex]?.scores;
+      const newlySaved = CATEGORIES.some(cat => savedScores?.[cat.id] != null && shownScores?.[cat.id] == null);
+      if (!confirmedHere && (!newlySaved || pendingSubmitRef.current?.gameId === gameId)) {
+        reportMpIssue('turn_change_blocked', gameId, { source: 'refresh', reason: 'score_unconfirmed', nextPlayer: game.current_player_index, nextRound: game.round });
+        return;
+      }
+    }
 
     // Several refreshes can be in flight at once; never let an older server
     // snapshot (lower updated_at) overwrite a newer one already applied.
@@ -667,6 +687,7 @@ export function useMultiplayerGame() {
         const prevGS = stateRef.current.gameState;
         const myIdx = stateRef.current.myPlayerIndex;
         if (!prevGS || myIdx === null) return;
+        if (stateRef.current.gameId !== gameId || prevGS.currentPlayerIndex === myIdx) return;
         // Only react to opponent broadcasts; ignore our own echo.
         if (typeof payload?.player === 'number' && payload.player === myIdx) return;
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
@@ -701,6 +722,7 @@ export function useMultiplayerGame() {
         const prevGS = stateRef.current.gameState;
         const myIdx = stateRef.current.myPlayerIndex;
         if (!prevGS || myIdx === null || !payload) return;
+        if (stateRef.current.gameId !== gameId || prevGS.currentPlayerIndex === myIdx) return;
         if (typeof payload.player === 'number' && payload.player === myIdx) return;
         if (rollingGuardRef.current) return;
         if (payload.dice?.length !== 5 || payload.lockedDice?.length !== 5 || typeof payload.rollsLeft !== 'number') return;
@@ -713,12 +735,25 @@ export function useMultiplayerGame() {
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
         const next = payload.new as { dice?: number[]; locked_dice?: boolean[]; rolls_left?: number; is_rolling?: boolean; current_player_index?: number; round?: number; updated_at?: string };
+        if (!mountedRef.current || stateRef.current.gameId !== gameId) return;
+        if (isStaleSnapshot(lastSnapshotRef.current, gameId, next.updated_at)) {
+          reportMpIssue('turn_change_blocked', gameId, { source: 'realtime', reason: 'stale_snapshot', nextPlayer: next.current_player_index, nextRound: next.round });
+          return;
+        }
         // Live updates also count as "seen", so a slower refresh can't roll them back.
         if (next.updated_at && !isStaleSnapshot(lastSnapshotRef.current, gameId, next.updated_at)) {
           lastSnapshotRef.current = { gameId, updatedAt: next.updated_at };
         }
         const prevGS = stateRef.current.gameState;
         const myIdx = stateRef.current.myPlayerIndex;
+        if (prevGS && myIdx === prevGS.currentPlayerIndex &&
+            next.current_player_index !== undefined &&
+            (next.current_player_index !== prevGS.currentPlayerIndex ||
+              (next.round !== undefined && next.round !== prevGS.round))) {
+          reportMpIssue('turn_change_blocked', gameId, { source: 'realtime', reason: 'score_unconfirmed', nextPlayer: next.current_player_index, nextRound: next.round });
+          debouncedRefresh(gameId);
+          return;
+        }
         const opponentRolled =
           prevGS &&
           myIdx !== null &&
@@ -735,9 +770,9 @@ export function useMultiplayerGame() {
           !remoteRollingGuardRef.current;
         if (opponentRolled) {
           startRemoteRolling({
-            dice: next.dice!,
-            lockedDice: next.locked_dice!,
-            rollsLeft: next.rolls_left!,
+            dice: next.dice,
+            lockedDice: next.locked_dice,
+            rollsLeft: next.rolls_left,
             isRolling: !!next.is_rolling,
           });
         } else if (
@@ -781,7 +816,7 @@ export function useMultiplayerGame() {
               lockedDice: next.locked_dice ?? [false, false, false, false, false],
               rollsLeft: 3,
               isRolling: false,
-              currentPlayerIndex: next.current_player_index!,
+              currentPlayerIndex: next.current_player_index ?? prev.gameState.currentPlayerIndex,
               round: next.round ?? prev.gameState.round,
             },
           } : prev);
@@ -1351,21 +1386,6 @@ export function useMultiplayerGame() {
       if (i !== gs.currentPlayerIndex) return p;
       return { ...p, scores: { ...p.scores, [categoryId]: optimisticScore } };
     });
-    const allDone = updatedPlayers.every(p =>
-      CATEGORIES.every(cat => p.scores[cat.id] !== undefined && p.scores[cat.id] !== null)
-    );
-    let nextPlayerIndex = (gs.currentPlayerIndex + 1) % gs.players.length;
-    if (!allDone) {
-      for (let i = 0; i < gs.players.length; i++) {
-        const candidate = (gs.currentPlayerIndex + 1 + i) % gs.players.length;
-        const hasOpen = CATEGORIES.some(cat =>
-          updatedPlayers[candidate].scores[cat.id] === undefined ||
-          updatedPlayers[candidate].scores[cat.id] === null
-        );
-        if (hasOpen) { nextPlayerIndex = candidate; break; }
-      }
-    }
-
     pendingSubmitRef.current = { key: `${gs.currentPlayerIndex}:${categoryId}`, gameId };
     setPendingCategory(categoryId);
     setPendingPlayerIndex(gs.currentPlayerIndex);
@@ -1375,18 +1395,8 @@ export function useMultiplayerGame() {
       gameState: {
         ...prev.gameState,
         players: updatedPlayers,
-        currentPlayerIndex: allDone ? prev.gameState.currentPlayerIndex : nextPlayerIndex,
-        dice: [1, 1, 1, 1, 1],
-        lockedDice: [false, false, false, false, false],
-        rollsLeft: 3,
-        isRolling: false,
-        gameOver: allDone,
-        // Bump round whenever the player index wraps around (not just to 0),
-        // since earlier-finished players are skipped. Keeps turn-keys unique
-        // so auto-roll/AI effects don't dedupe across cycles.
-        round: !allDone && nextPlayerIndex <= prev.gameState.currentPlayerIndex
-          ? prev.gameState.round + 1
-          : prev.gameState.round,
+        // Fill the cell immediately, but keep this turn and its held dice
+        // until the score is acknowledged or read back from committed state.
       },
     } : prev);
 
@@ -1446,6 +1456,7 @@ export function useMultiplayerGame() {
       if (!mountedRef.current || stateRef.current.gameId !== gameId || pendingSubmitRef.current?.gameId !== gameId) return;
       if (saved) {
         reportMpIssue('submit_recovered', gameId, { ms: Date.now() - submitStartedAt, attempt_id: submitAttemptId });
+        confirmedScoreTurnRef.current = { gameId, playerIndex: gs.currentPlayerIndex, round: gs.round };
         releaseOptimistic();
         void refreshGameStateRef.current?.(gameId);
         return;
@@ -1460,17 +1471,19 @@ export function useMultiplayerGame() {
     () => mountedRef.current && isForeground() && stateRef.current.gameId === gameId
       && stateRef.current.status === 'playing' && pendingSubmitRef.current?.gameId === gameId), RETRY_TIMEOUT_MS)
       .then(({ data, error }) => {
+        if (!mountedRef.current || stateRef.current.gameId !== gameId || pendingSubmitRef.current?.gameId !== gameId) return;
         const submitMs = Date.now() - submitStartedAt;
-        if (!error) {
+        if (!error && data?.success === true) {
           if (submitMs > MP_SLOW_MS) reportMpIssue('submit_slow', gameId, { ms: submitMs, category: categoryId, attempt_id: submitAttemptId });
           if (typeof data?.score === 'number' && data.score !== optimisticScore) {
             reportMpIssue('score_mismatch', gameId, { category: categoryId, shown: shownDice, shownScore: optimisticScore, serverScore: data.score, ms: submitMs });
           }
+          confirmedScoreTurnRef.current = { gameId, playerIndex: gs.currentPlayerIndex, round: gs.round };
           releaseOptimistic();
           refreshGameStateRef.current?.(gameId);
           return;
         }
-        return recoverSubmit(error);
+        return recoverSubmit(error ?? new Error('score not confirmed'));
       })
       .catch((err) => {
         return recoverSubmit(err);

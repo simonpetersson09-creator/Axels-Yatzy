@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Skydd för turbyten – 15 november
+- [x] Stoppar äldre spelmeddelanden före animation/turbyte; behåller egen tur och låsta tärningar tills poäng bekräftats. Full avläsning får återhämta en missad poäng endast med sparad kategoripoäng; terminala avhopp och datorövertagande bevaras.
+- [x] Stoppade turbyten registreras via mp_issue utan namn/tärningsvärden. 53 tester godkända; avskilt körande prov visar egen tur/lås kvar efter gamla och obekräftade meddelanden, bekräftad poäng medger turbyte. Bygge OK; ingen riktig match skapad eller ändrad. Root AGENTS.md saknar utrymme för ny arkitekturregel.
+- [ ] Tvåtelefonprov kräver nästa signerade appversion och fysiska telefoner.
+
 ## Granskningsfynd 17:05 – rättningar
 - [x] Nya reservskrivningar baseras på aktuellt externt värde, inte en ogiltig gammal reserv. Tidigare skydd mot återställning av gamla värden bevarat.
 - [x] Lokal radering fortsätter efter nekad markörskrivning; markerar i minne och båda lagren när möjligt, återförsöker utan ny serverradering och blockerar återställning tills rensning klar.

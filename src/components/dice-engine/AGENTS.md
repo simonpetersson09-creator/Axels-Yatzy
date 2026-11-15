@@ -1,5 +1,6 @@
-- The dice canvas renders on demand (frameloop="demand") and DemandDriver in DiceScene keeps frames coming only while something animates; every useFrame must clamp delta, because the first frame after a pause can carry seconds — saves battery/CPU while dice lie still.
+- The dice canvas renders on demand (frameloop="demand") and DemandDriver plus each die's own invalidate keep frames coming until every die visibly rests (not just until a timer); every useFrame must clamp delta, because the first frame after a pause can carry seconds — saves battery/CPU while dice lie still.
 - Reset counters are transition events, not persistent visibility state; use explicit cleared state to restore an empty table after canvas recovery. Resume wakes a healthy canvas via DOM/native App events without generating rolls or reconnect requests.
 - Online: roll_started applies broadcast locks before the value-less spin; failed own rolls tumble until reloaded server state applies (capped) — no sliding kept dice or stale landings.
 - A landed roll remains active until its rolling edge ends; late face corrections settle in place instead of starting another entry flight.
 - Interrupted rolls retarget from their current pose and keep the landing signal busy until the corrected face settles; never snap on a simultaneous value/rolling change.
+- Only a visible rest emits dice:landed; unmount and turn sweeps release silently. A die mounted mid-roll (canvas recovery, orientation relayout) rests on its current face without a new fly-in.

@@ -175,15 +175,6 @@ export default function MultiplayerGamePage() {
   }, [gameState, isMyTurn, localRolling, remoteRolling, status]);
 
   const [glowActive, setGlowActive] = useState(false);
-  // If the automatic first roll hasn't happened ~2.5 s into my turn, show a
-  // small hint so the player knows to tap the roll button themselves.
-  const [rollFirstHintDue, setRollFirstHintDue] = useState(false);
-  useEffect(() => {
-    setRollFirstHintDue(false);
-    if (!isMyTurn || gameState?.rollsLeft !== 3) return;
-    const timer = window.setTimeout(() => setRollFirstHintDue(true), 2500);
-    return () => window.clearTimeout(timer);
-  }, [isMyTurn, gameState?.rollsLeft, gameState?.currentPlayerIndex, gameState?.round]);
   const prevPlayerRef = useRef<number | null>(null);
   const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -664,7 +655,13 @@ export default function MultiplayerGamePage() {
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending && !pendingCategory && !forfeiting;
-  const showRollFirstHint = rollFirstHintDue && gameState.rollsLeft === 3 && isMyTurn && !localRolling && !remoteRolling && status === 'playing';
+  // The table stays empty until the player's own Kast 1, so the same in-area
+  // slot that shows "Väntar på …" on the opponent's turn tells the player to
+  // start here. Turn ownership already separates the two, and the explicit
+  // !showWaitingText guard keeps them from ever appearing together.
+  const showStartRollHint = diceTableEmpty && isMyTurn && !gameState.gameOver
+    && gameState.rollsLeft === 3 && !(localRolling || remoteRolling || gameState.isRolling)
+    && status === 'playing' && !showWaitingText;
 
   const PLAYER_COLORS_HSL = [
     '36 82% 52%', // P1 amber
@@ -862,14 +859,11 @@ export default function MultiplayerGamePage() {
             >
               <PickDiceHint
                 show={
-                  showRollFirstHint || (
-                    gameState.rollsLeft === 2 &&
-                    isMyTurn &&
-                    !(localRolling || remoteRolling || gameState.isRolling) &&
-                    !gameState.lockedDice.some(Boolean)
-                  )
+                  gameState.rollsLeft === 2 &&
+                  isMyTurn &&
+                  !(localRolling || remoteRolling || gameState.isRolling) &&
+                  !gameState.lockedDice.some(Boolean)
                 }
-                text={showRollFirstHint ? t('rollFirstHint') : undefined}
                 className="mp-dice-hint mx-auto mb-1"
               />
               <DiceArea
@@ -894,6 +888,13 @@ export default function MultiplayerGamePage() {
                     {[0, 1, 2].map((i) => (
                       <span key={i} className="h-[7px] w-[7px] rounded-full bg-primary animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
                     ))}
+                  </div>
+                </div>
+              )}
+              {showStartRollHint && (
+                <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex items-center justify-center text-center text-primary">
+                  <div className="px-1 text-[13px] font-semibold leading-tight break-words">
+                    {t('startFirstRollHint')}
                   </div>
                 </div>
               )}

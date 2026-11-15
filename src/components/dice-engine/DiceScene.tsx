@@ -146,7 +146,11 @@ function DiceSceneImpl({
           const current = glRef.current;
           // Events from a canvas that was already replaced must not remount
           // its successor (one loss = one recovery, never a second fly-in).
-          const remountIfCurrent = () => { if (glRef.current === current) remount(); };
+          const remountIfCurrent = () => {
+            if (glRef.current !== current) return;
+            glRef.current = null;
+            remount();
+          };
           const onLost = (e: Event) => {
             // Preventing the default lets the browser try to restore it, and
             // guarantees a `webglcontextrestored` event.

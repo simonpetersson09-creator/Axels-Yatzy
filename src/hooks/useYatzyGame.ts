@@ -113,7 +113,7 @@ function fastForwardAi(state: GameState, localId?: string, log?: AiCatchUpTurn[]
     log?.push({ name: s.players[s.currentPlayerIndex].name, category: cat, score: calculateScore(s.dice, cat) });
     s = next;
   }
-  if (s.gameOver) clearLocalActiveGame(localId);
+  if (s.gameOver) saveGameState(s, localId);
   return s;
 }
 
@@ -166,7 +166,7 @@ export function useYatzyGame(localId?: string) {
 
   // Persist game state on every change
   useEffect(() => {
-    if (gameState && !gameState.gameOver) {
+    if (gameState) {
       saveGameState(gameState, localId);
       setActiveGame({
         type: 'local',
@@ -244,7 +244,9 @@ export function useYatzyGame(localId?: string) {
   const selectCategory = useCallback((categoryId: CategoryId, debug?: { rowText?: string; clickedCategoryId?: CategoryId; renderedRowIndex?: number | null; score?: number | null }) => {
     setGameState(prev => {
       const next = applyCategory(prev, categoryId);
-      if (next !== prev && next?.gameOver) clearLocalActiveGame(localIdRef.current);
+      // Persist the final score before rendering its result. Never delete the
+      // only recoverable result before statistics have committed.
+      if (next !== prev && next?.gameOver) saveGameState(next, localIdRef.current);
       return next;
     });
   }, []);

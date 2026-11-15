@@ -24,12 +24,26 @@ export interface ActiveGame {
 }
 
 function readList(): ActiveGame[] {
+  const migrateLocal = (g: ActiveGame): ActiveGame => {
+    if (g.type !== 'local' || g.gameId) return { ...g, lastRollTime: g.lastRollTime ?? g.timestamp };
+    // Stable destination makes an interrupted migration safe to repeat.
+    const gameId = 'local-legacy';
+    const raw = localStorage.getItem(SAVED_GAME_KEY);
+    if (raw && !localStorage.getItem(savedKey(gameId))) localStorage.setItem(savedKey(gameId), raw);
+    for (const key of ['yatzy-player-names', 'yatzy-ai-players']) {
+      const value = localStorage.getItem(key);
+      if (value && !localStorage.getItem(`${key}:${gameId}`)) localStorage.setItem(`${key}:${gameId}`, value);
+    }
+    return { ...g, gameId, lastRollTime: g.lastRollTime ?? g.timestamp };
+  };
   const raw = localStorage.getItem(GAMES_KEY);
   if (raw) {
     try {
       const arr = JSON.parse(raw) as ActiveGame[];
       if (Array.isArray(arr)) {
-        return arr.map(g => ({ ...g, lastRollTime: g.lastRollTime ?? g.timestamp }));
+        const list = arr.map(migrateLocal);
+        if (arr.some(g => g.type === 'local' && !g.gameId)) writeList(list);
+        return list;
       }
     } catch { /* ignore */ }
   }
@@ -37,7 +51,7 @@ function readList(): ActiveGame[] {
   const legacy = localStorage.getItem(LEGACY_KEY);
   if (legacy) {
     try {
-      const g = JSON.parse(legacy) as ActiveGame;
+      const g = migrateLocal(JSON.parse(legacy) as ActiveGame);
       g.lastRollTime = g.lastRollTime ?? g.timestamp;
       const list = [g];
       localStorage.setItem(GAMES_KEY, JSON.stringify(list));

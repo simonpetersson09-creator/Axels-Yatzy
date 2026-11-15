@@ -907,6 +907,20 @@ html.ad-banner-on:has(.mp-game) { --dice-scale: 0.8; }
 @media (min-height: 900px) { html.ad-banner-on:has(.mp-game) { --dice-scale: 1; } }
 /* Same sitting point on every chair: figure centre at 30% of the table image from its centre. */
 /* Online uses the full screen, with compact metrics only where the screen requires it. */
+/* Local play must fit even when privacy/no-fill means no banner was loaded. */
+@media (max-width: 699px), (max-height: 599px) {
+  html:not(.ad-banner-on):has(.local-game) {
+    --game-top-gap: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
+    --sb-row-h: clamp(18px, calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) - 60px) / 20), 34px);
+  }
+  .local-game { overflow-y: auto; touch-action: pan-y; }
+  .local-game .ios-side-zone { min-height: 0; }
+}
+@media (max-height: 720px) {
+  html:not(.ad-banner-on):has(.local-game) { --dice-scale: .78; --dice-gap-scale: .55; }
+  .local-game .game-player-names { height: auto; min-height: 100px; }
+  .local-game .game-roll-button { width: 72px; height: 72px; }
+}
 @media (max-height: 800px) {
   html:not(.ad-banner-on):has(.mp-game) {
     --sb-row-h: 28px;

@@ -212,15 +212,35 @@ export function useDiceAnimation({
     state.pendingRoll = false;
     state.sweeping = true;
     state.settledValue = value;
-    setDieFlying(index, false);
+    // Leaving the table is not a landing.
+    setDieFlying(index, false, false);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);
+
+  /** False until the roll effect has run once for this mounted die. */
+  const rollEffectMounted = useRef(false);
 
   // Start / restart a roll whenever `rolling` flips on (held dice are skipped).
   useEffect(() => {
     const group = groupRef.current;
     if (!group) return;
+    const firstRun = !rollEffectMounted.current;
+    rollEffectMounted.current = true;
+
+    // A die (re)mounted while its roll is already running — canvas recovery,
+    // orientation relayout, reopening a match — restores its current face at
+    // rest. The flight was already seen, so it must not fly in again, and
+    // there is no new landing to announce.
+    if (firstRun && rolling && !held && !cleared) {
+      settle();
+      state.rollActive = true;
+      state.rollValue = value;
+      state.animating = false;
+      state.pendingRoll = false;
+      state.settling = false;
+      return;
+    }
 
     if (!rolling || held) {
       if (!rolling) state.rollActive = false;
@@ -347,13 +367,24 @@ export function useDiceAnimation({
   }, [rolling, held, value, duration, reducedMotion, index, size, cleared]);
 
   // A die unmounted mid-flight must not block the next landing signal.
-  useEffect(() => () => setDieFlying(index, false), [index]);
+  // Silent: an unmount is not a visible landing.
+  useEffect(() => () => setDieFlying(index, false, false), [index]);
 
 
 
-  useFrame((_, delta) => {
+  useFrame((frameState, delta) => {
     const group = groupRef.current;
     if (!group) return;
+    // On-demand canvas: keep frames coming until this die has visibly come to
+    // rest, however slow the frames are (clamped deltas stretch the motion).
+    if (
+      state.animating ||
+      state.settling ||
+      state.pendingRoll ||
+      (state.sweeping && state.sweepT < state.sweepDelay + state.sweepDuration * 0.44)
+    ) {
+      (frameState as { invalidate?: () => void } | undefined)?.invalidate?.();
+    }
 
     if (state.sweeping) {
       state.right.set(screenRight[0], screenRight[1], screenRight[2]).normalize();

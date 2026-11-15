@@ -234,6 +234,41 @@ describe('online dice sync', () => {
     unmount();
   });
 
+  it('does not land an older snapshot after a newer throw started during the wait', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,false,false,false,false], rollsLeft: 1, round: 1 } }); });
+    await act(async () => { m.handlers.games({ new: { ...game, rolls_left: 2, dice: [3,3,3,3,3], locked_dice: [false,false,false,false,false], updated_at: '2026-11-15T12:00:01Z' } }); });
+    expect(diceAwait.active).toBe(true);
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [3,6,6,6,6], lockedDice: [true,false,false,false,false], rollsLeft: 1, round: 1 } }); });
+    expect(diceAwait.active).toBe(false);
+    expect(result.current.gameState?.dice).toEqual([3,6,6,6,6]);
+    unmount();
+  });
+
+  it('keeps a queued next throw for its own flight when a full read shows it early', async () => {
+    game = { ...game, current_player_index: 1, rolls_left: 3 };
+    const { result, unmount } = await joined();
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_result({ payload: { player: 1, dice: [1,1,2,3,4], lockedDice: [false,false,false,false,false], rollsLeft: 2, round: 1 } }); });
+    await act(async () => { m.handlers.roll_started({ payload: { player: 1, lockedDice: [true,true,false,false,false], rollsLeft: 1, round: 1 } }); });
+    game = { ...game, rolls_left: 1, dice: [1,1,1,1,5], locked_dice: [true,true,false,false,false], updated_at: '2026-11-15T12:00:02Z' };
+    await act(async () => { await result.current.retryConnection(); });
+    let sawFirst = false;
+    for (let i = 0; i < 40; i++) {
+      await act(async () => { await vi.advanceTimersByTimeAsync(50); });
+      const gs = result.current.gameState;
+      if (gs?.rollsLeft === 2 || (result.current.remoteRolling && gs?.rollsLeft === 1)) sawFirst = true;
+      if (!result.current.remoteRolling && gs?.rollsLeft === 1) break;
+    }
+    await act(async () => { await vi.advanceTimersByTimeAsync(4000); });
+    expect(sawFirst).toBe(true);
+    expect(result.current.gameState?.dice).toEqual([1,1,1,1,5]);
+    expect(result.current.remoteRolling).toBe(false);
+    unmount();
+  });
+
   it("holds the opponent's kept dice still from the start of their roll", async () => {
     game = { ...game, current_player_index: 1, rolls_left: 2 };
     const { result, unmount } = await joined();

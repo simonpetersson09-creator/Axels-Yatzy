@@ -792,7 +792,7 @@ export function useMultiplayerGame() {
           && typeof payload.rollsLeft === 'number' && payload.rollsLeft < prevGS.rollsLeft
         ) {
           const hint = { lockedDice: payload.lockedDice, rollsLeft: payload.rollsLeft };
-          remoteLockHintRef.current = hint;
+          remoteLockHintRef.current = hint.lockedDice;
           pendingRollUpdateRef.current = null;
           setState(prev => prev.gameState ? { ...prev, gameState: { ...prev.gameState, ...hint } } : prev);
           stateRef.current = { ...stateRef.current, gameState: { ...prevGS, ...hint } };

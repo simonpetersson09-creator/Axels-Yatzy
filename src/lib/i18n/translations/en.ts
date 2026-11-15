@@ -310,7 +310,7 @@ export const en: Partial<typeof sv> = {
   errSubmitScore: 'Could not save the score',
   pickDiceHint: 'Pick dice\nto keep',
   rollFirstHint: "Tap Roll\nto start",
-  startFirstRollHint: 'Start with roll 1',
+  startFirstRollHint: 'Start with\nroll 1',
   slowConnection: "Slow connection…",
   searchingOpponent: 'Searching for opponent…',
   searchingOpponentHint: 'If no one is found, you play the computer',

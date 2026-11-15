@@ -291,7 +291,7 @@ export const hr: Partial<typeof sv> = {
   errSubmitScore: 'Nije moguće spremiti rezultat',
   pickDiceHint: 'Odaberi kockice\nza zadržavanje',
   rollFirstHint: "Dodirni Baci\nza početak",
-  startFirstRollHint: 'Počni s bacanjem 1',
+  startFirstRollHint: 'Počni s\nbacanjem 1',
   slowConnection: "Spora veza…",
   searchingOpponent: 'Tražimo protivnika…',
   searchingOpponentHint: 'Ako nikoga ne nađemo, igraš protiv računala',

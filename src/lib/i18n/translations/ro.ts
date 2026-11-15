@@ -291,7 +291,7 @@ export const ro: Partial<typeof sv> = {
   errSubmitScore: 'Nu s-a putut salva scorul',
   pickDiceHint: 'Alege zarurile\nde păstrat',
   rollFirstHint: "Atinge Aruncă\npentru a începe",
-  startFirstRollHint: 'Începe cu aruncarea 1',
+  startFirstRollHint: 'Începe cu\naruncarea 1',
   slowConnection: "Conexiune lentă…",
   searchingOpponent: 'Căutăm un adversar…',
   searchingOpponentHint: 'Dacă nu găsim pe nimeni, joci cu calculatorul',

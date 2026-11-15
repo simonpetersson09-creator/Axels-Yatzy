@@ -291,7 +291,7 @@ export const hu: Partial<typeof sv> = {
   errSubmitScore: 'Nem sikerült menteni a pontszámot',
   pickDiceHint: 'Válaszd ki, melyik\nkockák maradjanak',
   rollFirstHint: "Koppints a Dobásra\na kezdéshez",
-  startFirstRollHint: 'Kezd az 1. dobással',
+  startFirstRollHint: 'Kezd az\n1. dobással',
   slowConnection: "Lassú kapcsolat…",
   searchingOpponent: 'Ellenfél keresése…',
   searchingOpponentHint: 'Ha nincs ellenfél, a gép ellen játszol',

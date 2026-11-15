@@ -291,7 +291,7 @@ export const vi: Partial<typeof sv> = {
   errSubmitScore: 'Không thể lưu điểm',
   pickDiceHint: 'Chọn xúc xắc\nđể giữ',
   rollFirstHint: "Chạm Đổ\nđể bắt đầu",
-  startFirstRollHint: 'Bắt đầu với lượt đổ 1',
+  startFirstRollHint: 'Bắt đầu với\nlượt đổ 1',
   slowConnection: "Kết nối chậm…",
   searchingOpponent: 'Đang tìm đối thủ…',
   searchingOpponentHint: 'Nếu không tìm thấy ai, bạn sẽ chơi với máy',

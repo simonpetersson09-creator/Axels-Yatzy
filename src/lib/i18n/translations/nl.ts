@@ -291,7 +291,7 @@ export const nl: Partial<typeof sv> = {
   errSubmitScore: 'Score opslaan mislukt',
   pickDiceHint: 'Kies stenen\nom te houden',
   rollFirstHint: "Tik op Gooien\nom te beginnen",
-  startFirstRollHint: 'Begin met worp 1',
+  startFirstRollHint: 'Begin met\nworp 1',
   slowConnection: "Trage verbinding…",
   searchingOpponent: 'Tegenstander zoeken…',
   searchingOpponentHint: 'Als we niemand vinden, speel je tegen de computer',

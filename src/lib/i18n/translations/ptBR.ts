@@ -291,7 +291,7 @@ export const ptBR: Partial<typeof sv> = {
   errSubmitScore: 'Não foi possível salvar os pontos',
   pickDiceHint: 'Escolha os dados\npara guardar',
   rollFirstHint: "Toque em Jogar\npara começar",
-  startFirstRollHint: 'Comece com a jogada 1',
+  startFirstRollHint: 'Comece com\na jogada 1',
   slowConnection: "Conexão lenta…",
   searchingOpponent: 'Buscando adversário…',
   searchingOpponentHint: 'Se ninguém aparecer, você joga contra o computador',

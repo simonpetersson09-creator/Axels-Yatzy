@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Fördjupad tärningskontroll – 15 november
+- [ ] Kontrollera ändringarna 13–15 november med gamla/dubbla meddelanden, borttappat kastsvar och avslutad motståndartur under rullning; rätta återskapade fel.
+- [ ] Kör riktade tester och avskilt körande prov utan riktiga matchdata.
+- [ ] Full telefonverifiering och väntans grundorsak kräver signerad version och fysiska telefoner.
+
 ## Skydd för turbyten – 15 november
 - [x] Stoppar äldre spelmeddelanden före animation/turbyte; behåller egen tur och låsta tärningar tills poäng bekräftats. Full avläsning får återhämta en missad poäng endast med sparad kategoripoäng; terminala avhopp och datorövertagande bevaras.
 - [x] Stoppade turbyten registreras via mp_issue utan namn/tärningsvärden. 53 tester godkända; avskilt körande prov visar egen tur/lås kvar efter gamla och obekräftade meddelanden, bekräftad poäng medger turbyte. Bygge OK; ingen riktig match skapad eller ändrad. Root AGENTS.md saknar utrymme för ny arkitekturregel.

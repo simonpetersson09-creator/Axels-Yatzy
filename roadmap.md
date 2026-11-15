@@ -1,9 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Releasegranskning – skadade sparningar och delad förstaplats
-- [ ] Avvisa ogiltiga lokala spelvärden kontrollerat utan att ändra andra sparningar eller historik.
-- [ ] Visa oavgjort och delade placeringar konsekvent; bevara statistikens regel att oavgjort inte är vinst.
-- [ ] Återskapa felen, kör regressionstester och verifiera spel-/resultatflödet i körande app.
+- [x] Avvisar ogiltiga index, tärningar, lås, kast/rundor, kategoripoäng och felaktigt färdigstatus kontrollerat; andra sparningar och historik bevarade.
+- [x] Lokala och separata resultat visar Oavgjort och delade placeringar (1/1/3); oavgjort ger fortsatt ingen vinst. Befintlig översättning finns på alla 40 språk.
+- [x] 12 fel återskapade före rättning; 31 tester godkända och bygge OK. Avskilt körande prov: 5–5 → oavgjort/rank 1/1 → omladdning/exakt en match och noll vinster → omspel; separat rank 1/1/3 och ogiltigt index → spelbar ny match, inga runtimefel. Fysiska telefonprov kvar enligt releasepunkten nedan; ingen publicering. Ny gemensam placeringshjälpare; root AGENTS.md vid skyddad storleksgräns.
 
 ## Releasegranskning – prioritet 1–4, 15 november
 - [x] Färdiga lokala resultat sparas före visning och överlever misslyckad statistikskrivning/omstart; omspel spärras före sparad statistik, återställda resultat dubbelräknas inte.

@@ -1,4 +1,5 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { resumeRecoverableWrites, writeRecoverable } from './recoverable-storage';
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), claim: vi.fn(), native: vi.fn(), remove: vi.fn() }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: { rpc: mocks.rpc } }));
 vi.mock('@/lib/session', () => ({ getSessionId: () => 'test-player', claimSession: mocks.claim }));
@@ -7,6 +8,7 @@ vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: mocks.native 
 vi.mock('@capacitor/preferences', () => ({ Preferences: { remove: mocks.remove } }));
 import { deletePlayerData } from './delete-player-data';
 beforeEach(() => {
+  resumeRecoverableWrites();
   vi.clearAllMocks(); localStorage.clear(); sessionStorage.clear();
   mocks.claim.mockResolvedValue(true); mocks.native.mockReturnValue(false);
   mocks.rpc.mockResolvedValue({ data: { ok: true }, error: null });
@@ -15,6 +17,7 @@ beforeEach(() => {
   localStorage.setItem('yatzy-player-stats', '{"gamesPlayed":9}');
   localStorage.setItem('mrb_dice_shop_v1', '{"xp":7,"owned":["i_music"]}');
 });
+afterEach(() => vi.restoreAllMocks());
 it('removes profile, statistics, XP and purchases only after server confirmation', async () => {
   await deletePlayerData();
   expect(mocks.rpc).toHaveBeenCalledWith('delete_player_data', { p_session_id: 'test-player', p_device_id: 'test-device' });
@@ -49,4 +52,29 @@ it('retries native cleanup without repeating successful server deletion', async 
   await deletePlayerData();
   expect(mocks.rpc).toHaveBeenCalledTimes(1);
   expect(localStorage.getItem('yatzy_player_name')).toBeNull();
+});
+it('cleans local data even when both deletion marker writes fail and resumes saving', async () => {
+  const original = Storage.prototype.setItem;
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function(key, value) {
+    if (key === 'mrb_data_deletion_cleanup') throw new Error('full');
+    original.call(this, key, value);
+  });
+  await deletePlayerData();
+  expect(localStorage.getItem('yatzy_player_name')).toBeNull();
+  expect(localStorage.getItem('mrb_dice_shop_v1')).toBeNull();
+  expect(writeRecoverable('new-save', '30')).toBe(true);
+});
+it('retries cleanup using session marker after local marker fails without repeating deletion', async () => {
+  const original = Storage.prototype.setItem;
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function(key, value) {
+    if (this === localStorage && key === 'mrb_data_deletion_cleanup') throw new Error('full');
+    original.call(this, key, value);
+  });
+  mocks.native.mockReturnValue(true);
+  mocks.remove.mockRejectedValueOnce(new Error('native'));
+  await expect(deletePlayerData()).rejects.toThrow('native');
+  expect(sessionStorage.getItem('mrb_data_deletion_cleanup')).toBe('1');
+  await deletePlayerData();
+  expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  expect(sessionStorage.getItem('mrb_data_deletion_cleanup')).toBeNull();
 });

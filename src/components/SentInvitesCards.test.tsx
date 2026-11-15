@@ -21,7 +21,7 @@ beforeEach(() => {
     status: 'pending', expires_at: new Date(Date.now() + 60000).toISOString(),
   }))));
 });
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.useRealTimers(); });
 it('withdraws both linked invitations before closing their game', async () => {
   const view = render(<SentInvitesCards openLobbies={[lobby]} onLobbyClosed={mocks.closed} />);
   await act(async () => view.getByRole('button', { name: 'close' }).click());
@@ -58,4 +58,13 @@ it('blocks overlapping close taps while the first withdrawal is pending', async 
   expect(mocks.reply).toHaveBeenCalledTimes(1);
   await act(async () => resolve({ ok: true }));
   expect(mocks.close).toHaveBeenCalledTimes(1);
+});
+it('expires sent invites locally during a hung refresh without removing the open lobby', async () => {
+  vi.useFakeTimers();
+  mocks.rpc.mockReturnValue(new Promise(() => {}));
+  const view = render(<SentInvitesCards openLobbies={[lobby]} />);
+  expect(JSON.parse(localStorage.getItem('yatzy-sent-invites') ?? '[]')).toHaveLength(2);
+  await act(async () => { await vi.advanceTimersByTimeAsync(60001); });
+  expect(JSON.parse(localStorage.getItem('yatzy-sent-invites') ?? '[]')).toEqual([]);
+  expect(view.getByRole('button', { name: 'close' })).toBeInTheDocument();
 });

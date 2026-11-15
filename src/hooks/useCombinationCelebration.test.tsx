@@ -32,3 +32,29 @@ it('clears the previous medal on a new turn and still celebrates the next landed
   act(() => window.dispatchEvent(new Event('dice:landed')));
   expect(result.current.activeCelebration).toBe('fourOfAKind');
 });
+it('retains an early landed hand until its logical roll finishes, exactly once', () => {
+  const { result, rerender } = renderHook(gs => useCombinationCelebration(gs), { initialProps: { ...state, isRolling: true } });
+  act(() => window.dispatchEvent(new Event('dice:landed')));
+  expect(result.current.activeCelebration).toBeNull();
+  rerender(state);
+  expect(result.current.activeCelebration).toBe('threeOfAKind');
+  act(() => window.dispatchEvent(new Event('dice:landed')));
+  expect(result.current.activeCelebration).toBe('threeOfAKind');
+});
+it('never uses an early landing for a different subsequent server hand', () => {
+  const { result, rerender } = renderHook(gs => useCombinationCelebration(gs), { initialProps: { ...state, isRolling: true } });
+  act(() => window.dispatchEvent(new Event('dice:landed')));
+  rerender({ ...state, dice: [1, 2, 3, 4, 6] });
+  expect(result.current.activeCelebration).toBeNull();
+});
+it('replays the same first Yatzy after a new game without deduplicating it as the old match', () => {
+  const yatzy = { ...state, dice: [6, 6, 6, 6, 6] };
+  const { result, rerender } = renderHook(gs => useCombinationCelebration(gs), { initialProps: yatzy });
+  act(() => window.dispatchEvent(new Event('dice:landed')));
+  expect(result.current.yatzyTrigger).toBe(1);
+  rerender({ ...state, rollsLeft: 3 });
+  rerender({ ...yatzy, isRolling: true });
+  act(() => window.dispatchEvent(new Event('dice:landed')));
+  rerender(yatzy);
+  expect(result.current.yatzyTrigger).toBe(2);
+});

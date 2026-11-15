@@ -1,5 +1,12 @@
 # Roadmap – Snabbspel online
 
+## Fyra kvarvarande kastfel – 15 november 21:28 UTC
+- [ ] Bevara mottagna köade kast vid återanslutning till samma match.
+- [ ] Stoppa äldre läsningar efter timeout från att återställa kastnummer/lås.
+- [ ] Kontrollera matchgeneration efter väntad felåterhämtning.
+- [ ] Landa mjukt när ett kast avbryts samtidigt som värdet ändras.
+- [ ] Kör felproven och befintliga tärnings-/onlinetester; telefonflyt kräver fysisk telefon.
+
 ## Rättningar efter djupdykning – 15 november 21:12 UTC
 - [x] Sena värdekorrigeringar landar på plats; köade kast får en separat bekräftad animationskant.
 - [x] Köade resultat bevaras vid sena startmeddelanden; sparade rader/full läsning använder gemensam resultatordning och gamla timeoutbuffertar avvisas.

@@ -29,6 +29,23 @@ function advance(frames = 80, delta = 1 / 60) {
 }
 
 describe('dice recovery without changing game state', () => {
+  it('smoothly lands on the corrected face when a roll is interrupted', () => {
+    const { group, travel, rerender } = mount({ ...resting, rolling: true, value: 2 });
+    advance(20);
+    const pose = group.quaternion.clone();
+    const position = travel.position.clone();
+    rerender({ ...resting, rolling: false, value: 6 });
+    expect(group.quaternion.angleTo(pose)).toBeLessThan(0.000001);
+    expect(travel.position.distanceTo(position)).toBeLessThan(0.000001);
+    advance(1);
+    expect(group.quaternion.angleTo(pose)).toBeLessThan(0.8);
+    advance(30);
+    expect(travel.position.length()).toBe(0);
+    const landed = group.quaternion.clone();
+    rerender({ ...resting, value: 6 });
+    expect(group.quaternion.angleTo(landed)).toBeLessThan(0.000001);
+  });
+
   it('corrects a late face without starting an extra flight after landing', () => {
     const { travel, rerender } = mount({ ...resting, rolling: true, value: 2 });
     advance(150);

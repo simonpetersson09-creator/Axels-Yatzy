@@ -24,7 +24,7 @@ import { setActiveGame, removeActiveGame } from '@/lib/active-game';
 import { recordGameResult } from '@/lib/local-stats';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { QuickChat } from '@/components/game/QuickChat';
-import { TurnTransition } from '@/components/game/TurnTransition';
+import { playTurnHaptic } from '@/lib/haptics';
 import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { motion } from 'framer-motion';
@@ -171,7 +171,6 @@ export default function MultiplayerGamePage() {
     liveStateRef.current = { gameState, isMyTurn, localRolling, remoteRolling, status };
   }, [gameState, isMyTurn, localRolling, remoteRolling, status]);
 
-  const [showTurnTransition, setShowTurnTransition] = useState(false);
   const [glowActive, setGlowActive] = useState(false);
   // If the automatic first roll hasn't happened ~2.5 s into my turn, show a
   // small hint so the player knows to tap the roll button themselves.
@@ -413,7 +412,9 @@ export default function MultiplayerGamePage() {
 
     if (prev === null) return; // first observation — skip
     if (current === myPlayerIndex && prev !== myPlayerIndex) {
-      setShowTurnTransition(true);
+      // No full-screen "Din tur" overlay: in fast play it flashed between
+      // every throw. The glowing roll button and haptic signal the turn.
+      playTurnHaptic().catch(() => {});
       setGlowActive(true);
       if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
       glowTimerRef.current = setTimeout(() => setGlowActive(false), 2600);
@@ -726,10 +727,6 @@ export default function MultiplayerGamePage() {
         show={showYatzyCelebration}
         celebrationId={gameState ? diceProfiles.get(gameState.currentPlayerIndex)?.celebration : null}
         onComplete={() => setShowYatzyCelebration(false)}
-      />
-      <TurnTransition
-        trigger={showTurnTransition}
-        onDismiss={() => setShowTurnTransition(false)}
       />
       <motion.div
         className="ios-game-card mp-game relative flex w-full flex-col gap-2"

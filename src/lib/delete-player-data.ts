@@ -3,6 +3,7 @@ import { Preferences } from '@capacitor/preferences';
 import { supabase } from '@/integrations/supabase/client';
 import { initDeviceId } from '@/lib/device';
 import { getSessionId, claimSession } from '@/lib/session';
+import { pauseRecoverableWrites, resumeRecoverableWrites } from './recoverable-storage';
 
 const CLEANUP_PENDING = 'mrb_data_deletion_cleanup';
 export function isPlayerStorageKey(key: string): boolean {
@@ -19,8 +20,10 @@ export async function deletePlayerData(): Promise<void> {
     if (error || !data || typeof data !== 'object' || Array.isArray(data) || data.ok !== true) {
       throw new Error('delete_failed');
     }
+    pauseRecoverableWrites();
     localStorage.setItem(CLEANUP_PENDING, '1');
   }
+  pauseRecoverableWrites();
   if (Capacitor.isNativePlatform()) await Preferences.remove({ key: 'yatzy_device_id' });
   for (const storage of [localStorage, sessionStorage]) {
     for (const key of Object.keys(storage)) {
@@ -28,4 +31,5 @@ export async function deletePlayerData(): Promise<void> {
     }
   }
   localStorage.removeItem(CLEANUP_PENDING);
+  resumeRecoverableWrites();
 }

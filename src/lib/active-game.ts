@@ -1,3 +1,6 @@
+import { readRecoverable, writeRecoverable, removeRecoverable } from './recoverable-storage';
+import { getCurrentLocalMatchKey } from './local-match-key';
+
 const GAMES_KEY = 'yatzy_active_games';
 const SAVED_GAME_KEY = 'yatzy_saved_game';
 const LEGACY_KEY = 'yatzy_active_game';
@@ -28,15 +31,15 @@ function readList(): ActiveGame[] {
     if (g.type !== 'local' || g.gameId) return { ...g, lastRollTime: g.lastRollTime ?? g.timestamp };
     // Stable destination makes an interrupted migration safe to repeat.
     const gameId = 'local-legacy';
-    const raw = localStorage.getItem(SAVED_GAME_KEY);
-    if (raw && !localStorage.getItem(savedKey(gameId))) localStorage.setItem(savedKey(gameId), raw);
+    const raw = readRecoverable(SAVED_GAME_KEY);
+    if (raw && !readRecoverable(savedKey(gameId))) writeRecoverable(savedKey(gameId), raw, true);
     for (const key of ['yatzy-player-names', 'yatzy-ai-players']) {
-      const value = localStorage.getItem(key);
-      if (value && !localStorage.getItem(`${key}:${gameId}`)) localStorage.setItem(`${key}:${gameId}`, value);
+      const value = readRecoverable(key);
+      if (value && !readRecoverable(`${key}:${gameId}`)) writeRecoverable(`${key}:${gameId}`, value, true);
     }
     return { ...g, gameId, lastRollTime: g.lastRollTime ?? g.timestamp };
   };
-  const raw = localStorage.getItem(GAMES_KEY);
+  const raw = readRecoverable(GAMES_KEY);
   if (raw) {
     try {
       const arr = JSON.parse(raw) as ActiveGame[];
@@ -48,13 +51,13 @@ function readList(): ActiveGame[] {
     } catch { /* ignore */ }
   }
   // Migrate legacy single entry
-  const legacy = localStorage.getItem(LEGACY_KEY);
+  const legacy = readRecoverable(LEGACY_KEY);
   if (legacy) {
     try {
       const g = migrateLocal(JSON.parse(legacy) as ActiveGame);
       g.lastRollTime = g.lastRollTime ?? g.timestamp;
       const list = [g];
-      localStorage.setItem(GAMES_KEY, JSON.stringify(list));
+      writeRecoverable(GAMES_KEY, JSON.stringify(list), true);
       return list;
     } catch { /* ignore */ }
   }
@@ -62,13 +65,13 @@ function readList(): ActiveGame[] {
 }
 
 function writeList(list: ActiveGame[]) {
-  localStorage.setItem(GAMES_KEY, JSON.stringify(list));
+  writeRecoverable(GAMES_KEY, JSON.stringify(list), true);
   // Keep legacy key in sync with the most-recent entry for any straggler readers.
   const latest = list[0];
   if (latest) {
-    localStorage.setItem(LEGACY_KEY, JSON.stringify(latest));
+    writeRecoverable(LEGACY_KEY, JSON.stringify(latest), true);
   } else {
-    localStorage.removeItem(LEGACY_KEY);
+    removeRecoverable(LEGACY_KEY);
   }
 }
 
@@ -167,10 +170,10 @@ export function clearLocalActiveGame(localId?: string) {
     localId ? !(g.type === 'local' && g.gameId === localId) : g.type !== 'local',
   );
   writeList(list);
-  localStorage.removeItem(savedKey(localId));
+  removeRecoverable(savedKey(localId));
   if (localId) {
-    localStorage.removeItem(`yatzy-player-names:${localId}`);
-    localStorage.removeItem(`yatzy-ai-players:${localId}`);
+    removeRecoverable(`yatzy-player-names:${localId}`);
+    removeRecoverable(`yatzy-ai-players:${localId}`);
   }
 }
 
@@ -182,15 +185,17 @@ export function clearActiveGame() {
   const list = readList();
   const [, ...rest] = list;
   writeList(rest);
-  localStorage.removeItem(SAVED_GAME_KEY);
+  removeRecoverable(SAVED_GAME_KEY);
 }
 
 export function saveGameState(state: unknown, localId?: string) {
-  localStorage.setItem(savedKey(localId), JSON.stringify(state));
+  const snapshot = localId && state && typeof state === 'object'
+    ? { ...state, matchKey: getCurrentLocalMatchKey(localId) } : state;
+  return writeRecoverable(savedKey(localId), JSON.stringify(snapshot), true);
 }
 
 export function loadGameState<T>(localId?: string): T | null {
-  const raw = localStorage.getItem(savedKey(localId));
+  const raw = readRecoverable(savedKey(localId));
   if (!raw) return null;
   try {
     return JSON.parse(raw) as T;

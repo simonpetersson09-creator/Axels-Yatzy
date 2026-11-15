@@ -8,6 +8,7 @@ vi.mock('./result-delivery', () => ({ flushResultReports: vi.fn() }));
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   resetLocalStats();
 });
 
@@ -85,7 +86,7 @@ describe('recordGameResult', () => {
   });
 
   it('does not claim success or lose the key when persistence fails', () => {
-    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => { throw new Error('full'); });
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('full'); });
     expect(recordGameResult(250, true, 1, 'retry')).toBe(false);
     spy.mockRestore();
     expect(getLocalStats().gamesPlayed).toBe(0);

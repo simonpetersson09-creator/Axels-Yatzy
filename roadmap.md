@@ -1,5 +1,14 @@
 # Roadmap – Snabbspel online
 
+## Inbjudningar och sparfel – ny granskning 15 november
+- [x] Behåll inkommande inbjudningar vid misslyckade hämtningar och återhämta vid nästa lyckade svar.
+- [x] Matchsparning, aktiva spel och matchidentitet använder reservsparning/återförsök. Slutresultat bär sin egen matchidentitet så avbrutet omspel inte dubbelräknar. Gamla tabbreserver skriver aldrig över senare sparningar; borttagningar återförsöks utan att återställa borttaget spel.
+- [x] SDK-bekräftade XP-kvitton hålls för leverans med samma identitet även när båda lagren nekar skrivning; bekräftad betalning rensar kön utan dubbelutdelning. Radering stoppar reservåterställning före nästa möjliga felsteg. Helt blockerad lagring plus processdöd kan inte garanteras beständig.
+- [x] 30 riktade tester och 782 tester i bredare körning godkända, 1 överhoppat; hela sviten varierar med parameternamnskrockar i tillfälliga SQL-funktioner (senaste helkörning 810 godkända/5 fel). Inga migrations- eller livedataändringar. Storleksbevakning tillagd i testmiljön; bygge OK.
+- [x] Körande avskilt telefonprov: Anna kvar efter nätfel, bekräftat tomt svar stänger; skrivfel → 30 poäng → omladdning/exakt en match; blockerade kvittoskrivningar → exakt 1 XP och tom kö. Bilder granskade, inga sidfel. Arkitekturregel kunde inte sparas i root AGENTS.md på grund av skyddad storleksgräns.
+- [x] Ny skrivskyddad granskning: förfallna inbjudningar kan ligga kvar; Home-status saknar automatiskt återförsök efter läsfel; namnlikhet ger fel avhoppsmarkering på resultat; gammal medalj kan ligga kvar efter nytt kast. Starkare kombinations undertryckning av svagare kan vara avsiktlig och är inte bekräftad regelbugg. Native sen belöning och oberoende annonsbevis kvar som tidigare kontroll/säkerhetsbegränsning.
+- [ ] Verklig annons- och lagringsverifiering på iPhone/Android kräver nästa signerade appversion och fysiska telefoner.
+
 ## Två bekräftade fel – 15 november
 - [x] Annonsspärren behålls vid misslyckad cacherensning före/efter annonsval, även om UMP tillåter annonser. Formulärfel rensar även efteråt och använder aktuellt UMP-besked först efter båda lyckade cachegränser; nästa lyckade ändringsförsök återhämtar.
 - [x] Pågående spel och tidigare status behålls vid misslyckad spel-/spelarhämtning via en gemensam komplett läsögonblicksbild; bekräftat tomma svar får fortsatt städa. Arkitekturregel kunde inte läggas till i root AGENTS.md vid skyddad storleksgräns.

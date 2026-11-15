@@ -7,7 +7,7 @@ import { getLocalStats, recordGameResult, getPendingResultReports } from './loca
 vi.mock('./result-delivery', () => ({ flushResultReports: vi.fn() }));
 const scores = Object.fromEntries(CATEGORIES.filter(c => c.id !== 'chance').map(c => [c.id, 0]));
 const state: GameState = { players: [{ id: 'p0', name: 'Me', scores }], currentPlayerIndex: 0, dice: [6,6,6,6,6], lockedDice: [false,false,false,false,false], rollsLeft: 0, isRolling: false, gameOver: false, round: 15 };
-beforeEach(() => localStorage.clear());
+beforeEach(() => { localStorage.clear(); sessionStorage.clear(); });
 afterEach(() => vi.restoreAllMocks());
 it('retains the final score through a failed stats write and restart, then counts exactly once', () => {
   localStorage.setItem('yatzy_saved_game:slot', JSON.stringify(state));
@@ -17,7 +17,7 @@ it('retains the final score through a failed stats write and restart, then count
   expect(loadGameState<GameState>('slot')?.gameOver).toBe(true);
   const original = Storage.prototype.setItem;
   vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function(this: Storage, key, value) {
-    if (key === 'yatzy-player-stats') throw new Error('full');
+    if (key.endsWith('yatzy-player-stats')) throw new Error('full');
     original.call(this, key, value);
   });
   expect(recordGameResult(30, true, 0, 'match')).toBe(false);

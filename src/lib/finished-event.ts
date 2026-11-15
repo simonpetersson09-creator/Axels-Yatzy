@@ -5,8 +5,10 @@ export function trackFinishedEvent(matchKey: string, metadata: Record<string, un
   const key = `yatzy-finished-event:${matchKey}`;
   try {
     if (localStorage.getItem(key) === '1') return false;
-    localStorage.setItem(key, '1');
   } catch { return false; }
-  trackEvent('game_finished', metadata, options);
+  // Stable event ID makes the queue-first / ledger-second interruption safe:
+  // reprocessing the result can only deliver the same event, never a new one.
+  trackEvent('game_finished', { ...metadata, event_id: `finished:${matchKey}` }, options);
+  try { localStorage.setItem(key, '1'); } catch { return false; }
   return true;
 }

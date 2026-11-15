@@ -10,7 +10,6 @@ export function createRewardedPair(show: (late: () => void) => Promise<RewardedR
   // Old partial bundles cannot prove a new SDK reward or trigger an extra ad.
   try { localStorage.removeItem(STORAGE_KEY); } catch { /* private mode */ }
   let busy = false;
-  let generation = 0;
   let reward: (() => void) | null = null;
   const listeners = new Set<() => void>();
   const notify = () => listeners.forEach(fn => fn());
@@ -28,7 +27,6 @@ export function createRewardedPair(show: (late: () => void) => Promise<RewardedR
             if (counted) return;
             if (!persist(attemptId)) return;
             counted = true;
-            generation += 1;
             reward?.();
             notify();
           };

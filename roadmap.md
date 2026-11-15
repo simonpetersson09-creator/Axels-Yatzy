@@ -1,9 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Två bekräftade fel – 15 november
-- [ ] Behåll annonsspärren vid misslyckad cacherensning före/efter annonsval; bevara UMP:s aktuella besked efter rena formulärfel.
-- [ ] Behåll pågående spel och tidigare status vid misslyckad spel-/spelarhämtning på startsidan; bekräftat tomma svar får fortsatt städa.
-- [ ] Återskapa fel, kör riktade tester och kontrollera startsidans nätfel/återhämtning utan livedata.
+- [x] Annonsspärren behålls vid misslyckad cacherensning före/efter annonsval, även om UMP tillåter annonser. Formulärfel rensar även efteråt och använder aktuellt UMP-besked först efter båda lyckade cachegränser; nästa lyckade ändringsförsök återhämtar.
+- [x] Pågående spel och tidigare status behålls vid misslyckad spel-/spelarhämtning via en gemensam komplett läsögonblicksbild; bekräftat tomma svar får fortsatt städa. Arkitekturregel kunde inte läggas till i root AGENTS.md vid skyddad storleksgräns.
+- [x] Sex annonsfel återskapade före rättning; 200 tester godkända i 10 filer, bygge OK. Avskilt körande telefonmått: nätfel → omladdning behåller Anna, återhämtning visar Din tur, fel i spelarhämtning behåller kortet, bekräftad radering tar bort det; bilder granskade, inga runtimefel eller livedata. Riktigt native-annonsprov kräver nästa signerade appversion och telefon.
 
 ## Medaljernas placering – 15 november
 - [x] Kombinationsmedaljer förankrade vid verkliga mitten av Nedre sektionen med storleksbevakning i gemensamma ScoreBoard; tidigare 60 procent hamnade 67 px för långt ner. Spelregler, översättningar och Yatzy-firande oförändrade.

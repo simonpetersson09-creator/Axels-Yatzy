@@ -54,6 +54,8 @@ type RollStartedPayload = {
   dice?: number[];
   lockedDice?: boolean[];
   rollsLeft?: number;
+  /** Round the throw belongs to; older app versions omit it. */
+  round?: number;
 };
 
 interface MultiplayerState {
@@ -703,6 +705,8 @@ export function useMultiplayerGame() {
         // Only react to opponent broadcasts; ignore our own echo.
         if (typeof payload?.player === 'number' && payload.player === myIdx) return;
         if (typeof payload?.player === 'number' && payload.player !== prevGS.currentPlayerIndex) return;
+        // A late start from an earlier round must never touch this round's dice.
+        if (typeof payload?.round === 'number' && payload.round !== prevGS.round) return;
         // A late start for a roll already displayed must never start a new flight.
         if (typeof payload?.rollsLeft === 'number' && payload.rollsLeft >= prevGS.rollsLeft) return;
         if (rollingGuardRef.current || remoteRollingGuardRef.current) return;
@@ -740,6 +744,8 @@ export function useMultiplayerGame() {
         if (stateRef.current.gameId !== gameId || prevGS.currentPlayerIndex === myIdx) return;
         if (typeof payload.player === 'number' && payload.player === myIdx) return;
         if (typeof payload.player === 'number' && payload.player !== prevGS.currentPlayerIndex) return;
+        // A delayed result from an earlier round must never land on this round.
+        if (typeof payload.round === 'number' && payload.round !== prevGS.round) return;
         if (rollingGuardRef.current) return;
         if (payload.dice?.length !== 5 || payload.lockedDice?.length !== 5 || typeof payload.rollsLeft !== 'number') return;
         // A delayed result for an earlier throw must not release the waiting
@@ -1075,7 +1081,7 @@ export function useMultiplayerGame() {
       channelRef.current?.send({
         type: 'broadcast',
         event: 'roll_started',
-        payload: { player: latest.myPlayerIndex, lockedDice: optimisticLocked, rollsLeft: optimisticRollsLeft },
+        payload: { player: latest.myPlayerIndex, lockedDice: optimisticLocked, rollsLeft: optimisticRollsLeft, round: latest.gameState?.round },
       });
     } catch {
       // Non-fatal — opponent will still spin via postgres_changes fallback.
@@ -1198,7 +1204,7 @@ export function useMultiplayerGame() {
           channelRef.current?.send({
             type: 'broadcast',
             event: 'roll_result',
-            payload: { player: latest.myPlayerIndex, dice: part.dice, lockedDice: part.lockedDice, rollsLeft: part.rollsLeft },
+            payload: { player: latest.myPlayerIndex, dice: part.dice, lockedDice: part.lockedDice, rollsLeft: part.rollsLeft, round: latest.gameState?.round },
           });
         } catch { /* opponent falls back to postgres_changes */ }
         rollConfirmedRef.current = true;

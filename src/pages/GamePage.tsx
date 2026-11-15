@@ -557,6 +557,15 @@ export default function GamePage() {
                 skin={gameState.currentPlayerIndex === HUMAN_INDEX && !isCurrentAi ? mySkin : 'white'}
                 className="mt-0"
               />
+              {/* Same in-area prompt as the online game: the table is empty
+                  until the human throws Kast 1 themselves. */}
+              {gameState.rollsLeft === 3 && !isCurrentAi && !gameState.isRolling && !gameState.gameOver && (
+                <div aria-live="polite" className="pointer-events-none absolute inset-0 z-[40] flex items-center justify-center text-center text-primary">
+                  <div className="px-1 text-[13px] font-semibold leading-tight break-words">
+                    {t('startFirstRollHint')}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bottom: Roll + Home + Forfeit */}

@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Databas och admin – uppföljning 15 november
+- [ ] Återskapa det rapporterade databasfelet och verifiera gammal → ny kvittofunktion utan produktionsskrivningar.
+- [ ] Rätta adminjämförelsen med samma aktuella aktivitetsregler och verifiera alla synliga dagar.
+- [ ] Kör berörda regressionstester och redovisa återstående releasekontroller.
+
 ## Releasegranskning – skadade sparningar och delad förstaplats
 - [x] Avvisar ogiltiga index, tärningar, lås, kast/rundor, kategoripoäng och felaktigt färdigstatus kontrollerat; andra sparningar och historik bevarade.
 - [x] Lokala och separata resultat visar Oavgjort och delade placeringar (1/1/3); oavgjort ger fortsatt ingen vinst. Befintlig översättning finns på alla 40 språk.

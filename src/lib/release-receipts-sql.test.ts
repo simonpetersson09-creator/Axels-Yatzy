@@ -5,6 +5,8 @@ const db = process.env.SUPABASE_DB_URL ? postgres(process.env.SUPABASE_DB_URL, {
 afterAll(async () => { await db?.end(); });
 const source = readFileSync('drizzle/migrations/0133_durable_match_and_ad_reward_receipts.sql','utf8');
 const award = readFileSync('drizzle/migrations/0066_award_ad_xp_no_daily_cap.sql','utf8');
+const previousYatzy = readFileSync('drizzle/migrations/0007_permanent_dice_tiers.sql','utf8')
+  .match(/CREATE OR REPLACE FUNCTION public\.record_local_yatzy_match[\s\S]*?END \$\$;/)?.[0];
 describe.skipIf(!db)('release receipts — temporary tables only, no production awards', () => {
   async function scenario(check: (sql: postgres.TransactionSql) => Promise<void>) {
     if (!db) throw new Error('Missing test connection');
@@ -24,6 +26,10 @@ describe.skipIf(!db)('release receipts — temporary tables only, no production 
       for (const table of source.match(/CREATE TABLE public\.[\s\S]*?\n\);/g) ?? []) {
         await sql.unsafe(table.replace('CREATE TABLE public.','CREATE TEMP TABLE ').replace(/public\./g,'pg_temp.').replace(/\);$/,') ON COMMIT DROP;'));
       }
+      // Replay the real existing definition before replacing it: parameter-name
+      // incompatibilities must fail here, not be hidden by a fresh function.
+      if (!previousYatzy) throw new Error('Missing previous Yatzy definition');
+      await sql.unsafe(previousYatzy.replace(/public\./g,'pg_temp.').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
       for (const fn of (award+'\n'+source).match(/CREATE OR REPLACE FUNCTION[\s\S]*?\$function\$;/g) ?? []) {
         await sql.unsafe(fn.replace(/public\./g,'pg_temp.').replace("SET search_path TO 'public'","SET search_path TO 'pg_temp'"));
       }

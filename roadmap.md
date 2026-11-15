@@ -576,3 +576,4 @@
 - [x] Förstora protokoll, tärningar och knappar i lokala och online-matcher; bevara matchtillstånd vid rotation.
 - [x] Kontrollera Mini/Air/Pro stående/liggande och iPhone: sidbilder, lokalt poängval, simulerad fyrspelar-onlineplan med fria namn/tärningar/chatt/knappar, resultat, butik och Mina tärningar. Rotationsprov bevarade registrerad poäng; 11 relevanta tester godkända, inga runtimefel i online-/rotationsprov. Bygge OK.
 - [ ] Kontrollera på fysisk iPad efter nytt appbygge; native-annonser och verkliga safe areas kan inte verifieras här.
+- [x] Onlinetärningar: motståndarens sparade tärningar stilla från kaststart; misslyckat kast landar på bekräftat läge; servergräns 3 → 8 s. Telefonprov i nästa appversion återstår.

@@ -1787,6 +1787,10 @@ export type Database = {
         Args: { p_game_id: string; p_session_id: string; p_to_index: number }
         Returns: boolean
       }
+      friend_request_state: {
+        Args: { p_game_id: string; p_session_id: string; p_to_index: number }
+        Returns: string
+      }
       friend_request_status: {
         Args: { p_other_session_ids: string[]; p_session_id: string }
         Returns: Json

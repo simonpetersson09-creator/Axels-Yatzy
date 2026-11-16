@@ -242,6 +242,10 @@ export default function GamePage() {
     const delay = 1000 + Math.random() * 400;
 
     let innerTimer: ReturnType<typeof setTimeout> | null = null;
+    // Set once the planned move has been carried out. If the effect re-runs
+    // before that (e.g. the app regains focus and nudges it), the cancelled
+    // move is re-planned at once instead of waiting for the stuck watchdog.
+    let acted = false;
     const t = setTimeout(() => {
       const gs = gameStateRef.current;
       if (!gs) return;
@@ -251,6 +255,7 @@ export default function GamePage() {
         setAiChosenCategory(cat);
         setAiThinking(false);
         innerTimer = setTimeout(() => {
+          acted = true;
           selectCategoryFnRef.current(cat);
           setAiChosenCategory(null);
         }, 1600);
@@ -265,6 +270,7 @@ export default function GamePage() {
           setAiChosenCategory(cat);
           setAiThinking(false);
           innerTimer = setTimeout(() => {
+            acted = true;
             selectCategoryFnRef.current(cat);
             setAiChosenCategory(null);
           }, 1200);
@@ -272,6 +278,7 @@ export default function GamePage() {
         }
         setLocks(locks);
         innerTimer = setTimeout(() => {
+          acted = true;
           rollFnRef.current();
         }, 700);
       }
@@ -280,6 +287,7 @@ export default function GamePage() {
     return () => {
       clearTimeout(t);
       if (innerTimer) clearTimeout(innerTimer);
+      if (!acted && aiTurnRef.current === aiKey) aiTurnRef.current = null;
     };
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, setLocks, aiNudge]);
 

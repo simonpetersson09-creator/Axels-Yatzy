@@ -28,7 +28,6 @@ import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/ha
 import { QuickChat } from '@/components/game/QuickChat';
 const WAITING_TEXT_DELAY_MS = 2500;
 const AUTO_FIRST_ROLL = false;
-import { TurnTransition } from '@/components/game/TurnTransition';
 import { getProfileName } from '@/lib/profile';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { motion } from 'framer-motion';
@@ -159,7 +158,6 @@ export default function MultiplayerGamePage() {
   useEffect(() => { setInfoIndex(null); }, [gameState?.currentPlayerIndex]);
   const statsRecordedRef = useRef(false);
   const rejoinCalledRef = useRef<string | null>(null);
-  const [showTurnTransition, setShowTurnTransition] = useState(false);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const autoRollRef = useRef<string | null>(null);
   const autoRollPendingRef = useRef<string | null>(null);
@@ -410,7 +408,6 @@ export default function MultiplayerGamePage() {
 
     if (prev === null) return; // first observation — skip
     if (current === myPlayerIndex && prev !== myPlayerIndex) {
-      setShowTurnTransition(true);
       setGlowActive(true);
       if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
       glowTimerRef.current = setTimeout(() => setGlowActive(false), 2600);
@@ -744,10 +741,6 @@ export default function MultiplayerGamePage() {
         show={showYatzyCelebration}
         celebrationId={gameState ? diceProfiles.get(gameState.currentPlayerIndex)?.celebration : null}
         onComplete={() => setShowYatzyCelebration(false)}
-      />
-      <TurnTransition
-        trigger={showTurnTransition}
-        onDismiss={() => setShowTurnTransition(false)}
       />
       <motion.div
         className="ios-game-card mp-game relative flex w-full flex-col gap-2"

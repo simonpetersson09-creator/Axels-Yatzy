@@ -13,7 +13,7 @@ interface TurnTransitionProps {
   visibleMs?: number;
 }
 
-const VISIBLE_MS = 600;
+const VISIBLE_MS = 1500;
 
 export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VISIBLE_MS }: TurnTransitionProps) {
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VIS
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
+          transition={{ duration: 0.15, ease: 'easeOut', opacity: { duration: visible ? 0.15 : 0.3 } }}
         >
           {/* Subtle backdrop tint so text pops without fully blocking gameplay */}
           <div className="absolute inset-0 bg-background/30 backdrop-blur-[2px]" />
@@ -53,7 +53,7 @@ export function TurnTransition({ trigger, onDismiss, playerName, visibleMs = VIS
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: -6 }}
             transition={{
-              duration: 0.35,
+              duration: visible ? 0.15 : 0.3,
               ease: [0.22, 1, 0.36, 1],
             }}
           >

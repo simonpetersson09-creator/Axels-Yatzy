@@ -3,7 +3,9 @@ import { trackStatsOpened } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { AvatarFrame } from '@/components/AvatarFrame';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { readStatsView, saveStatsView } from '@/lib/stats-view-cache';
 import { ArrowLeft, Globe, CalendarDays, MapPin, Trophy, Flame, ChevronDown, Dices } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { getProfileCountry } from '@/lib/profile';
@@ -19,18 +21,19 @@ import {
 export default function StatsPage() {
   const navigate = useNavigate();
   const { t, lang } = useTranslation();
-  const [loading, setLoading] = useState(true);
-  const [rank, setRank] = useState<RankInfo>({ country: null, world: null });
-  const [weekly, setWeekly] = useState<WeeklyRank | null>(null);
-  const [top, setTop] = useState<TopCountry[]>([]);
-  const [topMonth, setTopMonth] = useState<TopCountry[]>([]);
-  const [yearGames, setYearGames] = useState<number | null>(null);
-  const { year, monthName } = getStatsPeriod(lang);
-  const [hof, setHof] = useState<HallOfFameEntry[]>([]);
-  const [most, setMost] = useState<HallOfFameEntry[]>([]);
-  const [frames, setFrames] = useState<Record<string, string>>({});
-  const myCountry = getProfileCountry();
   const mySession = getSessionId();
+  const [initial] = useState(() => readStatsView(mySession));
+  const [loading, setLoading] = useState(!initial);
+  const [rank, setRank] = useState<RankInfo>(initial?.rank ?? { country: null, world: null });
+  const [weekly, setWeekly] = useState<WeeklyRank | null>(initial?.weekly ?? null);
+  const [top, setTop] = useState<TopCountry[]>(initial?.top ?? []);
+  const [topMonth, setTopMonth] = useState<TopCountry[]>(initial?.topMonth ?? []);
+  const [yearGames, setYearGames] = useState<number | null>(initial?.yearGames ?? null);
+  const { year, monthName } = getStatsPeriod(lang);
+  const [hof, setHof] = useState<HallOfFameEntry[]>(initial?.hof ?? []);
+  const [most, setMost] = useState<HallOfFameEntry[]>(initial?.most ?? []);
+  const [frames, setFrames] = useState<Record<string, string>>(initial?.frames ?? {});
+  const myCountry = getProfileCountry();
   const visitTracked = useRef(false);
 
   useEffect(() => {
@@ -41,19 +44,25 @@ export default function StatsPage() {
     let alive = true;
     (async () => {
       // Same sync as the home screen, so both screens always show the same numbers.
-      const [r, tc, tm, h, m] = await Promise.all([syncCountryRank(), syncTopCountries(10, 'year'), syncTopCountries(10, 'month'), fetchWeeklyHallOfFame(10), fetchWeeklyMostGames(10)]);
-      const [yg, yr] = await Promise.all([fetchMyYearGames(), fetchYearRanks()]);
+      const [r, tc, tm, h, m, yg, yr] = await Promise.all([syncCountryRank(), syncTopCountries(10, 'year'), syncTopCountries(10, 'month'), fetchWeeklyHallOfFame(10), fetchWeeklyMostGames(10), fetchMyYearGames(), fetchYearRanks()]);
       const w = r.country ? await syncWeeklyRank() : null;
       if (!alive) return;
-      setRank(yr); setTop(tc); setTopMonth(tm); setYearGames(yg); setWeekly(w); setHof(h); setMost(m); setLoading(false);
       const ids = [...new Set([...h, ...m].map((p) => p.session_id))];
       const daily = await fetchWeeklyGames24h(ids);
       if (!alive) return;
-      setHof(h.map(p => ({ ...p, games_24h: daily[p.session_id] ?? null })));
-      setMost(m.map(p => ({ ...p, games_24h: daily[p.session_id] ?? null })));
+      const nextHof = h.map(p => ({ ...p, games_24h: daily[p.session_id] ?? null }));
+      const nextMost = m.map(p => ({ ...p, games_24h: daily[p.session_id] ?? null }));
+      setRank(yr); setTop(tc); setTopMonth(tm); setYearGames(yg); setWeekly(w);
+      setHof(nextHof); setMost(nextMost); setLoading(false);
+      let nextFrames = initial?.frames ?? {};
+      saveStatsView(mySession, { rank: yr, weekly: w, top: tc, topMonth: tm, yearGames: yg, hof: nextHof, most: nextMost, frames: nextFrames });
       if (ids.length) {
         const { data } = await supabase.rpc('get_frames_for_sessions', { p_session_ids: ids });
-        if (alive && data) setFrames(Object.fromEntries((data as { session_id: string; frame: string }[]).map((d) => [d.session_id, d.frame])));
+        if (alive && data) {
+          nextFrames = Object.fromEntries((data as { session_id: string; frame: string }[]).map((d) => [d.session_id, d.frame]));
+          setFrames(nextFrames);
+          saveStatsView(mySession, { rank: yr, weekly: w, top: tc, topMonth: tm, yearGames: yg, hof: nextHof, most: nextMost, frames: nextFrames });
+        }
       }
     })();
     return () => { alive = false; };
@@ -75,15 +84,15 @@ export default function StatsPage() {
         paddingBottom: 'calc(40px + env(safe-area-inset-bottom))',
       }}
     >
-      <motion.div className="max-w-md mx-auto space-y-4" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+      <div className="max-w-md mx-auto space-y-4">
         <div className="flex items-center gap-3">
-          <button
+          <Button variant="ghost" size="icon"
             onClick={() => ((window.history.state?.idx ?? 0) > 0 ? navigate(-1) : navigate('/settings', { replace: true }))}
             className="p-2 -ml-2 rounded-xl hover:bg-secondary transition-colors"
             aria-label={t('back')}
           >
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-          </button>
+          </Button>
           <h1 className="text-xl font-display font-bold">{t('statsPageTitle')}</h1>
         </div>
 
@@ -126,7 +135,7 @@ export default function StatsPage() {
               <div className="px-3.5 py-1.5 flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0"><Dices className="w-4 h-4 text-primary" /></div>
                 <p className="flex-1 text-[11px] uppercase tracking-wider text-muted-foreground">{t('yearGamesLabel', { year })}</p>
-                <p className="font-display font-bold text-base tabular-nums text-primary">{loading ? '…' : yearGames == null ? '—' : fmt(yearGames)}</p>
+                <p className="font-display font-bold text-base tabular-nums text-primary"><GentleValue value={loading ? '…' : yearGames == null ? '—' : fmt(yearGames)} /></p>
               </div>
             </div>
           )}
@@ -153,9 +162,14 @@ export default function StatsPage() {
 
         <CountryList title={t('topCountriesYearTitle', { year })} rows={top} loading={loading} myCountry={myCountry} lang={lang} loadingText={t('loading')} />
         <CountryList title={t('topCountriesMonthTitle', { month: monthName })} rows={topMonth} loading={loading} myCountry={myCountry} lang={lang} loadingText={t('loading')} />
-      </motion.div>
+      </div>
     </div>
   );
+}
+
+function GentleValue({ value }: { value: string }) {
+  const reduced = useReducedMotion();
+  return <motion.span key={value} initial={reduced ? false : { opacity: 0.65 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>{value}</motion.span>;
 }
 
 function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: {
@@ -171,7 +185,7 @@ function RankCard({ icon, label, rank, total, loading, fmt, playersWord, sub }: 
       </div>
       <div className="text-right">
         <p className="font-display font-bold text-base tabular-nums text-primary">
-          {loading ? '…' : rank ? `#${fmt(rank)}` : '—'}
+          <GentleValue value={loading ? '…' : rank ? `#${fmt(rank)}` : '—'} />
         </p>
       </div>
     </div>
@@ -198,7 +212,7 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
           {show24h && <span className="w-14 text-right">24h</span>}
           <span className="w-12 text-right">{valueLabel}</span>
         </div>
-        {loading && <div className="p-4 text-sm text-muted-foreground">{loadingText}</div>}
+        {loading && <div aria-label={loadingText} aria-busy="true">{Array.from({ length: 10 }, (_, i) => <div key={i} className="h-[68px] border-t border-border/20 flex items-center gap-3 px-3"><span className="w-7 h-7 rounded-full bg-muted/40" /><span className="h-3 w-24 bg-muted/40 rounded" /></div>)}</div>}
         {!loading && rows.length === 0 && <div className="p-4 text-sm text-muted-foreground">{empty}</div>}
         {rows.map((p, i) => (
           <div
@@ -215,14 +229,14 @@ function HofSection({ icon, title, subtitle, rows, loading, mySession, frames, e
               </span>
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">{p.name}</p>
+              <p className="text-sm font-semibold flex items-baseline gap-1 min-w-0"><span className="truncate">{p.name}</span>{p.session_id === mySession && <span className="text-game-gold shrink-0">({t('you')})</span>}</p>
               {i < 3 && <p className="text-[11px] font-bold text-game-gold">{prize.title.replace(/[!！]/g, '')}: {3 - i} XP</p>}
               <div className="text-[11px] text-muted-foreground">{sub(p)}</div>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              {show24h && <p className="w-14 text-right whitespace-nowrap font-display font-bold text-base tabular-nums text-game-gold-light">{p.games_24h == null ? '—' : `+ ${p.games_24h.toLocaleString(lang)}`}</p>}
+              {show24h && <p className="w-14 text-right whitespace-nowrap font-display font-bold text-base tabular-nums text-game-gold-light"><GentleValue value={p.games_24h == null ? '—' : `+ ${p.games_24h.toLocaleString(lang)}`} /></p>}
             <div className="w-12 text-right shrink-0">
-              <p className="font-display font-bold text-lg tabular-nums text-primary">{value(p)}</p>
+              <p className="font-display font-bold text-lg tabular-nums text-primary"><GentleValue value={value(p)} /></p>
             </div>
             </div>
           </div>
@@ -239,11 +253,11 @@ function CountryList({ title, rows, loading, myCountry, lang, loadingText }: {
   const [open, setOpen] = useState(false);
   return (
     <section className="space-y-2">
-      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
+      <Button variant="ghost" onClick={() => setOpen(o => !o)} aria-expanded={open}
         className="w-full flex items-center justify-between rounded-2xl bg-secondary/50 border border-border/40 px-4 py-3">
         <span className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-[0.12em]">{title}</span>
         <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
+      </Button>
       {open && (
         <div className="rounded-2xl bg-secondary/50 border border-border/40 overflow-hidden">
           {loading && <div className="p-4 text-sm text-muted-foreground">{loadingText}</div>}

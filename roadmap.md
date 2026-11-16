@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Topplista och mjuk statistik – 16 november
+- [ ] Markera endast den egna spelarens namn med guldfärgat (Du).
+- [ ] Visa senaste statistik direkt vid återbesök och uppdatera utan inhoppsrörelse eller separat 24h-hopp; kontrollera telefon och dator.
+
 ## Fast bannerplats i datormatch – 16 november
 - [x] Lokal spelplan använder alltid bannerutrymmet även innan laddning och utan annons; sena annonsanrop ändrar inte protokoll/tärningsstorlek.
 - [x] 85 annons-/layoutprov godkända; identiska spelplansmått när bannerklassen slås av/på på sex skärmstorlekar, utan sidfel. Native-annons på fysisk telefon kräver nästa appversion. Root AGENTS.md vid skyddad storleksgräns.

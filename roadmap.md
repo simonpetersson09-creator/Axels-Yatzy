@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Godkänt betygsutskick – 16 november
+- [ ] Skicka godkänd svensk betygstext en gång till nåbara iOS-/Androidenheter med allmänna påminnelser påslagna; verifiera leveransresultat.
+
 ## Topplista och mjuk statistik – 16 november
 - [x] Markera endast den egna spelarens namn med guldfärgat (Du); befintliga översättningar på alla 40 språk återanvänds.
 - [x] Senaste statistik visas direkt vid återbesök samma Stockholmsdag/session; siffrorna tonas försiktigt till nytt värde, hela sidans inhoppsrörelse borttagen, veckolistor/24h visas tillsammans. Första besöket visar reserverade rader tills siffrorna hämtats.

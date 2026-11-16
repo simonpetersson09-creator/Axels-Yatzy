@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Topplista och mjuk statistik – 16 november
-- [ ] Markera endast den egna spelarens namn med guldfärgat (Du).
-- [ ] Visa senaste statistik direkt vid återbesök och uppdatera utan inhoppsrörelse eller separat 24h-hopp; kontrollera telefon och dator.
+- [x] Markera endast den egna spelarens namn med guldfärgat (Du); befintliga översättningar på alla 40 språk återanvänds.
+- [x] Senaste statistik visas direkt vid återbesök samma Stockholmsdag/session; siffrorna tonas försiktigt till nytt värde, hela sidans inhoppsrörelse borttagen, veckolistor/24h visas tillsammans. Första besöket visar reserverade rader tills siffrorna hämtats.
+- [x] 13 prov godkända; avskilt telefon-/datorprov visar endast egen markering i båda listor, direkt +2 vid återbesök och därefter +3, inga runtimefel; bygge OK. Inga livedata ändrade; appen behöver nästa version.
 
 ## Fast bannerplats i datormatch – 16 november
 - [x] Lokal spelplan använder alltid bannerutrymmet även innan laddning och utan annons; sena annonsanrop ändrar inte protokoll/tärningsstorlek.

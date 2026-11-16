@@ -158,7 +158,6 @@ export default function MultiplayerGamePage() {
   useEffect(() => { setInfoIndex(null); }, [gameState?.currentPlayerIndex]);
   const statsRecordedRef = useRef(false);
   const rejoinCalledRef = useRef<string | null>(null);
-  const [showTurnTransition, setShowTurnTransition] = useState(false);
   const pressedButtonRef = useRef<'kasta' | 'home' | 'forfeit' | null>(null);
   const autoRollRef = useRef<string | null>(null);
   const autoRollPendingRef = useRef<string | null>(null);

@@ -1283,7 +1283,9 @@ function scheduleParkedRemoval() {
 }
 
 /** Gör plats för bannern i spelets layout (se html.ad-banner-on i index.css). */
+let bannerFitDone = false;
 function setBannerSpace(on: boolean) {
+  if (!on) bannerFitDone = false;
   if (typeof document !== 'undefined') document.documentElement.classList.toggle('ad-banner-on', on);
   if (!on && typeof document !== 'undefined') resetBannerFit();
 }
@@ -1356,12 +1358,11 @@ function resetBannerFit() {
  * kan hamna under annonsen oavsett telefon.
  */
 async function fitGameAboveBanner(isStale: () => boolean) {
-  // Local-game geometry is reserved by CSS from the first render, even
-  // without consent/no-fill. SDK readiness must never resize the board.
-  if (document.querySelector('.local-game')) return;
+  // Fit once per screen: refitting when the SDK becomes ready would make the board jump.
+  if (bannerFitDone) return;
   await waitForStableGame(isStale);
-  if (isStale()) return;
-  if (document.querySelector('.local-game')) return;
+  if (isStale() || bannerFitDone) return;
+  bannerFitDone = true;
   resetBannerFit();
   await raf2();
   const root = document.documentElement;
@@ -1484,10 +1485,12 @@ export async function showGameBanner(placement: BannerPlacement = 'game'): Promi
   // hela matchen, så layouten aldrig hoppar när bannern laddas klart,
   // misslyckas eller laddas om. Utgå från att bannern alltid finns.
   if (placement === 'game') setBannerSpace(true);
+  // Krymp spelplanen ovanför bannerplatsen direkt, oberoende av annonsladdning.
+  const gen = ++bannerGen;
+  if (placement === 'game') void fitGameAboveBanner(() => !bannerWanted || gen !== bannerGen);
   if (privacyChanging || privacyBlocked) return;
   // Varje sidbyte får ett eget nummer; ett äldre anrop som fortfarande väntar
   // avbryts, så att två sidor aldrig visar varsin banner.
-  const gen = ++bannerGen;
   const stale = () => !bannerWanted || gen !== bannerGen || privacyChanging || privacyBlocked;
   return queueBannerOperation(() => showBannerForScreen(stale, placement));
 }

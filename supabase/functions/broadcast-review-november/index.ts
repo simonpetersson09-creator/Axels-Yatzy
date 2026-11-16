@@ -12,7 +12,8 @@ Deno.serve(async req => {
   if (!url || !key || !secret) return json({error:'Unauthorized'},401);
   const db = createClient(url,key);
   const {data:authorized,error:authError} = await db.rpc('internal_secret_matches',{p_secret:secret});
-  if (authError || authorized !== true) return json({error:'Unauthorized'},401);
+  const envSecret = Deno.env.get('INTERNAL_NOTIFY_SECRET') ?? '';
+  if (authorized !== true && (!envSecret || secret !== envSecret)) return json({error:'Unauthorized'},401);
   const body = await req.json().catch(() => null);
   if (!body || body.campaign !== CAMPAIGN || typeof body.dry_run !== 'boolean') return json({error:'Invalid campaign'},400);
   if (!campaignOpen(Date.now())) return json({error:'Campaign closed'},410);

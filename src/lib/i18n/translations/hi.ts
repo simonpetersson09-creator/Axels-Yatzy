@@ -32,6 +32,7 @@ export const hi: Partial<typeof sv> = {
   worldRanking: "विश्व रैंकिंग",
   addFriendBtn: "दोस्त जोड़ें",
   friendRequestSent: "अनुरोध भेजा गया",
+  friendsAlready: "आप दोस्त हैं",
   friendRequestsTitle: "दोस्ती के अनुरोध",
   friendRequestFrom: "{name} आपका दोस्त बनना चाहता है",
   friendRequestPending: "जवाब का इंतज़ार",

@@ -32,6 +32,7 @@ export const bn: Partial<typeof sv> = {
   worldRanking: "বিশ্ব র‍্যাঙ্কিং",
   addFriendBtn: "বন্ধু যোগ করুন",
   friendRequestSent: "অনুরোধ পাঠানো হয়েছে",
+  friendsAlready: "আপনারা বন্ধু",
   friendRequestsTitle: "বন্ধুত্বের অনুরোধ",
   friendRequestFrom: "{name} আপনার বন্ধু হতে চায়",
   friendRequestPending: "উত্তরের অপেক্ষায়",

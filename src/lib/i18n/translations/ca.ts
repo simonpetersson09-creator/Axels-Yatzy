@@ -31,6 +31,7 @@ export const ca: Partial<typeof sv> = {
   worldRanking: "Rànquing mundial",
   addFriendBtn: "Afegeix amic",
   friendRequestSent: "Sol·licitud enviada",
+  friendsAlready: "Sou amics",
   friendRequestsTitle: "Sol·licituds d'amistat",
   friendRequestFrom: "{name} vol ser el teu amic",
   friendRequestPending: "esperant resposta",

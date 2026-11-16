@@ -960,6 +960,13 @@
       "when": 1794778883108,
       "tag": "0136_roll_retry_idempotency",
       "breakpoints": true
+    },
+    {
+      "idx": 137,
+      "version": "7",
+      "when": 1794819505933,
+      "tag": "0137_friend_request_state",
+      "breakpoints": true
     }
   ]
 }

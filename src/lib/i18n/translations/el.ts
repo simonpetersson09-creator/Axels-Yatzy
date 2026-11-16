@@ -32,6 +32,7 @@ export const el: Partial<typeof sv> = {
   worldRanking: "Παγκόσμια κατάταξη",
   addFriendBtn: "Προσθήκη φίλου",
   friendRequestSent: "Το αίτημα στάλθηκε",
+  friendsAlready: "Είστε φίλοι",
   friendRequestsTitle: "Αιτήματα φιλίας",
   friendRequestFrom: "{name} θέλει να γίνει φίλος σου",
   friendRequestPending: "αναμονή απάντησης",

@@ -32,6 +32,7 @@ export const hr: Partial<typeof sv> = {
   worldRanking: "Svjetska ljestvica",
   addFriendBtn: "Dodaj prijatelja",
   friendRequestSent: "Zahtjev poslan",
+  friendsAlready: "Prijatelji ste",
   friendRequestsTitle: "Zahtjevi za prijateljstvo",
   friendRequestFrom: "{name} želi biti tvoj prijatelj",
   friendRequestPending: "čeka odgovor",

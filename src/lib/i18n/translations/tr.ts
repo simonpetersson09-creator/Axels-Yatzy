@@ -32,6 +32,7 @@ export const tr: Partial<typeof sv> = {
   worldRanking: "Dünya sıralaması",
   addFriendBtn: "Arkadaş ekle",
   friendRequestSent: "İstek gönderildi",
+  friendsAlready: "Arkadaşsınız",
   friendRequestsTitle: "Arkadaşlık istekleri",
   friendRequestFrom: "{name} arkadaşın olmak istiyor",
   friendRequestPending: "yanıt bekleniyor",

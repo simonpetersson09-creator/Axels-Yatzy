@@ -32,6 +32,7 @@ export const pt: Partial<typeof sv> = {
   worldRanking: "Ranking mundial",
   addFriendBtn: "Adicionar amigo",
   friendRequestSent: "Pedido enviado",
+  friendsAlready: "São amigos",
   friendRequestsTitle: "Pedidos de amizade",
   friendRequestFrom: "{name} quer ser teu amigo",
   friendRequestPending: "a aguardar resposta",

@@ -32,6 +32,7 @@ export const te: Partial<typeof sv> = {
   worldRanking: "ప్రపంచ ర్యాంకింగ్",
   addFriendBtn: "స్నేహితుడిని జోడించు",
   friendRequestSent: "అభ్యర్థన పంపబడింది",
+  friendsAlready: "మీరు స్నేహితులు",
   friendRequestsTitle: "స్నేహ అభ్యర్థనలు",
   friendRequestFrom: "{name} మీ స్నేహితుడు కావాలనుకుంటున్నారు",
   friendRequestPending: "సమాధానం కోసం వేచి ఉంది",

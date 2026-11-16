@@ -32,6 +32,7 @@ export const vi: Partial<typeof sv> = {
   worldRanking: "Bảng xếp hạng thế giới",
   addFriendBtn: "Thêm bạn",
   friendRequestSent: "Đã gửi lời mời",
+  friendsAlready: "Hai bạn là bạn bè",
   friendRequestsTitle: "Lời mời kết bạn",
   friendRequestFrom: "{name} muốn kết bạn với bạn",
   friendRequestPending: "đang chờ trả lời",

@@ -32,6 +32,7 @@ export const hu: Partial<typeof sv> = {
   worldRanking: "Világranglista",
   addFriendBtn: "Barát hozzáadása",
   friendRequestSent: "Jelölés elküldve",
+  friendsAlready: "Barátok vagytok",
   friendRequestsTitle: "Barátjelölések",
   friendRequestFrom: "{name} a barátod szeretne lenni",
   friendRequestPending: "válaszra vár",

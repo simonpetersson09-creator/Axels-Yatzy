@@ -32,6 +32,7 @@ export const gu: Partial<typeof sv> = {
   worldRanking: "વિશ્વ રેન્કિંગ",
   addFriendBtn: "મિત્ર ઉમેરો",
   friendRequestSent: "વિનંતી મોકલી",
+  friendsAlready: "તમે મિત્રો છો",
   friendRequestsTitle: "મિત્ર વિનંતીઓ",
   friendRequestFrom: "{name} તમારો મિત્ર બનવા માંગે છે",
   friendRequestPending: "જવાબની રાહ",

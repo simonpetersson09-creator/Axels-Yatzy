@@ -47,4 +47,3 @@
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
 - iOS lifecycle patch follows diagnostics: UMP/ATT locks survive caller timeouts; ATT waits for active main-thread presenter/notDetermined. Android Rewarded uses Kotlin getters.
 
-- Local matches always include a computer opponent (resolveLocalLineup repairs lost/solo lineups); solo results stay local and never reach server top lists, ranking or wins.

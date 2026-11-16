@@ -508,6 +508,10 @@ export default function GamePage() {
                 selectionDisabled={isCurrentAi}
               />
               <CombinationCelebration type={activeCelebration} />
+              <TurnTransition
+                trigger={showTurnTransition}
+                onDismiss={() => setShowTurnTransition(false)}
+              />
             </div>
           </div>
 

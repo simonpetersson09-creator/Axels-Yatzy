@@ -1,6 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
 import { sendPush, disableTokenIfStale } from '../_shared/apns.ts';
-import { recipients, type Target, type Preference } from '../broadcast-play-november/campaign.ts';
+import { recipients, type Target, type Preference } from './audience.ts';
 import { CAMPAIGN, CLOSE_AT, TEXT, campaignOpen } from './campaign.ts';
 
 Deno.serve(async req => {

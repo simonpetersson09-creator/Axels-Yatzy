@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { campaignOpen } from './campaign';
-import { recipients } from '../broadcast-play-november/campaign';
+import { recipients } from './audience';
 describe('approved review broadcast', () => {
   it('closes after the approved sending evening', () => {
     expect(campaignOpen(Date.parse('2026-11-16T20:15:00Z'))).toBe(true);

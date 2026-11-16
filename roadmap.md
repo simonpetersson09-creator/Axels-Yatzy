@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Fast bannerplats i datormatch – 16 november
+- [x] Lokal spelplan använder alltid bannerutrymmet även innan laddning och utan annons; sena annonsanrop ändrar inte protokoll/tärningsstorlek.
+- [ ] Kontrollera bannerprov och oförändrad spelplansstorlek före/efter annons på telefon- och surfplattemått.
+
 ## Fyra kvarvarande kastfel – 15 november 21:28 UTC
 - [x] Bevara mottagna köade kast vid återanslutning till samma match.
 - [x] Stoppa äldre läsningar efter timeout från att återställa kastnummer/lås; serveråterhämtning efter misslyckat eget kast bevarad.

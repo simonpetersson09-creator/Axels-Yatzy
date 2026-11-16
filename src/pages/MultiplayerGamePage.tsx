@@ -918,15 +918,18 @@ export default function MultiplayerGamePage() {
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
               <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
-                {gameState.rollsLeft > 0 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
+                {gameState.rollsLeft > 0 && isMyTurn && (
                   <TurnIndicator
                     currentPlayerName={gameState.players[gameState.currentPlayerIndex]?.name ?? ''}
                     isMyTurn={true}
                     rollsLeft={gameState.rollsLeft}
-                    isRolling={false}
+                    // Own animation controls visibility; the server rolling flag
+                    // can briefly lag and must not remount/reanimate this bubble.
+                    isRolling={localRolling}
                     isAi={false}
                     playerIndex={gameState.currentPlayerIndex}
                     placement="left"
+                    steady
                   />
                 )}
                 <button

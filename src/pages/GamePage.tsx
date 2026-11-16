@@ -594,7 +594,7 @@ export default function GamePage() {
               style={{ isolation: 'isolate', marginTop: 'var(--action-top-gap, 60px)' }}
             >
               <div className="relative">
-                {gameState.rollsLeft > 0 && gameState.rollsLeft < 3 && !isCurrentAi && !gameState.isRolling && (
+                {gameState.rollsLeft > 0 && !isCurrentAi && !gameState.isRolling && (
                   <TurnIndicator
                     currentPlayerName={gameState.players[gameState.currentPlayerIndex].name}
                     isMyTurn={true}

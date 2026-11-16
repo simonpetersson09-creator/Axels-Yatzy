@@ -69,6 +69,12 @@ export default function GamePage() {
   });
   const [playerNames, setPlayerNames] = useState<string[]>(initialLineup.playerNames);
   const [aiPlayers, setAiPlayers] = useState<number[]>(initialLineup.aiPlayers);
+  // Persist a repaired lineup at once so resume/catch-up reads the computer seat.
+  useEffect(() => {
+    writeRecoverable(namesKey, JSON.stringify(initialLineup.playerNames), true);
+    writeRecoverable(aiPlayersKey, JSON.stringify(initialLineup.aiPlayers), true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (incomingPlayerNames) {

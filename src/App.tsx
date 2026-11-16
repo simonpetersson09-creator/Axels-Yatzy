@@ -7,7 +7,6 @@ import { AndroidBackButton } from '@/components/AndroidBackButton';
 import { SwipeBack } from '@/components/SwipeBack';
 import { Capacitor } from "@capacitor/core";
 import HomePage from "./pages/HomePage";
-import GameSetupPage from "./pages/GameSetupPage";
 import GamePage from "./pages/GamePage";
 import ResultsPage from "./pages/ResultsPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -90,7 +89,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/index" element={<Navigate to="/" replace />} />
-          <Route path="/setup" element={<GameSetupPage />} />
+          <Route path="/setup" element={<Navigate to="/" replace />} />
           <Route path="/waiting-room" element={<WaitingRoomPage />} />
           <Route path="/join" element={<JoinPage />} />
           <Route path="/game" element={<AppOpenGameGate><GamePage /></AppOpenGameGate>} />

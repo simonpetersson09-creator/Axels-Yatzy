@@ -1356,8 +1356,12 @@ function resetBannerFit() {
  * kan hamna under annonsen oavsett telefon.
  */
 async function fitGameAboveBanner(isStale: () => boolean) {
+  // Local-game geometry is reserved by CSS from the first render, even
+  // without consent/no-fill. SDK readiness must never resize the board.
+  if (document.querySelector('.local-game')) return;
   await waitForStableGame(isStale);
   if (isStale()) return;
+  if (document.querySelector('.local-game')) return;
   resetBannerFit();
   await raf2();
   const root = document.documentElement;

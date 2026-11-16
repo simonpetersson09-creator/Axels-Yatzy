@@ -32,6 +32,7 @@ export const fi: Partial<typeof sv> = {
   worldRanking: "Maailmanranking",
   addFriendBtn: "Lisää kaveri",
   friendRequestSent: "Kaveripyyntö lähetetty",
+  friendsAlready: "Olette ystäviä",
   friendRequestsTitle: "Kaveripyynnöt",
   friendRequestFrom: "{name} haluaa olla kaverisi",
   friendRequestPending: "odottaa vastausta",

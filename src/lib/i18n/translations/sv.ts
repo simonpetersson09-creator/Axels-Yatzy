@@ -41,6 +41,7 @@ export const sv = {
   worldRanking: "Världsranking",
   addFriendBtn: "Lägg till vän",
   friendRequestSent: "Vänförfrågan skickad",
+  friendsAlready: "Ni är vänner",
   friendRequestsTitle: "Vänförfrågningar",
   friendRequestFrom: "{name} vill bli din vän",
   friendRequestPending: "väntar på svar",

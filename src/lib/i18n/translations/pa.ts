@@ -32,6 +32,7 @@ export const pa: Partial<typeof sv> = {
   worldRanking: "ਵਿਸ਼ਵ ਰੈਂਕਿੰਗ",
   addFriendBtn: "ਦੋਸਤ ਜੋੜੋ",
   friendRequestSent: "ਬੇਨਤੀ ਭੇਜੀ ਗਈ",
+  friendsAlready: "ਤੁਸੀਂ ਦੋਸਤ ਹੋ",
   friendRequestsTitle: "ਦੋਸਤੀ ਬੇਨਤੀਆਂ",
   friendRequestFrom: "{name} ਤੁਹਾਡਾ ਦੋਸਤ ਬਣਨਾ ਚਾਹੁੰਦਾ ਹੈ",
   friendRequestPending: "ਜਵਾਬ ਦੀ ਉਡੀਕ",

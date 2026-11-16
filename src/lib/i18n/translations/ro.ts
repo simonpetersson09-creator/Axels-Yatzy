@@ -32,6 +32,7 @@ export const ro: Partial<typeof sv> = {
   worldRanking: "Clasament mondial",
   addFriendBtn: "Adaugă prieten",
   friendRequestSent: "Cerere trimisă",
+  friendsAlready: "Sunteți prieteni",
   friendRequestsTitle: "Cereri de prietenie",
   friendRequestFrom: "{name} vrea să fie prietenul tău",
   friendRequestPending: "așteaptă răspuns",

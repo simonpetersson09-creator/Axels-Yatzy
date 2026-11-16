@@ -32,6 +32,7 @@ export const mr: Partial<typeof sv> = {
   worldRanking: "जागतिक क्रमवारी",
   addFriendBtn: "मित्र जोडा",
   friendRequestSent: "विनंती पाठवली",
+  friendsAlready: "तुम्ही मित्र आहात",
   friendRequestsTitle: "मैत्री विनंत्या",
   friendRequestFrom: "{name} तुमचा मित्र होऊ इच्छितो",
   friendRequestPending: "उत्तराची वाट",

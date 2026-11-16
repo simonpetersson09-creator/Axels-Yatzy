@@ -3,7 +3,7 @@ import { designFromLook, designSwatchBg } from '@/lib/dice-designs';
 import { Check, X, UserPlus } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
-import { friendRequestExists, sendFriendRequest } from '@/lib/friend-requests';
+import { friendRequestState, sendFriendRequest } from '@/lib/friend-requests';
 import { motion } from 'framer-motion';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
 import { nextTier, TIER_GOALS, SKIN_RANK, type DiceSkin } from '@/lib/dice-skin';
@@ -61,14 +61,14 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
   const { t } = useTranslation();
   const tierLine = useTierLine();
   useBackHandler(open && !!profile, onClose);
-  const [friendState, setFriendState] = useState<'unknown' | 'can' | 'sending' | 'sent'>('unknown');
+  const [friendState, setFriendState] = useState<'unknown' | 'can' | 'sending' | 'sent' | 'friends'>('unknown');
   const targetKey = friendTarget ? `${friendTarget.gameId}:${friendTarget.index}` : '';
   useEffect(() => {
     if (!open || !friendTarget) return;
     let alive = true;
     setFriendState('unknown');
-    friendRequestExists(friendTarget.gameId, friendTarget.index)
-      .then((e) => { if (alive) setFriendState(e ? 'sent' : 'can'); }, () => { if (alive) setFriendState('can'); });
+    friendRequestState(friendTarget.gameId, friendTarget.index)
+      .then((st) => { if (alive) setFriendState(st === 'none' ? 'can' : st); }, () => { if (alive) setFriendState('can'); });
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, targetKey]);
@@ -157,8 +157,8 @@ export function DiceInfoSheet({ open, onClose, name, profile, inviteDaysLeft, sh
             className={cn('mt-3 w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold active:scale-[0.98] transition',
               friendState === 'can' ? 'bg-primary text-primary-foreground' : 'bg-muted/40 text-muted-foreground')}
           >
-            {friendState === 'sent' ? <Check className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
-            {friendState === 'sent' ? t('friendRequestSent') : t('addFriendBtn')}
+            {friendState === 'sent' || friendState === 'friends' ? <Check className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+            {friendState === 'friends' ? t('friendsAlready') : friendState === 'sent' ? t('friendRequestSent') : t('addFriendBtn')}
           </button>
         )}
 

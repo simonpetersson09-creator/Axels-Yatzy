@@ -32,6 +32,7 @@ export const ta: Partial<typeof sv> = {
   worldRanking: "உலக தரவரிசை",
   addFriendBtn: "நண்பரைச் சேர்",
   friendRequestSent: "கோரிக்கை அனுப்பப்பட்டது",
+  friendsAlready: "நீங்கள் நண்பர்கள்",
   friendRequestsTitle: "நட்பு கோரிக்கைகள்",
   friendRequestFrom: "{name} உங்கள் நண்பராக விரும்புகிறார்",
   friendRequestPending: "பதிலுக்காக காத்திருக்கிறது",

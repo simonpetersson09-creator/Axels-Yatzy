@@ -32,6 +32,7 @@ export const kn: Partial<typeof sv> = {
   worldRanking: "ವಿಶ್ವ ಶ್ರೇಯಾಂಕ",
   addFriendBtn: "ಸ್ನೇಹಿತರನ್ನು ಸೇರಿಸಿ",
   friendRequestSent: "ವಿನಂತಿ ಕಳುಹಿಸಲಾಗಿದೆ",
+  friendsAlready: "ನೀವು ಸ್ನೇಹಿತರು",
   friendRequestsTitle: "ಸ್ನೇಹ ವಿನಂತಿಗಳು",
   friendRequestFrom: "{name} ನಿಮ್ಮ ಸ್ನೇಹಿತರಾಗಲು ಬಯಸುತ್ತಾರೆ",
   friendRequestPending: "ಉತ್ತರಕ್ಕಾಗಿ ಕಾಯುತ್ತಿದೆ",

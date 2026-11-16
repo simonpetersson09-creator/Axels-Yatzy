@@ -32,6 +32,7 @@ export const ko: Partial<typeof sv> = {
   worldRanking: "세계 랭킹",
   addFriendBtn: "친구 추가",
   friendRequestSent: "친구 요청을 보냈어요",
+  friendsAlready: "친구입니다",
   friendRequestsTitle: "친구 요청",
   friendRequestFrom: "{name}님이 친구가 되고 싶어 해요",
   friendRequestPending: "응답 대기 중",

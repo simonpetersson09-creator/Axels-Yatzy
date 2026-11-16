@@ -31,6 +31,7 @@ export const ru: Partial<typeof sv> = {
   worldRanking: "Мировой рейтинг",
   addFriendBtn: "Добавить в друзья",
   friendRequestSent: "Заявка отправлена",
+  friendsAlready: "Вы друзья",
   friendRequestsTitle: "Заявки в друзья",
   friendRequestFrom: "{name} хочет добавить вас в друзья",
   friendRequestPending: "ждёт ответа",

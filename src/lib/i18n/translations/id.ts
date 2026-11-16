@@ -32,6 +32,7 @@ export const id: Partial<typeof sv> = {
   worldRanking: "Peringkat dunia",
   addFriendBtn: "Tambah teman",
   friendRequestSent: "Permintaan terkirim",
+  friendsAlready: "Kalian berteman",
   friendRequestsTitle: "Permintaan pertemanan",
   friendRequestFrom: "{name} ingin berteman denganmu",
   friendRequestPending: "menunggu balasan",

@@ -32,6 +32,7 @@ export const no: Partial<typeof sv> = {
   worldRanking: "Verdensranking",
   addFriendBtn: "Legg til venn",
   friendRequestSent: "Venneforespørsel sendt",
+  friendsAlready: "Dere er venner",
   friendRequestsTitle: "Venneforespørsler",
   friendRequestFrom: "{name} vil bli vennen din",
   friendRequestPending: "venter på svar",

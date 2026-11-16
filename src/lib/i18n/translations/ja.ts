@@ -32,6 +32,7 @@ export const ja: Partial<typeof sv> = {
   worldRanking: "世界ランキング",
   addFriendBtn: "友達に追加",
   friendRequestSent: "リクエストを送信しました",
+  friendsAlready: "友達です",
   friendRequestsTitle: "友達リクエスト",
   friendRequestFrom: "{name}さんが友達になりたがっています",
   friendRequestPending: "返信待ち",

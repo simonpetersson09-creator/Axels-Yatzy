@@ -32,6 +32,7 @@ export const th: Partial<typeof sv> = {
   worldRanking: "อันดับโลก",
   addFriendBtn: "เพิ่มเพื่อน",
   friendRequestSent: "ส่งคำขอแล้ว",
+  friendsAlready: "เป็นเพื่อนกันแล้ว",
   friendRequestsTitle: "คำขอเป็นเพื่อน",
   friendRequestFrom: "{name} อยากเป็นเพื่อนกับคุณ",
   friendRequestPending: "รอการตอบกลับ",

@@ -32,6 +32,7 @@ export const ml: Partial<typeof sv> = {
   worldRanking: "ലോക റാങ്കിംഗ്",
   addFriendBtn: "സുഹൃത്തിനെ ചേർക്കുക",
   friendRequestSent: "അഭ്യർത്ഥന അയച്ചു",
+  friendsAlready: "നിങ്ങൾ സുഹൃത്തുക്കളാണ്",
   friendRequestsTitle: "സൗഹൃദ അഭ്യർത്ഥനകൾ",
   friendRequestFrom: "{name} നിങ്ങളുടെ സുഹൃത്താകാൻ ആഗ്രഹിക്കുന്നു",
   friendRequestPending: "മറുപടിക്കായി കാത്തിരിക്കുന്നു",

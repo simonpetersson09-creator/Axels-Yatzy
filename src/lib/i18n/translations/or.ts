@@ -32,6 +32,7 @@ export const or: Partial<typeof sv> = {
   worldRanking: "ବିଶ୍ୱ ର‍୍ୟାଙ୍କିଙ୍ଗ",
   addFriendBtn: "ବନ୍ଧୁ ଯୋଡନ୍ତୁ",
   friendRequestSent: "ଅନୁରୋଧ ପଠାଗଲା",
+  friendsAlready: "ଆପଣ ବନ୍ଧୁ",
   friendRequestsTitle: "ବନ୍ଧୁ ଅନୁରୋଧ",
   friendRequestFrom: "{name} ଆପଣଙ୍କ ବନ୍ଧୁ ହେବାକୁ ଚାହାଁନ୍ତି",
   friendRequestPending: "ଉତ୍ତର ଅପେକ୍ଷାରେ",

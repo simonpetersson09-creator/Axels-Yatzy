@@ -21,6 +21,13 @@ export async function friendRequestExists(gameId: string, toIndex: number): Prom
   return !!data;
 }
 
+/** 'friends' when accepted, 'sent' for any other request, 'none' otherwise. */
+export async function friendRequestState(gameId: string, toIndex: number): Promise<'none' | 'sent' | 'friends'> {
+  const { data, error } = await supabase.rpc('friend_request_state', { p_session_id: getSessionId(), p_game_id: gameId, p_to_index: toIndex });
+  if (error) return (await friendRequestExists(gameId, toIndex)) ? 'sent' : 'none';
+  return data === 'friends' ? 'friends' : data === 'sent' ? 'sent' : 'none';
+}
+
 /** Returns 'sent', 'already' or 'error'. */
 export async function sendFriendRequest(gameId: string, toIndex: number): Promise<'sent' | 'already' | 'error'> {
   try {

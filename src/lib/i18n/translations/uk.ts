@@ -32,6 +32,7 @@ export const uk: Partial<typeof sv> = {
   worldRanking: "Світовий рейтинг",
   addFriendBtn: "Додати в друзі",
   friendRequestSent: "Запит надіслано",
+  friendsAlready: "Ви друзі",
   friendRequestsTitle: "Запити в друзі",
   friendRequestFrom: "{name} хоче додати вас у друзі",
   friendRequestPending: "чекає відповіді",

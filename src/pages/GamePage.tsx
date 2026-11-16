@@ -476,8 +476,8 @@ export default function GamePage() {
       />
       <motion.div
         className="ios-game-card relative flex flex-col gap-2"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
         <div className="game-play-row flex w-full max-w-full gap-1 items-start mt-[var(--game-top-gap,50px)] mb-0">

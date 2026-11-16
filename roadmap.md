@@ -2,7 +2,7 @@
 
 ## Fast bannerplats i datormatch – 16 november
 - [x] Lokal spelplan använder alltid bannerutrymmet även innan laddning och utan annons; sena annonsanrop ändrar inte protokoll/tärningsstorlek.
-- [ ] Kontrollera bannerprov och oförändrad spelplansstorlek före/efter annons på telefon- och surfplattemått.
+- [x] 85 annons-/layoutprov godkända; identiska spelplansmått när bannerklassen slås av/på på sex skärmstorlekar, utan sidfel. Native-annons på fysisk telefon kräver nästa appversion. Root AGENTS.md vid skyddad storleksgräns.
 
 ## Fyra kvarvarande kastfel – 15 november 21:28 UTC
 - [x] Bevara mottagna köade kast vid återanslutning till samma match.

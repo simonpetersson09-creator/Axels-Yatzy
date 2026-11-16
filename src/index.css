@@ -908,24 +908,10 @@ html:is(.ad-banner-on, :has(.local-game)):has(.mp-game) { --dice-scale: 0.8; }
 @media (min-height: 900px) { html:is(.ad-banner-on, :has(.local-game)):has(.mp-game) { --dice-scale: 1; } }
 /* Same sitting point on every chair: figure centre at 30% of the table image from its centre. */
 /* Online uses the full screen, with compact metrics only where the screen requires it. */
-/* Local play reserves a fixed banner budget, including native safe areas.
-   These dimensions never depend on SDK readiness or consent. */
+/* Local play keeps the banner layout even without consent or a loaded ad. */
 @media (max-width: 699px), (max-height: 599px) {
-  html:has(.local-game) {
-    --local-banner-row-h: 29px;
-    --sb-row-h: min(var(--local-banner-row-h), calc((var(--app-dvh, 100dvh) - var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 164px) / 20));
-  }
   .local-game { overflow-y: auto; touch-action: pan-y; }
   .local-game .ios-side-zone { min-height: 0; }
-}
-@media (max-width: 699px) and (max-height: 720px) {
-  html:has(.local-game) { --local-banner-row-h: 24px; }
-}
-@media (max-width: 699px) and (min-height: 800px) and (max-height: 899px) {
-  html:has(.local-game) { --local-banner-row-h: 32px; }
-}
-@media (max-width: 699px) and (min-height: 900px) {
-  html:has(.local-game) { --local-banner-row-h: 34px; }
 }
 @media (max-width: 379px) {
   .local-game { --sb-col-w: 36px; --sb-label-w: 82px; }

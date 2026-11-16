@@ -1364,14 +1364,17 @@ async function fitGameAboveBanner(isStale: () => boolean) {
   if (isStale() || bannerFitDone) return;
   bannerFitDone = true;
   resetBannerFit();
-  await raf2();
+  fitGameNow();
+}
+
+/** Samma anpassning utan väntan: mäter synkront före första bildrutan. */
+function fitGameNow(): void {
   const root = document.documentElement;
   const css = getComputedStyle(root);
   let row = parseFloat(css.getPropertyValue('--sb-row-h')) || 34;
   let dice = parseFloat(css.getPropertyValue('--dice-scale')) || 1;
   let gapS = parseFloat(css.getPropertyValue('--dice-gap-scale')) || dice;
   for (let i = 0; i < 14; i++) {
-    if (isStale()) return;
     const e = gameEdges();
     if (!e) return;
     const bottom = Math.max(e.board, e.buttons);
@@ -1399,8 +1402,7 @@ async function fitGameAboveBanner(isStale: () => boolean) {
     root.style.setProperty('--sb-row-h', `${row}px`);
     root.style.setProperty('--dice-scale', String(dice));
     root.style.setProperty('--dice-gap-scale', String(gapS));
-    await raf2();
-    await raf2();
+    void root.offsetHeight; // synkron omräkning av layouten
   }
 }
 
@@ -1487,7 +1489,15 @@ export async function showGameBanner(placement: BannerPlacement = 'game'): Promi
   if (placement === 'game') setBannerSpace(true);
   // Krymp spelplanen ovanför bannerplatsen direkt, oberoende av annonsladdning.
   const gen = ++bannerGen;
-  if (placement === 'game') void fitGameAboveBanner(() => !bannerWanted || gen !== bannerGen);
+  if (placement === 'game') {
+    if (!bannerFitDone && document.querySelector('.local-game .ios-score-zone')) {
+      // Mot datorn: anpassa direkt före första bildrutan, så planen redan står
+      // på sin annonsplats när den syns och aldrig flyttar sig.
+      bannerFitDone = true;
+      resetBannerFit();
+      fitGameNow();
+    } else void fitGameAboveBanner(() => !bannerWanted || gen !== bannerGen);
+  }
   if (privacyChanging || privacyBlocked) return;
   // Varje sidbyte får ett eget nummer; ett äldre anrop som fortfarande väntar
   // avbryts, så att två sidor aldrig visar varsin banner.

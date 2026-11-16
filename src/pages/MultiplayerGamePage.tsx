@@ -950,7 +950,7 @@ export default function MultiplayerGamePage() {
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
                 >
                   <span className="pointer-events-none text-center leading-tight px-1">
-                  {gameState.rollsLeft > 0 && gameState.rollsLeft < 3 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
+                  {gameState.rollsLeft > 0 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
                     <span className="block text-[9px] font-medium leading-tight mb-1">{t('yourTurnLabel')}</span>
                   )}
                   {!isMyTurn ? (

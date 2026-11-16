@@ -1,0 +1,1 @@
+- Statistics use a session- and Stockholm-day-scoped memory snapshot for immediate revisits; refresh weekly rows and 24-hour values together without page entry movement, so figures stay server-owned and avoid sequential layout jumps.

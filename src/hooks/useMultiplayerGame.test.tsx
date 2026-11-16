@@ -193,6 +193,18 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.gameState?.rollsLeft).toBe(2);
     expect(result.current.error).toBeNull();
   });
+  it('an original roll overtaken by its resend lands on the resent result instead of rolling twice', async () => {
+    const { result } = await joined();
+    m.roll.mockResolvedValueOnce({ data: { success: false, stale_command: true, stale_roll: true, dice: [2, 3, 4, 5, 6], rolls_left: 2, round: 1, current_player_index: 0 }, error: new Error('roll already applied') });
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(10); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(4500); });
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    expect(m.roll.mock.calls[0][2]).toMatchObject({ p_expected_rolls_left: 3 });
+    expect(result.current.gameState?.dice).toEqual([2, 3, 4, 5, 6]);
+    expect(result.current.gameState?.rollsLeft).toBe(2);
+    expect(result.current.error).toBeNull();
+  });
+
   it('a resent roll names its roll count and lands on the original when the server already rolled', async () => {
     const { result } = await joined();
     m.roll.mockRejectedValueOnce(new Error('Load failed'))
@@ -200,7 +212,7 @@ describe('authoritative multiplayer recovery', () => {
     await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(10); });
     await act(async () => { await vi.advanceTimersByTimeAsync(4500); });
     expect(m.roll).toHaveBeenCalledTimes(2);
-    expect(m.roll.mock.calls[0][2]).not.toHaveProperty('p_expected_rolls_left');
+    expect(m.roll.mock.calls[0][2]).toMatchObject({ p_expected_rolls_left: 3 });
     expect(m.roll.mock.calls[1][2]).toMatchObject({ p_expected_rolls_left: 3 });
     expect(result.current.gameState?.dice).toEqual([4, 4, 4, 4, 4]);
     expect(result.current.gameState?.rollsLeft).toBe(2);

@@ -1302,18 +1302,19 @@ export function useMultiplayerGame() {
         const invokeRoll = (resend = false) => {
           withTimeout(directRpc('client_roll', 'roll-dice', {
             p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
-            // A resend names the roll count it was made for: if the original
-            // already reached the server, it is rejected instead of rolling twice.
-            ...(resend ? { p_expected_rolls_left: expect.rollsLeft + 1 } : {}),
+            // Every send (original and resend) names the roll count it was made
+            // for, so whichever reaches the server second is rejected under the
+            // row lock — even when the resend overtakes the original.
+            p_expected_rolls_left: expect.rollsLeft + 1,
           }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId, timeoutAfterMs: NETWORK_TIMEOUT_MS })).then(
             (res) => finish(() => {
               const r = res as RollRes;
               const d = r.data;
-              if (resend && d?.stale_roll && d.round === expect.round
+              if (d?.stale_roll && d.round === expect.round
                 && d.current_player_index === expect.player && d.rolls_left === expect.rollsLeft
                 && Array.isArray(d.dice)) {
                 // The original roll landed: show it, never spend another.
-                reportMpIssue('roll_resend_deduped', gid, { attempt_id: rollAttemptId });
+                reportMpIssue('roll_resend_deduped', gid, { attempt_id: rollAttemptId, resend });
                 resolve({ data: { success: true, dice: d.dice, rolls_left: d.rolls_left }, error: null });
                 return;
               }

@@ -20,7 +20,8 @@ import { forfeitAdAllowed, getLastForfeitAdAt } from '@/lib/forfeit-ad';
 import { getLastInterstitialShownAt } from '@/lib/admob';
 import { getLocalMatchKey, startNextLocalMatch } from '@/lib/local-match-key';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
-import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
+import { aiDecideLocks, aiPickCategory, getRandomAiNames } from '@/lib/yatzy-ai';
+import { resolveLocalLineup, isRankedLocalMatch } from '@/lib/local-lineup';
 import { getProfileAvatar, subscribeProfileChanges } from '@/lib/profile';
 import { GameOverOverlay } from '@/components/game/GameOverOverlay';
 import { CombinationCelebration } from '@/components/game/CombinationCelebration';
@@ -55,22 +56,19 @@ export default function GamePage() {
   const namesKey = `yatzy-player-names:${localGameId}`;
   const aiPlayersKey = `yatzy-ai-players:${localGameId}`;
   
-  // Persist playerNames and aiPlayers to localStorage so they survive app suspension/refresh
-  const [playerNames, setPlayerNames] = useState<string[]>(() => {
-    if (incomingPlayerNames) return incomingPlayerNames;
-    try {
-      const saved = readRecoverable(namesKey);
-      return saved ? JSON.parse(saved) : [getPlayerName() || t('playerN', { n: 1 })];
-    } catch { return [getPlayerName() || t('playerN', { n: 1 })]; }
+  // Persist playerNames and aiPlayers to localStorage so they survive app suspension/refresh.
+  // A lost or solo lineup is repaired to a computer opponent (never solo play).
+  const [initialLineup] = useState(() => {
+    const parse = (key: string) => { try { const v = readRecoverable(key); return v ? JSON.parse(v) : null; } catch { return null; } };
+    return resolveLocalLineup(
+      incomingPlayerNames ?? parse(namesKey),
+      incomingAiPlayers ?? parse(aiPlayersKey),
+      getPlayerName() || t('playerN', { n: 1 }),
+      () => getRandomAiNames(1)[0],
+    );
   });
-
-  const [aiPlayers, setAiPlayers] = useState<number[]>(() => {
-    if (incomingAiPlayers) return incomingAiPlayers;
-    try {
-      const saved = readRecoverable(aiPlayersKey);
-      return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
-  });
+  const [playerNames, setPlayerNames] = useState<string[]>(initialLineup.playerNames);
+  const [aiPlayers, setAiPlayers] = useState<number[]>(initialLineup.aiPlayers);
 
   useEffect(() => {
     if (incomingPlayerNames) {
@@ -146,9 +144,10 @@ export default function GamePage() {
       const maxScore = Math.max(...allScores);
       const winnersCount = allScores.filter(s => s === maxScore).length;
       // Only count as win if human is sole max-scorer (ties = no win)
-      const won = humanScore === maxScore && winnersCount === 1 && !aiPlayers.includes(0);
+      const ranked = isRankedLocalMatch(gameState.players.length);
+      const won = ranked && humanScore === maxScore && winnersCount === 1 && !aiPlayers.includes(0);
       const yatzys = (gameState.players[0].scores as Record<string, number | null | undefined>)?.yatzy === 50 ? 1 : 0;
-      const isNewResult = recordGameResult(humanScore, won, yatzys, localMatchKeyRef.current);
+      const isNewResult = recordGameResult(humanScore, won, yatzys, localMatchKeyRef.current, true, ranked);
       if (isNewResult && yatzys > 0) void reportLocalYatzyMatch(localMatchKeyRef.current);
       if (isNewResult) trackFinishedEvent(localMatchKeyRef.current, { won, score: humanScore, aiCount: aiPlayers.length }, { gameMode: 'single_player' });
       if (isGameResultRecorded(localMatchKeyRef.current)) {

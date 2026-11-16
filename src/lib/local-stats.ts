@@ -128,6 +128,8 @@ export function recordGameResult(
   matchKey?: string,
   /** false for forfeited/unfinished matches — they never reach the weekly top lists. */
   completed = true,
+  /** false for solo matches: counted locally, never sent to top lists/ranking. */
+  ranked = true,
 ): boolean {
   // Forward-only: never rewrite old totals or let an unfinished match affect
   // any statistic, the dedupe ledger, or a server leaderboard.
@@ -160,8 +162,8 @@ export function recordGameResult(
     ? [...stored.recordedKeys, matchKey]
     : stored.recordedKeys;
 
-  const completedGames = stored.completedGames + 1;
-  const pendingReports = [...(stored.pendingReports ?? []), { key: matchKey ?? `local:${crypto.randomUUID()}`, score: playerScore, games: completedGames, yatzy: yatzysThisGame > 0 && !matchKey?.startsWith('mp:'), completedAt: new Date().toISOString() }];
+  const completedGames = ranked ? stored.completedGames + 1 : stored.completedGames;
+  const pendingReports = !ranked ? (stored.pendingReports ?? []) : [...(stored.pendingReports ?? []), { key: matchKey ?? `local:${crypto.randomUUID()}`, score: playerScore, games: completedGames, yatzy: yatzysThisGame > 0 && !matchKey?.startsWith('mp:'), completedAt: new Date().toISOString() }];
   const toStore: StoredStats = { ...stats, version: CURRENT_VERSION, recordedKeys, completedGames, pendingReports };
   // Stats and their match key commit in one write. Do not report/reward a
   // result that failed to persist; a later attempt may retry it safely.

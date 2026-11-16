@@ -917,7 +917,9 @@ export default function MultiplayerGamePage() {
               style={{ isolation: 'isolate', marginTop: 'var(--mp-action-top-gap, 8px)' }}
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
-              <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
+              {/* The bubble sits outside the pulsing glow wrapper so the glow's
+                  repaint can never move or shimmer it; the button is unchanged. */}
+              <div className="relative">
                 {gameState.rollsLeft > 0 && isMyTurn && (
                   <TurnIndicator
                     currentPlayerName={gameState.players[gameState.currentPlayerIndex]?.name ?? ''}
@@ -932,6 +934,7 @@ export default function MultiplayerGamePage() {
                     steady
                   />
                 )}
+              <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
                 <button
                   type="button"
                   onPointerDown={(e) => {
@@ -984,6 +987,7 @@ export default function MultiplayerGamePage() {
                         : t('rollLast')}
                   </span>
                 </button>
+              </div>
               </div>
 
               <div className="flex items-center justify-center gap-2 w-full mt-0" style={{ position: 'relative', zIndex: 2 }}>

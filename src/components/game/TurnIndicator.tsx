@@ -40,8 +40,12 @@ export function TurnIndicator({
 
   const isLeft = placement === 'left';
 
+  // Steady (online) bubbles avoid half-pixel transforms: iOS re-snaps such
+  // layers while the neighbouring Kasta glow repaints, which looks like a shake.
   const wrapperStyle: React.CSSProperties = isLeft
-    ? { right: 'calc(100% + 10px)', top: '50%', transform: 'translateY(-50%)' }
+    ? steady
+      ? { right: 'calc(100% + 10px)', top: 0, bottom: 0, display: 'flex', alignItems: 'center' }
+      : { right: 'calc(100% + 10px)', top: '50%', transform: 'translateY(-50%)' }
     : { bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)' };
 
   return (
@@ -49,13 +53,15 @@ export function TurnIndicator({
     <motion.div
       className={cn('flex items-center', isLeft ? 'flex-row' : 'flex-col')}
       initial={steady ? false : { opacity: 0, y: isLeft ? 0 : 8, x: isLeft ? 8 : 0, scale: 0.95 }}
-      animate={{ opacity: steady && isRolling ? 0 : 1, y: 0, x: 0, scale: 1 }}
+      animate={steady ? { opacity: isRolling ? 0 : 1 } : { opacity: 1, y: 0, x: 0, scale: 1 }}
       transition={steady ? { duration: 0.12, ease: 'easeOut' } : { type: 'spring', stiffness: 380, damping: 26 }}
     >
       {/* Bubble */}
       <div
         className={cn(
-          'relative px-3.5 py-1.5 rounded-full shadow-lg backdrop-blur-sm',
+          'relative px-3.5 py-1.5 rounded-full shadow-lg',
+          // Blurring the pulsing Kasta glow behind it made the bubble shimmer on iOS.
+          !steady && 'backdrop-blur-sm',
           isMyTurn
             ? 'bg-gradient-to-b from-primary/95 to-game-gold-dark/95 text-primary-foreground'
             : 'bg-card/90 border border-border/50 text-foreground'

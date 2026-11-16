@@ -155,7 +155,9 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
               <motion.button
                 onClick={onBackToMenu}
                 disabled={leaving}
-                className="w-full py-3 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-sm flex items-center justify-center gap-2"
+                className={onPlayAgain
+                  ? 'w-full py-3 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-sm flex items-center justify-center gap-2'
+                  : 'w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-[15px] flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_hsl(var(--primary)/0.4)]'}
                 whileTap={{ scale: 0.97 }}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}

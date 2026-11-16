@@ -6,6 +6,7 @@ import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
+import { TurnTransition } from '@/components/game/TurnTransition';
 import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { getDiceAreaPrompt } from '@/lib/dice-area-prompt';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
@@ -222,6 +223,19 @@ export default function GamePage() {
       if (autoRollPendingRef.current === key) autoRollPendingRef.current = null;
     };
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.gameOver, gameState?.isRolling, aiPlayers, roll, aiNudge]);
+
+  // Center bubble when the turn passes to a human player (not at game start).
+  const [showTurnTransition, setShowTurnTransition] = useState(false);
+  const prevTurnKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!gameState || gameState.gameOver) return;
+    const key = `${gameState.currentPlayerIndex}-${gameState.round}`;
+    const prev = prevTurnKeyRef.current;
+    prevTurnKeyRef.current = key;
+    if (prev === null || prev === key) return;
+    if (aiPlayers.includes(gameState.currentPlayerIndex)) return;
+    setShowTurnTransition(true);
+  }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.gameOver, aiPlayers]);
 
   // AI auto-play
   useEffect(() => {
@@ -494,6 +508,10 @@ export default function GamePage() {
                 selectionDisabled={isCurrentAi}
               />
               <CombinationCelebration type={activeCelebration} />
+              <TurnTransition
+                trigger={showTurnTransition}
+                onDismiss={() => setShowTurnTransition(false)}
+              />
             </div>
           </div>
 

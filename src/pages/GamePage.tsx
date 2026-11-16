@@ -237,6 +237,7 @@ export default function GamePage() {
     const aiKey = `${gameState.currentPlayerIndex}-${gameState.round}-${gameState.rollsLeft}`;
     if (aiTurnRef.current === aiKey) return;
     aiTurnRef.current = aiKey;
+    console.log('DBG plan', aiKey, performance.now()|0);
 
     setAiThinking(true);
     const delay = 1000 + Math.random() * 400;
@@ -287,6 +288,7 @@ export default function GamePage() {
     return () => {
       clearTimeout(t);
       if (innerTimer) clearTimeout(innerTimer);
+      console.log('DBG cleanup', aiKey, acted, performance.now()|0);
       if (!acted && aiTurnRef.current === aiKey) aiTurnRef.current = null;
     };
   }, [gameState?.currentPlayerIndex, gameState?.round, gameState?.rollsLeft, gameState?.isRolling, gameState?.gameOver, aiPlayers, setLocks, aiNudge]);

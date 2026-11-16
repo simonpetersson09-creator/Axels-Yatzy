@@ -1486,12 +1486,11 @@ export async function showGameBanner(placement: BannerPlacement = 'game'): Promi
   // misslyckas eller laddas om. Utgå från att bannern alltid finns.
   if (placement === 'game') setBannerSpace(true);
   // Krymp spelplanen ovanför bannerplatsen direkt, oberoende av annonsladdning.
-  const fitGen = bannerGen + 1;
-  if (placement === 'game') void fitGameAboveBanner(() => !bannerWanted || fitGen !== bannerGen);
+  const gen = ++bannerGen;
+  if (placement === 'game') void fitGameAboveBanner(() => !bannerWanted || gen !== bannerGen);
   if (privacyChanging || privacyBlocked) return;
   // Varje sidbyte får ett eget nummer; ett äldre anrop som fortfarande väntar
   // avbryts, så att två sidor aldrig visar varsin banner.
-  const gen = ++bannerGen;
   const stale = () => !bannerWanted || gen !== bannerGen || privacyChanging || privacyBlocked;
   return queueBannerOperation(() => showBannerForScreen(stale, placement));
 }

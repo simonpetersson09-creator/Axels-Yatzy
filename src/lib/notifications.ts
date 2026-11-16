@@ -202,6 +202,9 @@ async function doInitNotifications(): Promise<void> {
       // Friend joined my waiting room: LobbyJoinNotice already shows it in the app.
       if (kind === 'lobby_join') return;
       if (kind === 'waiting_room') return;
+      // Already inside a match: the turn state is visible on screen, so the
+      // "Det är din tur" toast would only cover the dice. Suppress it.
+      if (window.location.pathname.startsWith('/multiplayer-game')) return;
 
       const showToast = kind === 'reminder' || kind === 'play_reminder' ? toast.message : toast;
       let action: { label: string; onClick: () => void } | undefined;

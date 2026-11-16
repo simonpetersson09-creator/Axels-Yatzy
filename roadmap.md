@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Fast bannerplats i datormatch – 16 november
+- [x] Lokal spelplan använder alltid bannerutrymmet även innan laddning och utan annons; sena annonsanrop ändrar inte protokoll/tärningsstorlek.
+- [x] 85 annons-/layoutprov godkända; identiska spelplansmått när bannerklassen slås av/på på sex skärmstorlekar, utan sidfel. Native-annons på fysisk telefon kräver nästa appversion. Root AGENTS.md vid skyddad storleksgräns.
+
 ## Fyra kvarvarande kastfel – 15 november 21:28 UTC
 - [x] Bevara mottagna köade kast vid återanslutning till samma match.
 - [x] Stoppa äldre läsningar efter timeout från att återställa kastnummer/lås; serveråterhämtning efter misslyckat eget kast bevarad.

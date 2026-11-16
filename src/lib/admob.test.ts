@@ -575,6 +575,26 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     await m.hideGameBanner();
   });
 
+  it('shows a local banner without waiting for an SDK-triggered game refit', async () => {
+    const game = document.createElement('div');
+    game.className = 'local-game';
+    const board = document.createElement('div');
+    board.className = 'ios-score-zone';
+    game.appendChild(board);
+    document.body.appendChild(game);
+    vi.spyOn(board, 'getBoundingClientRect').mockReturnValue({ bottom: 1000 } as DOMRect);
+    try {
+      const m = await import('./admob');
+      const pending = m.showGameBanner();
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(native.banner.show).toHaveBeenCalledOnce();
+      await pending;
+      await m.hideGameBanner();
+    } finally {
+      game.remove();
+    }
+  });
+
   it('allows exactly three retries, each 30 seconds after a confirmed failure', async () => {
     const m = await import('./admob');
     expect(m.BANNER_RETRY_DELAY_MS).toBe(30_000);

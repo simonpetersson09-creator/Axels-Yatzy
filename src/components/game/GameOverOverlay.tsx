@@ -16,7 +16,8 @@ interface GameOverOverlayProps {
   show: boolean;
   players: PlayerResult[];
   aiPlayers: number[];
-  onPlayAgain: () => void;
+  /** Omitted when replays are used up: only Home is offered. */
+  onPlayAgain?: () => void;
   onBackToMenu: () => void;
   leaving?: boolean;
 }
@@ -139,7 +140,7 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
             </div>
 
             <div className="flex flex-col gap-2.5 pt-2">
-              <motion.button
+              {onPlayAgain && <motion.button
                 onClick={onPlayAgain}
                 disabled={leaving}
                 className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-[15px] flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_hsl(var(--primary)/0.4)]"
@@ -150,7 +151,7 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
               >
                 <RotateCcw className="w-4 h-4" />
                 <span className="truncate">{t('playAgain')}</span>
-              </motion.button>
+              </motion.button>}
               <motion.button
                 onClick={onBackToMenu}
                 disabled={leaving}

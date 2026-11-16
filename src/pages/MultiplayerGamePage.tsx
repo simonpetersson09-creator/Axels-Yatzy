@@ -9,6 +9,7 @@ import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
+import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { getDiceAreaPrompt } from '@/lib/dice-area-prompt';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
@@ -924,6 +925,17 @@ export default function MultiplayerGamePage() {
             >
               {/* Glow wrapper around kasta button when turn just changed to me */}
               <div className={`relative rounded-full ${glowActive && isMyTurn ? 'animate-pulse-gold' : ''}`}>
+                {gameState.rollsLeft > 0 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
+                  <TurnIndicator
+                    currentPlayerName={gameState.players[gameState.currentPlayerIndex]?.name ?? ''}
+                    isMyTurn={true}
+                    rollsLeft={gameState.rollsLeft}
+                    isRolling={false}
+                    isAi={false}
+                    playerIndex={gameState.currentPlayerIndex}
+                    placement="left"
+                  />
+                )}
                 <button
                   type="button"
                   onPointerDown={(e) => {
@@ -950,9 +962,6 @@ export default function MultiplayerGamePage() {
                   style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', zIndex: 1 }}
                 >
                   <span className="pointer-events-none text-center leading-tight px-1">
-                  {gameState.rollsLeft > 0 && isMyTurn && !(localRolling || remoteRolling || gameState.isRolling) && (
-                    <span className="block text-[9px] font-medium leading-tight mb-1">{t('yourTurnLabel')}</span>
-                  )}
                   {!isMyTurn ? (
                     <span className="flex flex-col items-center gap-0.5 leading-none">
                       <span className="text-[10px] font-medium opacity-80">P{gameState.currentPlayerIndex + 1}</span>

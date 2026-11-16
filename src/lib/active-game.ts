@@ -174,6 +174,7 @@ export function clearLocalActiveGame(localId?: string) {
   if (localId) {
     removeRecoverable(`yatzy-player-names:${localId}`);
     removeRecoverable(`yatzy-ai-players:${localId}`);
+    removeRecoverable(`yatzy-replays:${localId}`);
   }
 }
 

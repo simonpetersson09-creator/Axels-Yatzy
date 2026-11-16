@@ -10,6 +10,7 @@ interface TurnIndicatorProps {
   isAi?: boolean;
   playerIndex?: number;
   placement?: 'top' | 'left';
+  steady?: boolean;
 }
 
 const PLAYER_COLORS = [
@@ -27,6 +28,7 @@ export function TurnIndicator({
   isAi = false,
   playerIndex = 0,
   placement = 'top',
+  steady = false,
 }: TurnIndicatorProps) {
   const { t } = useTranslation();
   const hsl = PLAYER_COLORS[playerIndex] ?? PLAYER_COLORS[0];
@@ -46,9 +48,9 @@ export function TurnIndicator({
     <div className="absolute z-10 pointer-events-none" style={wrapperStyle}>
     <motion.div
       className={cn('flex items-center', isLeft ? 'flex-row' : 'flex-col')}
-      initial={{ opacity: 0, y: isLeft ? 0 : 8, x: isLeft ? 8 : 0, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+      initial={steady ? false : { opacity: 0, y: isLeft ? 0 : 8, x: isLeft ? 8 : 0, scale: 0.95 }}
+      animate={{ opacity: steady && isRolling ? 0 : 1, y: 0, x: 0, scale: 1 }}
+      transition={steady ? { duration: 0.12, ease: 'easeOut' } : { type: 'spring', stiffness: 380, damping: 26 }}
     >
       {/* Bubble */}
       <div
@@ -75,10 +77,10 @@ export function TurnIndicator({
           </span>
           {isMyTurn && (
             <span className="relative flex h-2 w-2">
-              <span
+              {!steady && <span
                 className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                 style={{ backgroundColor: 'currentColor' }}
-              />
+              />}
               <span className="relative inline-flex rounded-full h-2 w-2 bg-current" />
             </span>
           )}

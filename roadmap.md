@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Topplista och mjuk statistik – 16 november
+- [x] Markera endast den egna spelarens namn med guldfärgat (Du); befintliga översättningar på alla 40 språk återanvänds.
+- [x] Senaste statistik visas direkt vid återbesök samma Stockholmsdag/session; siffrorna tonas försiktigt till nytt värde, hela sidans inhoppsrörelse borttagen, veckolistor/24h visas tillsammans. Första besöket visar reserverade rader tills siffrorna hämtats.
+- [x] 13 prov godkända; avskilt telefon-/datorprov visar endast egen markering i båda listor, direkt +2 vid återbesök och därefter +3, inga runtimefel; bygge OK. Inga livedata ändrade; appen behöver nästa version.
+
 ## Fast bannerplats i datormatch – 16 november
 - [x] Lokal spelplan använder alltid bannerutrymmet även innan laddning och utan annons; sena annonsanrop ändrar inte protokoll/tärningsstorlek.
 - [x] 85 annons-/layoutprov godkända; identiska spelplansmått när bannerklassen slås av/på på sex skärmstorlekar, utan sidfel. Native-annons på fysisk telefon kräver nästa appversion. Root AGENTS.md vid skyddad storleksgräns.

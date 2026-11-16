@@ -18,7 +18,7 @@ import { setActiveGame, clearLocalActiveGame, removeActiveGame, newLocalGameId }
 import { recordGameResult, getRankedGames, isGameResultRecorded } from '@/lib/local-stats';
 import { forfeitAdAllowed, getLastForfeitAdAt } from '@/lib/forfeit-ad';
 import { getLastInterstitialShownAt } from '@/lib/admob';
-import { getLocalMatchKey, startNextLocalMatch } from '@/lib/local-match-key';
+import { getLocalMatchKey, startNextLocalMatch, getLocalReplayCount, bumpLocalReplayCount, canReplayLocal } from '@/lib/local-match-key';
 import { playLightHaptic, playDiceLandHaptic, playSuccessHaptic } from '@/lib/haptics';
 import { aiDecideLocks, aiPickCategory, getRandomAiNames } from '@/lib/yatzy-ai';
 import { resolveLocalLineup, isRankedLocalMatch } from '@/lib/local-lineup';
@@ -400,8 +400,11 @@ export default function GamePage() {
     selectCategory(categoryId as any, debug);
   }, [gameState, selectCategory, aiPlayers]);
 
+  const [replayCount, setReplayCount] = useState(() => getLocalReplayCount(localGameId));
   const handlePlayAgain = useCallback(() => {
+    if (!canReplayLocal(getLocalReplayCount(localGameId))) return;
     if (!isGameResultRecorded(localMatchKeyRef.current)) { toast.error(t('errGeneric')); return; }
+    setReplayCount(bumpLocalReplayCount(localGameId));
     writeRecoverable(namesKey, JSON.stringify(playerNames), true);
     writeRecoverable(aiPlayersKey, JSON.stringify(aiPlayers), true);
     // Every new match needs a fresh dedupe key, otherwise the second and all
@@ -458,7 +461,7 @@ export default function GamePage() {
         show={gameState.gameOver}
         players={gameOverResults}
         aiPlayers={aiPlayers}
-        onPlayAgain={() => { void leave(handlePlayAgain); }}
+        onPlayAgain={canReplayLocal(replayCount) ? () => { void leave(handlePlayAgain); } : undefined}
         onBackToMenu={() => { void leave(); }}
         leaving={leaving}
       />

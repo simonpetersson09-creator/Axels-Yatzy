@@ -26,3 +26,17 @@ export function startNextLocalMatch(localGameId: string): string {
 export function getCurrentLocalMatchKey(localGameId: string): string {
   return readRecoverable(`yatzy-match-key:${localGameId}`) ?? `local:${localGameId}`;
 }
+/** After this many "Spela igen" in a row, the next result offers only Home. */
+export const MAX_LOCAL_REPLAYS = 2;
+export function getLocalReplayCount(localGameId: string): number {
+  const n = Number(readRecoverable(`yatzy-replays:${localGameId}`) ?? 0);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+}
+export function canReplayLocal(replays: number): boolean {
+  return replays < MAX_LOCAL_REPLAYS;
+}
+export function bumpLocalReplayCount(localGameId: string): number {
+  const next = getLocalReplayCount(localGameId) + 1;
+  writeRecoverable(`yatzy-replays:${localGameId}`, String(next), true);
+  return next;
+}

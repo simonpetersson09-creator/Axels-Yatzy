@@ -1,5 +1,8 @@
 # Roadmap – Snabbspel online
 
+## Godkänt betygsutskick – 16 november
+- [x] Godkänd svensk betygstext skickad 21:13 svensk tid till samtliga 176 nåbara iOS-/Androidenheter med allmänna påminnelser påslagna; 176 accepterade, 0 fel, verifierat i leveransloggen. Sju urvals-/tidsgränsprov godkända. Faktisk telefonvisning kan inte bekräftas. Engångsskydd och stängd kampanj efter kvällen; root AGENTS.md saknar utrymme för ny regel.
+
 ## Topplista och mjuk statistik – 16 november
 - [x] Markera endast den egna spelarens namn med guldfärgat (Du); befintliga översättningar på alla 40 språk återanvänds.
 - [x] Senaste statistik visas direkt vid återbesök samma Stockholmsdag/session; siffrorna tonas försiktigt till nytt värde, hela sidans inhoppsrörelse borttagen, veckolistor/24h visas tillsammans. Första besöket visar reserverade rader tills siffrorna hämtats.

@@ -550,6 +550,21 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard_excluded_sessions: {
+        Row: {
+          created_at: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
       lobby_join_queue: {
         Row: {
           created_at: string

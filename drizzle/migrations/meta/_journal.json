@@ -974,6 +974,13 @@
       "when": 1794921820075,
       "tag": "0138_admin_issues_latest_release",
       "breakpoints": true
+    },
+    {
+      "idx": 139,
+      "version": "7",
+      "when": 1794941364234,
+      "tag": "0139_leaderboard_excluded_sessions",
+      "breakpoints": true
     }
   ]
 }

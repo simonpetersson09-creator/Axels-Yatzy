@@ -967,6 +967,13 @@
       "when": 1794819505933,
       "tag": "0137_friend_request_state",
       "breakpoints": true
+    },
+    {
+      "idx": 138,
+      "version": "7",
+      "when": 1794921820075,
+      "tag": "0138_admin_issues_latest_release",
+      "breakpoints": true
     }
   ]
 }

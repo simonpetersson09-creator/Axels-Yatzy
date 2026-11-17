@@ -34,7 +34,7 @@ const COLUMNS: { key: AdminColumnKey; label: string }[] = [
   { key: "cpu_finished", label: "Mot datorn" },
   { key: "online_finished", label: "Online (inkl. Snabbspel)" },
   { key: "forfeits", label: "Avhopp online" },
-  { key: "issues", label: "Problemhändelser (2 senaste versionerna)" },
+  { key: "issues", label: "Problemhändelser (senaste versionen)" },
   { key: "post_match_shown", label: "Matchannonser visade / tillfällen" },
 ];
 

@@ -55,13 +55,16 @@ describe.skipIf(!db)('admin extra counters in connection-local fixtures', () => 
         .replace('CREATE FUNCTION public.admin_daily_extra_stats', 'CREATE OR REPLACE FUNCTION public.admin_daily_extra_stats');
       const parser = readFileSync('drizzle/migrations/0103_admin_issues_latest_two_versions.sql','utf8').split('REVOKE ALL')[0];
       await sql.unsafe(parser.replace('public.admin_issue_release','pg_temp.admin_issue_release').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
-      await sql.unsafe(source.replace('public.admin_daily_extra_stats','pg_temp.admin_daily_extra_stats').replace(/public\.admin_issue_release/g,'pg_temp.admin_issue_release').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+      const latestRelease = readFileSync('drizzle/migrations/0138_admin_issues_latest_release.sql', 'utf8');
+      const lookupChange = latestRelease.match(/regexp_replace\(definition, '([^']+)', '([^']+)'/);
+      if (!lookupChange) throw new Error('Expected production lookup change');
+      await sql.unsafe(source.replace(new RegExp(lookupChange[1], 'i'), lookupChange[2]).replace('public.admin_daily_extra_stats','pg_temp.admin_daily_extra_stats').replace(/public\.admin_issue_release/g,'pg_temp.admin_issue_release').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       const [row] = await sql`select * from pg_temp.admin_daily_extra_stats('2026-11-07') where day='2026-11-07'`;
       return row;
     });
   }
-  it('counts unique affected app devices using the same latest two releases and exclusions', async () => {
-    expect(Number((await fixture()).issue_devices)).toBe(2);
+  it('counts unique affected app devices using only the latest release and exclusions', async () => {
+    expect(Number((await fixture()).issue_devices)).toBe(1);
   });
   it('counts first recorded play from full history on Stockholm days, excluding web', async () => {
     expect(Number((await fixture()).new_players)).toBe(1);

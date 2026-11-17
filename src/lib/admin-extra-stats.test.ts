@@ -18,6 +18,8 @@ describe.skipIf(!db)('admin extra counters in connection-local fixtures', () => 
     if (!db) throw new Error('Missing SQL test connection');
     return db.begin(async sql => {
       await sql.unsafe(`
+        DROP FUNCTION IF EXISTS pg_temp.admin_daily_stats_v3(date);
+        DROP FUNCTION IF EXISTS pg_temp.admin_daily_extra_stats(date);
         CREATE TEMP TABLE analytics_sessions(device_id text,platform text,app_version text) ON COMMIT DROP;
         CREATE TEMP TABLE analytics_events(id text,device_id text,platform text,app_version text,created_at timestamptz,event_name text,metadata jsonb) ON COMMIT DROP;
         CREATE TEMP TABLE excluded_stat_devices(device_id text) ON COMMIT DROP;

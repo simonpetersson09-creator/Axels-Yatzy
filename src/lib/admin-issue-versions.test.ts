@@ -15,6 +15,8 @@ describe.skipIf(!url)('admin issues latest release (isolated SQL)', () => {
     if (!db) throw new Error('Missing test connection');
     return db.begin(async sql => {
       await sql.unsafe(`
+        DROP FUNCTION IF EXISTS pg_temp.admin_daily_stats_v3(date);
+        DROP FUNCTION IF EXISTS pg_temp.admin_daily_extra_stats(date);
         CREATE TEMP TABLE analytics_sessions(device_id text, platform text, started_at timestamptz, last_seen_at timestamptz, app_version text) ON COMMIT DROP;
         CREATE TEMP TABLE analytics_events(device_id text, platform text, created_at timestamptz, event_name text, game_mode text, app_version text) ON COMMIT DROP;
         CREATE TEMP TABLE games(id text, updated_at timestamptz, status text, forfeited_by text, forfeited_by_session_id text) ON COMMIT DROP;

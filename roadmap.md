@@ -1,8 +1,8 @@
 # Roadmap – Snabbspel online
 
 ## Lokalisering av fyra Android-bilder – 18 november
-- [ ] Översätt rubriker och all synlig gränssnittstext i de fyra utvalda Android-bilderna till 26 angivna språk, utan att ändra motiv, layout eller övrig design.
-- [ ] Kontrollera textpassform och bildkvalitet, skapa en mapp per land med fullständigt svenskt landsnamn och paketera samtliga 104 bilder i en ZIP.
+- [x] Översatt rubriker och all synlig gränssnittstext i de fyra utvalda Android-bilderna till 26 angivna språk, utan att ändra motiv, layout eller övrig design.
+- [x] Textpassform och bildkvalitet kontrollerad för samtliga språk; 104 PNG-bilder i 1080 × 1920, en mapp per land med fullständigt svenskt landsnamn, ZIP med 26 mappar och 104 intakta poster sparad i Files.
 
 ## Godkänt betygsutskick – 16 november
 - [x] Godkänd svensk betygstext skickad 21:13 svensk tid till samtliga 176 nåbara iOS-/Androidenheter med allmänna påminnelser påslagna; 176 accepterade, 0 fel, verifierat i leveransloggen. Sju urvals-/tidsgränsprov godkända. Faktisk telefonvisning kan inte bekräftas. Engångsskydd och stängd kampanj efter kvällen; root AGENTS.md saknar utrymme för ny regel.

@@ -10,7 +10,7 @@ it.skipIf(!db)('optimized admin preserves every counter, age and incomplete flag
     await sql.unsafe('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
     // Read-only live inputs, connection-local functions: no production statistics are written.
     let optimizedDefinition = '';
-    for (const name of ['admin_is_app_activity_event','admin_issue_release','admin_mean_app_age','admin_median_app_age','admin_daily_stats_v3','admin_daily_stats_v4','admin_daily_stats_v5','admin_daily_stats_v6']) {
+    for (const name of ['admin_is_app_activity_event','admin_issue_release','admin_is_significant_issue','admin_mean_app_age','admin_median_app_age','admin_daily_stats_v3','admin_daily_stats_v4','admin_daily_stats_v5','admin_daily_stats_v6']) {
       const [row] = await sql`SELECT pg_get_functiondef(oid) definition FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname=${name}`;
       if (name === 'admin_daily_stats_v3') optimizedDefinition = row.definition;
       await sql.unsafe(row.definition.replace(/public\.admin_/g, 'pg_temp.admin_'));

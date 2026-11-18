@@ -1643,6 +1643,10 @@ export type Database = {
         Args: { _event: string }
         Returns: boolean
       }
+      admin_is_significant_issue: {
+        Args: { _metadata: Json }
+        Returns: boolean
+      }
       admin_issue_release: { Args: { _version: string }; Returns: number[] }
       admin_mean_app_age: {
         Args: { _day: string; _first_days: string[] }

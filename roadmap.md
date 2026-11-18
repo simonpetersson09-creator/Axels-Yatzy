@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Nya appskärmar för Android – 18 november
+- [ ] Ersätt de retuscherade bilderna med fyra nyfotade appvyer på vart och ett av de 26 språken; behåll rubriker, landsmappar och ZIP-struktur.
+- [ ] Kontrollera de riktiga appskärmarna på Androidmått, granska text och layout samt spara en ny ZIP utan att ändra appens kod eller livedata.
+
 ## Lokalisering av fyra Android-bilder – 18 november
 - [x] Översatt rubriker och all synlig gränssnittstext i de fyra utvalda Android-bilderna till 26 angivna språk, utan att ändra motiv, layout eller övrig design.
 - [x] Textpassform och bildkvalitet kontrollerad för samtliga språk; 104 PNG-bilder i 1080 × 1920, en mapp per land med fullständigt svenskt landsnamn, ZIP med 26 mappar och 104 intakta poster sparad i Files.

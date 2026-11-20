@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Androidbilder och mindre tomrum – 20 november
+- [x] Lokal telefonspelplan använder tillgänglig höjd ovanför bannerplatsen; online och surfplattor oförändrade. 91 tester godkända.
+- [x] Fast placering efter kast verifierad på fyra Androidmått; fyra granskade modellbilder sparade som v3. Simulerade systemmarginaler, fysisk telefon kräver nästa appversion. Root AGENTS.md saknar utrymme för ny regel.
+
 ## Nya appskärmar för Android – 18 november
 - [x] Ersätt de retuscherade bilderna med fyra nyfotade appvyer på vart och ett av de 26 språken; behåll rubriker, landsmappar och ZIP-struktur.
 - [x] Kontrollera de riktiga appskärmarna på Androidmått, granska text och layout samt spara en ny ZIP utan att ändra appens kod eller livedata. Samtliga 104 bilder visuellt granskade och verifierade i 1080 × 1920; ZIP med 26 landsmappar och 104 intakta PNG-poster sparad i Files.

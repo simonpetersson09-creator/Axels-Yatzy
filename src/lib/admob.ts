@@ -1374,6 +1374,21 @@ function fitGameNow(): void {
   let row = parseFloat(css.getPropertyValue('--sb-row-h')) || 34;
   let dice = parseFloat(css.getPropertyValue('--dice-scale')) || 1;
   let gapS = parseFloat(css.getPropertyValue('--dice-gap-scale')) || dice;
+  // Phone local games use all available height, not a fixed row preset that
+  // leaves a second empty band above the already reserved banner.
+  if (window.innerWidth < 700 && document.querySelector('.local-game')) {
+    const edges = gameEdges();
+    const limit = window.innerHeight - safeAreaBottom() - 50 - BANNER_GAP_PX;
+    if (edges) {
+      const spare = limit - edges.board;
+      const extraRow = Math.floor(spare / 20 * 10) / 10;
+      if (extraRow > 0) {
+        row += extraRow;
+        root.style.setProperty('--sb-row-h', `${row}px`);
+        void root.offsetHeight;
+      }
+    }
+  }
   for (let i = 0; i < 14; i++) {
     const e = gameEdges();
     if (!e) return;
@@ -1386,7 +1401,7 @@ function fitGameNow(): void {
     const sideOver = Math.max(e.buttons - limit, mis); // hur mycket sidokolumnen ska kortas
     if (e.board - limit > 0.5) {
       // Själva brickan räcker under annonsen: kortare rader.
-      const nextRow = Math.max(20, Math.floor((row - (e.board - limit) / 19 - 0.25) * 2) / 2);
+      const nextRow = Math.max(20, Math.floor((row - (e.board - limit) / 20 - 0.1) * 10) / 10);
       if (nextRow < row) {
         row = nextRow;
         root.style.setProperty('--sb-row-h', `${row}px`);

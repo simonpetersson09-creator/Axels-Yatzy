@@ -595,7 +595,7 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     }
   });
 
-  it('keeps full-size dice when shortening the board also brings the buttons above the banner', async () => {
+  it.each([{ height: 800, row: 32 }, { height: 780, row: 29 }])('uses available height without shrinking dice ($height px)', async ({ height, row }) => {
     const root = document.documentElement;
     const game = document.createElement('div');
     game.className = 'local-game';
@@ -604,18 +604,20 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     const button = document.createElement('button');
     game.append(board, button);
     document.body.appendChild(game);
-    const bottom = () => 107 + 20 * (parseFloat(root.style.getPropertyValue('--sb-row-h')) || 32);
+    const bottom = () => 107 + 20 * (parseFloat(root.style.getPropertyValue('--sb-row-h')) || row);
     vi.spyOn(board, 'getBoundingClientRect').mockImplementation(() => ({ bottom: bottom() } as DOMRect));
     vi.spyOn(button, 'getBoundingClientRect').mockImplementation(() => ({ top: bottom() - 32, bottom: bottom(), height: 32 } as DOMRect));
     const originalComputedStyle = window.getComputedStyle;
-    vi.stubGlobal('innerHeight', 800);
+    vi.stubGlobal('innerHeight', height);
+    vi.stubGlobal('innerWidth', 360);
     vi.stubGlobal('getComputedStyle', (element: Element) => element === root ? {
-      getPropertyValue: (key: string) => root.style.getPropertyValue(key) || ({ '--sb-row-h': '32px', '--dice-scale': '1', '--dice-gap-scale': '1' } as Record<string, string>)[key] || '',
+      getPropertyValue: (key: string) => root.style.getPropertyValue(key) || ({ '--sb-row-h': `${row}px`, '--dice-scale': '1', '--dice-gap-scale': '1' } as Record<string, string>)[key] || '',
     } : originalComputedStyle(element));
     try {
       const m = await import('./admob');
       const pending = m.showGameBanner();
-      expect(bottom()).toBeLessThanOrEqual(800 - 50 - 12);
+      expect(bottom()).toBeLessThanOrEqual(height - 50 - 12);
+      expect(bottom()).toBeGreaterThanOrEqual(height - 50 - 12 - 10);
       expect(root.style.getPropertyValue('--dice-scale')).toBe('');
       expect(root.style.getPropertyValue('--dice-gap-scale')).toBe('');
       await vi.advanceTimersByTimeAsync(1000);

@@ -1386,7 +1386,15 @@ function fitGameNow(): void {
     const sideOver = Math.max(e.buttons - limit, mis); // hur mycket sidokolumnen ska kortas
     if (e.board - limit > 0.5) {
       // Själva brickan räcker under annonsen: kortare rader.
-      row = Math.max(20, Math.floor((row - (e.board - limit) / 19 - 0.25) * 2) / 2);
+      const nextRow = Math.max(20, Math.floor((row - (e.board - limit) / 19 - 0.25) * 2) / 2);
+      if (nextRow < row) {
+        row = nextRow;
+        root.style.setProperty('--sb-row-h', `${row}px`);
+        void root.offsetHeight;
+        // Stretch/auto-margin moves the buttons with the board. Measure that
+        // first: its old bottom is not evidence that the dice need shrinking.
+        continue;
+      }
     }
     if (sideOver > 1 && dice > 0.45) {
       // Sidokolumnen (tärningar + Kasta + Hem/Ge upp) är för lång: mindre tärningar.

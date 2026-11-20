@@ -107,7 +107,13 @@ export function DiceArea({
     >
       <div
         className="relative overflow-visible"
-        style={{ height: columnHeight, width: columnWidth, zIndex: 30 }}
+        style={{
+          // Layout must follow banner fitting synchronously; the canvas and
+          // tap targets catch up via useDiceScale before the next frame.
+          height: `calc(${(compact ? 54 : 60) * 5}px * var(--dice-scale, 1) + ${(compact ? 29 : 36) * 4}px * var(--dice-gap-scale, var(--dice-scale, 1)))`,
+          width: `calc(${(compact ? 54 : 60) * 1.85}px * var(--dice-scale, 1))`,
+          zIndex: 30,
+        }}
       >
         {/* Oversized, non-interactive overlay layer for the 3D canvas. */}
         <div

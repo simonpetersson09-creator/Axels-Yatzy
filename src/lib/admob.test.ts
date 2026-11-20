@@ -595,6 +595,40 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     }
   });
 
+  it('keeps full-size dice when shortening the board also brings the buttons above the banner', async () => {
+    const root = document.documentElement;
+    const game = document.createElement('div');
+    game.className = 'local-game';
+    const board = document.createElement('div');
+    board.className = 'ios-score-zone';
+    const button = document.createElement('button');
+    game.append(board, button);
+    document.body.appendChild(game);
+    const bottom = () => 107 + 20 * (parseFloat(root.style.getPropertyValue('--sb-row-h')) || 32);
+    vi.spyOn(board, 'getBoundingClientRect').mockImplementation(() => ({ bottom: bottom() } as DOMRect));
+    vi.spyOn(button, 'getBoundingClientRect').mockImplementation(() => ({ top: bottom() - 32, bottom: bottom(), height: 32 } as DOMRect));
+    const originalComputedStyle = window.getComputedStyle;
+    vi.stubGlobal('innerHeight', 800);
+    vi.stubGlobal('getComputedStyle', (element: Element) => element === root ? {
+      getPropertyValue: (key: string) => root.style.getPropertyValue(key) || ({ '--sb-row-h': '32px', '--dice-scale': '1', '--dice-gap-scale': '1' } as Record<string, string>)[key] || '',
+    } : originalComputedStyle(element));
+    try {
+      const m = await import('./admob');
+      const pending = m.showGameBanner();
+      expect(bottom()).toBeLessThanOrEqual(800 - 50 - 12);
+      expect(root.style.getPropertyValue('--dice-scale')).toBe('');
+      expect(root.style.getPropertyValue('--dice-gap-scale')).toBe('');
+      await vi.advanceTimersByTimeAsync(1000);
+      await pending;
+      await m.hideGameBanner();
+    } finally {
+      game.remove();
+      root.style.removeProperty('--sb-row-h');
+      root.style.removeProperty('--dice-scale');
+      root.style.removeProperty('--dice-gap-scale');
+    }
+  });
+
   it('allows exactly three retries, each 30 seconds after a confirmed failure', async () => {
     const m = await import('./admob');
     expect(m.BANNER_RETRY_DELAY_MS).toBe(30_000);

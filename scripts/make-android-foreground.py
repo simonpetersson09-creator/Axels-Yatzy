@@ -5,7 +5,9 @@ The adaptive layer is 108dp and Android masks it (circle, rounded square,
 ...), so the artwork must sit inside the 66dp safe zone. The icon is placed
 at 60/108 of the layer, centered. The background continues the icon's own
 radial gradient outward (median of the darkest half of each ring, since the
-artwork is bright and the background dark), so no edge seam is visible.
+artwork is bright and the background dark), so no edge seam is visible. The
+artwork share is kept near 80/108 so the top hat stays inside the circular
+safe zone.
 
 Usage: python3 scripts/make-android-foreground.py [source.png]
 Called by scripts/make-icons.js.
@@ -17,7 +19,7 @@ from PIL import Image
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else 'resources/icon.png'
 DENSITIES = {'mdpi': 108, 'hdpi': 162, 'xhdpi': 216, 'xxhdpi': 324, 'xxxhdpi': 432}
-ART = 72 / 108  # artwork share of the 108dp layer
+ART = 80 / 108  # artwork share of the 108dp layer
 
 im = np.asarray(Image.open(SRC).convert('RGB'), dtype=np.float64)
 H = W = im.shape[0]

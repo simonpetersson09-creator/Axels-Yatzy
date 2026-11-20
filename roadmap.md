@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Appkontroll – 20 november kväll
+- [x] 788 tester godkända med begränsad parallell belastning; 140 databasprov överhoppade för att undvika live-skrivningar. Två annonsprov föll först under belastning, samtliga 80 gick igenom separat och hela omkörningen gick igenom.
+- [x] Startsida, statistik med verkliga läsningar och avskild datormatch kontrollerade; eget första kast, låsning, omkast och 12 poängval fungerade utan live-skrivningar. Helmatchens avslut inte verifierat: browserprovet nådde väntetimeout inför nästa tur. Inga appändringar eller bekräftade nya spelfel; fysisk annonsering/telefonflyt och nätfördröjning kvarstår att verifiera.
+
 ## Riktad kastdiagnostik – 20 november
 - [x] Mät eget onlineresultat till landningssignal, direkt svar/reservhämtning och bakgrunds-/anslutningssignaler; snabba normala svar är tysta, högst åtta extra diagnoser per match, ingen ändrad adminräkning eller kastlogik.
 - [x] 62 riktade tester godkända inklusive live-adminräkning via läsande jämförelse, sena svar, reservhämtning, matchbyte och integritet; bygge OK. Mätningen gäller appens landningssignal, inte fysisk GPU-landning; fysisk telefon kräver nästa appversion.

@@ -47,6 +47,10 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.gameState?.dice).toEqual([2,3,4,5,6]);
     expect(result.current.rollPending).toBe(false);
     expect(diceAwait.active).toBe(false);
+    expect(trackEvent).toHaveBeenCalledWith('play_dice_result_timing', expect.objectContaining({
+      result_source: 'rpc', result_received_ms: 10600,
+      result_to_landing_signal_ms: 0, landing_signal_ms: 10600,
+    }), { gameId: 'game', gameMode: 'multiplayer' });
     await act(async () => { await vi.advanceTimersByTimeAsync(750); });
     expect(result.current.localRolling).toBe(false);
     expect(result.current.error).toBeNull();
@@ -79,6 +83,7 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.gameId).toBe('new-game');
     expect(result.current.gameState?.dice).toEqual([4,4,4,4,4]);
     expect(result.current.gameState?.rollsLeft).toBe(2);
+    expect(vi.mocked(trackEvent).mock.calls.filter(call => call[0] === 'play_dice_result_timing')).toHaveLength(0);
     unmount();
   });
   it('still ends recovery for a request that never answers and ignores success after that deadline', async () => {

@@ -2,6 +2,7 @@ import { isStaleSnapshot } from '@/lib/snapshot-order';
 import { flushSync } from 'react-dom';
 import { directRpc, invokeDeviceAction } from '@/lib/multiplayer-actions';
 import { measureRecoveryRead } from '@/lib/multiplayer-recovery-diagnostics';
+import { observeDiceResult } from '@/lib/dice-result-diagnostics';
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, requireClaimedDevice } from '@/lib/session';
@@ -273,6 +274,7 @@ export function useMultiplayerGame() {
   const startRemoteRollingRef = useRef<((d?: RollDicePart, h?: { lockedDice: boolean[]; rollsLeft: number }) => void) | null>(null);
   const applyRemoteResultRef = useRef<((p: RollDicePart, s?: 'roll_result' | 'saved_row') => void) | null>(null);
   const animResolveRef = useRef<(() => void) | null>(null);
+  const resultDiagnosticRef = useRef<ReturnType<typeof observeDiceResult> | null>(null);
   // A value-less remote spin that gave up waiting; its late result may still land.
   const timedOutThrowRef = useRef<{ gameId: string; player: number; round: number; rollsLeft: number } | null>(null);
   const remoteLockHintRef = useRef<boolean[] | null>(null);
@@ -836,6 +838,10 @@ export function useMultiplayerGame() {
       setRemoteRolling(false);
       setRollPending(false);
     }
+    if (activeGameIdRef.current !== gameId) {
+      resultDiagnosticRef.current?.cancel();
+      resultDiagnosticRef.current = null;
+    }
     activeGameIdRef.current = gameId;
     cleanupChannel();
     cleanupTimers();
@@ -1261,6 +1267,10 @@ export function useMultiplayerGame() {
     const rollStartedAt = Date.now();
     const rollGeneration = animationGenerationRef.current;
     const rollAttemptId = crypto.randomUUID();
+    resultDiagnosticRef.current?.cancel();
+    const resultDiagnostic = observeDiceResult(latest.gameId, rollAttemptId);
+    resultDiagnosticRef.current = resultDiagnostic;
+    let resultSource: 'rpc' | 'recovery' = 'rpc';
     // Scoring stays blocked until the server has confirmed this roll (or the
     // real state has been reloaded after a failure).
     rollConfirmedRef.current = false;
@@ -1311,7 +1321,10 @@ export function useMultiplayerGame() {
             // row lock — even when the resend overtakes the original.
             p_expected_rolls_left: expect.rollsLeft + 1,
           }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId, timeoutAfterMs: NETWORK_TIMEOUT_MS }).then(
-            (res) => finish(() => {
+            (res) => {
+              if (!res.error && Array.isArray(res.data?.dice)) resultDiagnostic.received('rpc');
+              finish(() => {
+              resultSource = 'rpc';
               const r = res as RollRes;
               const d = r.data;
               if (d?.stale_roll && d.round === expect.round
@@ -1323,7 +1336,8 @@ export function useMultiplayerGame() {
                 return;
               }
               resolve(r);
-            }),
+              });
+            },
             (err) => { invokeFailed = err ?? new Error('timeout'); },
           );
         };
@@ -1343,8 +1357,12 @@ export function useMultiplayerGame() {
                 .select('dice, rolls_left, round, current_player_index')
                 .eq('id', gid).maybeSingle()), 5_000), { gameId: gid, attemptId: rollAttemptId, readIndex: ++readIndex });
               if (g && g.round === expect.round && g.current_player_index === expect.player && g.rolls_left === expect.rollsLeft) {
+                resultDiagnostic.received('recovery');
                 reportMpIssue('roll_recovered', gid, { ms: Date.now() - rollStartedAt, attempt_id: rollAttemptId });
-                finish(() => resolve({ data: { success: true, dice: g.dice, rolls_left: g.rolls_left }, error: null }));
+                finish(() => {
+                  resultSource = 'recovery';
+                  resolve({ data: { success: true, dice: g.dice, rolls_left: g.rolls_left }, error: null });
+                });
                 return;
               }
               // Turn moved on or the roll can no longer happen: stop waiting.
@@ -1399,6 +1417,7 @@ export function useMultiplayerGame() {
           ...prev,
           gameState: { ...prev.gameState, dice: part.dice, rollsLeft: part.rollsLeft },
         } : prev);
+        resultDiagnostic.landingSignal(resultSource);
         setDiceAwait(false);
         try {
           channelRef.current?.send({
@@ -1448,6 +1467,8 @@ export function useMultiplayerGame() {
     });
     return new Promise<boolean>((resolve) => {
       done.then((result) => {
+        resultDiagnostic.cancel();
+        if (resultDiagnosticRef.current === resultDiagnostic) resultDiagnosticRef.current = null;
         if (rollGeneration !== animationGenerationRef.current) { resolve(false); return; }
         // Always release the guard, even if unmounted, so a remounted view
         // never inherits a permanently "rolling" lock.
@@ -1944,6 +1965,8 @@ export function useMultiplayerGame() {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      resultDiagnosticRef.current?.cancel();
+      resultDiagnosticRef.current = null;
       subscriptionGenerationRef.current += 1;
       rollingGuardRef.current = false;
       // The await flag is shared by every dice view; never leave it on.

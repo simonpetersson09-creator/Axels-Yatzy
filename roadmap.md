@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Riktad kastdiagnostik – 20 november
+- [x] Mät eget onlineresultat till landningssignal, direkt svar/reservhämtning och bakgrunds-/anslutningssignaler; snabba normala svar är tysta, högst åtta extra diagnoser per match, ingen ändrad adminräkning eller kastlogik.
+- [x] 62 riktade tester godkända inklusive live-adminräkning via läsande jämförelse, sena svar, reservhämtning, matchbyte och integritet; bygge OK. Mätningen gäller appens landningssignal, inte fysisk GPU-landning; fysisk telefon kräver nästa appversion.
+
 ## Större onlinetärningar på A55, Pixel 8 och SE 3 – 20 november
 - [x] Förstora endast onlinetärningar i de tre telefonmåtten; behåll Kasta-knappens storlek och lokalt annonsutrymme.
 - [x] Alla åtta telefonmått i båda lägena kontrollerade; större tärningar och fria namn/chatt/knappar i tre färska onlinebilder. Sex layouttester godkända, bygge OK. Simulerade skärmar; fysisk telefon kräver nästa appversion.

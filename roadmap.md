@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Större onlinetärningar på A55, Pixel 8 och SE 3 – 20 november
+- [x] Förstora endast onlinetärningar i de tre telefonmåtten; behåll Kasta-knappens storlek och lokalt annonsutrymme.
+- [x] Alla åtta telefonmått i båda lägena kontrollerade; större tärningar och fria namn/chatt/knappar i tre färska onlinebilder. Sex layouttester godkända, bygge OK. Simulerade skärmar; fysisk telefon kräver nästa appversion.
+
 ## Sent eget kastsvar – 20 november
 - [x] Behåll det verkliga kastsvar som kommer efter åttasekundersgränsen; samma engångsavgörande mot reservläsningen och samma match-/animationsskydd.
 - [x] 79 riktade tester godkända: 10,6-sekunderssvaret avslutar väntan direkt, reservläsning/nyare kast och matchbyte skyddas, uteblivet svar når fortfarande slutgränsen. Bygge OK. Verklig anslutningsfördröjning och fysisk telefon är inte verifierade; rättningen kräver nästa appversion.

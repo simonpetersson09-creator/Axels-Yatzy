@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Sent eget kastsvar – 20 november
+- [x] Behåll det verkliga kastsvar som kommer efter åttasekundersgränsen; samma engångsavgörande mot reservläsningen och samma match-/animationsskydd.
+- [x] 79 riktade tester godkända: 10,6-sekunderssvaret avslutar väntan direkt, reservläsning/nyare kast och matchbyte skyddas, uteblivet svar når fortfarande slutgränsen. Bygge OK. Verklig anslutningsfördröjning och fysisk telefon är inte verifierade; rättningen kräver nästa appversion.
+
 ## Kontroll efter skärmjusteringar och Androidannonser – 20 november
 - [x] Åtta telefonmått kontrollerade i lokalt och online fyrspelarläge; fast lokal spelplan, 13–21 px marginal till bannerplats, online utan banner. 214 annons-/layoutprov och Androidpatchkontroll godkända.
 - [x] Läs Androids verkliga annonsloggar; senaste startförsöket hoppades över före första färdiga matchen, riktiga banners fick visningskvitton idag. Ingen generell Androidblockering bevisad; installerat paket och kompisens specifika telefon ej verifierade.

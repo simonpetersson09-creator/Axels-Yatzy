@@ -1300,13 +1300,17 @@ export function useMultiplayerGame() {
         let readIndex = 0;
         const finish = (fn: () => void) => { if (!settled) { settled = true; fn(); } };
         const invokeRoll = (resend = false) => {
-          withTimeout(directRpc('client_roll', 'roll-dice', {
+          // Observe the eight-second deadline without dropping the real answer.
+          // The recovery loop owns the final deadline; finish() accepts exactly
+          // one winner (RPC or read), and the animation generation below guards
+          // match changes. A late success must end the wait immediately.
+          directRpc('client_roll', 'roll-dice', {
             p_game_id: gid, p_session_id: sessionId, p_locked: optimisticLocked,
             // Every send (original and resend) names the roll count it was made
             // for, so whichever reaches the server second is rejected under the
             // row lock — even when the resend overtakes the original.
             p_expected_rolls_left: expect.rollsLeft + 1,
-          }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId, timeoutAfterMs: NETWORK_TIMEOUT_MS })).then(
+          }, { game_id: gid, session_id: sessionId, server_rolls: true, locked_dice: optimisticLocked }, { attemptId: rollAttemptId, timeoutAfterMs: NETWORK_TIMEOUT_MS }).then(
             (res) => finish(() => {
               const r = res as RollRes;
               const d = r.data;

@@ -12,6 +12,7 @@ vi.mock('@/lib/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('@/lib/notifications', () => ({ clearGameNotifications: vi.fn() }));
 import { useMultiplayerGame } from './useMultiplayerGame';
 import { trackEvent } from '@/lib/analytics';
+import { diceAwait } from '@/components/dice-engine/await-store';
 let game: Record<string, unknown>;
 let failReads = false;
 const players = [{ id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false, session_id: 'me' }, { id: 'p2', player_name: 'Other', player_index: 1, scores: {}, is_bot: false, session_id: 'other' }];
@@ -35,6 +36,64 @@ async function joined() {
   return hook;
 }
 describe('authoritative multiplayer recovery', () => {
+  it('lands a successful response at 10600ms even after the 8000ms deadline while recovery reads fail', async () => {
+    const { result, unmount } = await joined();
+    failReads = true;
+    let release: (value: unknown) => void = () => {};
+    m.roll.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(10600); });
+    expect(result.current.rollPending).toBe(true);
+    await act(async () => { release({ data: { success: true, dice: [2,3,4,5,6], rolls_left: 2 }, error: null }); });
+    expect(result.current.gameState?.dice).toEqual([2,3,4,5,6]);
+    expect(result.current.rollPending).toBe(false);
+    expect(diceAwait.active).toBe(false);
+    await act(async () => { await vi.advanceTimersByTimeAsync(750); });
+    expect(result.current.localRolling).toBe(false);
+    expect(result.current.error).toBeNull();
+    expect(m.roll).toHaveBeenCalledTimes(1);
+    unmount();
+  });
+  it('ignores an original late response after recovery already settled and a newer roll landed', async () => {
+    const { result, unmount } = await joined();
+    let release: (value: unknown) => void = () => {};
+    m.roll.mockImplementationOnce(() => new Promise(resolve => { release = resolve; }))
+      .mockResolvedValue({ data: { success: true, dice: [6,5,4,3,2], rolls_left: 1 }, error: null });
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(10); });
+    game = { ...game, rolls_left: 2, dice: [2,3,4,5,6] };
+    await act(async () => { await vi.advanceTimersByTimeAsync(4500); });
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(2200); });
+    await act(async () => { release({ data: { success: true, dice: [2,3,4,5,6], rolls_left: 2 }, error: null }); });
+    expect(result.current.gameState?.dice).toEqual([6,5,4,3,2]);
+    expect(result.current.gameState?.rollsLeft).toBe(1);
+    expect(m.roll).toHaveBeenCalledTimes(2);
+    unmount();
+  });
+  it('ignores a late successful roll after the view changed to another match', async () => {
+    const { result, unmount } = await joined();
+    let release: (value: unknown) => void = () => {};
+    m.roll.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    await act(async () => { void result.current.roll(); await vi.advanceTimersByTimeAsync(8500); });
+    game = { ...game, id: 'new-game', dice: [4,4,4,4,4], rolls_left: 2 };
+    await act(async () => { await result.current.rejoinGame('new-game'); });
+    await act(async () => { release({ data: { success: true, dice: [2,3,4,5,6], rolls_left: 2 }, error: null }); await vi.advanceTimersByTimeAsync(750); });
+    expect(result.current.gameId).toBe('new-game');
+    expect(result.current.gameState?.dice).toEqual([4,4,4,4,4]);
+    expect(result.current.gameState?.rollsLeft).toBe(2);
+    unmount();
+  });
+  it('still ends recovery for a request that never answers and ignores success after that deadline', async () => {
+    const { result, unmount } = await joined();
+    let release: (value: unknown) => void = () => {};
+    m.roll.mockImplementation(() => new Promise(resolve => { release = resolve; }));
+    let completed: boolean | undefined;
+    await act(async () => { void result.current.roll().then(value => { completed = value; }); await vi.advanceTimersByTimeAsync(29000); });
+    expect(completed).toBe(false);
+    expect(result.current.localRolling).toBe(false);
+    await act(async () => { release({ data: { success: true, dice: [2,3,4,5,6], rolls_left: 2 }, error: null }); });
+    expect(result.current.gameState?.rollsLeft).toBe(3);
+    expect(result.current.gameState?.dice).toEqual([1,1,1,1,1]);
+    unmount();
+  });
   it('aborts a lock-wait roll after same-game resubscription', async () => {
     game = { ...game, rolls_left: 2 };
     const { result, unmount } = await joined();

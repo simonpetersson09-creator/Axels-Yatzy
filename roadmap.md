@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Kontroll efter skärmjusteringar och Androidannonser – 20 november
+- [x] Åtta telefonmått kontrollerade i lokalt och online fyrspelarläge; fast lokal spelplan, 13–21 px marginal till bannerplats, online utan banner. 214 annons-/layoutprov och Androidpatchkontroll godkända.
+- [x] Läs Androids verkliga annonsloggar; senaste startförsöket hoppades över före första färdiga matchen, riktiga banners fick visningskvitton idag. Ingen generell Androidblockering bevisad; installerat paket och kompisens specifika telefon ej verifierade.
+- [x] Behåll nuvarande startannonsförsök enligt användarens val; annonsbeteendet oförändrat.
+- [ ] Identifiera kompisens startannonsförsök; väntar på spelarens namn.
+
 ## Tipsbubbla och tre Androidskärmar – 20 november
 - [x] Ta bort ”Välj tärningar att behålla” i lokalt spel och online.
 - [x] Större tärningar på Galaxy S24, Galaxy A55 och Pixel 8 genom tätare mellanrum; namn och knappar fria, lokal bannerplats minst 13 px under spelplan/knappar.

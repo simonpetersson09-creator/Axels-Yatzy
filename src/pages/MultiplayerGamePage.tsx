@@ -10,7 +10,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
-import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { getDiceAreaPrompt } from '@/lib/dice-area-prompt';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
@@ -856,15 +855,6 @@ export default function MultiplayerGamePage() {
               className="mp-dice-column relative mt-2"
               onClick={!isMyTurn ? () => { setInfoIndex(gameState.currentPlayerIndex); trackEvent('dice_info_opened', { from: 'dice' }); } : undefined}
             >
-              <PickDiceHint
-                show={
-                  gameState.rollsLeft === 2 &&
-                  isMyTurn &&
-                  !(localRolling || remoteRolling || gameState.isRolling) &&
-                  !gameState.lockedDice.some(Boolean)
-                }
-                className="mp-dice-hint mx-auto mb-1"
-              />
               <DiceArea
                 onTableEmptyChange={setDiceTableEmpty}
                 dice={gameState.dice}

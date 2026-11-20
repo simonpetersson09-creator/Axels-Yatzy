@@ -931,11 +931,6 @@ html:is(.ad-banner-on, :has(.local-game)):has(.mp-game) { --dice-scale: 0.8; }
     align-items: center;
     justify-content: center;
   }
-  .local-game .game-dice-column > .pick-dice-position {
-    position: absolute;
-    inset-inline: 0;
-    top: 0;
-  }
   .local-game .ios-action-zone { flex-shrink: 0; }
 }
 @media (max-width: 379px) {
@@ -1020,9 +1015,21 @@ html:not(.ad-banner-on):has(.mp-game) {
 @media (min-height: 881px) {
   html:not(.ad-banner-on):has(.mp-game) { --dice-scale: 1.40; --dice-gap-scale: .92; }
 }
-/* Keep the hint out of the dice budget, without hiding it or moving names/chat. */
+/* Centre the dice in the space between names and the bottom controls. */
 .mp-game .mp-dice-column { margin-top: 0; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
-.mp-game .mp-dice-hint { position: absolute; inset-inline: 0; top: 0; }
+/* Narrow Android-size phones: use tighter gaps instead of tiny dice.
+   These bounds exclude the SE/mini and tablets; local banner fitting remains
+   responsible for keeping all controls above the reserved ad space. */
+@media (min-width: 350px) and (max-width: 379px) and (min-height: 761px) and (max-height: 880px) {
+  html:has(.local-game):not(:has(.mp-game)) {
+    --dice-scale: 1.12;
+    --dice-gap-scale: .4;
+  }
+  html:not(.ad-banner-on):has(.mp-game) {
+    --dice-scale: 1.08;
+    --dice-gap-scale: .35;
+  }
+}
 .waiting-table-stage { --waiting-sit-dist: calc(var(--waiting-table-size) * .3); }
 .waiting-seat-0 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) * -1 + var(--waiting-seat-offset) - 31px)); }
 .waiting-seat-2 .waiting-figure { transform: translateY(calc(var(--waiting-sit-dist) - var(--waiting-seat-offset) + 31px)) rotate(180deg); }

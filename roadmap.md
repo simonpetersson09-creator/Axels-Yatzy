@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Tipsbubbla och tre Androidskärmar – 20 november
+- [x] Ta bort ”Välj tärningar att behålla” i lokalt spel och online.
+- [x] Större tärningar på Galaxy S24, Galaxy A55 och Pixel 8 genom tätare mellanrum; namn och knappar fria, lokal bannerplats minst 13 px under spelplan/knappar.
+- [x] Sex fyrspelarbilder visuellt granskade i 1080×2340/1080×2400; lokalt kast och onlinevy med avskilda svar kontrollerade, 86 tester godkända. Simulerade modellmått/systemmarginaler; verklig telefon och native-annons kräver nästa appversion. Root AGENTS.md vid skyddad storleksgräns.
+
 ## Centrering av lokala tärningar
 - [x] Centrerade lokala tärningar mellan sista spelarnamnet och Kasta på telefoner; knappen och bannerplatsen kvar.
 - [x] Mittpunkt uppmätt inom 1 px på fyra telefonmått efter kast; 86 tester godkända, S24 Ultra-bild v5 granskad och sparad. Fysiska telefoner kräver nästa appversion.

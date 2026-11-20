@@ -6,7 +6,6 @@ import { useYatzyGame } from '@/hooks/useYatzyGame';
 import { DiceArea } from '@/components/game/DiceArea';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
-import { PickDiceHint } from '@/components/game/PickDiceHint';
 import { getDiceAreaPrompt } from '@/lib/dice-area-prompt';
 import { ScoreBoard, type ScoreboardClickDebug } from '@/components/game/ScoreBoard';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
@@ -557,15 +556,6 @@ export default function GamePage() {
 
             {/* Dice — tapping the computer's dice shows its info */}
             <div className="game-dice-column relative mt-2" onClick={isCurrentAi ? () => setAiInfoOpen(true) : undefined}>
-              <PickDiceHint
-                show={
-                  gameState.rollsLeft === 2 &&
-                  !isCurrentAi &&
-                  !gameState.isRolling &&
-                  !gameState.lockedDice.some(Boolean)
-                }
-                className="pick-dice-position mx-auto mb-1"
-              />
               <DiceArea
                 onTableEmptyChange={setDiceTableEmpty}
                 dice={gameState.dice}

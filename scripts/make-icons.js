@@ -69,10 +69,10 @@ for (const [dpi, size] of DENSITIES) {
   const dir = join(ANDROID_RES, `mipmap-${dpi}`);
   render(MASTER, join(dir, 'ic_launcher.png'), size, { alpha: false });
   render(MASTER, join(dir, 'ic_launcher_round.png'), size, { circle: true, alpha: true });
-  // Adaptive foreground: 2.25x the legacy size, full-bleed (matches the
-  // files Capacitor's own generator produced for this project).
-  render(MASTER, join(dir, 'ic_launcher_foreground.png'), Math.round(size * 2.25), { alpha: true });
 }
+// Adaptive foregrounds: artwork centered in the 66dp safe zone on a seamless
+// continuation of the icon's own radial gradient (see the Python script).
+execFileSync('python3', [join(ROOT, 'scripts', 'make-android-foreground.py'), MASTER], { stdio: 'inherit' });
 console.log('[icons] Android mipmaps regenerated (mdpi..xxxhdpi).');
 
 // ---------- 2. iOS (committed appiconset, copied by set-ios-icons.js) ----------

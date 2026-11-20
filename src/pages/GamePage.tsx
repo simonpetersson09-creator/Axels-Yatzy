@@ -564,7 +564,7 @@ export default function GamePage() {
                   !gameState.isRolling &&
                   !gameState.lockedDice.some(Boolean)
                 }
-                className="mx-auto mb-1"
+                className="pick-dice-position mx-auto mb-1"
               />
               <DiceArea
                 onTableEmptyChange={setDiceTableEmpty}

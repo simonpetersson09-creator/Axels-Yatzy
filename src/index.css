@@ -921,6 +921,23 @@ html:is(.ad-banner-on, :has(.local-game)):has(.mp-game) { --dice-scale: 0.8; }
   .local-game { overflow-y: auto; touch-action: pan-y; }
   .local-game .ios-side-zone { min-height: 0; }
 }
+@media (max-width: 699px) {
+  .local-game .game-player-names { height: auto; min-height: 0; flex-shrink: 0; }
+  .local-game .game-dice-column {
+    flex: 1;
+    min-height: 0;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .local-game .game-dice-column > .pick-dice-position {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+  }
+  .local-game .ios-action-zone { flex-shrink: 0; }
+}
 @media (max-width: 379px) {
   .local-game { --sb-col-w: 36px; --sb-label-w: 82px; }
 }

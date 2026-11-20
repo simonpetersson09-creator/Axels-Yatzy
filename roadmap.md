@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Centrering av lokala tärningar
+- [x] Centrerade lokala tärningar mellan sista spelarnamnet och Kasta på telefoner; knappen och bannerplatsen kvar.
+- [x] Mittpunkt uppmätt inom 1 px på fyra telefonmått efter kast; 86 tester godkända, S24 Ultra-bild v5 granskad och sparad. Fysiska telefoner kräver nästa appversion.
+
 ## S24 Ultra – större tärningar
 - [x] Förstorade tärningar på breda, höga telefoner med bibehållen gap-skala; fast spelplan och bannerplats kontrollerade efter kast.
 - [x] Fyra simulerade telefonmått kontrollerade, 80 annonstester godkända; S24 Ultra-bild v4 granskad och sparad i 1440 × 3120. Kräver nästa appversion för fysisk telefonkontroll.

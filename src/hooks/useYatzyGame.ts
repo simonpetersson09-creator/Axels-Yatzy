@@ -4,6 +4,8 @@ import { calculateScore, rollDice } from '@/lib/yatzy-scoring';
 import { aiDecideLocks, aiPickCategory } from '@/lib/yatzy-ai';
 import { setActiveGame, updateLastRollTime, saveGameState, loadGameState, clearLocalActiveGame } from '@/lib/active-game';
 import { readRecoverable } from '@/lib/recoverable-storage';
+import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 
 function createPlayer(name: string, index: number): Player {
   return {
@@ -73,7 +75,7 @@ function isValidGameState(value: unknown): value is GameState {
 }
 
 /** Pure scoring step: writes the category for the current player and advances the turn. */
-function applyCategory(prev: GameState | null, categoryId: CategoryId): GameState | null {
+function applyCategory(prev: GameState | null, categoryId: CategoryId, computer = false): GameState | null {
   if (!prev || prev.rollsLeft === 3) return prev;
   const currentPlayer = prev.players[prev.currentPlayerIndex];
   if (currentPlayer.scores[categoryId] !== undefined && currentPlayer.scores[categoryId] !== null) return prev;
@@ -104,6 +106,7 @@ function applyCategory(prev: GameState | null, categoryId: CategoryId): GameStat
   const wrapped = !gameOver && nextPlayerIndex <= prev.currentPlayerIndex;
   return {
     ...prev,
+    lastComputerMove: computer ? { playerIndex: prev.currentPlayerIndex, category: categoryId, score } : prev.lastComputerMove,
     players: updatedPlayers,
     currentPlayerIndex: gameOver ? prev.currentPlayerIndex : nextPlayerIndex,
     dice: [1, 1, 1, 1, 1],
@@ -135,22 +138,26 @@ function fastForwardAi(state: GameState, localId?: string, log?: AiCatchUpTurn[]
   let guard = 0;
   while (!s.gameOver && ai.includes(s.currentPlayerIndex) && guard++ < 200) {
     const scores = s.players[s.currentPlayerIndex].scores;
-    if (s.rollsLeft > 0) {
-      const locks = s.rollsLeft === 3 ? [false, false, false, false, false] : s.lockedDice;
-      s = { ...s, dice: rollDice(s.dice, locks), lockedDice: locks, rollsLeft: s.rollsLeft - 1 };
-      if (s.rollsLeft > 0) {
-        s = { ...s, lockedDice: aiDecideLocks(s.dice, scores, s.rollsLeft) };
-        if (s.lockedDice.every(Boolean)) s = { ...s, rollsLeft: 0 };
-      }
+    if (s.rollsLeft === 3) {
+      const locks = [false, false, false, false, false];
+      s = { ...s, dice: rollDice(s.dice, locks), lockedDice: locks, rollsLeft: 2 };
       continue;
     }
+    if (s.rollsLeft > 0) {
+      // The saved dice already include any in-flight roll. Decide from that
+      // result before rerolling, just like the visible computer turn.
+      const locks = aiDecideLocks(s.dice, scores, s.rollsLeft);
+      if (!locks.every(Boolean)) {
+        s = { ...s, dice: rollDice(s.dice, locks), lockedDice: locks, rollsLeft: s.rollsLeft - 1 };
+        continue;
+      }
+    }
     const cat = aiPickCategory(s.dice, scores);
-    const next = applyCategory(s, cat);
+    const next = applyCategory(s, cat, true);
     if (!next || next === s) break;
     log?.push({ name: s.players[s.currentPlayerIndex].name, category: cat, score: calculateScore(s.dice, cat) });
     s = next;
   }
-  if (s.gameOver) saveGameState(s, localId);
   return s;
 }
 
@@ -174,6 +181,16 @@ export function useYatzyGame(localId?: string) {
   });
   const [aiCatchUp] = useState<AiCatchUpTurn[]>(() => catchUpRef.current);
   const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stateRef = useRef(gameState);
+  // Commit once, outside React's replayable updater, and save before a native
+  // suspension can stop effects. Lifecycle callbacks always see the latest move.
+  const updateGameState = useCallback((update: (prev: GameState | null) => GameState | null) => {
+    const next = update(stateRef.current);
+    if (next === stateRef.current) return;
+    stateRef.current = next;
+    if (next) saveGameState(next, localIdRef.current);
+    setGameState(next);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -187,7 +204,7 @@ export function useYatzyGame(localId?: string) {
     const unstick = () => {
       if (document.visibilityState !== 'visible') return;
       if (rollTimeoutRef.current) return;
-      setGameState(prev => (prev?.isRolling ? { ...prev, isRolling: false } : prev));
+      updateGameState(prev => (prev?.isRolling ? { ...prev, isRolling: false } : prev));
     };
     document.addEventListener('visibilitychange', unstick);
     window.addEventListener('focus', unstick);
@@ -197,19 +214,66 @@ export function useYatzyGame(localId?: string) {
       window.removeEventListener('focus', unstick);
       clearInterval(iv);
     };
-  }, []);
+  }, [updateGameState]);
+
+  useEffect(() => {
+    let backgrounded = false;
+    let disposed = false;
+    let removeNative: (() => void) | undefined;
+    const finishComputerTurn = () => {
+      const prev = stateRef.current;
+      if (!prev || prev.gameOver) return;
+      const next = fastForwardAi({ ...prev, isRolling: false }, localIdRef.current);
+      // Human rolls are unaffected by this lifecycle handling.
+      if (!next.lastComputerMove || next.lastComputerMove === prev.lastComputerMove) return;
+      if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
+      rollTimeoutRef.current = null;
+      updateGameState(() => next);
+    };
+    const lifecycle = (active: boolean) => {
+      if (!active) {
+        backgrounded = true;
+        finishComputerTurn();
+      } else if (backgrounded) {
+        backgrounded = false;
+        finishComputerTurn();
+      }
+    };
+    const visibility = () => lifecycle(document.visibilityState === 'visible');
+    const pageHide = () => lifecycle(false);
+    const pageShow = () => lifecycle(true);
+    document.addEventListener('visibilitychange', visibility);
+    window.addEventListener('pagehide', pageHide);
+    window.addEventListener('pageshow', pageShow);
+    if (Capacitor.isNativePlatform()) {
+      void App.addListener('appStateChange', ({ isActive }) => lifecycle(isActive)).then(handle => {
+        if (disposed) void handle.remove();
+        else removeNative = () => { void handle.remove(); };
+      }).catch(() => {});
+    }
+    return () => {
+      disposed = true;
+      document.removeEventListener('visibilitychange', visibility);
+      window.removeEventListener('pagehide', pageHide);
+      window.removeEventListener('pageshow', pageShow);
+      removeNative?.();
+    };
+  }, [updateGameState]);
 
 
 
   // Persist game state on every change
   useEffect(() => {
-    if (gameState) {
-      saveGameState(gameState, localId);
+    const latest = stateRef.current;
+    if (latest) {
+      // A suspension can commit ahead of the effect for the previous render.
+      // Never overwrite that newer computer score with the rendered snapshot.
+      saveGameState(latest, localId);
       setActiveGame({
         type: 'local',
         gameId: localId,
         timestamp: Date.now(),
-        currentPlayerIndex: gameState.currentPlayerIndex,
+        currentPlayerIndex: latest.currentPlayerIndex,
       });
     }
   }, [gameState, localId]);
@@ -226,15 +290,16 @@ export function useYatzyGame(localId?: string) {
       gameOver: false,
       round: 1,
     };
-    setGameState(state);
-  }, []);
+    updateGameState(() => state);
+  }, [updateGameState]);
 
   const roll = useCallback(() => {
-    setGameState(prev => {
+    updateGameState(prev => {
       if (!prev || prev.rollsLeft <= 0 || prev.isRolling) return prev;
       const newDice = rollDice(prev.dice, prev.rollsLeft === 3 ? [false, false, false, false, false] : prev.lockedDice);
       return {
         ...prev,
+        lastComputerMove: prev.currentPlayerIndex === 0 ? undefined : prev.lastComputerMove,
         dice: newDice,
         rollsLeft: prev.rollsLeft - 1,
         isRolling: true,
@@ -246,25 +311,25 @@ export function useYatzyGame(localId?: string) {
     if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
     rollTimeoutRef.current = setTimeout(() => {
       rollTimeoutRef.current = null;
-      setGameState(prev => prev ? { ...prev, isRolling: false } : prev);
+      updateGameState(prev => prev ? { ...prev, isRolling: false } : prev);
     }, 1350);
-  }, []);
+  }, [updateGameState]);
 
   const toggleLock = useCallback((index: number) => {
-    setGameState(prev => {
+    updateGameState(prev => {
       if (!prev || prev.rollsLeft === 3 || prev.rollsLeft === 0) return prev;
       const newLocked = [...prev.lockedDice];
       newLocked[index] = !newLocked[index];
       return { ...prev, lockedDice: newLocked };
     });
-  }, []);
+  }, [updateGameState]);
 
   const setLocks = useCallback((locks: boolean[]) => {
-    setGameState(prev => {
+    updateGameState(prev => {
       if (!prev) return prev;
       return { ...prev, lockedDice: locks };
     });
-  }, []);
+  }, [updateGameState]);
 
   const getPossibleScores = useCallback((): Record<CategoryId, number> | null => {
     if (!gameState || gameState.rollsLeft === 3) return null;
@@ -278,19 +343,25 @@ export function useYatzyGame(localId?: string) {
     return result as Record<CategoryId, number>;
   }, [gameState]);
 
-  const selectCategory = useCallback((categoryId: CategoryId, debug?: { rowText?: string; clickedCategoryId?: CategoryId; renderedRowIndex?: number | null; score?: number | null }) => {
-    setGameState(prev => {
-      const next = applyCategory(prev, categoryId);
+  const selectCategory = useCallback((categoryId: CategoryId, debug?: { rowText?: string; clickedCategoryId?: CategoryId; renderedRowIndex?: number | null; score?: number | null }, computer = false) => {
+    updateGameState(prev => {
+      const next = applyCategory(prev, categoryId, computer);
       // Persist the final score before rendering its result. Never delete the
       // only recoverable result before statistics have committed.
       if (next !== prev && next?.gameOver) saveGameState(next, localIdRef.current);
       return next;
     });
-  }, []);
+  }, [updateGameState]);
 
   const resetGame = useCallback(() => {
     clearLocalActiveGame(localIdRef.current);
-    setGameState(null);
+    updateGameState(() => null);
+  }, [updateGameState]);
+
+  const ownsTurn = useCallback((playerIndex: number, round: number, rollsLeft: number) => {
+    const current = stateRef.current;
+    return !!current && !current.gameOver && !current.isRolling &&
+      current.currentPlayerIndex === playerIndex && current.round === round && current.rollsLeft === rollsLeft;
   }, []);
 
   return {
@@ -303,5 +374,6 @@ export function useYatzyGame(localId?: string) {
     selectCategory,
     resetGame,
     aiCatchUp,
+    ownsTurn,
   };
 }

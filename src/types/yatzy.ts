@@ -55,6 +55,8 @@ export interface GameState {
   round: number;
   forfeitedBy?: string | null;
   forfeitedBySessionId?: string | null;
+  /** Last committed local computer choice, retained until the human rolls. */
+  lastComputerMove?: { playerIndex: number; category: CategoryId; score: number };
 }
 
 export interface PlayerStats {

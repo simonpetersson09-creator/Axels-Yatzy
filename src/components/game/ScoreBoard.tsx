@@ -144,7 +144,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
         </span>
       )}
       <AnimatePresence>
-        {justPlaced && playerColor && (
+        {(justPlaced || (isAiChosen && isScored)) && playerColor && (
           <motion.span
             key="placed"
             aria-hidden

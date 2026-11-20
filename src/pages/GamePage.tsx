@@ -44,7 +44,7 @@ export default function GamePage() {
   const { t } = useTranslation();
   // Each local match lives in its own slot so several games can run in parallel.
   const [localGameId] = useState<string>(() => location.state?.localGameId ?? newLocalGameId());
-  const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory } = useYatzyGame(localGameId);
+  const { gameState, startGame, roll, toggleLock, setLocks, getPossibleScores, selectCategory, ownsTurn } = useYatzyGame(localGameId);
   // The dice area carries at most one text; the shared helper decides which,
   // so the start prompt can never land on top of another text.
   const [diceTableEmpty, setDiceTableEmpty] = useState(false);
@@ -105,8 +105,8 @@ export default function GamePage() {
   // selectCategory. Prevents phantom rolls after a turn changes.
   const rollFnRef = useRef(roll);
   rollFnRef.current = roll;
-  const selectCategoryFnRef = useRef(selectCategory);
-  selectCategoryFnRef.current = selectCategory;
+  const selectCategoryFnRef = useRef((category: Parameters<typeof selectCategory>[0]) => selectCategory(category, undefined, true));
+  selectCategoryFnRef.current = (category) => selectCategory(category, undefined, true);
   const [aiThinking, setAiThinking] = useState(false);
   const [aiChosenCategory, setAiChosenCategory] = useState<string | null>(null);
   // Bumped by the watchdog to re-arm the auto-roll / AI effects after a freeze.
@@ -217,6 +217,8 @@ export default function GamePage() {
     if (autoRollRef.current === key || autoRollPendingRef.current === key) return;
     autoRollPendingRef.current = key;
     const t = setTimeout(() => {
+      const gs = gameStateRef.current;
+      if (!gs || !ownsTurn(gameState.currentPlayerIndex, gameState.round, 3)) return;
       autoRollRef.current = key;
       autoRollPendingRef.current = null;
       roll();
@@ -250,15 +252,22 @@ export default function GamePage() {
     // before that (e.g. the app regains focus and nudges it), the cancelled
     // move is re-planned at once instead of waiting for the stuck watchdog.
     let acted = false;
+    const stillOwnsMove = () => {
+      const gs = gameStateRef.current;
+      return !!gs && !gs.gameOver && !gs.isRolling && aiPlayers.includes(gs.currentPlayerIndex) &&
+        `${gs.currentPlayerIndex}-${gs.round}-${gs.rollsLeft}` === aiKey &&
+        ownsTurn(gameState.currentPlayerIndex, gameState.round, gameState.rollsLeft);
+    };
     const t = setTimeout(() => {
       const gs = gameStateRef.current;
-      if (!gs) return;
+      if (!gs || !stillOwnsMove()) return;
       if (gs.rollsLeft === 0) {
         const currentPlayer = gs.players[gs.currentPlayerIndex];
         const cat = aiPickCategory(gs.dice, currentPlayer.scores);
         setAiChosenCategory(cat);
         setAiThinking(false);
         innerTimer = setTimeout(() => {
+          if (!stillOwnsMove()) return;
           acted = true;
           selectCategoryFnRef.current(cat);
           setAiChosenCategory(null);
@@ -274,6 +283,7 @@ export default function GamePage() {
           setAiChosenCategory(cat);
           setAiThinking(false);
           innerTimer = setTimeout(() => {
+            if (!stillOwnsMove()) return;
             acted = true;
             selectCategoryFnRef.current(cat);
             setAiChosenCategory(null);
@@ -282,6 +292,7 @@ export default function GamePage() {
         }
         setLocks(locks);
         innerTimer = setTimeout(() => {
+          if (!stillOwnsMove()) return;
           acted = true;
           rollFnRef.current();
         }, 700);
@@ -497,7 +508,8 @@ export default function GamePage() {
                 possibleScores={possibleScores}
                 onSelectCategory={handleSelectCategory}
                 rollsLeft={gameState.rollsLeft}
-                aiChosenCategory={aiChosenCategory}
+                aiChosenCategory={isCurrentAi && aiChosenCategory ? aiChosenCategory : gameState.lastComputerMove?.category}
+                aiChosenPlayerIndex={isCurrentAi && aiChosenCategory ? gameState.currentPlayerIndex : gameState.lastComputerMove?.playerIndex}
                 selectionDisabled={isCurrentAi}
               />
               <CombinationCelebration type={activeCelebration} />

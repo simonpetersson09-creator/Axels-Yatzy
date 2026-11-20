@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Datorns tur vid stängd app – 20 november
+- [x] Pågående datortur slutförs vid bakgrund eller återöppning med befintliga kast och EV-beslut; vald ruta sparas och markeras tills människan kastar. Sen datortimer verifierar aktuell tur synkront; inga ändringar online.
+- [x] 49 riktade tester godkända; riktigt lokalt kast/poängval → bakgrund → färdig datortur → nio sekunders väntan → omstart med synlig markering → eget kast rensar markering, utan live-skrivningar eller runtimefel. Bygge OK; fysisk stängning/återkomst kräver nästa appversion och telefon. Arkitekturregel i hooks/AGENTS.md; root vid skyddad storleksgräns.
+
 ## Appkontroll – 20 november kväll
 - [x] 788 tester godkända med begränsad parallell belastning; 140 databasprov överhoppade för att undvika live-skrivningar. Två annonsprov föll först under belastning, samtliga 80 gick igenom separat och hela omkörningen gick igenom.
 - [x] Startsida, statistik med verkliga läsningar och avskild datormatch kontrollerade; eget första kast, låsning, omkast och 12 poängval fungerade utan live-skrivningar. Helmatchens avslut inte verifierat: browserprovet nådde väntetimeout inför nästa tur. Inga appändringar eller bekräftade nya spelfel; fysisk annonsering/telefonflyt och nätfördröjning kvarstår att verifiera.

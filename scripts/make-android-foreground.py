@@ -17,7 +17,7 @@ from PIL import Image
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else 'resources/icon.png'
 DENSITIES = {'mdpi': 108, 'hdpi': 162, 'xhdpi': 216, 'xxhdpi': 324, 'xxxhdpi': 432}
-ART = 60 / 108  # artwork share of the 108dp layer
+ART = 72 / 108  # artwork share of the 108dp layer
 
 im = np.asarray(Image.open(SRC).convert('RGB'), dtype=np.float64)
 H = W = im.shape[0]

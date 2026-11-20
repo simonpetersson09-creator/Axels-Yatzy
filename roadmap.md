@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## S24 Ultra – större tärningar
+- [x] Förstorade tärningar på breda, höga telefoner med bibehållen gap-skala; fast spelplan och bannerplats kontrollerade efter kast.
+- [x] Fyra simulerade telefonmått kontrollerade, 80 annonstester godkända; S24 Ultra-bild v4 granskad och sparad i 1440 × 3120. Kräver nästa appversion för fysisk telefonkontroll.
+
 ## Androidbilder och mindre tomrum – 20 november
 - [x] Lokal telefonspelplan använder tillgänglig höjd ovanför bannerplatsen; online och surfplattor oförändrade. 91 tester godkända.
 - [x] Fast placering efter kast verifierad på fyra Androidmått; fyra granskade modellbilder sparade som v3. Simulerade systemmarginaler, fysisk telefon kräver nästa appversion. Root AGENTS.md saknar utrymme för ny regel.

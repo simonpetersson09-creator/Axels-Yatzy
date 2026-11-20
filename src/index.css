@@ -823,6 +823,14 @@ html:is(.ad-banner-on, :has(.local-game)):has(.mp-game) { --dice-scale: 0.74; }
     --dice-scale: 1;
   }
 }
+/* Wide, tall phones: keep dice proportional without expanding their gaps.
+   The synchronous banner fit can still reduce them if space is insufficient. */
+@media (min-width: 420px) and (max-width: 699px) and (min-height: 900px) {
+  html:has(.local-game):not(:has(.mp-game)) {
+    --dice-scale: 1.3;
+    --dice-gap-scale: 1;
+  }
+}
 /* Små telefoner (SE/mini): krymp protokollet så bannern får plats under. */
 @media (max-height: 720px) {
   html:is(.ad-banner-on, :has(.local-game)) {

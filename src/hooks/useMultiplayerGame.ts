@@ -1727,12 +1727,17 @@ export function useMultiplayerGame() {
       ? state.gameState.players[myPlayerIndex]?.name ?? null
       : null;
     const myPlayerId = myPlayerIndex !== null ? state.gameState?.players[myPlayerIndex]?.id : undefined;
+    const forfeitStartedAt = Date.now();
 
     forfeitingRef.current = true;
     setForfeiting(true);
     setForfeitError(false);
 
     const isCurrent = () => mountedRef.current && stateRef.current.gameId === gameId;
+    const reportSlowForfeit = () => {
+      const ms = Date.now() - forfeitStartedAt;
+      if (isCurrent() && ms > MP_SLOW_MS) reportMpIssue('forfeit_slow', gameId, { ms });
+    };
     const accept = () => {
       if (!isCurrent()) return;
       unconfirmedForfeitRef.current = null;
@@ -1759,7 +1764,6 @@ export function useMultiplayerGame() {
           (game.is_quick_match && seat.id === myPlayerId && seat.is_bot &&
             seat.session_id !== sessionId && seat.session_id.startsWith('bot:'))) {
           accept();
-          reportMpIssue('forfeit_recovered', gameId);
           return 'accepted';
         }
         if (game.status === 'finished') {
@@ -1777,7 +1781,10 @@ export function useMultiplayerGame() {
       // A manual retry first reads authoritative state; never resend blind.
       if (unconfirmedForfeitRef.current === gameId) {
         const outcome = await reconcile();
-        if (outcome === 'accepted' || outcome === 'ended') return;
+        if (outcome === 'accepted' || outcome === 'ended') {
+          reportSlowForfeit();
+          return;
+        }
         if (outcome !== 'running') throw new Error('forfeit_unconfirmed');
       }
       // A read showing "playing" cannot cancel a still-live prior request.
@@ -1794,13 +1801,25 @@ export function useMultiplayerGame() {
       const { data, error } = await withTimeout(request);
       if (error || !data?.success) throw error ?? new Error('forfeit not accepted');
       accept();
+      reportSlowForfeit();
     } catch (err) {
-      console.error('Forfeit failed:', err);
-      reportMpIssue('forfeit_failed', gameId, { err: errText(err) });
-      if (!isCurrent() || confirmedForfeitsRef.current.has(gameId)) return;
+      if (!isCurrent()) return;
+      if (confirmedForfeitsRef.current.has(gameId)) {
+        reportSlowForfeit();
+        return;
+      }
       unconfirmedForfeitRef.current = gameId;
       const outcome = await reconcile();
-      if (outcome !== 'accepted' && outcome !== 'ended' && isCurrent() && !confirmedForfeitsRef.current.has(gameId)) setForfeitError(true);
+      if (!isCurrent()) return;
+      // A lost/rejected response is not a failed exit if authoritative state
+      // confirms it. Keep actual elapsed waits visible, not routine recovery.
+      if (outcome === 'accepted' || outcome === 'ended' || confirmedForfeitsRef.current.has(gameId)) {
+        reportSlowForfeit();
+        return;
+      }
+      console.error('Forfeit failed:', err);
+      reportMpIssue('forfeit_failed', gameId, { err: errText(err), ms: Date.now() - forfeitStartedAt });
+      setForfeitError(true);
     } finally {
       forfeitingRef.current = false;
       if (mountedRef.current) setForfeiting(false);

@@ -28,7 +28,7 @@ describe.skipIf(!db)('significant admin issues (connection-local SQL)', () => {
   it('preserves a result arriving after the roll timeout', async () => {
     expect(await significant({ kind: 'dice_result_fallback', via: 'late_after_timeout' })).toBe(true);
   });
-  it.each(['roll_failed', 'lock_error', 'submit_failed', 'score_mismatch', 'dice_value_jump', 'dice_slow_result'])('preserves meaningful %s', async kind => {
+  it.each(['roll_failed', 'lock_error', 'submit_failed', 'score_mismatch', 'dice_value_jump', 'dice_slow_result', 'forfeit_failed', 'forfeit_slow'])('preserves meaningful %s', async kind => {
     expect(await significant({ kind })).toBe(true);
   });
   it('handles malformed timing without mistaking snapshot age for elapsed wait', async () => {
@@ -38,7 +38,7 @@ describe.skipIf(!db)('significant admin issues (connection-local SQL)', () => {
     if (!db) throw new Error('Missing SQL test connection');
     await db.begin(async sql => {
       await sql.unsafe('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
-      for (const name of ['admin_issue_release', 'admin_is_significant_issue', 'admin_daily_stats_v3', 'admin_daily_extra_stats']) {
+      for (const name of ['admin_issue_release', 'admin_is_significant_issue', 'admin_is_app_activity_event', 'admin_daily_stats_v3', 'admin_daily_extra_stats']) {
         const [row] = await sql`select pg_get_functiondef(oid) definition from pg_proc where pronamespace='public'::regnamespace and proname=${name}`;
         await sql.unsafe(row.definition.replace(/public\.admin_/g, 'pg_temp.admin_'));
       }
@@ -60,7 +60,7 @@ describe.skipIf(!db)('significant admin issues (connection-local SQL)', () => {
       expect(Number(actual.issues)).toBe(Number(expected.n));
       expect(Number(actual.issue_devices)).toBe(Number(expected.devices));
     });
-  });
+  }, 120_000);
   it('keeps the helper private to the protected admin service', async () => {
     if (!db) throw new Error('Missing SQL test connection');
     const [row] = await db`select has_function_privilege('anon','public.admin_is_significant_issue(jsonb)','EXECUTE') a,

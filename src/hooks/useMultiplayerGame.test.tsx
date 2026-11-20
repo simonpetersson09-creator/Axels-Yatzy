@@ -11,11 +11,13 @@ vi.mock('@/lib/i18n', () => ({ t: (key: string) => key }));
 vi.mock('@/lib/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('@/lib/notifications', () => ({ clearGameNotifications: vi.fn() }));
 import { useMultiplayerGame } from './useMultiplayerGame';
+import { trackEvent } from '@/lib/analytics';
 let game: Record<string, unknown>;
 let failReads = false;
 const players = [{ id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false, session_id: 'me' }, { id: 'p2', player_name: 'Other', player_index: 1, scores: {}, is_bot: false, session_id: 'other' }];
 beforeEach(() => {
   vi.useFakeTimers(); failReads = false;
+  vi.mocked(trackEvent).mockClear();
   vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
   players[0] = { id: 'p1', player_name: 'Me', player_index: 0, scores: {}, is_bot: false, session_id: 'me' };
   game = { id: 'game', game_code: 'ABCDEF', status: 'playing', current_player_index: 0, dice: [1,1,1,1,1], locked_dice: [false,false,false,false,false], rolls_left: 3, round: 1, updated_at: '2026-10-24T12:00:00Z' };
@@ -256,6 +258,7 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.forfeiting).toBe(false);
     expect(result.current.error).toBeNull();
     expect(result.current.forfeitError).toBe(true);
+    expect(trackEvent).toHaveBeenCalledWith('mp_issue', expect.objectContaining({ kind: 'forfeit_failed', err: 'offline' }), expect.anything());
   });
   it('lost response recovers a server-accepted forfeit without sending twice', async () => {
     const { result } = await joined();
@@ -268,6 +271,7 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.gameState?.forfeitedBySessionId).toBe('me');
     expect(result.current.forfeitError).toBe(false);
     expect(m.action).toHaveBeenCalledOnce();
+    expect(vi.mocked(trackEvent).mock.calls.filter(([event]) => event === 'mp_issue')).toEqual([]);
   });
   it('recovers an early quick-match forfeit from the replaced seat', async () => {
     game = { ...game, is_quick_match: true };
@@ -281,6 +285,51 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.status).toBe('finished');
     expect(result.current.gameState?.forfeitedBySessionId).toBe('me');
     expect(m.action).toHaveBeenCalledOnce();
+    expect(vi.mocked(trackEvent).mock.calls.filter(([event]) => event === 'mp_issue')).toEqual([]);
+  });
+  it('waits for authoritative reconciliation before logging a failed exit', async () => {
+    const { result } = await joined();
+    m.action.mockRejectedValue(new Error('offline'));
+    const normalFrom = m.from.getMockImplementation();
+    let release: (value: unknown) => void = () => {};
+    const read = new Promise(resolve => { release = resolve; });
+    m.from.mockImplementation((table: string) => {
+      if (table !== 'games') return normalFrom?.(table);
+      const q = { select: () => q, eq: () => q, single: () => read };
+      return q;
+    });
+    let pending: Promise<void> = Promise.resolve();
+    await act(async () => { pending = result.current.forfeitGame(); });
+    expect(vi.mocked(trackEvent).mock.calls.filter(([event]) => event === 'mp_issue')).toEqual([]);
+    await act(async () => {
+      release({ data: { ...game, status: 'finished', forfeited_by_session_id: 'me' }, error: null });
+      await pending;
+    });
+    expect(result.current.status).toBe('finished');
+    expect(vi.mocked(trackEvent).mock.calls.filter(([event]) => event === 'mp_issue')).toEqual([]);
+  });
+  it('keeps a recovered exit taking 4000ms visible as slow, not failed', async () => {
+    const { result } = await joined();
+    m.action.mockImplementation(async () => {
+      await new Promise(resolve => setTimeout(resolve, 4000));
+      game = { ...game, status: 'finished', forfeited_by_session_id: 'me' };
+      throw new Error('lost response');
+    });
+    await act(async () => { void result.current.forfeitGame(); await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.status).toBe('finished');
+    const issues = vi.mocked(trackEvent).mock.calls.filter(([event]) => event === 'mp_issue');
+    expect(issues).toHaveLength(1);
+    expect(issues[0]?.[1]).toMatchObject({ kind: 'forfeit_slow', ms: 4000 });
+  });
+  it('keeps a directly accepted exit taking 4000ms visible as slow', async () => {
+    const { result } = await joined();
+    m.action.mockImplementation(async () => {
+      await new Promise(resolve => setTimeout(resolve, 4000));
+      return { data: { success: true }, error: null };
+    });
+    await act(async () => { void result.current.forfeitGame(); await vi.advanceTimersByTimeAsync(4000); });
+    expect(result.current.status).toBe('finished');
+    expect(trackEvent).toHaveBeenCalledWith('mp_issue', expect.objectContaining({ kind: 'forfeit_slow', ms: 4000 }), expect.anything());
   });
   it('failed reconciliation stays on the board and blocks a blind manual retry', async () => {
     const { result } = await joined(); failReads = true;
@@ -346,6 +395,7 @@ describe('authoritative multiplayer recovery', () => {
     expect(result.current.status).toBe('finished');
     expect(result.current.gameState?.forfeitedBySessionId).toBe('other');
     expect(result.current.forfeitError).toBe(false);
+    expect(vi.mocked(trackEvent).mock.calls.filter(([event]) => event === 'mp_issue')).toEqual([]);
   });
   it('pending last score never exposes a confirmed finished board or permits another action', async () => {
     game = { ...game, rolls_left: 0, dice: [6,6,6,6,6] };

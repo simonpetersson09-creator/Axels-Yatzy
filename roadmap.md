@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Hundra hela provmatcher – 21 november
+- [ ] Spela 50 kompletta datormatcher och 50 kompletta onlinematcher med avskild, simulerad kommunikation; verklig spellogik, alla 15 poängrader, lås/omkast, återkomst, sena/dubbla meddelanden och resultatkontroll. Inga live-spelaruppgifter eller topplistor får påverkas.
+- [ ] Kontrollera ett helt matchflöde i förhandsvisningen och rapportera bekräftade avvikelser separat från provmiljöns begränsningar; inga appändringar i denna granskning.
+
 ## Hela anropets väntetid – 21 november
 - [x] Befintliga privata kast-, lås- och poängkvitton mäter SQL-start, väntan före handlingen och hela handlingen inklusive lås. Telefonen jämför samma försök med mottagna svarshuvuden/avkodning; ingen omsändning eller ändrad adminfiltrering. Tid före SQL-start är fortfarande oklassificerad, inte bevisad nätfördröjning.
 - [x] 59 tester godkända inklusive tre serverhandlingar i temporära tabeller, gammalt kast utan ny mutation, nekad kvittoskrivning från fel enhet, raderingskedja och live-adminfilter. Privata åtkomster verifierade, bygge OK. Root AGENTS.md vid storleksgränsen, därför ingen ny arkitekturregel där.

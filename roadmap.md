@@ -1,8 +1,9 @@
 # Roadmap – Snabbspel online
 
 ## Hundra hela provmatcher – 21 november
-- [ ] Spela 50 kompletta datormatcher och 50 kompletta onlinematcher med avskild, simulerad kommunikation; verklig spellogik, alla 15 poängrader, lås/omkast, återkomst, sena/dubbla meddelanden och resultatkontroll. Inga live-spelaruppgifter eller topplistor får påverkas.
-- [ ] Kontrollera ett helt matchflöde i förhandsvisningen och rapportera bekräftade avvikelser separat från provmiljöns begränsningar; inga appändringar i denna granskning.
+- [x] 50 kompletta datormatcher (verklig AI, 2–4 platser) och 50 kompletta onlinematcher med simulerad server/kommunikation godkända. 3 225 spelarturer, 9 210 observerade kast och 11 183 låskontroller; 17 lokala återöppningar, 10 onlineåterkomster, 1 500 äldre meddelanden. Alla poäng kontrollerade mot oberoende beräkning och resultat räknades endast en gång; inga live-skrivningar eller nya bekräftade spelfel.
+- [x] 100 matchprov samt 125 riktade regressionstester godkända. Extra helmatch genom förhandsvisningens knappar: 15 rundor, 45 egna kast, alla slutpoäng och en statistikregistrering, inga runtimefel; 55 externa skrivningar blockerade. En extra accelererad omkörning missade ett knapptryck; inte återskapat med normal animationstid och därför inte klassat som appfel. Ingen ändrad appfunktion; endast provfiler.
+- [x] Begränsningar redovisade: onlineproven kör appens hook men simulerar server, transport och andra spelaren; verkligt nät/produktionsserver, annonser och tärningsflyt på fysisk telefon är inte verifierade av dessa hundra matcher. Root AGENTS.md vid storleksgräns, ingen ny arkitekturregel införd.
 
 ## Hela anropets väntetid – 21 november
 - [x] Befintliga privata kast-, lås- och poängkvitton mäter SQL-start, väntan före handlingen och hela handlingen inklusive lås. Telefonen jämför samma försök med mottagna svarshuvuden/avkodning; ingen omsändning eller ändrad adminfiltrering. Tid före SQL-start är fortfarande oklassificerad, inte bevisad nätfördröjning.

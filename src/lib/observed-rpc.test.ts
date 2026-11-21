@@ -46,3 +46,17 @@ it('preserves the existing session authorization and ignores observer errors', a
   expect((await observedRpc('client_roll', {}, () => { throw new Error('observer only'); })).data).toEqual({ success: true });
   expect(fetch).toHaveBeenCalledTimes(1);
 });
+
+it('observes headers before body parsing without consuming or repeating the response', async () => {
+  vi.stubEnv('VITE_SUPABASE_URL', 'https://example.invalid');
+  vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY', 'public-test-key');
+  mocks.session.mockResolvedValue({ data: { session: null } });
+  const stages: string[] = [];
+  const fetch = vi.fn(async () => new Response('{"success":true}', { headers: { 'Content-Type': 'application/json' } }));
+  vi.stubGlobal('fetch', fetch);
+  const result = await observedRpc('client_roll', {}, () => { stages.push('dispatch'); }, () => { stages.push('headers'); });
+  stages.push('parsed');
+  expect(stages).toEqual(['dispatch', 'headers', 'parsed']);
+  expect(result.data).toEqual({ success: true });
+  expect(fetch).toHaveBeenCalledTimes(1);
+});

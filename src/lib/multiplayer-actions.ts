@@ -2,7 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { requireClaimedDevice } from '@/lib/session';
 import { t } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
-import { rollTiming } from '@/lib/roll-timing';
+import { rollTiming, databaseTiming } from '@/lib/roll-timing';
 import { observedRpc } from '@/lib/observed-rpc';
 
 /** Both the direct and function paths wait for a confirmed device binding. */
@@ -17,6 +17,8 @@ export async function directRpc(
   let claimEnded: number | null = null;
   let requested: number | null = null;
   let requestedAt: string | null = null;
+  let headersReceived: number | null = null;
+  let databaseResult: unknown;
   const visibilityAtStart = document.visibilityState;
   let visibilityChanges = 0;
   const changed = () => { visibilityChanges++; };
@@ -31,17 +33,20 @@ export async function directRpc(
         occurred_at: new Date().toISOString(), ok, stage,
         response_received: responseReceived,
         request_dispatched: requested !== null,
-        timing_version: 2,
+        timing_version: 3,
         dispatch_boundary: 'fetch_entry',
         client_prepare_ms: Math.round(claimEnded === null ? 0 : (requested ?? ended) - claimEnded),
         pre_dispatch_ms: Math.round((requested ?? ended) - started),
         requested_at: requestedAt,
         response_at: stage === 'response' ? new Date().toISOString() : null,
+        fetch_to_headers_ms: requested !== null && headersReceived !== null ? Math.round(headersReceived - requested) : null,
+        headers_to_response_ms: stage === 'response' && headersReceived !== null ? Math.round(ended - headersReceived) : null,
         visibility_at_start: visibilityAtStart,
         visibility_at_end: document.visibilityState,
         visibility_changes: visibilityChanges,
         online_hint: navigator.onLine,
         ...rollTiming(ended - started, (claimEnded ?? ended) - started, requested === null ? 0 : ended - requested, serverMs),
+        ...databaseTiming(requested === null ? 0 : ended - requested, databaseResult),
       }, { gameId: typeof args.p_game_id === 'string' ? args.p_game_id : null, gameMode: 'multiplayer' });
     } catch { /* Diagnostics never affect a roll. */ }
   };
@@ -66,9 +71,10 @@ export async function directRpc(
     if (requested !== null) return;
     requested = performance.now();
     requestedAt = new Date().toISOString();
-  }); }
+  }, () => { headersReceived = performance.now(); }); }
   catch (error) { record(false); throw error; }
   const { data, error } = response;
+  databaseResult = data;
   const result = data as { success?: boolean; error?: string; server_ms?: number; stale_command?: boolean } | null;
   record(!error && result?.success === true, result?.server_ms, 'response', true);
   if (error) return { data: null, error };

@@ -169,9 +169,28 @@ it.each(['client_roll', 'client_set_locks_guarded', 'client_submit_score'] as co
     expect((await pending).error).toBeNull();
     expect(mocks.track).toHaveBeenLastCalledWith(expect.any(String), expect.objectContaining({
       total_ms: 3600, claim_ms: 0, client_prepare_ms: 3500, pre_dispatch_ms: 3500,
-      request_ms: 100, server_ms: 1, outside_server_ms: 99, timing_version: 2,
+      request_ms: 100, server_ms: 1, outside_server_ms: 99, timing_version: 3,
       request_dispatched: true, dispatch_boundary: 'fetch_entry',
     }), expect.anything());
     expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  } finally { vi.clearAllTimers(); vi.useRealTimers(); }
+});
+
+it('correlates full database timing without treating the legacy 1ms action as the whole request', async () => {
+  vi.useFakeTimers();
+  try {
+    mocks.claim.mockResolvedValue('device');
+    mocks.rpc.mockImplementation(async () => {
+      await new Promise(resolve => setTimeout(resolve, 12600));
+      return { data: { success: true, server_ms: 1, db_statement_ms: 8000, db_entry_ms: 500, db_action_ms: 7500 }, error: null };
+    });
+    const pending = directRpc('client_roll', 'unused', {}, {}, { attemptId: 'full-database' });
+    await vi.advanceTimersByTimeAsync(12600);
+    expect((await pending).error).toBeNull();
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.track).toHaveBeenCalledWith('play_roll_timing', expect.objectContaining({
+      attempt_id: 'full-database', db_statement_ms: 8000, db_action_ms: 7500,
+      unaccounted_request_ms: 4600, cause_confirmed: false,
+    }), expect.anything());
   } finally { vi.clearAllTimers(); vi.useRealTimers(); }
 });

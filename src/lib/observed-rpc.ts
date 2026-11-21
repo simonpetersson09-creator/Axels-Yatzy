@@ -9,6 +9,7 @@ export function observedRpc(
   rpc: string,
   args: Record<string, unknown>,
   onFetchStarted: () => void,
+  onHeadersReceived?: () => void,
 ) {
   const client = createClient(
     import.meta.env.VITE_SUPABASE_URL,
@@ -22,7 +23,9 @@ export function observedRpc(
           const headers = new Headers(init?.headers);
           headers.set('Authorization', `Bearer ${data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`);
           try { onFetchStarted(); } catch { /* Measurement cannot block play. */ }
-          return globalThis.fetch(input, { ...init, headers });
+          const response = await globalThis.fetch(input, { ...init, headers });
+          try { onHeadersReceived?.(); } catch { /* Measurement cannot block play. */ }
+          return response;
         },
       },
     },

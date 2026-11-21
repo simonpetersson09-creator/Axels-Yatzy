@@ -650,6 +650,9 @@ export type Database = {
       multiplayer_request_timings: {
         Row: {
           attempt_id: string
+          db_action_ms: number | null
+          db_entry_ms: number | null
+          db_statement_ms: number | null
           operation: string
           recorded_at: string
           request_id: string
@@ -659,6 +662,9 @@ export type Database = {
         }
         Insert: {
           attempt_id: string
+          db_action_ms?: number | null
+          db_entry_ms?: number | null
+          db_statement_ms?: number | null
           operation: string
           recorded_at?: string
           request_id?: string
@@ -668,6 +674,9 @@ export type Database = {
         }
         Update: {
           attempt_id?: string
+          db_action_ms?: number | null
+          db_entry_ms?: number | null
+          db_statement_ms?: number | null
           operation?: string
           recorded_at?: string
           request_id?: string
@@ -1884,6 +1893,10 @@ export type Database = {
       internal_create_quick_match: {
         Args: { p_names: string[]; p_sessions: string[]; p_size: number }
         Returns: string
+      }
+      internal_database_timing: {
+        Args: { p_entered: string; p_result: Json }
+        Returns: Json
       }
       internal_grant_referral: {
         Args: { p_invitee: string; p_inviter: string }

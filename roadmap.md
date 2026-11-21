@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Hela anropets väntetid – 21 november
+- [x] Befintliga privata kast-, lås- och poängkvitton mäter SQL-start, väntan före handlingen och hela handlingen inklusive lås. Telefonen jämför samma försök med mottagna svarshuvuden/avkodning; ingen omsändning eller ändrad adminfiltrering. Tid före SQL-start är fortfarande oklassificerad, inte bevisad nätfördröjning.
+- [x] 59 tester godkända inklusive tre serverhandlingar i temporära tabeller, gammalt kast utan ny mutation, nekad kvittoskrivning från fel enhet, raderingskedja och live-adminfilter. Privata åtkomster verifierade, bygge OK. Root AGENTS.md vid storleksgränsen, därför ingen ny arkitekturregel där.
+- [ ] Fastställ den verkliga fördröjningsorsaken från samma anrops server-/telefonmätningar; kräver nästa appversion och nya matcher på fysisk telefon. Servermätningen är införd nu.
+
 ## Datorns tur vid stängd app – 20 november
 - [x] Pågående datortur slutförs vid bakgrund eller återöppning med befintliga kast och EV-beslut; vald ruta sparas och markeras tills människan kastar. Sen datortimer verifierar aktuell tur synkront; inga ändringar online.
 - [x] 49 riktade tester godkända; riktigt lokalt kast/poängval → bakgrund → färdig datortur → nio sekunders väntan → omstart med synlig markering → eget kast rensar markering, utan live-skrivningar eller runtimefel. Bygge OK; fysisk stängning/återkomst kräver nästa appversion och telefon. Arkitekturregel i hooks/AGENTS.md; root vid skyddad storleksgräns.

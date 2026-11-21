@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Grundorsak till serverväntan – 21 november
+- [x] Skrivskyddad kontroll: 141 driftsatta kvitton med nya SQL-fält, SQL p50 1,692 ms/p95 7,831 ms/max 12,405 ms; nattens tre 12,6 s-försök korrelerade men har endast äldre mätning. Aktuella gatewaytider och två hälsoprover visar ingen verifierad belastningsbrist. 39 befintliga prov godkända; lokal separat PostgreSQL-instans återskapade poolkö, radlås och väntan efter SQL utan riktiga spelåtgärder. Rapport sparad i Files; ingen app-/serverändring eller publicering.
+- [ ] Verifiera grundorsaken och välj latensåtgärd: kräver ett verkligt långsamt försök med nya SQL-/klientgränser och korrelerad gateway-/pool-/commitspårning. Före/efter-p50/p95 för hela klientkedjan kräver representativ mätserie på fysisk telefon; nuvarande snabba klientanrop är inte samtliga loggade.
+
 ## Sena poäng- och låskvitton – 21 november
 - [x] Gemensam engångsbekräftelse för sena originalkvitton och reservläsningar; tidsgräns behåller spelvy och handlingsägare. Matchlivstid/spelare/tur/kast/handling skyddas; skickad låskö väntar på verkligt anrop även efter reservbekräftelse. Gamla optimistiska lås rensas vid nytt serverkast; terminal nätfelshantering bevarad utan omsändning.
 - [x] 22 nya regressioner, varav 10 fallerade mot tidigare kod; hela relevanta gruppen 172 godkända inklusive 50 simulerade helmatcher. Avskilt browserprov: exakt ett låsanrop och ett poänganrop med 12,6 s injicerad svarstid; lås synligt, 30 poäng sparat i provsvaret, motståndarens tur visas utan runtimefel. Bygge OK; inga produktionsdata eller publicering. Arkitektur i hooks/AGENTS.md, root saknar utrymme.

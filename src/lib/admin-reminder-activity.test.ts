@@ -6,7 +6,7 @@ afterAll(async () => { await db?.end(); });
 describe.skipIf(!db)('server reminders are not player activity (isolated deployed SQL)', () => {
  async function fixture(event: string, visit = false) {
   if (!db) throw new Error('Missing SQL connection');
-  const names = ['admin_is_app_activity_event(text)','admin_mean_app_age(date,date[])','admin_median_app_age(date,date[])','admin_daily_stats_v3(date)','admin_daily_stats_v4(date)','admin_daily_stats_v5(date)'];
+  const names = ['admin_is_app_activity_event(text)','admin_is_significant_issue(jsonb)','admin_mean_app_age(date,date[])','admin_median_app_age(date,date[])','admin_daily_stats_v3(date)','admin_daily_stats_v4(date)','admin_daily_stats_v5(date)'];
   const definitions: string[] = [];
   for (const name of names) {
    const [row] = await db`select pg_get_functiondef(${`public.${name}`}::regprocedure) definition`;
@@ -15,7 +15,7 @@ describe.skipIf(!db)('server reminders are not player activity (isolated deploye
   return db.begin(async sql => {
       await sql.unsafe(`
         CREATE TEMP TABLE analytics_sessions(device_id text, platform text, started_at timestamptz, last_seen_at timestamptz, app_version text) ON COMMIT DROP;
-        CREATE TEMP TABLE analytics_events(device_id text, platform text, created_at timestamptz, event_name text, game_mode text, app_version text) ON COMMIT DROP;
+        CREATE TEMP TABLE analytics_events(device_id text, platform text, created_at timestamptz, event_name text, game_mode text, app_version text, metadata jsonb) ON COMMIT DROP;
         CREATE TEMP TABLE games(id text, updated_at timestamptz, status text, forfeited_by text, forfeited_by_session_id text) ON COMMIT DROP;
         CREATE TEMP TABLE game_players(game_id text, session_id text, is_bot boolean, player_index integer) ON COMMIT DROP;
         CREATE TEMP TABLE session_owners(session_id text PRIMARY KEY, device_id text) ON COMMIT DROP;

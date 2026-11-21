@@ -10,6 +10,7 @@ describe.skipIf(!db)('weekly country fallback — isolated SQL', () => {
     await db.begin(async sql => {
       await sql.unsafe(`
         CREATE TEMP TABLE player_country_stats(session_id text PRIMARY KEY,country text) ON COMMIT DROP;
+        CREATE TEMP TABLE leaderboard_excluded_sessions(session_id text PRIMARY KEY) ON COMMIT DROP;
         CREATE TEMP TABLE weekly_hall_of_fame(session_id text,first_name text,country text,week_start date,best_score integer,games_played integer,best_at timestamptz,updated_at timestamptz,PRIMARY KEY(session_id,week_start)) ON COMMIT DROP;
         CREATE OR REPLACE FUNCTION pg_temp.internal_hof_week() RETURNS date LANGUAGE sql AS $$ SELECT DATE '2026-11-02' $$;
         CREATE OR REPLACE FUNCTION pg_temp.internal_anon_number(text) RETURNS text LANGUAGE sql AS $$ SELECT '4867'::text $$;

@@ -14,7 +14,7 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
       // Only connection-local tables/function are written. No live games, events or player statistics.
       await sql.unsafe(`
         CREATE TEMP TABLE analytics_sessions(device_id text, platform text, started_at timestamptz, last_seen_at timestamptz, app_version text) ON COMMIT DROP;
-        CREATE TEMP TABLE analytics_events(device_id text, platform text, created_at timestamptz, event_name text, game_mode text, app_version text) ON COMMIT DROP;
+        CREATE TEMP TABLE analytics_events(device_id text, platform text, created_at timestamptz, event_name text, game_mode text, app_version text, metadata jsonb) ON COMMIT DROP;
         CREATE TEMP TABLE games(id text, updated_at timestamptz, status text, forfeited_by text, forfeited_by_session_id text) ON COMMIT DROP;
         CREATE TEMP TABLE game_players(game_id text, session_id text, is_bot boolean, player_index integer) ON COMMIT DROP;
         CREATE TEMP TABLE session_owners(session_id text PRIMARY KEY, device_id text) ON COMMIT DROP;
@@ -29,7 +29,10 @@ describe.skipIf(!url)('admin completed online matches (isolated server SQL)', ()
       await sql.unsafe(helper.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       const [activityHelper] = await sql`select pg_get_functiondef('public.admin_is_app_activity_event(text)'::regprocedure) definition`;
       await sql.unsafe(activityHelper.definition.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
+      const [issueHelper] = await sql`select pg_get_functiondef('public.admin_is_significant_issue(jsonb)'::regprocedure) definition`;
+      await sql.unsafe(issueHelper.definition.replace(/public\.admin_/g, 'pg_temp.admin_').replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp'"));
       const isolatedDefinition = source.definition
+        .replace(/public\.admin_is_significant_issue/g, 'pg_temp.admin_is_significant_issue')
         .replace('public.admin_daily_stats_v3', 'pg_temp.admin_daily_stats_v3')
         .replace(/public\.admin_issue_release/g, 'pg_temp.admin_issue_release')
         .replace(/public\.admin_is_app_activity_event/g, 'pg_temp.admin_is_app_activity_event')

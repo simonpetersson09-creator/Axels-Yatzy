@@ -30,6 +30,7 @@ import RewardedXpHost from "./components/RewardedXpHost";
 import WaitingRoomPage from './pages/WaitingRoomPage';
 import PlayJourneyHost from './components/PlayJourneyHost';
 import { AppOpenGameGate } from './components/AppOpenGameGate';
+import WaitingRoomExpiryHost from './components/WaitingRoomExpiryHost';
 
 // Admin dashboard is available in dev and on web (Lovable preview / browser),
 // but NEVER bundled into native iOS App Store builds.
@@ -78,6 +79,7 @@ const App = () => (
         <LobbyJoinNotice />
         <NotificationAskHost />
         <RewardedXpHost />
+        <WaitingRoomExpiryHost />
         <AndroidBackButton />
         <SwipeBack />
         {ADMIN_ENABLED && DevFriendBotRunner && (

@@ -13,5 +13,6 @@ describe('waiting-room rules', () => {
   it('indicator excludes own seat', () => expect(otherWaitingCount([player('a'), player('b')], 'a', 0)).toBe(1));
   it('indicator includes absent seats', () => expect(otherWaitingCount([player('b', { present: false })], 'a', 0)).toBe(1));
   it('indicator includes solo seats after the old expiry', () => expect(otherWaitingCount([player('b', { expires_at: new Date(100).toISOString() })], 'a', 100000)).toBe(1));
-  it('indicator excludes nonready players at their deadline', () => expect(otherWaitingCount([player('b', { ready: false, recall_until: new Date(100).toISOString() })], 'a', 100)).toBe(0));
+  it('indicator excludes absent players at their deadline', () => expect(otherWaitingCount([player('b', { present: false, ready: false, recall_until: new Date(100).toISOString() })], 'a', 100)).toBe(0));
+  it('indicator retains present nonready players after 120 seconds', () => expect(otherWaitingCount([player('b', { ready: false, recall_until: new Date(120000).toISOString() })], 'a', 120000)).toBe(1));
 });

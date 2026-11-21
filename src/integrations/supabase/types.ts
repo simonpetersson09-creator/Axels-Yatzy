@@ -1169,6 +1169,38 @@ export type Database = {
         }
         Relationships: []
       }
+      waiting_room_expiry_notices: {
+        Row: {
+          created_at: string
+          id: string
+          player_names: string
+          seat_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          player_names?: string
+          seat_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          player_names?: string
+          seat_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waiting_room_expiry_notices_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "session_owners"
+            referencedColumns: ["session_id"]
+          },
+        ]
+      }
       waiting_room_push_queue: {
         Row: {
           delivered: boolean | null
@@ -1483,6 +1515,10 @@ export type Database = {
       accept_invite: {
         Args: { p_invite_id: string; p_session_id: string }
         Returns: Json
+      }
+      ack_waiting_room_expiry: {
+        Args: { p_device_id: string; p_notice_id: string; p_session_id: string }
+        Returns: boolean
       }
       ack_weekly_xp_rewards: {
         Args: {

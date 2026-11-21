@@ -4,11 +4,13 @@ import { initDeviceId } from '@/lib/device';
 import { getSessionId, getPlayerName, getAnonNumber } from '@/lib/session';
 import { t } from '@/lib/i18n';
 import type { WaitingPlayer } from './waiting-room-rules';
+import { publishWaitingExpiryNotice, acknowledgeWaitingExpiryNotice, type WaitingExpiryNotice } from './waiting-room-expiry-notice';
 
 export interface WaitingSeat extends WaitingPlayer { game_id: string | null; notify_enabled: boolean }
 export interface WaitingSnapshot {
   error: string | null; server_now: string; countdown_at: string | null;
   push_registered: boolean; mine: WaitingSeat | null; players: WaitingPlayer[];
+  expiry_notice?: WaitingExpiryNotice | null;
 }
 export type RoomAction = 'sync' | 'join' | 'open' | 'heartbeat' | 'ready' | 'away' | 'leave' | 'extend' | 'notify';
 const SEAT_KEY = 'yatzy_waiting_seat';
@@ -23,9 +25,19 @@ export async function roomAction(action: RoomAction, opts: { seatId?: string | n
   });
   if (error) throw new Error(error.message);
   const snapshot = data as unknown as WaitingSnapshot;
+  publishWaitingExpiryNotice(getSessionId(), snapshot.expiry_notice);
   if (snapshot.mine) localStorage.setItem(SEAT_KEY, snapshot.mine.id);
   else if (action === 'leave' || snapshot.error === 'expired' || (action === 'sync' && !snapshot.error)) localStorage.removeItem(SEAT_KEY);
   return snapshot;
+}
+
+export async function dismissWaitingExpiry(id: string) {
+  const session = getSessionId();
+  const { data, error } = await supabase.rpc('ack_waiting_room_expiry', {
+    p_session_id: session, p_device_id: await initDeviceId(), p_notice_id: id,
+  });
+  if (error || data !== true) throw new Error('notice_ack_failed');
+  acknowledgeWaitingExpiryNotice(session, id);
 }
 
 // Durable handoff if a native cold-start tap arrives before React mounts.

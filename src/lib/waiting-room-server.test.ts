@@ -1,4 +1,4 @@
-// Transaction scenarios roll back all QA data. Committed concurrency testing
+// Scenarios use transaction-local table copies. Committed concurrency testing
 // requires an explicitly disposable database, never the shared player table.
 import { afterAll, describe, expect, it } from 'vitest';
 import postgres from 'postgres';
@@ -11,12 +11,20 @@ async function scenario(check: (sql: postgres.TransactionSql, ids: string[], act
   const rollback = new Error('qa_rollback');
   try {
     await db.begin(async sql => {
-      await sql`select pg_advisory_xact_lock(742001)`;
-      const occupied = await sql`select count(*)::int as n from waiting_room_seats where game_id is null`;
-      if (occupied[0].n !== 0) throw new Error('Real waiting players present: refusing QA interference');
+      for (const table of ['games', 'game_players', 'waiting_room_seats', 'waiting_room_state', 'waiting_room_push_queue', 'session_owners', 'push_tokens', 'waiting_room_expiry_notices']) {
+        await sql.unsafe(`CREATE TEMP TABLE ${table} (LIKE public.${table} INCLUDING DEFAULTS INCLUDING CONSTRAINTS INCLUDING INDEXES) ON COMMIT DROP`);
+      }
+      for (const name of ['claim_session', 'internal_waiting_room_reconcile', 'waiting_room_action', 'waiting_room_count']) {
+        const [row] = await sql`SELECT pg_get_functiondef(oid) AS definition FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname=${name}`;
+        await sql.unsafe(row.definition.replace(`public.${name}(`, `pg_temp.${name}(`)
+          .replace("SET search_path TO 'public'", "SET search_path TO 'pg_temp', 'public'")
+          .replaceAll('public.session_owners', 'pg_temp.session_owners')
+          .replaceAll('claim_session(p_session_id,p_device_id)', 'pg_temp.claim_session(p_session_id,p_device_id)')
+          .replaceAll('PERFORM internal_waiting_room_reconcile()', 'PERFORM pg_temp.internal_waiting_room_reconcile()'));
+      }
       const ids = Array.from({ length: 5 }, () => `qa-room-${randomUUID()}`);
       const action = async (i: number, act = 'join', seat: string | null = null, ready = false, notify = false) => {
-        const rows = await sql`select waiting_room_action(${ids[i]},${ids[i] + '-device'},${act},${seat}::uuid,${'QA '+i},${ready},${notify}) as result`;
+        const rows = await sql`select pg_temp.waiting_room_action(${ids[i]},${ids[i] + '-device'},${act},${seat}::uuid,${'QA '+i},${ready},${notify}) as result`;
         return rows[0].result;
       };
       await check(sql, ids, action);
@@ -102,14 +110,14 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     const q=await sql`select count(*)::int n from waiting_room_push_queue where seat_id=${a.mine.id}`;expect(q[0].n).toBe(0);
   }));
   it('expiry and stale notification cannot resurrect old seat', () => scenario(async (sql, ids, action) => {
-    const a=await action(0);await action(1);await sql`update waiting_room_seats set recall_until=now() where id=${a.mine.id}`;
+    const a=await action(0);await action(0,'away',a.mine.id);await action(1);await sql`update waiting_room_seats set recall_until=now() where id=${a.mine.id}`;
     const old=await action(0,'open',a.mine.id);expect(old.error).toBe('expired');expect(old.mine).toBeNull();
     const fresh=await action(0);expect(fresh.mine.id).not.toBe(a.mine.id);
     expect((await action(0,'open',a.mine.id)).mine).toBeNull();
   }));
   it('device identity prevents other devices changing the seat', () => scenario(async (sql, ids, action) => {
     const a=await action(0);
-    await expect(sql`select waiting_room_action(${ids[0]},'wrong-device','ready',${a.mine.id}::uuid,'attacker',true,false)`).rejects.toThrow('room_identity_denied');
+    await expect(sql`select pg_temp.waiting_room_action(${ids[0]},'wrong-device','ready',${a.mine.id}::uuid,'attacker',true,false)`).rejects.toThrow('room_identity_denied');
   }));
   it('solo waiting survives the old 15-minute expiry and needs no extension', () => scenario(async (sql, ids, action) => {
     const a=await action(0);await sql`update waiting_room_seats set expires_at=now()+interval '1 minute' where id=${a.mine.id}`;
@@ -120,12 +128,12 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
   it('server indicator excludes own, expired, recalled and matched seats but includes absence', () => scenario(async (sql, ids, action) => {
     const a=await action(0), b=await action(1);
     await action(1,'away',b.mine.id);
-    let n=await sql`select waiting_room_count(${ids[0]}) n`;expect(n[0].n).toBe(1);
+    let n=await sql`select pg_temp.waiting_room_count(${ids[0]}) n`;expect(n[0].n).toBe(1);
     await sql`update waiting_room_seats set recall_until=now() where id=${b.mine.id}`;
-    n=await sql`select waiting_room_count(${ids[0]}) n`;expect(n[0].n).toBe(0);
+    n=await sql`select pg_temp.waiting_room_count(${ids[0]}) n`;expect(n[0].n).toBe(0);
     await action(0,'heartbeat',a.mine.id);
-    const c=await action(2);await sql`update waiting_room_seats set recall_until=now() where id=${c.mine.id}`;
-    n=await sql`select waiting_room_count(${ids[0]}) n`;expect(n[0].n).toBe(0);
+    const c=await action(2);await action(2,'away',c.mine.id);await sql`update waiting_room_seats set recall_until=now() where id=${c.mine.id}`;
+    n=await sql`select pg_temp.waiting_room_count(${ids[0]}) n`;expect(n[0].n).toBe(0);
   }));
   it('three players start only after the third is ready', () => scenario(async (sql,ids,action) => {
     const seats=[];for(let i=0;i<3;i++)seats.push((await action(i)).mine.id);
@@ -147,25 +155,28 @@ describe.skipIf(!url)('authoritative waiting room database', () => {
     expect(away.mine.game_id).toBeNull();expect(away.countdown_at).toBeNull();
     expect(away.players.every((p:any)=>!p.ready)).toBe(true);
   }));
-  it('company starts exactly 120 seconds for every nonready participant', () => scenario(async(sql,ids,action)=>{
+  it('company starts exactly 120 seconds only for absent participants', () => scenario(async(sql,ids,action)=>{
     const a=await action(0);expect(a.mine.recall_until).toBeNull();
+    await action(0,'away',a.mine.id);
     const b=await action(1);
-    for(const p of b.players)expect((Date.parse(p.recall_until)-Date.parse(b.server_now))/1000).toBe(120);
+    expect((Date.parse(b.players.find((p:any)=>p.id===a.mine.id).recall_until)-Date.parse(b.server_now))/1000).toBe(120);
+    expect(b.mine.recall_until).toBeNull();
     const again=await action(0,'join',a.mine.id);
-    expect(again.mine.recall_until).toBe(b.players.find((p:any)=>p.id===a.mine.id).recall_until);
+    expect(again.mine.recall_until).toBeNull();
   }));
-  it('return and heartbeat do not extend the ready deadline', () => scenario(async(sql,ids,action)=>{
+  it('return cancels the absence deadline and heartbeat keeps the seat', () => scenario(async(sql,ids,action)=>{
     const a=await action(0);await action(0,'away',a.mine.id);const b=await action(1);
-    const deadline=b.players.find((p:any)=>p.id===a.mine.id).recall_until;
-    expect((await action(0,'open',a.mine.id)).mine.recall_until).toBe(deadline);
-    expect((await action(0,'heartbeat',a.mine.id)).mine.recall_until).toBe(deadline);
+    expect(b.players.find((p:any)=>p.id===a.mine.id).recall_until).toBeTruthy();
+    expect((await action(0,'open',a.mine.id)).mine.recall_until).toBeNull();
+    expect((await action(0,'heartbeat',a.mine.id)).mine.recall_until).toBeNull();
   }));
-  it('at 120 seconds removes both present and absent nonready seats, retaining ready player', () => scenario(async(sql,ids,action)=>{
+  it('at 120 seconds removes only absent seats, retaining present and ready players', () => scenario(async(sql,ids,action)=>{
     const a=await action(0),b=await action(1),c=await action(2);
     await action(0,'ready',a.mine.id,true);await action(2,'away',c.mine.id);
     await sql`update waiting_room_seats set recall_until=now() where id in (${b.mine.id},${c.mine.id})`;
     const out=await action(0,'sync',a.mine.id);
-    expect(out.players.map((p:any)=>p.id)).toEqual([a.mine.id]);expect(out.mine.ready).toBe(true);expect(out.mine.recall_until).toBeNull();
-    expect((await action(1,'ready',b.mine.id,true)).error).toBe('expired');
+    expect(new Set(out.players.map((p:any)=>p.id))).toEqual(new Set([a.mine.id,b.mine.id]));expect(out.mine.ready).toBe(true);expect(out.mine.recall_until).toBeNull();
+    expect((await action(1,'ready',b.mine.id,true)).error).toBeNull();
+    expect((await action(2,'open',c.mine.id)).error).toBe('expired');
   }));
 });

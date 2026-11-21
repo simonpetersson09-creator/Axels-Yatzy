@@ -9,7 +9,7 @@ afterAll(async () => { if (db) await db.end(); });
 async function isolated(check: (sql: postgres.TransactionSql, seat: string, game: string) => Promise<void>, status = 'finished') {
   if (!db) throw new Error('Database test connection missing');
   await db.begin(async sql => {
-    for (const table of ['games', 'game_players', 'waiting_room_seats', 'waiting_room_state', 'waiting_room_push_queue', 'session_owners', 'push_tokens']) {
+    for (const table of ['games', 'game_players', 'waiting_room_seats', 'waiting_room_state', 'waiting_room_push_queue', 'session_owners', 'push_tokens', 'waiting_room_expiry_notices']) {
       await sql.unsafe(`CREATE TEMP TABLE ${table} (LIKE public.${table} INCLUDING DEFAULTS INCLUDING CONSTRAINTS INCLUDING INDEXES) ON COMMIT DROP`);
     }
     for (const name of ['claim_session', 'internal_waiting_room_reconcile', 'waiting_room_action']) {

@@ -995,6 +995,13 @@
       "when": 1795245287365,
       "tag": "0141_full_multiplayer_database_timing",
       "breakpoints": true
+    },
+    {
+      "idx": 142,
+      "version": "7",
+      "when": 1795299705732,
+      "tag": "0142_waiting_room_absent_expiry",
+      "breakpoints": true
     }
   ]
 }

@@ -9,7 +9,7 @@ afterAll(async () => { await db?.end(); });
 async function isolated(check: (sql: postgres.TransactionSql) => Promise<void>) {
   if (!db) throw new Error('Database test connection missing');
   await db.begin(async sql => {
-    for (const table of ['games', 'game_players', 'waiting_room_seats', 'waiting_room_state', 'waiting_room_push_queue', 'session_owners', 'push_tokens']) {
+    for (const table of ['games', 'game_players', 'waiting_room_seats', 'waiting_room_state', 'waiting_room_push_queue', 'session_owners', 'push_tokens', 'waiting_room_expiry_notices']) {
       await sql.unsafe(`CREATE TEMP TABLE ${table} (LIKE public.${table} INCLUDING DEFAULTS INCLUDING CONSTRAINTS INCLUDING INDEXES) ON COMMIT DROP`);
     }
     for (const name of ['claim_session', 'internal_waiting_room_reconcile', 'waiting_room_action']) {
@@ -55,11 +55,12 @@ describe.skipIf(!url)('two-hour solo deadline (isolated deployed SQL)', () => {
     const [row] = await sql`SELECT present,extract(epoch FROM solo_until-now())::int AS remaining FROM waiting_room_seats`;
     expect(row).toEqual({ present: true, remaining: 7200 });
   }));
-  it('another player clears solo expiry and applies the 120-second ready deadline', () => isolated(async sql => {
+  it('another player clears solo expiry and gives only the absent player 120 seconds', () => isolated(async sql => {
     await sql`INSERT INTO waiting_room_seats(session_id,player_name,seat,present,ready) VALUES('second-review','Second',0,true,false)`;
     await sql`SELECT pg_temp.internal_waiting_room_reconcile()`;
-    const rows = await sql`SELECT solo_until,extract(epoch FROM recall_until-now())::int AS remaining FROM waiting_room_seats`;
+    const rows = await sql`SELECT present,solo_until,extract(epoch FROM recall_until-now())::int AS remaining FROM waiting_room_seats ORDER BY present`;
     expect(rows).toHaveLength(2);
-    for (const row of rows) expect(row).toEqual({ solo_until: null, remaining: 120 });
+    expect(rows[0]).toEqual({ present: false, solo_until: null, remaining: 120 });
+    expect(rows[1]).toEqual({ present: true, solo_until: null, remaining: null });
   }));
 });

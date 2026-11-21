@@ -6,7 +6,7 @@ export interface WaitingPlayer {
   present: boolean; ready: boolean; expires_at: string; recall_until: string | null;
 }
 export function validWaitingPlayers(players: WaitingPlayer[], now: number) {
-  return players.filter(p => !p.recall_until || p.ready || Date.parse(p.recall_until) > now);
+  return players.filter(p => p.present || !p.recall_until || p.ready || Date.parse(p.recall_until) > now);
 }
 export function otherWaitingCount(players: WaitingPlayer[], session: string, now: number) {
   return validWaitingPlayers(players, now).filter(p => p.session_id !== session).length;

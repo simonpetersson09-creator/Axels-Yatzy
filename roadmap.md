@@ -1,5 +1,11 @@
 # Roadmap – Snabbspel online
 
+## Väntrum – bara frånvarande tas bort efter två minuter
+- [x] Driftsatt: endast frånvarande tas bort efter 120 sekunder; närvarande utan Redo behåller platsen, återkomst avbryter fristen och matchstart kräver fortfarande minst två närvarande/redo.
+- [x] Privat beständigt återkomstbesked med missade spelares namn, mitt på skärmen; exakt kvittering, skydd mot sena svar, ägarradering och 30 dagars rensning. Välkomst-/frist-/beskedstexter för alla 40 språk.
+- [x] Sex felprov återskapades före rättningen; 77 väntrumsprov godkända efteråt inklusive serverstart, identitet, kvitteringsfel och bakgrund. Ett samtidighetsprov kräver uttryckligen separat databas och hoppades över. Telefon-/surfplattevy visar centrerat namnbesked som försvinner efter OK och omladdning, inga runtimefel eller verkliga spelmuteringar. Bygge OK; root AGENTS.md fullt, regel i lib/AGENTS.md.
+- [ ] Verifiera på fysisk telefon med nästa signerade appversion; serverregeln gäller redan, nya appbeskedet kräver nytt bygge.
+
 ## Grundorsak till serverväntan – 21 november
 - [x] Skrivskyddad kontroll: 141 driftsatta kvitton med nya SQL-fält, SQL p50 1,692 ms/p95 7,831 ms/max 12,405 ms; nattens tre 12,6 s-försök korrelerade men har endast äldre mätning. Aktuella gatewaytider och två hälsoprover visar ingen verifierad belastningsbrist. 39 befintliga prov godkända; lokal separat PostgreSQL-instans återskapade poolkö, radlås och väntan efter SQL utan riktiga spelåtgärder. Rapport sparad i Files; ingen app-/serverändring eller publicering.
 - [ ] Verifiera grundorsaken och välj latensåtgärd: kräver ett verkligt långsamt försök med nya SQL-/klientgränser och korrelerad gateway-/pool-/commitspårning. Före/efter-p50/p95 för hela klientkedjan kräver representativ mätserie på fysisk telefon; nuvarande snabba klientanrop är inte samtliga loggade.

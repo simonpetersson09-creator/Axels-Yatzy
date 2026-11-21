@@ -4,17 +4,24 @@ vi.mock('@/lib/analytics', () => ({ trackEvent: mocks.track }));
 vi.mock('@/lib/session', () => ({ requireClaimedDevice: mocks.claim }));
 vi.mock('@/lib/i18n', () => ({ t: () => 'Connection failed' }));
 vi.mock('@/integrations/supabase/client', () => ({ supabase: { rpc: mocks.rpc, functions: { invoke: mocks.invoke } } }));
-vi.mock('@/lib/observed-rpc', () => ({ observedRpc: async (rpc: string, args: Record<string, unknown>, dispatched: () => void) => {
+type Observer = { onHeaders?: (i: { status: number; serverDate: null; gatewayRequestId: null }) => void; onBodyRead?: (i: { bytes: number }) => void; onTransportError?: (i: { errorName: string }) => void };
+// Emulates the real transport: a TypeError is a fetch failure (no headers);
+// anything else arrived with headers and a fully read body.
+vi.mock('@/lib/observed-rpc', () => ({ observedRpc: async (rpc: string, args: Record<string, unknown>, dispatched: () => void, headers?: () => void, observer?: Observer) => {
   if (mocks.prepareMs) await new Promise(resolve => setTimeout(resolve, mocks.prepareMs));
   dispatched();
-  return mocks.rpc(rpc, args);
+  const response = await mocks.rpc(rpc, args);
+  if (response?.error instanceof TypeError) observer?.onTransportError?.({ errorName: 'TypeError' });
+  else { headers?.(); observer?.onHeaders?.({ status: 200, serverDate: null, gatewayRequestId: null }); observer?.onBodyRead?.({ bytes: 2 }); }
+  return response;
 } }));
-import { directRpc, invokeDeviceAction } from './multiplayer-actions';
+import { directRpc, invokeDeviceAction, resetTimingBudgetForTests } from './multiplayer-actions';
 beforeEach(() => {
   mocks.prepareMs = 0;
   mocks.claim.mockReset(); mocks.rpc.mockReset().mockResolvedValue({ data: { success: true }, error: null });
   mocks.invoke.mockReset().mockResolvedValue({ data: { success: true }, error: null });
   mocks.track.mockReset();
+  resetTimingBudgetForTests();
 });
 it.each(['client_roll', 'client_set_locks', 'client_set_locks_guarded', 'client_submit_score', 'client_start_game'] as const)('%s sends nothing until registration succeeds', async rpc => {
   let release: (value: string) => void = () => {};
@@ -133,7 +140,7 @@ it('correlates a lost score response with dispatch time and visibility changes, 
     await vi.advanceTimersByTimeAsync(4499);
     expect((await pending).error).toBeInstanceOf(TypeError);
     expect(mocks.rpc).toHaveBeenCalledTimes(1);
-    expect(mocks.track).toHaveBeenCalledWith('play_score_timing', expect.objectContaining({ attempt_id: 'score-attempt', request_dispatched: true, requested_at: expect.any(String), response_at: expect.any(String), visibility_changes: 1, server_timing_available: false }), expect.anything());
+    expect(mocks.track).toHaveBeenCalledWith('play_score_timing', expect.objectContaining({ attempt_id: 'score-attempt', request_dispatched: true, requested_at: expect.any(String), response_at: null, response_received: false, outcome: 'transport_error', visibility_changes: 1, server_timing_available: false }), expect.anything());
     expect(mocks.rpc).toHaveBeenCalledWith('client_submit_score_diagnosed', expect.objectContaining({ p_attempt_id: 'score-attempt' }));
     expect(mocks.track.mock.calls[0]?.[1]).not.toHaveProperty('p_expected_dice');
   } finally { vi.clearAllTimers(); vi.useRealTimers(); }

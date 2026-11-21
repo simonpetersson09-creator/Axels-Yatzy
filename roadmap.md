@@ -695,3 +695,8 @@
 - [ ] Kontrollera på fysisk iPad efter nytt appbygge; native-annonser och verkliga safe areas kan inte verifieras här.
 - [x] Onlinetärningar: motståndarens sparade tärningar stilla från kaststart; misslyckat kast landar på bekräftat läge; servergräns 3 → 8 s. Telefonprov i nästa appversion återstår.
 - [x] Tärningar 15 nov kväll: gammalt svar kan inte ersätta nytt kast, gamla läsningar/låsväntan släpps efter matchbyte, omsänt kast kan inte förbruka två kast (server), avbruten animation räknas inte som landning, rotation/grafikåterställning ger inget nytt inkast, låg bildfrekvens ritar klart landningen. Kräver ny appversion + telefonprov.
+
+## RPC-fördröjning 12,5 s – diagnostik v3 (21 nov)
+- [x] timing_version 3 skiljer huvuden, svarskropp, nätfel, tidsgräns och färdigt resultat; HTTP-status, serverns Date-huvud, nätbyten; tak 2/försök och 40/session.
+- [x] Gatewayns sb-request-id är dold för appen (CORS); läses om den blir exponerad.
+- [ ] Verifiera i nästa signerade iOS-/Androidbygge (kräver nytt bygge).

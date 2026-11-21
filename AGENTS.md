@@ -47,3 +47,4 @@
 - Online locks send full batches (per-die toggles legacy); notice expiry ignores score updates.
 - iOS lifecycle patch follows diagnostics: UMP/ATT locks survive caller timeouts; ATT waits for active main-thread presenter/notDetermined. Android Rewarded uses Kotlin getters.
 
+- RPC timing (observed-rpc/multiplayer-actions, timing_version 3): observe only, never retry/cancel; classify outcome (result/rejected/http/transport/body/deadline); log slow (>3 s) or failed calls, ≤2 per attempt and a per-session cap. sb-request-id is CORS-hidden in the app, so correlate via attempt_id + Date header.

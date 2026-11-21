@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Sena poäng- och låskvitton – 21 november
+- [x] Gemensam engångsbekräftelse för sena originalkvitton och reservläsningar; tidsgräns behåller spelvy och handlingsägare. Matchlivstid/spelare/tur/kast/handling skyddas; skickad låskö väntar på verkligt anrop även efter reservbekräftelse. Gamla optimistiska lås rensas vid nytt serverkast; terminal nätfelshantering bevarad utan omsändning.
+- [x] 22 nya regressioner, varav 10 fallerade mot tidigare kod; hela relevanta gruppen 172 godkända inklusive 50 simulerade helmatcher. Avskilt browserprov: exakt ett låsanrop och ett poänganrop med 12,6 s injicerad svarstid; lås synligt, 30 poäng sparat i provsvaret, motståndarens tur visas utan runtimefel. Bygge OK; inga produktionsdata eller publicering. Arkitektur i hooks/AGENTS.md, root saknar utrymme.
+- [ ] Fysisk telefon/OS-suspension och verkligt nät återstår; kräver nästa signerade appversion och telefoner. Helt uteblivet kvitto och okänd reservläsning behåller spärren till bekräftelse/återanslutning; ursprunglig 12–16 s transportorsak inte rättad av denna kvittensändring.
+
 ## Hundra hela provmatcher – 21 november
 - [x] 50 kompletta datormatcher (verklig AI, 2–4 platser) och 50 kompletta onlinematcher med simulerad server/kommunikation godkända. 3 225 spelarturer, 9 210 observerade kast och 11 183 låskontroller; 17 lokala återöppningar, 10 onlineåterkomster, 1 500 äldre meddelanden. Alla poäng kontrollerade mot oberoende beräkning och resultat räknades endast en gång; inga live-skrivningar eller nya bekräftade spelfel.
 - [x] 100 matchprov samt 125 riktade regressionstester godkända. Extra helmatch genom förhandsvisningens knappar: 15 rundor, 45 egna kast, alla slutpoäng och en statistikregistrering, inga runtimefel; 55 externa skrivningar blockerade. En extra accelererad omkörning missade ett knapptryck; inte återskapat med normal animationstid och därför inte klassat som appfel. Ingen ändrad appfunktion; endast provfiler.

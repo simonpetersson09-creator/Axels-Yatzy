@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom';
 import { directRpc, invokeDeviceAction } from '@/lib/multiplayer-actions';
 import { measureRecoveryRead } from '@/lib/multiplayer-recovery-diagnostics';
 import { observeDiceResult } from '@/lib/dice-result-diagnostics';
+import { createConfirmationAttempt, type ConfirmationReply } from './confirmation-attempt';
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId, requireClaimedDevice } from '@/lib/session';
@@ -117,38 +118,8 @@ function withTimeout<T>(promise: Promise<T>, ms = NETWORK_TIMEOUT_MS): Promise<T
 
 /** Wait this long for a score answer before checking committed state. */
 const RETRY_AFTER_MS = 4_000;
-/** Outer limit for a call that may be retried once. */
+/** Waiting signal only; a live mutation keeps its confirmation ownership. */
 const RETRY_TIMEOUT_MS = 12_000;
-
-/**
- * Runs one mutation; if it hasn't answered after RETRY_AFTER_MS,
- * first asks `check` whether it already took effect (returns that result),
- * otherwise keeps waiting for the original request. Never overlaps mutations.
- * Never use for rolls — a repeat would spend an extra roll.
- */
-function withConfirmationCheck(
-  call: () => Promise<{ data: any; error: any }>,
-  check?: () => Promise<{ data: any; error: any } | null>,
-  canRetry: () => boolean = () => true,
-): Promise<{ data: any; error: any }> {
-  const deadline = Date.now() + RETRY_TIMEOUT_MS;
-  return new Promise((resolve) => {
-    let done = false;
-    const finish = (r: { data: any; error: any }) => { if (!done) { done = true; clearTimeout(t); resolve(r); } };
-    const first = call();
-    first.then(finish, (e) => finish({ data: null, error: e }));
-    const t = setTimeout(async () => {
-      if (done || Date.now() >= deadline || !canRetry()) return;
-      try {
-        const already = check ? await check() : null;
-        if (already) return finish(already);
-      } catch { /* fall through to resend */ }
-      if (done || Date.now() >= deadline || !canRetry()) return;
-      // A missing confirmation is not evidence that the mutation failed.
-      // The original request retains ownership; no concurrent resend.
-    }, RETRY_AFTER_MS);
-  });
-}
 
 function sameArray<T>(a?: T[] | null, b?: T[] | null) {
   return !!a && !!b && a.length === b.length && a.every((value, index) => value === b[index]);
@@ -219,7 +190,12 @@ export function useMultiplayerGame() {
   // Set while a score-submit RPC is in flight. While set, realtime/refresh
   // payloads are dropped so the optimistic UI (filled cell, advanced turn,
   // reset dice) isn't briefly overwritten by a stale server snapshot.
-  const pendingSubmitRef = useRef<{ key: string; gameId: string } | null>(null);
+  const pendingSubmitRef = useRef<{ key: string; gameId: string; attemptId: string; playerIndex: number; categoryId: CategoryId; confirm: (score: number) => void } | null>(null);
+  const confirmationAttemptsRef = useRef(new Set<ReturnType<typeof createConfirmationAttempt>>());
+  const lockConfirmationsRef = useRef(new Set<{
+    gameId: string; playerIndex: number; round: number; rollsLeft: number; locks: boolean[];
+    isCurrent: () => boolean; confirm: (reply: ConfirmationReply) => void;
+  }>());
   const confirmedScoreTurnRef = useRef<{ gameId: string; playerIndex: number; round: number } | null>(null);
 
   // Client-driven dice spin for the *opponent* — server.is_rolling stays false,
@@ -529,6 +505,27 @@ export function useMultiplayerGame() {
     // a quick-match seat handed to a bot. Late reads must not reopen it.
     if (confirmedForfeitsRef.current.has(gameId)) return;
 
+    // A fresh, generation-checked read can settle the same owned attempt.
+    // Scores are immutable per player/category in a match; never infer success
+    // merely from a changed turn or from somebody else's saved score.
+    const scoreAttempt = pendingSubmitRef.current;
+    if (scoreAttempt?.gameId === gameId) {
+      const owner = dbPlayers.find(p => p.player_index === scoreAttempt.playerIndex && p.session_id === sessionId);
+      const saved = (owner?.scores as Record<string, unknown> | undefined)?.[scoreAttempt.categoryId];
+      if (typeof saved === 'number' && Number.isFinite(saved)) {
+        scoreAttempt.confirm(saved);
+        // Its one-time resolution releases the optimistic guard and refreshes.
+        return;
+      }
+    }
+    for (const attempt of lockConfirmationsRef.current) {
+      if (attempt.gameId === gameId && attempt.isCurrent() && game.status === 'playing'
+          && game.current_player_index === attempt.playerIndex && game.round === attempt.round
+          && game.rolls_left === attempt.rollsLeft && sameArray(game.locked_dice as boolean[], attempt.locks)) {
+        attempt.confirm({ data: { success: true }, error: null });
+      }
+    }
+
     // A full read can confirm a score whose answer was lost, including a bot
     // takeover. A turn-only notification cannot prove that our turn ended.
     const visible = stateRef.current;
@@ -589,6 +586,12 @@ export function useMultiplayerGame() {
       isRolling: game.is_rolling,
     };
 
+    const pendingLock = pendingLockRef.current;
+    if (pendingLock?.gameId === gameId && (pendingLock.playerIndex !== game.current_player_index
+        || pendingLock.round !== game.round || pendingLock.rollsLeft !== game.rolls_left)) {
+      // An optimistic batch belongs to one throw, not every throw in a turn.
+      pendingLockRef.current = null;
+    }
     const optimisticLock = getPendingLockForTurn(game.id, game.current_player_index, game.round);
     if (optimisticLock && sameArray(optimisticLock, dicePart.lockedDice)) {
       pendingLockRef.current = null;
@@ -819,6 +822,19 @@ export function useMultiplayerGame() {
     subscriptionGenerationRef.current += 1;
     if (activeGameIdRef.current !== gameId) {
       animationGenerationRef.current += 1;
+      confirmationAttemptsRef.current.forEach(attempt => attempt.cancel());
+      confirmationAttemptsRef.current.clear();
+      lockConfirmationsRef.current.clear();
+      pendingSubmitRef.current = null;
+      submittingRef.current = false;
+      setPendingCategory(null);
+      setPendingPlayerIndex(null);
+      pendingLockRef.current = null;
+      if (lockBatchRef.current?.timer) clearTimeout(lockBatchRef.current.timer);
+      lockBatchRef.current?.resolve(true);
+      lockBatchRef.current = null;
+      pendingLockPromisesRef.current.clear();
+      setLocksPending(false);
       if (remoteRollingTimerRef.current) clearTimeout(remoteRollingTimerRef.current);
       remoteRollingTimerRef.current = null;
       if (rollingTimerRef.current) clearTimeout(rollingTimerRef.current);
@@ -1494,6 +1510,8 @@ export function useMultiplayerGame() {
     if (gs.rollsLeft === 3 || gs.rollsLeft === 0 || latest.myPlayerIndex !== gs.currentPlayerIndex) return;
 
     const gameId = latest.gameId;
+    const lockLifetime = animationGenerationRef.current;
+    const lockSubscription = subscriptionGenerationRef.current;
     const seq = pendingLockSeqRef.current + 1;
     pendingLockSeqRef.current = seq;
 
@@ -1533,12 +1551,13 @@ export function useMultiplayerGame() {
         const skip = () => {
           pendingLockPromisesRef.current.delete(current.promise);
           current.resolve(true);
-          if (mountedRef.current) setLocksPending(pendingLockPromisesRef.current.size > 0);
+          if (mountedRef.current && animationGenerationRef.current === lockLifetime && activeGameIdRef.current === gameId) setLocksPending(pendingLockPromisesRef.current.size > 0);
         };
         const pending = pendingLockRef.current;
         const sendSeq = pending?.gameId === gameId ? pending.seq : -1;
         const locks = pending?.gameId === gameId ? pending.lockedDice : null;
-        if (!locks || !pending) { skip(); return; }
+        if (!mountedRef.current || animationGenerationRef.current !== lockLifetime || subscriptionGenerationRef.current !== lockSubscription
+            || activeGameIdRef.current !== gameId || stateRef.current.gameId !== gameId || !locks || !pending) { skip(); return; }
         const live = stateRef.current.gameState;
         if (!live || live.round !== pending.round || live.currentPlayerIndex !== pending.playerIndex || live.rollsLeft !== pending.rollsLeft) {
           skip(); return;
@@ -1552,6 +1571,17 @@ export function useMultiplayerGame() {
         lastSentLocksRef.current = { gameId, seq: sendSeq };
         const lockStartedAt = Date.now();
         const lockAttemptId = crypto.randomUUID();
+        const isCurrentLock = () => {
+          const s = stateRef.current;
+          const currentGS = s.gameState;
+          return mountedRef.current && animationGenerationRef.current === lockLifetime
+            && activeGameIdRef.current === gameId && s.gameId === gameId && isActionable(s)
+            && s.myPlayerIndex === pending.playerIndex && currentGS?.currentPlayerIndex === pending.playerIndex
+            && currentGS.round === pending.round && currentGS.rollsLeft === pending.rollsLeft
+            && sameArray(currentGS.dice, live.dice);
+        };
+        let confirmation: ReturnType<typeof createConfirmationAttempt> | null = null;
+        let readConfirmation: { gameId: string; playerIndex: number; round: number; rollsLeft: number; locks: boolean[]; isCurrent: () => boolean; confirm: (reply: ConfirmationReply) => void } | null = null;
         try {
           // The row-locked turn guard rejects a delayed request from an older roll.
           const request = directRpc('client_set_locks_guarded', 'toggle-lock', {
@@ -1561,8 +1591,31 @@ export function useMultiplayerGame() {
           }, { game_id: gameId, session_id: sessionId, locked_dice: locks }, { attemptId: lockAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS });
           // Keep later lock batches behind the REAL request, even after the UI deadline.
           lockChainRef.current = request.catch(() => undefined);
-          const { data, error } = await withTimeout(request, RETRY_TIMEOUT_MS);
-          if (error) {
+          confirmation = createConfirmationAttempt({
+            call: () => request,
+            isCurrent: isCurrentLock,
+            // Preserve existing terminal lock-error reconciliation. Only an
+            // unanswered request needs the new deadline confirmation read.
+            checkOnFailure: false,
+            deadlineMs: RETRY_TIMEOUT_MS,
+            onWaiting: () => reportMpIssue('lock_slow', gameId, { ms: Date.now() - lockStartedAt, attempt_id: lockAttemptId }),
+            check: async () => {
+              if (!isForeground() || !isCurrentLock()) return null;
+              const generation = subscriptionGenerationRef.current;
+              const { data: saved, error } = await withTimeout(Promise.resolve(supabase.from('games').select('id, status, current_player_index, round, rolls_left, locked_dice, dice').eq('id', gameId).single()), 5_000);
+              if (generation !== subscriptionGenerationRef.current || !isCurrentLock() || error || !saved
+                  || saved.id !== gameId || saved.status !== 'playing' || saved.current_player_index !== pending.playerIndex
+                  || saved.round !== pending.round || saved.rolls_left !== pending.rollsLeft
+                  || !sameArray(saved.dice as number[], live.dice) || !sameArray(saved.locked_dice as boolean[], locks)) return null;
+              return { data: { success: true }, error: null };
+            },
+          });
+          confirmationAttemptsRef.current.add(confirmation);
+          readConfirmation = { gameId, playerIndex: pending.playerIndex, round: pending.round, rollsLeft: pending.rollsLeft, locks, isCurrent: isCurrentLock, confirm: confirmation.confirm };
+          lockConfirmationsRef.current.add(readConfirmation);
+          const { data, error } = await confirmation.result;
+          if (!isCurrentLock()) { current.resolve(true); return; }
+          if (error || data?.success !== true) {
             console.error('Toggle lock error:', error);
             reportMpIssue(data?.stale_command ? 'lock_stale' : 'lock_error', gameId, { ms: Date.now() - lockStartedAt, err: errText(error), attempt_id: lockAttemptId });
             if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq) pendingLockRef.current = null;
@@ -1571,7 +1624,13 @@ export function useMultiplayerGame() {
             return;
           }
           const lockMs = Date.now() - lockStartedAt;
-          if (lockMs > MP_SLOW_MS) reportMpIssue('lock_slow', gameId, { ms: lockMs, attempt_id: lockAttemptId });
+          if (lockMs > MP_SLOW_MS && lockMs < RETRY_TIMEOUT_MS) reportMpIssue('lock_slow', gameId, { ms: lockMs, attempt_id: lockAttemptId });
+          // Only this exact batch may restore its locks, never a newer tap.
+          if (pendingLockSeqRef.current === sendSeq) {
+            setState(prev => prev.gameId === gameId && prev.gameState ? {
+              ...prev, gameState: { ...prev.gameState, lockedDice: [...locks] },
+            } : prev);
+          }
           lockTimerRef.current = setTimeout(() => {
             if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq && sameArray(pendingLockRef.current.lockedDice, locks)) {
               pendingLockRef.current = null;
@@ -1579,14 +1638,17 @@ export function useMultiplayerGame() {
           }, LOCK_OPTIMISTIC_MS);
           current.resolve(true);
         } catch (err) {
+          if (!isCurrentLock()) { current.resolve(true); return; }
           console.error('Toggle lock failed:', err);
           reportMpIssue('lock_failed', gameId, { ms: Date.now() - lockStartedAt, err: errText(err), attempt_id: lockAttemptId });
           if (pendingLockRef.current?.gameId === gameId && pendingLockRef.current.seq === sendSeq) pendingLockRef.current = null;
           refreshGameStateRef.current?.(gameId);
           current.resolve(false);
         } finally {
+          if (confirmation) confirmationAttemptsRef.current.delete(confirmation);
+          if (readConfirmation) lockConfirmationsRef.current.delete(readConfirmation);
           pendingLockPromisesRef.current.delete(current.promise);
-          if (mountedRef.current) setLocksPending(pendingLockPromisesRef.current.size > 0);
+          if (mountedRef.current && animationGenerationRef.current === lockLifetime && activeGameIdRef.current === gameId) setLocksPending(pendingLockPromisesRef.current.size > 0);
         }
       })();
       lockChainRef.current = send;
@@ -1627,6 +1689,8 @@ export function useMultiplayerGame() {
 
     submittingRef.current = true;
     const gameId = latest.gameId;
+    const submitLifetime = animationGenerationRef.current;
+    const submitAttemptId = crypto.randomUUID();
 
     // ── Optimistic UI ───────────────────────────────────────────────────────
     // Mirror useYatzyGame.selectCategory exactly so multiplayer feels as
@@ -1638,7 +1702,8 @@ export function useMultiplayerGame() {
       if (i !== gs.currentPlayerIndex) return p;
       return { ...p, scores: { ...p.scores, [categoryId]: optimisticScore } };
     });
-    pendingSubmitRef.current = { key: `${gs.currentPlayerIndex}:${categoryId}`, gameId };
+    pendingSubmitRef.current = { key: `${gs.currentPlayerIndex}:${categoryId}`, gameId, attemptId: submitAttemptId,
+      playerIndex: gs.currentPlayerIndex, categoryId, confirm: () => {} };
     setPendingCategory(categoryId);
     setPendingPlayerIndex(gs.currentPlayerIndex);
 
@@ -1652,8 +1717,18 @@ export function useMultiplayerGame() {
       },
     } : prev);
 
-    // Keep optimistic results guarded until the bounded request completes.
+    const ownsSubmit = () => mountedRef.current && animationGenerationRef.current === submitLifetime
+      && activeGameIdRef.current === gameId && stateRef.current.gameId === gameId
+      && pendingSubmitRef.current?.attemptId === submitAttemptId;
+    const isCurrentSubmit = () => {
+      const live = stateRef.current.gameState;
+      return ownsSubmit() && stateRef.current.myPlayerIndex === gs.currentPlayerIndex
+        && isActionable(stateRef.current) && live?.currentPlayerIndex === gs.currentPlayerIndex
+        && live.round === gs.round && live.rollsLeft === gs.rollsLeft && sameArray(live.dice, gs.dice);
+    };
+    // Only the owner may release this optimistic result.
     const releaseOptimistic = () => {
+      if (!ownsSubmit()) return;
       if (submitTimerRef.current) { clearTimeout(submitTimerRef.current); submitTimerRef.current = null; }
       pendingSubmitRef.current = null;
       submittingRef.current = false;
@@ -1671,9 +1746,9 @@ export function useMultiplayerGame() {
     }, SUBMIT_ANIM_MS);
 
     const submitStartedAt = Date.now();
-    const submitAttemptId = crypto.randomUUID();
     const shownDice = [...gs.dice];
     const rollbackSubmit = () => {
+      if (!ownsSubmit()) return;
       // A failed read must never leave the optimistic last cell looking final.
       if (mountedRef.current) setState(prev => prev.gameId === gameId ? { ...prev, gameState: gs } : prev);
       failedRollReconcileRef.current = gameId;
@@ -1687,59 +1762,52 @@ export function useMultiplayerGame() {
     // The "your turn" push is sent by the database itself (client_submit_score).
     // Observe committed state without resending a still-live mutation.
     const checkSaved = async () => {
+      if (!isForeground() || !isCurrentSubmit()) return null;
+      const generation = subscriptionGenerationRef.current;
       const { data: pl, error } = await withTimeout(Promise.resolve(supabase.from('game_players').select('scores')
         .eq('game_id', gameId).eq('session_id', sessionId).maybeSingle()), 5_000);
-      if (error) return null;
+      if (generation !== subscriptionGenerationRef.current || !isCurrentSubmit() || error) return null;
       const saved = (pl?.scores as Record<string, unknown> | undefined)?.[categoryId];
-      if (saved === undefined || saved === null) return null;
-      return { data: { success: true, score: Number(saved), category_id: categoryId }, error: null };
+      if (typeof saved !== 'number' || !Number.isFinite(saved)) return null;
+      return { data: { success: true, score: saved, category_id: categoryId }, error: null };
     };
-    let checking: ReturnType<typeof checkSaved> | null = null;
-    const sharedCheck = () => {
-      if (checking) return checking;
-      const request = checkSaved();
-      checking = request;
-      void request.finally(() => { if (checking === request) checking = null; }).catch(() => {});
-      return request;
-    };
-    const recoverSubmit = async (err: unknown) => {
-      let saved = null;
-      try { saved = await sharedCheck(); } catch { /* Unknown is never treated as saved. */ }
-      if (!mountedRef.current || stateRef.current.gameId !== gameId || pendingSubmitRef.current?.gameId !== gameId) return;
-      if (saved) {
-        reportMpIssue('submit_recovered', gameId, { ms: Date.now() - submitStartedAt, attempt_id: submitAttemptId });
-        confirmedScoreTurnRef.current = { gameId, playerIndex: gs.currentPlayerIndex, round: gs.round };
-        releaseOptimistic();
-        void refreshGameStateRef.current?.(gameId);
-        return;
-      }
-      reportMpIssue('submit_failed', gameId, { ms: Date.now() - submitStartedAt, err: errText(err), attempt_id: submitAttemptId });
-      setState(prev => ({ ...prev, error: t(errText(err) === 'timeout' ? 'errTimeout' : 'errSubmitScore') }));
-      rollbackSubmit();
-    };
-    withTimeout(withConfirmationCheck(() => directRpc('client_submit_score', 'submit-score', {
-      p_game_id: gameId, p_session_id: sessionId, p_category_id: categoryId, p_expected_dice: shownDice,
-    }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }, { attemptId: submitAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS }), sharedCheck,
-    () => mountedRef.current && isForeground() && stateRef.current.gameId === gameId
-      && stateRef.current.status === 'playing' && pendingSubmitRef.current?.gameId === gameId), RETRY_TIMEOUT_MS)
+    const confirmation = createConfirmationAttempt({
+      call: () => directRpc('client_submit_score', 'submit-score', {
+        p_game_id: gameId, p_session_id: sessionId, p_category_id: categoryId, p_expected_dice: shownDice,
+      }, { game_id: gameId, session_id: sessionId, category_id: categoryId, expected_dice: shownDice }, { attemptId: submitAttemptId, timeoutAfterMs: RETRY_TIMEOUT_MS }),
+      check: checkSaved, isCurrent: isCurrentSubmit,
+      checkAfterMs: RETRY_AFTER_MS, deadlineMs: RETRY_TIMEOUT_MS,
+      onWaiting: () => {
+        // Keep the existing board/animations mounted; its waiting indicator
+        // already communicates slow confirmation without a terminal error page.
+        reportMpIssue('submit_slow', gameId, { ms: Date.now() - submitStartedAt, category: categoryId, attempt_id: submitAttemptId, waiting: true });
+      },
+    });
+    confirmationAttemptsRef.current.add(confirmation);
+    if (pendingSubmitRef.current?.attemptId === submitAttemptId) {
+      pendingSubmitRef.current.confirm = score => confirmation.confirm({ data: { success: true, score, category_id: categoryId }, error: null });
+    }
+    void confirmation.result
       .then(({ data, error }) => {
-        if (!mountedRef.current || stateRef.current.gameId !== gameId || pendingSubmitRef.current?.gameId !== gameId) return;
+        if (!ownsSubmit()) return;
+        if (!isCurrentSubmit()) { releaseOptimistic(); void refreshGameStateRef.current?.(gameId); return; }
         const submitMs = Date.now() - submitStartedAt;
         if (!error && data?.success === true) {
-          if (submitMs > MP_SLOW_MS) reportMpIssue('submit_slow', gameId, { ms: submitMs, category: categoryId, attempt_id: submitAttemptId });
+          if (submitMs > MP_SLOW_MS && submitMs < RETRY_TIMEOUT_MS) reportMpIssue('submit_slow', gameId, { ms: submitMs, category: categoryId, attempt_id: submitAttemptId });
           if (typeof data?.score === 'number' && data.score !== optimisticScore) {
             reportMpIssue('score_mismatch', gameId, { category: categoryId, shown: shownDice, shownScore: optimisticScore, serverScore: data.score, ms: submitMs });
           }
           confirmedScoreTurnRef.current = { gameId, playerIndex: gs.currentPlayerIndex, round: gs.round };
+          setState(prev => ({ ...prev, error: null }));
           releaseOptimistic();
           refreshGameStateRef.current?.(gameId);
           return;
         }
-        return recoverSubmit(error ?? new Error('score not confirmed'));
+        reportMpIssue('submit_failed', gameId, { ms: submitMs, err: errText(error), attempt_id: submitAttemptId });
+        setState(prev => ({ ...prev, error: t('errSubmitScore') }));
+        rollbackSubmit();
       })
-      .catch((err) => {
-        return recoverSubmit(err);
-      });
+      .finally(() => { confirmationAttemptsRef.current.delete(confirmation); });
   }, [state.gameId, state.gameState, state.myPlayerIndex, sessionId]);
 
   // Never leave the board until the server has accepted the forfeit.
@@ -1965,6 +2033,9 @@ export function useMultiplayerGame() {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      confirmationAttemptsRef.current.forEach(attempt => attempt.cancel());
+      confirmationAttemptsRef.current.clear();
+      lockConfirmationsRef.current.clear();
       resultDiagnosticRef.current?.cancel();
       resultDiagnosticRef.current = null;
       subscriptionGenerationRef.current += 1;

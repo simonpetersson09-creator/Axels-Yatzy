@@ -651,7 +651,8 @@ export default function MultiplayerGamePage() {
   }
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-  const possibleScores = !localRolling && !remoteRolling ? getPossibleScores() : null;
+  // Hide score suggestions for the whole roll (tap → server dice → landing) so cells never flash.
+  const possibleScores = !localRolling && !remoteRolling && !rollPending && !gameState.isRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending && !pendingCategory && !forfeiting;
   // The table stays empty until the player's own Kast 1, so the same in-area
   // slot that shows "Väntar på …" on the opponent's turn tells the player to

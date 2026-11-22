@@ -49,11 +49,16 @@ const COL_W = 'min-w-[var(--sb-col-w,42px)] w-[var(--sb-col-w,42px)]';
 const LABEL_W = 'w-[var(--sb-label-w,86px)] min-w-[var(--sb-label-w,86px)]';
 const ROW_H = 'h-[var(--sb-row-h,34px)]';
 
-function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bgStyle, isAiChosen, playerColor, justPlaced }: {
+export function shouldShowZeroScoreHint(possibleScore: number | undefined, rollsLeft: number, canSelect: boolean, isAiChosen: boolean): boolean {
+  return canSelect && !isAiChosen && possibleScore === 0 && rollsLeft === 0;
+}
+
+function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, rollsLeft, bgClass, bgStyle, isAiChosen, playerColor, justPlaced }: {
   isScored: boolean;
   scoreValue: number | null | undefined;
   possibleScore: number | undefined;
   canSelect: boolean;
+  rollsLeft: number;
   bgClass: string;
   bgStyle?: React.CSSProperties;
   isAiChosen?: boolean;
@@ -63,6 +68,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
 }) {
   const [justScored, setJustScored] = useState(false);
   const prevScoredRef = useRef(isScored);
+  const showZeroHint = shouldShowZeroScoreHint(possibleScore, rollsLeft, canSelect, !!isAiChosen);
 
   useEffect(() => {
     if (isScored && !prevScoredRef.current) {
@@ -107,39 +113,16 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
           }}
         />
       )}
-      {canSelect && !isAiChosen && possibleScore === 0 && (
-        <span
-          aria-hidden
-          className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[5] ui-glow-pulse"
-          style={{
-            border: '1.5px solid hsl(0 78% 58%)',
-            boxShadow: '0 0 6px hsl(0 78% 58% / 0.55), inset 0 0 4px hsl(0 78% 58% / 0.25)',
-          }}
-        />
-      )}
-
-      {canSelect && !isAiChosen && possibleScore === 0 && (
+      {showZeroHint && (
         <span
           aria-hidden
           className="absolute inset-0 flex items-center justify-center z-[6] pointer-events-none"
         >
           <span
-            className="block"
-            style={{
-              width: '22px',
-              height: '2px',
-              background: 'linear-gradient(90deg, transparent, hsl(0 78% 58%), transparent)',
-              transform: 'rotate(-45deg)',
-            }}
+            className="block w-5 h-0.5 bg-destructive/70 -rotate-45"
           />
           <span
-            className="absolute block"
-            style={{
-              width: '22px',
-              height: '2px',
-              background: 'linear-gradient(90deg, transparent, hsl(0 78% 58%), transparent)',
-              transform: 'rotate(45deg)',
-            }}
+            className="absolute block w-5 h-0.5 bg-destructive/70 rotate-45"
           />
         </span>
       )}
@@ -206,7 +189,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, bgClass, bg
         animate={justScored ? { scale: [1, 1.4, 1] } : { scale: 1 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
-        {isScored ? scoreValue : canSelect ? (possibleScore === 0 ? '—' : possibleScore) : ''}
+        {isScored ? scoreValue : canSelect && possibleScore !== 0 ? possibleScore : ''}
       </motion.span>
     </div>
   );
@@ -340,6 +323,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
         scoreValue={player.scores[cat.id]}
         possibleScore={possibleScore}
         canSelect={canSelect}
+        rollsLeft={rollsLeft}
         bgClass={bg.className}
         bgStyle={bg.style}
         isAiChosen={slotIdx === aiChosenPlayerIndex && aiChosenCategory === cat.id}

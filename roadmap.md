@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Kryss endast efter sista kastet – 22 november
+- [x] Ta bort röda nollpoängsramen och strecket; minska krysset från 22 till 20 px. Visa förslagskryss endast med noll kast kvar i gemensam spelbricka, utan ändrade sparade poäng eller valmöjligheter.
+- [x] 20 riktade tester godkända; avskilt telefonprov: inga kryss efter kast 1/2, nio mindre kryss utan ram efter kast 3, valt nollpoängsresultat visas som sparat 0. Inga sidfel eller produktionsskrivningar; bygge OK. Gemensam spelbricka gäller lokalt och online; fysisk telefon/onlinehelmatch ej separat verifierad.
+
 ## Väntrum – bara frånvarande tas bort efter två minuter
 - [x] Driftsatt: endast frånvarande tas bort efter 120 sekunder; närvarande utan Redo behåller platsen, återkomst avbryter fristen och matchstart kräver fortfarande minst två närvarande/redo.
 - [x] Privat beständigt återkomstbesked med missade spelares namn, mitt på skärmen; exakt kvittering, skydd mot sena svar, ägarradering och 30 dagars rensning. Välkomst-/frist-/beskedstexter för alla 40 språk.

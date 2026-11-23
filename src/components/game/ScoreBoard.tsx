@@ -1,4 +1,5 @@
-import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useSyncExternalStore } from 'react';
+import { areDiceFlying, subscribeDiceFlight } from '@/components/dice-engine/await-store';
 import { CATEGORIES, Category, CategoryId, Player } from '@/types/yatzy';
 import { getUpperSectionTotal, getUpperBonusDifference, isUpperBonusSecured, getTotalScore } from '@/lib/yatzy-scoring';
 import { cn } from '@/lib/utils';
@@ -196,7 +197,11 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, rollsLeft, 
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSelectCategory, rollsLeft, aiChosenCategory, aiChosenPlayerIndex, selectionDisabled, seenKey, myIndex }: ScoreBoardProps & { seenKey?: string; myIndex?: number }) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores: requestedScores, onSelectCategory, rollsLeft, aiChosenCategory, aiChosenPlayerIndex, selectionDisabled, seenKey, myIndex }: ScoreBoardProps & { seenKey?: string; myIndex?: number }) {
+  // Shared by local, friend, waiting-room and quick matches. Game timers can
+  // finish before visible rest; hide suggestions and block row selection together.
+  const diceFlying = useSyncExternalStore(subscribeDiceFlight, areDiceFlying, () => false);
+  const possibleScores = diceFlying ? null : requestedScores;
   const { t } = useTranslation();
   const boardRef = useRef<HTMLDivElement>(null);
   const lowerSectionRef = useRef<HTMLDivElement>(null);

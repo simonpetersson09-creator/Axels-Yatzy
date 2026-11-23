@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Poängförslag väntar på verklig landning – 23 november
+- [x] Gemensam spelbricka döljer förslag och spärrar poängval medan någon tärning rör sig; gäller datorspel, vänmatcher, väntrum och snabbspel. Normala kastflaggor bevarade; sparade poäng och serverhandlingar oförändrade.
+- [x] Lästa spelvyer, start-/återspelsvägar, lokal återkomst och onlinekö; två regressioner återskapade före det gemensamma skyddet. 67 riktade tester godkända. Avskilt skärmprov med verklig 3D-rörelse blockerar val efter spelklockans slut och sparar sedan 21 i Chans utan sidfel eller live-skrivningar. Bygge OK.
+- [ ] Bekräfta på fysisk telefon i nästa signerade appversion; verkligt nät och telefonens bildflyt kan inte verifieras i det avskilda skärmprovet.
+
 ## Kryss endast efter sista kastet – 22 november
 - [x] Ta bort röda nollpoängsramen och strecket; minska krysset från 22 till 20 px. Visa förslagskryss endast med noll kast kvar i gemensam spelbricka, utan ändrade sparade poäng eller valmöjligheter.
 - [x] 20 riktade tester godkända; avskilt telefonprov: inga kryss efter kast 1/2, nio mindre kryss utan ram efter kast 3, valt nollpoängsresultat visas som sparat 0. Inga sidfel eller produktionsskrivningar; bygge OK. Gemensam spelbricka gäller lokalt och online; fysisk telefon/onlinehelmatch ej separat verifierad.

@@ -131,6 +131,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, rollsLeft, 
           <motion.span
             key="placed"
             aria-hidden
+            data-placed-highlight
             className="absolute inset-[2px] rounded-[6px] pointer-events-none z-[4]"
             style={{
               border: `2px solid hsl(${playerColor})`,
@@ -139,7 +140,6 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, rollsLeft, 
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0.45, 1, 0.45, 1] }}
-            exit={{ opacity: 0, transition: { duration: 0.6 } }}
             transition={{ duration: 2.4, ease: 'easeInOut' }}
           />
         )}
@@ -269,6 +269,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       } catch { /* storage unavailable */ }
     }
     if (!prev) return; // first render / reopened match: nothing "new"
+    if (now.size < prev.size) { setLastPlaced(null); return; } // match restarted
     const added = [...now].filter((k) => !prev!.has(k));
     if (added.length === 1) { setLastPlaced(added[0]); return; }
     if (!storeKey || added.length === 0) return; // never highlight a bulk reload in local games
@@ -283,11 +284,14 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores, onSele
       if (hit.length > 1) return;
     }
   }, [players]);
+  // The highlight stays until the player to act rolls — a fixed timeout used
+  // to clear it after 3.5 s, which read as a brief blink.
+  const prevRollsLeftRef = useRef(rollsLeft);
   useEffect(() => {
-    if (!lastPlaced) return;
-    const t = setTimeout(() => setLastPlaced(null), 3500);
-    return () => clearTimeout(t);
-  }, [lastPlaced]);
+    const prev = prevRollsLeftRef.current;
+    prevRollsLeftRef.current = rollsLeft;
+    if (prev === 3 && rollsLeft < 3) setLastPlaced(null);
+  }, [rollsLeft]);
 
   const cellBg = (slotIdx: number): { className: string; style?: React.CSSProperties } => {
     const isCurrent = slotIdx === currentPlayerIndex;

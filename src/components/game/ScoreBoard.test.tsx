@@ -96,3 +96,66 @@ describe('ScoreBoard category hit mapping', () => {
     );
   });
 });
+
+describe('ScoreBoard last-placed highlight', () => {
+  const twoPlayers = (): Player[] => [
+    { id: 'player-1', name: 'Simon P', scores: {} },
+    { id: 'player-2', name: 'Alicia', scores: {} },
+  ];
+
+  const renderBoard = (ps: Player[], rollsLeft = 3) =>
+    render(
+      <ScoreBoard
+        players={ps}
+        currentPlayerIndex={0}
+        possibleScores={possibleScores}
+        onSelectCategory={vi.fn()}
+        rollsLeft={rollsLeft}
+      />
+    );
+
+  it('keeps the opponent placement highlighted past the old 3.5 s timeout', () => {
+    vi.useFakeTimers();
+    try {
+      const ps = twoPlayers();
+      const { rerender, container } = renderBoard(ps);
+      ps[1].scores = { ones: 3 };
+      rerender(
+        <ScoreBoard players={[...ps]} currentPlayerIndex={0} possibleScores={possibleScores} onSelectCategory={vi.fn()} rollsLeft={3} />
+      );
+      expect(container.querySelector('[data-placed-highlight]')).not.toBeNull();
+      vi.advanceTimersByTime(5000);
+      expect(container.querySelector('[data-placed-highlight]')).not.toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('clears the highlight when the player to act rolls', () => {
+    const ps = twoPlayers();
+    const { rerender, container } = renderBoard(ps);
+    ps[1].scores = { ones: 3 };
+    rerender(
+      <ScoreBoard players={[...ps]} currentPlayerIndex={0} possibleScores={possibleScores} onSelectCategory={vi.fn()} rollsLeft={3} />
+    );
+    expect(container.querySelector('[data-placed-highlight]')).not.toBeNull();
+    rerender(
+      <ScoreBoard players={[...ps]} currentPlayerIndex={0} possibleScores={possibleScores} onSelectCategory={vi.fn()} rollsLeft={2} />
+    );
+    expect(container.querySelector('[data-placed-highlight]')).toBeNull();
+  });
+
+  it('clears the highlight when the match restarts', () => {
+    const ps = twoPlayers();
+    const { rerender, container } = renderBoard(ps);
+    ps[1].scores = { ones: 3 };
+    rerender(
+      <ScoreBoard players={[...ps]} currentPlayerIndex={0} possibleScores={possibleScores} onSelectCategory={vi.fn()} rollsLeft={3} />
+    );
+    expect(container.querySelector('[data-placed-highlight]')).not.toBeNull();
+    rerender(
+      <ScoreBoard players={twoPlayers()} currentPlayerIndex={0} possibleScores={possibleScores} onSelectCategory={vi.fn()} rollsLeft={3} />
+    );
+    expect(container.querySelector('[data-placed-highlight]')).toBeNull();
+  });
+});

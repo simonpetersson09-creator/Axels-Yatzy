@@ -220,7 +220,7 @@ export function useYatzyGame(localId?: string) {
     let backgrounded = false;
     let disposed = false;
     let removeNative: (() => void) | undefined;
-    const finishComputerTurn = () => {
+    const finishComputerTurn = (leaving = false) => {
       const prev = stateRef.current;
       if (!prev || prev.gameOver) return;
       const next = fastForwardAi({ ...prev, isRolling: false }, localIdRef.current);
@@ -228,7 +228,12 @@ export function useYatzyGame(localId?: string) {
       if (!next.lastComputerMove || next.lastComputerMove === prev.lastComputerMove) return;
       if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current);
       rollTimeoutRef.current = null;
-      updateGameState(() => next);
+      if (leaving) {
+        // Navigation to Home also ends the visible computer timers. Commit
+        // before unmount, without scheduling another render of the old game.
+        stateRef.current = next;
+        saveGameState(next, localIdRef.current);
+      } else updateGameState(() => next);
     };
     const lifecycle = (active: boolean) => {
       if (!active) {
@@ -253,6 +258,7 @@ export function useYatzyGame(localId?: string) {
     }
     return () => {
       disposed = true;
+      finishComputerTurn(true);
       document.removeEventListener('visibilitychange', visibility);
       window.removeEventListener('pagehide', pageHide);
       window.removeEventListener('pageshow', pageShow);

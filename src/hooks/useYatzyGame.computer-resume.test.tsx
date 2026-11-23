@@ -1,7 +1,7 @@
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { useYatzyGame } from './useYatzyGame';
-import { loadGameState, saveGameState } from '@/lib/active-game';
+import { getLocalActiveGames, loadGameState, saveGameState, setActiveGame } from '@/lib/active-game';
 import { writeRecoverable } from '@/lib/recoverable-storage';
 import { CATEGORIES, type GameState } from '@/types/yatzy';
 import { rollDice } from '@/lib/yatzy-scoring';
@@ -123,4 +123,40 @@ it('invalidates a delayed computer action synchronously before React renders the
     expect(loadGameState<GameState>(slot)?.players[1].scores.yatzy).toBe(50);
   });
   expect(loadGameState<GameState>(slot)?.currentPlayerIndex).toBe(0);
+});
+
+it('makes the Home card ready synchronously when native background finishes the computer turn', async () => {
+  writeRecoverable(`yatzy-ai-players:${slot}`, '[1]', true);
+  const { result } = renderHook(() => useYatzyGame(slot));
+  await act(async () => {});
+  act(() => { result.current.startGame(['Me', 'Computer']); result.current.roll(); });
+  act(() => { vi.advanceTimersByTime(1350); result.current.selectCategory('chance'); });
+  expect(getLocalActiveGames()[0].currentPlayerIndex).toBe(1);
+  act(() => {
+    native.listener?.({ isActive: false });
+    // This read deliberately happens before React's persistence effect.
+    expect(getLocalActiveGames()[0].currentPlayerIndex).toBe(0);
+  });
+});
+
+it('finishes and saves a computer turn on navigation to Home without opening the match again', () => {
+  writeRecoverable(`yatzy-ai-players:${slot}`, '[1]', true);
+  const { result, unmount } = renderHook(() => useYatzyGame(slot));
+  act(() => { result.current.startGame(['Me', 'Computer']); result.current.roll(); });
+  act(() => { vi.advanceTimersByTime(1350); result.current.selectCategory('chance'); });
+  const lastRollTime = getLocalActiveGames()[0].lastRollTime;
+  expect(getLocalActiveGames()[0].currentPlayerIndex).toBe(1);
+  unmount();
+  expect(getLocalActiveGames()[0].currentPlayerIndex).toBe(0);
+  expect(getLocalActiveGames()[0].lastRollTime).toBe(lastRollTime);
+  expect(loadGameState<GameState>(slot)?.lastComputerMove).toEqual({ playerIndex: 1, category: 'yatzy', score: 50 });
+  vi.advanceTimersByTime(10000);
+  expect(loadGameState<GameState>(slot)?.players[1].scores).toEqual({ yatzy: 50 });
+  expect(loadGameState<GameState>(slot)?.rollsLeft).toBe(3);
+});
+
+it('reads the saved human turn instead of an older active-card summary after restart', () => {
+  setActiveGame({ type: 'local', gameId: slot, timestamp: 100, lastRollTime: 200, currentPlayerIndex: 1 });
+  saveGameState(saved({ currentPlayerIndex: 0, rollsLeft: 3, isRolling: false }), slot);
+  expect(getLocalActiveGames()[0]).toMatchObject({ currentPlayerIndex: 0, timestamp: 100, lastRollTime: 200 });
 });

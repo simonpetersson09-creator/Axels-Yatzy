@@ -340,13 +340,21 @@ export default function HomePage() {
 
   const [statusTick, setStatusTick] = useState(0);
   useEffect(() => {
+    const refreshGames = () => setActiveGames(getActiveGames());
     const onFocus = () => {
       setStats(getLocalStats());
-      setActiveGames(getActiveGames());
+      refreshGames();
       setStatusTick(n => n + 1);
     };
+    // Navigation cleanup can commit the computer turn after Home's initial
+    // render. Read it again once mounted, then follow same-device saves.
+    refreshGames();
+    window.addEventListener('local-game-saved', refreshGames);
     window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
+    return () => {
+      window.removeEventListener('local-game-saved', refreshGames);
+      window.removeEventListener('focus', onFocus);
+    };
   }, []);
 
   // Close language picker when tapping outside of it.

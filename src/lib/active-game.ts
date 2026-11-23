@@ -76,7 +76,16 @@ function writeList(list: ActiveGame[]) {
 }
 
 export function getActiveGames(): ActiveGame[] {
-  return readList().sort((a, b) => b.lastRollTime - a.lastRollTime);
+  return readList().map(game => {
+    if (game.type !== 'local') return game;
+    // The saved turn is authoritative: suspension may commit it before the
+    // hook's next render updates the small active-game summary.
+    const saved = loadGameState<{ currentPlayerIndex?: number; players?: unknown[] }>(game.gameId);
+    const index = saved?.currentPlayerIndex;
+    if (typeof index !== 'number' || !Number.isInteger(index) || index < 0 ||
+        !Array.isArray(saved?.players) || index >= saved.players.length) return game;
+    return { ...game, currentPlayerIndex: index };
+  }).sort((a, b) => b.lastRollTime - a.lastRollTime);
 }
 
 export function getLocalActiveGames(): ActiveGame[] {
@@ -192,7 +201,9 @@ export function clearActiveGame() {
 export function saveGameState(state: unknown, localId?: string) {
   const snapshot = localId && state && typeof state === 'object'
     ? { ...state, matchKey: getCurrentLocalMatchKey(localId) } : state;
-  return writeRecoverable(savedKey(localId), JSON.stringify(snapshot), true);
+  const saved = writeRecoverable(savedKey(localId), JSON.stringify(snapshot), true);
+  if (saved) window.dispatchEvent(new Event('local-game-saved'));
+  return saved;
 }
 
 export function loadGameState<T>(localId?: string): T | null {

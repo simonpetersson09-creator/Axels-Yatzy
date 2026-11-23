@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Matchkort efter datorns tur – 23 november
+- [x] Läs kortets tur från den sparade matchen; slutför datorturen även vid Hem och uppdatera kortet vid lokala sparningar, utan ändrad matchutgångstid eller statistik.
+- [x] 69 tester godkända inklusive 50 kompletta datormatcher; Hem mitt i datortur ger grönt kort med Din tur, omladdning bevarar kortet och återöppning visar samma datorpoäng/markering. Inga live-skrivningar eller sidfel; bygge OK. Fysisk telefonverifiering kräver nästa appversion.
+
 ## Poängförslag väntar på verklig landning – 23 november
 - [x] Gemensam spelbricka döljer förslag och spärrar poängval medan någon tärning rör sig; gäller datorspel, vänmatcher, väntrum och snabbspel. Normala kastflaggor bevarade; sparade poäng och serverhandlingar oförändrade.
 - [x] Lästa spelvyer, start-/återspelsvägar, lokal återkomst och onlinekö; två regressioner återskapade före det gemensamma skyddet. 67 riktade tester godkända. Avskilt skärmprov med verklig 3D-rörelse blockerar val efter spelklockans slut och sparar sedan 21 i Chans utan sidfel eller live-skrivningar. Bygge OK.

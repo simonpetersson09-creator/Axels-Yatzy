@@ -3,6 +3,7 @@
 ## Blinkning vid poängplacering – 23 november
 - [x] Dölj övriga poängförslag under placering och bekräftelse, även tills nästa tur lästs; gemensam spelbricka behåller vald ruta och återställer val före nästa bild vid återställning. Bara presentation; poängberäkning/server/avslutade resultat oförändrade.
 - [x] Glappet återskapat före rättningen; 54 riktade tester godkända. Avskilt klickprov: 30 i Chans, bara vald markering, inga övriga förslagsglödningar under 73 bildrutor genom sparning/bekräftelse/fördröjt turbyte; inga sidfel eller produktionsskrivningar. Samma bricka används av dator-, vän-, väntrums- och snabbmatcher; bygge OK. Fysisk telefon och verkligt onlineförlopp kräver nästa appversion.
+- [x] Följdkontroll: alla markeringar/återkomstvägar samt serverpoäng/bakgrundsdator kodlästa; ytterligare glapp vid rotation efter bekräftelsen återskapat och rättat med sidägd presentationsmarkering. 62 riktade tester godkända; samma rotationsprov visar bara vald poäng genom 74 bildrutor, lokalt poängval/återöppning bevarar datorns markering. Inga sidfel/live-skrivningar, bygge OK. Fysisk telefon och verkligt onlineförlopp återstår i nästa appversion; förteckning i .lovable/reviews/score-placement-flow-sweep.md.
 
 ## Matchkort efter datorns tur – 23 november
 - [x] Läs kortets tur från den sparade matchen; slutför datorturen även vid Hem och uppdatera kortet vid lokala sparningar, utan ändrad matchutgångstid eller statistik.

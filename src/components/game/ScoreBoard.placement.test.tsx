@@ -35,3 +35,28 @@ it('restores available choices after a score rollback without losing the origina
   fireEvent.click(getByRole('button', { name: /\(chance\)/ }));
   expect(select).toHaveBeenCalledWith('chance', expect.objectContaining({ score: 30 }));
 });
+
+it('keeps other choices closed when rotation remounts an already-confirmed placement', () => {
+  const select = vi.fn();
+  const placed = [{ ...players[0], scores: { chance: 30 } }, players[1]];
+  const { rerender, getByRole } = render(<ScoreBoard key="before" players={placed} currentPlayerIndex={0}
+    possibleScores={suggestions} onSelectCategory={select} rollsLeft={0} rememberedPlacement="0:chance" />);
+  rerender(<ScoreBoard key="after" players={placed} currentPlayerIndex={0} possibleScores={suggestions}
+    onSelectCategory={select} rollsLeft={0} rememberedPlacement="0:chance" />);
+  fireEvent.click(getByRole('button', { name: /\(yatzy\)/ }));
+  expect(select).not.toHaveBeenCalled();
+  rerender(<ScoreBoard key="after" players={placed} currentPlayerIndex={1} possibleScores={suggestions}
+    onSelectCategory={select} rollsLeft={2} />);
+  fireEvent.click(getByRole('button', { name: /\(chance\)/ }));
+  expect(select).toHaveBeenCalledWith('chance', expect.objectContaining({ score: 30 }));
+});
+
+it('restores choices if a remembered placement is rolled back after board rotation', () => {
+  const select = vi.fn();
+  const { rerender, getByRole } = render(<ScoreBoard players={[{ ...players[0], scores: { chance: 30 } }, players[1]]}
+    currentPlayerIndex={0} possibleScores={suggestions} onSelectCategory={select} rollsLeft={0} rememberedPlacement="0:chance" />);
+  rerender(<ScoreBoard players={players} currentPlayerIndex={0} possibleScores={suggestions}
+    onSelectCategory={select} rollsLeft={0} />);
+  fireEvent.click(getByRole('button', { name: /\(chance\)/ }));
+  expect(select).toHaveBeenCalledWith('chance', expect.objectContaining({ score: 30 }));
+});

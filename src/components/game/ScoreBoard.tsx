@@ -17,6 +17,8 @@ interface ScoreBoardProps {
   aiChosenCategory?: string | null;
   aiChosenPlayerIndex?: number | null;
   selectionDisabled?: boolean;
+  /** Restore the page-owned placement when orientation rebuilds this board. */
+  rememberedPlacement?: string | null;
 }
 
 export interface ScoreboardClickDebug {
@@ -198,7 +200,7 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, rollsLeft, 
   );
 }
 
-export function ScoreBoard({ players, currentPlayerIndex, possibleScores: requestedScores, onSelectCategory, rollsLeft, aiChosenCategory, aiChosenPlayerIndex, selectionDisabled, seenKey, myIndex }: ScoreBoardProps & { seenKey?: string; myIndex?: number }) {
+export function ScoreBoard({ players, currentPlayerIndex, possibleScores: requestedScores, onSelectCategory, rollsLeft, aiChosenCategory, aiChosenPlayerIndex, selectionDisabled, rememberedPlacement, seenKey, myIndex }: ScoreBoardProps & { seenKey?: string; myIndex?: number }) {
   // Shared by local, friend, waiting-room and quick matches. Game timers can
   // finish before visible rest; hide suggestions and block row selection together.
   const diceFlying = useSyncExternalStore(subscribeDiceFlight, areDiceFlying, () => false);
@@ -254,7 +256,7 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores: reques
   // Remember which cell was filled last so it can be highlighted for a
   // moment — the next player then sees where the previous score went.
   const prevScoresRef = useRef<Set<string> | null>(null);
-  const [lastPlaced, setLastPlaced] = useState<string | null>(null);
+  const [lastPlaced, setLastPlaced] = useState<string | null>(rememberedPlacement ?? null);
   const placingCurrentScore = !!aiChosenCategory && aiChosenPlayerIndex === currentPlayerIndex;
   const possibleScores = diceFlying || selectionDisabled || placingCurrentScore
     || isScorePlacementAwaitingTurn(lastPlaced, currentPlayerIndex, rollsLeft) ? null : requestedScores;

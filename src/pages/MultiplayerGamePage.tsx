@@ -11,7 +11,7 @@ import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { getDiceAreaPrompt } from '@/lib/dice-area-prompt';
-import { canShowOnlineScoreSuggestions } from '@/lib/score-suggestions';
+import { canShowOnlineScoreSuggestions, reconcileScorePresentationHold, type ScorePresentationHold } from '@/lib/score-suggestions';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
@@ -112,6 +112,15 @@ export default function MultiplayerGamePage() {
   }, [waitingServer]);
 
   const gameId = searchParams.get('gameId');
+  // Orientation rebuilds the board, not the page. Keep the submitted-turn
+  // presentation here until a real turn change or rollback replaces it.
+  const scorePresentationRef = useRef<ScorePresentationHold | null>(null);
+  if (gameState) {
+    scorePresentationRef.current = reconcileScorePresentationHold(scorePresentationRef.current, {
+      gameId, playerIndex: gameState.currentPlayerIndex, round: gameState.round, rollsLeft: gameState.rollsLeft,
+      scores: gameState.players[gameState.currentPlayerIndex]?.scores ?? {}, pendingCategory, pendingPlayerIndex,
+    });
+  } else if (scorePresentationRef.current?.gameId !== gameId) scorePresentationRef.current = null;
   usePlayNetworkDiagnostics(gameId, status, !!error || !!forfeitError, slowServer);
   const gameShown = !!gameState;
   useEffect(() => { if (gameShown) reportPushTapGameShown(gameId); }, [gameShown, gameId]);
@@ -656,6 +665,7 @@ export default function MultiplayerGamePage() {
   // A chosen score keeps the turn until confirmed; other suggestions must not pulse meanwhile.
   const possibleScores = canShowOnlineScoreSuggestions({
     isMyTurn, localRolling, remoteRolling, rollPending, gameRolling: gameState.isRolling, pendingCategory,
+    placementAwaitingTurn: scorePresentationRef.current !== null,
   }) ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending && !pendingCategory && !forfeiting;
   // The table stays empty until the player's own Kast 1, so the same in-area
@@ -772,6 +782,8 @@ export default function MultiplayerGamePage() {
                 rollsLeft={gameState.rollsLeft}
                 aiChosenCategory={pendingCategory}
                 aiChosenPlayerIndex={pendingPlayerIndex}
+                rememberedPlacement={scorePresentationRef.current
+                  ? `${scorePresentationRef.current.playerIndex}:${scorePresentationRef.current.category}` : null}
                 selectionDisabled={!isMyTurn || (rollPending && !localRolling)}
               />
               {waitingServer && showWait && !localRolling && (

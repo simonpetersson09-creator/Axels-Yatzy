@@ -33,6 +33,14 @@ export function isDiceAwaiting() {
  * celebrations should react to, instead of guessing with timers.
  */
 const flying = new Set<number>();
+const flightListeners = new Set<() => void>();
+
+/** Presentation-only snapshot: true until the last visible die rests. */
+export const areDiceFlying = () => flying.size > 0;
+export function subscribeDiceFlight(listener: () => void) {
+  flightListeners.add(listener);
+  return () => { flightListeners.delete(listener); };
+}
 /**
  * `notifyLanding = false` releases a die without a landing signal (unmount,
  * turn sweep): nothing came to rest on screen, so no celebration may react.
@@ -41,6 +49,7 @@ export function setDieFlying(index: number, isFlying: boolean, notifyLanding = t
   const had = flying.size > 0;
   if (isFlying) flying.add(index);
   else flying.delete(index);
+  if (had !== areDiceFlying()) flightListeners.forEach(listener => listener());
   if (notifyLanding && had && flying.size === 0 && typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('dice:landed'));
   }

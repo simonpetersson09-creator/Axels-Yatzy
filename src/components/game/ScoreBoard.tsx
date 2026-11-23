@@ -90,7 +90,8 @@ function ScoreCell({ isScored, scoreValue, possibleScore, canSelect, rollsLeft, 
   return (
     <div
       className={cn(
-        'relative border-r border-yatzy-line/40 last:border-r-0 text-center transition-colors duration-300 ease-out flex items-center justify-center overflow-hidden rounded-[2px] pointer-events-none', ROW_H, COL_W,
+        'relative border-r border-yatzy-line/40 last:border-r-0 text-center flex items-center justify-center overflow-hidden rounded-[2px] pointer-events-none', ROW_H, COL_W,
+        canSelect && 'transition-colors duration-300 ease-out',
         bgClass,
         isAiChosen && 'bg-primary/30 ring-2 ring-inset ring-primary/60 animate-pulse',
         canSelect && possibleScore !== undefined && possibleScore > 0 && 'bg-yatzy-highlight/25',

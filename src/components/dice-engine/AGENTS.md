@@ -4,3 +4,4 @@
 - A landed roll remains active until its rolling edge ends; late face corrections settle in place instead of starting another entry flight.
 - Interrupted rolls retarget from their current pose and keep the landing signal busy until the corrected face settles; never snap on a simultaneous value/rolling change.
 - Only a visible rest emits dice:landed; unmount and turn sweeps release silently. A die mounted mid-roll (canvas recovery, orientation relayout) rests on its current face without a new fly-in.
+- Online score suggestions also subscribe to the existing flight tracker; action timers alone cannot certify visible rest, and silent canvas cleanup must release the presentation gate without a false landing event.

@@ -2,7 +2,8 @@ import { reportPushTapGameShown } from '@/lib/play-timing';
 import QuickMatchOpponentNotice from '@/components/multiplayer/QuickMatchOpponentNotice';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { areDiceFlying, subscribeDiceFlight } from '@/components/dice-engine/await-store';
 import { useGameAvatars, syncOwnAvatar } from '@/lib/avatar-sync';
 import { useDiceProfiles, usePlayerStats, profileSkin, checkNewFriendCredit, consumeNewGold } from '@/lib/gold-dice';
 import { DiceInfoSheet } from '@/components/DiceInfoSheet';
@@ -101,6 +102,7 @@ export default function MultiplayerGamePage() {
   const waitingServer = (rollPending || locksPending) && isMyTurn;
   const [slowServer, setSlowServer] = useState(false);
   const [diceTableEmpty, setDiceTableEmpty] = useState(false);
+  const diceFlying = useSyncExternalStore(subscribeDiceFlight, areDiceFlying, () => false);
   const [showWait, setShowWait] = useState(false);
   useEffect(() => {
     if (!waitingServer) { setSlowServer(false); setShowWait(false); return; }
@@ -652,7 +654,7 @@ export default function MultiplayerGamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   // Hide score suggestions for the whole roll (tap → server dice → landing) so cells never flash.
-  const possibleScores = !localRolling && !remoteRolling && !rollPending && !gameState.isRolling ? getPossibleScores() : null;
+  const possibleScores = isMyTurn && !diceFlying && !localRolling && !remoteRolling && !rollPending && !gameState.isRolling ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending && !pendingCategory && !forfeiting;
   // The table stays empty until the player's own Kast 1, so the same in-area
   // slot that shows "Väntar på …" on the opponent's turn tells the player to

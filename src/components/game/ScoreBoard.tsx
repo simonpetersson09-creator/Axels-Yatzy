@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playScoreSelectSound } from '@/lib/dice-sounds';
 import { useTranslation, type TranslationKey } from '@/lib/i18n';
+import { isScorePlacementAwaitingTurn } from '@/lib/score-suggestions';
 
 interface ScoreBoardProps {
   players: Player[];
@@ -201,7 +202,6 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores: reques
   // Shared by local, friend, waiting-room and quick matches. Game timers can
   // finish before visible rest; hide suggestions and block row selection together.
   const diceFlying = useSyncExternalStore(subscribeDiceFlight, areDiceFlying, () => false);
-  const possibleScores = diceFlying ? null : requestedScores;
   const { t } = useTranslation();
   const boardRef = useRef<HTMLDivElement>(null);
   const lowerSectionRef = useRef<HTMLDivElement>(null);
@@ -255,7 +255,12 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores: reques
   // moment — the next player then sees where the previous score went.
   const prevScoresRef = useRef<Set<string> | null>(null);
   const [lastPlaced, setLastPlaced] = useState<string | null>(null);
-  useEffect(() => {
+  const placingCurrentScore = !!aiChosenCategory && aiChosenPlayerIndex === currentPlayerIndex;
+  const possibleScores = diceFlying || selectionDisabled || placingCurrentScore
+    || isScorePlacementAwaitingTurn(lastPlaced, currentPlayerIndex, rollsLeft) ? null : requestedScores;
+  // Resolve placement/rollback before paint, so old suggestions cannot flash
+  // for one frame between a receipt and the subsequent turn refresh.
+  useLayoutEffect(() => {
     const now = new Set<string>();
     players.forEach((p, i) => CATEGORIES.forEach((c) => {
       if (p.scores[c.id] !== undefined && p.scores[c.id] !== null) now.add(`${i}:${c.id}`);
@@ -276,7 +281,8 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores: reques
     }
     if (!prev) return; // first render / reopened match: nothing "new"
     if (now.size < prev.size) { setLastPlaced(null); return; } // match restarted
-    const added = [...now].filter((k) => !prev!.has(k));
+    const previous = prev;
+    const added = [...now].filter((k) => !previous.has(k));
     if (added.length === 1) { setLastPlaced(added[0]); return; }
     if (!storeKey || added.length === 0) return; // never highlight a bulk reload in local games
     // Several placements were missed: show the most recent opponent's one

@@ -11,6 +11,7 @@ import { useMultiplayerGame } from '@/hooks/MultiplayerProvider';
 import { DiceArea } from '@/components/game/DiceArea';
 import { TurnIndicator } from '@/components/game/TurnIndicator';
 import { getDiceAreaPrompt } from '@/lib/dice-area-prompt';
+import { canShowOnlineScoreSuggestions } from '@/lib/score-suggestions';
 import { ScoreBoard } from '@/components/game/ScoreBoard';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { YatzyCelebration } from '@/components/game/YatzyCelebration';
@@ -652,7 +653,10 @@ export default function MultiplayerGamePage() {
 
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   // Hide score suggestions for the whole roll (tap → server dice → landing) so cells never flash.
-  const possibleScores = isMyTurn && !localRolling && !remoteRolling && !rollPending && !gameState.isRolling ? getPossibleScores() : null;
+  // A chosen score keeps the turn until confirmed; other suggestions must not pulse meanwhile.
+  const possibleScores = canShowOnlineScoreSuggestions({
+    isMyTurn, localRolling, remoteRolling, rollPending, gameRolling: gameState.isRolling, pendingCategory,
+  }) ? getPossibleScores() : null;
   const canRoll = gameState.rollsLeft > 0 && isMyTurn && !locksPending && !rollPending && !pendingCategory && !forfeiting;
   // The table stays empty until the player's own Kast 1, so the same in-area
   // slot that shows "Väntar på …" on the opponent's turn tells the player to

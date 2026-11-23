@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Blinkning vid poängplacering – 23 november
+- [x] Dölj övriga poängförslag under placering och bekräftelse, även tills nästa tur lästs; gemensam spelbricka behåller vald ruta och återställer val före nästa bild vid återställning. Bara presentation; poängberäkning/server/avslutade resultat oförändrade.
+- [x] Glappet återskapat före rättningen; 54 riktade tester godkända. Avskilt klickprov: 30 i Chans, bara vald markering, inga övriga förslagsglödningar under 73 bildrutor genom sparning/bekräftelse/fördröjt turbyte; inga sidfel eller produktionsskrivningar. Samma bricka används av dator-, vän-, väntrums- och snabbmatcher; bygge OK. Fysisk telefon och verkligt onlineförlopp kräver nästa appversion.
+
 ## Matchkort efter datorns tur – 23 november
 - [x] Läs kortets tur från den sparade matchen; slutför datorturen även vid Hem och uppdatera kortet vid lokala sparningar, utan ändrad matchutgångstid eller statistik.
 - [x] 69 tester godkända inklusive 50 kompletta datormatcher; Hem mitt i datortur ger grönt kort med Din tur, omladdning bevarar kortet och återöppning visar samma datorpoäng/markering. Inga live-skrivningar eller sidfel; bygge OK. Fysisk telefonverifiering kräver nästa appversion.

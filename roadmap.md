@@ -3,6 +3,7 @@
 ## Matchkort efter datorns tur – 23 november
 - [x] Läs kortets tur från den sparade matchen; slutför datorturen även vid Hem och uppdatera kortet vid lokala sparningar, utan ändrad matchutgångstid eller statistik.
 - [x] 69 tester godkända inklusive 50 kompletta datormatcher; Hem mitt i datortur ger grönt kort med Din tur, omladdning bevarar kortet och återöppning visar samma datorpoäng/markering. Inga live-skrivningar eller sidfel; bygge OK. Fysisk telefonverifiering kräver nästa appversion.
+- [x] Följdkontroll: samtliga kort-/återkomstvägar, onlinekällor och serverjobb kodlästa; 37 riktade tester godkända inklusive tre datorer, annan matchplats, avhopp och redan färdiga resultat. Inget ytterligare bekräftat fel; inga fler beteendeändringar. Native/push/verkligt nät inte nytestade; telefonprov kräver nästa appversion. Förteckning i .lovable/reviews/local-card-flow-sweep.md.
 
 ## Poängförslag väntar på verklig landning – 23 november
 - [x] Gemensam spelbricka döljer förslag och spärrar poängval medan någon tärning rör sig; gäller datorspel, vänmatcher, väntrum och snabbspel. Normala kastflaggor bevarade; sparade poäng och serverhandlingar oförändrade.

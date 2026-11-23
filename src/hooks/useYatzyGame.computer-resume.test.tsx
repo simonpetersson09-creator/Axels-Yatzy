@@ -1,7 +1,7 @@
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { useYatzyGame } from './useYatzyGame';
-import { getLocalActiveGames, loadGameState, saveGameState, setActiveGame } from '@/lib/active-game';
+import { clearLocalActiveGame, getLocalActiveGames, loadGameState, saveGameState, setActiveGame } from '@/lib/active-game';
 import { writeRecoverable } from '@/lib/recoverable-storage';
 import { CATEGORIES, type GameState } from '@/types/yatzy';
 import { rollDice } from '@/lib/yatzy-scoring';
@@ -159,4 +159,54 @@ it('reads the saved human turn instead of an older active-card summary after res
   setActiveGame({ type: 'local', gameId: slot, timestamp: 100, lastRollTime: 200, currentPlayerIndex: 1 });
   saveGameState(saved({ currentPlayerIndex: 0, rollsLeft: 3, isRolling: false }), slot);
   expect(getLocalActiveGames()[0]).toMatchObject({ currentPlayerIndex: 0, timestamp: 100, lastRollTime: 200 });
+});
+
+it('finishes all three computer seats before making the local card ready', () => {
+  writeRecoverable(`yatzy-ai-players:${slot}`, '[1,2,3]', true);
+  const { result, unmount } = renderHook(() => useYatzyGame(slot));
+  act(() => { result.current.startGame(['Me', 'Computer 1', 'Computer 2', 'Computer 3']); result.current.roll(); });
+  act(() => { vi.advanceTimersByTime(1350); result.current.selectCategory('chance'); });
+  unmount();
+  const state = loadGameState<GameState>(slot);
+  expect(state?.players.slice(1).map(p => p.scores.yatzy)).toEqual([50, 50, 50]);
+  expect(getLocalActiveGames()[0].currentPlayerIndex).toBe(0);
+  expect(state?.round).toBe(2);
+  expect(state?.rollsLeft).toBe(3);
+});
+
+it('does not change another saved match when leaving a computer turn', () => {
+  const other = saved({ currentPlayerIndex: 0, rollsLeft: 1, isRolling: false });
+  saveGameState(other, 'other-slot');
+  const before = loadGameState<GameState>('other-slot');
+  writeRecoverable(`yatzy-ai-players:${slot}`, '[1]', true);
+  const { result, unmount } = renderHook(() => useYatzyGame(slot));
+  act(() => { result.current.startGame(['Me', 'Computer']); result.current.roll(); });
+  act(() => { vi.advanceTimersByTime(1350); result.current.selectCategory('chance'); });
+  unmount();
+  expect(loadGameState<GameState>('other-slot')).toEqual(before);
+  expect(loadGameState<GameState>(slot)?.currentPlayerIndex).toBe(0);
+});
+
+it('never restores a forfeited local match during navigation cleanup', () => {
+  writeRecoverable(`yatzy-ai-players:${slot}`, '[1]', true);
+  const { result, unmount } = renderHook(() => useYatzyGame(slot));
+  act(() => { result.current.startGame(['Me', 'Computer']); result.current.roll(); });
+  act(() => { vi.advanceTimersByTime(1350); result.current.selectCategory('chance'); });
+  clearLocalActiveGame(slot);
+  unmount();
+  expect(loadGameState<GameState>(slot)).toBeNull();
+  expect(getLocalActiveGames()).toHaveLength(0);
+});
+
+it('leaves completed results exactly unchanged on background and unmount', () => {
+  const filled = Object.fromEntries(CATEGORIES.map(c => [c.id, 0]));
+  seed(saved({ round: 15, gameOver: true, isRolling: false, rollsLeft: 3, players: [
+    { id: 'p0', name: 'Me', scores: filled }, { id: 'p1', name: 'Computer', scores: filled },
+  ] }));
+  const { unmount } = renderHook(() => useYatzyGame(slot));
+  const before = loadGameState<GameState>(slot);
+  act(() => { window.dispatchEvent(new Event('pagehide')); });
+  unmount();
+  expect(loadGameState<GameState>(slot)).toEqual(before);
+  expect(rollDice).not.toHaveBeenCalled();
 });

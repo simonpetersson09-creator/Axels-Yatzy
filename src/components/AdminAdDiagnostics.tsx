@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Copy, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { adminAuthHeaders } from '@/lib/admin-hub-session';
 
-export default function AdminAdDiagnostics({ adminKey }: { adminKey: string }) {
+export default function AdminAdDiagnostics({ adminKey, hubToken = null }: { adminKey: string; hubToken?: string | null }) {
   const [text, setText] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -12,7 +13,7 @@ export default function AdminAdDiagnostics({ adminKey }: { adminKey: string }) {
     setLoading(true); setError(''); setCopied(false);
     try {
       const { data, error } = await supabase.functions.invoke('admin-analytics', {
-        headers: { 'x-admin-key': adminKey }, body: { view: 'ios-app-open' },
+        headers: adminAuthHeaders(adminKey, hubToken), body: { view: 'ios-app-open' },
       });
       if (error || data?.error) throw new Error('Diagnostiken kunde inte hämtas.');
       setText(data?.diagnostics?.length ? data.diagnostics.map((row: unknown) => JSON.stringify(row)).join('\n') : 'Inga iPhone-försök registrerade de senaste 30 dagarna.');

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { adminHourLabel, adminWeekdayName, type AdminBestTimes } from "@/lib/admin-best-times";
+import { adminAuthHeaders } from '@/lib/admin-hub-session';
 
 /**
  * Två fält bredvid admindiagrammet: bästa veckodag och bästa timme,
  * räknade oberoende av varandra på aktiva appenheter (svensk tid, sedan 1 november).
  */
-export default function AdminBestTimes({ adminKey }: { adminKey: string }) {
+export default function AdminBestTimes({ adminKey, hubToken = null }: { adminKey: string; hubToken?: string | null }) {
   const [best, setBest] = useState<AdminBestTimes | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -14,7 +15,7 @@ export default function AdminBestTimes({ adminKey }: { adminKey: string }) {
     let active = true;
     void (async () => {
       const { data, error } = await supabase.functions.invoke("admin-analytics", {
-        headers: { "x-admin-key": adminKey },
+        headers: adminAuthHeaders(adminKey, hubToken),
         body: { view: "best-times" },
       });
       if (!active) return;
@@ -25,7 +26,7 @@ export default function AdminBestTimes({ adminKey }: { adminKey: string }) {
       setBest((data as { best: AdminBestTimes }).best ?? null);
     })();
     return () => { active = false; };
-  }, [adminKey]);
+  }, [adminKey, hubToken]);
 
   if (failed) return null;
 

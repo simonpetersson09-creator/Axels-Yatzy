@@ -7,6 +7,7 @@ import AdminLineChart from "@/components/AdminLineChart";
 import AdminBestTimes from "@/components/AdminBestTimes";
 import AdminAdDiagnostics from "@/components/AdminAdDiagnostics";
 import { adminVisibleDays } from "@/lib/admin-period";
+import { adminAuthHeaders, captureAdminHubToken, clearAdminHubToken } from '@/lib/admin-hub-session';
 import {
   adminRecordIndexes,
   adminOnlineOutcomes,
@@ -47,12 +48,14 @@ function fmtDay(d: string) {
 }
 
 export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
+  const [hubToken, setHubToken] = useState<string | null>(captureAdminHubToken);
   const [adminKey, setAdminKey] = useState<string>(() => {
     try { return localStorage.getItem(ADMIN_KEY_STORAGE) ?? ""; } catch { return ""; }
   });
   const [rows, setRows] = useState<DayRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(Boolean(adminKey));
+  const [loading, setLoading] = useState(hubToken !== null || Boolean(adminKey));
+  const loadGeneration = useRef(0);
   const [collapsedColumns, setCollapsedColumns] = useState<AdminColumnKey[]>([]);
   const records = useMemo(() => adminRecordIndexes(rows ?? [], COLUMNS.map((c) => c.key)), [rows]);
   const means = useMemo(() => Object.fromEntries((rows ?? []).map((row) => [row.day,
@@ -122,36 +125,47 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
   }, []);
 
   const load = async (key: string) => {
+    const generation = ++loadGeneration.current;
     setLoading(true);
     setError(null);
     try {
       const { data, error } = await supabase.functions.invoke("admin-analytics", {
-        headers: { "x-admin-key": key },
+        headers: adminAuthHeaders(key, hubToken),
       });
+      if (generation !== loadGeneration.current) return;
       if (error || !data || "error" in data) {
         const status = error && "context" in error ? (error.context as { status?: number } | undefined)?.status : undefined;
         const unauthorized = status === 401 || data?.error === "Unauthorized" || error?.message === "Unauthorized";
         if (unauthorized) {
-          try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch { /* ignore */ }
-          setAdminKey("");
+          if (hubToken !== null) {
+            clearAdminHubToken();
+            setHubToken(null);
+          } else {
+            try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch { /* ignore */ }
+            setAdminKey("");
+          }
         }
         setError(unauthorized
-          ? "Lösenordet godkändes inte. Skriv ditt aktuella adminlösenord igen."
+          ? hubToken !== null ? "Hub-inloggningen är ogiltig eller har gått ut. Öppna admin igen från MrB. Admin."
+            : "Lösenordet godkändes inte. Skriv ditt aktuella adminlösenord igen."
           : "Admin kunde inte öppnas just nu. Försök igen.");
         setRows(null);
         return;
       }
       setRows(adminVisibleDays((data as { days: DayRow[] }).days));
-      try { localStorage.setItem(ADMIN_KEY_STORAGE, key); } catch { /* ignore */ }
+      if (hubToken === null) {
+        try { localStorage.setItem(ADMIN_KEY_STORAGE, key); } catch { /* ignore */ }
+      }
     } catch (e) {
-      setError(String(e));
+      if (generation === loadGeneration.current) setError("Admin kunde inte öppnas just nu. Försök igen.");
     } finally {
-      setLoading(false);
+      if (generation === loadGeneration.current) setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (adminKey) void load(adminKey);
+    if (hubToken !== null || adminKey) void load(adminKey);
+    return () => { loadGeneration.current++; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -163,6 +177,12 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
           Öppnar admin…
         </div>
       );
+    }
+    if (hubToken !== null) {
+      return <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center gap-3 p-6">
+        <p role="alert">{error}</p>
+        <Button variant="outline" onClick={() => void load(adminKey)}><RefreshCw />Försök igen</Button>
+      </div>;
     }
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
@@ -220,6 +240,9 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         </Button>
         <Button variant="outline" size="sm" disabled={loading}
           onClick={() => {
+            loadGeneration.current++;
+            clearAdminHubToken();
+            setHubToken(null);
             try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch { /* ignore */ }
             setAdminKey("");
             setRows(null);
@@ -232,10 +255,10 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
       </div>
       {error && <p className="text-sm text-destructive mb-2">{error}</p>}
       {rows.some((r) => r.incomplete_columns?.length) && <p className="text-sm text-muted-foreground mb-3">† Ofullständigt underlag efter matchstädningen den 6 november. Äldre onlinematcher är delvis återställda; dagfördelningen kan avvika. Medel, summor och rekord visas inte där fullständig historik saknas. Appåldern kan även påverkas framåt.</p>}
-      <AdminAdDiagnostics adminKey={adminKey} />
+      <AdminAdDiagnostics adminKey={adminKey} hubToken={hubToken} />
       {diagram ? (
         <div className="flex flex-col lg:flex-row gap-5 items-start">
-          <AdminBestTimes adminKey={adminKey} />
+          <AdminBestTimes adminKey={adminKey} hubToken={hubToken} />
           <div className="flex-1 min-w-0 w-full">
             <AdminLineChart rows={rows} />
           </div>

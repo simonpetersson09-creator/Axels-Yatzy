@@ -1,10 +1,11 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { diagnosticRows } from './diagnostics.ts';
+import { verifyHubToken } from './hub-auth.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-admin-key, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "authorization, x-client-info, apikey, content-type, x-admin-key, x-hub-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 function timingSafeEqual(a: string, b: string): boolean {
@@ -23,10 +24,16 @@ Deno.serve(async (req) => {
     });
 
   const expectedKey = Deno.env.get("ADMIN_API_KEY");
-  if (!expectedKey) return json({ error: "Admin endpoint not configured" }, 503);
-  const providedKey = req.headers.get("x-admin-key") ?? "";
-  if (!providedKey || !timingSafeEqual(providedKey, expectedKey)) {
-    return json({ error: "Unauthorized" }, 401);
+  if (req.headers.has('x-hub-token')) {
+    if (!await verifyHubToken(req.headers.get('x-hub-token'), Deno.env.get('HUB_SHARED_SECRET'))) {
+      return json({ error: 'Unauthorized' }, 401);
+    }
+  } else {
+    if (!expectedKey) return json({ error: "Admin endpoint not configured" }, 503);
+    const providedKey = req.headers.get("x-admin-key") ?? "";
+    if (!providedKey || !timingSafeEqual(providedKey, expectedKey)) {
+      return json({ error: "Unauthorized" }, 401);
+    }
   }
 
   const supabase = createClient(

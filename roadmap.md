@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## MrB. Admin-hubbinloggning – 24 november
+- [x] Begär HUB_SHARED_SECRET via säkert formulär; lägg till separat minnesbaserad hub-token och serververifiering utan ändrade adminfrågor eller vanlig inloggning.
+- [x] 48 tester godkända; driftsatt server godtar giltig token och avvisar fel signatur/utgången token. Hub/vanlig inloggning ger identiskt fullständigt statistiksvar. Separata webbursprung: tabell, uppdatering, diagnostik, diagram och utloggning verifierade utan kakor eller beständig lagring; inga sidfel. Publicerad /admin saknar blockerande X-Frame-Options/CSP; bygge OK. Publicering av nya sidan och slutprov från den verkliga MrB. Admin-hubben återstår inför användning.
+
 ## Android Java-kompilering – 24 november
 - [x] Diagnostikanropet infogas endast i onAdFailedToLoad efter befintligt skydd för gammal banner; tidigare felpatchad removeBanner repareras även med befintlig markör. Diagnostik, annonslogik och iOS bevarade.
 - [x] Exakt rad-356-fel återskapat med Gradle release-Java-kompilering; reparerad installation, ren låst AdMob 8.2.1-installation och upprepad hel patchkedja kompilerar. 19 tester godkända inklusive verklig javac-regression mot release-beroenden. iOS byte-identiskt; full signerad app/AAB ej byggd. Reproduktionsunderlag i .lovable/reviews/android-load-diagnostics-java.md.

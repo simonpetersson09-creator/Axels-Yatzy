@@ -42,7 +42,7 @@ function javaHelper(banner) {
     }
 `;
 }
-async function patch(path, transform, needles) {
+async function patch(path, transform, needles, normalize = source => source) {
   const file = resolve(root, path);
   let source = await readFile(file, 'utf8');
   if (!source.includes(mark)) {
@@ -52,8 +52,31 @@ async function patch(path, transform, needles) {
     };
     transform(replace);
   }
+  source = normalize(source);
   for (const needle of [mark, ...needles]) if (!source.includes(needle)) throw new Error(`Incomplete ad load diagnostics: ${path}: ${needle}`);
   await writeFile(file, source);
+}
+function normalizeAndroidBannerHook(source) {
+  // Repair the old globally matched hook even when its helper marker exists.
+  // That anchor also occurs in removeBanner(), where adError is out of scope.
+  const clean = source.replace(/^[ \t]*reportLoadFailure\(adError\);\r?\n/gm, '');
+  const signature = '                    public void onAdFailedToLoad(@NonNull LoadAdError adError) {';
+  const start = clean.indexOf(signature);
+  const end = clean.indexOf('\n                    @Override', start + signature.length);
+  if (start < 0 || end < 0 || clean.indexOf(signature, start + signature.length) >= 0) {
+    throw new Error('Android banner diagnostics: unique load-failure callback missing');
+  }
+  const callback = clean.slice(start, end);
+  // Keep diagnostics after the existing stale-view return and before teardown.
+  const anchor = '                        final ViewGroup bannerParent = resolveViewGroup();';
+  const guard = '                            super.onAdFailedToLoad(adError);\n                            return;';
+  if (!callback.includes(guard) || callback.indexOf(anchor) <= callback.indexOf(guard)
+      || callback.indexOf(anchor) !== callback.lastIndexOf(anchor)) {
+    throw new Error('Android banner diagnostics: guarded failure teardown missing');
+  }
+  return clean.slice(0, start)
+    + callback.replace(anchor, '                        reportLoadFailure(adError);\n' + anchor)
+    + clean.slice(end);
 }
 if (!platform || platform === 'ios') {
   const base = 'ios/Sources/AdMobPlugin/';
@@ -71,9 +94,7 @@ if (!platform || platform === 'android') {
   const base = 'android/src/main/java/com/getcapacitor/community/admob/';
   await patch(base + 'banner/BannerExecutor.java', replace => {
     replace('    private ViewGroup mViewGroup;', '    private ViewGroup mViewGroup;\n' + javaHelper(true));
-    replace('                        final ViewGroup bannerParent = resolveViewGroup();',
-      '                        reportLoadFailure(adError);\n                        final ViewGroup bannerParent = resolveViewGroup();');
-  }, ['reportLoadFailure(adError);', 'getAdapterResponses()', '"adapter_count"']);
+  }, ['reportLoadFailure(adError);', 'getAdapterResponses()', '"adapter_count"'], normalizeAndroidBannerHook);
   await patch(base + 'interstitial/AdInterstitialExecutor.java', replace => {
     replace('    public void showInterstitial(', javaHelper(false) + '\n    public void showInterstitial(');
     replace('                            delegate.onAdFailedToLoad(error);',

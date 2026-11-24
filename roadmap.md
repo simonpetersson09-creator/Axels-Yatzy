@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Android Java-kompilering – 24 november
+- [x] Diagnostikanropet infogas endast i onAdFailedToLoad efter befintligt skydd för gammal banner; tidigare felpatchad removeBanner repareras även med befintlig markör. Diagnostik, annonslogik och iOS bevarade.
+- [x] Exakt rad-356-fel återskapat med Gradle release-Java-kompilering; reparerad installation, ren låst AdMob 8.2.1-installation och upprepad hel patchkedja kompilerar. 19 tester godkända inklusive verklig javac-regression mot release-beroenden. iOS byte-identiskt; full signerad app/AAB ej byggd. Reproduktionsunderlag i .lovable/reviews/android-load-diagnostics-java.md.
+
 ## Blinkning vid poängplacering – 23 november
 - [x] Dölj övriga poängförslag under placering och bekräftelse, även tills nästa tur lästs; gemensam spelbricka behåller vald ruta och återställer val före nästa bild vid återställning. Bara presentation; poängberäkning/server/avslutade resultat oförändrade.
 - [x] Glappet återskapat före rättningen; 54 riktade tester godkända. Avskilt klickprov: 30 i Chans, bara vald markering, inga övriga förslagsglödningar under 73 bildrutor genom sparning/bekräftelse/fördröjt turbyte; inga sidfel eller produktionsskrivningar. Samma bricka används av dator-, vän-, väntrums- och snabbmatcher; bygge OK. Fysisk telefon och verkligt onlineförlopp kräver nästa appversion.

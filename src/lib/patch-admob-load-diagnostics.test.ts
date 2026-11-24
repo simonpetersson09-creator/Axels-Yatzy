@@ -48,8 +48,71 @@ describe('SDK load diagnostic patch', () => {
       });
       execFileSync(process.execPath, [script, platform], { cwd });
       files.forEach(({ file }, i) => expect(readFileSync(file, 'utf8')).toBe(patched[i]));
+      if (platform === 'android') {
+        const banner = files[0];
+        const hook = '                        reportLoadFailure(adError);\n';
+        const callback = patched[0].slice(patched[0].indexOf('public void onAdFailedToLoad('));
+        expect(callback.indexOf(hook)).toBeGreaterThan(callback.indexOf('return;'));
+        expect(patched[0].slice(0, patched[0].indexOf('public void onAdFailedToLoad('))).not.toContain(hook);
+        expect(patched[0].split(hook)).toHaveLength(2);
+        // Recreate 4ef339e8: the helper marker exists, but the call is in removeBanner.
+        const legacy = patched[0].replace(hook, '').replace(
+          '                        final ViewGroup bannerParent = resolveViewGroup();',
+          hook + '                        final ViewGroup bannerParent = resolveViewGroup();',
+        );
+        writeFileSync(banner.file, legacy);
+        execFileSync(process.execPath, [script, platform], { cwd });
+        expect(readFileSync(banner.file, 'utf8')).toBe(patched[0]);
+        execFileSync(process.execPath, [script, platform], { cwd });
+        expect(readFileSync(banner.file, 'utf8')).toBe(patched[0]);
+        writeFileSync(banner.file, patched[0].replace('public void onAdFailedToLoad(', 'public void missingCallback('));
+        expect(() => execFileSync(process.execPath, [script, platform], { cwd, stdio: 'pipe' })).toThrow();
+        writeFileSync(banner.file, patched[0]);
+      }
       writeFileSync(files[0].file, patched[0].replace('"adapter_count"', '"missing"'));
       expect(() => execFileSync(process.execPath, [script, platform], { cwd, stdio: 'pipe' })).toThrow();
     } finally { rmSync(cwd, { recursive: true, force: true }); }
   });
+  // Use the real Android/Google/Capacitor classpath exported by the release
+  // JavaCompile task, not Java stubs. Run in Android CI with JDK 21 on PATH:
+  // MRB_ANDROID_JAVA_CLASSPATH=<release classpath> bunx vitest run <this file>
+  it.skipIf(!process.env.MRB_ANDROID_JAVA_CLASSPATH)('javac rejects the old hook and compiles clean, repeated and repaired Android patches', () => {
+    const classpath = process.env.MRB_ANDROID_JAVA_CLASSPATH;
+    if (!classpath) throw new Error('Release Java classpath required');
+    const cwd = mkdtempSync(resolve(tmpdir(), 'ad-load-javac-'));
+    const base = resolve(cwd, 'node_modules/@capacitor-community/admob/android/src/main/java/com/getcapacitor/community/admob');
+    try {
+      const files = entries.filter(([p]) => p === 'android').map(([, path, fixture]) => {
+        const file = resolve(base, path);
+        mkdirSync(dirname(file), { recursive: true });
+        writeFileSync(file, readFileSync(resolve('src/lib/__fixtures__/ad-load-native', fixture), 'utf8'));
+        return file;
+      });
+      const compile = () => execFileSync('javac', ['-source', '21', '-target', '21', '-cp', classpath,
+        '-d', resolve(cwd, 'classes'), ...files], { cwd, stdio: 'pipe' });
+      execFileSync(process.execPath, [script, 'android'], { cwd });
+      compile();
+      const clean = files.map(file => readFileSync(file, 'utf8'));
+      execFileSync(process.execPath, [script, 'android'], { cwd });
+      compile();
+      files.forEach((file, i) => expect(readFileSync(file, 'utf8')).toBe(clean[i]));
+      const hook = '                        reportLoadFailure(adError);\n';
+      writeFileSync(files[0], clean[0].replace(hook, '').replace(
+        '                        final ViewGroup bannerParent = resolveViewGroup();',
+        hook + '                        final ViewGroup bannerParent = resolveViewGroup();',
+      ));
+      let failure = '';
+      try { compile(); } catch (error) {
+        if (error && typeof error === 'object' && 'stderr' in error) failure = String(error.stderr);
+      }
+      expect(failure).toContain('cannot find symbol');
+      expect(failure).toContain('adError');
+      execFileSync(process.execPath, [script, 'android'], { cwd });
+      compile();
+      expect(readFileSync(files[0], 'utf8')).toBe(clean[0]);
+      execFileSync(process.execPath, [script, 'android'], { cwd });
+      compile();
+      expect(readFileSync(files[0], 'utf8')).toBe(clean[0]);
+    } finally { rmSync(cwd, { recursive: true, force: true }); }
+  }, 120_000);
 });

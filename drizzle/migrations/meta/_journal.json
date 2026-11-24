@@ -1009,6 +1009,13 @@
       "when": 1795531512340,
       "tag": "0143_admin_faster_statistics",
       "breakpoints": true
+    },
+    {
+      "idx": 144,
+      "version": "7",
+      "when": 1795539005662,
+      "tag": "0144_admin_stats_cache",
+      "breakpoints": true
     }
   ]
 }

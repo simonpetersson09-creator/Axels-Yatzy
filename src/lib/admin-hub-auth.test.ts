@@ -34,7 +34,7 @@ describe('hub HMAC verification', () => {
 // Execute the actual handler, substituting only external SDK/database and Deno environment.
 function endpoint() {
   const rpc = vi.fn(async () => ({ data: [], error: null }));
-  const createClient = vi.fn(() => ({ rpc }));
+  const createClient = vi.fn(() => ({ rpc, from: () => ({ upsert: async () => ({ error: null }) }) }));
   let handler: ((req: Request) => Promise<Response>) | undefined;
   const source = readFileSync('supabase/functions/admin-analytics/index.ts', 'utf8').replace(/^import .*;\r?\n/gm, '');
   const js = transpileModule(source, { compilerOptions: { module: ModuleKind.ESNext } }).outputText;

@@ -143,6 +143,11 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
           try { localStorage.setItem(ADMIN_KEY_STORAGE, key); } catch { /* ignore */ }
         }
       }
+      // Show the last saved figures immediately; fresh figures replace them below.
+      void supabase.functions.invoke("admin-analytics", { headers, body: { view: "cached" } }).then(({ data: c }) => {
+        if (generation !== loadGeneration.current || !Array.isArray(c?.days)) return;
+        setRows((current) => current ?? adminVisibleDays(c.days as DayRow[]));
+      }).catch(() => { /* live figures follow */ });
       const { data, error } = await supabase.functions.invoke("admin-analytics", { headers });
       if (generation !== loadGeneration.current) return;
       if (error) throw error;

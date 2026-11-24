@@ -57,8 +57,13 @@ Deno.serve(async (req) => {
     if (error) return json({ error: error.message }, 500);
     return json({ best: data ?? null });
   }
+  if (body.view === 'cached') {
+    const { data } = await supabase.from('admin_stats_cache').select('data,computed_at').eq('id', 1).maybeSingle();
+    return json({ days: data?.data ?? null, computedAt: data?.computed_at ?? null });
+  }
   // App devices only (ios/android), Stockholm days; computed in SQL so no row caps apply.
   const { data, error } = await supabase.rpc("admin_daily_stats_v8", { _start: "2026-11-01" });
   if (error) return json({ error: error.message }, 500);
+  await supabase.from('admin_stats_cache').upsert({ id: 1, data: data ?? [], computed_at: new Date().toISOString() });
   return json({ days: data ?? [] });
 });

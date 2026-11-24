@@ -4,13 +4,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AdminPage from "./AdminPage";
 import { clearAdminHubToken } from '@/lib/admin-hub-session';
 
-const mocks = vi.hoisted(() => ({ invoke: vi.fn() }));
-vi.mock("@/integrations/supabase/client", () => ({ supabase: { functions: { invoke: mocks.invoke } } }));
+const mocks = vi.hoisted(() => ({ invoke: vi.fn(), cached: vi.fn() }));
+vi.mock("@/integrations/supabase/client", () => ({ supabase: { functions: {
+  invoke: (name: string, options: { body?: { view?: string } }) =>
+    options?.body?.view === "cached" ? mocks.cached(name, options) : mocks.invoke(name, options),
+} } }));
 vi.mock("@/components/AdminLineChart", () => ({ default: () => <div>Chart</div> }));
 
 const openAdmin = () => render(<MemoryRouter><AdminPage /></MemoryRouter>);
 beforeEach(() => {
-  localStorage.clear(); mocks.invoke.mockReset(); clearAdminHubToken();
+  localStorage.clear(); mocks.invoke.mockReset(); mocks.cached.mockReset(); mocks.cached.mockResolvedValue({ data: { days: null }, error: null }); clearAdminHubToken();
   window.history.replaceState(null, '', '/admin');
 });
 afterEach(cleanup);

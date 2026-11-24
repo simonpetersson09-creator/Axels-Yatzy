@@ -115,6 +115,24 @@ export type Database = {
           },
         ]
       }
+      admin_stats_cache: {
+        Row: {
+          computed_at: string
+          data: Json
+          id: number
+        }
+        Insert: {
+          computed_at?: string
+          data: Json
+          id: number
+        }
+        Update: {
+          computed_at?: string
+          data?: Json
+          id?: number
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           app_version: string | null

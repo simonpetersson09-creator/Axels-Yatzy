@@ -36,11 +36,14 @@ Deno.serve(async (req) => {
     }
   }
 
+  const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
+  // Authentication-only requests do not open a database connection or compute statistics.
+  if (body.view === 'auth') return json({ authenticated: true });
+
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
-  const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
   if (body.view === 'ios-app-open') {
     const { data, error } = await supabase.from('analytics_events')
       .select('metadata,created_at,app_version').eq('event_name', 'ios_app_open_diag').eq('platform', 'ios')

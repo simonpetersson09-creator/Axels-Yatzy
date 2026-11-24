@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Snabbare adminöppning – 24 november
+- [x] Separat servervalidering utan databasarbete visar admin innan siffrorna; samma nyckel/hub-token verifieras på varje statistikbegäran. Utloggning fungerar även under laddning och gamla svar ignoreras.
+- [x] 84 tester godkända. Samma läsögonblick: alla 24 dagars värden identiska före/efter och efter upprepad migration; beräkning 15,4 → 6,2 s i regressionstest. Verklig vanlig inloggning visar admin efter 0,26 s och siffror efter 6,73 s. Uppdatering/utloggning och hubramens statistik/diagram verifierade utan sparad inloggning eller kakor, inga sidfel; bygge OK. Totalt spärrad Storage verifierad i komponenttest, inte hela appens webbläsarprov (annan appstartkod avbryts vid sådan spärr). Serverförbättring driftsatt; nya adminvyn behöver publiceras. Root AGENTS.md fullt, ingen ny regel sparad där.
+
 ## MrB. Admin-hubbinloggning – 24 november
 - [x] Begär HUB_SHARED_SECRET via säkert formulär; lägg till separat minnesbaserad hub-token och serververifiering utan ändrade adminfrågor eller vanlig inloggning.
 - [x] 48 tester godkända; driftsatt server godtar giltig token och avvisar fel signatur/utgången token. Hub/vanlig inloggning ger identiskt fullständigt statistiksvar. Separata webbursprung: tabell, uppdatering, diagnostik, diagram och utloggning verifierade utan kakor eller beständig lagring; inga sidfel. Publicerad /admin saknar blockerande X-Frame-Options/CSP; bygge OK. Publicering av nya sidan och slutprov från den verkliga MrB. Admin-hubben återstår inför användning.

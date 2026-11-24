@@ -53,6 +53,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
     try { return localStorage.getItem(ADMIN_KEY_STORAGE) ?? ""; } catch { return ""; }
   });
   const [rows, setRows] = useState<DayRow[] | null>(null);
+  const [authenticated, setAuthenticated] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(hubToken !== null || Boolean(adminKey));
   const loadGeneration = useRef(0);
@@ -129,35 +130,41 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase.functions.invoke("admin-analytics", {
-        headers: adminAuthHeaders(key, hubToken),
-      });
-      if (generation !== loadGeneration.current) return;
-      if (error || !data || "error" in data) {
-        const status = error && "context" in error ? (error.context as { status?: number } | undefined)?.status : undefined;
-        const unauthorized = status === 401 || data?.error === "Unauthorized" || error?.message === "Unauthorized";
-        if (unauthorized) {
-          if (hubToken !== null) {
-            clearAdminHubToken();
-            setHubToken(null);
-          } else {
-            try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch { /* ignore */ }
-            setAdminKey("");
-          }
+      const headers = adminAuthHeaders(key, hubToken);
+      if (!authenticated) {
+        const validation = await supabase.functions.invoke("admin-analytics", {
+          headers, body: { view: "auth" },
+        });
+        if (generation !== loadGeneration.current) return;
+        if (validation.error) throw validation.error;
+        if (validation.data?.authenticated !== true) throw new Error(validation.data?.error ?? "Admin validation failed");
+        setAuthenticated(true);
+        if (hubToken === null) {
+          try { localStorage.setItem(ADMIN_KEY_STORAGE, key); } catch { /* ignore */ }
         }
-        setError(unauthorized
-          ? hubToken !== null ? "Hub-inloggningen är ogiltig eller har gått ut. Öppna admin igen från MrB. Admin."
-            : "Lösenordet godkändes inte. Skriv ditt aktuella adminlösenord igen."
-          : "Admin kunde inte öppnas just nu. Försök igen.");
-        setRows(null);
-        return;
       }
+      const { data, error } = await supabase.functions.invoke("admin-analytics", { headers });
+      if (generation !== loadGeneration.current) return;
+      if (error) throw error;
+      if (!data || "error" in data || !Array.isArray(data.days)) throw new Error(data?.error ?? "Statistics unavailable");
       setRows(adminVisibleDays((data as { days: DayRow[] }).days));
-      if (hubToken === null) {
-        try { localStorage.setItem(ADMIN_KEY_STORAGE, key); } catch { /* ignore */ }
-      }
     } catch (e) {
-      if (generation === loadGeneration.current) setError("Admin kunde inte öppnas just nu. Försök igen.");
+      if (generation !== loadGeneration.current) return;
+      const failure = e as { context?: { status?: number }; message?: string } | null;
+      const unauthorized = failure?.context?.status === 401 || failure?.message === "Unauthorized";
+      if (unauthorized) {
+        setAuthenticated(false);
+        setRows(null);
+        if (hubToken !== null) { clearAdminHubToken(); setHubToken(null); }
+        else {
+          try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch { /* ignore */ }
+          setAdminKey("");
+        }
+      }
+      setError(unauthorized
+        ? hubToken !== null ? "Hub-inloggningen är ogiltig eller har gått ut. Öppna admin igen från MrB. Admin."
+          : "Lösenordet godkändes inte. Skriv ditt aktuella adminlösenord igen."
+        : "Admin kunde inte öppnas just nu. Försök igen.");
     } finally {
       if (generation === loadGeneration.current) setLoading(false);
     }
@@ -169,7 +176,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!rows) {
+  if (!authenticated) {
     if (loading) {
       return (
         <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6" role="status">
@@ -214,7 +221,8 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
     );
   }
 
-  const sum = (k: keyof DayRow): number | string => rows.some((r) => adminValueIncomplete(r, k)) ? "—" : k === "total" ? rows.reduce((a,r) => a + r.cpu_finished + r.online_finished, 0) : rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
+  const visibleRows = rows ?? [];
+  const sum = (k: keyof DayRow): number | string => visibleRows.some((r) => adminValueIncomplete(r, k)) ? "—" : k === "total" ? visibleRows.reduce((a,r) => a + r.cpu_finished + r.online_finished, 0) : visibleRows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
 
   return (
     <div className="min-h-screen max-h-screen overflow-y-auto overscroll-contain bg-background text-foreground p-4 md:p-8">
@@ -238,7 +246,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
           <RefreshCw />
           {loading ? "Uppdaterar…" : "Uppdatera"}
         </Button>
-        <Button variant="outline" size="sm" disabled={loading}
+        <Button variant="outline" size="sm"
           onClick={() => {
             loadGeneration.current++;
             clearAdminHubToken();
@@ -246,6 +254,8 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
             try { localStorage.removeItem(ADMIN_KEY_STORAGE); } catch { /* ignore */ }
             setAdminKey("");
             setRows(null);
+            setAuthenticated(false);
+            setLoading(false);
             setError(null);
           }}
         >
@@ -254,13 +264,17 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
         </div>
       </div>
       {error && <p className="text-sm text-destructive mb-2">{error}</p>}
-      {rows.some((r) => r.incomplete_columns?.length) && <p className="text-sm text-muted-foreground mb-3">† Ofullständigt underlag efter matchstädningen den 6 november. Äldre onlinematcher är delvis återställda; dagfördelningen kan avvika. Medel, summor och rekord visas inte där fullständig historik saknas. Appåldern kan även påverkas framåt.</p>}
+      {visibleRows.some((r) => r.incomplete_columns?.length) && <p className="text-sm text-muted-foreground mb-3">† Ofullständigt underlag efter matchstädningen den 6 november. Äldre onlinematcher är delvis återställda; dagfördelningen kan avvika. Medel, summor och rekord visas inte där fullständig historik saknas. Appåldern kan även påverkas framåt.</p>}
       <AdminAdDiagnostics adminKey={adminKey} hubToken={hubToken} />
-      {diagram ? (
+      {rows === null ? (
+        <div className="py-12 flex items-center justify-center gap-2 text-muted-foreground" role="status">
+          {loading ? <><RefreshCw className="h-5 w-5 motion-safe:animate-spin" />Hämtar statistik…</> : <Button variant="outline" onClick={() => void load(adminKey)}><RefreshCw />Försök igen</Button>}
+        </div>
+      ) : diagram ? (
         <div className="flex flex-col lg:flex-row gap-5 items-start">
           <AdminBestTimes adminKey={adminKey} hubToken={hubToken} />
           <div className="flex-1 min-w-0 w-full">
-            <AdminLineChart rows={rows} />
+            <AdminLineChart rows={visibleRows} />
           </div>
         </div>
       ) : <>
@@ -322,7 +336,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
+            {visibleRows.map((r, i) => (
               <tr key={r.day} className="border-t border-border">
                 <td className="px-2 py-1 whitespace-nowrap">{fmtDay(r.day)}</td>
                 {COLUMNS.map((c) => (
@@ -366,7 +380,7 @@ export default function AdminPage({ diagram = false }: { diagram?: boolean }) {
                   {!collapsedColumns.includes(c.key) &&
                   <span className="flex items-baseline justify-end gap-1 tabular-nums">
                     <span className="text-right">
-                      {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "returning_played" || c.key === "avg_app_age_days" ? "—" : c.key === "post_match_shown" ? `${sum(c.key)} / ${sum("post_match_opportunities")}` : c.key === "forfeits" ? `${sum(c.key)} av ${rows.reduce((n, r) => n + adminOnlineOutcomes(r), 0)}` : sum(c.key)}
+                      {c.key === "devices" || c.key === "ios" || c.key === "played" || c.key === "returning_played" || c.key === "avg_app_age_days" ? "—" : c.key === "post_match_shown" ? `${sum(c.key)} / ${sum("post_match_opportunities")}` : c.key === "forfeits" ? `${sum(c.key)} av ${visibleRows.reduce((n, r) => n + adminOnlineOutcomes(r), 0)}` : sum(c.key)}
                     </span>
                     <span className="w-0" aria-hidden="true" />
                   </span>}

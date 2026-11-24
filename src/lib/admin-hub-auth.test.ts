@@ -87,3 +87,29 @@ describe('admin server access', () => {
     expect(createClient).not.toHaveBeenCalled();
   });
 });
+
+describe('fast authentication-only endpoint', () => {
+  it.each(['hub', 'ordinary'])('validates %s access without creating a client or computing statistics', async mode => {
+    const { handler, createClient, rpc } = endpoint();
+    const headers = mode === 'hub' ? { 'x-hub-token': sign(Date.now() + 60_000) } : { 'x-admin-key': 'ordinary-public-fixture' };
+    const response = await handler(new Request('https://fixture.invalid', {
+      method: 'POST', headers, body: JSON.stringify({ view: 'auth' }),
+    }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ authenticated: true });
+    expect(createClient).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+    expect(response.headers.get('cache-control')).toBe('no-store');
+  });
+  it.each(['bad-signature', 'expired', 'bad-key'])('rejects %s on the fast path', async mode => {
+    const { handler, createClient } = endpoint();
+    const headers = mode === 'bad-key' ? { 'x-admin-key': 'wrong-fixture' } : {
+      'x-hub-token': mode === 'expired' ? sign(Date.now() - 1) : `${Date.now() + 60_000}.${'0'.repeat(64)}`,
+    };
+    const response = await handler(new Request('https://fixture.invalid', {
+      method: 'POST', headers, body: JSON.stringify({ view: 'auth' }),
+    }));
+    expect(response.status).toBe(401);
+    expect(createClient).not.toHaveBeenCalled();
+  });
+});

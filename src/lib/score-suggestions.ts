@@ -8,7 +8,8 @@ export function canShowOnlineScoreSuggestions(state: {
   pendingCategory: string | null;
   placementAwaitingTurn?: boolean;
 }): boolean {
-  return state.isMyTurn && !state.localRolling && !state.remoteRolling && !state.rollPending
+  // Shown on every player's turn (opponents too) so everyone sees boxes and crosses.
+  return !state.localRolling && !state.remoteRolling && !state.rollPending
     && !state.gameRolling && state.pendingCategory === null && !state.placementAwaitingTurn;
 }
 

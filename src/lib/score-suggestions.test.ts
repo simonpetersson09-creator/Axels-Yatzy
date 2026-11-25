@@ -4,6 +4,10 @@ import { canShowOnlineScoreSuggestions, isScorePlacementAwaitingTurn, reconcileS
 const ready = { isMyTurn: true, localRolling: false, remoteRolling: false, rollPending: false, gameRolling: false, pendingCategory: null };
 
 describe('online score suggestions', () => {
+  it('also shows suggestions on an opponent turn', () => {
+    expect(canShowOnlineScoreSuggestions({ ...ready, isMyTurn: false })).toBe(true);
+  });
+
   it('shows other open categories after the dice have landed', () => {
     expect(canShowOnlineScoreSuggestions(ready)).toBe(true);
   });

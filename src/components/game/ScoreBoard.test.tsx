@@ -44,6 +44,18 @@ describe('ScoreBoard category hit mapping', () => {
     expect(onSelectCategory).toHaveBeenCalledWith('smallStraight', expect.objectContaining({ score: 0 }));
   });
 
+  it('shows suggestions on computer/opponent turns but blocks taps', () => {
+    const onSelectCategory = vi.fn();
+    const { getByRole, getAllByText } = render(
+      <ScoreBoard players={players} currentPlayerIndex={0}
+        possibleScores={possibleScores}
+        onSelectCategory={onSelectCategory} rollsLeft={0} selectionDisabled />
+    );
+    expect(getAllByText(String(possibleScores.chance)).length).toBeGreaterThan(0);
+    fireEvent.click(getByRole('button', { name: /Chans \(chance\)/i }));
+    expect(onSelectCategory).not.toHaveBeenCalled();
+  });
+
   it('sends chance when the visible Chans row is clicked', () => {
     const onSelectCategory = vi.fn();
 

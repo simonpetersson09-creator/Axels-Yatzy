@@ -253,12 +253,14 @@ export function ScoreBoard({ players, currentPlayerIndex, possibleScores: reques
     prevFilledRef.current = filledCount;
   }, [filledCount]);
 
+  // Suggestions (boxes and crosses) stay visible on computer and opponent turns;
+  // selectionDisabled only blocks taps (canSelectRow).
   // Remember which cell was filled last so it can be highlighted for a
   // moment — the next player then sees where the previous score went.
   const prevScoresRef = useRef<Set<string> | null>(null);
   const [lastPlaced, setLastPlaced] = useState<string | null>(rememberedPlacement ?? null);
   const placingCurrentScore = !!aiChosenCategory && aiChosenPlayerIndex === currentPlayerIndex;
-  const possibleScores = diceFlying || selectionDisabled || placingCurrentScore
+  const possibleScores = diceFlying || placingCurrentScore
     || isScorePlacementAwaitingTurn(lastPlaced, currentPlayerIndex, rollsLeft) ? null : requestedScores;
   // Resolve placement/rollback before paint, so old suggestions cannot flash
   // for one frame between a receipt and the subsequent turn refresh.

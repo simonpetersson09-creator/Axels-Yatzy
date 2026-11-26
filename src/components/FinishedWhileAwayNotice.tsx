@@ -8,6 +8,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { getMatchStandings } from '@/lib/match-standings';
 import { usePostMatchExit } from '@/hooks/usePostMatchExit';
+import { getSessionId } from '@/lib/session';
+import { recordFinishedOnlineResult } from '@/lib/record-online-result';
 
 let openCount = 0;
 /** Home's reopen ad waits while this notice owns the post-match ad. */
@@ -34,12 +36,18 @@ export default function FinishedWhileAwayNotice({ gameId, onDone }: { gameId: st
     let cancelled = false;
     void (async () => {
       const [g, p] = await Promise.all([
-        supabase.from('games').select('forfeited_by').eq('id', gameId).maybeSingle(),
-        supabase.from('game_players').select('player_name, player_index, scores').eq('game_id', gameId),
+        supabase.from('games').select('forfeited_by, forfeited_by_session_id').eq('id', gameId).maybeSingle(),
+        supabase.from('game_players').select('player_name, player_index, scores, session_id').eq('game_id', gameId),
       ]);
       if (cancelled) return;
       if (p.error || !p.data) { setRows([]); return; }
       setForfeitName(g.data?.forfeited_by ?? null);
+      if (!g.error && g.data) {
+        recordFinishedOnlineResult(gameId, getSessionId(), p.data.map(r => {
+          const sc = (r.scores ?? {}) as Record<string, number | null>;
+          return { session_id: r.session_id, score: getTotalScore(sc), yatzy: sc.yatzy === 50 };
+        }), !!g.data.forfeited_by || !!g.data.forfeited_by_session_id);
+      }
       setRows(p.data
         .sort((a, b) => a.player_index - b.player_index)
         .map(r => ({ name: r.player_name, index: r.player_index, score: getTotalScore((r.scores ?? {}) as Record<string, number | null>) })));

@@ -474,4 +474,10 @@ export const te: Partial<typeof sv> = {
   shopPromoBody: "ఐచ్ఛిక ప్రకటనలను చూసి XP సంపాదించండి. డైస్ షాప్‌లో మీ XPతో కొత్త డైస్, ఫ్రేమ్‌లు, Yatzy ఎఫెక్ట్‌లను పొందండి.",
   shopPromoButton: "డైస్ షాప్‌కు వెళ్లండి",
   shopPromoLater: "ఇప్పుడు వద్దు",
+  resNewRecord: "కొత్త రికార్డు!",
+  resBonusGot: "బోనస్ పూర్తి: 63లో {n}",
+  resBonusMissed: "బోనస్\u200cకు కేవలం {n} పాయింట్లు",
+  resYatzy: "ఈ మ్యాచ్\u200cలో యాట్జీ!",
+  resStreak: "వరుసగా {n} విజయాలు",
+  resToRecord: "మీ రికార్డుకు {n} పాయింట్లు",
 };

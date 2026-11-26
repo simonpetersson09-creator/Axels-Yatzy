@@ -465,4 +465,10 @@ export const en: Partial<typeof sv> = {
   shopKind_owned: "Your dice",
   lobbyFriendJoined: "{name} joined your game 🎲",
   shopWallet: "Balance: {n} XP",
+  resNewRecord: "New record!",
+  resBonusGot: "Bonus done: {n} of 63",
+  resBonusMissed: "Only {n} points from the bonus",
+  resYatzy: "Yatzy this match!",
+  resStreak: "{n} wins in a row",
+  resToRecord: "{n} points from your record",
 };

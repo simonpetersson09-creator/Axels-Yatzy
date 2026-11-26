@@ -473,4 +473,10 @@ export const ca: Partial<typeof sv> = {
   shopPromoBody: "Mira anuncis opcionals per guanyar XP. Gasta els teus XP a la botiga de daus en daus nous, marcs i efectes de Yatzy.",
   shopPromoButton: "Ves a la botiga de daus",
   shopPromoLater: "Ara no",
+  resNewRecord: "Nou rècord!",
+  resBonusGot: "Bonus aconseguit: {n} de 63",
+  resBonusMissed: "Només {n} punts per al bonus",
+  resYatzy: "Yatzy en aquesta partida!",
+  resStreak: "{n} victòries seguides",
+  resToRecord: "{n} punts del teu rècord",
 };

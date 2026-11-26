@@ -458,4 +458,10 @@ export const de: Partial<typeof sv> = {
   shopPromoBody: "Sieh dir freiwillig Werbung an und verdiene XP. Gib deine XP im Würfel-Shop für neue Würfel, Rahmen und Yatzy-Effekte aus.",
   shopPromoButton: "Zum Würfel-Shop",
   shopPromoLater: "Nicht jetzt",
+  resNewRecord: "Neuer Rekord!",
+  resBonusGot: "Bonus geschafft: {n} von 63",
+  resBonusMissed: "Nur {n} Punkte bis zum Bonus",
+  resYatzy: "Yatzy in diesem Spiel!",
+  resStreak: "{n} Siege in Folge",
+  resToRecord: "{n} Punkte bis zu deinem Rekord",
 };

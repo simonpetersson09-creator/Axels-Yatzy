@@ -474,4 +474,10 @@ export const ml: Partial<typeof sv> = {
   shopPromoBody: "ഐച്ഛികമായ പരസ്യങ്ങൾ കണ്ട് XP നേടൂ. ഡൈസ് ഷോപ്പിൽ പുതിയ ഡൈസുകൾ, ഫ്രെയിമുകൾ, Yatzy ഇഫക്റ്റുകൾ എന്നിവ വാങ്ങാൻ നിങ്ങളുടെ XP ഉപയോഗിക്കൂ.",
   shopPromoButton: "ഡൈസ് ഷോപ്പിലേക്ക്",
   shopPromoLater: "ഇപ്പോൾ വേണ്ട",
+  resNewRecord: "പുതിയ റെക്കോർഡ്!",
+  resBonusGot: "ബോണസ് നേടി: 63-ൽ {n}",
+  resBonusMissed: "ബോണസിന് {n} പോയിന്റ് മാത്രം",
+  resYatzy: "ഈ മത്സരത്തിൽ യാറ്റ്സി!",
+  resStreak: "തുടർച്ചയായി {n} ജയം",
+  resToRecord: "നിങ്ങളുടെ റെക്കോർഡിന് {n} പോയിന്റ്",
 };

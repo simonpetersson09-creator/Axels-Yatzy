@@ -474,4 +474,10 @@ export const kn: Partial<typeof sv> = {
   shopPromoBody: "ಐಚ್ಛಿಕ ಜಾಹೀರಾತುಗಳನ್ನು ಕೊನೆಯವರೆಗೆ ವೀಕ್ಷಿಸಿ, XP ಗಳಿಸಿ. ಡೈಸ್ ಅಂಗಡಿಯಲ್ಲಿ ಹೊಸ ಡೈಸ್, ಫ್ರೇಮ್‌ಗಳು ಮತ್ತು Yatzy ಎಫೆಕ್ಟ್‌ಗಳಿಗಾಗಿ ನಿಮ್ಮ XP ಬಳಸಿ.",
   shopPromoButton: "ಡೈಸ್ ಅಂಗಡಿಗೆ ಹೋಗಿ",
   shopPromoLater: "ಈಗ ಬೇಡ",
+  resNewRecord: "ಹೊಸ ದಾಖಲೆ!",
+  resBonusGot: "ಬೋನಸ್ ಪೂರ್ಣ: 63 ರಲ್ಲಿ {n}",
+  resBonusMissed: "ಬೋನಸ್\u200cಗೆ ಕೇವಲ {n} ಅಂಕ",
+  resYatzy: "ಈ ಪಂದ್ಯದಲ್ಲಿ ಯಾಟ್ಜಿ!",
+  resStreak: "ಸತತ {n} ಗೆಲುವು",
+  resToRecord: "ನಿಮ್ಮ ದಾಖಲೆಗೆ {n} ಅಂಕ",
 };

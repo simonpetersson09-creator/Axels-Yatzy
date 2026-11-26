@@ -478,4 +478,10 @@ export const hr: Partial<typeof sv> = {
   shopPromoBody: "Gledaj neobavezne oglase i zaradi XP. Potroši svoj XP u trgovini kockicama na nove kockice, okvire i Yatzy efekte.",
   shopPromoButton: "U trgovinu kockicama",
   shopPromoLater: "Ne sada",
+  resNewRecord: "Novi rekord!",
+  resBonusGot: "Bonus osvojen: {n} od 63",
+  resBonusMissed: "Samo {n} bodova do bonusa",
+  resYatzy: "Yatzy u ovoj igri!",
+  resStreak: "{n} pobjeda zaredom",
+  resToRecord: "{n} bodova do tvog rekorda",
 };

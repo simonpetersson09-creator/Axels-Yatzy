@@ -474,4 +474,10 @@ export const ja: Partial<typeof sv> = {
   shopPromoBody: "任意の広告を最後まで視聴してXPを獲得しよう。貯めたXPはサイコロショップで、新しいサイコロやフレーム、Yatzyエフェクトに使えるよ。",
   shopPromoButton: "サイコロショップへ",
   shopPromoLater: "今はしない",
+  resNewRecord: "新記録！",
+  resBonusGot: "ボーナス達成：{n}/63",
+  resBonusMissed: "ボーナスまであと{n}点",
+  resYatzy: "この試合でヤッツィー！",
+  resStreak: "{n}連勝",
+  resToRecord: "自己ベストまで{n}点",
 };

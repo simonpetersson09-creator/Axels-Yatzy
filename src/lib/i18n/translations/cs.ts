@@ -474,4 +474,10 @@ export const cs: Partial<typeof sv> = {
   shopPromoBody: "Zhlédni dobrovolné reklamy a získej XP. V obchodě s kostkami je můžeš utratit za nové kostky, rámečky a efekty Yatzy.",
   shopPromoButton: "Do obchodu s kostkami",
   shopPromoLater: "Teď ne",
+  resNewRecord: "Nový rekord!",
+  resBonusGot: "Bonus získán: {n} z 63",
+  resBonusMissed: "Jen {n} bodů do bonusu",
+  resYatzy: "Yatzy v této hře!",
+  resStreak: "{n} výher v řadě",
+  resToRecord: "{n} bodů od tvého rekordu",
 };

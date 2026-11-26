@@ -474,4 +474,10 @@ export const or: Partial<typeof sv> = {
   shopPromoBody: "ଇଚ୍ଛାଧୀନ ବିଜ୍ଞାପନ ଦେଖି XP ଅର୍ଜନ କରନ୍ତୁ। ଡାଇସ୍ ଦୋକାନରେ ଆପଣଙ୍କ XP ବ୍ୟବହାର କରି ନୂଆ ଡାଇସ୍, ଫ୍ରେମ୍ ଓ Yatzy ଇଫେକ୍ଟ କିଣନ୍ତୁ।",
   shopPromoButton: "ଡାଇସ୍ ଦୋକାନକୁ ଯାଆନ୍ତୁ",
   shopPromoLater: "ଏବେ ନୁହେଁ",
+  resNewRecord: "ନୂଆ ରେକର୍ଡ!",
+  resBonusGot: "ବୋନସ ପୂରଣ: 63 ରୁ {n}",
+  resBonusMissed: "ବୋନସରୁ କେବଳ {n} ପଏଣ୍ଟ",
+  resYatzy: "ଏହି ମ୍ୟାଚରେ ୟାଟ୍ଜି!",
+  resStreak: "କ୍ରମାଗତ {n} ଜିତ",
+  resToRecord: "ଆପଣଙ୍କ ରେକର୍ଡରୁ {n} ପଏଣ୍ଟ",
 };

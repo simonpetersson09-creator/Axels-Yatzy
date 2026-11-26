@@ -474,4 +474,10 @@ export const bn: Partial<typeof sv> = {
   shopPromoBody: "ঐচ্ছিক বিজ্ঞাপন শেষ পর্যন্ত দেখে XP অর্জন করো। ডাইস শপে তোমার XP দিয়ে নতুন ডাইস, ফ্রেম ও Yatzy ইফেক্ট কেনো।",
   shopPromoButton: "ডাইস শপে যাও",
   shopPromoLater: "এখন নয়",
+  resNewRecord: "নতুন রেকর্ড!",
+  resBonusGot: "বোনাস পূর্ণ: 63-এর মধ্যে {n}",
+  resBonusMissed: "বোনাস থেকে মাত্র {n} পয়েন্ট দূরে",
+  resYatzy: "এই ম্যাচে ইয়াৎজি!",
+  resStreak: "টানা {n} জয়",
+  resToRecord: "আপনার রেকর্ড থেকে {n} পয়েন্ট দূরে",
 };

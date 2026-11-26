@@ -463,4 +463,10 @@ export const fi: Partial<typeof sv> = {
   shopPromoBody: "Katso vapaaehtoisia mainoksia loppuun ja ansaitse XP:tä. Käytä XP:tä noppakaupassa uusiin noppiin, kehyksiin ja Yatzy-efekteihin.",
   shopPromoButton: "Noppakauppaan",
   shopPromoLater: "Ei nyt",
+  resNewRecord: "Uusi ennätys!",
+  resBonusGot: "Bonus saatu: {n}/63",
+  resBonusMissed: "Vain {n} pistettä bonuksesta",
+  resYatzy: "Yatzy ottelussa!",
+  resStreak: "{n} voittoa putkeen",
+  resToRecord: "{n} pistettä ennätyksestäsi",
 };

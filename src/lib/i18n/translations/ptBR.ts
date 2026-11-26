@@ -473,4 +473,10 @@ export const ptBR: Partial<typeof sv> = {
   shopPromoBody: "Assista a anúncios opcionais para ganhar XP. Use seu XP na loja de dados para comprar novos dados, molduras e efeitos de Yatzy.",
   shopPromoButton: "Ir para a loja de dados",
   shopPromoLater: "Agora não",
+  resNewRecord: "Novo recorde!",
+  resBonusGot: "Bônus conquistado: {n} de 63",
+  resBonusMissed: "Só {n} pontos do bônus",
+  resYatzy: "Yatzy nesta partida!",
+  resStreak: "{n} vitórias seguidas",
+  resToRecord: "{n} pontos do seu recorde",
 };

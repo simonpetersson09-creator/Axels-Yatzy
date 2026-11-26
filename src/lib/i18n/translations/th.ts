@@ -474,4 +474,10 @@ export const th: Partial<typeof sv> = {
   shopPromoBody: "เลือกดูโฆษณาจนจบเพื่อรับ XP ใช้ XP ของคุณในร้านค้าลูกเต๋าเพื่อซื้อลูกเต๋าใหม่ กรอบ และเอฟเฟกต์ Yatzy",
   shopPromoButton: "ไปที่ร้านค้าลูกเต๋า",
   shopPromoLater: "ไว้ก่อน",
+  resNewRecord: "สถิติใหม่!",
+  resBonusGot: "ได้โบนัส: {n} จาก 63",
+  resBonusMissed: "อีกแค่ {n} แต้มถึงโบนัส",
+  resYatzy: "ได้ Yatzy ในเกมนี้!",
+  resStreak: "ชนะติดกัน {n} ครั้ง",
+  resToRecord: "อีก {n} แต้มถึงสถิติของคุณ",
 };

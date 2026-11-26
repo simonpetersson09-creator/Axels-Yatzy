@@ -473,4 +473,10 @@ export const ru: Partial<typeof sv> = {
   shopPromoBody: "Досматривай необязательную рекламу до конца и получай XP. Трать XP в магазине кубиков на новые кубики, рамки и эффекты Yatzy.",
   shopPromoButton: "В магазин кубиков",
   shopPromoLater: "Не сейчас",
+  resNewRecord: "Новый рекорд!",
+  resBonusGot: "Бонус получен: {n} из 63",
+  resBonusMissed: "Всего {n} очков до бонуса",
+  resYatzy: "Yatzy в этой игре!",
+  resStreak: "{n} победы подряд",
+  resToRecord: "{n} очков до вашего рекорда",
 };

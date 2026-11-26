@@ -473,4 +473,10 @@ export const pl: Partial<typeof sv> = {
   shopPromoBody: "Oglądaj opcjonalne reklamy do końca i zdobywaj XP. Wydawaj XP w sklepie z kośćmi na nowe kości, ramki i efekty Yatzy.",
   shopPromoButton: "Przejdź do sklepu z kośćmi",
   shopPromoLater: "Nie teraz",
+  resNewRecord: "Nowy rekord!",
+  resBonusGot: "Bonus zdobyty: {n} z 63",
+  resBonusMissed: "Tylko {n} pkt do bonusu",
+  resYatzy: "Yatzy w tej grze!",
+  resStreak: "{n} wygrane z rzędu",
+  resToRecord: "{n} pkt do Twojego rekordu",
 };

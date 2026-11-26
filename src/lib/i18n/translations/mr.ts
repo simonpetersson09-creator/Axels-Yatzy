@@ -474,4 +474,10 @@ export const mr: Partial<typeof sv> = {
   shopPromoBody: "ऐच्छिक जाहिराती शेवटपर्यंत पाहा आणि XP मिळव. फासे दुकानात तुझे XP वापरून नवे फासे, फ्रेम्स आणि Yatzy इफेक्ट्स घे.",
   shopPromoButton: "फासे दुकानात जा",
   shopPromoLater: "आत्ता नको",
+  resNewRecord: "नवा विक्रम!",
+  resBonusGot: "बोनस पूर्ण: 63 पैकी {n}",
+  resBonusMissed: "बोनसपासून फक्त {n} गुण",
+  resYatzy: "या सामन्यात यात्झी!",
+  resStreak: "सलग {n} विजय",
+  resToRecord: "तुमच्या विक्रमापासून {n} गुण",
 };

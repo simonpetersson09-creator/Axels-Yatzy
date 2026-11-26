@@ -473,4 +473,10 @@ export const nl: Partial<typeof sv> = {
   shopPromoBody: "Bekijk optionele advertenties en verdien XP. Besteed je XP in de dobbelsteenwinkel aan nieuwe dobbelstenen, kaders en Yatzy-effecten.",
   shopPromoButton: "Naar de dobbelsteenwinkel",
   shopPromoLater: "Niet nu",
+  resNewRecord: "Nieuw record!",
+  resBonusGot: "Bonus binnen: {n} van 63",
+  resBonusMissed: "Nog maar {n} punten tot de bonus",
+  resYatzy: "Yatzy dit potje!",
+  resStreak: "{n} keer op rij gewonnen",
+  resToRecord: "{n} punten van je record",
 };

@@ -468,4 +468,10 @@ export const it: Partial<typeof sv> = {
   shopPromoBody: "Guarda annunci facoltativi per guadagnare XP. Usa i tuoi XP nel negozio dadi per ottenere nuovi dadi, cornici ed effetti Yatzy.",
   shopPromoButton: "Vai al negozio dadi",
   shopPromoLater: "Non ora",
+  resNewRecord: "Nuovo record!",
+  resBonusGot: "Bonus ottenuto: {n} su 63",
+  resBonusMissed: "Solo {n} punti dal bonus",
+  resYatzy: "Yatzy in questa partita!",
+  resStreak: "{n} vittorie di fila",
+  resToRecord: "{n} punti dal tuo record",
 };

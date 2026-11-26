@@ -478,6 +478,12 @@ export const sv = {
   shopKind_owned: "Dina köpta tärningar",
   lobbyFriendJoined: "{name} gick med i ditt spel 🎲",
   shopWallet: "Kassa: {n} XP",
+  resNewRecord: "Nytt rekord!",
+  resBonusGot: "Bonus klar: {n} av 63",
+  resBonusMissed: "Bara {n} poäng från bonusen",
+  resYatzy: "Yatzy i matchen!",
+  resStreak: "{n} vinster i rad",
+  resToRecord: "{n} poäng från ditt rekord",
 };
 
 export type TranslationKey = keyof typeof sv;

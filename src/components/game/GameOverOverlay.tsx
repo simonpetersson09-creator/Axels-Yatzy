@@ -5,6 +5,7 @@ import { useTranslation } from '@/lib/i18n';
 import { fireWinConfetti, tryHapticWin } from '@/lib/confetti';
 import { playWinSound } from '@/lib/win-sound';
 import { getMatchStandings } from '@/lib/match-standings';
+import type { MatchHighlight } from '@/lib/match-highlights';
 
 interface PlayerResult {
   name: string;
@@ -20,9 +21,11 @@ interface GameOverOverlayProps {
   onPlayAgain?: () => void;
   onBackToMenu: () => void;
   leaving?: boolean;
+  /** Up to four personal highlights for the local player. */
+  highlights?: MatchHighlight[];
 }
 
-export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackToMenu, leaving = false }: GameOverOverlayProps) {
+export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackToMenu, leaving = false, highlights = [] }: GameOverOverlayProps) {
   const { t } = useTranslation();
   const standings = getMatchStandings(players);
   const winner = standings[0]?.player;
@@ -138,6 +141,30 @@ export function GameOverOverlay({ show, players, aiPlayers, onPlayAgain, onBackT
                 );
               })}
             </div>
+
+            {highlights.length > 0 && (
+              <div className="space-y-1.5" data-testid="match-highlights">
+                {highlights.map((h, i) => {
+                  const text = h.kind === 'newRecord' ? `🏆 ${t('resNewRecord')}`
+                    : h.kind === 'bonusGot' ? `⭐ ${t('resBonusGot', { n: h.upper })}`
+                    : h.kind === 'bonusMissed' ? `🎯 ${t('resBonusMissed', { n: h.missing })}`
+                    : h.kind === 'yatzy' ? `🎲 ${t('resYatzy')}`
+                    : h.kind === 'streak' ? `🔥 ${t('resStreak', { n: h.n })}`
+                    : `📈 ${t('resToRecord', { n: h.n })}`;
+                  return (
+                    <motion.p
+                      key={h.kind}
+                      className={`text-sm text-center rounded-xl px-3 py-2 ${h.kind === 'newRecord' ? 'bg-primary/15 text-primary font-bold' : 'bg-secondary/40 text-foreground'}`}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.55 + i * 0.07 }}
+                    >
+                      {text}
+                    </motion.p>
+                  );
+                })}
+              </div>
+            )}
 
             <div className="flex flex-col gap-2.5 pt-2">
               {onPlayAgain && <motion.button

@@ -474,4 +474,10 @@ export const ro: Partial<typeof sv> = {
   shopPromoBody: "Vizionează reclame opționale și câștigă XP. Folosește XP în magazinul de zaruri pentru zaruri noi, rame și efecte Yatzy.",
   shopPromoButton: "Mergi la magazinul de zaruri",
   shopPromoLater: "Nu acum",
+  resNewRecord: "Record nou!",
+  resBonusGot: "Bonus obținut: {n} din 63",
+  resBonusMissed: "Doar {n} puncte până la bonus",
+  resYatzy: "Yatzy în acest meci!",
+  resStreak: "{n} victorii la rând",
+  resToRecord: "{n} puncte până la recordul tău",
 };

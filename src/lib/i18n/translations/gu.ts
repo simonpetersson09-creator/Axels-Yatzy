@@ -474,4 +474,10 @@ export const gu: Partial<typeof sv> = {
   shopPromoBody: "વૈકલ્પિક જાહેરાતો જુઓ અને XP મેળવો. ડાઇસ શોપમાં નવા ડાઇસ, ફ્રેમ અને Yatzy ઇફેક્ટ્સ માટે તમારા XP વાપરો.",
   shopPromoButton: "ડાઇસ શોપમાં જાઓ",
   shopPromoLater: "હમણાં નહીં",
+  resNewRecord: "નવો રેકોર્ડ!",
+  resBonusGot: "બોનસ પૂર્ણ: 63 માંથી {n}",
+  resBonusMissed: "બોનસથી માત્ર {n} પોઇન્ટ દૂર",
+  resYatzy: "આ મેચમાં યાત્ઝી!",
+  resStreak: "સતત {n} જીત",
+  resToRecord: "તમારા રેકોર્ડથી {n} પોઇન્ટ દૂર",
 };

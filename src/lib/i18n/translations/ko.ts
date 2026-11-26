@@ -463,4 +463,10 @@ export const ko: Partial<typeof sv> = {
   shopPromoBody: "선택형 광고를 끝까지 보고 XP를 모아 봐. 모은 XP로 주사위 상점에서 새 주사위, 프레임, Yatzy 효과를 구매할 수 있어.",
   shopPromoButton: "주사위 상점으로",
   shopPromoLater: "나중에",
+  resNewRecord: "새 기록!",
+  resBonusGot: "보너스 달성: {n}/63",
+  resBonusMissed: "보너스까지 {n}점",
+  resYatzy: "이번 경기 야찌!",
+  resStreak: "{n}연승",
+  resToRecord: "내 기록까지 {n}점",
 };

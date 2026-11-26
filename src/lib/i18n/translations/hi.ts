@@ -474,4 +474,10 @@ export const hi: Partial<typeof sv> = {
   shopPromoBody: "वैकल्पिक विज्ञापन पूरे देखकर XP कमाओ। पासे की दुकान में अपने XP से नए पासे, फ़्रेम और Yatzy इफ़ेक्ट खरीदो।",
   shopPromoButton: "पासे की दुकान पर जाओ",
   shopPromoLater: "अभी नहीं",
+  resNewRecord: "नया रिकॉर्ड!",
+  resBonusGot: "बोनस पूरा: 63 में से {n}",
+  resBonusMissed: "बोनस से बस {n} अंक दूर",
+  resYatzy: "इस मैच में यात्ज़ी!",
+  resStreak: "लगातार {n} जीत",
+  resToRecord: "आपके रिकॉर्ड से {n} अंक दूर",
 };

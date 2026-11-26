@@ -474,4 +474,10 @@ export const vi: Partial<typeof sv> = {
   shopPromoBody: "Xem hết quảng cáo tùy chọn để kiếm XP. Dùng XP trong cửa hàng xúc xắc để mua xúc xắc mới, khung và hiệu ứng Yatzy.",
   shopPromoButton: "Đến cửa hàng xúc xắc",
   shopPromoLater: "Để sau",
+  resNewRecord: "Kỷ lục mới!",
+  resBonusGot: "Đạt thưởng: {n}/63",
+  resBonusMissed: "Chỉ còn {n} điểm tới thưởng",
+  resYatzy: "Có Yatzy trận này!",
+  resStreak: "Thắng {n} trận liên tiếp",
+  resToRecord: "Còn {n} điểm tới kỷ lục",
 };

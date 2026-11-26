@@ -463,4 +463,10 @@ export const da: Partial<typeof sv> = {
   shopPromoBody: "Se valgfrie reklamer, og optjen XP. Brug dine XP i terningbutikken på nye terninger, rammer og Yatzy-effekter.",
   shopPromoButton: "Til terningbutikken",
   shopPromoLater: "Ikke nu",
+  resNewRecord: "Ny rekord!",
+  resBonusGot: "Bonus klaret: {n} af 63",
+  resBonusMissed: "Kun {n} point fra bonussen",
+  resYatzy: "Yatzy i kampen!",
+  resStreak: "{n} sejre i træk",
+  resToRecord: "{n} point fra din rekord",
 };

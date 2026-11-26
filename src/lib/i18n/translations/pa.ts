@@ -478,4 +478,10 @@ export const pa: Partial<typeof sv> = {
   shopPromoBody: "ਵਿਕਲਪਿਕ ਇਸ਼ਤਿਹਾਰ ਦੇਖੋ ਅਤੇ XP ਕਮਾਓ। ਡਾਈਸ ਦੀ ਦੁਕਾਨ ਵਿੱਚ ਆਪਣੇ XP ਨਾਲ ਨਵੇਂ ਡਾਈਸ, ਫ੍ਰੇਮ ਅਤੇ Yatzy ਇਫ਼ੈਕਟ ਖ਼ਰੀਦੋ।",
   shopPromoButton: "ਡਾਈਸ ਦੀ ਦੁਕਾਨ 'ਤੇ ਜਾਓ",
   shopPromoLater: "ਹੁਣ ਨਹੀਂ",
+  resNewRecord: "ਨਵਾਂ ਰਿਕਾਰਡ!",
+  resBonusGot: "ਬੋਨਸ ਪੂਰਾ: 63 ਵਿੱਚੋਂ {n}",
+  resBonusMissed: "ਬੋਨਸ ਤੋਂ ਸਿਰਫ਼ {n} ਅੰਕ",
+  resYatzy: "ਇਸ ਮੈਚ ਵਿੱਚ ਯਾਟਜ਼ੀ!",
+  resStreak: "ਲਗਾਤਾਰ {n} ਜਿੱਤਾਂ",
+  resToRecord: "ਤੁਹਾਡੇ ਰਿਕਾਰਡ ਤੋਂ {n} ਅੰਕ",
 };

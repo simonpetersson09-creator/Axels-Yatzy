@@ -468,4 +468,10 @@ export const fr: Partial<typeof sv> = {
   shopPromoBody: "Regardez des publicités facultatives pour gagner des XP. Utilisez vos XP dans la boutique de dés pour obtenir de nouveaux dés, des cadres et des effets Yatzy.",
   shopPromoButton: "Aller à la boutique de dés",
   shopPromoLater: "Pas maintenant",
+  resNewRecord: "Nouveau record !",
+  resBonusGot: "Bonus obtenu : {n} sur 63",
+  resBonusMissed: "Plus que {n} points pour le bonus",
+  resYatzy: "Yatzy dans cette partie !",
+  resStreak: "{n} victoires d’affilée",
+  resToRecord: "{n} points de votre record",
 };

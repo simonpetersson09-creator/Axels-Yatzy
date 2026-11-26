@@ -474,4 +474,10 @@ export const sk: Partial<typeof sv> = {
   shopPromoBody: "Pozeraj dobrovoľné reklamy a získavaj XP. V obchode s kockami môžeš svoje XP minúť na nové kocky, rámčeky a efekty Yatzy.",
   shopPromoButton: "Do obchodu s kockami",
   shopPromoLater: "Teraz nie",
+  resNewRecord: "Nový rekord!",
+  resBonusGot: "Bonus získaný: {n} z 63",
+  resBonusMissed: "Len {n} bodov do bonusu",
+  resYatzy: "Yatzy v tejto hre!",
+  resStreak: "{n} výhier za sebou",
+  resToRecord: "{n} bodov od tvojho rekordu",
 };

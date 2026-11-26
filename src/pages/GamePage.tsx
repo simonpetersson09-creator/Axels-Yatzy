@@ -14,7 +14,8 @@ import { getFrame } from '@/lib/cosmetics';
 import { ForfeitButton } from '@/components/game/ForfeitButton';
 import { getTotalScore } from '@/lib/yatzy-scoring';
 import { setActiveGame, clearLocalActiveGame, removeActiveGame, newLocalGameId } from '@/lib/active-game';
-import { recordGameResult, getRankedGames, isGameResultRecorded } from '@/lib/local-stats';
+import { recordGameResult, getRankedGames, isGameResultRecorded, getLocalStats } from '@/lib/local-stats';
+import { getMatchHighlights } from '@/lib/match-highlights';
 import { forfeitAdAllowed, getLastForfeitAdAt } from '@/lib/forfeit-ad';
 import { getLastInterstitialShownAt } from '@/lib/admob';
 import { getLocalMatchKey, startNextLocalMatch, getLocalReplayCount, bumpLocalReplayCount, canReplayLocal } from '@/lib/local-match-key';
@@ -139,6 +140,12 @@ export default function GamePage() {
       });
     }
   }, [gameState]);
+
+  // Stats as they were before this match, for the result box highlights.
+  const preMatchStatsRef = useRef(getLocalStats());
+  useEffect(() => {
+    if (gameState && !gameState.gameOver) preMatchStatsRef.current = getLocalStats();
+  }, [gameState?.gameOver, gameState?.round]);
 
   useEffect(() => {
     if (!gameState?.gameOver) return;
@@ -444,6 +451,14 @@ export default function GamePage() {
   const gameOverResults = gameState.gameOver
     ? gameState.players.map(p => ({ name: p.name, score: getTotalScore(p.scores) }))
     : [];
+  const highlights = gameState.gameOver && !aiPlayers.includes(0)
+    ? (() => {
+        const totals = gameOverResults.map(r => r.score);
+        const top = Math.max(...totals);
+        const won = isRankedLocalMatch(gameState.players.length) && totals[0] === top && totals.filter(x => x === top).length === 1;
+        return getMatchHighlights(gameState.players[0].scores, totals[0], won, preMatchStatsRef.current);
+      })()
+    : [];
 
   const isCurrentAi = aiPlayers.includes(gameState.currentPlayerIndex);
   const possibleScores = gameState.isRolling ? null : getPossibleScores();
@@ -480,6 +495,7 @@ export default function GamePage() {
         onPlayAgain={canReplayLocal(replayCount) ? () => { void leave(handlePlayAgain); } : undefined}
         onBackToMenu={() => { void leave(); }}
         leaving={leaving}
+        highlights={highlights}
       />
       <DiceInfoSheet
         open={aiInfoOpen && isCurrentAi}

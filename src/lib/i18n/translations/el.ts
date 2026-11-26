@@ -474,4 +474,10 @@ export const el: Partial<typeof sv> = {
   shopPromoBody: "Δες προαιρετικές διαφημίσεις και κέρδισε XP. Χρησιμοποίησε τα XP σου στο κατάστημα ζαριών για νέα ζάρια, πλαίσια και εφέ Yatzy.",
   shopPromoButton: "Στο κατάστημα ζαριών",
   shopPromoLater: "Όχι τώρα",
+  resNewRecord: "Νέο ρεκόρ!",
+  resBonusGot: "Μπόνους: {n} από 63",
+  resBonusMissed: "Μόνο {n} πόντοι για το μπόνους",
+  resYatzy: "Yatzy σε αυτό το παιχνίδι!",
+  resStreak: "{n} νίκες στη σειρά",
+  resToRecord: "{n} πόντοι από το ρεκόρ σου",
 };

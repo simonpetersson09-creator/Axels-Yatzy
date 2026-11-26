@@ -474,4 +474,10 @@ export const ms: Partial<typeof sv> = {
   shopPromoBody: "Tonton iklan pilihan hingga tamat untuk mendapat XP. Gunakan XP awak di kedai dadu untuk membeli dadu baharu, bingkai dan kesan Yatzy.",
   shopPromoButton: "Ke kedai dadu",
   shopPromoLater: "Bukan sekarang",
+  resNewRecord: "Rekod baharu!",
+  resBonusGot: "Bonus dicapai: {n} daripada 63",
+  resBonusMissed: "Hanya {n} mata ke bonus",
+  resYatzy: "Yatzy dalam perlawanan ini!",
+  resStreak: "{n} kemenangan berturut-turut",
+  resToRecord: "{n} mata dari rekod anda",
 };

@@ -474,4 +474,10 @@ export const hu: Partial<typeof sv> = {
   shopPromoBody: "Nézz végig opcionális reklámokat, és szerezz XP-t. Költsd el az XP-det a Kockaboltban új kockákra, keretekre és Yatzy-effektekre.",
   shopPromoButton: "Irány a Kockabolt",
   shopPromoLater: "Most nem",
+  resNewRecord: "Új rekord!",
+  resBonusGot: "Bónusz megvan: {n}/63",
+  resBonusMissed: "Csak {n} pont a bónuszig",
+  resYatzy: "Yatzy ebben a meccsben!",
+  resStreak: "{n} győzelem sorozatban",
+  resToRecord: "{n} pont a rekordodig",
 };

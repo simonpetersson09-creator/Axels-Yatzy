@@ -474,4 +474,10 @@ export const tr: Partial<typeof sv> = {
   shopPromoBody: "İsteğe bağlı reklamları izleyerek XP kazan. Kazandığın XP ile Zar Mağazası'ndan yeni zarlar, çerçeveler ve Yatzy efektleri al.",
   shopPromoButton: "Zar Mağazası'na git",
   shopPromoLater: "Şimdi değil",
+  resNewRecord: "Yeni rekor!",
+  resBonusGot: "Bonus tamam: {n}/63",
+  resBonusMissed: "Bonusa sadece {n} puan",
+  resYatzy: "Bu maçta Yatzy!",
+  resStreak: "Üst üste {n} galibiyet",
+  resToRecord: "Rekoruna {n} puan",
 };

@@ -58,14 +58,6 @@ import ServerNewsPrompt, { shouldShowServerNews, markServerNewsSeen } from '@/co
 import AndroidNewsPrompt, { shouldShowAndroidNews, markAndroidNewsSeen } from '@/components/AndroidNewsPrompt';
 import { shouldShowDailyStartupAd, markDailyStartupAdShown } from '@/components/DailyAdPrompt';
 
-/** Module-level: startup ad is only considered once per app launch. */
-let startupAdChecked = false;
-/** Module-level so it survives HomePage remounts while the app is in background. */
-let backgroundedAt = 0;
-const RESUME_AD_MIN_AWAY_MS = 20_000;
-/** Leaving Home or backgrounding permanently invalidates the current return. */
-let resumeHomeEpoch = 0;
-let resumeWatcherInstalled = false;
 const onStartScreen = () => window.location.pathname === '/' && document.visibilityState === 'visible';
 /**
  * A missed post-match ad replaces the App Open ad at the next open/return.
@@ -84,6 +76,14 @@ async function tryPendingPostMatchAd(canShow: () => boolean): Promise<boolean> {
   trackEvent('post_match_reopen_ad', { result });
   return true;
 }
+/** Module-level: startup ad is only considered once per app launch. */
+let startupAdChecked = false;
+/** Module-level so it survives HomePage remounts while the app is in background. */
+let backgroundedAt = 0;
+const RESUME_AD_MIN_AWAY_MS = 20_000;
+/** Leaving Home or backgrounding permanently invalidates the current return. */
+let resumeHomeEpoch = 0;
+let resumeWatcherInstalled = false;
 async function tryShowResumeAd() {
   if (!onStartScreen()) { trackAdOpportunity('appOpen', 'resume', 'skipped', 'not_on_home'); return; }
   const epoch = resumeHomeEpoch;

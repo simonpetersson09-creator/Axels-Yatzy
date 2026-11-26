@@ -11,14 +11,15 @@ async function harness() {
   let listener: (state: { isActive: boolean }) => void = () => {};
   const App = { addListener: vi.fn(async (_name, callback) => { listener = callback; }) };
   const show = vi.fn(async (_allowed: () => boolean, _source: string) => false);
-  const preload = vi.fn(); const track = vi.fn(); const opportunity = vi.fn();
+  const pending = vi.fn(() => false); const preload = vi.fn(); const track = vi.fn(); const opportunity = vi.fn();
   const block = home.slice(home.indexOf('let startupAdChecked'), home.indexOf("import { shouldShowRatePrompt"))
     .replace("await import('@capacitor/app')", 'await Promise.resolve({ App: bridge })');
   const cleanupMatch = home.match(/useLayoutEffect\((\(\) => \(\) => \{ resumeHomeEpoch\+\+; \}), \[\]\)/);
   if (!cleanupMatch) throw new Error('Home lifecycle cleanup missing');
-  const setup = new Function('bridge', 'window', 'document', 'showAppOpenAd', 'preloadAppOpenAd', 'trackEvent', 'trackAdOpportunity',
+  const setup = new Function('bridge', 'window', 'document', 'showAppOpenAd', 'preloadAppOpenAd', 'trackEvent', 'trackAdOpportunity', 'tryPendingPostMatchAd', 'onStartScreen',
     `${block}\nreturn { installResumeAdWatcher, leaveHome: (${cleanupMatch[1]})() };`);
-  const lifecycle = setup(App, window, document, show, preload, track, opportunity);
+  const lifecycle = setup(App, window, document, show, preload, track, opportunity, async () => pending(),
+    () => window.location.pathname === '/' && document.visibilityState === 'visible');
   lifecycle.installResumeAdWatcher(); await vi.advanceTimersByTimeAsync(0);
   return { window, document, show, preload, track, opportunity, leaveHome: lifecycle.leaveHome,
     state: (isActive: boolean) => listener({ isActive }) };
@@ -47,9 +48,9 @@ describe('return-away Home lifecycle', () => {
     const startScreen = vi.fn(() => true);
     const show = vi.fn(async (check: () => boolean) => { allowed = check; return false; });
     vi.useFakeTimers();
-    const setup = new Function('isAdMobAvailable', 'shouldShowDailyStartupAd', 'preloadAppOpenAd', 'showAppOpenAd', 'onStartScreen', 'markDailyStartupAdShown', 'trackEvent',
+    const setup = new Function('isAdMobAvailable', 'shouldShowDailyStartupAd', 'preloadAppOpenAd', 'showAppOpenAd', 'onStartScreen', 'markDailyStartupAdShown', 'trackEvent', 'getPendingPostMatchAd', 'tryPendingPostMatchAd',
       `let startupAdChecked = false; const AD_BUTTON_LOCKED = false; ${block}`);
-    const stop = setup(() => true, () => true, vi.fn(), show, startScreen, vi.fn(), vi.fn());
+    const stop = setup(() => true, () => true, vi.fn(), show, startScreen, vi.fn(), vi.fn(), () => null, vi.fn());
     await vi.advanceTimersByTimeAsync(1500); expect(allowed()).toBe(true);
     stop(); startScreen.mockReturnValue(false); expect(allowed()).toBe(false);
     startScreen.mockReturnValue(true); expect(allowed()).toBe(false);

@@ -737,3 +737,7 @@
 - [x] timing_version 3 skiljer huvuden, svarskropp, nätfel, tidsgräns och färdigt resultat; HTTP-status, serverns Date-huvud, nätbyten; tak 2/försök och 40/session.
 - [x] Gatewayns sb-request-id är dold för appen (CORS); läses om den blir exponerad.
 - [ ] Verifiera i nästa signerade iOS-/Androidbygge (kräver nytt bygge).
+
+## Datorns beslut – 26 november
+- [x] Beräkna sista kastet exakt, tillåt delade fyrtal och väg kåk mot säker bonus.
+- [x] 65 tester godkända, inklusive 50 fullständiga datormatcher; samma 100 simuleringsfrön gav snitt 240,78 mot 227,49 och bonus 78 mot 58. Inga suboptimala sista kast med en ruta kvar; alla 12 gamla felval och båda bonusfallen återprovade. Synligt bonusval sparat och visat på spelbrickan utan spelarstatistik.

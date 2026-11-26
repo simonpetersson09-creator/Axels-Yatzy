@@ -169,6 +169,14 @@ function bestPlacementValue(
   let bestValue = -Infinity;
   let bestRaw = 0;
 
+  // No future slot remains: optimise actual points, not sacrifice penalties.
+  if (available.length === 1) {
+    const catId = available[0];
+    const rawScore = calculateScore(dice, catId);
+    const securedBonus = catId in UPPER_FACE && !bonus.alreadyHave && rawScore >= bonus.gap;
+    return { catId, rawScore, value: rawScore + (securedBonus ? BONUS_VALUE : 0) };
+  }
+
   // How costly it is to "burn" (zero-score) a category. Lower = sacrifice first.
   // This produces human-credible strikes: ones → twos → straights → triples → ...
   // → chance → yatzy (almost never sacrificed early).
@@ -247,6 +255,8 @@ function bestPlacementValue(
         // Each point above/below target is worth pointValue extra (~1.3-2.2)
         // beyond face value, because it changes the bonus equation.
         value += surplus * bonus.pointValue;
+        // A guaranteed bonus is worth its real 50 points, not just progress.
+        if (raw >= bonus.gap) value += BONUS_VALUE;
         // Heavy penalty for zero-ing a bonus-reachable upper slot:
         // it removes the entire face's contribution from the bonus path.
         if (raw === 0) value -= face * 1.5;
@@ -360,15 +370,12 @@ function sampleFinalDice(
 
 // ─── Candidate keep-set generation ───────────────────────
 
-function uniqueLockKey(locks: boolean[]): string {
-  return locks.map(l => l ? '1' : '0').join('');
-}
-
 function generateCandidateLocks(dice: number[], available: Set<string>): boolean[][] {
   const seen = new Set<string>();
   const out: boolean[][] = [];
   const add = (locks: boolean[]) => {
-    const key = uniqueLockKey(locks);
+    // Equivalent holds of identical dice must not get separate noisy samples.
+    const key = dice.filter((_, i) => locks[i]).sort((a, b) => a - b).join('');
     if (!seen.has(key)) { seen.add(key); out.push(locks); }
   };
 
@@ -423,7 +430,66 @@ function generateCandidateLocks(dice: number[], available: Set<string>): boolean
     }
   }
 
+  // Include partial groups, e.g. keep 6,6,6,2 from 6,6,6,6,2 for a house.
+  for (let mask = 0; mask < 32; mask++) {
+    add(dice.map((_, i) => Boolean(mask & (1 << i))));
+  }
   return out;
+}
+
+// Exact weighted outcomes; at most 252 unordered hands for five fresh dice.
+const exactOutcomes = new Map<number, { dice: number[]; probability: number }[]>();
+
+function outcomesForDice(count: number): { dice: number[]; probability: number }[] {
+  const cached = exactOutcomes.get(count);
+  if (cached) return cached;
+  const grouped = new Map<string, { dice: number[]; probability: number }>();
+  const probability = 1 / 6 ** count;
+  const visit = (rolled: number[]) => {
+    if (rolled.length === count) {
+      const sorted = [...rolled].sort((a, b) => a - b);
+      const key = sorted.join('');
+      const existing = grouped.get(key);
+      if (existing) existing.probability += probability;
+      else grouped.set(key, { dice: sorted, probability });
+      return;
+    }
+    for (let face = 1; face <= 6; face++) visit([...rolled, face]);
+  };
+  visit([]);
+  const outcomes = [...grouped.values()];
+  exactOutcomes.set(count, outcomes);
+  return outcomes;
+}
+
+function exactLastRollLocks(
+  dice: number[], scores: Record<string, number | null>,
+  available: CategoryId[], bonus: BonusInfo, candidates: boolean[][],
+): boolean[] {
+  const values = new Map<string, number>();
+  let bestLocks = dice.map(() => true);
+  let bestEV = -Infinity;
+  for (const locks of candidates) {
+    const kept = dice.filter((_, i) => locks[i]);
+    let ev = 0;
+    for (const outcome of outcomesForDice(5 - kept.length)) {
+      const finalDice = [...kept, ...outcome.dice].sort((a, b) => a - b);
+      const key = finalDice.join('');
+      let value = values.get(key);
+      if (value === undefined) {
+        value = bestPlacementValue(finalDice, scores, available, bonus).value;
+        values.set(key, value);
+      }
+      ev += outcome.probability * value;
+    }
+    // Stable ties prefer keeping more dice instead of taking needless risks.
+    if (ev > bestEV + 1e-9 || (Math.abs(ev - bestEV) <= 1e-9 &&
+      kept.length > bestLocks.filter(Boolean).length)) {
+      bestEV = ev;
+      bestLocks = locks;
+    }
+  }
+  return bestLocks;
 }
 
 // ─── EV evaluation for a keep pattern ────────────────────
@@ -483,14 +549,7 @@ export function aiPickCategory(
   if (sorted === '12345' && avSet.has('smallStraight')) {
     return 'smallStraight';
   }
-  // 4. Full house: prefer over upper if available
-  const threeIdx = counts.findIndex(c => c >= 3);
-  const twoIdx = counts.findIndex((c, i) => c >= 2 && i !== threeIdx);
-  if (threeIdx !== -1 && twoIdx !== -1 && avSet.has('fullHouse')) {
-    return 'fullHouse';
-  }
-  // 5. Four of a kind: no shortcut — bestPlacementValue weighs it against
-  //    upper bonus, Chance and future value like every other category.
+  // Full house and four of a kind are weighed against upper bonus and future value.
 
   return bestPlacementValue(dice, scores, available, bonus).catId;
 }
@@ -522,17 +581,8 @@ export function aiDecideLocks(
   if (sorted === '12345' && avSet.has('smallStraight') && !avSet.has('largeStraight')) {
     return [true, true, true, true, true];
   }
-  // Completed full house with both slots open & no obvious better play
-  const threeIdx = counts.findIndex(c => c >= 3);
-  const twoIdx = counts.findIndex((c, i) => c >= 2 && i !== threeIdx);
-  if (threeIdx !== -1 && twoIdx !== -1 && avSet.has('fullHouse')) {
-    // Keep unless we have 4-of-a-kind and yatzy is open (then chase yatzy)
-    if (!(counts[threeIdx] >= 4 && avSet.has('yatzy'))) {
-      return [true, true, true, true, true];
-    }
-  }
-
   const candidates = generateCandidateLocks(dice, avSet);
+  if (rollsLeft === 1) return exactLastRollLocks(dice, scores, available, bonus, candidates);
 
   let bestLocks = candidates[0];
   let bestEV = -Infinity;

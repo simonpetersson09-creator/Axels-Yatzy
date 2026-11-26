@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { aiPickCategory } from './yatzy-ai';
+import { describe, it, expect, vi } from 'vitest';
+import { aiDecideLocks, aiPickCategory } from './yatzy-ai';
 import { CATEGORIES } from '@/types/yatzy';
 
 // Helper: build a scores object with given categories pre-filled (to 0 unless specified).
@@ -52,5 +52,54 @@ describe('aiPickCategory — upper vs fourOfAKind priority', () => {
     const pick = aiPickCategory(dice, scoresWith());
     // threes raw=9 hits target, threeOfAKind raw=9 too, but threes feeds bonus.
     expect(pick).toBe('threes');
+  });
+});
+
+describe('computer decision audit regressions', () => {
+  function onlyOpen(...open: string[]): Record<string, number | null> {
+    return Object.fromEntries(CATEGORIES.map(c => [c.id, open.includes(c.id) ? null : 0]));
+  }
+
+  it('splits four sixes to keep 6,6,6,2 when only full house remains', () => {
+    const dice = [6, 6, 6, 2, 6];
+    const locks = aiDecideLocks(dice, onlyOpen('fullHouse'), 1);
+    expect(dice.filter((_, i) => locks[i]).sort()).toEqual([2, 6, 6, 6]);
+  });
+
+  it('keeps the pair of ones rather than rerolling everything for a final Yatzy', () => {
+    expect(aiDecideLocks([3, 5, 4, 1, 1], onlyOpen('yatzy'), 1))
+      .toEqual([false, false, false, true, true]);
+  });
+
+  it('uses no random samples for the last roll and repeats the same decision', () => {
+    const random = vi.spyOn(Math, 'random').mockImplementation(() => { throw new Error('Random sample'); });
+    try {
+      for (let i = 0; i < 5; i++) {
+        expect(aiDecideLocks([3, 5, 4, 1, 1], scoresWith(), 1))
+          .toEqual(aiDecideLocks([3, 5, 4, 1, 1], scoresWith(), 1));
+      }
+      expect(random).not.toHaveBeenCalled();
+    } finally { random.mockRestore(); }
+  });
+
+  it('takes three ones and the 50-point bonus at 60 upper points over a 7-point house', () => {
+    expect(aiPickCategory([1, 2, 2, 1, 1], scoresWith({
+      twos: 6, threes: 9, fours: 12, fives: 15, sixes: 18,
+    }))).toBe('ones');
+  });
+
+  it('takes three fours and the 50-point bonus at 53 upper points over a 16-point house', () => {
+    expect(aiPickCategory([2, 4, 4, 4, 2], scoresWith({
+      ones: 1, twos: 4, threes: 9, fives: 15, sixes: 24,
+    }))).toBe('fours');
+  });
+
+  it('still takes a useful house when the upper bonus cannot be reached', () => {
+    expect(aiPickCategory([6, 6, 6, 5, 5], onlyOpen('fullHouse', 'ones'))).toBe('fullHouse');
+  });
+
+  it('keeps three sixes and rerolls only the two other dice in the final upper slot', () => {
+    const scores = { ...onlyOpen('sixes'), ones: 3, twos: 6, threes: 9, fours: 12, fives: 15 };
+    expect(aiDecideLocks([6, 6, 6, 2, 1], scores, 1)).toEqual([true, true, true, false, false]);
   });
 });

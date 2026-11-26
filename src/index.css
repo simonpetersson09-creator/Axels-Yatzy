@@ -269,16 +269,17 @@
 .waiting-modal-backdrop { position: fixed; inset: 0; background: hsl(var(--background) / .85); z-index: 100; display: grid; place-items: center; padding: 20px; }
 @media (max-width: 350px) { .waiting-table-stage { height: 370px; } .waiting-person-label { width: 92px; } .waiting-seat-0 .waiting-person-label, .waiting-seat-2 .waiting-person-label { left: 8px; } .waiting-seat-1 .waiting-person-label { left: calc(58px + var(--waiting-chair-edge) - var(--waiting-seat-offset)); } .waiting-seat-3 .waiting-person-label { right: calc(58px - var(--waiting-seat-offset) + var(--waiting-chair-edge)); } }
 
-/* Fixed native ad footprint, not a scaled web banner. */
+/* Full safe-area width for SDK-sized anchored adaptive search banners. */
 .quick-search-screen {
-  padding: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 10px max(12px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  --search-ad-reserve: min(150px, 20vh);
+  padding: max(12px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) var(--safe-area-inset-right, env(safe-area-inset-right, 0px)) max(12px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))) var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
   overflow-y: auto;
 }
 .quick-search-layout {
   height: 100%;
-  min-height: 464px;
+  min-height: calc(260px + var(--search-ad-reserve));
   display: grid;
-  grid-template-rows: minmax(min-content, 1fr) minmax(274px, 1fr);
+  grid-template-rows: minmax(min-content, 1fr) calc(24px + var(--search-ad-reserve));
   justify-items: center;
 }
 .quick-search-status {
@@ -290,8 +291,8 @@
   overflow-wrap: anywhere;
 }
 .quick-search-icon { width: 48px; height: 48px; }
-.quick-search-ad-area { display: grid; place-items: center; padding-top: 24px; width: 100%; }
-.quick-search-ad-slot { width: 300px; height: 250px; flex-shrink: 0; }
+.quick-search-ad-area { display: grid; align-items: end; justify-items: center; padding-top: 24px; width: 100%; }
+.quick-search-ad-slot { width: 100%; height: var(--search-ad-height, var(--search-ad-reserve)); flex-shrink: 0; }
 .ad-banner-preview {
   position: fixed;
   left: 50%;

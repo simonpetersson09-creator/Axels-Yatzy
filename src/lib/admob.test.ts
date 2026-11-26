@@ -9,7 +9,7 @@ vi.mock('@/lib/analytics', () => ({ trackEvent: diagnostics.trackEvent }));
 vi.mock('@capacitor-community/admob', () => ({
   AdmobConsentStatus: { REQUIRED: 'REQUIRED' },
   InterstitialAdPluginEvents: { Dismissed: 'dismissed', FailedToShow: 'failed' },
-  BannerAdSize: { BANNER: 'BANNER', MEDIUM_RECTANGLE: 'MEDIUM_RECTANGLE' }, BannerAdPosition: { BOTTOM_CENTER: 'BOTTOM_CENTER' },
+  BannerAdSize: { BANNER: 'BANNER', MEDIUM_RECTANGLE: 'MEDIUM_RECTANGLE', ADAPTIVE_BANNER: 'ADAPTIVE_BANNER' }, BannerAdPosition: { BOTTOM_CENTER: 'BOTTOM_CENTER' },
   BannerAdPluginEvents: { Loaded: 'b_loaded', FailedToLoad: 'b_failed', AdImpression: 'b_impression', SizeChanged: 'b_size', Opened: 'b_opened', Closed: 'b_closed' },
   RewardAdPluginEvents: { Showed: 'r_showed', Rewarded: 'r_reward', Dismissed: 'r_dismissed', FailedToShow: 'r_failed' },
   AdMob: {
@@ -724,7 +724,7 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     const search = m.showGameBanner('search'); await vi.advanceTimersByTimeAsync(100); await search;
     expect(native.banner.show).toHaveBeenLastCalledWith(expect.objectContaining({
       adId: platform === 'ios' ? 'ca-app-pub-7448540924654868/1041815937' : 'ca-app-pub-7448540924654868/2816751438',
-      adSize: 'MEDIUM_RECTANGLE', margin: 100,
+      adSize: 'ADAPTIVE_BANNER', margin: 100,
     }));
     await m.hideGameBanner();
     const game = m.showGameBanner(); await vi.advanceTimersByTimeAsync(15_000); await game;
@@ -735,6 +735,44 @@ describe.each(['ios', 'android'])('%s banner diagnostics and recovery', (platfor
     }));
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
+  });
+
+  it.each([280, 390, 1024])('requests SDK adaptive sizing for a %s-wide search screen', async (width) => {
+    const slot = document.createElement('div');
+    slot.dataset.searchAdSlot = '';
+    document.body.appendChild(slot);
+    vi.spyOn(slot, 'getBoundingClientRect').mockReturnValue({ width, height: 150, top: 538, bottom: 688 } as DOMRect);
+    vi.stubGlobal('innerHeight', 700);
+    try {
+      const m = await import('./admob');
+      const search = m.showGameBanner('search');
+      await vi.advanceTimersByTimeAsync(100); await search;
+      expect(native.banner.show).toHaveBeenCalledOnce();
+      expect(native.banner.show).toHaveBeenCalledWith(expect.objectContaining({ adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 12 }));
+      await m.hideGameBanner();
+    } finally { slot.remove(); vi.restoreAllMocks(); }
+  });
+
+  it('keeps the search ad after SDK height changes but reloads for a new width', async () => {
+    const slot = document.createElement('div');
+    slot.dataset.searchAdSlot = '';
+    document.body.appendChild(slot);
+    let width = 390;
+    vi.spyOn(slot, 'getBoundingClientRect').mockImplementation(() => ({ width, height: 70, top: 618, bottom: 688 } as DOMRect));
+    vi.stubGlobal('innerHeight', 700);
+    try {
+      const m = await import('./admob');
+      const first = m.showGameBanner('search'); await vi.advanceTimersByTimeAsync(100); await first;
+      native.handlers.get('b_size')?.forEach(h => (h as (d: unknown) => void)({ width, height: 70 }));
+      const same = m.showGameBanner('search'); await vi.advanceTimersByTimeAsync(100); await same;
+      expect(native.banner.show).toHaveBeenCalledOnce();
+      width = 844;
+      const rotated = m.showGameBanner('search'); await vi.advanceTimersByTimeAsync(100); await rotated;
+      expect(native.banner.remove).toHaveBeenCalledOnce();
+      expect(native.banner.show).toHaveBeenCalledTimes(2);
+      expect(native.banner.show).toHaveBeenLastCalledWith(expect.objectContaining({ adSize: 'ADAPTIVE_BANNER' }));
+      await m.hideGameBanner();
+    } finally { slot.remove(); vi.restoreAllMocks(); }
   });
 
   it('logs SDK loading and impressions separately, with one listener across matches', async () => {

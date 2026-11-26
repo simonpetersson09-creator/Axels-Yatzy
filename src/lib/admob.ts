@@ -1247,9 +1247,17 @@ function ensureBannerListeners(mod: AdMobModule): Promise<void> {
       }));
       handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.AdImpression, () => reportBanner('impression')));
       handles.push(await mod.AdMob.addListener(mod.BannerAdPluginEvents.SizeChanged, (size) => {
-        // Lets fixed overlays (quick chat) stay above the real native banner height.
+        // Search owns its SDK-sized slot; never refit the game for a search ad.
         try {
-          document.documentElement.style.setProperty('--ad-banner-space', `${Math.max(0, shownMargin) + (size.height || 0)}px`);
+          const owner = bannerLoadOwner;
+          if (owner?.placement === 'search') {
+            if (!owner.stale() && Number.isFinite(size.height) && size.height > 0) {
+              document.querySelector<HTMLElement>('[data-search-ad-slot]')?.style.setProperty('--search-ad-height', `${size.height}px`);
+            }
+          } else {
+            // Lets fixed overlays (quick chat) stay above the real game banner.
+            document.documentElement.style.setProperty('--ad-banner-space', `${Math.max(0, shownMargin) + (size.height || 0)}px`);
+          }
         } catch { /* ignore */ }
         reportBanner('size_changed', undefined, { width: size.width, height: size.height });
       }));
@@ -1461,12 +1469,14 @@ async function centeredBannerMargin(): Promise<number> {
 }
 
 let shownMargin = -1;
+let shownSearchWidth = -1;
+let parkedSearchWidth = -1;
 let bannerRemoving: Promise<void> = Promise.resolve();
 
 async function searchBannerMargin(): Promise<number | null> {
   await raf2();
   const slot = document.querySelector('[data-search-ad-slot]')?.getBoundingClientRect();
-  if (!slot || slot.width < 300 || slot.top < 0 || slot.bottom > window.innerHeight - safeAreaBottom() + 1) return null;
+  if (!slot || slot.width <= 0 || slot.top < 0 || slot.bottom > window.innerHeight - safeAreaBottom() + 1) return null;
   return Math.max(0, Math.round(window.innerHeight - safeAreaBottom() - slot.bottom));
 }
 
@@ -1479,10 +1489,12 @@ async function previewBanner(on: boolean, isStale: () => boolean = () => false, 
   if (isStale()) return;
   const d = document.createElement('div');
   d.id = id;
-  d.textContent = placement === 'search' ? 'Annons · 300×250' : 'Annons · 320×50';
+  const slot = placement === 'search' ? document.querySelector('[data-search-ad-slot]')?.getBoundingClientRect() : null;
+  d.textContent = placement === 'search' ? 'Annons · adaptiv förhandsvisning' : 'Annons · 320×50';
   d.className = 'ad-banner-preview';
-  d.style.width = placement === 'search' ? '300px' : '320px';
-  d.style.height = placement === 'search' ? '250px' : '50px';
+  d.style.width = placement === 'search' ? `${slot?.width ?? 0}px` : '320px';
+  // Illustration only: the Google SDK chooses the actual height on phones.
+  d.style.height = placement === 'search' ? `${Math.min(slot?.height ?? 0, window.innerWidth >= 728 ? 90 : 50)}px` : '50px';
   const margin = placement === 'search' ? await searchBannerMargin() : await centeredBannerMargin();
   if (margin === null) return;
   if (isStale()) return; // sidan lämnades medan vi mätte
@@ -1505,7 +1517,6 @@ export async function showGameBanner(placement: BannerPlacement = 'game'): Promi
   cancelBannerRetry();
   bannerRetryCount = 0;
   bannerWanted = true;
-  shownPlacement = placement;
   // Reservera bannerns plats direkt när spelskärmen öppnas och behåll den
   // hela matchen, så layouten aldrig hoppar när bannern laddas klart,
   // misslyckas eller laddas om. Utgå från att bannern alltid finns.
@@ -1545,6 +1556,7 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
     if (placement === 'game') await fitGameAboveBanner(stale);
     if (stale()) return;
     const margin = placement === 'search' ? await searchBannerMargin() : await centeredBannerMargin();
+    const searchWidth = placement === 'search' ? document.querySelector('[data-search-ad-slot]')?.getBoundingClientRect().width ?? -1 : -1;
     if (margin === null) {
       if (bannerShown) {
         await mod.AdMob.hideBanner();
@@ -1552,6 +1564,7 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
         bannerParked = true;
         parkedMargin = shownMargin;
         parkedPlacement = shownPlacement;
+        parkedSearchWidth = shownSearchWidth;
         scheduleParkedRemoval();
       }
       return;
@@ -1560,21 +1573,27 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
     await bannerRemoving.catch(() => {});
     if (stale()) { if (!bannerWanted) setBannerSpace(false); return; }
     // Samma plats som nu: låt bannern ligga kvar i stället för att ladda om den.
-    if (bannerShown && placement === shownPlacement && margin === shownMargin && !bannerFailed) { reportBanner('kept'); return; }
+    if (bannerShown && placement === shownPlacement && margin === shownMargin && searchWidth === shownSearchWidth && !bannerFailed) {
+      bannerLoadOwner = { stale, placement };
+      reportBanner('kept');
+      return;
+    }
     // Parked (hidden, still loaded) banner at the same spot: resume instantly
     // instead of loading a new one — e.g. between matches.
     if (bannerParked) {
       clearTimeout(bannerParkTimer);
       bannerParked = false;
-      if (placement === parkedPlacement && margin === parkedMargin && !bannerFailed) {
+      if (placement === parkedPlacement && margin === parkedMargin && searchWidth === parkedSearchWidth && !bannerFailed) {
         reportBanner('resume_requested', undefined, { margin });
         try {
+          bannerLoadOwner = { stale, placement };
           await mod.AdMob.resumeBanner();
           if (!bannerFailed) {
             if (stale()) { await mod.AdMob.hideBanner(); if (bannerFailed) return; bannerParked = true; reportBanner('hidden'); scheduleParkedRemoval(); return; }
             bannerShown = true;
             shownMargin = margin;
             shownPlacement = placement;
+            shownSearchWidth = searchWidth;
             setBannerSpace(placement === 'game');
             reportBanner('resumed', undefined, { margin });
             return;
@@ -1598,7 +1617,7 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
     bannerLoadOwner = { stale, placement };
     await mod.AdMob.showBanner({
       adId,
-      adSize: placement === 'search' ? mod.BannerAdSize.MEDIUM_RECTANGLE : mod.BannerAdSize.BANNER,
+      adSize: placement === 'search' ? mod.BannerAdSize.ADAPTIVE_BANNER : mod.BannerAdSize.BANNER,
       position: mod.BannerAdPosition.BOTTOM_CENTER,
       margin,
       isTesting: ADMOB_CONFIG.useTestAds,
@@ -1608,6 +1627,7 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
     bannerShown = true;
     shownMargin = margin;
     shownPlacement = placement;
+    shownSearchWidth = searchWidth;
     setBannerSpace(bannerWanted && placement === 'game');
     if (stale()) {
       await mod.AdMob.hideBanner();
@@ -1616,6 +1636,7 @@ async function showBannerForScreen(stale: () => boolean, placement: BannerPlacem
       bannerParked = true;
       parkedMargin = margin;
       parkedPlacement = placement;
+      parkedSearchWidth = searchWidth;
       reportBanner('hidden');
       scheduleParkedRemoval();
     }
@@ -1659,6 +1680,7 @@ async function hideBannerForScreen(): Promise<void> {
       bannerParked = true;
       parkedMargin = parkAt;
       parkedPlacement = shownPlacement;
+      parkedSearchWidth = shownSearchWidth;
       reportBanner('hidden');
       scheduleParkedRemoval();
     } catch (error) {

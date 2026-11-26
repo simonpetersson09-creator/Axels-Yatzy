@@ -618,11 +618,11 @@ export async function showOptionalInterstitial(): Promise<ShowAdResult> {
 }
 
 /** Result exit only: skip unprepared ads rather than delaying navigation. No XP. */
-export async function showPostMatchInterstitial(context?: { matchKey: string; action: 'home' | 'replay' }): Promise<ShowAdResult> {
+export async function showPostMatchInterstitial(context?: { matchKey: string; action: 'home' | 'replay' | 'reopen' }): Promise<ShowAdResult> {
   return showInterstitial('postMatch', context);
 }
 
-async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matchKey: string; action: 'home' | 'replay' }): Promise<ShowAdResult> {
+async function showInterstitial(kind: 'optional' | 'postMatch', context?: { matchKey: string; action: 'home' | 'replay' | 'reopen' }): Promise<ShowAdResult> {
   const generation = adGeneration;
   const startedAt = Date.now();
   const details = { ...context, loadId: interstitialLoadId, cacheAgeMs: preparedAt ? Date.now() - preparedAt : null };

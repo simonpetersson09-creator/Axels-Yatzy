@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { preloadInterstitial, showPostMatchInterstitial } from '@/lib/admob';
 import { trackEvent } from '@/lib/analytics';
+import { markPendingPostMatchAd, settlePostMatchAd } from '@/lib/pending-post-match-ad';
 
 // A result can be revisited without presenting another ad for the same match.
 const attemptedMatches = new Set<string>();
@@ -15,7 +16,10 @@ export function usePostMatchExit(matchKey: string, completed: boolean, onHome: (
   }, [matchKey]);
 
   useEffect(() => {
-    if (completed && !attemptedMatches.has(matchKey)) void preloadInterstitial();
+    if (completed && !attemptedMatches.has(matchKey)) {
+      markPendingPostMatchAd(matchKey);
+      void preloadInterstitial();
+    }
   }, [completed, matchKey]);
 
   const leave = useCallback(async (onContinue?: () => void) => {
@@ -28,7 +32,9 @@ export function usePostMatchExit(matchKey: string, completed: boolean, onHome: (
     try {
       if (completed && !attemptedMatches.has(matchKey)) {
         attemptedMatches.add(matchKey);
+        const shownAt = Date.now();
         const result = await showPostMatchInterstitial({ matchKey, action });
+        settlePostMatchAd(matchKey, result, Date.now() - shownAt);
         log(result);
       } else log(completed ? 'already_attempted' : 'unfinished');
     } catch { log('failed'); /* An ad failure must never prevent continuing. */ }

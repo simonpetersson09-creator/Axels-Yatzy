@@ -41,6 +41,9 @@ import { useTranslation } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { syncCountryRank, getCachedRankInfo, countryToFlag, countryName, type RankInfo } from '@/lib/country-rank';
 import { getLanguage, setLanguage, LANGUAGES, subscribeProfileChanges, type Language } from '@/lib/profile';
+import { preloadInterstitial, showPostMatchInterstitial } from '@/lib/admob';
+import { getPendingPostMatchAd, notePendingPostMatchAttempt, settlePostMatchAd } from '@/lib/pending-post-match-ad';
+import FinishedWhileAwayNotice, { isFinishedNoticeOpen } from '@/components/FinishedWhileAwayNotice';
 import { isAdMobAvailable, preloadRewarded, subscribeRewardedState, getRewardedState, showAppOpenAd, preloadAppOpenAd, trackAdOpportunity } from '@/lib/admob';
 import { optionalAdPair } from '@/lib/rewarded-pair';
 import { OptionalAdsDialog } from '@/components/OptionalAdsDialog';
@@ -64,9 +67,27 @@ const RESUME_AD_MIN_AWAY_MS = 20_000;
 let resumeHomeEpoch = 0;
 let resumeWatcherInstalled = false;
 const onStartScreen = () => window.location.pathname === '/' && document.visibilityState === 'visible';
+/**
+ * A missed post-match ad replaces the App Open ad at the next open/return.
+ * Returns true when a pending match existed, so App Open is skipped.
+ */
+async function tryPendingPostMatchAd(canShow: () => boolean): Promise<boolean> {
+  if (isFinishedNoticeOpen()) return true; // its own button shows the ad
+  const pending = getPendingPostMatchAd();
+  if (!pending) return false;
+  notePendingPostMatchAttempt(pending.matchKey);
+  const ready = await Promise.race([preloadInterstitial(), new Promise<boolean>(r => setTimeout(() => r(false), 8000))]);
+  if (!ready || !canShow() || isFinishedNoticeOpen()) return true;
+  const shownAt = Date.now();
+  const result = await showPostMatchInterstitial({ matchKey: pending.matchKey, action: 'reopen' });
+  settlePostMatchAd(pending.matchKey, result, Date.now() - shownAt);
+  trackEvent('post_match_reopen_ad', { result });
+  return true;
+}
 async function tryShowResumeAd() {
   if (!onStartScreen()) { trackAdOpportunity('appOpen', 'resume', 'skipped', 'not_on_home'); return; }
   const epoch = resumeHomeEpoch;
+  if (await tryPendingPostMatchAd(() => epoch === resumeHomeEpoch && onStartScreen())) return;
   if (await showAppOpenAd(() => epoch === resumeHomeEpoch && onStartScreen(), 'resume')) trackEvent('resume_ad');
 }
 /** Installed once and never removed, so leaving the app mid-match is also counted. */
@@ -117,6 +138,7 @@ export default function HomePage() {
   const [activeGames, setActiveGames] = useState<ActiveGame[]>(() => getActiveGames());
   const [openLobbies, setOpenLobbies] = useState<OpenLobby[]>([]);
   const [statuses, setStatuses] = useState<Record<string, GameStatus>>({});
+  const [finishedAway, setFinishedAway] = useState<string[]>([]);
   const [quickHint, setQuickHint] = useState(() => quickHintPending());
   const [showQuickMatch, setShowQuickMatch] = useState(
     () => !!(window.history.state?.usr as { openQuickMatch?: boolean } | undefined)?.openQuickMatch,
@@ -251,6 +273,12 @@ export default function HomePage() {
   useEffect(() => {
     if (startupAdChecked) return;
     if (AD_BUTTON_LOCKED || !isAdMobAvailable()) return;
+    if (getPendingPostMatchAd()) {
+      startupAdChecked = true;
+      let stop = false;
+      const t0 = setTimeout(() => { void tryPendingPostMatchAd(() => !stop && onStartScreen()); }, 1500);
+      return () => { stop = true; clearTimeout(t0); };
+    }
     if (!shouldShowDailyStartupAd()) return;
     // Start loading right away so the ad is usually ready when it is shown.
     void preloadAppOpenAd('startup');
@@ -498,6 +526,10 @@ export default function HomePage() {
         if (g.status === 'finished') {
           removeActiveGame(id);
           removed = true;
+          // Ended while this player was away: show the result in the middle.
+          if (players?.some(p => p.game_id === id && p.session_id === sessionId)) {
+            setFinishedAway(list => list.includes(id) ? list : [...list, id]);
+          }
           continue;
         }
         const me = players?.find(p => p.game_id === id && p.session_id === sessionId);
@@ -565,7 +597,7 @@ export default function HomePage() {
 
   const homePrompt = getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk });
   const rewardWeek = weeklyRewards[0]?.week_start;
-  const showWeeklyReward = !homePrompt && !showQuickMatch && !onlineSearch && !waitingEntryOpen && !showAdsConsent && !!rewardWeek;
+  const showWeeklyReward = finishedAway.length === 0 && !homePrompt && !showQuickMatch && !onlineSearch && !waitingEntryOpen && !showAdsConsent && !!rewardWeek;
 
   return (
     <div
@@ -1057,6 +1089,13 @@ export default function HomePage() {
           <NotificationAskPrompt onYes={() => closeNotifAsk(true)} onLater={() => closeNotifAsk(false)} />
         )}
       </AnimatePresence>
+      {finishedAway[0] && (
+        <FinishedWhileAwayNotice
+          key={finishedAway[0]}
+          gameId={finishedAway[0]}
+          onDone={() => setFinishedAway(list => list.slice(1))}
+        />
+      )}
       {showWeeklyReward && (
         <WeeklyRewardNotice
           key={rewardWeek}

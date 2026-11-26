@@ -490,6 +490,9 @@ export function ensureTrackingAuthorization(mod: AdMobModule): Promise<void> {
 async function ensureInitialized(): Promise<AdMobModule> {
   const generation = adGeneration;
   if (!adAllowed(generation)) throw new Error('privacy_transition');
+  // New players reach their first roll without ad/consent prompts: nothing is
+  // initialized (no UMP, ATT or ad request) until one match is completed.
+  if (!initialized && getRankedGames() === 0) throw new Error('first_match_pending');
   // Caller timeouts never cancel native initialization. Keep ownership until
   // the shared operation settles so late callers cannot start another one.
   if (!initializationPromise) {

@@ -735,6 +735,21 @@ export default function HomePage() {
                 <span>{t('quickMatch')}</span>
               </motion.button>
               </Button>
+              {quickHint && !showQuickMatch && (
+                <motion.button
+                  data-play-action="first_vs_computer"
+                  onClick={() => {
+                    markQuickHintDone(); setQuickHint(false);
+                    const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
+                    const playerNames = [humanName, ...getRandomAiNames(1)];
+                    navigate('/game', { state: { playerNames, aiPlayers: [1], localGameId: newLocalGameId() } });
+                  }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-sm"
+                >
+                  🤖 {onboardingCopy().solo}
+                </motion.button>
+              )}
               <AnimatePresence>
                 {showQuickMatch && (
                   <motion.div

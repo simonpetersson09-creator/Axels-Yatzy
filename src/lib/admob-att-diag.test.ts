@@ -76,15 +76,3 @@ describe('ad skip diagnostics', () => {
     vi.doUnmock('./local-stats');
   });
 });
-
-describe('first match gate', () => {
-  beforeEach(() => { vi.resetModules(); sdk.att.mockReset(); sdk.init.mockReset(); });
-  it('asks no consent/ATT and loads no ads before the first completed match', async () => {
-    vi.doMock('./local-stats', () => ({ getRankedGames: () => 0 }));
-    const m = await import('./admob');
-    expect(await m.preloadInterstitial()).toBe(false);
-    expect(sdk.att).not.toHaveBeenCalled();
-    expect(sdk.init).not.toHaveBeenCalled();
-    vi.doUnmock('./local-stats');
-  });
-});

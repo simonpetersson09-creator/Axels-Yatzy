@@ -564,6 +564,13 @@ export function aiDecideLocks(
   const available = availableList(scores);
   if (available.length === 0) return [false, false, false, false, false];
 
+  // The final upper box has one target, on both remaining rolls.
+  // Do not let simulation noise keep other faces or discard matching dice.
+  const finalCategory = available[0];
+  if (available.length === 1 && finalCategory in UPPER_FACE) {
+    return lockAllOf(dice, UPPER_FACE[finalCategory]);
+  }
+
   const avSet = new Set<string>(available);
   const bonus = bonusInfo(scores, avSet);
 

@@ -103,3 +103,34 @@ describe('computer decision audit regressions', () => {
     expect(aiDecideLocks([6, 6, 6, 2, 1], scores, 1)).toEqual([true, true, true, false, false]);
   });
 });
+
+describe('only one upper score box remains', () => {
+  const upperIds = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
+
+  it.each(upperIds)('always keeps exactly the matching dice for %s after roll 1 and roll 2', (category) => {
+    const face = upperIds.indexOf(category) + 1;
+    const scores = Object.fromEntries(CATEGORIES.map(c => [c.id, c.id === category ? null : 0]));
+    const random = vi.spyOn(Math, 'random').mockImplementation(() => {
+      throw new Error('The last upper box must not use random simulations');
+    });
+    try {
+      // Every possible ordered hand: includes no matches, all matches and mixed groups.
+      for (let hand = 0; hand < 6 ** 5; hand++) {
+        const dice = Array.from({ length: 5 }, (_, i) => Math.floor(hand / 6 ** i) % 6 + 1);
+        const expected = dice.map(d => d === face);
+        expect(aiDecideLocks(dice, scores, 2)).toEqual(expected);
+        expect(aiDecideLocks(dice, scores, 1)).toEqual(expected);
+      }
+    } finally {
+      random.mockRestore();
+    }
+  });
+
+  it.each([0, 12, 15])('keeps only ones regardless of bonus progress (%i per filled upper box)', (score) => {
+    const scores = Object.fromEntries(CATEGORIES.map(c => [c.id, c.id === 'ones' ? null : score]));
+    for (const rollsLeft of [2, 1]) {
+      expect(aiDecideLocks([6, 1, 6, 1, 6], scores, rollsLeft))
+        .toEqual([false, true, false, true, false]);
+    }
+  });
+});

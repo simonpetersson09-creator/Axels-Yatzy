@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { aiDecideLocks, aiPickCategory } from './yatzy-ai';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { aiDecideLocks, aiPickCategory, optimalReady } from './yatzy-ai';
+beforeAll(() => optimalReady);
 import { aiDecideLocks as serverAiDecideLocks } from '../../supabase/functions/_shared/yatzy/ai';
 import { CATEGORIES } from '@/types/yatzy';
 

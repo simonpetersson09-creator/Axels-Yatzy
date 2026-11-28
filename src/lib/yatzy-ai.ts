@@ -1,5 +1,12 @@
 import { CategoryId, CATEGORIES } from '@/types/yatzy';
 import { calculateScore, getUpperSectionTotal } from '@/lib/yatzy-scoring';
+import { base64ToBytes, createOptimalPlayer, decodeTable, type OptimalPlayer } from '../../supabase/functions/_shared/yatzy/optimal';
+
+// The exact optimal table loads in its own chunk; until it is ready the heuristic plays.
+let optimal: OptimalPlayer | null = null;
+export const optimalReady: Promise<void> = import('../../supabase/functions/_shared/yatzy/optimal-table-data')
+  .then(m => { optimal = createOptimalPlayer(decodeTable(base64ToBytes(m.OPTIMAL_TABLE_B64))); })
+  .catch(() => {});
 
 // ─── Names ───────────────────────────────────────────────
 
@@ -569,6 +576,7 @@ export function aiPickCategory(
   const available = availableList(scores);
   if (available.length === 0) return 'chance';
   if (available.length === 1) return available[0];
+  if (optimal) return optimal.pickCategory(dice, scores) as CategoryId;
 
   const avSet = new Set<string>(available);
   const bonus = bonusInfo(scores, avSet);
@@ -603,6 +611,7 @@ export function aiDecideLocks(
 ): boolean[] {
   const available = availableList(scores);
   if (available.length === 0) return [false, false, false, false, false];
+  if (optimal) return optimal.decideLocks(dice, scores, rollsLeft);
 
   // The final upper box has one target, on both remaining rolls.
   // Do not let simulation noise keep other faces or discard matching dice.

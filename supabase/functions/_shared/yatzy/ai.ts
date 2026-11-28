@@ -1,5 +1,6 @@
 import { CategoryId, CATEGORIES } from './types.ts';
 import { calculateScore, getUpperSectionTotal } from './scoring.ts';
+import { getOptimalPlayer } from './optimal-player.ts';
 
 // ─── Names ───────────────────────────────────────────────
 
@@ -558,6 +559,7 @@ export function aiPickCategory(
   const available = availableList(scores);
   if (available.length === 0) return 'chance';
   if (available.length === 1) return available[0];
+  return getOptimalPlayer().pickCategory(dice, scores) as CategoryId;
 
   const avSet = new Set<string>(available);
   const bonus = bonusInfo(scores, avSet);
@@ -599,6 +601,7 @@ export function aiDecideLocks(
 ): boolean[] {
   const available = availableList(scores);
   if (available.length === 0) return [false, false, false, false, false];
+  return getOptimalPlayer().decideLocks(dice, scores, rollsLeft);
 
   const finalCategory = available[0];
   if (available.length === 1 && finalCategory in UPPER_FACE) {

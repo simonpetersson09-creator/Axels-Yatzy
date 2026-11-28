@@ -74,6 +74,11 @@ function availableList(scores: Record<string, number | null>): CategoryId[] {
     .map(c => c.id);
 }
 
+function usableUpperOnlyDice(dice: number[], available: Set<string>): boolean[] {
+  const upperOnly = [...available].every(id => UPPER_IDS.includes(id as CategoryId));
+  return dice.map(face => !upperOnly || available.has(UPPER_IDS[face - 1]));
+}
+
 function longestRun(dice: number[]): number[] {
   const unique = [...new Set(dice)].sort((a, b) => a - b);
   if (unique.length === 0) return [];
@@ -360,7 +365,8 @@ function sampleFinalDice(
   let d = rerollDice(dice, locks);
   let r = rollsRemaining - 1;
   while (r > 0) {
-    const greedy = greedyLocksForSim(d, available);
+    const usable = usableUpperOnlyDice(d, available);
+    const greedy = greedyLocksForSim(d, available).map((locked, i) => locked && usable[i]);
     if (greedy.every(Boolean)) break;
     d = rerollDice(d, greedy);
     r -= 1;
@@ -373,7 +379,10 @@ function sampleFinalDice(
 function generateCandidateLocks(dice: number[], available: Set<string>): boolean[][] {
   const seen = new Set<string>();
   const out: boolean[][] = [];
+  const usable = usableUpperOnlyDice(dice, available);
   const add = (locks: boolean[]) => {
+    // With no combination boxes left, a filled face can never score.
+    locks = locks.map((locked, i) => locked && usable[i]);
     // Equivalent holds of identical dice must not get separate noisy samples.
     const key = dice.filter((_, i) => locks[i]).sort((a, b) => a - b).join('');
     if (!seen.has(key)) { seen.add(key); out.push(locks); }

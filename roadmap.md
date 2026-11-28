@@ -1,5 +1,10 @@
 # Roadmap – Snabbspel online
 
+## Oanvändbara tärningar – 28 november
+- [x] Återskapat sparade tvåor utan giltig ruta. Samma skydd i lokala och serverns datorval, inklusive beräkning av nästa kast; giltiga kombinationer och historiska resultat lämnas orörda.
+- [x] 102 tester godkända inklusive båda datorerna, 3 720 prov med flera kvarvarande sifferrutor, alla slutrutans tärningskombinationer och 50 kompletta datormatcher. Avskild verklig spelvy: Emma sparar ettan men inte tvåan, avslutar turen med 6 på treor; tvåor oförändrade, inga sidfel. Bygge OK; onlinefunktionen driftsatt. Fysisk telefon och verklig onlinetur ej spelade i detta prov; lokala ändringen kräver nästa appversion.
+- [x] Kodlästa regelvägar: GamePage synlig datortur, useYatzyGame bakgrund/återöppning och dev-bot-turn använder rättad lokal AI; quick-match-bot datorplatser/inaktiva spelare/jobbet använder rättad server-AI. Båda AI-kopiornas kandidater och simulerade omkast skyddade. Databasens aktuella perform_toggle_lock och båda perform_roll_dice-varianter utför givna lås, väljer inte strategi och lämnas oförändrade; inga avslutade resultat ändrade.
+
 ## Snabbare adminöppning – 24 november
 - [x] Separat servervalidering utan databasarbete visar admin innan siffrorna; samma nyckel/hub-token verifieras på varje statistikbegäran. Utloggning fungerar även under laddning och gamla svar ignoreras.
 - [x] 84 tester godkända. Samma läsögonblick: alla 24 dagars värden identiska före/efter och efter upprepad migration; beräkning 15,4 → 6,2 s i regressionstest. Verklig vanlig inloggning visar admin efter 0,26 s och siffror efter 6,73 s. Uppdatering/utloggning och hubramens statistik/diagram verifierade utan sparad inloggning eller kakor, inga sidfel; bygge OK. Totalt spärrad Storage verifierad i komponenttest, inte hela appens webbläsarprov (annan appstartkod avbryts vid sådan spärr). Serverförbättring driftsatt; nya adminvyn behöver publiceras. Root AGENTS.md fullt, ingen ny regel sparad där.

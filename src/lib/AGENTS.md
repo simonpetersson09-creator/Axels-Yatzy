@@ -1,4 +1,5 @@
 # src/lib notes
+- Local and server AI must filter unusable upper-only holds before sampling and during simulated rerolls; test both engines together so random estimates cannot preserve dead faces.
 - Admin hub credentials live only in page memory and travel in x-hub-token on every admin request; the server rechecks exp.sig HMAC before the unchanged queries, so cross-origin frames never depend on cookies or saved passwords.
 - Waiting-room expiry notices persist server-side under device-checked RPCs and owner-delete cascade; render on foreground return, acknowledge only the exact notice after confirmation, and never infer an expiry from network failure.
 - RPC timing (observed-rpc/multiplayer-actions, timing_version 3): observe only, never retry/cancel; classify outcome (result/rejected/http/transport/body/deadline); log slow (>3 s) or failed calls, ≤2 per attempt and a per-session cap. sb-request-id is CORS-hidden in the app, so correlate via attempt_id + Date header.

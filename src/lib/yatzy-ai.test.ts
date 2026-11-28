@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { aiDecideLocks, aiPickCategory } from './yatzy-ai';
+import { aiDecideLocks as serverAiDecideLocks } from '../../supabase/functions/_shared/yatzy/ai';
 import { CATEGORIES } from '@/types/yatzy';
 
 // Helper: build a scores object with given categories pre-filled (to 0 unless specified).
@@ -104,7 +105,7 @@ describe('computer decision audit regressions', () => {
   });
 });
 
-describe('only one upper score box remains', () => {
+describe.each([['local', aiDecideLocks], ['online', serverAiDecideLocks]] as const)('only one upper score box remains (%s)', (_name, aiDecideLocks) => {
   const upperIds = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
 
   it.each(upperIds)('always keeps exactly the matching dice for %s after roll 1 and roll 2', (category) => {
@@ -132,5 +133,41 @@ describe('only one upper score box remains', () => {
       expect(aiDecideLocks([6, 1, 6, 1, 6], scores, rollsLeft))
         .toEqual([false, true, false, true, false]);
     }
+  });
+});
+
+describe.each([['local', aiDecideLocks], ['online', serverAiDecideLocks]] as const)('no unusable holds when only upper boxes remain (%s)', (_name, aiDecideLocks) => {
+  it('rerolls two and every other filled face after either roll across all upper combinations without twos', () => {
+    const ids = ['ones', 'threes', 'fours', 'fives', 'sixes'];
+    let seed = 9;
+    const random = vi.spyOn(Math, 'random').mockImplementation(() => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return seed / 4294967296;
+    });
+    try {
+      for (let mask = 1; mask < 32; mask++) {
+        const open = ids.filter((_, i) => mask & (1 << i));
+        const scores = Object.fromEntries(CATEGORIES.map(c => [c.id, open.includes(c.id) ? null : 0]));
+        const faces = open.map(id => ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].indexOf(id) + 1);
+        for (let n = 0; n < 30; n++) {
+          const dice = Array.from({ length: 5 }, () => 1 + Math.floor(Math.random() * 6));
+          for (const rollsLeft of [2, 1]) {
+            const locks = aiDecideLocks(dice, scores, rollsLeft);
+            expect(dice.filter((face, i) => locks[i] && !faces.includes(face)))
+              .toEqual([]);
+          }
+        }
+      }
+    } finally {
+      random.mockRestore();
+    }
+  }, 30000);
+
+  it('still keeps twos for a Yatzy when twos are filled', () => {
+    const scores = Object.fromEntries(CATEGORIES.map(c => [c.id, c.id === 'yatzy' ? null : 0]));
+    expect(aiDecideLocks([2, 2, 2, 2, 6], scores, 2))
+      .toEqual([true, true, true, true, false]);
+    expect(aiDecideLocks([2, 2, 2, 2, 6], scores, 1))
+      .toEqual([true, true, true, true, false]);
   });
 });

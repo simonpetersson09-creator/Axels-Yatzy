@@ -74,6 +74,11 @@ function availableList(scores: Record<string, number | null>): CategoryId[] {
     .map(c => c.id);
 }
 
+function usableUpperOnlyDice(dice: number[], available: Set<string>): boolean[] {
+  const upperOnly = [...available].every(id => UPPER_IDS.includes(id as CategoryId));
+  return dice.map(face => !upperOnly || available.has(UPPER_IDS[face - 1]));
+}
+
 function longestRun(dice: number[]): number[] {
   const unique = [...new Set(dice)].sort((a, b) => a - b);
   if (unique.length === 0) return [];
@@ -350,7 +355,8 @@ function sampleFinalDice(
   let d = rerollDice(dice, locks);
   let r = rollsRemaining - 1;
   while (r > 0) {
-    const greedy = greedyLocksForSim(d, available);
+    const usable = usableUpperOnlyDice(d, available);
+    const greedy = greedyLocksForSim(d, available).map((locked, i) => locked && usable[i]);
     if (greedy.every(Boolean)) break;
     d = rerollDice(d, greedy);
     r -= 1;
@@ -367,7 +373,10 @@ function uniqueLockKey(locks: boolean[]): string {
 function generateCandidateLocks(dice: number[], available: Set<string>): boolean[][] {
   const seen = new Set<string>();
   const out: boolean[][] = [];
+  const usable = usableUpperOnlyDice(dice, available);
   const add = (locks: boolean[]) => {
+    // With no combination boxes left, a filled face can never score.
+    locks = locks.map((locked, i) => locked && usable[i]);
     const key = uniqueLockKey(locks);
     if (!seen.has(key)) { seen.add(key); out.push(locks); }
   };
@@ -504,6 +513,11 @@ export function aiDecideLocks(
 ): boolean[] {
   const available = availableList(scores);
   if (available.length === 0) return [false, false, false, false, false];
+
+  const finalCategory = available[0];
+  if (available.length === 1 && finalCategory in UPPER_FACE) {
+    return lockAllOf(dice, UPPER_FACE[finalCategory]);
+  }
 
   const avSet = new Set<string>(available);
   const bonus = bonusInfo(scores, avSet);

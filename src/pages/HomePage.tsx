@@ -48,6 +48,7 @@ import { isAdMobAvailable, preloadRewarded, subscribeRewardedState, getRewardedS
 import { optionalAdPair } from '@/lib/rewarded-pair';
 import { OptionalAdsDialog } from '@/components/OptionalAdsDialog';
 import { QuickMatchSearch } from '@/components/multiplayer/QuickMatchSearch';
+import { QuickMatchChoices } from '@/components/QuickMatchChoices';
 import RateAppPrompt from '@/components/RateAppPrompt';
 import NotificationAskPrompt from '@/components/NotificationAskPrompt';
 import { getHomePrompt } from '@/lib/home-prompt';
@@ -595,6 +596,26 @@ export default function HomePage() {
   };
 
 
+  const startQuickMatch = (players: number, online: boolean): boolean => {
+    const opponents = players - 1;
+    if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
+      trackEvent('play_start_blocked', { reason: 'local_match_limit', opponents });
+      toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
+      return false;
+    }
+    const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
+    const playerNames = [humanName, ...getRandomAiNames(opponents)];
+    const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
+    setShowQuickMatch(false);
+    if (online) {
+      setOnlineSearch({ humanName, playerNames, aiPlayers, startedAt: Date.now() });
+    } else {
+      trackEvent('quick_match_started', { opponents, fallback: false }, { gameMode: 'quick_match' });
+      navigate('/game', { state: { playerNames, aiPlayers, localGameId: newLocalGameId() } });
+    }
+    return true;
+  };
+
   const homePrompt = getHomePrompt({ server: showServerNews, online: showOnlineNews, android: showAndroidNews, rate: showRatePrompt, notifications: showNotifAsk });
   const rewardWeek = weeklyRewards[0]?.week_start;
   const showWeeklyReward = finishedAway.length === 0 && !homePrompt && !showQuickMatch && !onlineSearch && !waitingEntryOpen && !showAdsConsent && !!rewardWeek;
@@ -744,33 +765,8 @@ export default function HomePage() {
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <p className="text-center text-sm text-muted-foreground font-medium">
-                      {t('selectPlayerCount')}
-                    </p>
-                    <div className="flex gap-2">
-                      {[1, 2, 3].map(opponents => (
-                        <motion.button
-                          key={opponents}
-                          data-play-action={`opponents_${opponents}`}
-                          onClick={() => {
-                            const humanName = getPlayerName() || t('playerN', { n: getAnonNumber() });
-                            const aiNames = getRandomAiNames(opponents);
-                            const playerNames = [humanName, ...aiNames];
-                            const aiPlayers = Array.from({ length: opponents }, (_, i) => i + 1);
-                            if (countActiveLocalGames() >= MAX_ACTIVE_LOCAL_GAMES) {
-                              trackEvent('play_start_blocked', { reason: 'local_match_limit', opponents });
-                              toast.error(t('maxActiveLocalGames', { max: MAX_ACTIVE_LOCAL_GAMES }));
-                              return;
-                            }
-                            setOnlineSearch({ humanName, playerNames, aiPlayers, startedAt: Date.now() });
-                          }}
-                          className="flex-1 py-3 px-2 rounded-xl bg-secondary text-secondary-foreground font-display font-bold text-xs sm:text-sm transition-all hover:bg-secondary/80 flex items-center justify-center text-center leading-tight"
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <span>{opponents} {opponents === 1 ? t('opponent') : t('opponents')}</span>
-                        </motion.button>
-                      ))}
-                    </div>
+                    <QuickMatchChoices onOnline={players => startQuickMatch(players, true)}
+                      onComputer={players => startQuickMatch(players, false)} onClose={() => setShowQuickMatch(false)} />
                   </motion.div>
                 )}
               </AnimatePresence>

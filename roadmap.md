@@ -1,5 +1,9 @@
 # Roadmap – Snabbspel online
 
+## Val i Snabbspel – 28 november
+- [x] Online och Mot datorn över gemensamt val av 2–4 spelare; vanlig onlinesökning bevarad, datormatch startar direkt. Samma gräns för pågående lokala matcher och översättningar för alla 40 språk.
+- [x] 23 riktade tester godkända; direktstart med tre datorer och första kastet verifierade på telefon/iPad stående/liggande, inga sidfel. Avskild onlinesökning skickar tre platser och Avbryt återgår hem; inga riktiga onlinematcher skapade. Bygge OK; fysisk telefon och verklig onlinemotståndare inte verifierade, ändringen kommer i nästa appversion.
+
 ## Oanvändbara tärningar – 28 november
 - [x] Återskapat sparade tvåor utan giltig ruta. Samma skydd i lokala och serverns datorval, inklusive beräkning av nästa kast; giltiga kombinationer och historiska resultat lämnas orörda.
 - [x] 102 tester godkända inklusive båda datorerna, 3 720 prov med flera kvarvarande sifferrutor, alla slutrutans tärningskombinationer och 50 kompletta datormatcher. Avskild verklig spelvy: Emma sparar ettan men inte tvåan, avslutar turen med 6 på treor; tvåor oförändrade, inga sidfel. Bygge OK; onlinefunktionen driftsatt. Fysisk telefon och verklig onlinetur ej spelade i detta prov; lokala ändringen kräver nästa appversion.

@@ -437,6 +437,92 @@ function generateCandidateLocks(dice: number[], available: Set<string>): boolean
 
 // ─── EV evaluation for a keep pattern ────────────────────
 
+// Exact weighted outcomes; at most 252 unordered hands for five fresh dice.
+const exactOutcomes = new Map<number, { dice: number[]; probability: number }[]>();
+
+function outcomesForDice(count: number): { dice: number[]; probability: number }[] {
+  const cached = exactOutcomes.get(count);
+  if (cached) return cached;
+  const grouped = new Map<string, { dice: number[]; probability: number }>();
+  const probability = 1 / 6 ** count;
+  const visit = (rolled: number[]) => {
+    if (rolled.length === count) {
+      const sorted = [...rolled].sort((a, b) => a - b);
+      const key = sorted.join('');
+      const existing = grouped.get(key);
+      if (existing) existing.probability += probability;
+      else grouped.set(key, { dice: sorted, probability });
+      return;
+    }
+    for (let face = 1; face <= 6; face++) visit([...rolled, face]);
+  };
+  visit([]);
+  const outcomes = [...grouped.values()];
+  exactOutcomes.set(count, outcomes);
+  return outcomes;
+}
+
+/** Exact keep choice with one or two rolls left (no sampling noise). */
+function exactLocks(
+  dice: number[], rollsLeft: number, scores: Record<string, number | null>,
+  available: CategoryId[], bonus: BonusInfo, candidates: boolean[][],
+): boolean[] {
+  const placed = new Map<string, number>();
+  const keepMemo = new Map<string, number>();
+  const handMemo = new Map<string, number>();
+  const place = (hand: number[]): number => {
+    const key = hand.join('');
+    let v = placed.get(key);
+    if (v === undefined) {
+      v = bestPlacementValue(hand, scores, available, bonus).value;
+      placed.set(key, v);
+    }
+    return v;
+  };
+  // Best value of a sorted hand with one roll left.
+  const handValue = (hand: number[]): number => {
+    const key = hand.join('');
+    let v = handMemo.get(key);
+    if (v !== undefined) return v;
+    v = -Infinity;
+    const seen = new Set<string>();
+    for (let mask = 0; mask < 32; mask++) {
+      const kept = hand.filter((_, i) => Boolean(mask & (1 << i)));
+      const k = kept.join('');
+      if (seen.has(k)) continue;
+      seen.add(k);
+      v = Math.max(v, keepValue(kept, 1));
+    }
+    handMemo.set(key, v);
+    return v;
+  };
+  const keepValue = (kept: number[], rolls: number): number => {
+    const key = `${rolls}:${kept.join('')}`;
+    let v = keepMemo.get(key);
+    if (v !== undefined) return v;
+    v = 0;
+    for (const outcome of outcomesForDice(5 - kept.length)) {
+      const hand = [...kept, ...outcome.dice].sort((a, b) => a - b);
+      v += outcome.probability * (rolls === 1 ? place(hand) : handValue(hand));
+    }
+    keepMemo.set(key, v);
+    return v;
+  };
+  let bestLocks = dice.map(() => true);
+  let bestEV = -Infinity;
+  for (const locks of candidates) {
+    const kept = dice.filter((_, i) => locks[i]).sort((a, b) => a - b);
+    const ev = keepValue(kept, rollsLeft >= 2 ? 2 : 1);
+    // Stable ties prefer keeping more dice instead of taking needless risks.
+    if (ev > bestEV + 1e-9 || (Math.abs(ev - bestEV) <= 1e-9 &&
+      kept.length > bestLocks.filter(Boolean).length)) {
+      bestEV = ev;
+      bestLocks = locks;
+    }
+  }
+  return bestLocks;
+}
+
 function MC_SAMPLES(rollsRemaining: number): number {
   // More rolls left = more variance, more samples needed.
   // Boosted from 140/90 → 300/200 for noticeably steadier EV estimates —
@@ -547,15 +633,5 @@ export function aiDecideLocks(
   }
 
   const candidates = generateCandidateLocks(dice, avSet);
-
-  let bestLocks = candidates[0];
-  let bestEV = -Infinity;
-  for (const locks of candidates) {
-    const ev = evaluateKeepEV(locks, dice, rollsLeft, scores, available, avSet, bonus);
-    if (ev > bestEV) {
-      bestEV = ev;
-      bestLocks = locks;
-    }
-  }
-  return bestLocks;
+  return exactLocks(dice, rollsLeft, scores, available, bonus, candidates);
 }

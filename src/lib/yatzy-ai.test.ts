@@ -171,3 +171,30 @@ describe.each([['local', aiDecideLocks], ['online', serverAiDecideLocks]] as con
       .toEqual([true, true, true, true, false]);
   });
 });
+
+describe.each([['local', aiDecideLocks], ['online', serverAiDecideLocks]] as const)('exact choices after the first roll (%s)', (_name, aiDecideLocks) => {
+  const only = (open: string[]) => Object.fromEntries(
+    CATEGORIES.map(c => [c.id, open.includes(c.id) ? null : 0]),
+  ) as Record<string, number | null>;
+
+  it('keeps a three of a kind when four of a kind and Yatzy are open', () => {
+    const scores = only(['fourOfAKind', 'yatzy']);
+    for (let i = 0; i < 5; i++) {
+      expect(aiDecideLocks([2, 3, 4, 4, 4], scores, 2)).toEqual([false, false, true, true, true]);
+    }
+  });
+
+  it('keeps a four of a kind when Yatzy is open', () => {
+    const scores = only(['yatzy', 'chance']);
+    for (let i = 0; i < 5; i++) {
+      expect(aiDecideLocks([4, 4, 4, 4, 5], scores, 2)).toEqual([true, true, true, true, false]);
+    }
+  });
+
+  it('does not keep a worthless hand when only two pairs and Yatzy remain', () => {
+    const scores = only(['twoPairs', 'yatzy']);
+    for (let i = 0; i < 5; i++) {
+      expect(aiDecideLocks([1, 3, 4, 5, 5], scores, 2)).not.toEqual([true, true, true, true, true]);
+    }
+  });
+});
